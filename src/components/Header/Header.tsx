@@ -4,7 +4,8 @@ import styles from './Header.module.scss'
 export default function Header() {
     return (
         <div className={styles.header}>
-            <WalletAdapter />
+            <div className={styles.header__title}>Adrena</div>
+            <WalletAdapter className={styles.header__walletAdapter} />
         </div>
     );
 }

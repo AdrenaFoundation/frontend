@@ -3,6 +3,7 @@ import { WalletAdapterName } from '@/adapters/walletAdapters';
 import { useSelector, useDispatch } from '@/store/store';
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
+import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 import styles from './WalletAdapter.module.scss'
 
@@ -11,7 +12,7 @@ type PhantomProvider = {
     publicKey: PublicKey | null;
 };
 
-export default function WalletAdapter() {
+export default function WalletAdapter({ className }: { className?: string; }) {
     const dispatch = useDispatch();
     const [openModal, setOpenModal] = useState<boolean>(false);
     const wallet = useSelector(s => s.wallet);
@@ -51,19 +52,26 @@ export default function WalletAdapter() {
     }, [getWalletAddressFromAdapter]);
 
     return (
-        <div className={styles.walletAdapter}>
-            {!connected ? <button onClick={() => setOpenModal(true)}>Connect</button> : null}
+        <div className={`${styles.walletAdapter} ${className ?? ''}`}>
+            {!connected ? <Button title="Connect wallet" onClick={() => setOpenModal(true)} /> : null}
 
-            {connected ? <button onClick={() => {
+            {connected && connectedWalletAddress ? <Button title={connectedWalletAddress} onClick={() => {
                 dispatch(disconnectWalletAction(wallet));
                 setOpenModal(false);
-            }}>{connectedWalletAddress} Disconnect</button> : null}
+            }} rightIcon='images/power-off.svg' /> : null}
 
-            {openModal ? <Modal title='Select wallet' close={() => setOpenModal(false)}>
-                <div onClick={() => {
+            {openModal ? <Modal title='Select wallet' close={() => setOpenModal(false)} className={styles.walletAdapter__modal}>
+                <div className={styles.walletAdapter__modal_wallet_list} onClick={() => {
                     dispatch(connectWalletAction('phantom'));
                     setOpenModal(false);
-                }}>Phantom</div>
+                }}>
+
+                    <div className={styles.walletAdapter__modal_wallet_list_item}>
+                        <img className={styles.walletAdapter__modal_wallet_list_item_logo} src='/images/phantom.png' />
+                        <span className={styles.walletAdapter__modal_wallet_list_item_title}>Phantom</span>
+                    </div>
+
+                </div>
             </Modal> : null}
         </div>
     );

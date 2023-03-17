@@ -1,3 +1,5 @@
+@import '@/styles/variable.scss';
+
 .modalView {
     position: fixed;
     width: 100%;
@@ -14,26 +16,39 @@
         z-index: 2;
     }
 
-    &__window {
-        border: 1px solid grey;
-        min-width: 15em;
-        min-height: 10em;
-        background-color: white;
-        z-index: 3;
-    }
-
     &__header {
-        background-color: red;
-        height: 2em;
+        background-color: $mainColor;
+        height: 3em;
         width: 100%;
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: center;
-        border-bottom: 1px solid grey;
+        justify-content: space-between;
+        border-bottom: 1px solid $borderColor;
+        padding-left: 1em;
+        padding-right: 1em;
 
         &_title {
-            font-size: 1.1em;
+            font-size: 1.3em;
         }
+
+        &_close_icon {
+            width: 1em;
+            height: 1em;
+            cursor: pointer;
+
+            &:hover {
+                opacity: $hoverOpacity;
+            }
+        }
+    }
+
+    &__window {
+        min-width: 15em;
+        min-height: 10em;
+        background-color: $mainColor;
+        z-index: 3;
+        color: whitesmoke;
+        border-radius: $borderRadius;
     }
 }

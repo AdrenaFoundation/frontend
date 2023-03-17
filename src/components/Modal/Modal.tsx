@@ -62,7 +62,8 @@ const Modal = ({
 
                 <div className={styles.modalView__window} role="dialog">
                     <div className={styles.modalView__header}>
-                        <h4 className={styles.modalView__header_title}>{title}</h4>
+                        <span className={styles.modalView__header_title}>{title}</span>
+                        <img className={styles.modalView__header_close_icon} src="/images/cross.svg" alt="close icon" onClick={() => close()} />
                     </div>
 
                     <div className={`${styles.modalView__body} ${className ?? ''}`}>{children}</div>

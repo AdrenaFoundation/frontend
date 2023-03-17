@@ -11,4 +11,20 @@ body,
   height: 100%;
   display: flex;
   flex-direction: column;
+  font-family: app-font;
+}
+
+@font-face {
+  font-family: app-font;
+  src: url('/fonts/Roboto-Regular.ttf');
+}
+
+@font-face {
+  font-family: app-font-thin;
+  src: url('/fonts/Roboto-Thin.ttf');
+}
+
+@font-face {
+  font-family: app-font-bold;
+  src: url('/fonts/Roboto-Bold.ttf');
 }

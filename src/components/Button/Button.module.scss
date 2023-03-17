@@ -1,0 +1,28 @@
+@import '@/styles/variable.scss';
+
+.button {
+    padding: 0.5em;
+    display: flex;
+    cursor: pointer;
+    color: whitesmoke;
+    border-radius: $borderRadius;
+    border: 1px solid $borderColor;
+
+    &:hover {
+        opacity: $hoverOpacity;
+    }
+
+    &__left_icon,
+    &__right_icon {
+        height: 1em;
+        width: 1em;
+    }
+
+    &__left_icon {
+        margin-right: 0.5em;
+    }
+
+    &__right_icon {
+        margin-left: 0.5em;
+    }
+}

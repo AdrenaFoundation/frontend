@@ -1,5 +1,7 @@
+@import '@/styles/variable.scss';
+
 .footer {
     width: 100%;
     height: 5em;
-    background-color: grey;
+    background-color: $mainColor;
 }
