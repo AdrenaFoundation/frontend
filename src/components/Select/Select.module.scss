@@ -1,0 +1,53 @@
+@import '@/styles/variable.scss';
+
+.select {
+    color: whitesmoke;
+    position: relative;
+
+    &__selected {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        height: 2em;
+
+        &:hover {
+            opacity: $hoverOpacity;
+        }
+
+        img {
+            height: 1.5em;
+            width: 1.5em;
+        }
+    }
+
+    &__list {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 2em;
+        right: 0.5em;
+        background-color: $secondaryColor;
+        border: 0.1em solid white;
+
+        div {
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            padding-left: 1em;
+            padding-right: 1em;
+            cursor: pointer;
+
+            &:hover {
+                opacity: $hoverOpacity;
+            }
+
+            &:not(:last-child) {
+                border-bottom: 1px solid $borderColor;
+            }
+        }
+    }
+
+    &__list_opened {
+        display: flex;
+    }
+}

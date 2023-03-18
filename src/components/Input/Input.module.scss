@@ -1,0 +1,11 @@
+@import '@/styles/variable.scss';
+
+.input {
+    background-color: $secondaryColor;
+    border: 0;
+    font-size: $sizeBig;
+    color: whitesmoke;
+    outline: none;
+    width: 100%;
+    font-family: $fontBold;
+}

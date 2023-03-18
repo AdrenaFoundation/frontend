@@ -11,7 +11,11 @@ body,
   height: 100%;
   display: flex;
   flex-direction: column;
-  font-family: app-font;
+  font-family: app-fon-thin;
+}
+
+* {
+  font-family: app-font-thin;
 }
 
 @font-face {
@@ -27,4 +31,18 @@ body,
 @font-face {
   font-family: app-font-bold;
   src: url('/fonts/Roboto-Bold.ttf');
+}
+
+// Hide arrows on input number
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
