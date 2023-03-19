@@ -16,7 +16,10 @@ export default function tokenPricesReducer(
 ) {
   switch (action.type) {
     case "setTokenPrice":
-      return action.payload;
+      return {
+        ...state,
+        [action.payload.token]: action.payload.price,
+      };
     default:
       return state;
   }

@@ -46,10 +46,15 @@ const useListenToPythTokenPricesChange = (): PythConnection | null => {
       // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
       // console.log(`${product.symbol}: $${price.price} \xB1$${price.confidence} Status: ${PriceStatus[price.status]}`);
 
-      // Symbol looks like SOL/USD, BTC/USD, USDC/USD etc.
-      const [token] = product.symbol.split("/");
+      // Symbol looks like SOL/USD, BTC/USD or like Crypto.ETH/USD etc.
+      let [token] = product.symbol.split("/");
 
-      dispatch(setTokenPriceAction(token as Token, price.confidence ?? null));
+      // Remove Crypto. prefix
+      if (/Crypto\./.test(token)) {
+        token = token.slice("Crypto.".length);
+      }
+
+      dispatch(setTokenPriceAction(token as Token, price.price ?? null));
     });
 
     // Start listening for price change events.
