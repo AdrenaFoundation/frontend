@@ -1,2 +1,4 @@
+export type StableToken = "USDC";
+export type NonStableToken = "ETH" | "BTC" | "SOL";
 
-export type Token = 'ETH' | 'BTC' | 'SOL' | 'USDC';
+export type Token = StableToken | NonStableToken;

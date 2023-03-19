@@ -1,22 +1,22 @@
-@import '@/styles/variable.scss';
+@import "@/styles/variable.scss";
 
 .header {
-    width: 100%;
-    height: 6em;
-    background-color: $mainColor;
-    display: flex;
-    align-items: center;
+  width: 100%;
+  height: 6em;
+  background-color: $mainColor;
+  display: flex;
+  align-items: center;
 
-    &__title {
-        font-size: 1.2em;
-        font-weight: bold;
-        color: white;
-        margin-left: 2em;
-        text-transform: uppercase;
-    }
+  &__title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    margin-left: 2em;
+    text-transform: uppercase;
+  }
 
-    &__walletAdapter {
-        margin-left: auto;
-        margin-right: 2em;
-    }
+  &__walletAdapter {
+    margin-left: auto;
+    margin-right: 2em;
+  }
 }

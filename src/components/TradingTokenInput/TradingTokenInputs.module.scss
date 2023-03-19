@@ -1,70 +1,70 @@
-@import '@/styles/variable.scss';
+@import "@/styles/variable.scss";
 
 .tradingTokenInputs {
-    position: relative;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  &__switch {
+    background-color: $thirdColor;
+    border-radius: 5em;
+    padding: 0.5em;
+    width: 2em;
+    height: 2em;
+    position: absolute;
+    cursor: pointer;
+
+    // width / 2
+    left: calc(50% - 1em);
+    top: calc(50% - 1em);
+
+    img {
+      width: 1em;
+      height: 1em;
+      transform: rotate(90deg);
+    }
+
+    &:hover {
+      opacity: $hoverOpacity;
+    }
+  }
+
+  &__container {
+    height: 8em;
+    width: 22em;
+    background-color: $secondaryColor;
     display: flex;
     flex-direction: column;
+    padding: 1em;
+    justify-content: center;
+    margin-top: 0.8em;
 
-    &__switch {
-        background-color: $thirdColor;
-        border-radius: 5em;
-        padding: 0.5em;
-        width: 2em;
-        height: 2em;
-        position: absolute;
-        cursor: pointer;
-
-        // width / 2
-        left: calc(50% - 1em);
-        top: calc(50% - 1em);
-
-        img {
-            width: 1em;
-            height: 1em;
-            transform: rotate(90deg);
-        }
-
-        &:hover {
-            opacity: $hoverOpacity;
-        }
+    &_labels {
+      color: whitesmoke;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
     }
 
-    &__container {
-        height: 8em;
-        width: 22em;
+    &_infos {
+      display: flex;
+      width: 100%;
+
+      &_input {
         background-color: $secondaryColor;
-        display: flex;
-        flex-direction: column;
-        padding: 1em;
-        justify-content: center;
-        margin-top: 0.8em;
+        border: 0;
+        font-size: $sizeBig;
+        color: whitesmoke;
+        outline: none;
+        width: 100%;
+        font-family: $fontBold;
+      }
 
-        &_labels {
-            color: whitesmoke;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            width: 100%;
-            justify-content: space-between;
-        }
-
-        &_infos {
-            display: flex;
-            width: 100%;
-
-            &_input {
-                background-color: $secondaryColor;
-                border: 0;
-                font-size: $sizeBig;
-                color: whitesmoke;
-                outline: none;
-                width: 100%;
-                font-family: $fontBold;
-            }
-
-            &_select {
-                font-size: $sizeBig;
-            }
-        }
+      &_select {
+        font-size: $sizeBig;
+      }
     }
+  }
 }

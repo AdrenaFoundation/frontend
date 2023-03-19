@@ -5,72 +5,75 @@ import styles from "./Modal.module.scss";
 
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
-    const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
-        null
-    );
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
+    null
+  );
 
-    useEffect(() => {
-        // Look for container in the DOM
-        const container = document.getElementById("modal-container");
+  useEffect(() => {
+    // Look for container in the DOM
+    const container = document.getElementById("modal-container");
 
-        if (!container) {
-            // Should never happens
-            throw new Error("Portal container not found");
-        }
-
-        setPortalContainer(container);
-    }, []);
-
-    if (portalContainer === null) {
-        return null;
+    if (!container) {
+      // Should never happens
+      throw new Error("Portal container not found");
     }
 
-    return createPortal(children, portalContainer);
+    setPortalContainer(container);
+  }, []);
+
+  if (portalContainer === null) {
+    return null;
+  }
+
+  return createPortal(children, portalContainer);
 };
 
 const Modal = ({
-    title,
-    children,
-    close,
-    className,
+  title,
+  children,
+  close,
+  className,
 }: {
-    title: string;
-    children: ReactNode;
-    close: () => void;
-    className?: string;
+  title: string;
+  children: ReactNode;
+  close: () => void;
+  className?: string;
 }) => {
-    useEffect(() => {
-        const handler = (evt: KeyboardEvent) => {
-            if (evt.key !== 'Escape')
-                return;
+  useEffect(() => {
+    const handler = (evt: KeyboardEvent) => {
+      if (evt.key !== "Escape") return;
 
-            close();
-        };
+      close();
+    };
 
-        window.addEventListener("keydown", handler);
+    window.addEventListener("keydown", handler);
 
-        return () => window.removeEventListener("keydown", handler);
-    }, []);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
-    return (
-        <PortalContainer>
-            <div className={styles.modalView}>
-                <div
-                    className={styles.modalView__background}
-                    onClick={() => close()}
-                />
+  return (
+    <PortalContainer>
+      <div className={styles.modalView}>
+        <div className={styles.modalView__background} onClick={() => close()} />
 
-                <div className={styles.modalView__window} role="dialog">
-                    <div className={styles.modalView__header}>
-                        <span className={styles.modalView__header_title}>{title}</span>
-                        <img className={styles.modalView__header_close_icon} src="/images/cross.svg" alt="close icon" onClick={() => close()} />
-                    </div>
+        <div className={styles.modalView__window} role="dialog">
+          <div className={styles.modalView__header}>
+            <span className={styles.modalView__header_title}>{title}</span>
+            <img
+              className={styles.modalView__header_close_icon}
+              src="/images/cross.svg"
+              alt="close icon"
+              onClick={() => close()}
+            />
+          </div>
 
-                    <div className={`${styles.modalView__body} ${className ?? ''}`}>{children}</div>
-                </div>
-            </div>
-        </PortalContainer>
-    );
+          <div className={`${styles.modalView__body} ${className ?? ""}`}>
+            {children}
+          </div>
+        </div>
+      </div>
+    </PortalContainer>
+  );
 };
 
 export default Modal;

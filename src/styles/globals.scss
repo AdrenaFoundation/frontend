@@ -20,17 +20,17 @@ body,
 
 @font-face {
   font-family: app-font;
-  src: url('/fonts/Roboto-Regular.ttf');
+  src: url("/fonts/Roboto-Regular.ttf");
 }
 
 @font-face {
   font-family: app-font-thin;
-  src: url('/fonts/Roboto-Thin.ttf');
+  src: url("/fonts/Roboto-Thin.ttf");
 }
 
 @font-face {
   font-family: app-font-bold;
-  src: url('/fonts/Roboto-Bold.ttf');
+  src: url("/fonts/Roboto-Bold.ttf");
 }
 
 // Hide arrows on input number
@@ -43,7 +43,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }

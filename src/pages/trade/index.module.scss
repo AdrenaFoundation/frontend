@@ -1,22 +1,22 @@
-@import '@/styles/variable.scss';
+@import "@/styles/variable.scss";
 
 .trade {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: $mainColor;
+
+  &__tradingview {
+    height: 30em;
+    width: 10em;
     background-color: $mainColor;
+  }
 
-    &__tradingview {
-        height: 30em;
-        width: 10em;
-        background-color: $mainColor;
-    }
-
-    &__panel {
-        height: 30em;
-        width: 20em;
-        background-color: $mainColor;
-    }
+  &__panel {
+    height: 30em;
+    width: 20em;
+    background-color: $mainColor;
+  }
 }
