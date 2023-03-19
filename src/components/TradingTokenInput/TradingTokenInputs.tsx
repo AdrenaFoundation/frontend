@@ -5,7 +5,13 @@ import styles from './TradingTokenInputs.module.scss'
 
 type Tokens = 'ETH' | 'BTC' | 'SOL';
 
-export default function TradingTokenInputs({ className, titleA, titleB }: { className?: string; titleA: string; titleB: string; }) {
+export default function TradingTokenInputs({ className, inputALabelTopLeft, inputALabelTopRight, inputBLabelTopLeft, inputBLabelTopRight }: {
+    className?: string;
+    inputALabelTopLeft?: string;
+    inputALabelTopRight?: string;
+    inputBLabelTopLeft?: string;
+    inputBLabelTopRight?: string;
+}) {
     const [inputA, setInputA] = useState<string>('');
     const [inputB, setInputB] = useState<string>('');
 
@@ -25,8 +31,9 @@ export default function TradingTokenInputs({ className, titleA, titleB }: { clas
     return (
         <div className={`${styles.tradingTokenInputs} ${className ?? ''}`}>
             <div className={`${styles.tradingTokenInputs__container} ${className ?? ''}`}>
-                <div className={styles.tradingTokenInputs__container_title}>
-                    {titleA}
+                <div className={styles.tradingTokenInputs__container_labels}>
+                    <div>{inputALabelTopLeft}</div>
+                    <div>{inputALabelTopRight}</div>
                 </div>
                 <div className={styles.tradingTokenInputs__container_infos}>
                     <Input value={inputA} placeholder="0.00" className={styles.tradingTokenInputs__container_infos_input} onChange={(v) => setInputA(v)} />
@@ -40,8 +47,9 @@ export default function TradingTokenInputs({ className, titleA, titleB }: { clas
             </div>
 
             <div className={`${styles.tradingTokenInputs__container} ${className ?? ''}`}>
-                <div className={styles.tradingTokenInputs__container_title}>
-                    {titleB}
+                <div className={styles.tradingTokenInputs__container_labels}>
+                    <div>{inputBLabelTopLeft}</div>
+                    <div>{inputBLabelTopRight}</div>
                 </div>
                 <div className={styles.tradingTokenInputs__container_infos}>
                     <Input value={inputB} placeholder="0.00" className={styles.tradingTokenInputs__container_infos_input} onChange={(v) => setInputB(v)} />

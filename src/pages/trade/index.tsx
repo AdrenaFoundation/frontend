@@ -1,13 +1,12 @@
 import TabSelect from '@/components/TabSelect/TabSelect';
 import TradingTokenInputs from '@/components/TradingTokenInput/TradingTokenInputs';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styles from './index.module.scss'
 
-export default function Trade() {
-    const [selectedTab, setSelectedTab] = useState<'long' | 'short' | 'swap'>('long');
+type State = 'long' | 'short' | 'swap';
 
-    const dispatch = useDispatch();
+export default function Trade() {
+    const [selectedTab, setSelectedTab] = useState<State>('long');
 
     return (
         <div className={styles.trade}>
@@ -26,7 +25,17 @@ export default function Trade() {
                         setSelectedTab(title);
                     }} />
 
-                <TradingTokenInputs titleA="Pay" titleB="Long" />
+                {
+                    selectedTab === 'long' ? <TradingTokenInputs inputALabelTopLeft='Pay' inputALabelTopRight='' inputBLabelTopLeft='Long' inputBLabelTopRight='' /> : null
+                }
+
+                {
+                    selectedTab === 'short' ? <TradingTokenInputs inputALabelTopLeft='Pay' inputALabelTopRight='' inputBLabelTopLeft='Short' inputBLabelTopRight='' /> : null
+                }
+
+                {
+                    selectedTab === 'swap' ? <TradingTokenInputs inputALabelTopLeft='Pay' inputALabelTopRight='' inputBLabelTopLeft='Receive' inputBLabelTopRight='' /> : null
+                }
             </div>
         </div>
     );
