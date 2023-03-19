@@ -1,11 +1,14 @@
 import TabSelect from '@/components/TabSelect/TabSelect';
 import TradingTokenInputs from '@/components/TradingTokenInput/TradingTokenInputs';
+import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
 import { useState } from 'react';
 import styles from './index.module.scss'
 
 type State = 'long' | 'short' | 'swap';
 
 export default function Trade() {
+    useListenToPythTokenPricesChange();
+
     const [selectedTab, setSelectedTab] = useState<State>('long');
 
     return (

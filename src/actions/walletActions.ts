@@ -13,7 +13,6 @@ export type DisconnectWalletAction = {
 
 export type WalletAction = ConnectWalletAction | DisconnectWalletAction;
 
-
 export const connectWalletAction = (name: WalletAdapterName) => async (dispatch: Dispatch<ConnectWalletAction>) => {
     const adapter = getWalletAdapters()[name];
 

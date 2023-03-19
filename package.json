@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@pythnetwork/client": "^2.15.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-react": "^0.15.31",
