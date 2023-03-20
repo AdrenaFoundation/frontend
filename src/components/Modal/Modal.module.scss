@@ -7,13 +7,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 100;
 
   &__background {
     position: absolute;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    z-index: 2;
+    z-index: 101;
   }
 
   &__header {
@@ -47,7 +48,7 @@
     min-width: 15em;
     min-height: 10em;
     background-color: $mainColor;
-    z-index: 3;
+    z-index: 102;
     color: whitesmoke;
     border-radius: $borderRadius;
   }

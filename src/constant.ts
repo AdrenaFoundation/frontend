@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
-import { Token } from "./types";
+import { NonStableToken, StableToken, Token } from "./types";
 
 // mainnet addresses (cannot find devnet addresses matching pyth devnet data feeds)
 export const tokenAddresses = {
@@ -13,3 +13,6 @@ export const tokenAddresses = {
 } as Record<Token, PublicKey>;
 
 export const tokenList = ["USDC", "ETH", "BTC", "SOL"] as Token[];
+
+export const stableTokenList = ["USDC"] as StableToken[];
+export const nonStableTokenList = ["ETH", "BTC", "SOL"] as NonStableToken[];

@@ -1,22 +1,27 @@
+import React from "react";
 import styles from "./Button.module.scss";
 
-export default function Button({
-  title,
-  onClick,
-  className,
-  leftIcon,
-  rightIcon,
-}: {
-  title: string;
-  onClick: () => void;
-  className?: string;
-  leftIcon?: string;
-  rightIcon?: string;
-}) {
+function Button(
+  {
+    title,
+    onClick,
+    className,
+    leftIcon,
+    rightIcon,
+  }: {
+    title: string;
+    onClick: () => void;
+    className?: string;
+    leftIcon?: string;
+    rightIcon?: string;
+  },
+  ref?: React.Ref<HTMLDivElement>
+) {
   return (
     <div
       className={`${styles.button} ${className ?? ""}`}
       onClick={() => onClick()}
+      ref={ref}
     >
       {leftIcon ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -38,3 +43,5 @@ export default function Button({
     </div>
   );
 }
+
+export default React.forwardRef(Button);

@@ -3,7 +3,8 @@ import {
   disconnectWalletAction,
 } from "@/actions/walletActions";
 import { useSelector, useDispatch } from "@/store/store";
-import { useState } from "react";
+import React from "react";
+import { RefObject, useState } from "react";
 import Button from "../Button/Button";
 import Modal from "../Modal/Modal";
 import styles from "./WalletAdapter.module.scss";
@@ -12,7 +13,10 @@ function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 4)}..${address.slice(address.length - 4)}`;
 }
 
-export default function WalletAdapter({ className }: { className?: string }) {
+function WalletAdapter(
+  { className }: { className?: string },
+  ref?: React.Ref<HTMLDivElement>
+) {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const wallet = useSelector((s) => s.wallet);
@@ -22,7 +26,11 @@ export default function WalletAdapter({ className }: { className?: string }) {
   return (
     <div className={`${styles.walletAdapter} ${className ?? ""}`}>
       {!connected ? (
-        <Button title="Connect wallet" onClick={() => setOpenModal(true)} />
+        <Button
+          title="Connect wallet"
+          onClick={() => setOpenModal(true)}
+          ref={ref}
+        />
       ) : null}
 
       {connected ? (
@@ -70,3 +78,5 @@ export default function WalletAdapter({ className }: { className?: string }) {
     </div>
   );
 }
+
+export default React.forwardRef(WalletAdapter);

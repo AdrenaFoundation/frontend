@@ -83,11 +83,19 @@ export default function TradingInputs<T extends Token, U extends Token>({
   className,
   allowedTokenA,
   allowedTokenB,
+  onChangeInputA,
+  onChangeInputB,
+  onChangeTokenA,
+  onChangeTokenB,
 }: {
   actionType: "short" | "long" | "swap";
   className?: string;
   allowedTokenA: T[];
   allowedTokenB: U[];
+  onChangeInputA: (v: number | null) => void;
+  onChangeInputB: (v: number | null) => void;
+  onChangeTokenA: (t: T) => void;
+  onChangeTokenB: (t: U) => void;
 }) {
   const wallet = useSelector((s) => s.wallet);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -110,6 +118,25 @@ export default function TradingInputs<T extends Token, U extends Token>({
   const [tokenB, setTokenB] = useState<U>(allowedTokenB[0]);
 
   const [leverage, setLeverage] = useState<number>(1);
+
+  // Propagate changes to upper component
+  useEffect(() => {
+    const nb = Number(inputA);
+    onChangeInputA(isNaN(nb) || !inputA.length ? null : nb);
+  }, [inputA, onChangeInputA]);
+
+  useEffect(() => {
+    const nb = Number(inputB);
+    onChangeInputB(isNaN(nb) || !inputB.length ? null : nb);
+  }, [inputB, onChangeInputB]);
+
+  useEffect(() => {
+    onChangeTokenA(tokenA);
+  }, [onChangeTokenA, tokenA]);
+
+  useEffect(() => {
+    onChangeTokenB(tokenB);
+  }, [onChangeTokenB, tokenB]);
 
   // Switch inputs values and tokens
   const switchAB = () => {
@@ -184,7 +211,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
   return (
     <div className={`${styles.tradingInputs} ${className ?? ""}`}>
       {/* Input A */}
-      <div className={`${styles.tradingInputs__container} ${className ?? ""}`}>
+      <div className={styles.tradingInputs__container}>
         <div className={styles.tradingInputs__container_labels}>
           <div>
             Pay{priceA !== null ? `: ${getDisplayedUsdPrice(priceA)}` : null}
@@ -223,7 +250,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
       </div>
 
       {/* Input B */}
-      <div className={`${styles.tradingInputs__container} ${className ?? ""}`}>
+      <div className={styles.tradingInputs__container}>
         <div className={styles.tradingInputs__container_labels}>
           <div>
             {

@@ -18,5 +18,19 @@
     height: 30em;
     width: 22em;
     background-color: $mainColor;
+
+    &_trading_inputs {
+      margin-top: 1em;
+    }
+
+    &_execute_btn {
+      margin-top: 1em;
+      background-color: $thirdColor;
+      border-color: $thirdColor;
+    }
+
+    &_wallet_adapter {
+      display: none;
+    }
   }
 }
