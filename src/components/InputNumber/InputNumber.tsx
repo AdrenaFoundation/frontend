@@ -11,8 +11,6 @@ export default function InputNumber({
   placeholder?: string;
   className?: string;
 }) {
-  console.log(">> Value", value);
-
   return (
     <input
       type="number"

@@ -4,14 +4,21 @@
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-evenly;
+  flex-wrap: wrap;
   background-color: $mainColor;
+  padding: 1em;
+  justify-content: center;
 
   &__tradingview {
-    height: 30em;
-    width: 10em;
+    height: 40em;
+    flex-shrink: 1;
+    flex-grow: 1;
     background-color: $mainColor;
+    display: flex;
+    padding-left: 1em;
+    padding-right: 1em;
+    min-width: 40em;
+    max-width: 60em;
   }
 
   &__panel {

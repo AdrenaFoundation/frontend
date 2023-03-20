@@ -6,13 +6,15 @@ import Button from "../Button/Button";
 import InputNumber from "../InputNumber/InputNumber";
 import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
-import styles from "./tradingInputs.module.scss";
+import styles from "./TradingInputs.module.scss";
 
 const DISPLAYED_PRICE_PRECISION = 6;
 const INPUT_PRECISION = 8;
 
 function getDisplayedUsdPrice(price: number): string {
-  return `${Number(price.toFixed(DISPLAYED_PRICE_PRECISION)).toString()} USD`;
+  return `${Number(
+    price.toFixed(DISPLAYED_PRICE_PRECISION)
+  ).toLocaleString()} USD`;
 }
 
 function recalculateInputs<T extends Token, U extends Token>({

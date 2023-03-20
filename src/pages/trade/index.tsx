@@ -10,6 +10,7 @@ import Button from "@/components/Button/Button";
 import WalletAdapter from "@/components/WalletAdapter/WalletAdapter";
 import { useSelector } from "@/store/store";
 import { nonStableTokenList, tokenList } from "@/constant";
+import TradingChart from "@/components/TradingChart/TradingChart";
 
 type State = "long" | "short" | "swap";
 
@@ -71,7 +72,16 @@ export default function Trade() {
 
   return (
     <div className={styles.trade}>
-      <div className={styles.trade__tradingview}></div>
+      <div className={styles.trade__tradingview}>
+        {/* Display trading chart for appropriate token */}
+        {selectedTab === "short" || selectedTab === "long" ? (
+          <TradingChart token={tokenB as NonStableToken} />
+        ) : null}
+
+        {selectedTab === "swap" ? (
+          <TradingChart token={tokenA as NonStableToken} />
+        ) : null}
+      </div>
 
       <div className={styles.trade__panel}>
         <TabSelect
