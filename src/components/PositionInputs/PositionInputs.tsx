@@ -5,7 +5,7 @@ import { SetStateAction, useEffect, useState } from "react";
 import Input from "../Input/Input";
 import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
-import styles from "./LongPositionInputs.module.scss";
+import styles from "./positionInputs.module.scss";
 
 const DISPLAYED_PRICE_PRECISION = 6;
 const INPUT_PRECISION = 8;
@@ -78,11 +78,13 @@ function recalculateInputs<T extends Token, U extends Token>({
   );
 }
 
-export default function LongPositionInputs<T extends Token, U extends Token>({
+export default function PositionInputs<T extends Token, U extends Token>({
+  positionType,
   className,
   allowedTokenA,
   allowedTokenB,
 }: {
+  positionType: "Short" | "Long";
   className?: string;
   allowedTokenA: T[];
   allowedTokenB: U[];
@@ -180,12 +182,10 @@ export default function LongPositionInputs<T extends Token, U extends Token>({
   };
 
   return (
-    <div className={`${styles.longPositionInputs} ${className ?? ""}`}>
+    <div className={`${styles.positionInputs} ${className ?? ""}`}>
       {/* Input A */}
-      <div
-        className={`${styles.longPositionInputs__container} ${className ?? ""}`}
-      >
-        <div className={styles.longPositionInputs__container_labels}>
+      <div className={`${styles.positionInputs__container} ${className ?? ""}`}>
+        <div className={styles.positionInputs__container_labels}>
           <div>
             Pay{priceA !== null ? `: ${getDisplayedUsdPrice(priceA)}` : null}
           </div>
@@ -193,16 +193,16 @@ export default function LongPositionInputs<T extends Token, U extends Token>({
             {wallet ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}` : null}
           </div>
         </div>
-        <div className={styles.longPositionInputs__container_infos}>
+        <div className={styles.positionInputs__container_infos}>
           <Input
             value={inputA}
             placeholder="0.00"
-            className={styles.longPositionInputs__container_infos_input}
+            className={styles.positionInputs__container_infos_input}
             onChange={handleInputAChange}
           />
 
           <Select
-            className={styles.longPositionInputs__container_infos_select}
+            className={styles.positionInputs__container_infos_select}
             selected={tokenA}
             options={allowedTokenA}
             onSelect={(token) => setTokenA(token)}
@@ -210,10 +210,7 @@ export default function LongPositionInputs<T extends Token, U extends Token>({
         </div>
       </div>
 
-      <div
-        className={styles.longPositionInputs__switch}
-        onClick={() => switchAB()}
-      >
+      <div className={styles.positionInputs__switch} onClick={() => switchAB()}>
         {
           // eslint-disable-next-line @next/next/no-img-element
           <img src="/images/swap.svg" alt="swap icon" />
@@ -221,25 +218,24 @@ export default function LongPositionInputs<T extends Token, U extends Token>({
       </div>
 
       {/* Input B */}
-      <div
-        className={`${styles.longPositionInputs__container} ${className ?? ""}`}
-      >
-        <div className={styles.longPositionInputs__container_labels}>
+      <div className={`${styles.positionInputs__container} ${className ?? ""}`}>
+        <div className={styles.positionInputs__container_labels}>
           <div>
-            Long{priceB !== null ? `: ${getDisplayedUsdPrice(priceB)}` : null}
+            {positionType}
+            {priceB !== null ? `: ${getDisplayedUsdPrice(priceB)}` : null}
           </div>
           {<div>Leverage{`: x${leverage.toFixed(2)}`}</div>}
         </div>
-        <div className={styles.longPositionInputs__container_infos}>
+        <div className={styles.positionInputs__container_infos}>
           <Input
             value={inputB}
             placeholder="0.00"
-            className={styles.longPositionInputs__container_infos_input}
+            className={styles.positionInputs__container_infos_input}
             onChange={handleInputBChange}
           />
 
           <Select
-            className={styles.longPositionInputs__container_infos_select}
+            className={styles.positionInputs__container_infos_select}
             selected={tokenB}
             options={allowedTokenB}
             onSelect={(token) => setTokenB(token)}
@@ -248,9 +244,9 @@ export default function LongPositionInputs<T extends Token, U extends Token>({
       </div>
 
       {/* Leverage */}
-      <div className={styles.longPositionInputs__leverage_slider}>
+      <div className={styles.positionInputs__leverage_slider}>
         <LeverageSlider
-          className={styles.longPositionInputs__leverage_slider_obj}
+          className={styles.positionInputs__leverage_slider_obj}
           onChange={(v: number) => setLeverage(v)}
         />
       </div>
