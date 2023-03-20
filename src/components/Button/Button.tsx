@@ -19,6 +19,7 @@ export default function Button({
       onClick={() => onClick()}
     >
       {leftIcon ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={leftIcon}
           className={styles.button__left_icon}
@@ -27,6 +28,7 @@ export default function Button({
       ) : null}
       {title}
       {rightIcon ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={rightIcon}
           className={styles.button__right_icon}

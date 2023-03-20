@@ -214,7 +214,10 @@ export default function LongPositionInputs<T extends Token, U extends Token>({
         className={styles.longPositionInputs__switch}
         onClick={() => switchAB()}
       >
-        <img src="/images/swap.svg" alt="swap icon" />
+        {
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/images/swap.svg" alt="swap icon" />
+        }
       </div>
 
       {/* Input B */}

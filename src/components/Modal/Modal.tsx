@@ -49,7 +49,7 @@ const Modal = ({
     window.addEventListener("keydown", handler);
 
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [close]);
 
   return (
     <PortalContainer>
@@ -59,12 +59,15 @@ const Modal = ({
         <div className={styles.modalView__window} role="dialog">
           <div className={styles.modalView__header}>
             <span className={styles.modalView__header_title}>{title}</span>
-            <img
-              className={styles.modalView__header_close_icon}
-              src="/images/cross.svg"
-              alt="close icon"
-              onClick={() => close()}
-            />
+            {
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                className={styles.modalView__header_close_icon}
+                src="/images/cross.svg"
+                alt="close icon"
+                onClick={() => close()}
+              />
+            }
           </div>
 
           <div className={`${styles.modalView__body} ${className ?? ""}`}>

@@ -24,7 +24,10 @@ export default function TabSelect<T extends string>({
           }`}
           onClick={() => onClick(title, index)}
         >
-          {icon ? <img src={icon} alt="tab icon" /> : null}
+          {icon ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={icon} alt="tab icon" />
+          ) : null}
 
           <span>{title}</span>
         </div>

@@ -21,7 +21,10 @@ export default function Select<T extends string>({
         onClick={() => setOpened(!opened)}
       >
         <span>{selected}</span>
-        <img src="/images/chevron-down.svg" alt="chevron down" />
+        {
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/images/chevron-down.svg" alt="chevron down" />
+        }
       </div>
 
       <div
