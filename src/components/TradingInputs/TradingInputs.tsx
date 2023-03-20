@@ -5,7 +5,7 @@ import { SetStateAction, useEffect, useState } from "react";
 import Input from "../Input/Input";
 import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
-import styles from "./positionInputs.module.scss";
+import styles from "./tradingInputs.module.scss";
 
 const DISPLAYED_PRICE_PRECISION = 6;
 const INPUT_PRECISION = 8;
@@ -78,13 +78,13 @@ function recalculateInputs<T extends Token, U extends Token>({
   );
 }
 
-export default function PositionInputs<T extends Token, U extends Token>({
-  positionType,
+export default function TradingInputs<T extends Token, U extends Token>({
+  actionType,
   className,
   allowedTokenA,
   allowedTokenB,
 }: {
-  positionType: "Short" | "Long";
+  actionType: "short" | "long" | "swap";
   className?: string;
   allowedTokenA: T[];
   allowedTokenB: U[];
@@ -182,10 +182,10 @@ export default function PositionInputs<T extends Token, U extends Token>({
   };
 
   return (
-    <div className={`${styles.positionInputs} ${className ?? ""}`}>
+    <div className={`${styles.tradingInputs} ${className ?? ""}`}>
       {/* Input A */}
-      <div className={`${styles.positionInputs__container} ${className ?? ""}`}>
-        <div className={styles.positionInputs__container_labels}>
+      <div className={`${styles.tradingInputs__container} ${className ?? ""}`}>
+        <div className={styles.tradingInputs__container_labels}>
           <div>
             Pay{priceA !== null ? `: ${getDisplayedUsdPrice(priceA)}` : null}
           </div>
@@ -193,16 +193,16 @@ export default function PositionInputs<T extends Token, U extends Token>({
             {wallet ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}` : null}
           </div>
         </div>
-        <div className={styles.positionInputs__container_infos}>
+        <div className={styles.tradingInputs__container_infos}>
           <Input
             value={inputA}
             placeholder="0.00"
-            className={styles.positionInputs__container_infos_input}
+            className={styles.tradingInputs__container_infos_input}
             onChange={handleInputAChange}
           />
 
           <Select
-            className={styles.positionInputs__container_infos_select}
+            className={styles.tradingInputs__container_infos_select}
             selected={tokenA}
             options={allowedTokenA}
             onSelect={(token) => setTokenA(token)}
@@ -210,7 +210,7 @@ export default function PositionInputs<T extends Token, U extends Token>({
         </div>
       </div>
 
-      <div className={styles.positionInputs__switch} onClick={() => switchAB()}>
+      <div className={styles.tradingInputs__switch} onClick={() => switchAB()}>
         {
           // eslint-disable-next-line @next/next/no-img-element
           <img src="/images/swap.svg" alt="swap icon" />
@@ -218,24 +218,40 @@ export default function PositionInputs<T extends Token, U extends Token>({
       </div>
 
       {/* Input B */}
-      <div className={`${styles.positionInputs__container} ${className ?? ""}`}>
-        <div className={styles.positionInputs__container_labels}>
+      <div className={`${styles.tradingInputs__container} ${className ?? ""}`}>
+        <div className={styles.tradingInputs__container_labels}>
           <div>
-            {positionType}
+            {
+              {
+                long: "Long",
+                short: "Short",
+                swap: "Receive",
+              }[actionType]
+            }
             {priceB !== null ? `: ${getDisplayedUsdPrice(priceB)}` : null}
           </div>
-          {<div>Leverage{`: x${leverage.toFixed(2)}`}</div>}
+
+          {/* Display leverage if short/long, otherwise display wallet balance */}
+          {actionType === "short" || actionType === "long" ? (
+            <div>Leverage{`: x${leverage.toFixed(2)}`}</div>
+          ) : (
+            <>
+              {wallet
+                ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}`
+                : null}
+            </>
+          )}
         </div>
-        <div className={styles.positionInputs__container_infos}>
+        <div className={styles.tradingInputs__container_infos}>
           <Input
             value={inputB}
             placeholder="0.00"
-            className={styles.positionInputs__container_infos_input}
+            className={styles.tradingInputs__container_infos_input}
             onChange={handleInputBChange}
           />
 
           <Select
-            className={styles.positionInputs__container_infos_select}
+            className={styles.tradingInputs__container_infos_select}
             selected={tokenB}
             options={allowedTokenB}
             onSelect={(token) => setTokenB(token)}
@@ -243,13 +259,15 @@ export default function PositionInputs<T extends Token, U extends Token>({
         </div>
       </div>
 
-      {/* Leverage */}
-      <div className={styles.positionInputs__leverage_slider}>
-        <LeverageSlider
-          className={styles.positionInputs__leverage_slider_obj}
-          onChange={(v: number) => setLeverage(v)}
-        />
-      </div>
+      {/* Leverage (only in short/long) */}
+      {actionType === "short" || actionType === "long" ? (
+        <div className={styles.tradingInputs__leverage_slider}>
+          <LeverageSlider
+            className={styles.tradingInputs__leverage_slider_obj}
+            onChange={(v: number) => setLeverage(v)}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

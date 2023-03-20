@@ -3,7 +3,7 @@ import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPrices
 import { NonStableToken, Token } from "@/types";
 import { useState } from "react";
 import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
-import PositionInputs from "@/components/PositionInputs/PositionInputs";
+import TradingInputs from "@/components/TradingInputs/TradingInputs";
 
 import styles from "./index.module.scss";
 
@@ -33,22 +33,28 @@ export default function Trade() {
         />
 
         {selectedTab === "long" ? (
-          <PositionInputs
-            positionType="Long"
+          <TradingInputs
+            actionType="long"
             allowedTokenA={["ETH", "BTC", "SOL"] as NonStableToken[]}
             allowedTokenB={["ETH", "BTC", "SOL", "USDC"] as Token[]}
           />
         ) : null}
 
         {selectedTab === "short" ? (
-          <PositionInputs
-            positionType="Short"
+          <TradingInputs
+            actionType="short"
             allowedTokenA={["ETH", "BTC", "SOL"] as NonStableToken[]}
             allowedTokenB={["ETH", "BTC", "SOL", "USDC"] as Token[]}
           />
         ) : null}
 
-        {selectedTab === "swap" ? <></> : null}
+        {selectedTab === "swap" ? (
+          <TradingInputs
+            actionType="swap"
+            allowedTokenA={["ETH", "BTC", "SOL", "USDC"] as NonStableToken[]}
+            allowedTokenB={["ETH", "BTC", "SOL", "USDC"] as Token[]}
+          />
+        ) : null}
       </div>
     </div>
   );
