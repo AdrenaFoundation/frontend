@@ -210,11 +210,16 @@ export default function TradingInputs<T extends Token, U extends Token>({
         </div>
       </div>
 
-      <div className={styles.tradingInputs__switch} onClick={() => switchAB()}>
-        {
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src="/images/swap.svg" alt="swap icon" />
-        }
+      <div className={styles.tradingInputs__switch}>
+        <div
+          className={styles.tradingInputs__switch_inner}
+          onClick={() => switchAB()}
+        >
+          {
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src="/images/swap.svg" alt="swap icon" />
+          }
+        </div>
       </div>
 
       {/* Input B */}
