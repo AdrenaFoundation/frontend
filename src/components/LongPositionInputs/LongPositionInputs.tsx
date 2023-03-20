@@ -252,7 +252,7 @@ export default function longPositionInputs<T extends Token, U extends Token>({
         </div>
       </div>
 
-      {/* Leverage slider */}
+      {/* Leverage */}
       <div className={styles.longPositionInputs__leverage_slider}>
         <LeverageSlider
           className={styles.longPositionInputs__leverage_slider_obj}
