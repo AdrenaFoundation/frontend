@@ -1,9 +1,9 @@
 import { TokenPricesState } from "@/reducers/tokenPricesReducer";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../Button/Button";
-import Input from "../Input/Input";
+import InputNumber from "../InputNumber/InputNumber";
 import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
 import styles from "./tradingInputs.module.scss";
@@ -22,16 +22,16 @@ function recalculateInputs<T extends Token, U extends Token>({
   leverage,
 }: {
   mainInput: {
-    value: string;
+    value: number | null;
     token: T;
     setPrice: (p: number | null) => void;
-    setInput: (v: string) => void;
+    setInput: (v: number | null) => void;
   };
   secondaryInput: {
-    value: string;
+    value: number | null;
     token: U;
     setPrice: (p: number | null) => void;
-    setInput: (v: string) => void;
+    setInput: (v: number | null) => void;
   };
   tokenPrices: TokenPricesState;
   leverage: number;
@@ -39,10 +39,10 @@ function recalculateInputs<T extends Token, U extends Token>({
   const nb = Number(mainInput.value);
 
   // Price cannot be calculated if input is empty or not a number
-  if (!mainInput.value.length || isNaN(nb)) {
+  if (mainInput.value === null || isNaN(nb)) {
     mainInput.setPrice(null);
     secondaryInput.setPrice(null);
-    secondaryInput.setInput("");
+    secondaryInput.setInput(null);
     return;
   }
 
@@ -52,7 +52,7 @@ function recalculateInputs<T extends Token, U extends Token>({
   if (mainTokenPrice === null) {
     mainInput.setPrice(null);
     secondaryInput.setPrice(null);
-    secondaryInput.setInput("");
+    secondaryInput.setInput(null);
     return;
   }
 
@@ -64,7 +64,7 @@ function recalculateInputs<T extends Token, U extends Token>({
 
   if (secondaryTokenPrice === null) {
     secondaryInput.setPrice(null);
-    secondaryInput.setInput("");
+    secondaryInput.setInput(null);
     return;
   }
 
@@ -73,9 +73,7 @@ function recalculateInputs<T extends Token, U extends Token>({
 
   secondaryInput.setPrice(secondaryPrice);
   secondaryInput.setInput(
-    Number(
-      (secondaryPrice / secondaryTokenPrice).toFixed(INPUT_PRECISION)
-    ).toString()
+    Number((secondaryPrice / secondaryTokenPrice).toFixed(INPUT_PRECISION))
   );
 }
 
@@ -88,6 +86,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
   onChangeInputB,
   onChangeTokenA,
   onChangeTokenB,
+  onChangeLeverage,
 }: {
   actionType: "short" | "long" | "swap";
   className?: string;
@@ -97,6 +96,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
   onChangeInputB: (v: number | null) => void;
   onChangeTokenA: (t: T) => void;
   onChangeTokenB: (t: U) => void;
+  onChangeLeverage: (v: number) => void;
 }) {
   const wallet = useSelector((s) => s.wallet);
   const connected = !!wallet;
@@ -110,8 +110,8 @@ export default function TradingInputs<T extends Token, U extends Token>({
     null
   );
 
-  const [inputA, setInputA] = useState<string>("");
-  const [inputB, setInputB] = useState<string>("");
+  const [inputA, setInputA] = useState<number | null>(null);
+  const [inputB, setInputB] = useState<number | null>(null);
 
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
@@ -123,23 +123,29 @@ export default function TradingInputs<T extends Token, U extends Token>({
   const [leverage, setLeverage] = useState<number>(1);
 
   // Propagate changes to upper component
-  useEffect(() => {
-    const nb = Number(inputA);
-    onChangeInputA(isNaN(nb) || !inputA.length ? null : nb);
-  }, [inputA, onChangeInputA]);
+  {
+    useEffect(() => {
+      const nb = Number(inputA);
+      onChangeInputA(isNaN(nb) || inputA === null ? null : nb);
+    }, [inputA, onChangeInputA]);
 
-  useEffect(() => {
-    const nb = Number(inputB);
-    onChangeInputB(isNaN(nb) || !inputB.length ? null : nb);
-  }, [inputB, onChangeInputB]);
+    useEffect(() => {
+      const nb = Number(inputB);
+      onChangeInputB(isNaN(nb) || inputB === null ? null : nb);
+    }, [inputB, onChangeInputB]);
 
-  useEffect(() => {
-    onChangeTokenA(tokenA);
-  }, [onChangeTokenA, tokenA]);
+    useEffect(() => {
+      onChangeTokenA(tokenA);
+    }, [onChangeTokenA, tokenA]);
 
-  useEffect(() => {
-    onChangeTokenB(tokenB);
-  }, [onChangeTokenB, tokenB]);
+    useEffect(() => {
+      onChangeTokenB(tokenB);
+    }, [onChangeTokenB, tokenB]);
+
+    useEffect(() => {
+      onChangeLeverage(leverage);
+    }, [onChangeLeverage, leverage]);
+  }
 
   // Switch inputs values and tokens
   const switchAB = () => {
@@ -201,12 +207,12 @@ export default function TradingInputs<T extends Token, U extends Token>({
     }
   }, [inputA, inputB, tokenA, manualUserInput, leverage, tokenB, tokenPrices]);
 
-  const handleInputAChange = (v: SetStateAction<string>) => {
+  const handleInputAChange = (v: number | null) => {
     setManualUserInput("A");
     setInputA(v);
   };
 
-  const handleInputBChange = (v: SetStateAction<string>) => {
+  const handleInputBChange = (v: number | null) => {
     setManualUserInput("B");
     setInputB(v);
   };
@@ -226,8 +232,8 @@ export default function TradingInputs<T extends Token, U extends Token>({
           </div>
         </div>
         <div className={styles.tradingInputs__container_infos}>
-          <Input
-            value={inputA}
+          <InputNumber
+            value={inputA ?? undefined}
             placeholder="0.00"
             className={styles.tradingInputs__container_infos_input}
             onChange={handleInputAChange}
@@ -242,7 +248,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
                 const amount = walletTokenBalances[tokenA];
 
-                handleInputAChange(amount?.toString() ?? "");
+                handleInputAChange(amount);
               }}
             />
           ) : null}
@@ -294,8 +300,8 @@ export default function TradingInputs<T extends Token, U extends Token>({
           )}
         </div>
         <div className={styles.tradingInputs__container_infos}>
-          <Input
-            value={inputB}
+          <InputNumber
+            value={inputB ?? undefined}
             placeholder="0.00"
             className={styles.tradingInputs__container_infos_input}
             onChange={handleInputBChange}
@@ -312,12 +318,17 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
       {/* Leverage (only in short/long) */}
       {actionType === "short" || actionType === "long" ? (
-        <div className={styles.tradingInputs__leverage_slider}>
-          <LeverageSlider
-            className={styles.tradingInputs__leverage_slider_obj}
-            onChange={(v: number) => setLeverage(v)}
-          />
-        </div>
+        <>
+          <div className={styles.tradingInputs__leverage_slider_title}>
+            Leverage Slider
+          </div>
+          <div className={styles.tradingInputs__leverage_slider}>
+            <LeverageSlider
+              className={styles.tradingInputs__leverage_slider_obj}
+              onChange={(v: number) => setLeverage(v)}
+            />
+          </div>
+        </>
       ) : null}
     </div>
   );

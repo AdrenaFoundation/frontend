@@ -22,11 +22,13 @@ export default function Trade() {
   const wallet = useSelector((s) => s.wallet);
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
+  const [leverage, setLeverage] = useState<number | null>(null);
 
   const handleExecuteButton = () => {
     if (!connected) {
@@ -84,56 +86,160 @@ export default function Trade() {
           }}
         />
 
-        {selectedTab === "long" ? (
-          <TradingInputs
-            className={styles.trade__panel_trading_inputs}
-            actionType="long"
-            allowedTokenA={nonStableTokenList}
-            allowedTokenB={tokenList}
-            onChangeInputA={setInputAValue}
-            onChangeInputB={setInputBValue}
-            onChangeTokenA={setTokenA}
-            onChangeTokenB={setTokenB}
-          />
+        <>
+          {selectedTab === "long" ? (
+            <TradingInputs
+              className={styles.trade__panel_trading_inputs}
+              actionType="long"
+              allowedTokenA={tokenList}
+              allowedTokenB={nonStableTokenList}
+              onChangeInputA={setInputAValue}
+              onChangeInputB={setInputBValue}
+              onChangeTokenA={setTokenA}
+              onChangeTokenB={setTokenB}
+              onChangeLeverage={setLeverage}
+            />
+          ) : null}
+
+          {selectedTab === "short" ? (
+            <TradingInputs
+              className={styles.trade__panel_trading_inputs}
+              actionType="short"
+              allowedTokenA={tokenList}
+              allowedTokenB={nonStableTokenList}
+              onChangeInputA={setInputAValue}
+              onChangeInputB={setInputBValue}
+              onChangeTokenA={setTokenA}
+              onChangeTokenB={setTokenB}
+              onChangeLeverage={setLeverage}
+            />
+          ) : null}
+
+          {selectedTab === "swap" ? (
+            <TradingInputs
+              className={styles.trade__panel_trading_inputs}
+              actionType="swap"
+              allowedTokenA={tokenList}
+              allowedTokenB={tokenList}
+              onChangeInputA={setInputAValue}
+              onChangeInputB={setInputBValue}
+              onChangeTokenA={setTokenA}
+              onChangeTokenB={setTokenB}
+              onChangeLeverage={setLeverage}
+            />
+          ) : null}
+        </>
+
+        {/* Position basic infos */}
+        {selectedTab === "short" || selectedTab === "long" ? (
+          <>
+            <div className={styles.trade__panel_infos}>
+              <div className={styles.trade__panel_infos_row}>
+                <span>Collateral In</span>
+                <span>{selectedTab === "long" ? "USD" : "USDC"}</span>
+              </div>
+
+              <div className={styles.trade__panel_infos_row}>
+                <span>Leverage</span>
+                <span>
+                  {leverage === null ? "-" : `${leverage.toFixed(2)}x`}
+                </span>
+              </div>
+
+              <div className={styles.trade__panel_infos_row}>
+                <span>Entry Price</span>
+                <span>
+                  {!tokenB || !tokenPrices[tokenB]
+                    ? "-"
+                    : `$${tokenPrices[tokenB]!.toFixed(2)}`}
+                </span>
+              </div>
+
+              <div className={styles.trade__panel_infos_row}>
+                <span>Liq. Price</span>
+                <span>TODO</span>
+              </div>
+
+              <div className={styles.trade__panel_infos_row}>
+                <span>Fees</span>
+                <span>TODO</span>
+              </div>
+            </div>
+          </>
         ) : null}
 
-        {selectedTab === "short" ? (
-          <TradingInputs
-            className={styles.trade__panel_trading_inputs}
-            actionType="short"
-            allowedTokenA={nonStableTokenList}
-            allowedTokenB={tokenList}
-            onChangeInputA={setInputAValue}
-            onChangeInputB={setInputBValue}
-            onChangeTokenA={setTokenA}
-            onChangeTokenB={setTokenB}
+        {/* Button to execute action */}
+        <>
+          <Button
+            className={styles.trade__panel_execute_btn}
+            title={buttonTitle}
+            onClick={handleExecuteButton}
           />
-        ) : null}
 
-        {selectedTab === "swap" ? (
-          <TradingInputs
-            className={styles.trade__panel_trading_inputs}
-            actionType="swap"
-            allowedTokenA={tokenList}
-            allowedTokenB={tokenList}
-            onChangeInputA={setInputAValue}
-            onChangeInputB={setInputBValue}
-            onChangeTokenA={setTokenA}
-            onChangeTokenB={setTokenB}
+          {/* to handle wallet connection, create an hidden wallet adapter */}
+          <WalletAdapter
+            className={styles.trade__panel_wallet_adapter}
+            ref={walletAdapterRef}
           />
-        ) : null}
+        </>
 
-        <Button
-          className={styles.trade__panel_execute_btn}
-          title={buttonTitle}
-          onClick={handleExecuteButton}
-        />
+        {/* Position extended infos */}
+        <>
+          {selectedTab === "short" || selectedTab === "long" ? (
+            <>
+              <div className={styles.trade__panel_extended_infos}>
+                <div className={styles.trade__panel_extended_infos_title}>
+                  {selectedTab === "short" ? "Short" : "Long"} {tokenB ?? "-"}
+                </div>
 
-        {/* to handle wallet connection, create an hidden wallet adapter */}
-        <WalletAdapter
-          className={styles.trade__panel_wallet_adapter}
-          ref={walletAdapterRef}
-        />
+                <div className={styles.trade__panel_extended_infos_row}>
+                  <span>Entry Price</span>
+                  <span>TODO</span>
+                </div>
+
+                <div className={styles.trade__panel_extended_infos_row}>
+                  <span>Exit Price</span>
+                  <span>TODO</span>
+                </div>
+
+                <div className={styles.trade__panel_extended_infos_row}>
+                  <span>Borrow Fee</span>
+                  <span>TODO</span>
+                </div>
+
+                <div className={styles.trade__panel_extended_infos_row}>
+                  <span>Available Liquidity</span>
+                  <span>TODO</span>
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {selectedTab === "swap" ? (
+            <>
+              <div className={styles.trade__panel_extended_infos}>
+                <div className={styles.trade__panel_extended_infos_title}>
+                  Swap
+                </div>
+
+                <div className={styles.trade__panel_extended_infos_row}>
+                  <span>{tokenA} Price</span>
+                  <span>TODO</span>
+                </div>
+
+                <div className={styles.trade__panel_extended_infos_row}>
+                  <span>{tokenB} Price</span>
+                  <span>TODO</span>
+                </div>
+
+                <div className={styles.trade__panel_extended_infos_row}>
+                  <span>Available Liquidity</span>
+                  <span>TODO</span>
+                </div>
+              </div>
+            </>
+          ) : null}
+        </>
       </div>
     </div>
   );

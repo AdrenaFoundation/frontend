@@ -32,5 +32,41 @@
     &_wallet_adapter {
       display: none;
     }
+
+    &_infos {
+      color: whitesmoke;
+      padding: 1em;
+      margin-top: 1em;
+
+      &_row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.2em;
+      }
+    }
+
+    &_extended_infos {
+      color: whitesmoke;
+      padding: 1em;
+      margin-top: 1em;
+
+      &_title {
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+
+        display: flex;
+        align-items: center;
+      }
+
+      &_row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.2em;
+      }
+    }
   }
 }
