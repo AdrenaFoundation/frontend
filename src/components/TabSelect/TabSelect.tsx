@@ -24,7 +24,7 @@ export default function TabSelect<T extends string>({
           }`}
           onClick={() => onClick(title, index)}
         >
-          {icon ? <img src={icon} /> : null}
+          {icon ? <img src={icon} alt="tab icon" /> : null}
 
           <span>{title}</span>
         </div>

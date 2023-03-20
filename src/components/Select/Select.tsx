@@ -21,7 +21,7 @@ export default function Select<T extends string>({
         onClick={() => setOpened(!opened)}
       >
         <span>{selected}</span>
-        <img src="/images/chevron-down.svg" />
+        <img src="/images/chevron-down.svg" alt="chevron down" />
       </div>
 
       <div

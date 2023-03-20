@@ -16,6 +16,7 @@ const useWatchWalletBalance = () => {
   const loadWalletBalances = useCallback(async () => {
     if (!connection) return;
     if (!wallet) return;
+    if (!dispatch) return;
 
     const balances = await Promise.all(
       tokenList.map(async (token) => {
@@ -43,11 +44,11 @@ const useWatchWalletBalance = () => {
         }, {} as Record<Token, number | null>)
       )
     );
-  }, [connection, wallet]);
+  }, [connection, wallet, dispatch]);
 
   useEffect(() => {
     loadWalletBalances();
-  }, [connection, wallet]);
+  }, [loadWalletBalances]);
 };
 
 export default useWatchWalletBalance;

@@ -53,6 +53,7 @@ export default function WalletAdapter({ className }: { className?: string }) {
               <img
                 className={styles.walletAdapter__modal_wallet_list_item_logo}
                 src="/images/phantom.png"
+                alt="phantom icon"
               />
               <span
                 className={styles.walletAdapter__modal_wallet_list_item_title}

@@ -5,7 +5,7 @@ import { SetStateAction, useEffect, useState } from "react";
 import Input from "../Input/Input";
 import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
-import styles from "./longPositionInputs.module.scss";
+import styles from "./LongPositionInputs.module.scss";
 
 const DISPLAYED_PRICE_PRECISION = 6;
 const INPUT_PRECISION = 8;
@@ -78,7 +78,7 @@ function recalculateInputs<T extends Token, U extends Token>({
   );
 }
 
-export default function longPositionInputs<T extends Token, U extends Token>({
+export default function LongPositionInputs<T extends Token, U extends Token>({
   className,
   allowedTokenA,
   allowedTokenB,
@@ -167,15 +167,7 @@ export default function longPositionInputs<T extends Token, U extends Token>({
         leverage,
       });
     }
-  }, [
-    inputA,
-    inputB,
-    tokenPrices[tokenA],
-    tokenPrices[tokenB],
-    tokenA,
-    manualUserInput,
-    leverage,
-  ]);
+  }, [inputA, inputB, tokenA, manualUserInput, leverage, tokenB, tokenPrices]);
 
   const handleInputAChange = (v: SetStateAction<string>) => {
     setManualUserInput("A");
@@ -222,7 +214,7 @@ export default function longPositionInputs<T extends Token, U extends Token>({
         className={styles.longPositionInputs__switch}
         onClick={() => switchAB()}
       >
-        <img src="/images/swap.svg" />
+        <img src="/images/swap.svg" alt="swap icon" />
       </div>
 
       {/* Input B */}

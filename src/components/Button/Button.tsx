@@ -19,11 +19,19 @@ export default function Button({
       onClick={() => onClick()}
     >
       {leftIcon ? (
-        <img src={leftIcon} className={styles.button__left_icon} />
+        <img
+          src={leftIcon}
+          className={styles.button__left_icon}
+          alt="left icon"
+        />
       ) : null}
       {title}
       {rightIcon ? (
-        <img src={rightIcon} className={styles.button__right_icon} />
+        <img
+          src={rightIcon}
+          className={styles.button__right_icon}
+          alt="right icon"
+        />
       ) : null}
     </div>
   );

@@ -41,7 +41,7 @@ const useListenToPythTokenPricesChange = (): PythConnection | null => {
   }, [connection]);
 
   useEffect(() => {
-    if (!pythConnection) return;
+    if (!pythConnection || !dispatch) return;
 
     pythConnection.onPriceChange((product: Product, price: PriceData) => {
       // sample output:
@@ -61,7 +61,7 @@ const useListenToPythTokenPricesChange = (): PythConnection | null => {
 
     // Start listening for price change events.
     pythConnection.start();
-  }, [pythConnection]);
+  }, [pythConnection, dispatch]);
 
   return pythConnection;
 };
