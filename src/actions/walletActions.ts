@@ -1,13 +1,16 @@
+import { Dispatch } from "@reduxjs/toolkit";
+import { PublicKey } from "@solana/web3.js";
 import {
   getWalletAdapters,
   WalletAdapterName,
 } from "@/adapters/walletAdapters";
-import { useSelector } from "@/store/store";
-import { Dispatch } from "@reduxjs/toolkit";
 
 export type ConnectWalletAction = {
   type: "connect";
-  payload: WalletAdapterName;
+  payload: {
+    adapterName: WalletAdapterName;
+    walletAddress: string;
+  };
 };
 
 export type DisconnectWalletAction = {
@@ -17,14 +20,17 @@ export type DisconnectWalletAction = {
 export type WalletAction = ConnectWalletAction | DisconnectWalletAction;
 
 export const connectWalletAction =
-  (name: WalletAdapterName) =>
+  (adapterName: WalletAdapterName) =>
   async (dispatch: Dispatch<ConnectWalletAction>) => {
-    const adapter = getWalletAdapters()[name];
+    const adapter = getWalletAdapters()[adapterName];
 
-    adapter.on("connect", () => {
+    adapter.on("connect", (walletPubkey: PublicKey) => {
       dispatch({
         type: "connect",
-        payload: name,
+        payload: {
+          adapterName,
+          walletAddress: walletPubkey.toBase58(),
+        },
       });
 
       console.log("Connected!");
@@ -33,14 +39,16 @@ export const connectWalletAction =
     try {
       await adapter.connect();
     } catch (err) {
-      console.log(new Error(`unable to connect to wallet ${name}`), { err });
+      console.log(new Error(`unable to connect to wallet ${adapterName}`), {
+        err,
+      });
     }
   };
 
 export const disconnectWalletAction =
-  (name: WalletAdapterName) =>
+  (adapterName: WalletAdapterName) =>
   async (dispatch: Dispatch<DisconnectWalletAction>) => {
-    const adapter = getWalletAdapters()[name];
+    const adapter = getWalletAdapters()[adapterName];
 
     adapter.on("disconnect", () => {
       dispatch({
@@ -53,8 +61,11 @@ export const disconnectWalletAction =
     try {
       await adapter.disconnect();
     } catch (err) {
-      console.log(new Error(`unable to disconnect from wallet ${name}`), {
-        err,
-      });
+      console.log(
+        new Error(`unable to disconnect from wallet ${adapterName}`),
+        {
+          err,
+        }
+      );
     }
   };

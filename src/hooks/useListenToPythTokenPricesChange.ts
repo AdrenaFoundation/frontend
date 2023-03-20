@@ -1,9 +1,11 @@
-import { setTokenPriceAction } from "@/actions/tokenPricesAction";
+import { setTokenPriceAction } from "@/actions/tokenPricesActions";
 import { useDispatch } from "@/store/store";
 import { Token } from "@/types";
 import {
   getPythProgramKeyForCluster,
+  PriceData,
   PriceStatus,
+  Product,
   PythConnection,
 } from "@pythnetwork/client";
 import { Connection, PublicKey } from "@solana/web3.js";
@@ -41,7 +43,7 @@ const useListenToPythTokenPricesChange = (): PythConnection | null => {
   useEffect(() => {
     if (!pythConnection) return;
 
-    pythConnection.onPriceChange((product, price) => {
+    pythConnection.onPriceChange((product: Product, price: PriceData) => {
       // sample output:
       // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
       // console.log(`${product.symbol}: $${price.price} \xB1$${price.confidence} Status: ${PriceStatus[price.status]}`);

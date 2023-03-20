@@ -4,11 +4,13 @@ import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPrices
 import { NonStableToken, Token } from "@/types";
 import { useState } from "react";
 import styles from "./index.module.scss";
+import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
 
 type State = "long" | "short" | "swap";
 
 export default function Trade() {
   useListenToPythTokenPricesChange();
+  useWatchWalletBalance();
 
   const [selectedTab, setSelectedTab] = useState<State>("long");
 

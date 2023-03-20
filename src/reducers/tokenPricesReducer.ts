@@ -1,5 +1,5 @@
 import { Token } from "@/types";
-import { TokenPricesAction } from "../actions/tokenPricesAction";
+import { TokenPricesAction } from "../actions/tokenPricesActions";
 
 export type TokenPricesState = Record<Token, number | null>;
 

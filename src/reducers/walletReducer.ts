@@ -1,7 +1,13 @@
 import { WalletAdapterName } from "@/adapters/walletAdapters";
+import { PublicKey } from "@solana/web3.js";
 import { WalletAction } from "../actions/walletActions";
 
-export type WalletState = WalletAdapterName | null;
+export type WalletState = {
+  adapterName: WalletAdapterName;
+
+  // Cannot use Pubkey here because Redux require serializeable values
+  walletAddress: string;
+} | null;
 
 const initialState: WalletState = null;
 

@@ -6,10 +6,12 @@ import {
   useDispatch as defaultUseDispatch,
 } from "react-redux";
 import walletReducer from "../reducers/walletReducer";
+import walletBalancesReducer from "../reducers/walletBalancesReducer";
 
 const rootReducer = combineReducers({
   wallet: walletReducer,
   tokenPrices: tokenPricesReducer,
+  walletTokenBalances: walletBalancesReducer,
 });
 
 const store = configureStore({

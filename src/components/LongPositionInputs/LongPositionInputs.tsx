@@ -3,6 +3,7 @@ import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import { SetStateAction, useEffect, useState } from "react";
 import Input from "../Input/Input";
+import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
 import styles from "./longPositionInputs.module.scss";
 
@@ -17,6 +18,7 @@ function recalculateInputs<T extends Token, U extends Token>({
   mainInput,
   secondaryInput,
   tokenPrices,
+  leverage,
 }: {
   mainInput: {
     value: string;
@@ -31,6 +33,7 @@ function recalculateInputs<T extends Token, U extends Token>({
     setInput: (v: string) => void;
   };
   tokenPrices: TokenPricesState;
+  leverage: number;
 }) {
   const nb = Number(mainInput.value);
 
@@ -56,17 +59,22 @@ function recalculateInputs<T extends Token, U extends Token>({
 
   mainInput.setPrice(mainPrice);
 
-  const secondaryPrice = tokenPrices[secondaryInput.token];
+  const secondaryTokenPrice = tokenPrices[secondaryInput.token];
 
-  if (secondaryPrice === null) {
+  if (secondaryTokenPrice === null) {
     secondaryInput.setPrice(null);
     secondaryInput.setInput("");
     return;
   }
 
-  secondaryInput.setPrice(mainPrice);
+  // TODO: take into account the fees to be paid by the user
+  const secondaryPrice = mainPrice * leverage;
+
+  secondaryInput.setPrice(secondaryPrice);
   secondaryInput.setInput(
-    Number((mainPrice / secondaryPrice).toFixed(INPUT_PRECISION)).toString()
+    Number(
+      (secondaryPrice / secondaryTokenPrice).toFixed(INPUT_PRECISION)
+    ).toString()
   );
 }
 
@@ -79,7 +87,9 @@ export default function longPositionInputs<T extends Token, U extends Token>({
   allowedTokenA: T[];
   allowedTokenB: U[];
 }) {
+  const wallet = useSelector((s) => s.wallet);
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
   // Keep track of the last input modified by the user
   // We consider it as the reference value
@@ -96,6 +106,8 @@ export default function longPositionInputs<T extends Token, U extends Token>({
   // Pick first token as default value
   const [tokenA, setTokenA] = useState<T>(allowedTokenA[0]);
   const [tokenB, setTokenB] = useState<U>(allowedTokenB[0]);
+
+  const [leverage, setLeverage] = useState<number>(1);
 
   // Switch inputs values and tokens
   const switchAB = () => {
@@ -142,6 +154,7 @@ export default function longPositionInputs<T extends Token, U extends Token>({
         mainInput: inputAInfos,
         secondaryInput: inputBInfos,
         tokenPrices,
+        leverage,
       });
     }
 
@@ -151,6 +164,7 @@ export default function longPositionInputs<T extends Token, U extends Token>({
         mainInput: inputBInfos,
         secondaryInput: inputAInfos,
         tokenPrices,
+        leverage,
       });
     }
   }, [
@@ -160,6 +174,7 @@ export default function longPositionInputs<T extends Token, U extends Token>({
     tokenPrices[tokenB],
     tokenA,
     manualUserInput,
+    leverage,
   ]);
 
   const handleInputAChange = (v: SetStateAction<string>) => {
@@ -182,7 +197,9 @@ export default function longPositionInputs<T extends Token, U extends Token>({
           <div>
             Pay{priceA !== null ? `: ${getDisplayedUsdPrice(priceA)}` : null}
           </div>
-          <div>Balance</div>
+          <div>
+            {wallet ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}` : null}
+          </div>
         </div>
         <div className={styles.longPositionInputs__container_infos}>
           <Input
@@ -216,7 +233,7 @@ export default function longPositionInputs<T extends Token, U extends Token>({
           <div>
             Long{priceB !== null ? `: ${getDisplayedUsdPrice(priceB)}` : null}
           </div>
-          <div>Leverage</div>
+          {<div>Leverage{`: x${leverage.toFixed(2)}`}</div>}
         </div>
         <div className={styles.longPositionInputs__container_infos}>
           <Input
@@ -233,6 +250,14 @@ export default function longPositionInputs<T extends Token, U extends Token>({
             onSelect={(token) => setTokenB(token)}
           />
         </div>
+      </div>
+
+      {/* Leverage slider */}
+      <div className={styles.longPositionInputs__leverage_slider}>
+        <LeverageSlider
+          className={styles.longPositionInputs__leverage_slider_obj}
+          onChange={(v: number) => setLeverage(v)}
+        />
       </div>
     </div>
   );
