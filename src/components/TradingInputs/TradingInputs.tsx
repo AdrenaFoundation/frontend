@@ -2,6 +2,7 @@ import { TokenPricesState } from "@/reducers/tokenPricesReducer";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import { SetStateAction, useEffect, useState } from "react";
+import Button from "../Button/Button";
 import Input from "../Input/Input";
 import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
@@ -98,6 +99,8 @@ export default function TradingInputs<T extends Token, U extends Token>({
   onChangeTokenB: (t: U) => void;
 }) {
   const wallet = useSelector((s) => s.wallet);
+  const connected = !!wallet;
+
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
@@ -217,7 +220,9 @@ export default function TradingInputs<T extends Token, U extends Token>({
             Pay{priceA !== null ? `: ${getDisplayedUsdPrice(priceA)}` : null}
           </div>
           <div>
-            {wallet ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}` : null}
+            {connected
+              ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}`
+              : null}
           </div>
         </div>
         <div className={styles.tradingInputs__container_infos}>
@@ -227,6 +232,20 @@ export default function TradingInputs<T extends Token, U extends Token>({
             className={styles.tradingInputs__container_infos_input}
             onChange={handleInputAChange}
           />
+
+          {connected ? (
+            <Button
+              title="MAX"
+              className={styles.tradingInputs__container_infos_max}
+              onClick={() => {
+                if (!walletTokenBalances) return;
+
+                const amount = walletTokenBalances[tokenA];
+
+                handleInputAChange(amount?.toString() ?? "");
+              }}
+            />
+          ) : null}
 
           <Select
             className={styles.tradingInputs__container_infos_select}
@@ -268,7 +287,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
             <div>Leverage{`: x${leverage.toFixed(2)}`}</div>
           ) : (
             <>
-              {wallet
+              {connected
                 ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}`
                 : null}
             </>

@@ -59,6 +59,7 @@
     &_infos {
       display: flex;
       width: 100%;
+      align-items: center;
 
       &_input {
         background-color: $secondaryColor;
@@ -72,6 +73,14 @@
 
       &_select {
         font-size: $sizeBig;
+      }
+
+      &_max {
+        background-color: $thirdColor;
+        border-color: $thirdColor;
+        margin-right: 0.5em;
+        font-size: 0.8em;
+        height: 3em;
       }
     }
   }

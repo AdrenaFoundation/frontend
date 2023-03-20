@@ -10,7 +10,9 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     background-color: $secondaryColor;
+    flex-grow: 1;
 
     &:hover {
       opacity: $hoverOpacity;
