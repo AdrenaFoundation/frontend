@@ -37,6 +37,9 @@
       padding-left: 1em;
       padding-right: 1em;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:hover {
         opacity: $hoverOpacity;
