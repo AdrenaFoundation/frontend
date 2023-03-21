@@ -10,12 +10,13 @@ type Widget = any;
 type TradingView = any;
 
 const symbol = {
-  ETH: "BINANCE:ETHUSD",
-  BTC: "BINANCE:BTCUSD",
-  SOL: "BINANCE:SOLUSD",
-} as Record<NonStableToken, string>;
+  ETH: "PYTH:ETHUSD",
+  BTC: "PYTH:BTCUSD",
+  SOL: "PYTH:SOLUSD",
+  USDC: "PYTH:USDCUSD",
+} as Record<Token, string>;
 
-export default function TradingChart({ token }: { token: NonStableToken }) {
+export default function TradingChart({ token }: { token: Token }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
 
@@ -41,8 +42,6 @@ export default function TradingChart({ token }: { token: NonStableToken }) {
             editablewatchlist: false,
             hotlist: false,
             hidevolume: true,
-            // venue: e.venue,
-            // symbology: e.symbology,
             disabled_features: [
               "symbol_search_hot_key",
               "header_compare",
@@ -54,16 +53,6 @@ export default function TradingChart({ token }: { token: NonStableToken }) {
               "header_fullscreen_button",
               "hide_left_toolbar_by_default",
             ],
-            overrides: {
-              // TODO CHANGE
-              //"paneProperties.background": "#131722",
-              //"paneProperties.vertGridProperties.color": "#363c4e",
-              //"paneProperties.horzGridProperties.color": "#363c4e",
-              //"symbolWatermarkProperties.transparency": 90,
-              //"scalesProperties.textColor": "#AAA",
-              //"mainSeriesProperties.candleStyle.wickUpColor": "#336854",
-              //"mainSeriesProperties.candleStyle.wickDownColor": "#7f323f",
-            },
           })
         );
       }

@@ -9,7 +9,7 @@ import styles from "./index.module.scss";
 import Button from "@/components/Button/Button";
 import WalletAdapter from "@/components/WalletAdapter/WalletAdapter";
 import { useSelector } from "@/store/store";
-import { nonStableTokenList, tokenList } from "@/constant";
+import { nonStableTokenList, stableTokenList, tokenList } from "@/constant";
 import TradingChart from "@/components/TradingChart/TradingChart";
 
 type State = "long" | "short" | "swap";
@@ -74,12 +74,20 @@ export default function Trade() {
     <div className={styles.trade}>
       <div className={styles.trade__tradingview}>
         {/* Display trading chart for appropriate token */}
-        {selectedTab === "short" || selectedTab === "long" ? (
-          <TradingChart token={tokenB as NonStableToken} />
-        ) : null}
+        {tokenA && tokenB ? (
+          <>
+            {selectedTab === "short" || selectedTab === "long" ? (
+              <TradingChart token={tokenB} />
+            ) : null}
 
-        {selectedTab === "swap" ? (
-          <TradingChart token={tokenA as NonStableToken} />
+            {selectedTab === "swap" ? (
+              <TradingChart
+                token={
+                  stableTokenList.includes(tokenA as any) ? tokenB : tokenA
+                }
+              />
+            ) : null}
+          </>
         ) : null}
       </div>
 
@@ -204,7 +212,7 @@ export default function Trade() {
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>Entry Price</span>
-                  <span>TODO</span>
+                  <span>{tokenB ? tokenPrices[tokenB] : "-"}</span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
@@ -234,12 +242,12 @@ export default function Trade() {
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>{tokenA} Price</span>
-                  <span>TODO</span>
+                  <span>{tokenA ? tokenPrices[tokenA] : "-"}</span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>{tokenB} Price</span>
-                  <span>TODO</span>
+                  <span>{tokenB ? tokenPrices[tokenB] : "-"}</span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
