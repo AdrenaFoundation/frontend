@@ -12,6 +12,7 @@ import { useSelector } from "@/store/store";
 import { nonStableTokenList, stableTokenList, tokenList } from "@/constant";
 import TradingChart from "@/components/TradingChart/TradingChart";
 import { formatNumber } from "@/utils";
+import useAdrenaProgram from "@/hooks/useAdrenaProgram";
 
 type State = "long" | "short" | "swap";
 
@@ -22,6 +23,7 @@ function formatPriceInfo(price: number) {
 export default function Trade() {
   useListenToPythTokenPricesChange();
   useWatchWalletBalance();
+  useAdrenaProgram();
 
   const [selectedTab, setSelectedTab] = useState<State>("long");
   const walletAdapterRef = useRef<HTMLDivElement>(null);

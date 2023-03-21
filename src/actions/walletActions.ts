@@ -4,6 +4,7 @@ import {
   getWalletAdapters,
   WalletAdapterName,
 } from "@/adapters/walletAdapters";
+import { Wallet } from "@project-serum/anchor";
 
 export type ConnectWalletAction = {
   type: "connect";
