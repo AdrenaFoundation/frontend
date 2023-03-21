@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import styles from "./Button.module.scss";
 
 function Button(
@@ -9,7 +9,7 @@ function Button(
     leftIcon,
     rightIcon,
   }: {
-    title: string;
+    title: ReactNode;
     onClick: () => void;
     className?: string;
     leftIcon?: string;

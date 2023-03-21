@@ -13,10 +13,33 @@
     color: white;
     margin-left: 2em;
     text-transform: uppercase;
+    margin-right: 2em;
+    text-decoration: none;
+  }
+
+  &__pagelink {
+    color: whitesmoke;
+    margin-left: 2em;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      opacity: $hoverOpacity;
+    }
+  }
+
+  &__tradepage {
+    background-color: $thirdColor;
+    margin-left: auto;
+
+    &_link {
+      color: white;
+      text-decoration: none;
+    }
   }
 
   &__walletAdapter {
-    margin-left: auto;
+    margin-left: 1em;
     margin-right: 2em;
   }
 }
