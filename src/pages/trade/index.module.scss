@@ -8,6 +8,7 @@
   background-color: $mainColor;
   padding: 1em;
   justify-content: center;
+  overflow: auto;
 
   &__tradingview {
     height: 40em;
