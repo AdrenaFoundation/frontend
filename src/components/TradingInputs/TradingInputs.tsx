@@ -1,21 +1,17 @@
 import { TokenPricesState } from "@/reducers/tokenPricesReducer";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
+import {
+  DISPLAY_NUMBER_PRECISION,
+  formatNumber,
+  INPUT_PRECISION,
+} from "@/utils";
 import { useEffect, useState } from "react";
 import Button from "../Button/Button";
 import InputNumber from "../InputNumber/InputNumber";
 import LeverageSlider from "../LeverageSlider/LeverageSlider";
 import Select from "../Select/Select";
 import styles from "./TradingInputs.module.scss";
-
-const DISPLAYED_PRICE_PRECISION = 6;
-const INPUT_PRECISION = 8;
-
-function getDisplayedUsdPrice(price: number): string {
-  return `${Number(
-    price.toFixed(DISPLAYED_PRICE_PRECISION)
-  ).toLocaleString()} USD`;
-}
 
 function recalculateInputs<T extends Token, U extends Token>({
   mainInput,
@@ -225,7 +221,10 @@ export default function TradingInputs<T extends Token, U extends Token>({
       <div className={styles.tradingInputs__container}>
         <div className={styles.tradingInputs__container_labels}>
           <div>
-            Pay{priceA !== null ? `: ${getDisplayedUsdPrice(priceA)}` : null}
+            Pay
+            {priceA !== null
+              ? `: ${formatNumber(priceA, DISPLAY_NUMBER_PRECISION)}`
+              : null}
           </div>
           <div>
             {connected
@@ -287,7 +286,9 @@ export default function TradingInputs<T extends Token, U extends Token>({
                 swap: "Receive",
               }[actionType]
             }
-            {priceB !== null ? `: ${getDisplayedUsdPrice(priceB)}` : null}
+            {priceB !== null
+              ? `: ${formatNumber(priceB, DISPLAY_NUMBER_PRECISION)}`
+              : null}
           </div>
 
           {/* Display leverage if short/long, otherwise display wallet balance */}

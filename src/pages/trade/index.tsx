@@ -11,8 +11,13 @@ import WalletAdapter from "@/components/WalletAdapter/WalletAdapter";
 import { useSelector } from "@/store/store";
 import { nonStableTokenList, stableTokenList, tokenList } from "@/constant";
 import TradingChart from "@/components/TradingChart/TradingChart";
+import { formatNumber } from "@/utils";
 
 type State = "long" | "short" | "swap";
+
+function formatPriceInfo(price: number) {
+  return `$${formatNumber(price, 2)}`;
+}
 
 export default function Trade() {
   useListenToPythTokenPricesChange();
@@ -160,16 +165,16 @@ export default function Trade() {
               <div className={styles.trade__panel_infos_row}>
                 <span>Leverage</span>
                 <span>
-                  {leverage === null ? "-" : `${leverage.toFixed(2)}x`}
+                  {leverage !== null ? `${formatNumber(leverage, 2)}x` : "-"}
                 </span>
               </div>
 
               <div className={styles.trade__panel_infos_row}>
                 <span>Entry Price</span>
                 <span>
-                  {!tokenB || !tokenPrices[tokenB]
-                    ? "-"
-                    : `$${tokenPrices[tokenB]!.toFixed(2)}`}
+                  {tokenB && tokenPrices[tokenB] !== null
+                    ? formatPriceInfo(tokenPrices[tokenB]!)
+                    : "-"}
                 </span>
               </div>
 
@@ -212,7 +217,11 @@ export default function Trade() {
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>Entry Price</span>
-                  <span>{tokenB ? tokenPrices[tokenB] : "-"}</span>
+                  <span>
+                    {tokenB && tokenPrices[tokenB]
+                      ? formatPriceInfo(tokenPrices[tokenB]!)
+                      : "-"}
+                  </span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
@@ -242,12 +251,20 @@ export default function Trade() {
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>{tokenA} Price</span>
-                  <span>{tokenA ? tokenPrices[tokenA] : "-"}</span>
+                  <span>
+                    {tokenA && tokenPrices[tokenA]
+                      ? formatPriceInfo(tokenPrices[tokenA]!)
+                      : "-"}
+                  </span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>{tokenB} Price</span>
-                  <span>{tokenB ? tokenPrices[tokenB] : "-"}</span>
+                  <span>
+                    {tokenB && tokenPrices[tokenB]
+                      ? formatPriceInfo(tokenPrices[tokenB]!)
+                      : "-"}
+                  </span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
