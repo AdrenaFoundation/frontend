@@ -1,12 +1,16 @@
+import { useEffect, useState } from "react";
+import useGetPositionEntryPriceAndFee from "@/hooks/useGetPositionEntryPriceAndFee";
 import { TokenPricesState } from "@/reducers/tokenPricesReducer";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import {
   DISPLAY_NUMBER_PRECISION,
   formatNumber,
+  formatPriceInfo,
   INPUT_PRECISION,
+  nativeToUi,
+  uiToNative,
 } from "@/utils";
-import { useEffect, useState } from "react";
 import Button from "../../Button/Button";
 import InputNumber from "../../InputNumber/InputNumber";
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
@@ -119,6 +123,16 @@ export default function TradingInputs<T extends Token, U extends Token>({
   const [tokenB, setTokenB] = useState<U>(allowedTokenB[0]);
 
   const [leverage, setLeverage] = useState<number>(1);
+
+  const entryPriceAndFee = useGetPositionEntryPriceAndFee(
+    (actionType === "short" || actionType === "long") && inputB && inputB > 0
+      ? {
+          token: tokenB,
+          collateral: uiToNative(inputB, 6).div(leverage),
+          size: uiToNative(inputB, 6),
+        }
+      : null
+  );
 
   // Propagate changes to upper component
   {
@@ -369,7 +383,13 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
               <div className={styles.tradingInputs__infos_row}>
                 <span>Entry Price</span>
-                <span>TODO</span>
+                <span>
+                  {entryPriceAndFee
+                    ? formatPriceInfo(
+                        nativeToUi(entryPriceAndFee.entryPrice, 6)
+                      )
+                    : "-"}
+                </span>
               </div>
 
               <div className={styles.tradingInputs__infos_row}>
@@ -379,7 +399,11 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
               <div className={styles.tradingInputs__infos_row}>
                 <span>Fees</span>
-                <span>TODO</span>
+                <span>
+                  {entryPriceAndFee
+                    ? formatPriceInfo(nativeToUi(entryPriceAndFee.fee, 6))
+                    : "-"}
+                </span>
               </div>
             </div>
           </>

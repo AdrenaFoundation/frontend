@@ -7,7 +7,7 @@ import PerpetualsJson from "@/target/perpetuals.json";
 import useConnection from "./useConnection";
 import useWallet from "./useWallet";
 
-const PERPETUALS_PROGRAM_ID = new PublicKey(PerpetualsJson.metadata.address);
+export const ADRENA_PROGRAM_ID = new PublicKey(PerpetualsJson.metadata.address);
 
 // default user to launch show basic pool data, etc
 export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
@@ -36,7 +36,7 @@ const useAdrenaProgram = (): Program<Perpetuals> | null => {
       }
     );
 
-    setProgram(new Program(PERPETUALS_IDL, PERPETUALS_PROGRAM_ID, provider));
+    setProgram(new Program(PERPETUALS_IDL, ADRENA_PROGRAM_ID, provider));
   }, [connection, wallet]);
 
   useEffect(() => {

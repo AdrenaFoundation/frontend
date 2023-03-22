@@ -44,6 +44,7 @@ export type PerpetualsTypes = AnchorTypes<
     FeesMode: FeesMode;
     OracleType: OracleType;
     Side: Side;
+    GetEntryPriceAndFeeParams: GetEntryPriceAndFeeParams;
     // Add needed types here ...
   }
 >;
@@ -91,6 +92,7 @@ export type PoolToken = Defined["PoolToken"];
 export type FeesMode = Defined["FeesMode"];
 export type OracleType = Defined["OracleType"];
 export type Side = Defined["Side"];
+export type GetEntryPriceAndFeeParams = Defined["GetEntryPriceAndFeeParams"];
 
 //
 // Program

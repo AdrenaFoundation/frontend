@@ -3,7 +3,9 @@ import { useCallback, useEffect, useState } from "react";
 import useAdrenaProgram from "./useAdrenaProgram";
 import { Pool } from "@/types";
 
-const MAIN_POOL = new PublicKey("2YxviUw1kDjAw1djVUkgUCLuwJ67TLc77wsHD1wRsciY");
+export const MAIN_POOL = new PublicKey(
+  "2YxviUw1kDjAw1djVUkgUCLuwJ67TLc77wsHD1wRsciY"
+);
 
 const useMainPool = (): Pool | null => {
   const adrenaProgram = useAdrenaProgram();
