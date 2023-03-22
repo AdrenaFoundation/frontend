@@ -293,7 +293,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
           {/* Display leverage if short/long, otherwise display wallet balance */}
           {actionType === "short" || actionType === "long" ? (
-            <div>Leverage{`: x${leverage.toFixed(2)}`}</div>
+            <div>Leverage{`: ${leverage.toFixed(2)}x`}</div>
           ) : (
             <>
               {connected

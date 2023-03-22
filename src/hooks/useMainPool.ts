@@ -13,7 +13,7 @@ const useMainPool = (): Pool | null => {
   const fetchMainPool = useCallback(async () => {
     if (!adrenaProgram) return;
 
-    const pool = await adrenaProgram.account.custody.fetch(MAIN_POOL);
+    const pool = await adrenaProgram.account.pool.fetch(MAIN_POOL);
 
     setMainPool(pool);
   }, [adrenaProgram]);

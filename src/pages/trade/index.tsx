@@ -11,8 +11,9 @@ import WalletAdapter from "@/components/WalletAdapter/WalletAdapter";
 import { useSelector } from "@/store/store";
 import { nonStableTokenList, stableTokenList, tokenList } from "@/constant";
 import TradingChart from "@/components/TradingChart/TradingChart";
-import { formatNumber } from "@/utils";
+import { formatNumber, getCustodyLiquidity } from "@/utils";
 import useAdrenaProgram from "@/hooks/useAdrenaProgram";
+import useCustodies from "@/hooks/useCustodies";
 
 type State = "long" | "short" | "swap";
 
@@ -23,7 +24,7 @@ function formatPriceInfo(price: number) {
 export default function Trade() {
   useListenToPythTokenPricesChange();
   useWatchWalletBalance();
-  useAdrenaProgram();
+  const custodies = useCustodies();
 
   const [selectedTab, setSelectedTab] = useState<State>("long");
   const walletAdapterRef = useRef<HTMLDivElement>(null);
@@ -173,11 +174,7 @@ export default function Trade() {
 
               <div className={styles.trade__panel_infos_row}>
                 <span>Entry Price</span>
-                <span>
-                  {tokenB && tokenPrices[tokenB] !== null
-                    ? formatPriceInfo(tokenPrices[tokenB]!)
-                    : "-"}
-                </span>
+                <span>TODO</span>
               </div>
 
               <div className={styles.trade__panel_infos_row}>
@@ -219,11 +216,7 @@ export default function Trade() {
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>Entry Price</span>
-                  <span>
-                    {tokenB && tokenPrices[tokenB]
-                      ? formatPriceInfo(tokenPrices[tokenB]!)
-                      : "-"}
-                  </span>
+                  <span>TODO</span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
@@ -233,12 +226,28 @@ export default function Trade() {
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>Borrow Fee</span>
-                  <span>TODO</span>
+                  <span>
+                    {custodies && tokenB
+                      ? `${formatNumber(
+                          100 * custodies[tokenB].borrowRateState.currentRate,
+                          4
+                        )}% / hr`
+                      : "-"}
+                  </span>
                 </div>
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>Available Liquidity</span>
-                  <span>TODO</span>
+                  <span>
+                    {custodies && tokenB && tokenPrices && tokenPrices[tokenB]
+                      ? formatPriceInfo(
+                          getCustodyLiquidity(
+                            custodies[tokenB],
+                            tokenPrices[tokenB]!
+                          )
+                        )
+                      : "-"}
+                  </span>
                 </div>
               </div>
             </>
@@ -271,7 +280,16 @@ export default function Trade() {
 
                 <div className={styles.trade__panel_extended_infos_row}>
                   <span>Available Liquidity</span>
-                  <span>TODO</span>
+                  <span>
+                    {custodies && tokenB && tokenPrices && tokenPrices[tokenB]
+                      ? formatPriceInfo(
+                          getCustodyLiquidity(
+                            custodies[tokenB],
+                            tokenPrices[tokenB]!
+                          )
+                        )
+                      : "-"}
+                  </span>
                 </div>
               </div>
             </>

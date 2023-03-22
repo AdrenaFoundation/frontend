@@ -3,6 +3,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
+import { Custody } from "./types";
 
 export const DISPLAY_NUMBER_PRECISION = 6;
 export const INPUT_PRECISION = 8;
@@ -19,4 +20,15 @@ export function findATAAddressSync(
 
 export function formatNumber(nb: number, precision: number): string {
   return Number(nb.toFixed(precision)).toLocaleString();
+}
+
+export function getCustodyLiquidity(
+  custody: Custody,
+  tokenCurrentPrice: number
+): number {
+  return (
+    (tokenCurrentPrice *
+      Number(custody.assets.owned.sub(custody.assets.locked))) /
+    10 ** custody.decimals
+  );
 }
