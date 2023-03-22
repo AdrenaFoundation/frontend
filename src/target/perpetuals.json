@@ -1631,11 +1631,9 @@
           },
           {
             "name": "borrowRate",
-            "type": "u64"
-          },
-          {
-            "name": "borrowRateSum",
-            "type": "u64"
+            "type": {
+              "defined": "BorrowRateParams"
+            }
           },
           {
             "name": "assets",
@@ -1659,6 +1657,24 @@
             "name": "tradeStats",
             "type": {
               "defined": "TradeStats"
+            }
+          },
+          {
+            "name": "longPositions",
+            "type": {
+              "defined": "PositionStats"
+            }
+          },
+          {
+            "name": "shortPositions",
+            "type": {
+              "defined": "PositionStats"
+            }
+          },
+          {
+            "name": "borrowRateState",
+            "type": {
+              "defined": "BorrowRateState"
             }
           },
           {
@@ -1704,19 +1720,13 @@
           {
             "name": "signers",
             "type": {
-              "array": [
-                "publicKey",
-                6
-              ]
+              "array": ["publicKey", 6]
             }
           },
           {
             "name": "signed",
             "type": {
-              "array": [
-                "bool",
-                6
-              ]
+              "array": ["bool", 6]
             }
           },
           {
@@ -2394,14 +2404,7 @@
       "name": "UpgradeCustodyParams",
       "type": {
         "kind": "struct",
-        "fields": [
-          {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
-          }
-        ]
+        "fields": []
       }
     },
     {
@@ -2646,11 +2649,27 @@
             "type": "u64"
           },
           {
+            "name": "maxInitialLeverage",
+            "type": "u64"
+          },
+          {
             "name": "maxLeverage",
             "type": "u64"
           },
           {
             "name": "maxPayoffMult",
+            "type": "u64"
+          },
+          {
+            "name": "maxUtilization",
+            "type": "u64"
+          },
+          {
+            "name": "maxPositionLockedUsd",
+            "type": "u64"
+          },
+          {
+            "name": "maxTotalLockedUsd",
             "type": "u64"
           }
         ]
@@ -2747,6 +2766,10 @@
         "fields": [
           {
             "name": "useEma",
+            "type": "bool"
+          },
+          {
+            "name": "useUnrealizedPnlInAum",
             "type": "bool"
           },
           {
@@ -3134,26 +3157,36 @@
     },
     {
       "code": 6018,
-      "name": "PoolAmountLimit",
-      "msg": "Pool amount limit exceeded"
+      "name": "CustodyAmountLimit",
+      "msg": "Custody amount limit exceeded"
     },
     {
       "code": 6019,
+      "name": "PositionAmountLimit",
+      "msg": "Position amount limit exceeded"
+    },
+    {
+      "code": 6020,
       "name": "TokenRatioOutOfRange",
       "msg": "Token ratio out of range"
     },
     {
-      "code": 6020,
+      "code": 6021,
       "name": "UnsupportedToken",
       "msg": "Token is not supported"
     },
     {
-      "code": 6021,
+      "code": 6022,
       "name": "InstructionNotAllowed",
       "msg": "Instruction is not allowed at this time"
+    },
+    {
+      "code": 6023,
+      "name": "MaxUtilization",
+      "msg": "Token utilization limit exceeded"
     }
   ],
   "metadata": {
-    "address": "6mL61P7WnYn96PHSCnLemKuUQUQGDzaK5Jeh3pnyKLV8"
+    "address": "CMcky3KoHk78YVP9LGe6PFbjwWomrfGxya3difDT2EQo"
   }
 }

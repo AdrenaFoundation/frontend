@@ -1,15 +1,12 @@
 import { PublicKey } from "@solana/web3.js";
 import { NonStableToken, StableToken, Token } from "./types";
 
-// mainnet addresses (cannot find devnet addresses matching pyth devnet data feeds)
+// devnet addresses of spl-tokens created to represent real token
 export const tokenAddresses = {
-  USDC: new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"),
-  // Wrap ETH (sollet)
-  ETH: new PublicKey("2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk"),
-  // Wrap BTC (sollet)
-  BTC: new PublicKey("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E"),
-  // Wrap SOL
-  SOL: new PublicKey("So11111111111111111111111111111111111111112"),
+  USDC: new PublicKey("4ZY3ZH8bStniqdCZdR14xsWW6vrMsCJrusobTdy4JipC"),
+  ETH: new PublicKey("3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr"),
+  BTC: new PublicKey("HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM"),
+  SOL: new PublicKey("EtX1Uagb44Yp5p4hsqjwAwF3mKaQTMizCyvC1CsyHAQN"),
 } as Record<Token, PublicKey>;
 
 export const tokenList = ["USDC", "ETH", "BTC", "SOL"] as Token[];

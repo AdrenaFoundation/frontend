@@ -70,7 +70,7 @@ export default function Trade() {
     }
 
     // If user wallet balance doesn't have enough tokens, tell user
-    if (!walletTokenABalance || inputAValue < walletTokenABalance) {
+    if (!walletTokenABalance || inputAValue > walletTokenABalance) {
       return `Insufficient ${tokenA} balance`;
     }
 

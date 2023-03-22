@@ -1,16 +1,13 @@
-import { AnchorProvider, Program, Wallet } from "@project-serum/anchor";
-import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import { AnchorProvider, Program } from "@project-serum/anchor";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
-import { IDL as PERPETUALS_IDL, Perpetuals } from "@/target/perpetuals";
-import * as PerpetualsJson from "@/target/perpetuals.json";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
+import { IDL as PERPETUALS_IDL, Perpetuals } from "@/target/perpetuals";
+import PerpetualsJson from "@/target/perpetuals.json";
 import useConnection from "./useConnection";
-import { useSelector } from "@/store/store";
 import useWallet from "./useWallet";
 
-const PERPETUALS_PROGRAM_ID = new PublicKey(
-  PerpetualsJson["metadata"]["address"]
-);
+const PERPETUALS_PROGRAM_ID = new PublicKey(PerpetualsJson.metadata.address);
 
 // default user to launch show basic pool data, etc
 export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
@@ -22,26 +19,6 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
   ])
 );
 
-class DefaultWallet implements Wallet {
-  constructor(readonly payer: Keypair) {}
-
-  static local(): NodeWallet | never {
-    throw new Error("Local wallet not supported");
-  }
-
-  async signTransaction(tx: Transaction): Promise<Transaction> {
-    return tx;
-  }
-
-  async signAllTransactions(txs: Transaction[]): Promise<Transaction[]> {
-    return txs;
-  }
-
-  get publicKey(): PublicKey {
-    return this.payer.publicKey;
-  }
-}
-
 const useAdrenaProgram = (): Program<Perpetuals> | null => {
   const connection = useConnection();
   const wallet = useWallet();
@@ -52,7 +29,7 @@ const useAdrenaProgram = (): Program<Perpetuals> | null => {
 
     const provider = new AnchorProvider(
       connection,
-      wallet ?? new DefaultWallet(DEFAULT_PERPS_USER),
+      wallet ?? new NodeWallet(DEFAULT_PERPS_USER),
       {
         commitment: "processed",
         skipPreflight: true,
