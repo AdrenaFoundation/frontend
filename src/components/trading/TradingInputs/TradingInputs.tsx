@@ -7,10 +7,10 @@ import {
   INPUT_PRECISION,
 } from "@/utils";
 import { useEffect, useState } from "react";
-import Button from "../Button/Button";
-import InputNumber from "../InputNumber/InputNumber";
-import LeverageSlider from "../LeverageSlider/LeverageSlider";
-import Select from "../Select/Select";
+import Button from "../../Button/Button";
+import InputNumber from "../../InputNumber/InputNumber";
+import LeverageSlider from "../../LeverageSlider/LeverageSlider";
+import Select from "../../Select/Select";
 import styles from "./TradingInputs.module.scss";
 
 function recalculateInputs<T extends Token, U extends Token>({
@@ -203,7 +203,20 @@ export default function TradingInputs<T extends Token, U extends Token>({
         leverage,
       });
     }
-  }, [inputA, inputB, tokenA, manualUserInput, leverage, tokenB, tokenPrices]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    inputA,
+    inputB,
+    manualUserInput,
+    leverage,
+    tokenA,
+    tokenB,
+    // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    tokenPrices[tokenA],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    tokenPrices[tokenB],
+  ]);
 
   const handleInputAChange = (v: number | null) => {
     setManualUserInput("A");
@@ -263,6 +276,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
         </div>
       </div>
 
+      {/* Switch AB */}
       <div className={styles.tradingInputs__switch}>
         <div
           className={styles.tradingInputs__switch_inner}
@@ -319,18 +333,52 @@ export default function TradingInputs<T extends Token, U extends Token>({
         </div>
       </div>
 
-      {/* Leverage (only in short/long) */}
       {actionType === "short" || actionType === "long" ? (
         <>
-          <div className={styles.tradingInputs__leverage_slider_title}>
-            Leverage Slider
-          </div>
-          <div className={styles.tradingInputs__leverage_slider}>
-            <LeverageSlider
-              className={styles.tradingInputs__leverage_slider_obj}
-              onChange={(v: number) => setLeverage(v)}
-            />
-          </div>
+          {/* Leverage (only in short/long) */}
+          <>
+            <div className={styles.tradingInputs__leverage_slider_title}>
+              Leverage Slider
+            </div>
+            <div className={styles.tradingInputs__leverage_slider}>
+              <LeverageSlider
+                className={styles.tradingInputs__leverage_slider_obj}
+                onChange={(v: number) => setLeverage(v)}
+              />
+            </div>
+          </>
+
+          {/* Position basic infos */}
+          <>
+            <div className={styles.tradingInputs__infos}>
+              <div className={styles.tradingInputs__infos_row}>
+                <span>Collateral In</span>
+                <span>{actionType === "long" ? "USD" : "USDC"}</span>
+              </div>
+
+              <div className={styles.tradingInputs__infos_row}>
+                <span>Leverage</span>
+                <span>
+                  {leverage !== null ? `${formatNumber(leverage, 2)}x` : "-"}
+                </span>
+              </div>
+
+              <div className={styles.tradingInputs__infos_row}>
+                <span>Entry Price</span>
+                <span>TODO</span>
+              </div>
+
+              <div className={styles.tradingInputs__infos_row}>
+                <span>Liq. Price</span>
+                <span>TODO</span>
+              </div>
+
+              <div className={styles.tradingInputs__infos_row}>
+                <span>Fees</span>
+                <span>TODO</span>
+              </div>
+            </div>
+          </>
         </>
       ) : null}
     </div>

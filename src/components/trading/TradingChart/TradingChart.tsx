@@ -23,8 +23,6 @@ export default function TradingChart({ token }: { token: Token }) {
   useEffect(() => {
     function createWidget() {
       if (document.getElementById("chart-area") && "TradingView" in window) {
-        console.log((window.TradingView as TradingView).widget);
-
         setWidget(
           new (window.TradingView as any).widget({
             container_id: "chart-area",

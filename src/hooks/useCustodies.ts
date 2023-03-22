@@ -38,8 +38,6 @@ const useCustodies = (): Record<Token, Custody> | null => {
 
         acc[token] = custody;
 
-        console.log("Custody", custody);
-
         return acc;
       }, {} as Record<Token, Custody>)
     );

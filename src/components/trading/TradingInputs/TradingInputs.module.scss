@@ -105,4 +105,18 @@
       margin: auto;
     }
   }
+
+  &__infos {
+    color: whitesmoke;
+    padding: 1em;
+    margin-top: 1em;
+
+    &_row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.2em;
+    }
+  }
 }

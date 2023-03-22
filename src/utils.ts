@@ -32,3 +32,7 @@ export function getCustodyLiquidity(
     10 ** custody.decimals
   );
 }
+
+export function formatPriceInfo(price: number) {
+  return `$${formatNumber(price, 2)}`;
+}

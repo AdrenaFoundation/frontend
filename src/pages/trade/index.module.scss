@@ -40,39 +40,25 @@
       display: none;
     }
 
-    &_infos {
-      color: whitesmoke;
-      padding: 1em;
-      margin-top: 1em;
-
-      &_row {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 0.2em;
-      }
-    }
-
-    &_extended_infos {
+    &_details {
       color: whitesmoke;
       padding: 1em;
       margin-top: 1em;
 
       &_title {
-        margin-top: 1em;
-        margin-bottom: 0.5em;
+        display: flex;
+        align-items: center;
+
+        span:nth-child(1) {
+          text-transform: capitalize;
+        }
+
+        span:nth-child(2) {
+          margin-left: 0.3em;
+        }
 
         display: flex;
         align-items: center;
-      }
-
-      &_row {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 0.2em;
       }
     }
   }
