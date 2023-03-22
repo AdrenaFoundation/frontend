@@ -16,6 +16,7 @@ import InputNumber from "../../InputNumber/InputNumber";
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
 import Select from "../../Select/Select";
 import styles from "./TradingInputs.module.scss";
+import { BN } from "@project-serum/anchor";
 
 function recalculateInputs<T extends Token, U extends Token>({
   mainInput,
@@ -128,7 +129,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
     (actionType === "short" || actionType === "long") && inputB && inputB > 0
       ? {
           token: tokenB,
-          collateral: uiToNative(inputB, 6).div(leverage),
+          collateral: uiToNative(inputB, 6).div(new BN(leverage)),
           size: uiToNative(inputB, 6),
         }
       : null

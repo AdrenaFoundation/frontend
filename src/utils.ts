@@ -53,11 +53,9 @@ export function findCustodyAddress(mint: PublicKey): PublicKey {
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {
-  return nb / 10 ** decimals;
+  return nb.div(new BN(10 ** decimals)).toNumber();
 }
 
 export function uiToNative(nb: number, decimals: number): BN {
-  const exp = new BN(10 ** decimals);
-
-  return new BN(nb).mul(exp);
+  return new BN(Math.floor(nb * 10 ** decimals));
 }

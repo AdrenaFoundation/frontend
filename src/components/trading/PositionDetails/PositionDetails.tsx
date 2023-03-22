@@ -2,9 +2,18 @@ import useCustodies from "@/hooks/useCustodies";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import { formatNumber, formatPriceInfo, getCustodyLiquidity } from "@/utils";
+import { BN } from "@project-serum/anchor";
 import styles from "./PositionDetails.module.scss";
 
-export default function PositionDetails({ tokenB }: { tokenB: Token }) {
+export default function PositionDetails({
+  tokenB,
+  entryPrice,
+  exitPrice,
+}: {
+  tokenB: Token;
+  entryPrice: number | null;
+  exitPrice: number | null;
+}) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const custodies = useCustodies();
 
@@ -12,12 +21,12 @@ export default function PositionDetails({ tokenB }: { tokenB: Token }) {
     <div className={styles.positionDetails}>
       <div className={styles.positionDetails__row}>
         <span>Entry Price</span>
-        <span>TODO</span>
+        <span>{entryPrice !== null ? formatPriceInfo(entryPrice) : "-"}</span>
       </div>
 
       <div className={styles.positionDetails__row}>
         <span>Exit Price</span>
-        <span>TODO</span>
+        <span>{exitPrice !== null ? formatPriceInfo(exitPrice) : "-"}</span>
       </div>
 
       <div className={styles.positionDetails__row}>
@@ -25,7 +34,9 @@ export default function PositionDetails({ tokenB }: { tokenB: Token }) {
         <span>
           {custodies && tokenB
             ? `${formatNumber(
-                100 * custodies[tokenB].borrowRateState.currentRate,
+                custodies[tokenB].borrowRateState.currentRate
+                  .mul(new BN(100))
+                  .toNumber(),
                 4
               )}% / hr`
             : "-"}

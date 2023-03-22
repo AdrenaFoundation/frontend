@@ -24,6 +24,7 @@ export default function Trade() {
   const wallet = useSelector((s) => s.wallet);
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
@@ -151,7 +152,25 @@ export default function Trade() {
             {tokenB && tokenA ? (
               <>
                 {selectedAction === "short" || selectedAction === "long" ? (
-                  <PositionDetails tokenB={tokenB} />
+                  <PositionDetails
+                    tokenB={tokenB}
+                    entryPrice={
+                      tokenB &&
+                      inputBValue &&
+                      tokenPrices &&
+                      tokenPrices[tokenB]
+                        ? tokenPrices[tokenB]
+                        : null
+                    }
+                    exitPrice={
+                      tokenB &&
+                      inputBValue &&
+                      tokenPrices &&
+                      tokenPrices[tokenB]
+                        ? tokenPrices[tokenB]
+                        : null
+                    }
+                  />
                 ) : (
                   <SwapDetails tokenA={tokenA} tokenB={tokenB} />
                 )}
