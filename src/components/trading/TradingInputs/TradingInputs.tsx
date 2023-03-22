@@ -236,12 +236,14 @@ export default function TradingInputs<T extends Token, U extends Token>({
           <div>
             Pay
             {priceA !== null
-              ? `: ${formatNumber(priceA, DISPLAY_NUMBER_PRECISION)}`
+              ? `: ${formatNumber(priceA, DISPLAY_NUMBER_PRECISION)} USD`
               : null}
           </div>
           <div>
             {connected
-              ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}`
+              ? `Balance: ${(
+                  walletTokenBalances?.[tokenA] ?? "0"
+                ).toLocaleString()}`
               : null}
           </div>
         </div>
@@ -301,7 +303,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
               }[actionType]
             }
             {priceB !== null
-              ? `: ${formatNumber(priceB, DISPLAY_NUMBER_PRECISION)}`
+              ? `: ${formatNumber(priceB, DISPLAY_NUMBER_PRECISION)} USD`
               : null}
           </div>
 
@@ -311,7 +313,9 @@ export default function TradingInputs<T extends Token, U extends Token>({
           ) : (
             <>
               {connected
-                ? `Balance: ${walletTokenBalances?.[tokenA] ?? "0"}`
+                ? `Balance: ${(
+                    walletTokenBalances?.[tokenA] ?? "0"
+                  ).toLocaleString()}`
                 : null}
             </>
           )}
