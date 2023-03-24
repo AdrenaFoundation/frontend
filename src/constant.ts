@@ -4,7 +4,7 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { NonStableToken, StableToken, Token, WalletAdapterName } from "./types";
 
 // devnet addresses of spl-tokens created to represent real token
-export const tokenAddresses = {
+export const tokenMints = {
   USDC: new PublicKey("4ZY3ZH8bStniqdCZdR14xsWW6vrMsCJrusobTdy4JipC"),
   ETH: new PublicKey("3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr"),
   BTC: new PublicKey("HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM"),

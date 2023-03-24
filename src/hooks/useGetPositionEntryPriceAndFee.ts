@@ -1,10 +1,20 @@
-import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
 import { NewPositionPricesAndFee, Token } from "@/types";
 import { BN } from "@project-serum/anchor";
 import useCustodies from "./useCustodies";
-import { tokenAddresses } from "@/constant";
+import { tokenMints } from "@/constant";
 import useAdrenaClient from "./useAdrenaClient";
+
+// TRICKS:
+//
+// Issue:
+// When users plays with leverage slider
+// it triggers hundred of getEntryPriceAndFee requests
+//
+// Solution:
+// Wait for the pending request to be resolved to trigger another one
+let pendingRequest: boolean = false;
+let waitingList: boolean = false;
 
 const useGetPositionEntryPriceAndFee = (
   params: {
@@ -20,39 +30,38 @@ const useGetPositionEntryPriceAndFee = (
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);
 
-  // Add one layer to avoid too many useless fetchPositionEntryPricesAndFee calls
-  const [paramsToCall, setParamsToCall] = useState<{
-    custody: PublicKey;
-    custodyOracleAccount: PublicKey;
-    collateral: BN;
-    size: BN;
-    side: "long" | "short";
-  } | null>(null);
-
   const fetchPositionEntryPricesAndFee = useCallback(async () => {
-    if (!paramsToCall || !client) return;
+    if (!client || !params || !custodies) return;
 
-    const entryPriceAndFee = await client.getEntryPriceAndFee(paramsToCall);
+    const custodyAddress = client.findCustodyAddress(tokenMints[params.token]);
 
-    setEntryPriceAndFee(entryPriceAndFee);
-  }, [client, paramsToCall]);
+    // Data is already loading
+    if (pendingRequest) {
+      waitingList = true;
+      return;
+    }
 
-  useEffect(() => {
-    if (!client) return;
-    if (!params) return;
-    if (!custodies) return;
+    pendingRequest = true;
 
-    const custodyAddress = client.findCustodyAddress(
-      tokenAddresses[params.token]
-    );
-
-    setParamsToCall({
+    const entryPriceAndFee = await client.getEntryPriceAndFee({
       custody: custodyAddress,
       custodyOracleAccount: custodies[params.token].oracle.oracleAccount,
       collateral: params.collateral,
       size: params.size,
       side: params.side,
     });
+
+    pendingRequest = false;
+
+    setEntryPriceAndFee(entryPriceAndFee);
+
+    // Call itself again to get fresher data
+    if (waitingList) {
+      waitingList = false;
+
+      setTimeout(() => fetchPositionEntryPricesAndFee());
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // eslint-disable-next-line react-hooks/exhaustive-deps

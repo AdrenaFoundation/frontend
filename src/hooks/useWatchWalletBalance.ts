@@ -1,4 +1,4 @@
-import { tokenAddresses, tokenList } from "@/constant";
+import { tokenMints, tokenList } from "@/constant";
 import { useDispatch, useSelector } from "@/store/store";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect } from "react";
@@ -22,7 +22,7 @@ const useWatchWalletBalance = () => {
       tokenList.map(async (token) => {
         const ata = findATAAddressSync(
           new PublicKey(wallet.walletAddress),
-          tokenAddresses[token]
+          tokenMints[token]
         );
 
         try {

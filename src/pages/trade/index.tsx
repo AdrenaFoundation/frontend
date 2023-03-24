@@ -12,6 +12,7 @@ import TradingChart from "@/components/trading/TradingChart/TradingChart";
 import SwapDetails from "@/components/trading/SwapDetails/SwapDetails";
 import PositionDetails from "@/components/trading/PositionDetails/PositionDetails";
 import styles from "./index.module.scss";
+import useAdrenaClient from "@/hooks/useAdrenaClient";
 
 type Action = "long" | "short" | "swap";
 
@@ -19,6 +20,7 @@ export default function Trade() {
   useListenToPythTokenPricesChange();
   useWatchWalletBalance();
 
+  const client = useAdrenaClient();
   const [selectedAction, setSelectedAction] = useState<Action>("long");
   const walletAdapterRef = useRef<HTMLDivElement>(null);
   const wallet = useSelector((s) => s.wallet);
@@ -35,7 +37,7 @@ export default function Trade() {
   const [leverage, setLeverage] = useState<number | null>(null);
 
   const handleExecuteButton = () => {
-    if (!connected) {
+    if (!connected || !client) {
       walletAdapterRef.current?.click();
       return;
     }

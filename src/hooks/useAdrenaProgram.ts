@@ -1,13 +1,11 @@
 import { AnchorProvider, Program } from "@project-serum/anchor";
-import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import { Keypair, Transaction } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
 import { IDL as PERPETUALS_IDL, Perpetuals } from "@/target/perpetuals";
-import PerpetualsJson from "@/target/perpetuals.json";
 import useConnection from "./useConnection";
 import useWallet from "./useWallet";
-
-export const ADRENA_PROGRAM_ID = new PublicKey(PerpetualsJson.metadata.address);
+import { AdrenaClient } from "@/AdrenaClient";
 
 // default user to launch show basic pool data, etc
 export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
@@ -60,7 +58,7 @@ const useAdrenaProgram = (): Program<Perpetuals> | null => {
       }).bind(provider);
     }
 
-    setProgram(new Program(PERPETUALS_IDL, ADRENA_PROGRAM_ID, provider));
+    setProgram(new Program(PERPETUALS_IDL, AdrenaClient.programId, provider));
   }, [connection, wallet]);
 
   useEffect(() => {
