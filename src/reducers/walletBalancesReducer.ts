@@ -1,4 +1,3 @@
-import { WalletAdapterName } from "@/adapters/walletAdapters";
 import { Token } from "@/types";
 import { WalletBalancesAction } from "../actions/walletBalancesActions";
 
