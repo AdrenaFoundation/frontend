@@ -1,24 +1,19 @@
-import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
-import useAdrenaProgram from "./useAdrenaProgram";
 import { Pool } from "@/types";
-
-export const MAIN_POOL = new PublicKey(
-  "2YxviUw1kDjAw1djVUkgUCLuwJ67TLc77wsHD1wRsciY"
-);
+import useAdrenaClient from "./useAdrenaClient";
 
 const useMainPool = (): Pool | null => {
-  const adrenaProgram = useAdrenaProgram();
+  const client = useAdrenaClient();
 
   const [mainPool, setMainPool] = useState<Pool | null>(null);
 
   const fetchMainPool = useCallback(async () => {
-    if (!adrenaProgram) return;
+    if (!client) return;
 
-    const pool = await adrenaProgram.account.pool.fetch(MAIN_POOL);
+    const pool = await client.loadMainPool();
 
     setMainPool(pool);
-  }, [adrenaProgram]);
+  }, [client]);
 
   useEffect(() => {
     fetchMainPool();

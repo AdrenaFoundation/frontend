@@ -4,8 +4,6 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { ADRENA_PROGRAM_ID } from "./hooks/useAdrenaProgram";
-import { MAIN_POOL } from "./hooks/useMainPool";
 import { Custody } from "./types";
 
 export const DISPLAY_NUMBER_PRECISION = 6;
@@ -43,13 +41,6 @@ export function formatPriceInfo(price: number) {
   }
 
   return `$${formatNumber(price, 2)}`;
-}
-
-export function findCustodyAddress(mint: PublicKey): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("custody"), MAIN_POOL.toBuffer(), mint.toBuffer()],
-    ADRENA_PROGRAM_ID
-  )[0];
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {

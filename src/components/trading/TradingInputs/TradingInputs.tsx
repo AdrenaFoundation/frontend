@@ -131,6 +131,7 @@ export default function TradingInputs<T extends Token, U extends Token>({
           token: tokenB,
           collateral: uiToNative(inputB, 6).div(new BN(leverage)),
           size: uiToNative(inputB, 6),
+          side: actionType,
         }
       : null
   );

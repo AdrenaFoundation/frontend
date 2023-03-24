@@ -1,26 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
-import useAdrenaProgram from "./useAdrenaProgram";
 import { NewPositionPricesAndFee, Token } from "@/types";
 import { BN } from "@project-serum/anchor";
-import { MAIN_POOL } from "./useMainPool";
 import useCustodies from "./useCustodies";
 import { tokenAddresses } from "@/constant";
-import { findCustodyAddress } from "@/utils";
-
-const PERPETUALS_ADDRESS = new PublicKey(
-  "EvcBDReED8nAhhj6TQE74TwsCh66AiqS9NvRV6K7QU6F"
-);
+import useAdrenaClient from "./useAdrenaClient";
 
 const useGetPositionEntryPriceAndFee = (
   params: {
     token: Token;
     collateral: BN;
     size: BN;
+    side: "long" | "short";
   } | null
 ): NewPositionPricesAndFee | null => {
-  const adrenaProgram = useAdrenaProgram();
+  const client = useAdrenaClient();
   const custodies = useCustodies();
 
   const [entryPriceAndFee, setEntryPriceAndFee] =
@@ -32,43 +26,36 @@ const useGetPositionEntryPriceAndFee = (
     custodyOracleAccount: PublicKey;
     collateral: BN;
     size: BN;
+    side: "long" | "short";
   } | null>(null);
 
   const fetchPositionEntryPricesAndFee = useCallback(async () => {
-    if (!paramsToCall || !adrenaProgram || !adrenaProgram.views) return;
-    const entryPriceAndFee = await adrenaProgram.views.getEntryPriceAndFee(
-      {
-        collateral: paramsToCall.collateral,
-        size: paramsToCall.size,
-        side: { long: {} },
-      },
-      {
-        accounts: {
-          perpetuals: PERPETUALS_ADDRESS,
-          pool: MAIN_POOL,
-          custody: paramsToCall.custody,
-          custodyOracleAccount: paramsToCall.custodyOracleAccount,
-        },
-      }
-    );
+    if (!paramsToCall || !client) return;
+
+    const entryPriceAndFee = await client.getEntryPriceAndFee(paramsToCall);
 
     setEntryPriceAndFee(entryPriceAndFee);
-  }, [adrenaProgram, paramsToCall]);
+  }, [client, paramsToCall]);
 
   useEffect(() => {
+    if (!client) return;
     if (!params) return;
     if (!custodies) return;
 
-    const custodyAddress = findCustodyAddress(tokenAddresses[params.token]);
+    const custodyAddress = client.findCustodyAddress(
+      tokenAddresses[params.token]
+    );
 
     setParamsToCall({
       custody: custodyAddress,
       custodyOracleAccount: custodies[params.token].oracle.oracleAccount,
       collateral: params.collateral,
       size: params.size,
+      side: params.side,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     !!custodies,
     // React detect changes when there are no change
     // Compute a string easy for react to compare
@@ -76,7 +63,7 @@ const useGetPositionEntryPriceAndFee = (
     params
       ? `${params.collateral.toString()}/${params.size.toString()}/${
           params.token
-        }`
+        }/${params.side}`
       : null,
   ]);
 
