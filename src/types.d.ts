@@ -6,6 +6,8 @@ export type NonStableToken = "ETH" | "BTC" | "SOL";
 
 export type Token = StableToken | NonStableToken;
 
+export type WalletAdapterName = "phantom";
+
 export type PerpetualsTypes = AnchorTypes<
   Perpetuals,
   {

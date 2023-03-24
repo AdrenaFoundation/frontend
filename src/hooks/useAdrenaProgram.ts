@@ -1,5 +1,5 @@
 import { AnchorProvider, Program } from "@project-serum/anchor";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
 import { useCallback, useEffect, useState } from "react";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
 import { IDL as PERPETUALS_IDL, Perpetuals } from "@/target/perpetuals";
@@ -35,6 +35,30 @@ const useAdrenaProgram = (): Program<Perpetuals> | null => {
         skipPreflight: true,
       }
     );
+
+    // TRICKS
+    //
+    // Issue:
+    // simulateTransaction try to sign the transaction even when there are no signers involved
+    // resulting in a popup asking user for validation. problematic when calling `views` instructions
+    //
+    // Solution:
+    // Override the behavior by adding an extra check into `signTransaction`
+    {
+      // Save old function
+      (provider as any).wallet._signTransaction =
+        provider.wallet.signTransaction;
+
+      (provider as any).wallet.signTransaction = (async (
+        transaction: Transaction
+      ) => {
+        if (!transaction.signatures.length) {
+          return transaction;
+        }
+
+        return (this as any)._signTransaction(transaction);
+      }).bind(provider);
+    }
 
     setProgram(new Program(PERPETUALS_IDL, ADRENA_PROGRAM_ID, provider));
   }, [connection, wallet]);

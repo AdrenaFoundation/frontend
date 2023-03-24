@@ -36,7 +36,6 @@ const useGetPositionEntryPriceAndFee = (
 
   const fetchPositionEntryPricesAndFee = useCallback(async () => {
     if (!paramsToCall || !adrenaProgram || !adrenaProgram.views) return;
-
     const entryPriceAndFee = await adrenaProgram.views.getEntryPriceAndFee(
       {
         collateral: paramsToCall.collateral,

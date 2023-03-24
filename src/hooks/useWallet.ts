@@ -1,7 +1,7 @@
 import { Wallet } from "@project-serum/anchor";
 import { useEffect, useState } from "react";
-import { getWalletAdapters } from "@/adapters/walletAdapters";
 import { useSelector } from "@/store/store";
+import { walletAdapters } from "@/constant";
 
 const useWallet = () => {
   const walletState = useSelector((s) => s.wallet);
@@ -11,7 +11,9 @@ const useWallet = () => {
   useEffect(() => {
     if (!walletState) return;
 
-    const adapter = getWalletAdapters()[walletState.adapterName];
+    const adapter = walletAdapters[walletState.adapterName];
+
+    // Cast to wallet because Adapters contains necessary Wallet functions
     setWallet(adapter as unknown as Wallet);
   }, [walletState]);
 

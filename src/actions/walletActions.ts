@@ -1,10 +1,8 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { PublicKey } from "@solana/web3.js";
-import {
-  getWalletAdapters,
-  WalletAdapterName,
-} from "@/adapters/walletAdapters";
 import { Wallet } from "@project-serum/anchor";
+import { WalletAdapterName } from "@/types";
+import { walletAdapters } from "@/constant";
 
 export type ConnectWalletAction = {
   type: "connect";
@@ -23,7 +21,7 @@ export type WalletAction = ConnectWalletAction | DisconnectWalletAction;
 export const connectWalletAction =
   (adapterName: WalletAdapterName) =>
   async (dispatch: Dispatch<ConnectWalletAction>) => {
-    const adapter = getWalletAdapters()[adapterName];
+    const adapter = walletAdapters[adapterName];
 
     adapter.on("connect", (walletPubkey: PublicKey) => {
       dispatch({
@@ -49,7 +47,7 @@ export const connectWalletAction =
 export const disconnectWalletAction =
   (adapterName: WalletAdapterName) =>
   async (dispatch: Dispatch<DisconnectWalletAction>) => {
-    const adapter = getWalletAdapters()[adapterName];
+    const adapter = walletAdapters[adapterName];
 
     adapter.on("disconnect", () => {
       dispatch({

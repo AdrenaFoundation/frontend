@@ -1,5 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
-import { NonStableToken, StableToken, Token } from "./types";
+import { Adapter } from "@solana/wallet-adapter-base";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { NonStableToken, StableToken, Token, WalletAdapterName } from "./types";
 
 // devnet addresses of spl-tokens created to represent real token
 export const tokenAddresses = {
@@ -13,3 +15,7 @@ export const tokenList = ["USDC", "ETH", "BTC", "SOL"] as Token[];
 
 export const stableTokenList = ["USDC"] as StableToken[];
 export const nonStableTokenList = ["ETH", "BTC", "SOL"] as NonStableToken[];
+
+export const walletAdapters: Record<WalletAdapterName, Adapter> = {
+  phantom: new PhantomWalletAdapter(),
+};
