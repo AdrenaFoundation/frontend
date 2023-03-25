@@ -1,16 +1,16 @@
 import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { useSelector } from "@/store/store";
-import { Mint } from "@/types";
+import { Token } from "@/types";
 import { formatNumber, formatPriceInfo, getCustodyLiquidity } from "@/utils";
 import { BN } from "@project-serum/anchor";
 import styles from "./PositionDetails.module.scss";
 
 export default function PositionDetails({
-  mintB,
+  tokenB,
   entryPrice,
   exitPrice,
 }: {
-  mintB: Mint;
+  tokenB: Token;
   entryPrice: number | null;
   exitPrice: number | null;
 }) {
@@ -32,10 +32,10 @@ export default function PositionDetails({
       <div className={styles.positionDetails__row}>
         <span>Borrow Fee</span>
         <span>
-          {client && mintB
+          {client && tokenB
             ? `${formatNumber(
                 client
-                  .getCustodyByMint(mintB.pubkey)
+                  .getCustodyByMint(tokenB.mint)
                   .borrowRateState.currentRate.mul(new BN(100))
                   .toNumber(),
                 4
@@ -47,11 +47,11 @@ export default function PositionDetails({
       <div className={styles.positionDetails__row}>
         <span>Available Liquidity</span>
         <span>
-          {client && mintB && tokenPrices && tokenPrices[mintB.name]
+          {client && tokenB && tokenPrices && tokenPrices[tokenB.name]
             ? formatPriceInfo(
                 getCustodyLiquidity(
-                  client.getCustodyByMint(mintB.pubkey),
-                  tokenPrices[mintB.name]!
+                  client.getCustodyByMint(tokenB.mint),
+                  tokenPrices[tokenB.name]!
                 )
               )
             : "-"}

@@ -6,7 +6,7 @@ import { Perpetuals } from "@/target/perpetuals";
 import {
   Custody,
   CustodyExtended,
-  Mint,
+  Token,
   NewPositionPricesAndFee,
   Pool,
 } from "./types";
@@ -15,9 +15,10 @@ import { findATAAddressSync, getTokenNameByMint } from "./utils";
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);
 
-  public static perpetualsAddress = new PublicKey(
-    "EvcBDReED8nAhhj6TQE74TwsCh66AiqS9NvRV6K7QU6F"
-  );
+  public static perpetualsAddress = PublicKey.findProgramAddressSync(
+    [Buffer.from("perpetuals")],
+    AdrenaClient.programId
+  )[0];
 
   public static multisigAddress = PublicKey.findProgramAddressSync(
     [Buffer.from("multisig")],
@@ -39,8 +40,10 @@ export class AdrenaClient {
     new PublicKey("BPFLoaderUpgradeab1e11111111111111111111111")
   )[0];
 
+  // @TODO, adapt to mainnet/devnet
+  // Handle one pool only for now
   public static mainPoolAddress = new PublicKey(
-    "2YxviUw1kDjAw1djVUkgUCLuwJ67TLc77wsHD1wRsciY"
+    "58W6atpSm8ZUz5rRjWLzNwPrpdukZzwz6rJuf5kPYARj"
   );
 
   public static lpTokenMint = PublicKey.findProgramAddressSync(
@@ -55,7 +58,7 @@ export class AdrenaClient {
     protected readonlyAdrenaProgram: Program<Perpetuals>,
     public mainPool: Pool,
     public custodies: CustodyExtended[],
-    public mints: Mint[]
+    public tokens: Token[]
   ) {}
 
   public static async initialize(
@@ -68,8 +71,8 @@ export class AdrenaClient {
       mainPool
     );
 
-    const mints: Mint[] = custodies.map((custody, i) => ({
-      pubkey: custody.mint,
+    const tokens: Token[] = custodies.map((custody, i) => ({
+      mint: custody.mint,
       name: getTokenNameByMint(custody.mint),
       decimals: 6,
       isStable: custody.isStable,
@@ -83,7 +86,7 @@ export class AdrenaClient {
       readonlyAdrenaProgram,
       mainPool,
       custodies,
-      mints
+      tokens
     );
   }
 
@@ -237,7 +240,7 @@ export class AdrenaClient {
     const position = this.findPositionAddress(owner, custodyAddress, side);
 
     console.log("Open position", {
-      price: price.mul(new BN(10_000)).div(new BN(9_800)).toString(),
+      price: price.mul(new BN(10_000)).div(new BN(9_000)).toString(),
       collateral: collateral.toString(),
       size: size.toString(),
     });
@@ -246,8 +249,8 @@ export class AdrenaClient {
       .openPosition({
         // TODO
         // HOW TO HANDLE SLIPPAGE?
-        // For now use 1% slippage
-        price: price.mul(new BN(10_000)).div(new BN(9_900)),
+        // For now use 10% slippage
+        price: price.mul(new BN(10_000)).div(new BN(9_000)),
         collateral,
         size,
         side: { [side]: {} },
@@ -267,7 +270,7 @@ export class AdrenaClient {
       });
   }
 
-  // swap mintA for mintB
+  // swap tokenA for tokenB
   public buildSwapTx({
     owner,
     amountIn,
@@ -322,7 +325,7 @@ export class AdrenaClient {
       });
   }
 
-  // swap mintA for mintB
+  // swap tokenA for tokenB
   public async swap(params: {
     owner: PublicKey;
     amountIn: BN;
@@ -411,12 +414,12 @@ export class AdrenaClient {
    */
 
   public async getEntryPriceAndFee({
-    mint,
+    token,
     collateral,
     size,
     side,
   }: {
-    mint: Mint;
+    token: Token;
     collateral: BN;
     size: BN;
     side: "long" | "short";
@@ -425,7 +428,7 @@ export class AdrenaClient {
       return null;
     }
 
-    const custody = this.getCustodyByMint(mint.pubkey);
+    const custody = this.getCustodyByMint(token.mint);
 
     return this.readonlyAdrenaProgram.views.getEntryPriceAndFee(
       {
@@ -437,7 +440,7 @@ export class AdrenaClient {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
           pool: AdrenaClient.mainPoolAddress,
-          custody: mint.custody,
+          custody: token.custody,
           custodyOracleAccount: custody.oracle.oracleAccount,
         },
       }

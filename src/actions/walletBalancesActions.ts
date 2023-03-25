@@ -1,15 +1,15 @@
+import { TokenName } from "@/types";
 import { Dispatch } from "@reduxjs/toolkit";
-import { Token } from "@/types";
 
 export type SetTokenBalancesAction = {
   type: "setTokenBalances";
-  payload: Record<string, number | null> | null;
+  payload: Record<TokenName, number | null> | null;
 };
 
 export type WalletBalancesAction = SetTokenBalancesAction;
 
 export const setWalletTokenBalancesAction =
-  (balances: Record<Token, number | null> | null) =>
+  (balances: Record<TokenName, number | null> | null) =>
   async (dispatch: Dispatch<SetTokenBalancesAction>) => {
     dispatch({
       type: "setTokenBalances",

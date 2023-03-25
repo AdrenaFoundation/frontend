@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { BN } from "@project-serum/anchor";
-import { Mint, NewPositionPricesAndFee } from "@/types";
+import { Token, NewPositionPricesAndFee } from "@/types";
 import useAdrenaClient from "./useAdrenaClient";
 import { PublicKey } from "@solana/web3.js";
 
@@ -17,7 +17,7 @@ let waitingList: boolean = false;
 
 const useGetPositionEntryPriceAndFee = (
   params: {
-    mint: Mint;
+    token: Token;
     collateral: BN;
     size: BN;
     side: "long" | "short";
@@ -58,7 +58,7 @@ const useGetPositionEntryPriceAndFee = (
     // Compute a string easy for react to compare
     // eslint-disable-next-line react-hooks/exhaustive-deps
     params
-      ? `${params.collateral.toString()}/${params.size.toString()}/${params.mint.pubkey.toBase58()}/${
+      ? `${params.collateral.toString()}/${params.size.toString()}/${params.token.mint.toBase58()}/${
           params.side
         }`
       : null,

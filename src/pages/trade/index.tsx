@@ -4,7 +4,7 @@ import { BN } from "@project-serum/anchor";
 
 import TabSelect from "@/components/TabSelect/TabSelect";
 import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPricesChange";
-import { Mint } from "@/types";
+import { Token } from "@/types";
 import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
 import TradingInputs from "@/components/trading/TradingInputs/TradingInputs";
 import Button from "@/components/Button/Button";
@@ -34,8 +34,8 @@ export default function Trade() {
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
-  const [mintA, setMintA] = useState<Mint | null>(null);
-  const [mintB, setMintB] = useState<Mint | null>(null);
+  const [tokenA, setMintA] = useState<Token | null>(null);
+  const [tokenB, setMintB] = useState<Token | null>(null);
 
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
@@ -47,9 +47,9 @@ export default function Trade() {
     }
 
     if (
-      !mintA ||
-      !mintB ||
-      !tokenPrices[mintB.pubkey.toBase58()] ||
+      !tokenA ||
+      !tokenB ||
+      !tokenPrices[tokenB.name] ||
       !inputAValue ||
       !inputBValue ||
       !leverage
@@ -66,21 +66,18 @@ export default function Trade() {
         // TODO
         // How to handle slippage?
         // the inputBValue should take fees into account, for now it doesn't.
-        // use high slippage here so we can do swaps
-        minAmountOut: uiToNative(inputBValue, 6)
-          .mul(new BN(9_000))
-          .div(new BN(10_000)),
-        mintA: mintA.pubkey,
-        mintB: mintB.pubkey,
+        minAmountOut: new BN(0),
+        mintA: tokenA.mint,
+        mintB: tokenB.mint,
       });
     }
 
     return client.openPositionWithSwap({
       owner: new PublicKey(wallet.walletAddress),
-      mintA: mintA.pubkey,
-      mintB: mintA.pubkey,
+      mintA: tokenA.mint,
+      mintB: tokenA.mint,
       amountA: uiToNative(inputAValue, 6),
-      price: uiToNative(tokenPrices[mintB.pubkey.toBase58()]!, 6),
+      price: uiToNative(tokenPrices[tokenB.name]!, 6),
       collateral: uiToNative(inputBValue, 6).div(new BN(leverage)),
       size: uiToNative(inputBValue, 6),
       side: selectedAction,
@@ -98,11 +95,11 @@ export default function Trade() {
     }
 
     // Loading, should happens quickly
-    if (!mintA) {
+    if (!tokenA) {
       return "...";
     }
 
-    const walletTokenABalance = walletTokenBalances?.[mintA.pubkey.toBase58()];
+    const walletTokenABalance = walletTokenBalances?.[tokenA.name];
 
     // Loading, should happens quickly
     if (typeof walletTokenABalance === "undefined") {
@@ -111,7 +108,7 @@ export default function Trade() {
 
     // If user wallet balance doesn't have enough tokens, tell user
     if (!walletTokenABalance || inputAValue > walletTokenABalance) {
-      return `Insufficient ${mintA.name} balance`;
+      return `Insufficient ${tokenA.name} balance`;
     }
 
     return "Execute";
@@ -121,14 +118,14 @@ export default function Trade() {
     <div className={styles.trade}>
       <div className={styles.trade__tradingview}>
         {/* Display trading chart for appropriate token */}
-        {mintA && mintB ? (
+        {tokenA && tokenB ? (
           <>
             {selectedAction === "short" || selectedAction === "long" ? (
-              <TradingChart mint={mintB} />
+              <TradingChart token={tokenB} />
             ) : null}
 
             {selectedAction === "swap" ? (
-              <TradingChart mint={mintA.isStable ? mintB : mintA} />
+              <TradingChart token={tokenA.isStable ? tokenB : tokenA} />
             ) : null}
           </>
         ) : null}
@@ -147,15 +144,15 @@ export default function Trade() {
           }}
         />
 
-        {client && client.mints.length && (
+        {client && client.tokens.length && (
           <TradingInputs
             className={styles.trade__panel_trading_inputs}
             actionType={selectedAction}
-            allowedMintA={client.mints}
-            allowedMintB={
+            allowedTokenA={client.tokens}
+            allowedTokenB={
               selectedAction === "swap"
-                ? client.mints
-                : client.mints.filter((m) => !m.isStable)
+                ? client.tokens
+                : client.tokens.filter((t) => !t.isStable)
             }
             onChangeInputA={setInputAValue}
             onChangeInputB={setInputBValue}
@@ -187,34 +184,34 @@ export default function Trade() {
               <span>{selectedAction}</span>
 
               {selectedAction === "short" || selectedAction === "long" ? (
-                <span>{mintB?.name ?? "-"}</span>
+                <span>{tokenB?.name ?? "-"}</span>
               ) : null}
             </div>
 
-            {mintA && mintB ? (
+            {tokenA && tokenB ? (
               <>
                 {selectedAction === "short" || selectedAction === "long" ? (
                   <PositionDetails
-                    mintB={mintB}
+                    tokenB={tokenB}
                     entryPrice={
-                      mintB &&
+                      tokenB &&
                       inputBValue &&
                       tokenPrices &&
-                      tokenPrices[mintB.name]
-                        ? tokenPrices[mintB.name]
+                      tokenPrices[tokenB.name]
+                        ? tokenPrices[tokenB.name]
                         : null
                     }
                     exitPrice={
-                      mintB &&
+                      tokenB &&
                       inputBValue &&
                       tokenPrices &&
-                      tokenPrices[mintB.name]
-                        ? tokenPrices[mintB.name]
+                      tokenPrices[tokenB.name]
+                        ? tokenPrices[tokenB.name]
                         : null
                     }
                   />
                 ) : (
-                  <SwapDetails mintA={mintA} mintB={mintB} />
+                  <SwapDetails tokenA={tokenA} tokenB={tokenB} />
                 )}
               </>
             ) : null}

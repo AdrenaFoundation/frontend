@@ -5,7 +5,7 @@ import { PublicKey } from "@solana/web3.js";
 export type SetTokenPriceAction = {
   type: "setTokenPrice";
   payload: {
-    mint: string;
+    tokenName: string;
     price: number | null;
   };
 };
@@ -13,12 +13,12 @@ export type SetTokenPriceAction = {
 export type TokenPricesAction = SetTokenPriceAction;
 
 export const setTokenPriceAction =
-  (mint: string, price: number | null) =>
+  (tokenName: string, price: number | null) =>
   async (dispatch: Dispatch<SetTokenPriceAction>) => {
     dispatch({
       type: "setTokenPrice",
       payload: {
-        mint,
+        tokenName,
         price,
       },
     });

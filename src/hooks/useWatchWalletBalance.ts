@@ -1,28 +1,27 @@
-import { tokenMints, tokenList } from "@/constant";
 import { useDispatch, useSelector } from "@/store/store";
 import { PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect } from "react";
 import { findATAAddressSync } from "@/utils";
 import useConnection from "./useConnection";
 import { setWalletTokenBalancesAction } from "@/actions/walletBalancesActions";
-import { Token } from "@/types";
+import { TokenName } from "@/types";
+import useAdrenaClient from "./useAdrenaClient";
 
 // TODO: Make it responsive to wallet token balance change
 const useWatchWalletBalance = () => {
   const dispatch = useDispatch();
   const connection = useConnection();
+  const client = useAdrenaClient();
   const wallet = useSelector((s) => s.wallet);
 
   const loadWalletBalances = useCallback(async () => {
-    if (!connection) return;
-    if (!wallet) return;
-    if (!dispatch) return;
+    if (!connection || !wallet || !dispatch || !client) return;
 
     const balances = await Promise.all(
-      tokenList.map(async (token) => {
+      client.tokens.map(async ({ mint }) => {
         const ata = findATAAddressSync(
           new PublicKey(wallet.walletAddress),
-          tokenMints[token]
+          mint
         );
 
         try {
@@ -38,13 +37,13 @@ const useWatchWalletBalance = () => {
     dispatch(
       setWalletTokenBalancesAction(
         balances.reduce((acc, balance, index) => {
-          acc[tokenList[index]] = balance;
+          acc[client.tokens[index].name] = balance;
 
           return acc;
-        }, {} as Record<Token, number | null>)
+        }, {} as Record<TokenName, number | null>)
       )
     );
-  }, [connection, wallet, dispatch]);
+  }, [connection, wallet, dispatch, client]);
 
   useEffect(() => {
     loadWalletBalances();

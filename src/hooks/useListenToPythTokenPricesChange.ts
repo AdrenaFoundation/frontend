@@ -1,44 +1,41 @@
 import { setTokenPriceAction } from "@/actions/tokenPricesActions";
 import { useDispatch } from "@/store/store";
-import { Token } from "@/types";
 import {
   getPythProgramKeyForCluster,
   PriceData,
-  PriceStatus,
   Product,
   PythConnection,
 } from "@pythnetwork/client";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
+import useAdrenaClient from "./useAdrenaClient";
 import useConnection from "./useConnection";
 
 const useListenToPythTokenPricesChange = (): PythConnection | null => {
   const dispatch = useDispatch();
+  const client = useAdrenaClient();
+
   const connection = useConnection();
   const [pythConnection, setPythConnection] = useState<PythConnection | null>(
     null
   );
 
   useEffect(() => {
-    if (!connection) return;
+    if (!connection || !client) return;
 
-    const feedIds: Record<Token, PublicKey> = {
-      // Devnet addresses
-      ETH: new PublicKey("EdVCmQ9FSPcVe5YySXDPCRmc8aDQLKJ9xvYBMZPie1Vw"),
-      BTC: new PublicKey("HovQMDrbAgAYPCmHVSrezcSmkMtXSSUsLDFANExrZh2J"),
-      SOL: new PublicKey("J83w4HKfqxwcq3BEMMkPFSppX3gqekLyLJBexebFVkix"),
-      USDC: new PublicKey("5SSkXsEKQepHHAewytPVwdej4epN1nxgLVM84L4KXgy7"),
-    };
+    const feedIds: PublicKey[] = client.tokens.map(
+      (token) => client.getCustodyByMint(token.mint).oracle.oracleAccount
+    );
 
     setPythConnection(
       new PythConnection(
         connection,
         getPythProgramKeyForCluster("devnet"),
         "confirmed",
-        Object.values(feedIds)
+        feedIds
       )
     );
-  }, [connection]);
+  }, [connection, client]);
 
   useEffect(() => {
     if (!pythConnection || !dispatch) return;
@@ -49,14 +46,14 @@ const useListenToPythTokenPricesChange = (): PythConnection | null => {
       // console.log(`${product.symbol}: $${price.price} \xB1$${price.confidence} Status: ${PriceStatus[price.status]}`);
 
       // Symbol looks like SOL/USD, BTC/USD or like Crypto.ETH/USD etc.
-      let [mint] = product.symbol.split("/");
+      let [tokenName] = product.symbol.split("/");
 
       // Remove Crypto. prefix
-      if (/Crypto\./.test(mint)) {
-        mint = mint.slice("Crypto.".length);
+      if (/Crypto\./.test(tokenName)) {
+        tokenName = tokenName.slice("Crypto.".length);
       }
 
-      dispatch(setTokenPriceAction(mint, price.price ?? null));
+      dispatch(setTokenPriceAction(tokenName, price.price ?? null));
     });
 
     // Start listening for price change events.

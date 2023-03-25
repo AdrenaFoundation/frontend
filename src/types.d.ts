@@ -1,19 +1,17 @@
 import { AnchorTypes } from "./IdlTypeParser";
 import { IDL as PERPETUALS_IDL, Perpetuals } from "@/target/perpetuals";
 
-export type StableToken = "USDC";
-export type NonStableToken = "ETH" | "BTC" | "SOL";
-
-export type Token = StableToken | NonStableToken;
-
 export type WalletAdapterName = "phantom";
 
 export type CustodyExtended = Custody & {
   pubkey: PublicKey;
 };
 
-export interface Mint {
-  pubkey: PublicKey;
+// Alias to improve readability
+export type TokenName = string;
+
+export interface Token {
+  mint: PublicKey;
   name: string;
   decimals: number;
   isStable: boolean;
