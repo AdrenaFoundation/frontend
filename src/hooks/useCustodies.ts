@@ -18,7 +18,16 @@ const useCustodies = (): Record<Token, Custody> | null => {
     console.log("Load custodies");
 
     setCustodies(await client.loadCustodies(mainPool));
-  }, [client, mainPool]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!client,
+    // Avoid rewritting fetchCustodies for no reason
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    mainPool
+      ? mainPool.tokens.reduce((acc, t) => `${acc}/${t.custody.toBase58()}`, "")
+      : null,
+  ]);
 
   useEffect(() => {
     fetchCustodies();

@@ -3,14 +3,15 @@ import useAdrenaProgram from "./useAdrenaProgram";
 import { AdrenaClient } from "@/AdrenaClient";
 
 const useAdrenaClient = () => {
-  const adrenaProgram = useAdrenaProgram();
+  const { readOnly, readWrite } = useAdrenaProgram();
   const [client, setClient] = useState<AdrenaClient | null>(null);
 
   const createClient = useCallback(async () => {
-    if (!adrenaProgram) return;
+    if (!readOnly || !readWrite) return;
 
-    setClient(new AdrenaClient(adrenaProgram));
-  }, [adrenaProgram]);
+    setClient(new AdrenaClient(readWrite, readOnly));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!readOnly, !!readWrite]);
 
   useEffect(() => {
     createClient();

@@ -17,17 +17,26 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
   ])
 );
 
-const useAdrenaProgram = (): Program<Perpetuals> | null => {
+const useAdrenaProgram = (): {
+  readOnly: Program<Perpetuals> | null;
+  readWrite: Program<Perpetuals> | null;
+} => {
   const connection = useConnection();
   const wallet = useWallet();
-  const [program, setProgram] = useState<Program<Perpetuals> | null>(null);
+  const [program, setProgram] = useState<{
+    readOnly: Program<Perpetuals> | null;
+    readWrite: Program<Perpetuals> | null;
+  }>({
+    readOnly: null,
+    readWrite: null,
+  });
 
   const createProgram = useCallback(async () => {
     if (!connection) return;
 
-    const provider = new AnchorProvider(
+    const readOnlyProvider = new AnchorProvider(
       connection,
-      wallet ?? new NodeWallet(DEFAULT_PERPS_USER),
+      new NodeWallet(DEFAULT_PERPS_USER),
       {
         commitment: "processed",
         skipPreflight: true,
@@ -41,24 +50,38 @@ const useAdrenaProgram = (): Program<Perpetuals> | null => {
     // resulting in a popup asking user for validation. problematic when calling `views` instructions
     //
     // Solution:
-    // Override the behavior by adding an extra check into `signTransaction`
+    // Create a readonly provider
+    // Override the behavior of `signTransaction` and don't sign anything
     {
       // Save old function
-      (provider as any).wallet._signTransaction =
-        provider.wallet.signTransaction;
+      (readOnlyProvider as any).wallet._signTransaction =
+        readOnlyProvider.wallet.signTransaction;
 
-      (provider as any).wallet.signTransaction = (async (
+      (readOnlyProvider as any).wallet.signTransaction = (async (
         transaction: Transaction
       ) => {
-        if (!transaction.signatures.length) {
-          return transaction;
-        }
-
-        return (this as any)._signTransaction(transaction);
-      }).bind(provider);
+        return transaction;
+      }).bind(readOnlyProvider);
     }
 
-    setProgram(new Program(PERPETUALS_IDL, AdrenaClient.programId, provider));
+    setProgram({
+      readOnly: new Program(
+        PERPETUALS_IDL,
+        AdrenaClient.programId,
+        readOnlyProvider
+      ),
+
+      readWrite: wallet
+        ? new Program(
+            PERPETUALS_IDL,
+            AdrenaClient.programId,
+            new AnchorProvider(connection, wallet, {
+              commitment: "processed",
+              skipPreflight: true,
+            })
+          )
+        : null,
+    });
   }, [connection, wallet]);
 
   useEffect(() => {

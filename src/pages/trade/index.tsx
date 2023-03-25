@@ -1,7 +1,10 @@
 import { useRef, useState } from "react";
+import { PublicKey } from "@solana/web3.js";
+import { BN } from "@project-serum/anchor";
+
 import TabSelect from "@/components/TabSelect/TabSelect";
 import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPricesChange";
-import { Token } from "@/types";
+import { NonStableToken, Token } from "@/types";
 import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
 import TradingInputs from "@/components/trading/TradingInputs/TradingInputs";
 import Button from "@/components/Button/Button";
@@ -11,8 +14,11 @@ import { nonStableTokenList, stableTokenList, tokenList } from "@/constant";
 import TradingChart from "@/components/trading/TradingChart/TradingChart";
 import SwapDetails from "@/components/trading/SwapDetails/SwapDetails";
 import PositionDetails from "@/components/trading/PositionDetails/PositionDetails";
-import styles from "./index.module.scss";
 import useAdrenaClient from "@/hooks/useAdrenaClient";
+import useCustodies from "@/hooks/useCustodies";
+import { uiToNative } from "@/utils";
+
+import styles from "./index.module.scss";
 
 type Action = "long" | "short" | "swap";
 
@@ -21,6 +27,7 @@ export default function Trade() {
   useWatchWalletBalance();
 
   const client = useAdrenaClient();
+  const custodies = useCustodies();
   const [selectedAction, setSelectedAction] = useState<Action>("long");
   const walletAdapterRef = useRef<HTMLDivElement>(null);
   const wallet = useSelector((s) => s.wallet);
@@ -36,15 +43,42 @@ export default function Trade() {
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
 
-  const handleExecuteButton = () => {
+  const handleExecuteButton = async () => {
+    if (selectedAction === "swap") {
+      // Should never happens
+      return;
+    }
+
     if (!connected || !client) {
       walletAdapterRef.current?.click();
       return;
     }
 
-    // TODO
-    console.log("TODO: EXECUTE");
-    return;
+    if (
+      !custodies ||
+      !tokenA ||
+      !tokenB ||
+      !tokenPrices[tokenB] ||
+      !inputAValue ||
+      !inputBValue ||
+      !leverage
+    ) {
+      console.log("Missing data to open position");
+      return;
+    }
+
+    await client.openPositionWithSwap({
+      owner: new PublicKey(wallet.walletAddress),
+      tokenA,
+      tokenB: tokenB as NonStableToken,
+      custodyA: custodies[tokenA],
+      custodyB: custodies[tokenB],
+      amountA: uiToNative(inputAValue, 6),
+      price: uiToNative(tokenPrices[tokenB]!, 6),
+      collateral: uiToNative(inputBValue, 6).div(new BN(leverage)),
+      size: uiToNative(inputBValue, 6),
+      side: selectedAction,
+    });
   };
 
   const buttonTitle = (() => {
