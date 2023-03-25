@@ -3,7 +3,7 @@ import { Token } from "@/types";
 
 export type SetTokenBalancesAction = {
   type: "setTokenBalances";
-  payload: Record<Token, number | null> | null;
+  payload: Record<string, number | null> | null;
 };
 
 export type WalletBalancesAction = SetTokenBalancesAction;

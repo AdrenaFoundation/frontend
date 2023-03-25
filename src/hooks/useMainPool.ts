@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Pool } from "@/types";
 import useAdrenaClient from "./useAdrenaClient";
 
+// TODO: Reload periodically?
 const useMainPool = (): Pool | null => {
   const client = useAdrenaClient();
 
@@ -10,9 +11,7 @@ const useMainPool = (): Pool | null => {
   const fetchMainPool = useCallback(async () => {
     if (!client) return;
 
-    const pool = await client.loadMainPool();
-
-    setMainPool(pool);
+    setMainPool(client.mainPool);
   }, [client]);
 
   useEffect(() => {

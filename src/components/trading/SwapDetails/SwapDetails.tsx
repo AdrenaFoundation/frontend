@@ -1,35 +1,35 @@
-import useCustodies from "@/hooks/useCustodies";
+import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { useSelector } from "@/store/store";
-import { Token } from "@/types";
+import { Mint } from "@/types";
 import { formatPriceInfo, getCustodyLiquidity } from "@/utils";
 import styles from "./SwapDetails.module.scss";
 
 export default function SwapDetails({
-  tokenA,
-  tokenB,
+  mintA,
+  mintB,
 }: {
-  tokenA: Token;
-  tokenB: Token;
+  mintA: Mint;
+  mintB: Mint;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const custodies = useCustodies();
+  const client = useAdrenaClient();
 
   return (
     <div className={styles.swapDetails}>
       <div className={styles.swapDetails__row}>
-        <span>{tokenA} Price</span>
+        <span>{mintA.name} Price</span>
         <span>
-          {tokenA && tokenPrices[tokenA]
-            ? formatPriceInfo(tokenPrices[tokenA]!)
+          {tokenPrices[mintA.name]
+            ? formatPriceInfo(tokenPrices[mintA.name]!)
             : "-"}
         </span>
       </div>
 
       <div className={styles.swapDetails__row}>
-        <span>{tokenB} Price</span>
+        <span>{mintB.name} Price</span>
         <span>
-          {tokenB && tokenPrices[tokenB]
-            ? formatPriceInfo(tokenPrices[tokenB]!)
+          {tokenPrices[mintB.name]
+            ? formatPriceInfo(tokenPrices[mintB.name]!)
             : "-"}
         </span>
       </div>
@@ -37,9 +37,12 @@ export default function SwapDetails({
       <div className={styles.swapDetails__row}>
         <span>Available Liquidity</span>
         <span>
-          {custodies && tokenB && tokenPrices && tokenPrices[tokenB]
+          {client && tokenPrices && tokenPrices[mintB.name]
             ? formatPriceInfo(
-                getCustodyLiquidity(custodies[tokenB], tokenPrices[tokenB]!)
+                getCustodyLiquidity(
+                  client.getCustodyByMint(mintB.pubkey),
+                  tokenPrices[mintB.name]!
+                )
               )
             : "-"}
         </span>

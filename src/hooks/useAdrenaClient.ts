@@ -7,9 +7,9 @@ const useAdrenaClient = () => {
   const [client, setClient] = useState<AdrenaClient | null>(null);
 
   const createClient = useCallback(async () => {
-    if (!readOnly || !readWrite) return;
+    if (!readOnly) return;
 
-    setClient(new AdrenaClient(readWrite, readOnly));
+    setClient(await AdrenaClient.initialize(readWrite, readOnly));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!readOnly, !!readWrite]);
 

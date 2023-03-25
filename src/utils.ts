@@ -4,6 +4,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
+import { tokenMints } from "./constant";
 import { Custody } from "./types";
 
 export const DISPLAY_NUMBER_PRECISION = 6;
@@ -49,4 +50,12 @@ export function nativeToUi(nb: BN, decimals: number): number {
 
 export function uiToNative(nb: number, decimals: number): BN {
   return new BN(Math.floor(nb * 10 ** decimals));
+}
+
+export function getTokenNameByMint(mint: PublicKey): string {
+  return (
+    Object.entries(tokenMints).find(([_, pubkey]) =>
+      pubkey.equals(mint)
+    )?.[0] ?? "NoName"
+  );
 }

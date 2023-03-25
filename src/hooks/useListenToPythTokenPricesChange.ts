@@ -49,14 +49,14 @@ const useListenToPythTokenPricesChange = (): PythConnection | null => {
       // console.log(`${product.symbol}: $${price.price} \xB1$${price.confidence} Status: ${PriceStatus[price.status]}`);
 
       // Symbol looks like SOL/USD, BTC/USD or like Crypto.ETH/USD etc.
-      let [token] = product.symbol.split("/");
+      let [mint] = product.symbol.split("/");
 
       // Remove Crypto. prefix
-      if (/Crypto\./.test(token)) {
-        token = token.slice("Crypto.".length);
+      if (/Crypto\./.test(mint)) {
+        mint = mint.slice("Crypto.".length);
       }
 
-      dispatch(setTokenPriceAction(token as Token, price.price ?? null));
+      dispatch(setTokenPriceAction(mint, price.price ?? null));
     });
 
     // Start listening for price change events.

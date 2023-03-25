@@ -1,10 +1,11 @@
 import { Token } from "@/types";
 import { Dispatch } from "@reduxjs/toolkit";
+import { PublicKey } from "@solana/web3.js";
 
 export type SetTokenPriceAction = {
   type: "setTokenPrice";
   payload: {
-    token: Token;
+    mint: string;
     price: number | null;
   };
 };
@@ -12,12 +13,12 @@ export type SetTokenPriceAction = {
 export type TokenPricesAction = SetTokenPriceAction;
 
 export const setTokenPriceAction =
-  (token: Token, price: number | null) =>
+  (mint: string, price: number | null) =>
   async (dispatch: Dispatch<SetTokenPriceAction>) => {
     dispatch({
       type: "setTokenPrice",
       payload: {
-        token,
+        mint,
         price,
       },
     });

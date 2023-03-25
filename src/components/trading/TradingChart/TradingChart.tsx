@@ -1,4 +1,4 @@
-import { NonStableToken, Token } from "@/types";
+import { Mint, NonStableToken, Token } from "@/types";
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 
 import styles from "./TradingChart.module.scss";
@@ -7,16 +7,8 @@ let tvScriptLoadingPromise: Promise<unknown>;
 
 // We don't have access to proper type
 type Widget = any;
-type TradingView = any;
 
-const symbol = {
-  ETH: "PYTH:ETHUSD",
-  BTC: "PYTH:BTCUSD",
-  SOL: "PYTH:SOLUSD",
-  USDC: "PYTH:USDCUSD",
-} as Record<Token, string>;
-
-export default function TradingChart({ token }: { token: Token }) {
+export default function TradingChart({ mint }: { mint: Mint }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
 
@@ -29,7 +21,7 @@ export default function TradingChart({ token }: { token: Token }) {
             width: "100%",
             height: "100%",
             autosize: true,
-            symbol: symbol[token],
+            symbol: `PYTH:${mint.name}USD`,
             interval: "D",
             timezone: "UTC",
             theme: "dark",
@@ -83,9 +75,9 @@ export default function TradingChart({ token }: { token: Token }) {
   useEffect(() => {
     if (!widget) return;
 
-    widget.options.symbol = symbol[token];
+    widget.options.symbol = `PYTH:${mint.name}USD`;
     widget.reload();
-  }, [token, widget]);
+  }, [mint, widget]);
 
   return (
     <div className={styles.tradingChart}>

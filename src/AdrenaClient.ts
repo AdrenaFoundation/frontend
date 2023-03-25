@@ -1,17 +1,16 @@
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
-import { AnchorProvider, BN, Program, Wallet } from "@project-serum/anchor";
+import { AnchorProvider, BN, Program } from "@project-serum/anchor";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import PerpetualsJson from "@/target/perpetuals.json";
 import { Perpetuals } from "@/target/perpetuals";
 import {
   Custody,
+  CustodyExtended,
+  Mint,
   NewPositionPricesAndFee,
-  NonStableToken,
   Pool,
-  Token,
 } from "./types";
-import { tokenMints, tokenList } from "./constant";
-import { findATAAddressSync } from "./utils";
+import { findATAAddressSync, getTokenNameByMint } from "./utils";
 
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);
@@ -49,66 +48,90 @@ export class AdrenaClient {
     AdrenaClient.programId
   )[0];
 
-  protected adrenaProgram: Program<Perpetuals>;
-
-  // Adrena Program with readonly provider
-  protected readonlyAdrenaProgram: Program<Perpetuals>;
-
   constructor(
-    adrenaProgram: Program<Perpetuals>,
+    protected adrenaProgram: Program<Perpetuals> | null,
+
+    // Adrena Program with readonly provider
+    protected readonlyAdrenaProgram: Program<Perpetuals>,
+    public mainPool: Pool,
+    public custodies: CustodyExtended[],
+    public mints: Mint[]
+  ) {}
+
+  public static async initialize(
+    adrenaProgram: Program<Perpetuals> | null,
     readonlyAdrenaProgram: Program<Perpetuals>
-  ) {
-    this.adrenaProgram = adrenaProgram;
-    this.readonlyAdrenaProgram = readonlyAdrenaProgram;
+  ): Promise<AdrenaClient> {
+    const mainPool = await AdrenaClient.loadMainPool(readonlyAdrenaProgram);
+    const custodies = await AdrenaClient.loadCustodies(
+      readonlyAdrenaProgram,
+      mainPool
+    );
+
+    const mints: Mint[] = custodies.map((custody, i) => ({
+      pubkey: custody.mint,
+      name: getTokenNameByMint(custody.mint),
+      decimals: 6,
+      isStable: custody.isStable,
+
+      // loadCustodies gets the custodies on the same order as in the main pool
+      custody: mainPool.tokens[i].custody,
+    }));
+
+    return new AdrenaClient(
+      adrenaProgram,
+      readonlyAdrenaProgram,
+      mainPool,
+      custodies,
+      mints
+    );
+  }
+
+  /*
+   * LOADERS
+   */
+
+  public static loadMainPool(
+    adrenaProgram: Program<Perpetuals>
+  ): Promise<Pool> {
+    return adrenaProgram.account.pool.fetch(AdrenaClient.mainPoolAddress);
+  }
+
+  public static async loadCustodies(
+    adrenaProgram: Program<Perpetuals>,
+    mainPool: Pool
+  ): Promise<CustodyExtended[]> {
+    const result = await adrenaProgram.account.custody.fetchMultiple(
+      mainPool.tokens.map((token) => token.custody)
+    );
+
+    // No custodies should be null
+    if (result.find((c) => c === null)) {
+      throw new Error("Error loading custodies");
+    }
+
+    return (result as Custody[]).map((custody, i) => ({
+      ...custody,
+      pubkey: mainPool.tokens[i].custody,
+    }));
   }
 
   /*
    * INSTRUCTIONS
    */
 
-  public loadMainPool(): Promise<Pool> {
-    return this.adrenaProgram.account.pool.fetch(AdrenaClient.mainPoolAddress);
-  }
-
-  public async loadCustodies(mainPool: Pool): Promise<Record<Token, Custody>> {
-    const custodies = await this.adrenaProgram.account.custody.fetchMultiple(
-      mainPool.tokens.map((token) => token.custody)
-    );
-
-    if (custodies.find((custody) => custody === null)) {
-      // Error loading custodies
-      throw new Error("Error loading custodies");
-    }
-
-    return tokenList.reduce((acc, token) => {
-      const tokenMint = tokenMints[token];
-
-      const custody = (custodies as Custody[]).find(({ mint }) =>
-        mint.equals(tokenMint)
-      );
-
-      if (!custody) {
-        throw new Error("Missing custody");
-      }
-
-      acc[token] = custody;
-
-      return acc;
-    }, {} as Record<Token, Custody>);
-  }
-
   protected async buildAddLiquidityTx({
     owner,
-    token,
+    mint,
     amount,
-    mainPool,
   }: {
     owner: PublicKey;
-    token: Token;
+    mint: PublicKey;
     amount: BN;
-    mainPool: Pool;
   }) {
-    const mint = tokenMints[token];
+    if (!this.adrenaProgram) {
+      throw new Error("adrena program not ready");
+    }
 
     const custodyAddress = this.findCustodyAddress(mint);
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
@@ -116,7 +139,7 @@ export class AdrenaClient {
     // Load custodies in same order as declared in mainPool
     const untypedCustodies =
       await this.adrenaProgram.account.custody.fetchMultiple(
-        mainPool.tokens.map(({ custody }) => custody)
+        this.mainPool.tokens.map(({ custody }) => custody)
       );
 
     if (untypedCustodies.find((custodies) => !custodies)) {
@@ -127,7 +150,7 @@ export class AdrenaClient {
 
     const custodyOracleAccount =
       custodies[
-        mainPool.tokens.findIndex((t) => t.custody.equals(custodyAddress))
+        this.mainPool.tokens.findIndex((t) => t.custody.equals(custodyAddress))
       ].oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
@@ -151,13 +174,13 @@ export class AdrenaClient {
       })
       .remainingAccounts([
         // needs to provide all custodies and theirs oracles
-        ...mainPool.tokens.map(({ custody }) => ({
+        ...this.mainPool.tokens.map(({ custody }) => ({
           pubkey: custody,
           isSigner: false,
           isWritable: false,
         })),
 
-        ...mainPool.tokens.map((_, index) => ({
+        ...this.mainPool.tokens.map((_, index) => ({
           pubkey: custodies[index].oracle.oracleAccount,
           isSigner: false,
           isWritable: false,
@@ -167,37 +190,47 @@ export class AdrenaClient {
 
   public async addLiquidity(params: {
     owner: PublicKey;
-    token: Token;
+    mint: PublicKey;
     amount: BN;
-    mainPool: Pool;
   }): Promise<string> {
     return this.signAndExecuteTx(
       await (await this.buildAddLiquidityTx(params)).transaction()
     );
   }
 
+  public getCustodyByMint(mint: PublicKey): Custody {
+    const custody = this.custodies.find((custody) => custody.mint.equals(mint));
+
+    if (!custody)
+      throw new Error(`Cannot find custody for mint ${mint.toBase58()}`);
+
+    return custody;
+  }
+
   protected buildOpenPositionTx({
     owner,
-    token,
-    custody,
+    mint,
     price,
     collateral,
     size,
     side,
   }: {
     owner: PublicKey;
-    token: NonStableToken;
-    custody: Custody;
+    mint: PublicKey;
     price: BN;
     collateral: BN;
     size: BN;
     side: "long" | "short";
   }) {
-    const mint = tokenMints[token];
+    if (!this.adrenaProgram) {
+      throw new Error("adrena program not ready");
+    }
 
     const custodyAddress = this.findCustodyAddress(mint);
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
-    const custodyOracleAccount = custody.oracle.oracleAccount;
+
+    const custodyOracleAccount =
+      this.getCustodyByMint(mint).oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
 
@@ -234,26 +267,23 @@ export class AdrenaClient {
       });
   }
 
-  // swap tokenA for tokenB
+  // swap mintA for mintB
   public buildSwapTx({
     owner,
     amountIn,
     minAmountOut,
-    tokenA,
-    tokenB,
-    custodyA,
-    custodyB,
+    mintA,
+    mintB,
   }: {
     owner: PublicKey;
     amountIn: BN;
     minAmountOut: BN;
-    tokenA: Token;
-    tokenB: Token;
-    custodyA: Custody;
-    custodyB: Custody;
+    mintA: PublicKey;
+    mintB: PublicKey;
   }) {
-    const mintA = tokenMints[tokenA];
-    const mintB = tokenMints[tokenB];
+    if (!this.adrenaProgram) {
+      throw new Error("adrena program not ready");
+    }
 
     const fundingAccount = findATAAddressSync(owner, mintA);
     const receivingAccount = findATAAddressSync(owner, mintB);
@@ -261,12 +291,14 @@ export class AdrenaClient {
     const receivingCustody = this.findCustodyAddress(mintA);
     const receivingCustodyTokenAccount =
       this.findCustodyTokenAccountAddress(mintA);
-    const receivingCustodyOracleAccount = custodyA.oracle.oracleAccount;
+    const receivingCustodyOracleAccount =
+      this.getCustodyByMint(mintA).oracle.oracleAccount;
 
     const dispensingCustody = this.findCustodyAddress(mintB);
     const dispensingCustodyTokenAccount =
       this.findCustodyTokenAccountAddress(mintB);
-    const dispensingCustodyOracleAccount = custodyB.oracle.oracleAccount;
+    const dispensingCustodyOracleAccount =
+      this.getCustodyByMint(mintB).oracle.oracleAccount;
 
     return this.adrenaProgram.methods
       .swap({
@@ -290,23 +322,20 @@ export class AdrenaClient {
       });
   }
 
-  // swap tokenA for tokenB
+  // swap mintA for mintB
   public async swap(params: {
     owner: PublicKey;
     amountIn: BN;
     minAmountOut: BN;
-    tokenA: Token;
-    tokenB: Token;
-    custodyA: Custody;
-    custodyB: Custody;
+    mintA: PublicKey;
+    mintB: PublicKey;
   }): Promise<string> {
     return this.signAndExecuteTx(await this.buildSwapTx(params).transaction());
   }
 
   public async openPosition(params: {
     owner: PublicKey;
-    token: NonStableToken;
-    custody: Custody;
+    mint: PublicKey;
     price: BN;
     collateral: BN;
     size: BN;
@@ -322,10 +351,8 @@ export class AdrenaClient {
   // before opening position with tokenB
   public async openPositionWithSwap({
     owner,
-    tokenA,
-    tokenB,
-    custodyA,
-    custodyB,
+    mintA,
+    mintB,
     price,
     amountA,
     collateral,
@@ -333,22 +360,19 @@ export class AdrenaClient {
     side,
   }: {
     owner: PublicKey;
-    tokenA: Token;
-    tokenB: NonStableToken;
-    custodyA: Custody;
-    custodyB: Custody;
+    mintA: PublicKey;
+    mintB: PublicKey;
     price: BN;
     amountA: BN;
     collateral: BN;
     size: BN;
     side: "long" | "short";
   }) {
-    // If tokens are same, no need for swap
-    if (tokenA === tokenB) {
+    // If mint are same, no need for swap
+    if (mintA.equals(mintB)) {
       return this.openPosition({
         owner,
-        token: tokenB,
-        custody: custodyB,
+        mint: mintB,
         price,
         collateral,
         size,
@@ -363,15 +387,12 @@ export class AdrenaClient {
         // collateral take into account swap fees
         // TODO: should we add some slippage?
         minAmountOut: collateral,
-        tokenA,
-        tokenB,
-        custodyA,
-        custodyB,
+        mintA,
+        mintB,
       }).instruction(),
       this.buildOpenPositionTx({
         owner,
-        token: tokenB,
-        custody: custodyB,
+        mint: mintB,
         price,
         collateral,
         size,
@@ -390,14 +411,12 @@ export class AdrenaClient {
    */
 
   public async getEntryPriceAndFee({
-    custody,
-    custodyOracleAccount,
+    mint,
     collateral,
     size,
     side,
   }: {
-    custody: PublicKey;
-    custodyOracleAccount: PublicKey;
+    mint: Mint;
     collateral: BN;
     size: BN;
     side: "long" | "short";
@@ -405,6 +424,8 @@ export class AdrenaClient {
     if (!this.readonlyAdrenaProgram.views) {
       return null;
     }
+
+    const custody = this.getCustodyByMint(mint.pubkey);
 
     return this.readonlyAdrenaProgram.views.getEntryPriceAndFee(
       {
@@ -416,8 +437,8 @@ export class AdrenaClient {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
           pool: AdrenaClient.mainPoolAddress,
-          custody,
-          custodyOracleAccount,
+          custody: mint.custody,
+          custodyOracleAccount: custody.oracle.oracleAccount,
         },
       }
     );
@@ -428,6 +449,10 @@ export class AdrenaClient {
    */
 
   protected async signAndExecuteTx(transaction: Transaction): Promise<string> {
+    if (!this.adrenaProgram) {
+      throw new Error("adrena program not ready");
+    }
+
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
     const connection = this.adrenaProgram.provider.connection;
 

@@ -1,14 +1,8 @@
-import { Token } from "@/types";
 import { TokenPricesAction } from "../actions/tokenPricesActions";
 
-export type TokenPricesState = Record<Token, number | null>;
+export type TokenPricesState = Record<string, number | null>;
 
-const initialState: TokenPricesState = {
-  ETH: null,
-  BTC: null,
-  SOL: null,
-  USDC: null,
-};
+const initialState: TokenPricesState = {};
 
 export default function tokenPricesReducer(
   state = initialState,
@@ -18,7 +12,7 @@ export default function tokenPricesReducer(
     case "setTokenPrice":
       return {
         ...state,
-        [action.payload.token]: action.payload.price,
+        [action.payload.mint]: action.payload.price,
       };
     default:
       return state;

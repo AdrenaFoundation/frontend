@@ -4,18 +4,16 @@ import { BN } from "@project-serum/anchor";
 
 import TabSelect from "@/components/TabSelect/TabSelect";
 import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPricesChange";
-import { NonStableToken, Token } from "@/types";
+import { Mint } from "@/types";
 import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
 import TradingInputs from "@/components/trading/TradingInputs/TradingInputs";
 import Button from "@/components/Button/Button";
 import WalletAdapter from "@/components/WalletAdapter/WalletAdapter";
 import { useSelector } from "@/store/store";
-import { nonStableTokenList, stableTokenList, tokenList } from "@/constant";
 import TradingChart from "@/components/trading/TradingChart/TradingChart";
 import SwapDetails from "@/components/trading/SwapDetails/SwapDetails";
 import PositionDetails from "@/components/trading/PositionDetails/PositionDetails";
 import useAdrenaClient from "@/hooks/useAdrenaClient";
-import useCustodies from "@/hooks/useCustodies";
 import { uiToNative } from "@/utils";
 
 import styles from "./index.module.scss";
@@ -27,7 +25,6 @@ export default function Trade() {
   useWatchWalletBalance();
 
   const client = useAdrenaClient();
-  const custodies = useCustodies();
   const [selectedAction, setSelectedAction] = useState<Action>("long");
   const walletAdapterRef = useRef<HTMLDivElement>(null);
   const wallet = useSelector((s) => s.wallet);
@@ -37,28 +34,22 @@ export default function Trade() {
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
-  const [tokenA, setTokenA] = useState<Token | null>(null);
-  const [tokenB, setTokenB] = useState<Token | null>(null);
+  const [mintA, setMintA] = useState<Mint | null>(null);
+  const [mintB, setMintB] = useState<Mint | null>(null);
 
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
 
   const handleExecuteButton = async () => {
-    if (selectedAction === "swap") {
-      // Should never happens
-      return;
-    }
-
     if (!connected || !client) {
       walletAdapterRef.current?.click();
       return;
     }
 
     if (
-      !custodies ||
-      !tokenA ||
-      !tokenB ||
-      !tokenPrices[tokenB] ||
+      !mintA ||
+      !mintB ||
+      !tokenPrices[mintB.pubkey.toBase58()] ||
       !inputAValue ||
       !inputBValue ||
       !leverage
@@ -67,14 +58,29 @@ export default function Trade() {
       return;
     }
 
-    await client.openPositionWithSwap({
+    if (selectedAction === "swap") {
+      return client.swap({
+        owner: new PublicKey(wallet.walletAddress),
+        amountIn: uiToNative(inputAValue, 6),
+
+        // TODO
+        // How to handle slippage?
+        // the inputBValue should take fees into account, for now it doesn't.
+        // use high slippage here so we can do swaps
+        minAmountOut: uiToNative(inputBValue, 6)
+          .mul(new BN(9_000))
+          .div(new BN(10_000)),
+        mintA: mintA.pubkey,
+        mintB: mintB.pubkey,
+      });
+    }
+
+    return client.openPositionWithSwap({
       owner: new PublicKey(wallet.walletAddress),
-      tokenA,
-      tokenB: tokenB as NonStableToken,
-      custodyA: custodies[tokenA],
-      custodyB: custodies[tokenB],
+      mintA: mintA.pubkey,
+      mintB: mintA.pubkey,
       amountA: uiToNative(inputAValue, 6),
-      price: uiToNative(tokenPrices[tokenB]!, 6),
+      price: uiToNative(tokenPrices[mintB.pubkey.toBase58()]!, 6),
       collateral: uiToNative(inputBValue, 6).div(new BN(leverage)),
       size: uiToNative(inputBValue, 6),
       side: selectedAction,
@@ -92,11 +98,11 @@ export default function Trade() {
     }
 
     // Loading, should happens quickly
-    if (!tokenA) {
+    if (!mintA) {
       return "...";
     }
 
-    const walletTokenABalance = walletTokenBalances?.[tokenA];
+    const walletTokenABalance = walletTokenBalances?.[mintA.pubkey.toBase58()];
 
     // Loading, should happens quickly
     if (typeof walletTokenABalance === "undefined") {
@@ -105,7 +111,7 @@ export default function Trade() {
 
     // If user wallet balance doesn't have enough tokens, tell user
     if (!walletTokenABalance || inputAValue > walletTokenABalance) {
-      return `Insufficient ${tokenA} balance`;
+      return `Insufficient ${mintA.name} balance`;
     }
 
     return "Execute";
@@ -115,18 +121,14 @@ export default function Trade() {
     <div className={styles.trade}>
       <div className={styles.trade__tradingview}>
         {/* Display trading chart for appropriate token */}
-        {tokenA && tokenB ? (
+        {mintA && mintB ? (
           <>
             {selectedAction === "short" || selectedAction === "long" ? (
-              <TradingChart token={tokenB} />
+              <TradingChart mint={mintB} />
             ) : null}
 
             {selectedAction === "swap" ? (
-              <TradingChart
-                token={
-                  stableTokenList.includes(tokenA as any) ? tokenB : tokenA
-                }
-              />
+              <TradingChart mint={mintA.isStable ? mintB : mintA} />
             ) : null}
           </>
         ) : null}
@@ -145,19 +147,23 @@ export default function Trade() {
           }}
         />
 
-        <TradingInputs
-          className={styles.trade__panel_trading_inputs}
-          actionType={selectedAction}
-          allowedTokenA={tokenList}
-          allowedTokenB={
-            selectedAction === "swap" ? tokenList : nonStableTokenList
-          }
-          onChangeInputA={setInputAValue}
-          onChangeInputB={setInputBValue}
-          onChangeTokenA={setTokenA}
-          onChangeTokenB={setTokenB}
-          onChangeLeverage={setLeverage}
-        />
+        {client && client.mints.length && (
+          <TradingInputs
+            className={styles.trade__panel_trading_inputs}
+            actionType={selectedAction}
+            allowedMintA={client.mints}
+            allowedMintB={
+              selectedAction === "swap"
+                ? client.mints
+                : client.mints.filter((m) => !m.isStable)
+            }
+            onChangeInputA={setInputAValue}
+            onChangeInputB={setInputBValue}
+            onChangeMintA={setMintA}
+            onChangeMintB={setMintB}
+            onChangeLeverage={setLeverage}
+          />
+        )}
 
         {/* Button to execute action */}
         <>
@@ -181,34 +187,34 @@ export default function Trade() {
               <span>{selectedAction}</span>
 
               {selectedAction === "short" || selectedAction === "long" ? (
-                <span>{tokenB ?? "-"}</span>
+                <span>{mintB?.name ?? "-"}</span>
               ) : null}
             </div>
 
-            {tokenB && tokenA ? (
+            {mintA && mintB ? (
               <>
                 {selectedAction === "short" || selectedAction === "long" ? (
                   <PositionDetails
-                    tokenB={tokenB}
+                    mintB={mintB}
                     entryPrice={
-                      tokenB &&
+                      mintB &&
                       inputBValue &&
                       tokenPrices &&
-                      tokenPrices[tokenB]
-                        ? tokenPrices[tokenB]
+                      tokenPrices[mintB.name]
+                        ? tokenPrices[mintB.name]
                         : null
                     }
                     exitPrice={
-                      tokenB &&
+                      mintB &&
                       inputBValue &&
                       tokenPrices &&
-                      tokenPrices[tokenB]
-                        ? tokenPrices[tokenB]
+                      tokenPrices[mintB.name]
+                        ? tokenPrices[mintB.name]
                         : null
                     }
                   />
                 ) : (
-                  <SwapDetails tokenA={tokenA} tokenB={tokenB} />
+                  <SwapDetails mintA={mintA} mintB={mintB} />
                 )}
               </>
             ) : null}

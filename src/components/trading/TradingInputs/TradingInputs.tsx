@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { BN } from "@project-serum/anchor";
 import useGetPositionEntryPriceAndFee from "@/hooks/useGetPositionEntryPriceAndFee";
 import { TokenPricesState } from "@/reducers/tokenPricesReducer";
 import { useSelector } from "@/store/store";
-import { Token } from "@/types";
+import { Mint } from "@/types";
 import {
   DISPLAY_NUMBER_PRECISION,
   formatNumber,
@@ -16,9 +17,8 @@ import InputNumber from "../../InputNumber/InputNumber";
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
 import Select from "../../Select/Select";
 import styles from "./TradingInputs.module.scss";
-import { BN } from "@project-serum/anchor";
 
-function recalculateInputs<T extends Token, U extends Token>({
+function recalculateInputs({
   mainInput,
   secondaryInput,
   tokenPrices,
@@ -26,13 +26,13 @@ function recalculateInputs<T extends Token, U extends Token>({
 }: {
   mainInput: {
     value: number | null;
-    token: T;
+    mint: Mint | null;
     setPrice: (p: number | null) => void;
     setInput: (v: number | null) => void;
   };
   secondaryInput: {
     value: number | null;
-    token: U;
+    mint: Mint | null;
     setPrice: (p: number | null) => void;
     setInput: (v: number | null) => void;
   };
@@ -42,14 +42,19 @@ function recalculateInputs<T extends Token, U extends Token>({
   const nb = Number(mainInput.value);
 
   // Price cannot be calculated if input is empty or not a number
-  if (mainInput.value === null || isNaN(nb)) {
+  if (
+    mainInput.value === null ||
+    isNaN(nb) ||
+    !mainInput.mint ||
+    !secondaryInput.mint
+  ) {
     mainInput.setPrice(null);
     secondaryInput.setPrice(null);
     secondaryInput.setInput(null);
     return;
   }
 
-  const mainTokenPrice = tokenPrices[mainInput.token];
+  const mainTokenPrice = tokenPrices[mainInput.mint.name];
 
   // No price available yet
   if (mainTokenPrice === null) {
@@ -63,7 +68,7 @@ function recalculateInputs<T extends Token, U extends Token>({
 
   mainInput.setPrice(mainPrice);
 
-  const secondaryTokenPrice = tokenPrices[secondaryInput.token];
+  const secondaryTokenPrice = tokenPrices[secondaryInput.mint.name];
 
   if (secondaryTokenPrice === null) {
     secondaryInput.setPrice(null);
@@ -80,25 +85,25 @@ function recalculateInputs<T extends Token, U extends Token>({
   );
 }
 
-export default function TradingInputs<T extends Token, U extends Token>({
+export default function TradingInputs({
   actionType,
   className,
-  allowedTokenA,
-  allowedTokenB,
+  allowedMintA,
+  allowedMintB,
   onChangeInputA,
   onChangeInputB,
-  onChangeTokenA,
-  onChangeTokenB,
+  onChangeMintA,
+  onChangeMintB,
   onChangeLeverage,
 }: {
   actionType: "short" | "long" | "swap";
   className?: string;
-  allowedTokenA: T[];
-  allowedTokenB: U[];
+  allowedMintA: Mint[];
+  allowedMintB: Mint[];
   onChangeInputA: (v: number | null) => void;
   onChangeInputB: (v: number | null) => void;
-  onChangeTokenA: (t: T) => void;
-  onChangeTokenB: (t: U) => void;
+  onChangeMintA: (t: Mint | null) => void;
+  onChangeMintB: (t: Mint | null) => void;
   onChangeLeverage: (v: number) => void;
 }) {
   const wallet = useSelector((s) => s.wallet);
@@ -119,16 +124,23 @@ export default function TradingInputs<T extends Token, U extends Token>({
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
 
-  // Pick first token as default value
-  const [tokenA, setTokenA] = useState<T>(allowedTokenA[0]);
-  const [tokenB, setTokenB] = useState<U>(allowedTokenB[0]);
+  // Pick first mint as default value
+  const [mintA, setMintA] = useState<Mint | null>(
+    allowedMintA.length ? allowedMintA[0] : null
+  );
+  const [mintB, setMintB] = useState<Mint | null>(
+    allowedMintB.length ? allowedMintB[0] : null
+  );
 
   const [leverage, setLeverage] = useState<number>(1);
 
   const entryPriceAndFee = useGetPositionEntryPriceAndFee(
-    (actionType === "short" || actionType === "long") && inputB && inputB > 0
+    (actionType === "short" || actionType === "long") &&
+      mintB &&
+      inputB &&
+      inputB > 0
       ? {
-          token: tokenB,
+          mint: mintB,
           collateral: uiToNative(inputB, 6).div(new BN(leverage)),
           size: uiToNative(inputB, 6),
           side: actionType,
@@ -149,12 +161,12 @@ export default function TradingInputs<T extends Token, U extends Token>({
     }, [inputB, onChangeInputB]);
 
     useEffect(() => {
-      onChangeTokenA(tokenA);
-    }, [onChangeTokenA, tokenA]);
+      onChangeMintA(mintA);
+    }, [onChangeMintA, mintA]);
 
     useEffect(() => {
-      onChangeTokenB(tokenB);
-    }, [onChangeTokenB, tokenB]);
+      onChangeMintB(mintB);
+    }, [onChangeMintB, mintB]);
 
     useEffect(() => {
       onChangeLeverage(leverage);
@@ -163,24 +175,26 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
   // Switch inputs values and tokens
   const switchAB = () => {
+    if (!mintA || !mintB) return;
+
     setInputA(inputB);
     setInputB(inputA);
 
     // Because we switch sides, the manual user input is the opposite one
     setManualUserInput(manualUserInput === "A" ? "B" : "A");
 
-    // if tokenB is not allowed, use default value
-    setTokenA(
-      allowedTokenA.includes(tokenB as any)
-        ? (tokenB as unknown as T)
-        : allowedTokenA[0]
+    // if mintB is not allowed, use default value
+    setMintA(
+      allowedMintA.find((mint) => mint.pubkey.equals(mintB.pubkey))
+        ? mintB
+        : allowedMintA[0]
     );
 
-    // if tokenA is not allowed, use default value
-    setTokenB(
-      allowedTokenB.includes(tokenA as any)
-        ? (tokenA as unknown as U)
-        : allowedTokenB[0]
+    // if mintA is not allowed, use default value
+    setMintB(
+      allowedMintB.find((mint) => mint.pubkey.equals(mintA.pubkey))
+        ? mintA
+        : allowedMintB[0]
     );
   };
 
@@ -188,14 +202,14 @@ export default function TradingInputs<T extends Token, U extends Token>({
   useEffect(() => {
     const inputAInfos = {
       value: inputA,
-      token: tokenA,
+      mint: mintA,
       setPrice: setPriceA,
       setInput: setInputA,
     };
 
     const inputBInfos = {
       value: inputB,
-      token: tokenB,
+      mint: mintB,
       setPrice: setPriceB,
       setInput: setInputB,
     };
@@ -225,13 +239,11 @@ export default function TradingInputs<T extends Token, U extends Token>({
     inputB,
     manualUserInput,
     leverage,
-    tokenA,
-    tokenB,
     // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    tokenPrices[tokenA],
+    mintA && tokenPrices[mintA.name],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    tokenPrices[tokenB],
+    mintB && tokenPrices[mintB.name],
   ]);
 
   const handleInputAChange = (v: number | null) => {
@@ -256,9 +268,9 @@ export default function TradingInputs<T extends Token, U extends Token>({
               : null}
           </div>
           <div>
-            {connected
+            {connected && mintA
               ? `Balance: ${(
-                  walletTokenBalances?.[tokenA] ?? "0"
+                  walletTokenBalances?.[mintA.pubkey.toBase58()] ?? "0"
                 ).toLocaleString()}`
               : null}
           </div>
@@ -276,9 +288,9 @@ export default function TradingInputs<T extends Token, U extends Token>({
               title="MAX"
               className={styles.tradingInputs__container_infos_max}
               onClick={() => {
-                if (!walletTokenBalances) return;
+                if (!walletTokenBalances || !mintA) return;
 
-                const amount = walletTokenBalances[tokenA];
+                const amount = walletTokenBalances[mintA.pubkey.toBase58()];
 
                 handleInputAChange(amount);
               }}
@@ -287,9 +299,11 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
           <Select
             className={styles.tradingInputs__container_infos_select}
-            selected={tokenA}
-            options={allowedTokenA}
-            onSelect={(token) => setTokenA(token)}
+            selected={mintA?.name ?? ""}
+            options={allowedMintA.map((v) => v.name)}
+            onSelect={(name) =>
+              setMintA(allowedMintA.find((mint) => mint.name === name)!)
+            }
           />
         </div>
       </div>
@@ -328,9 +342,9 @@ export default function TradingInputs<T extends Token, U extends Token>({
             <div>Leverage{`: ${leverage.toFixed(2)}x`}</div>
           ) : (
             <>
-              {connected
+              {connected && mintA
                 ? `Balance: ${(
-                    walletTokenBalances?.[tokenA] ?? "0"
+                    walletTokenBalances?.[mintA.pubkey.toBase58()] ?? "0"
                   ).toLocaleString()}`
                 : null}
             </>
@@ -346,9 +360,11 @@ export default function TradingInputs<T extends Token, U extends Token>({
 
           <Select
             className={styles.tradingInputs__container_infos_select}
-            selected={tokenB}
-            options={allowedTokenB}
-            onSelect={(token) => setTokenB(token)}
+            selected={mintB?.name ?? ""}
+            options={allowedMintB.map((v) => v.name)}
+            onSelect={(name) =>
+              setMintB(allowedMintB.find((mint) => mint.name === name)!)
+            }
           />
         </div>
       </div>

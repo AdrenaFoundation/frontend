@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { BN } from "@project-serum/anchor";
-import { NewPositionPricesAndFee, Token } from "@/types";
-import { tokenMints } from "@/constant";
-import useCustodies from "./useCustodies";
+import { Mint, NewPositionPricesAndFee } from "@/types";
 import useAdrenaClient from "./useAdrenaClient";
+import { PublicKey } from "@solana/web3.js";
 
 // TRICKS:
 //
@@ -18,22 +17,19 @@ let waitingList: boolean = false;
 
 const useGetPositionEntryPriceAndFee = (
   params: {
-    token: Token;
+    mint: Mint;
     collateral: BN;
     size: BN;
     side: "long" | "short";
   } | null
 ): NewPositionPricesAndFee | null => {
   const client = useAdrenaClient();
-  const custodies = useCustodies();
 
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);
 
   const fetchPositionEntryPricesAndFee = useCallback(async () => {
-    if (!client || !params || !custodies) return;
-
-    const custodyAddress = client.findCustodyAddress(tokenMints[params.token]);
+    if (!client || !params) return;
 
     // Data is already loading
     if (pendingRequest) {
@@ -43,13 +39,7 @@ const useGetPositionEntryPriceAndFee = (
 
     pendingRequest = true;
 
-    const entryPriceAndFee = await client.getEntryPriceAndFee({
-      custody: custodyAddress,
-      custodyOracleAccount: custodies[params.token].oracle.oracleAccount,
-      collateral: params.collateral,
-      size: params.size,
-      side: params.side,
-    });
+    const entryPriceAndFee = await client.getEntryPriceAndFee(params);
 
     pendingRequest = false;
 
@@ -64,15 +54,13 @@ const useGetPositionEntryPriceAndFee = (
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    !!custodies,
     // React detect changes when there are no change
     // Compute a string easy for react to compare
     // eslint-disable-next-line react-hooks/exhaustive-deps
     params
-      ? `${params.collateral.toString()}/${params.size.toString()}/${
-          params.token
-        }/${params.side}`
+      ? `${params.collateral.toString()}/${params.size.toString()}/${params.mint.pubkey.toBase58()}/${
+          params.side
+        }`
       : null,
   ]);
 

@@ -1,21 +1,21 @@
-import useCustodies from "@/hooks/useCustodies";
+import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { useSelector } from "@/store/store";
-import { Token } from "@/types";
+import { Mint } from "@/types";
 import { formatNumber, formatPriceInfo, getCustodyLiquidity } from "@/utils";
 import { BN } from "@project-serum/anchor";
 import styles from "./PositionDetails.module.scss";
 
 export default function PositionDetails({
-  tokenB,
+  mintB,
   entryPrice,
   exitPrice,
 }: {
-  tokenB: Token;
+  mintB: Mint;
   entryPrice: number | null;
   exitPrice: number | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const custodies = useCustodies();
+  const client = useAdrenaClient();
 
   return (
     <div className={styles.positionDetails}>
@@ -32,10 +32,11 @@ export default function PositionDetails({
       <div className={styles.positionDetails__row}>
         <span>Borrow Fee</span>
         <span>
-          {custodies && tokenB
+          {client && mintB
             ? `${formatNumber(
-                custodies[tokenB].borrowRateState.currentRate
-                  .mul(new BN(100))
+                client
+                  .getCustodyByMint(mintB.pubkey)
+                  .borrowRateState.currentRate.mul(new BN(100))
                   .toNumber(),
                 4
               )}% / hr`
@@ -46,9 +47,12 @@ export default function PositionDetails({
       <div className={styles.positionDetails__row}>
         <span>Available Liquidity</span>
         <span>
-          {custodies && tokenB && tokenPrices && tokenPrices[tokenB]
+          {client && mintB && tokenPrices && tokenPrices[mintB.name]
             ? formatPriceInfo(
-                getCustodyLiquidity(custodies[tokenB], tokenPrices[tokenB]!)
+                getCustodyLiquidity(
+                  client.getCustodyByMint(mintB.pubkey),
+                  tokenPrices[mintB.name]!
+                )
               )
             : "-"}
         </span>

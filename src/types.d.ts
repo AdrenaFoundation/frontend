@@ -8,6 +8,18 @@ export type Token = StableToken | NonStableToken;
 
 export type WalletAdapterName = "phantom";
 
+export type CustodyExtended = Custody & {
+  pubkey: PublicKey;
+};
+
+export interface Mint {
+  pubkey: PublicKey;
+  name: string;
+  decimals: number;
+  isStable: boolean;
+  custody: PublicKey;
+}
+
 export type PerpetualsTypes = AnchorTypes<
   Perpetuals,
   {

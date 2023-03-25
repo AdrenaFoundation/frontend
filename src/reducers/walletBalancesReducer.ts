@@ -1,7 +1,6 @@
-import { Token } from "@/types";
 import { WalletBalancesAction } from "../actions/walletBalancesActions";
 
-export type WalletBalancesState = Record<Token, number | null> | null;
+export type WalletBalancesState = Record<string, number | null> | null;
 
 const initialState: WalletBalancesState = null;
 
