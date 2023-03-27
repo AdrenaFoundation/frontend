@@ -10,11 +10,15 @@ function formatPercentage(nb: number | null): string {
   return `${Number(nb / 100).toFixed(2)}%`;
 }
 
-export default function ALPIndexComposition() {
+export default function ALPIndexComposition({
+  className,
+}: {
+  className?: string;
+}) {
   const alpIndexComposition = useALPIndexComposition();
 
   return (
-    <div className={styles.alpIndexComposition}>
+    <div className={`${styles.alpIndexComposition} ${className ?? ""}`}>
       <div className={styles.alpIndexComposition__title}>
         ALP Index Composition
       </div>

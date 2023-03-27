@@ -18,7 +18,7 @@ export default function Trade() {
 
   return (
     <div className={styles.dashboard}>
-      <ALPIndexComposition />
+      <ALPIndexComposition className={styles.dashboard__composition} />
     </div>
   );
 }

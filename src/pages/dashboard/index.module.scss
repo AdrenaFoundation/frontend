@@ -7,6 +7,11 @@
   flex-wrap: wrap;
   background-color: $mainColor;
   padding: 1em;
-  justify-content: center;
   overflow: auto;
+  flex-direction: column;
+
+  &__composition {
+    display: flex;
+    flex-direction: column;
+  }
 }
