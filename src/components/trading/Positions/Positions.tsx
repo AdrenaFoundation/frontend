@@ -8,6 +8,9 @@ export default function Positions({ className }: { className?: string }) {
   const positions = usePositions();
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
+  // TODO
+  // Change compeltely how the positions are displayed if the screen is small
+
   return (
     <div className={`${styles.positions} ${className ?? ""}`}>
       {/* Header */}

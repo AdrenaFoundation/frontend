@@ -64,7 +64,7 @@
       &_input {
         background-color: $secondaryColor;
         border: 0;
-        font-size: $sizeBig;
+        font-size: $fontSizeBig;
         color: whitesmoke;
         outline: none;
         width: 100%;
@@ -72,7 +72,7 @@
       }
 
       &_select {
-        font-size: $sizeBig;
+        font-size: $fontSizeBig;
       }
 
       &_max {
