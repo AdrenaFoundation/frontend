@@ -10,16 +10,27 @@
   justify-content: center;
   overflow: auto;
 
-  &__tradingview {
-    height: 40em;
-    flex-shrink: 1;
-    flex-grow: 1;
-    background-color: $mainColor;
+  &__view {
     display: flex;
-    padding-left: 1em;
-    padding-right: 1em;
-    min-width: 40em;
+    flex-direction: column;
+    width: 60%;
     max-width: 60em;
+
+    &_trading {
+      height: 40em;
+      flex-shrink: 1;
+      flex-grow: 1;
+      background-color: $mainColor;
+      display: flex;
+      padding-left: 1em;
+      padding-right: 1em;
+      min-width: 40em;
+      max-width: 60em;
+      max-height: 30em;
+    }
+
+    &_positions {
+    }
   }
 
   &__panel {

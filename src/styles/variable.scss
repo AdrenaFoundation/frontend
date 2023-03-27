@@ -4,6 +4,9 @@ $secondaryColor: #232743;
 $thirdColor: #2d3ed5;
 $fourthColor: #16182e;
 
+$green: #0ecc83;
+$red: #fa3c58;
+
 // Borders
 $borderRadius: 0.4em;
 $borderColor: hsla(0, 0%, 100%, 0.1607843137254902);
@@ -15,5 +18,6 @@ $hoverOpacity: 0.8;
 $sizeBig: 1.5em;
 
 // Fonts
-$fontBold: app-font;
-$fontBolder: app-font-bold;
+$fontRegular: app-font;
+$fontThin: app-font-thin;
+$fontBold: app-font-bold;

@@ -11,26 +11,26 @@ body,
   height: 100%;
   display: flex;
   flex-direction: column;
-  font-family: app-fon-thin;
+  font-family: app-font;
 }
 
 * {
-  font-family: app-font-thin;
+  font-family: app-font;
 }
 
 @font-face {
   font-family: app-font;
-  src: url("/fonts/Roboto-Regular.ttf");
+  src: url("/fonts/Louis George Cafe.ttf");
 }
 
 @font-face {
   font-family: app-font-thin;
-  src: url("/fonts/Roboto-Thin.ttf");
+  src: url("/fonts/Louis George Cafe Light.ttf");
 }
 
 @font-face {
   font-family: app-font-bold;
-  src: url("/fonts/Roboto-Bold.ttf");
+  src: url("/fonts/Louis George Cafe Bold.ttf");
 }
 
 // Hide arrows on input number

@@ -1,0 +1,12 @@
+@import "@/styles/variable.scss";
+
+.dashboard {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: $mainColor;
+  padding: 1em;
+  justify-content: center;
+  overflow: auto;
+}

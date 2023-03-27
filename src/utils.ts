@@ -4,7 +4,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { TOKEN_NAMES_LIBRARY } from "./constant";
+import { TOKEN_INFO_LIBRARY } from "./constant";
 import { Custody } from "./types";
 
 export const DISPLAY_NUMBER_PRECISION = 6;
@@ -53,9 +53,5 @@ export function uiToNative(nb: number, decimals: number): BN {
 }
 
 export function getTokenNameByMint(mint: PublicKey): string {
-  return (
-    Object.entries(TOKEN_NAMES_LIBRARY).find(([_, pubkey]) =>
-      pubkey.equals(mint)
-    )?.[0] ?? "Unknown"
-  );
+  return TOKEN_INFO_LIBRARY[mint.toBase58()]?.name ?? "Unknown";
 }

@@ -1,0 +1,84 @@
+@import "@/styles/variable.scss";
+
+.alpIndexComposition {
+  color: white;
+  background-color: $fourthColor;
+  border: 1px solid $borderColor;
+
+  &__title {
+    height: 3em;
+    border-bottom: 1px solid $borderColor;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-bottom: 1em;
+    font-family: $fontBold;
+  }
+
+  &__header {
+    height: 3em;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding-left: 1em;
+    padding-right: 1em;
+
+    div {
+      width: 10em;
+      flex-shrink: 0;
+      flex-grow: 1;
+      text-transform: uppercase;
+      display: flex;
+    }
+
+    div:last-child {
+      justify-content: flex-end;
+    }
+  }
+
+  &__tokens {
+    display: flex;
+    flex-direction: column;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  &__token {
+    display: flex;
+    height: 4em;
+    align-items: center;
+
+    &_name {
+      img {
+        width: 2em;
+        height: 2em;
+      }
+
+      span {
+        margin-left: 0.5em;
+      }
+    }
+
+    &_weights {
+      span:first-child {
+        margin-right: 0.3em;
+      }
+
+      span:last-child {
+        margin-left: 0.3em;
+      }
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      width: 10em;
+      flex-shrink: 0;
+      flex-grow: 1;
+      text-transform: uppercase;
+    }
+
+    div:last-child {
+      justify-content: flex-end;
+    }
+  }
+}

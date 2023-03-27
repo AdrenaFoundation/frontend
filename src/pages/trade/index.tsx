@@ -17,6 +17,8 @@ import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { uiToNative } from "@/utils";
 
 import styles from "./index.module.scss";
+import Positions from "@/components/trading/Positions/Positions";
+import usePositions from "@/hooks/usePositions";
 
 type Action = "long" | "short" | "swap";
 
@@ -116,19 +118,23 @@ export default function Trade() {
 
   return (
     <div className={styles.trade}>
-      <div className={styles.trade__tradingview}>
-        {/* Display trading chart for appropriate token */}
-        {tokenA && tokenB ? (
-          <>
-            {selectedAction === "short" || selectedAction === "long" ? (
-              <TradingChart token={tokenB} />
-            ) : null}
+      <div className={styles.trade__view}>
+        <div className={styles.trade__view_trading}>
+          {/* Display trading chart for appropriate token */}
+          {tokenA && tokenB ? (
+            <>
+              {selectedAction === "short" || selectedAction === "long" ? (
+                <TradingChart token={tokenB} />
+              ) : null}
 
-            {selectedAction === "swap" ? (
-              <TradingChart token={tokenA.isStable ? tokenB : tokenA} />
-            ) : null}
-          </>
-        ) : null}
+              {selectedAction === "swap" ? (
+                <TradingChart token={tokenA.isStable ? tokenB : tokenA} />
+              ) : null}
+            </>
+          ) : null}
+        </div>
+
+        <Positions className={styles.trade__view_positions} />
       </div>
 
       <div className={styles.trade__panel}>

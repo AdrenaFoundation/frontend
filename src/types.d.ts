@@ -5,6 +5,19 @@ export type WalletAdapterName = "phantom";
 
 export type CustodyExtended = Custody & {
   pubkey: PublicKey;
+  targetRatio: BN;
+  maxRatio: BN;
+  minRatio: BN;
+};
+
+export type PositionExtended = Exclude<Position, "side"> & {
+  pubkey: PublicKey;
+  leverage: number;
+
+  // Should never be null, but in case, we should display "unknown" token and
+  // still display the posiiton so it can be closed by the user
+  token: Token | null;
+  side: "long" | "short";
 };
 
 // Alias to improve readability
@@ -16,6 +29,7 @@ export interface Token {
   decimals: number;
   isStable: boolean;
   custody: PublicKey;
+  image?: string;
 }
 
 export type PerpetualsTypes = AnchorTypes<

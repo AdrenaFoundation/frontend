@@ -9,8 +9,11 @@ import {
   Token,
   NewPositionPricesAndFee,
   Pool,
+  Position,
+  PositionExtended,
 } from "./types";
-import { findATAAddressSync, getTokenNameByMint } from "./utils";
+import { findATAAddressSync, getTokenNameByMint, nativeToUi } from "./utils";
+import { TOKEN_INFO_LIBRARY } from "./constant";
 
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);
@@ -71,15 +74,24 @@ export class AdrenaClient {
       mainPool
     );
 
-    const tokens: Token[] = custodies.map((custody, i) => ({
-      mint: custody.mint,
-      name: getTokenNameByMint(custody.mint),
-      decimals: 6,
-      isStable: custody.isStable,
+    const tokens: Token[] = custodies.map((custody, i) => {
+      const infos:
+        | {
+            name: string;
+            image: string;
+          }
+        | undefined = TOKEN_INFO_LIBRARY[custody.mint.toBase58()];
 
-      // loadCustodies gets the custodies on the same order as in the main pool
-      custody: mainPool.tokens[i].custody,
-    }));
+      return {
+        mint: custody.mint,
+        name: infos?.name ?? "Unknown",
+        decimals: 6,
+        isStable: custody.isStable,
+        image: infos?.image,
+        // loadCustodies gets the custodies on the same order as in the main pool
+        custody: mainPool.tokens[i].custody,
+      };
+    });
 
     return new AdrenaClient(
       adrenaProgram,
@@ -113,10 +125,17 @@ export class AdrenaClient {
       throw new Error("Error loading custodies");
     }
 
-    return (result as Custody[]).map((custody, i) => ({
-      ...custody,
-      pubkey: mainPool.tokens[i].custody,
-    }));
+    return (result as Custody[]).map((custody, i) => {
+      const mainPoolToken = mainPool.tokens[i];
+
+      return {
+        ...custody,
+        pubkey: mainPoolToken.custody,
+        minRatio: mainPoolToken.minRatio,
+        maxRatio: mainPoolToken.maxRatio,
+        targetRatio: mainPoolToken.targetRatio,
+      };
+    });
   }
 
   /*
@@ -199,15 +218,6 @@ export class AdrenaClient {
     return this.signAndExecuteTx(
       await (await this.buildAddLiquidityTx(params)).transaction()
     );
-  }
-
-  public getCustodyByMint(mint: PublicKey): Custody {
-    const custody = this.custodies.find((custody) => custody.mint.equals(mint));
-
-    if (!custody)
-      throw new Error(`Cannot find custody for mint ${mint.toBase58()}`);
-
-    return custody;
   }
 
   protected buildOpenPositionTx({
@@ -447,9 +457,62 @@ export class AdrenaClient {
     );
   }
 
+  // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
+  public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
+    const possiblePositionAddresses = this.tokens.reduce(
+      (acc, token) => [
+        ...acc,
+        this.findPositionAddress(user, token.custody, "long"),
+        this.findPositionAddress(user, token.custody, "short"),
+      ],
+      [] as PublicKey[]
+    );
+
+    const positions =
+      (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
+        possiblePositionAddresses
+      )) as (Position | null)[];
+
+    return positions.reduce(
+      (acc: PositionExtended[], position: Position | null, index: number) => {
+        if (!position) {
+          return acc;
+        }
+
+        const token =
+          this.tokens.find((token) => token.custody.equals(position.custody)) ??
+          null;
+
+        const leverage =
+          nativeToUi(position.sizeUsd, 6) /
+          nativeToUi(position.collateralUsd, 6);
+
+        const extendedPosition: PositionExtended = {
+          ...position,
+          pubkey: possiblePositionAddresses[index],
+          token,
+          leverage,
+          side: Object.keys(position.side)[0] as "long" | "short",
+        };
+
+        return [...acc, extendedPosition];
+      },
+      [] as PositionExtended[]
+    );
+  }
+
   /*
    * UTILS
    */
+
+  public getCustodyByMint(mint: PublicKey): Custody {
+    const custody = this.custodies.find((custody) => custody.mint.equals(mint));
+
+    if (!custody)
+      throw new Error(`Cannot find custody for mint ${mint.toBase58()}`);
+
+    return custody;
+  }
 
   protected async signAndExecuteTx(transaction: Transaction): Promise<string> {
     if (!this.adrenaProgram) {

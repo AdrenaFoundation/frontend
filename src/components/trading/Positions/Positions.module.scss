@@ -1,0 +1,55 @@
+@import "@/styles/variable.scss";
+
+.positions {
+  color: white;
+  background-color: $fourthColor;
+  border: 1px solid $borderColor;
+  padding: 1em;
+
+  &__header {
+    display: flex;
+    padding-bottom: 1em;
+  }
+
+  &__column {
+    display: flex;
+    min-width: 5em;
+    width: 5em;
+    flex-grow: 1;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  &__contents {
+    display: flex;
+    flex-direction: column;
+
+    &_one {
+      display: flex;
+    }
+  }
+}
+
+.position_name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  div:nth-child(2) {
+    display: flex;
+  }
+
+  &_side {
+    margin-left: 0.2em;
+    text-transform: capitalize;
+
+    &_long {
+      color: $green;
+    }
+
+    &_short {
+      color: $red;
+    }
+  }
+}
