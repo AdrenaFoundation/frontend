@@ -15,11 +15,10 @@ import SwapDetails from "@/components/trading/SwapDetails/SwapDetails";
 import PositionDetails from "@/components/trading/PositionDetails/PositionDetails";
 import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { uiToNative } from "@/utils";
-
-import styles from "./index.module.scss";
 import Positions from "@/components/trading/Positions/Positions";
 import TradingChartHeader from "@/components/trading/TradingChartHeader/TradingChartHeader";
 import usePositions from "@/hooks/usePositions";
+import { twMerge } from "tailwind-merge";
 
 type Action = "long" | "short" | "swap";
 
@@ -141,12 +140,34 @@ export default function Trade() {
   })();
 
   return (
-    <div className={styles.trade}>
-      <div className={styles.trade__view}>
+    <div
+      className={twMerge(
+        "w-full",
+        "h-full",
+        "flex",
+        "bg-main",
+        "p-4",
+        "overflow-auto",
+        "flex-col",
+        "items-center",
+        "xl:flex-row",
+        "xl:justify-center",
+        "xl:items-start"
+      )}
+    >
+      <div
+        className={twMerge(
+          "flex",
+          "flex-col",
+          "w-full",
+          "xl:w-[60%]",
+          "xl:max-w-[60em]"
+        )}
+      >
         {/* Trading chart header */}
         {client && tokenB ? (
           <TradingChartHeader
-            className={styles.trade__view_header}
+            className="mb-4 p-4"
             tokenList={
               selectedAction === "short" || selectedAction === "long"
                 ? client.tokens.filter((t) => !t.isStable)
@@ -160,7 +181,17 @@ export default function Trade() {
           />
         ) : null}
 
-        <div className={styles.trade__view_trading}>
+        <div
+          className={twMerge(
+            "h-[60em]",
+            "shrink-1",
+            "grow",
+            "bg-main",
+            "flex",
+            "max-w-full",
+            "max-h-[30em]"
+          )}
+        >
           {/* Display trading chart for appropriate token */}
           {tokenA && tokenB ? (
             <>
@@ -178,20 +209,15 @@ export default function Trade() {
         <>
           {positions ? (
             <>
-              <div className={styles.trade__view_trading_position}>
-                Positions ({positions.length})
-              </div>
+              <div className="mb-4">Positions ({positions.length})</div>
 
-              <Positions
-                className={styles.trade__view_positions}
-                positions={positions}
-              />
+              <Positions positions={positions} />
             </>
           ) : null}
         </>
       </div>
 
-      <div className={styles.trade__panel}>
+      <div className={twMerge("w-[22em]", "mt-4", "xl:mt-0", "xl:ml-4")}>
         <TabSelect
           selected={selectedAction}
           tabs={[
@@ -207,7 +233,7 @@ export default function Trade() {
         {client && client.tokens.length && tokenA && tokenB && (
           <>
             <TradingInputs
-              className={styles.trade__panel_trading_inputs}
+              className="mt-4"
               actionType={selectedAction}
               allowedTokenA={client.tokens}
               allowedTokenB={
@@ -229,26 +255,23 @@ export default function Trade() {
         {/* Button to execute action */}
         <>
           <Button
-            className={styles.trade__panel_execute_btn}
+            className="mt-4 bg-blue"
             title={buttonTitle}
             onClick={handleExecuteButton}
           />
 
           {/* to handle wallet connection, create an hidden wallet adapter */}
-          <WalletAdapter
-            className={styles.trade__panel_wallet_adapter}
-            ref={walletAdapterRef}
-          />
+          <WalletAdapter className="hidden" ref={walletAdapterRef} />
         </>
 
         {/* Position details */}
         <>
-          <div className={styles.trade__panel_details}>
-            <div className={styles.trade__panel_details_title}>
-              <span>{selectedAction}</span>
+          <div className="p-4 mt-4">
+            <div className="flex items-center">
+              <span className="capitalize">{selectedAction}</span>
 
               {selectedAction === "short" || selectedAction === "long" ? (
-                <span>{tokenB?.name ?? "-"}</span>
+                <span className="ml-1">{tokenB?.name ?? "-"}</span>
               ) : null}
             </div>
 

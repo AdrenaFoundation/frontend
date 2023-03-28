@@ -1,24 +1,25 @@
 import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPricesChange";
 import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
-import { useSelector } from "@/store/store";
-import useAdrenaClient from "@/hooks/useAdrenaClient";
-
-import styles from "./index.module.scss";
+import { twMerge } from "tailwind-merge";
 
 export default function Buy() {
   useListenToPythTokenPricesChange();
   useWatchWalletBalance();
 
-  const client = useAdrenaClient();
-  const wallet = useSelector((s) => s.wallet);
-  const connected = !!wallet;
-  const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const tokenPrices = useSelector((s) => s.tokenPrices);
-
   return (
-    <div className={styles.buy}>
-      <div className={styles.buy__title}>Buy / Sell ALP</div>
-      <div className={styles.buy__description}>
+    <div
+      className={twMerge(
+        "w-full",
+        "h-full",
+        "flex",
+        "p-4",
+        "overflow-auto",
+        "flex-col",
+        "bg-main"
+      )}
+    >
+      <div className="text-4xl font-bold">Buy / Sell ALP</div>
+      <div className="mt-4">
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
     </div>
