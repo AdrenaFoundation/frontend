@@ -27,6 +27,12 @@ export default function Positions({ className }: { className?: string }) {
 
       {/* Content */}
       <div className={styles.positions__contents}>
+        {!positions?.length ? (
+          <div className={styles.positions__contents_none}>
+            No opened position
+          </div>
+        ) : null}
+
         {positions?.map((position) => (
           <div
             key={position.pubkey.toBase58()}

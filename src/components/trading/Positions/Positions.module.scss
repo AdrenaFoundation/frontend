@@ -4,11 +4,12 @@
   color: white;
   background-color: $fourthColor;
   border: 1px solid $borderColor;
-  padding: 1em;
 
   &__header {
     display: flex;
     padding-bottom: 1em;
+    padding: 1em;
+    border-bottom: 1px solid $borderColor;
   }
 
   &__column {
@@ -27,6 +28,14 @@
 
     &_one {
       display: flex;
+      padding: 1em;
+    }
+
+    &_none {
+      margin-top: 2em;
+      margin-bottom: 2em;
+      margin-left: auto;
+      margin-right: auto;
     }
   }
 }
@@ -35,6 +44,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-start;
 
   div:nth-child(2) {
     display: flex;
