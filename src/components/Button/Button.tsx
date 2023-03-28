@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styles from "./Button.module.scss";
+import { twMerge } from "tailwind-merge";
 
 function Button(
   {
@@ -19,26 +19,29 @@ function Button(
 ) {
   return (
     <div
-      className={`${styles.button} ${className ?? ""}`}
+      className={twMerge(
+        "flex",
+        "p-2",
+        "items-center",
+        "justify-center",
+        "cursor-pointer",
+        "rounded",
+        "border",
+        "border-grey",
+        "hover:opacity-90",
+        className
+      )}
       onClick={() => onClick()}
       ref={ref}
     >
       {leftIcon ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={leftIcon}
-          className={styles.button__left_icon}
-          alt="left icon"
-        />
+        <img src={leftIcon} className="h-4 w-4 mr-2" alt="left icon" />
       ) : null}
       {title}
       {rightIcon ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={rightIcon}
-          className={styles.button__right_icon}
-          alt="right icon"
-        />
+        <img src={rightIcon} className="h-4 w-4 ml-2" alt="right icon" />
       ) : null}
     </div>
   );

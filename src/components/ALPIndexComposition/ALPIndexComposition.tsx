@@ -1,6 +1,6 @@
 import useALPIndexComposition from "@/hooks/useALPIndexComposition";
 import { formatPriceInfo } from "@/utils";
-import styles from "./ALPIndexComposition.module.scss";
+import { twMerge } from "tailwind-merge";
 
 function formatPercentage(nb: number | null): string {
   if (nb === null) {
@@ -18,54 +18,64 @@ export default function ALPIndexComposition({
   const alpIndexComposition = useALPIndexComposition();
 
   return (
-    <div className={`${styles.alpIndexComposition} ${className ?? ""}`}>
-      <div className={styles.alpIndexComposition__title}>
+    <div
+      className={twMerge("bg-secondary", "border", "border-grey", className)}
+    >
+      <div className="flex h-12 w-full items-center pl-4 font-bold">
         ALP Index Composition
       </div>
 
-      <div className={styles.alpIndexComposition__header}>
-        <div>Token</div>
-        <div>Price</div>
-        <div>Pool</div>
-        <div>Weight</div>
-        <div>Utilization</div>
+      <div className="flex h-12 w-full items-center pl-4 pr-4">
+        {["Token", "Price", "Pool", "Weight", "Utilization"].map(
+          (columnName) => (
+            <div
+              key={columnName}
+              className="flex w-40 shrink-0 grow uppercase last:justify-end"
+            >
+              {columnName}
+            </div>
+          )
+        )}
       </div>
 
       {alpIndexComposition ? (
-        <div className={styles.alpIndexComposition__tokens}>
+        <div className="flex flex-col pl-4 pr-4">
           {alpIndexComposition.map((composition) => (
             <div
               key={composition.token.name}
-              className={styles.alpIndexComposition__token}
+              className="flex h-12 w-full items-center"
             >
-              <div className={styles.alpIndexComposition__token_name}>
+              <div className="flex items-center w-40 shrink-0 grow">
                 {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    className={styles.alpIndexComposition__token_icon}
+                    className="w-8 h-8"
                     src={composition.token.image}
                     alt={`${composition.token.name} logo`}
                   />
                 }
-                <span>{composition.token.name}</span>
+                <span className="ml-4">{composition.token.name}</span>
               </div>
 
-              <div>
+              <div className="flex items-center w-40 shrink-0 grow">
                 {composition.price ? formatPriceInfo(composition.price) : "-"}
               </div>
 
-              <div>
+              <div className="flex items-center w-40 shrink-0 grow">
                 {composition.poolUsdValue
                   ? formatPriceInfo(composition.poolUsdValue)
                   : "-"}
               </div>
 
-              <div className={styles.alpIndexComposition__token_weights}>
-                <span>{formatPercentage(composition.currentRatio)}</span>/
+              <div className="flex items-center w-40 shrink-0 grow">
+                <span>{formatPercentage(composition.currentRatio)}</span>
+                <span className="ml-1 mr-1">/</span>
                 <span>{formatPercentage(composition.targetRatio)}</span>
               </div>
 
-              <div>{formatPercentage(composition.utilization)}</div>
+              <div className="flex items-center w-40 shrink-0 grow justify-end">
+                {formatPercentage(composition.utilization)}
+              </div>
             </div>
           ))}
         </div>
