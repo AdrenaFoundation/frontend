@@ -16,7 +16,7 @@ import Button from "../../Button/Button";
 import InputNumber from "../../InputNumber/InputNumber";
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
 import Select from "../../Select/Select";
-import styles from "./TradingInputs.module.scss";
+import { twMerge } from "tailwind-merge";
 
 function recalculateInputs({
   mainInput,
@@ -244,11 +244,33 @@ export default function TradingInputs({
     setInputB(v);
   };
 
+  const infoRowStyle = "w-full flex justify-between items-center mt-1";
+
   return (
-    <div className={`${styles.tradingInputs} ${className ?? ""}`}>
+    <div className={twMerge("relative", "flex", "flex-col", className)}>
       {/* Input A */}
-      <div className={styles.tradingInputs__container}>
-        <div className={styles.tradingInputs__container_labels}>
+      <div
+        className={twMerge(
+          "h-32",
+          "w-32",
+          "p-8",
+          "bg-secondary",
+          "flex",
+          "items-center",
+          "w-full",
+          "justify-between",
+          "flex-col"
+        )}
+      >
+        <div
+          className={twMerge(
+            "shrink-0",
+            "flex",
+            "items-center",
+            "w-full",
+            "justify-between"
+          )}
+        >
           <div>
             Pay
             {priceA !== null
@@ -263,18 +285,32 @@ export default function TradingInputs({
               : null}
           </div>
         </div>
-        <div className={styles.tradingInputs__container_infos}>
+
+        <div className="flex w-full items-center">
           <InputNumber
             value={inputA ?? undefined}
             placeholder="0.00"
-            className={styles.tradingInputs__container_infos_input}
+            className={twMerge(
+              "bg-secondary",
+              "border-0",
+              "text-lg",
+              "outline-none",
+              "w-full",
+              "font-bold"
+            )}
             onChange={handleInputAChange}
           />
 
           {connected ? (
             <Button
               title="MAX"
-              className={styles.tradingInputs__container_infos_max}
+              className={twMerge(
+                "bg-blue",
+                "border-grey",
+                "mr-1",
+                "text-sm",
+                "h-4"
+              )}
               onClick={() => {
                 if (!walletTokenBalances || !tokenA) return;
 
@@ -286,7 +322,6 @@ export default function TradingInputs({
           ) : null}
 
           <Select
-            className={styles.tradingInputs__container_infos_select}
             selected={tokenA?.name ?? ""}
             options={allowedTokenA.map((v) => v.name)}
             onSelect={(name) =>
@@ -297,9 +332,29 @@ export default function TradingInputs({
       </div>
 
       {/* Switch AB */}
-      <div className={styles.tradingInputs__switch}>
+      <div
+        className={twMerge(
+          "w-full",
+          "h-4",
+          "overflow-visible",
+          "flex",
+          "justify-center",
+          "items-center",
+          "z-[2]"
+        )}
+      >
         <div
-          className={styles.tradingInputs__switch_inner}
+          className={twMerge(
+            "bg-blue",
+            "flex",
+            "rounded-full",
+            "p-1",
+            "w-7",
+            "h-7",
+            "cursor-pointer",
+            "items-center",
+            "justify-center"
+          )}
           onClick={() => switchAB()}
         >
           {
@@ -310,8 +365,28 @@ export default function TradingInputs({
       </div>
 
       {/* Input B */}
-      <div className={styles.tradingInputs__container}>
-        <div className={styles.tradingInputs__container_labels}>
+      <div
+        className={twMerge(
+          "h-32",
+          "w-32",
+          "p-8",
+          "bg-secondary",
+          "flex",
+          "items-center",
+          "w-full",
+          "justify-between",
+          "flex-col"
+        )}
+      >
+        <div
+          className={twMerge(
+            "shrink-0",
+            "flex",
+            "items-center",
+            "w-full",
+            "justify-between"
+          )}
+        >
           <div>
             {
               {
@@ -338,16 +413,23 @@ export default function TradingInputs({
             </>
           )}
         </div>
-        <div className={styles.tradingInputs__container_infos}>
+
+        <div className="flex w-full items-center">
           <InputNumber
             value={inputB ?? undefined}
             placeholder="0.00"
-            className={styles.tradingInputs__container_infos_input}
+            className={twMerge(
+              "bg-secondary",
+              "border-0",
+              "text-lg",
+              "outline-none",
+              "w-full",
+              "font-bold"
+            )}
             onChange={handleInputBChange}
           />
 
           <Select
-            className={styles.tradingInputs__container_infos_select}
             selected={tokenB?.name ?? ""}
             options={allowedTokenB.map((v) => v.name)}
             onSelect={(name) =>
@@ -361,12 +443,10 @@ export default function TradingInputs({
         <>
           {/* Leverage (only in short/long) */}
           <>
-            <div className={styles.tradingInputs__leverage_slider_title}>
-              Leverage Slider
-            </div>
-            <div className={styles.tradingInputs__leverage_slider}>
+            <div className="w-full mt-6 mb-2">Leverage Slider</div>
+            <div className="w-full flex flex-col justify-center items-center">
               <LeverageSlider
-                className={styles.tradingInputs__leverage_slider_obj}
+                className="w-[90%] m-auto"
                 onChange={(v: number) => setLeverage(v)}
               />
             </div>
@@ -374,20 +454,20 @@ export default function TradingInputs({
 
           {/* Position basic infos */}
           <>
-            <div className={styles.tradingInputs__infos}>
-              <div className={styles.tradingInputs__infos_row}>
+            <div className="p-1 mt-8">
+              <div className={infoRowStyle}>
                 <span>Collateral In</span>
                 <span>{actionType === "long" ? "USD" : "USDC"}</span>
               </div>
 
-              <div className={styles.tradingInputs__infos_row}>
+              <div className={infoRowStyle}>
                 <span>Leverage</span>
                 <span>
                   {leverage !== null ? `${formatNumber(leverage, 2)}x` : "-"}
                 </span>
               </div>
 
-              <div className={styles.tradingInputs__infos_row}>
+              <div className={infoRowStyle}>
                 <span>Entry Price</span>
                 <span>
                   {entryPriceAndFee
@@ -398,12 +478,12 @@ export default function TradingInputs({
                 </span>
               </div>
 
-              <div className={styles.tradingInputs__infos_row}>
+              <div className={infoRowStyle}>
                 <span>Liq. Price</span>
                 <span>TODO</span>
               </div>
 
-              <div className={styles.tradingInputs__infos_row}>
+              <div className={infoRowStyle}>
                 <span>Fees</span>
                 <span>
                   {entryPriceAndFee
