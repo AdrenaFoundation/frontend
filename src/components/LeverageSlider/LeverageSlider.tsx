@@ -1,7 +1,7 @@
 import Slider from "rc-slider";
-import styles from "./LeverageSlider.module.scss";
-import "rc-slider/assets/index.css";
 import { ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
+import "rc-slider/assets/index.css";
 
 export default function LeverageSlider({
   className,
@@ -11,7 +11,7 @@ export default function LeverageSlider({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className={`${styles.leverageSlider} ${className ?? ""}`}>
+    <div className={twMerge("h-4", "min-h-4", "flex", "min-w-10", className)}>
       <Slider
         min={1}
         max={50}
@@ -19,9 +19,7 @@ export default function LeverageSlider({
         step={0.1}
         marks={[2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50].reduce(
           (acc, mark) => {
-            acc[mark] = (
-              <span className={styles.leverageSlider__mark}>x{mark}</span>
-            );
+            acc[mark] = <span className="text-white">x{mark}</span>;
             return acc;
           },
           {} as Record<number, ReactNode>

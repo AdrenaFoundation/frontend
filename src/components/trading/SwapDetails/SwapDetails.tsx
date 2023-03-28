@@ -2,7 +2,6 @@ import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import { formatPriceInfo, getCustodyLiquidity } from "@/utils";
-import styles from "./SwapDetails.module.scss";
 
 export default function SwapDetails({
   tokenA,
@@ -14,9 +13,11 @@ export default function SwapDetails({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const client = useAdrenaClient();
 
+  const rowStyle = "w-full flex justify-between items-center mt-2";
+
   return (
-    <div className={styles.swapDetails}>
-      <div className={styles.swapDetails__row}>
+    <div className="flex flex-col p-1 mt-4">
+      <div className={rowStyle}>
         <span>{tokenA.name} Price</span>
         <span>
           {tokenPrices[tokenA.name]
@@ -25,7 +26,7 @@ export default function SwapDetails({
         </span>
       </div>
 
-      <div className={styles.swapDetails__row}>
+      <div className={rowStyle}>
         <span>{tokenB.name} Price</span>
         <span>
           {tokenPrices[tokenB.name]
@@ -34,7 +35,7 @@ export default function SwapDetails({
         </span>
       </div>
 
-      <div className={styles.swapDetails__row}>
+      <div className={rowStyle}>
         <span>Available Liquidity</span>
         <span>
           {client && tokenPrices && tokenPrices[tokenB.name]

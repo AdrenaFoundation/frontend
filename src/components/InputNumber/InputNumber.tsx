@@ -1,4 +1,4 @@
-import styles from "./InputNumber.module.scss";
+import { twMerge } from "tailwind-merge";
 
 export default function InputNumber({
   value,
@@ -26,7 +26,13 @@ export default function InputNumber({
         onChange(Math.min(nb, 500_000_000));
       }}
       placeholder={placeholder}
-      className={`${styles.input} ${className ?? ""}`}
+      className={twMerge(
+        "bg-secondary",
+        "border-0",
+        "outline-none",
+        "w-full",
+        className
+      )}
     />
   );
 }

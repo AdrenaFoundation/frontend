@@ -1,7 +1,6 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from "react";
 
 import { Token } from "@/types";
-import styles from "./TradingChart.module.scss";
 
 let tvScriptLoadingPromise: Promise<unknown>;
 
@@ -80,7 +79,7 @@ export default function TradingChart({ token }: { token: Token }) {
   }, [token, widget]);
 
   return (
-    <div className={styles.tradingChart}>
+    <div className="flex flex-col w-full">
       <div id="chart-area" />
       <div className="tradingview-widget-copyright"></div>
     </div>

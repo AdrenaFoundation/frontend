@@ -3,7 +3,6 @@ import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import { formatNumber, formatPriceInfo, getCustodyLiquidity } from "@/utils";
 import { BN } from "@project-serum/anchor";
-import styles from "./PositionDetails.module.scss";
 
 export default function PositionDetails({
   tokenB,
@@ -18,18 +17,18 @@ export default function PositionDetails({
   const client = useAdrenaClient();
 
   return (
-    <div className={styles.positionDetails}>
-      <div className={styles.positionDetails__row}>
+    <div className="flex flex-col p-1 mt-4">
+      <div className="w-full flex justify-between items-center mt-1">
         <span>Entry Price</span>
         <span>{entryPrice !== null ? formatPriceInfo(entryPrice) : "-"}</span>
       </div>
 
-      <div className={styles.positionDetails__row}>
+      <div className="w-full flex justify-between items-center mt-1">
         <span>Exit Price</span>
         <span>{exitPrice !== null ? formatPriceInfo(exitPrice) : "-"}</span>
       </div>
 
-      <div className={styles.positionDetails__row}>
+      <div className="w-full flex justify-between items-center mt-1">
         <span>Borrow Fee</span>
         <span>
           {client && tokenB
@@ -44,7 +43,7 @@ export default function PositionDetails({
         </span>
       </div>
 
-      <div className={styles.positionDetails__row}>
+      <div className="w-full flex justify-between items-center mt-1">
         <span>Available Liquidity</span>
         <span>
           {client && tokenB && tokenPrices && tokenPrices[tokenB.name]

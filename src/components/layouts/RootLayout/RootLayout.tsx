@@ -1,9 +1,8 @@
+import { Tooltip } from "react-tooltip";
 import Head from "next/head";
 import { ReactNode } from "react";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
-import styles from "./RootLayout.module.scss";
-import { Tooltip } from "react-tooltip";
 
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <>
@@ -20,7 +19,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => (
 
     <Footer />
 
-    <div className={styles.modalContainer}>
+    <div className="absolute top-0 right-0 overflow-hidden w-full">
       <div id="modal-container"></div>
     </div>
 

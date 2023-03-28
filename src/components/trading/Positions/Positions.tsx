@@ -1,11 +1,8 @@
-import { Tooltip } from "react-tooltip";
 import Button from "@/components/Button/Button";
-import usePositions from "@/hooks/usePositions";
 import { useSelector } from "@/store/store";
 import { formatNumber, formatPriceInfo, nativeToUi } from "@/utils";
-
-import styles from "./Positions.module.scss";
 import { PositionExtended } from "@/types";
+import { twMerge } from "tailwind-merge";
 
 export default function Positions({
   className,
@@ -19,73 +16,96 @@ export default function Positions({
   // TODO
   // Change compeltely how the positions are displayed if the screen is small
 
+  const columnStyle = "flex min-w-[5em] w-20 grow shrink-0 items-center";
+
   return (
-    <div className={`${styles.positions} ${className ?? ""}`}>
+    <div
+      className={twMerge(
+        "bg-secondary",
+        "border",
+        "border-grey",
+        "flex",
+        "flex-col",
+        className
+      )}
+    >
       {/* Header */}
-      <div className={styles.positions__header}>
-        <div className={styles.positions__column}>Position</div>
-        <div className={styles.positions__column}>Net Value</div>
-        <div className={styles.positions__column}>Size</div>
-        <div className={styles.positions__column}>Collateral</div>
-        <div className={styles.positions__column}>Entry Price</div>
-        <div className={styles.positions__column}>Mark Price</div>
-        <div className={styles.positions__column}>Liq. Price</div>
-        <div className={styles.positions__column}>{/* Close action*/}</div>
+      <div className="flex pb-4 border-b border-grey w-full p-4">
+        {[
+          "Position",
+          "Net Value",
+          "Size",
+          "Collateral",
+          "Entry Price",
+          "Mark Price",
+          "Liq. Price",
+          "", // close action
+        ].map((text) => (
+          <div key={text} className={columnStyle}>
+            {text}
+          </div>
+        ))}
       </div>
 
       {/* Content */}
-      <div className={styles.positions__contents}>
+      <div className="flex flex-col w-full bg-secondary">
         {!positions?.length ? (
-          <div className={styles.positions__contents_none}>
-            No opened position
-          </div>
+          <div className="mt-5 mb-5 ml-auto mr-auto">No opened position</div>
         ) : null}
 
         {positions?.map((position) => (
           <div
             key={position.pubkey.toBase58()}
-            className={styles.positions__contents_one}
+            className="flex pb-4 border-b border-grey w-full p-4"
           >
             <div
-              className={`${styles.positions__column} ${styles.position_name}`}
+              className={twMerge(
+                columnStyle,
+                "flex-col",
+                "justify-start",
+                "items-start"
+              )}
             >
               <div>{position.token?.name ?? "Unknown Token"}</div>
-              <div>
+
+              <div className="flex">
                 <div>{formatNumber(position.leverage, 2)}x</div>
                 <div
-                  className={`${styles.position_name_side} ${
-                    styles[`position_name_side_${position.side}`]
-                  }`}
+                  className={twMerge(
+                    "ml-1",
+                    "capitalize",
+                    position.side === "long" ? "text-green-400" : "bg-red-400"
+                  )}
                 >
                   {position.side}
                 </div>
               </div>
             </div>
 
-            <div className={styles.positions__column}>{/*Net Value*/}TODO</div>
+            <div className={columnStyle}>{/*Net Value*/}TODO</div>
 
-            <div className={styles.positions__column}>
+            <div className={columnStyle}>
               {formatPriceInfo(nativeToUi(position.sizeUsd, 6))}
             </div>
 
-            <div className={styles.positions__column}>
+            <div className={columnStyle}>
               {formatPriceInfo(nativeToUi(position.collateralUsd, 6))}
             </div>
 
-            <div className={styles.positions__column}>
+            <div className={columnStyle}>
               {formatPriceInfo(nativeToUi(position.price, 6))}
             </div>
 
-            <div className={styles.positions__column}>
+            <div className={columnStyle}>
               {position.token && tokenPrices[position.token.name]
                 ? formatPriceInfo(tokenPrices[position.token.name]!)
                 : "-"}
             </div>
 
-            <div className={styles.positions__column}>{/*Liq. Price*/}TODO</div>
+            <div className={columnStyle}>{/*Liq. Price*/}TODO</div>
 
             <Button
-              className={styles.positions__column}
+              className={columnStyle}
               title="Close"
               onClick={() => {
                 console.log("TODO: close position tx");

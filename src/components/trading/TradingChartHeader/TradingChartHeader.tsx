@@ -3,7 +3,7 @@ import useDailyStats from "@/hooks/useDailyStats";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import { formatNumber, formatPriceInfo } from "@/utils";
-import styles from "./TradingChartHeader.module.scss";
+import { twMerge } from "tailwind-merge";
 
 export default function TradingInputs({
   className,
@@ -16,13 +16,23 @@ export default function TradingInputs({
   selected: Token;
   onChange: (t: Token) => void;
 }) {
-  const wallet = useSelector((s) => s.wallet);
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const connected = !!wallet;
   const stats = useDailyStats();
 
+  const infoStyle = "flex w-1/5 flex-col ml-[5%] items-center justify-center";
+
   return (
-    <div className={`${styles.tradingChartHeader} ${className ?? ""}`}>
+    <div
+      className={twMerge(
+        "flex",
+        "h-14",
+        "bg-secondary",
+        "border",
+        "border-grey",
+        "items-center",
+        className
+      )}
+    >
       <Select
         selected={`${selected.name} / USD`}
         options={tokenList
@@ -39,24 +49,21 @@ export default function TradingInputs({
         }}
       />
 
-      <div className={styles.tradingChartHeader__currentprice}>
+      <div className={infoStyle}>
         {tokenPrices && tokenPrices[selected.name]
           ? formatPriceInfo(tokenPrices[selected.name]!)
           : null}
       </div>
 
-      <div className={styles.tradingChartHeader__dailyPriceChange}>
-        <span>24h Change</span>
+      <div className={infoStyle}>
+        <span className="text-sm">24h Change</span>
         <span
-          className={`${
+          className={twMerge(
+            "mt-0.5",
             stats && stats[selected.name].dailyChange > 0
-              ? styles.tradingChartHeader__positive
-              : ""
-          } ${
-            stats && stats[selected.name].dailyChange < 0
-              ? styles.tradingChartHeader__negative
-              : ""
-          }`}
+              ? "text-green-400"
+              : "text-red-400"
+          )}
         >
           {stats
             ? `${formatNumber(stats[selected.name].dailyChange, 2)}%`
@@ -64,9 +71,9 @@ export default function TradingInputs({
         </span>
       </div>
 
-      <div className={styles.tradingChartHeader__dailyPriceVolume}>
-        <span>24h Volume</span>
-        <span>
+      <div className={infoStyle}>
+        <span className="text-sm">24h Volume</span>
+        <span className="mt-0.5">
           {stats ? formatPriceInfo(stats[selected.name].dailyVolume) : "-"}
         </span>
       </div>

@@ -1,7 +1,6 @@
 import { useEffect, ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
-
-import styles from "./Modal.module.scss";
+import { twMerge } from "tailwind-merge";
 
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
@@ -53,16 +52,46 @@ const Modal = ({
 
   return (
     <PortalContainer>
-      <div className={styles.modalView}>
-        <div className={styles.modalView__background} onClick={() => close()} />
+      <div
+        className={twMerge(
+          "fixed",
+          "w-full",
+          "h-full",
+          "flex",
+          "justify-center",
+          "items-center",
+          "z-[100]"
+        )}
+      >
+        <div
+          className="absolute w-full h-full bg-black/70 z-[101]"
+          onClick={() => close()}
+        />
 
-        <div className={styles.modalView__window} role="dialog">
-          <div className={styles.modalView__header}>
-            <span className={styles.modalView__header_title}>{title}</span>
+        <div
+          className="min-w-20 min-h-10 bg-main z-[102] rounded"
+          role="dialog"
+        >
+          <div
+            className={twMerge(
+              "bg-main",
+              "h-12",
+              "w-full",
+              "flex",
+              "flex-row",
+              "items-center",
+              "justify-between",
+              "border-b",
+              "border-grey",
+              "pl-4",
+              "pr-4"
+            )}
+          >
+            <span className="text-xl">{title}</span>
             {
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                className={styles.modalView__header_close_icon}
+                className="w-4 h-4 cursor-pointer hover:opacity-90"
                 src="/images/cross.svg"
                 alt="close icon"
                 onClick={() => close()}
@@ -70,9 +99,7 @@ const Modal = ({
             }
           </div>
 
-          <div className={`${styles.modalView__body} ${className ?? ""}`}>
-            {children}
-          </div>
+          <div className={className ?? ""}>{children}</div>
         </div>
       </div>
     </PortalContainer>

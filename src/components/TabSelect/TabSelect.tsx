@@ -1,4 +1,4 @@
-import styles from "./TabSelect.module.scss";
+import { twMerge } from "tailwind-merge";
 
 export default function TabSelect<T extends string>({
   selected,
@@ -15,18 +15,26 @@ export default function TabSelect<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={`${styles.tabSelect} ${className ?? ""}`}>
+    <div className={twMerge("flex", className)}>
       {tabs.map(({ title, icon }, index) => (
         <div
           key={title}
-          className={`${styles.tabSelect__tab} ${
-            title === selected ? styles.tabSelect__selected_tab : ""
-          }`}
+          className={twMerge(
+            "p-4",
+            "capitalize",
+            "cursor-pointer",
+            "flex",
+            "items-center",
+            "justify-center",
+            title === selected ? "bg-secondary" : "bg-main",
+            "grow",
+            "hover:opacity-90"
+          )}
           onClick={() => onClick(title, index)}
         >
           {icon ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={icon} alt="tab icon" />
+            <img className="mr-4 h-4 w-4" src={icon} alt="tab icon" />
           ) : null}
 
           <span>{title}</span>
