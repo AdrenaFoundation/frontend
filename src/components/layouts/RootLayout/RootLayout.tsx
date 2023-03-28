@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import Header from "../../Header/Header";
 import Footer from "../../Footer/Footer";
 import styles from "./RootLayout.module.scss";
+import { Tooltip } from "react-tooltip";
 
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <>
@@ -22,6 +23,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => (
     <div className={styles.modalContainer}>
       <div id="modal-container"></div>
     </div>
+
+    <Tooltip id="tooltip-id" />
   </>
 );
 

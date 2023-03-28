@@ -1,7 +1,9 @@
+import { Tooltip } from "react-tooltip";
 import Button from "@/components/Button/Button";
 import usePositions from "@/hooks/usePositions";
 import { useSelector } from "@/store/store";
 import { formatNumber, formatPriceInfo, nativeToUi } from "@/utils";
+
 import styles from "./Positions.module.scss";
 
 export default function Positions({ className }: { className?: string }) {
