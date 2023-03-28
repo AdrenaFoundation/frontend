@@ -19,6 +19,7 @@ import { uiToNative } from "@/utils";
 import styles from "./index.module.scss";
 import Positions from "@/components/trading/Positions/Positions";
 import TradingChartHeader from "@/components/trading/TradingChartHeader/TradingChartHeader";
+import usePositions from "@/hooks/usePositions";
 
 type Action = "long" | "short" | "swap";
 
@@ -33,6 +34,7 @@ export default function Trade() {
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const positions = usePositions();
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
@@ -173,7 +175,20 @@ export default function Trade() {
           ) : null}
         </div>
 
-        <Positions className={styles.trade__view_positions} />
+        <>
+          {positions ? (
+            <>
+              <div className={styles.trade__view_trading_position}>
+                Positions ({positions.length})
+              </div>
+
+              <Positions
+                className={styles.trade__view_positions}
+                positions={positions}
+              />
+            </>
+          ) : null}
+        </>
       </div>
 
       <div className={styles.trade__panel}>

@@ -5,9 +5,15 @@ import { useSelector } from "@/store/store";
 import { formatNumber, formatPriceInfo, nativeToUi } from "@/utils";
 
 import styles from "./Positions.module.scss";
+import { PositionExtended } from "@/types";
 
-export default function Positions({ className }: { className?: string }) {
-  const positions = usePositions();
+export default function Positions({
+  className,
+  positions,
+}: {
+  className?: string;
+  positions: PositionExtended[] | null;
+}) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   // TODO

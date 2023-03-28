@@ -82,7 +82,7 @@ export default function TradingChart({ token }: { token: Token }) {
   return (
     <div className={styles.tradingChart}>
       <div id="chart-area" />
-      <div className="tradingview-widget-copyright">by TradingView</div>
+      <div className="tradingview-widget-copyright"></div>
     </div>
   );
 }
