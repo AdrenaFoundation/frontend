@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@project-serum/anchor";
 
@@ -18,7 +18,7 @@ import { uiToNative } from "@/utils";
 
 import styles from "./index.module.scss";
 import Positions from "@/components/trading/Positions/Positions";
-import usePositions from "@/hooks/usePositions";
+import TradingChartHeader from "@/components/trading/TradingChartHeader/TradingChartHeader";
 
 type Action = "long" | "short" | "swap";
 
@@ -36,11 +36,33 @@ export default function Trade() {
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
-  const [tokenA, setMintA] = useState<Token | null>(null);
-  const [tokenB, setMintB] = useState<Token | null>(null);
+  const [tokenA, setTokenA] = useState<Token | null>(null);
+  const [tokenB, setTokenB] = useState<Token | null>(null);
 
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
+
+  // Setup
+  useEffect(() => {
+    if (!client) return;
+
+    if (!tokenA) {
+      setTokenA(client.tokens[0]);
+    }
+
+    if (!tokenB) {
+      setTokenB(
+        selectedAction === "swap"
+          ? client.tokens[0]
+          : client.tokens.filter((t) => !t.isStable)[0]
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // Only call when the user get initialized or we change of action
+    client,
+    selectedAction,
+  ]);
 
   const handleExecuteButton = async () => {
     if (!connected || !client) {
@@ -119,6 +141,23 @@ export default function Trade() {
   return (
     <div className={styles.trade}>
       <div className={styles.trade__view}>
+        {/* Trading chart header */}
+        {client && tokenB ? (
+          <TradingChartHeader
+            className={styles.trade__view_header}
+            tokenList={
+              selectedAction === "short" || selectedAction === "long"
+                ? client.tokens.filter((t) => !t.isStable)
+                : client.tokens
+            }
+            selected={tokenB}
+            onChange={(t: Token) => {
+              console.log("SetTokenB", t);
+              setTokenB(t);
+            }}
+          />
+        ) : null}
+
         <div className={styles.trade__view_trading}>
           {/* Display trading chart for appropriate token */}
           {tokenA && tokenB ? (
@@ -150,22 +189,26 @@ export default function Trade() {
           }}
         />
 
-        {client && client.tokens.length && (
-          <TradingInputs
-            className={styles.trade__panel_trading_inputs}
-            actionType={selectedAction}
-            allowedTokenA={client.tokens}
-            allowedTokenB={
-              selectedAction === "swap"
-                ? client.tokens
-                : client.tokens.filter((t) => !t.isStable)
-            }
-            onChangeInputA={setInputAValue}
-            onChangeInputB={setInputBValue}
-            onChangeMintA={setMintA}
-            onChangeMintB={setMintB}
-            onChangeLeverage={setLeverage}
-          />
+        {client && client.tokens.length && tokenA && tokenB && (
+          <>
+            <TradingInputs
+              className={styles.trade__panel_trading_inputs}
+              actionType={selectedAction}
+              allowedTokenA={client.tokens}
+              allowedTokenB={
+                selectedAction === "swap"
+                  ? client.tokens
+                  : client.tokens.filter((t) => !t.isStable)
+              }
+              tokenA={tokenA}
+              tokenB={tokenB}
+              onChangeInputA={setInputAValue}
+              onChangeInputB={setInputBValue}
+              setTokenA={setTokenA}
+              setTokenB={setTokenB}
+              onChangeLeverage={setLeverage}
+            />
+          </>
         )}
 
         {/* Button to execute action */}

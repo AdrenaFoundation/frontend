@@ -74,24 +74,32 @@ export class AdrenaClient {
       mainPool
     );
 
-    const tokens: Token[] = custodies.map((custody, i) => {
-      const infos:
-        | {
-            name: string;
-            image: string;
-          }
-        | undefined = TOKEN_INFO_LIBRARY[custody.mint.toBase58()];
+    const tokens: Token[] = custodies
+      .map((custody, i) => {
+        const infos:
+          | {
+              name: string;
+              image: string;
+              coingeckoId: string;
+            }
+          | undefined = TOKEN_INFO_LIBRARY[custody.mint.toBase58()];
 
-      return {
-        mint: custody.mint,
-        name: infos?.name ?? "Unknown",
-        decimals: 6,
-        isStable: custody.isStable,
-        image: infos?.image,
-        // loadCustodies gets the custodies on the same order as in the main pool
-        custody: mainPool.tokens[i].custody,
-      };
-    });
+        if (!infos) {
+          return null;
+        }
+
+        return {
+          mint: custody.mint,
+          name: infos.name,
+          decimals: 6,
+          isStable: custody.isStable,
+          image: infos.image,
+          // loadCustodies gets the custodies on the same order as in the main pool
+          custody: mainPool.tokens[i].custody,
+          coingeckoId: infos.coingeckoId,
+        };
+      })
+      .filter((token) => !!token) as Token[];
 
     return new AdrenaClient(
       adrenaProgram,

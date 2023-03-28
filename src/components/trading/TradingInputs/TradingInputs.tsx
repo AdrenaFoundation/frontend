@@ -88,22 +88,26 @@ function recalculateInputs({
 export default function TradingInputs({
   actionType,
   className,
+  tokenA,
+  tokenB,
   allowedTokenA,
   allowedTokenB,
   onChangeInputA,
   onChangeInputB,
-  onChangeMintA,
-  onChangeMintB,
+  setTokenA,
+  setTokenB,
   onChangeLeverage,
 }: {
   actionType: "short" | "long" | "swap";
   className?: string;
+  tokenA: Token;
+  tokenB: Token;
   allowedTokenA: Token[];
   allowedTokenB: Token[];
   onChangeInputA: (v: number | null) => void;
   onChangeInputB: (v: number | null) => void;
-  onChangeMintA: (t: Token | null) => void;
-  onChangeMintB: (t: Token | null) => void;
+  setTokenA: (t: Token | null) => void;
+  setTokenB: (t: Token | null) => void;
   onChangeLeverage: (v: number) => void;
 }) {
   const wallet = useSelector((s) => s.wallet);
@@ -123,14 +127,6 @@ export default function TradingInputs({
 
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
-
-  // Pick first mint as default value
-  const [tokenA, setMintA] = useState<Token | null>(
-    allowedTokenA.length ? allowedTokenA[0] : null
-  );
-  const [tokenB, setMintB] = useState<Token | null>(
-    allowedTokenB.length ? allowedTokenB[0] : null
-  );
 
   const [leverage, setLeverage] = useState<number>(1);
 
@@ -161,14 +157,6 @@ export default function TradingInputs({
     }, [inputB, onChangeInputB]);
 
     useEffect(() => {
-      onChangeMintA(tokenA);
-    }, [onChangeMintA, tokenA]);
-
-    useEffect(() => {
-      onChangeMintB(tokenB);
-    }, [onChangeMintB, tokenB]);
-
-    useEffect(() => {
       onChangeLeverage(leverage);
     }, [onChangeLeverage, leverage]);
   }
@@ -184,14 +172,14 @@ export default function TradingInputs({
     setManualUserInput(manualUserInput === "A" ? "B" : "A");
 
     // if tokenB is not allowed, use default value
-    setMintA(
+    setTokenA(
       allowedTokenA.find((token) => token.mint.equals(tokenB.mint))
         ? tokenB
         : allowedTokenA[0]
     );
 
     // if tokenA is not allowed, use default value
-    setMintB(
+    setTokenB(
       allowedTokenB.find((token) => token.mint.equals(tokenA.mint))
         ? tokenA
         : allowedTokenB[0]
@@ -302,7 +290,7 @@ export default function TradingInputs({
             selected={tokenA?.name ?? ""}
             options={allowedTokenA.map((v) => v.name)}
             onSelect={(name) =>
-              setMintA(allowedTokenA.find((mint) => mint.name === name)!)
+              setTokenA(allowedTokenA.find((mint) => mint.name === name)!)
             }
           />
         </div>
@@ -363,7 +351,7 @@ export default function TradingInputs({
             selected={tokenB?.name ?? ""}
             options={allowedTokenB.map((v) => v.name)}
             onSelect={(name) =>
-              setMintB(allowedTokenB.find((mint) => mint.name === name)!)
+              setTokenB(allowedTokenB.find((mint) => mint.name === name)!)
             }
           />
         </div>

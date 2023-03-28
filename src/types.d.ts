@@ -29,7 +29,8 @@ export interface Token {
   decimals: number;
   isStable: boolean;
   custody: PublicKey;
-  image?: string;
+  image: string;
+  coingeckoId: string;
 }
 
 export type PerpetualsTypes = AnchorTypes<

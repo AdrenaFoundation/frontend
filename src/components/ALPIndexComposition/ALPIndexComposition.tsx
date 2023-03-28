@@ -39,14 +39,14 @@ export default function ALPIndexComposition({
               className={styles.alpIndexComposition__token}
             >
               <div className={styles.alpIndexComposition__token_name}>
-                {composition.token.image ? (
+                {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     className={styles.alpIndexComposition__token_icon}
                     src={composition.token.image}
                     alt={`${composition.token.name} logo`}
                   />
-                ) : null}
+                }
                 <span>{composition.token.name}</span>
               </div>
 

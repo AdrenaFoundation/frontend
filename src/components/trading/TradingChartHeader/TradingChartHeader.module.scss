@@ -1,0 +1,36 @@
+@import "@/styles/variable.scss";
+
+.tradingChartHeader {
+  display: flex;
+  height: 4em;
+  background-color: $fourthColor;
+  border: 1px solid $borderColor;
+  align-items: center;
+
+  &__currentprice {
+    margin-left: 5%;
+  }
+
+  &__dailyPriceVolume,
+  &__dailyPriceChange {
+    display: flex;
+    flex-direction: column;
+    margin-left: 5%;
+
+    span:first-child {
+      font-size: 0.8em;
+    }
+
+    span:nth-child(2) {
+      margin-top: 0.1em;
+    }
+  }
+
+  &__positive {
+    color: $green;
+  }
+
+  &__negative {
+    color: $red;
+  }
+}
