@@ -1,8 +1,9 @@
 import Button from "@/components/Button/Button";
 import { useSelector } from "@/store/store";
-import { formatNumber, formatPriceInfo, nativeToUi } from "@/utils";
+import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from "@/utils";
 import { PositionExtended } from "@/types";
 import { twMerge } from "tailwind-merge";
+import useAdrenaClient from "@/hooks/useAdrenaClient";
 
 export default function Positions({
   className,
@@ -11,6 +12,7 @@ export default function Positions({
   className?: string;
   positions: PositionExtended[] | null;
 }) {
+  const client = useAdrenaClient();
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   // TODO
@@ -108,7 +110,7 @@ export default function Positions({
               className={columnStyle}
               title="Close"
               onClick={() => {
-                console.log("TODO: close position tx");
+                // TODO: Open ClosePosition window
               }}
             />
           </div>

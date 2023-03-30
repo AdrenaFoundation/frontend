@@ -17,6 +17,7 @@ import InputNumber from "../../InputNumber/InputNumber";
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
 import Select from "../../Select/Select";
 import { twMerge } from "tailwind-merge";
+import TradingInput from "../TradingInput/TradingInput";
 
 function recalculateInputs({
   mainInput,
@@ -249,87 +250,38 @@ export default function TradingInputs({
   return (
     <div className={twMerge("relative", "flex", "flex-col", className)}>
       {/* Input A */}
-      <div
-        className={twMerge(
-          "h-32",
-          "w-32",
-          "p-8",
-          "bg-secondary",
-          "flex",
-          "items-center",
-          "w-full",
-          "justify-between",
-          "flex-col"
-        )}
-      >
-        <div
-          className={twMerge(
-            "shrink-0",
-            "flex",
-            "items-center",
-            "w-full",
-            "justify-between"
-          )}
-        >
-          <div>
+      <TradingInput
+        textTopLeft={
+          <>
             Pay
             {priceA !== null
               ? `: ${formatNumber(priceA, DISPLAY_NUMBER_PRECISION)} USD`
               : null}
-          </div>
-          <div>
+          </>
+        }
+        textTopRight={
+          <>
             {connected && tokenA
               ? `Balance: ${(
                   walletTokenBalances?.[tokenA.name] ?? "0"
                 ).toLocaleString()}`
               : null}
-          </div>
-        </div>
+          </>
+        }
+        value={inputA}
+        maxButton={connected}
+        selectedToken={tokenA}
+        tokenList={allowedTokenA}
+        onTokenSelect={setTokenA}
+        onChange={handleInputAChange}
+        onMaxButtonClick={() => {
+          if (!walletTokenBalances || !tokenA) return;
 
-        <div className="flex w-full items-center">
-          <InputNumber
-            value={inputA ?? undefined}
-            placeholder="0.00"
-            className={twMerge(
-              "bg-secondary",
-              "border-0",
-              "text-lg",
-              "outline-none",
-              "w-full",
-              "font-bold"
-            )}
-            onChange={handleInputAChange}
-          />
+          const amount = walletTokenBalances[tokenA.name];
 
-          {connected ? (
-            <Button
-              title="MAX"
-              className={twMerge(
-                "bg-blue",
-                "border-grey",
-                "mr-1",
-                "text-sm",
-                "h-4"
-              )}
-              onClick={() => {
-                if (!walletTokenBalances || !tokenA) return;
-
-                const amount = walletTokenBalances[tokenA.name];
-
-                handleInputAChange(amount);
-              }}
-            />
-          ) : null}
-
-          <Select
-            selected={tokenA?.name ?? ""}
-            options={allowedTokenA.map((v) => v.name)}
-            onSelect={(name) =>
-              setTokenA(allowedTokenA.find((mint) => mint.name === name)!)
-            }
-          />
-        </div>
-      </div>
+          handleInputAChange(amount);
+        }}
+      />
 
       {/* Switch AB */}
       <div
@@ -365,29 +317,9 @@ export default function TradingInputs({
       </div>
 
       {/* Input B */}
-      <div
-        className={twMerge(
-          "h-32",
-          "w-32",
-          "p-8",
-          "bg-secondary",
-          "flex",
-          "items-center",
-          "w-full",
-          "justify-between",
-          "flex-col"
-        )}
-      >
-        <div
-          className={twMerge(
-            "shrink-0",
-            "flex",
-            "items-center",
-            "w-full",
-            "justify-between"
-          )}
-        >
-          <div>
+      <TradingInput
+        textTopLeft={
+          <>
             {
               {
                 long: "Long",
@@ -398,46 +330,31 @@ export default function TradingInputs({
             {priceB !== null
               ? `: ${formatNumber(priceB, DISPLAY_NUMBER_PRECISION)} USD`
               : null}
-          </div>
-
-          {/* Display leverage if short/long, otherwise display wallet balance */}
-          {actionType === "short" || actionType === "long" ? (
-            <div>Leverage{`: ${leverage.toFixed(2)}x`}</div>
-          ) : (
-            <>
-              {connected && tokenA
-                ? `Balance: ${(
-                    walletTokenBalances?.[tokenA.name] ?? "0"
-                  ).toLocaleString()}`
-                : null}
-            </>
-          )}
-        </div>
-
-        <div className="flex w-full items-center">
-          <InputNumber
-            value={inputB ?? undefined}
-            placeholder="0.00"
-            className={twMerge(
-              "bg-secondary",
-              "border-0",
-              "text-lg",
-              "outline-none",
-              "w-full",
-              "font-bold"
+          </>
+        }
+        textTopRight={
+          <>
+            {/* Display leverage if short/long, otherwise display wallet balance */}
+            {actionType === "short" || actionType === "long" ? (
+              <div>Leverage{`: ${leverage.toFixed(2)}x`}</div>
+            ) : (
+              <>
+                {connected && tokenB
+                  ? `Balance: ${(
+                      walletTokenBalances?.[tokenB.name] ?? "0"
+                    ).toLocaleString()}`
+                  : null}
+              </>
             )}
-            onChange={handleInputBChange}
-          />
-
-          <Select
-            selected={tokenB?.name ?? ""}
-            options={allowedTokenB.map((v) => v.name)}
-            onSelect={(name) =>
-              setTokenB(allowedTokenB.find((mint) => mint.name === name)!)
-            }
-          />
-        </div>
-      </div>
+          </>
+        }
+        value={inputB}
+        maxButton={false}
+        selectedToken={tokenB}
+        tokenList={allowedTokenB}
+        onTokenSelect={setTokenB}
+        onChange={handleInputBChange}
+      />
 
       {actionType === "short" || actionType === "long" ? (
         <>

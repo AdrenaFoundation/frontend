@@ -427,6 +427,51 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
+  public async closePosition({
+    position,
+    price,
+  }: {
+    position: PositionExtended;
+    price: BN;
+  }): Promise<string> {
+    if (!this.adrenaProgram) {
+      throw new Error("adrena program not ready");
+    }
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody)
+    );
+
+    if (!custody) {
+      throw new Error("Cannot find custody related to position");
+    }
+
+    const custodyOracleAccount = custody.oracle.oracleAccount;
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+      custody.mint
+    );
+
+    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+
+    return this.adrenaProgram.methods
+      .closePosition({
+        price,
+      })
+      .accounts({
+        owner: position.owner,
+        receivingAccount,
+        transferAuthority: AdrenaClient.transferAuthority,
+        perpetuals: AdrenaClient.perpetuals,
+        pool: AdrenaClient.mainPoolAddress,
+        position: position.pubkey,
+        custody: position.custody,
+        custodyOracleAccount,
+        custodyTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .rpc();
+  }
+
   /*
    * VIEWS
    */
