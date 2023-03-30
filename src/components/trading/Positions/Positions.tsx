@@ -32,15 +32,14 @@ export default function Positions({
         <Modal
           title="Close Position"
           close={() => setClosePosition(null)}
-          className={twMerge(
-            "h-[40em]",
-            "flex",
-            "flex-col",
-            "items-center",
-            "p-4"
-          )}
+          className={twMerge("flex", "flex-col", "items-center", "p-4")}
         >
-          <ClosePosition position={closePosition} />
+          <ClosePosition
+            position={closePosition}
+            onClose={() => {
+              setClosePosition(null);
+            }}
+          />
         </Modal>
       ) : null}
 

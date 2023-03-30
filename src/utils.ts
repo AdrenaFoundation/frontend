@@ -20,11 +20,21 @@ export function findATAAddressSync(
   )[0];
 }
 
-export function formatNumber(nb: number, precision: number): string {
-  return Number(nb.toFixed(precision)).toLocaleString(undefined, {
+export function formatNumber(
+  nb: number,
+  precision: number,
+  displayPlusSymbol: boolean = false
+): string {
+  const str = Number(nb.toFixed(precision)).toLocaleString(undefined, {
     minimumFractionDigits: precision,
     maximumFractionDigits: precision,
   });
+
+  if (displayPlusSymbol && nb > 0) {
+    return `+${str}`;
+  }
+
+  return str;
 }
 
 export function getCustodyLiquidity(
@@ -38,7 +48,10 @@ export function getCustodyLiquidity(
   );
 }
 
-export function formatPriceInfo(price: number) {
+export function formatPriceInfo(
+  price: number,
+  displayPlusSymbol: boolean = false
+) {
   // If the price is very low, display it as it is, to not display $0
   if (price < 0.00999999999999 && price > 0) {
     return `$${price}`;
@@ -48,7 +61,7 @@ export function formatPriceInfo(price: number) {
     return `-$${formatNumber(price * -1, 2)}`;
   }
 
-  return `$${formatNumber(price, 2)}`;
+  return `$${formatNumber(price, 2, displayPlusSymbol)}`;
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {
