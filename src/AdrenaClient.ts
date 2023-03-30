@@ -11,8 +11,9 @@ import {
   Pool,
   Position,
   PositionExtended,
+  ProfitAndLoss,
 } from "./types";
-import { findATAAddressSync, getTokenNameByMint, nativeToUi } from "./utils";
+import { findATAAddressSync, nativeToUi } from "./utils";
 import { TOKEN_INFO_LIBRARY } from "./constant";
 
 export class AdrenaClient {
@@ -510,6 +511,68 @@ export class AdrenaClient {
     );
   }
 
+  public async getPnL({
+    position,
+  }: {
+    position: PositionExtended;
+  }): Promise<ProfitAndLoss | null> {
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody)
+    );
+
+    if (!custody) {
+      throw new Error("Cannot find custody related to position");
+    }
+
+    return this.readonlyAdrenaProgram.views.getPnl(
+      {},
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: AdrenaClient.mainPoolAddress,
+          position: position.pubkey,
+          custody: custody.pubkey,
+          custodyOracleAccount: custody.oracle.oracleAccount,
+        },
+      }
+    );
+  }
+
+  public async getPositionLiquidationPrice({
+    position,
+  }: {
+    position: PositionExtended;
+  }): Promise<BN | null> {
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody)
+    );
+
+    if (!custody) {
+      throw new Error("Cannot find custody related to position");
+    }
+
+    return this.readonlyAdrenaProgram.views.getLiquidationPrice(
+      {},
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: AdrenaClient.mainPoolAddress,
+          position: position.pubkey,
+          custody: custody.pubkey,
+          custodyOracleAccount: custody.oracle.oracleAccount,
+        },
+      }
+    );
+  }
+
   // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
   public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
     const possiblePositionAddresses = this.tokens.reduce(
@@ -526,7 +589,8 @@ export class AdrenaClient {
         possiblePositionAddresses
       )) as (Position | null)[];
 
-    return positions.reduce(
+    // Create extended positions
+    const positionsExtended = positions.reduce(
       (acc: PositionExtended[], position: Position | null, index: number) => {
         if (!position) {
           return acc;
@@ -540,18 +604,40 @@ export class AdrenaClient {
           nativeToUi(position.sizeUsd, 6) /
           nativeToUi(position.collateralUsd, 6);
 
-        const extendedPosition: PositionExtended = {
-          ...position,
-          pubkey: possiblePositionAddresses[index],
-          token,
-          leverage,
-          side: Object.keys(position.side)[0] as "long" | "short",
-        };
-
-        return [...acc, extendedPosition];
+        return [
+          ...acc,
+          {
+            ...position,
+            pubkey: possiblePositionAddresses[index],
+            token,
+            leverage,
+            side: Object.keys(position.side)[0] as "long" | "short",
+          },
+        ];
       },
-      [] as PositionExtended[]
+      []
     );
+
+    // Get liquidation price + pnl
+    const [liquidationPrices, pnls] = await Promise.all([
+      Promise.all(
+        positionsExtended.map((positionExtended) =>
+          this.getPositionLiquidationPrice({ position: positionExtended })
+        )
+      ),
+      Promise.all(
+        positionsExtended.map((positionExtended) =>
+          this.getPnL({ position: positionExtended })
+        )
+      ),
+    ]);
+
+    // Insert them in positions extended
+    return positionsExtended.map((positionExtended, index) => ({
+      ...positionExtended,
+      liquidationPrice: liquidationPrices[index],
+      pnl: pnls[index],
+    }));
   }
 
   /*

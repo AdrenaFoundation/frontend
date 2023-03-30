@@ -76,7 +76,7 @@ export default function Positions({
                   className={twMerge(
                     "ml-1",
                     "capitalize",
-                    position.side === "long" ? "text-green-400" : "bg-red-400"
+                    position.side === "long" ? "text-green-400" : "text-red-400"
                   )}
                 >
                   {position.side}
@@ -84,7 +84,21 @@ export default function Positions({
               </div>
             </div>
 
-            <div className={columnStyle}>{/*Net Value*/}TODO</div>
+            <div className={columnStyle}>
+              {!position.pnl ? "-" : null}
+
+              {position.pnl && !position.pnl.profit.isZero() ? (
+                <span className="text-green-400">
+                  {formatPriceInfo(nativeToUi(position.pnl.profit, 6))}
+                </span>
+              ) : null}
+
+              {position.pnl && !position.pnl.loss.isZero() ? (
+                <span className="text-red-400">
+                  {formatPriceInfo(nativeToUi(position.pnl.loss, 6) * -1)}
+                </span>
+              ) : null}
+            </div>
 
             <div className={columnStyle}>
               {formatPriceInfo(nativeToUi(position.sizeUsd, 6))}
@@ -104,7 +118,11 @@ export default function Positions({
                 : "-"}
             </div>
 
-            <div className={columnStyle}>{/*Liq. Price*/}TODO</div>
+            <div className={columnStyle}>
+              {position.liquidationPrice
+                ? formatPriceInfo(nativeToUi(position.liquidationPrice, 6))
+                : "-"}
+            </div>
 
             <Button
               className={columnStyle}

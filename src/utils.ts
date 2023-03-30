@@ -21,7 +21,10 @@ export function findATAAddressSync(
 }
 
 export function formatNumber(nb: number, precision: number): string {
-  return Number(nb.toFixed(precision)).toLocaleString();
+  return Number(nb.toFixed(precision)).toLocaleString(undefined, {
+    minimumFractionDigits: precision,
+    maximumFractionDigits: precision,
+  });
 }
 
 export function getCustodyLiquidity(
@@ -37,8 +40,12 @@ export function getCustodyLiquidity(
 
 export function formatPriceInfo(price: number) {
   // If the price is very low, display it as it is, to not display $0
-  if (price < 0.00999999999999) {
+  if (price < 0.00999999999999 && price > 0) {
     return `$${price}`;
+  }
+
+  if (price < 0) {
+    return `-$${formatNumber(price * -1, 2)}`;
   }
 
   return `$${formatNumber(price, 2)}`;

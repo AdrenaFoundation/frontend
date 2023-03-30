@@ -18,6 +18,8 @@ export type PositionExtended = Exclude<Position, "side"> & {
   // still display the posiiton so it can be closed by the user
   token: Token | null;
   side: "long" | "short";
+  liquidationPrice?: BN;
+  pnl?: ProfitAndLoss | null;
 };
 
 // Alias to improve readability
