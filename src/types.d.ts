@@ -13,10 +13,7 @@ export type CustodyExtended = Custody & {
 export type PositionExtended = Exclude<Position, "side"> & {
   pubkey: PublicKey;
   leverage: number;
-
-  // Should never be null, but in case, we should display "unknown" token and
-  // still display the posiiton so it can be closed by the user
-  token: Token | null;
+  token: Token;
   side: "long" | "short";
   liquidationPrice?: BN;
   pnl?: ProfitAndLoss | null;

@@ -78,7 +78,7 @@ export default function TradingInput({
               className={twMerge(
                 "bg-blue",
                 "border-grey",
-                "mr-4",
+                "mr-2",
                 "text-sm",
                 "h-6"
               )}
@@ -86,13 +86,18 @@ export default function TradingInput({
             />
           ) : null}
 
-          <Select
-            selected={selectedToken?.name ?? ""}
-            options={tokenList.map((v) => v.name)}
-            onSelect={(name) =>
-              onTokenSelect(tokenList.find((token) => token.name === name)!)
-            }
-          />
+          {tokenList.length ? (
+            <Select
+              className="shrink-0"
+              selected={selectedToken?.name ?? ""}
+              options={tokenList.map((v) => v.name)}
+              onSelect={(name) =>
+                onTokenSelect(tokenList.find((token) => token.name === name)!)
+              }
+            />
+          ) : (
+            <div>{selectedToken?.name ?? "-"}</div>
+          )}
         </div>
       </div>
     </div>

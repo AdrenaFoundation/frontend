@@ -600,6 +600,11 @@ export class AdrenaClient {
           this.tokens.find((token) => token.custody.equals(position.custody)) ??
           null;
 
+        // Ignore position with unknown tokens
+        if (!token) {
+          return acc;
+        }
+
         const leverage =
           nativeToUi(position.sizeUsd, 6) /
           nativeToUi(position.collateralUsd, 6);
