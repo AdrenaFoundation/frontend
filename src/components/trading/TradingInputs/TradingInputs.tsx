@@ -297,7 +297,7 @@ export default function TradingInputs({
       >
         <div
           className={twMerge(
-            "bg-blue",
+            "bg-highlight",
             "flex",
             "rounded-full",
             "p-1",

@@ -34,7 +34,7 @@ export default function Header() {
       </>
 
       <Button
-        className="bg-blue ml-auto"
+        className="bg-highlight ml-auto h-9 w-16 text-sm"
         title={<Link href="/trade">Trade</Link>}
         onClick={() => {}}
       />

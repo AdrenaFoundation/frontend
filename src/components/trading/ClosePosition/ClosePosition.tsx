@@ -166,7 +166,7 @@ export default function ClosePosition({
       </div>
 
       <Button
-        className="mt-4 bg-blue"
+        className="mt-4 bg-highlight"
         title="Close"
         onClick={() => {
           onClose();

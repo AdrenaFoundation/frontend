@@ -104,7 +104,7 @@ export default function PositionsBlocs({
 
           <div className="border-t border-grey p-4">
             <Button
-              className="w-24 bg-blue"
+              className="w-24 bg-highlight"
               title="Close"
               onClick={() => {
                 triggerClosePosition(position);

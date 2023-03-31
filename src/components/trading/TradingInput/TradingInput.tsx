@@ -76,7 +76,7 @@ export default function TradingInput({
             <Button
               title="MAX"
               className={twMerge(
-                "bg-blue",
+                "bg-highlight",
                 "border-grey",
                 "mr-2",
                 "text-sm",

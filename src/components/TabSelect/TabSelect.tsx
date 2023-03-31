@@ -26,9 +26,9 @@ export default function TabSelect<T extends string>({
             "flex",
             "items-center",
             "justify-center",
-            title === selected ? "bg-blue" : "bg-third",
+            title === selected ? "bg-highlight" : "bg-third",
             "grow",
-            title !== selected ? "hover:bg-blue" : "",
+            title !== selected ? "hover:bg-highlight" : "",
             title === selected ? "opacity-100" : "opacity-50"
           )}
           onClick={() => onClick(title, index)}
