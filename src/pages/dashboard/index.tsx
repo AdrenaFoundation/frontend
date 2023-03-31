@@ -19,7 +19,7 @@ export default function Trade() {
         "bg-main"
       )}
     >
-      <ALPIndexComposition className="flex flex-col" />
+      <ALPIndexComposition />
     </div>
   );
 }

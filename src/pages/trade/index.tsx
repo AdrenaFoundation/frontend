@@ -167,7 +167,7 @@ export default function Trade() {
         {/* Trading chart header */}
         {client && tokenB ? (
           <TradingChartHeader
-            className="mb-4 p-4"
+            className="mb-4 pl-4 pr-4"
             tokenList={
               selectedAction === "short" || selectedAction === "long"
                 ? client.tokens.filter((t) => !t.isStable)

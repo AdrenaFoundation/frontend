@@ -64,6 +64,14 @@ export function formatPriceInfo(
   return `$${formatNumber(price, 2, displayPlusSymbol)}`;
 }
 
+export function formatPercentage(nb: number | null): string {
+  if (nb === null) {
+    return "-";
+  }
+
+  return `${Number(nb / 100).toFixed(2)}%`;
+}
+
 export function nativeToUi(nb: BN, decimals: number): number {
   return nb.div(new BN(10 ** decimals)).toNumber();
 }
