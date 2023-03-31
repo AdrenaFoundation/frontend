@@ -21,7 +21,10 @@ export default function Header() {
       )}
     >
       <Link className="font-bold sm:ml-6 sm:mr-6 uppercase" href="/">
-        Adrena
+        {
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="images/logo.png" className="h-5" alt="logo" />
+        }
       </Link>
 
       <>

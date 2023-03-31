@@ -28,6 +28,16 @@ export default function Footer() {
           height="25"
         />
       </Link>
+
+      <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
+        <Image
+          className="hover:opacity-90 cursor-pointer ml-8"
+          src="/images/twitter.svg"
+          alt="twitter icon"
+          width="20"
+          height="20"
+        />
+      </Link>
     </div>
   );
 }
