@@ -162,6 +162,13 @@ export default function TradingInputs({
     }, [onChangeLeverage, leverage]);
   }
 
+  // Set leverage to 1 when swapping
+  useEffect(() => {
+    if (actionType === "swap") {
+      setLeverage(1);
+    }
+  }, [actionType]);
+
   // Switch inputs values and tokens
   const switchAB = () => {
     if (!tokenA || !tokenB) return;
