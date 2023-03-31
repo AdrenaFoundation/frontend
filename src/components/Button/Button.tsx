@@ -36,7 +36,7 @@ function Button(
     >
       {leftIcon ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={leftIcon} className="h-4 w-4 mr-2" alt="left icon" />
+        <img src={leftIcon} className="h-6 w-6 mr-2" alt="left icon" />
       ) : null}
 
       {title}

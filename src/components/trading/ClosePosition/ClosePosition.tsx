@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import TradingInput from "../TradingInput/TradingInput";
+import Checkbox from "@/components/Checkbox/Checkbox";
 
 export default function ClosePosition({
   className,
@@ -75,94 +76,103 @@ export default function ClosePosition({
         }}
       />
 
-      <div className={`${rowStyle} mt-4`}>
-        <div>Allow up to 1% slippage</div>
-        <div>
-          <input
-            className="cursor-pointer"
-            type="checkbox"
-            checked={allowedIncreasedSlippage}
-            onChange={(v) => {
-              setAllowedIncreasedSlippage(v.currentTarget.checked);
-            }}
-          />
+      <div className="flex flex-col text-sm">
+        <div className={`${rowStyle} mt-4`}>
+          <div className="text-txtfade">Allow up to 1% slippage</div>
+          <div className="flex items-center">
+            <Checkbox
+              checked={allowedIncreasedSlippage}
+              onChange={setAllowedIncreasedSlippage}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className={rowStyle}>
-        <div>Allowed slippage</div>
-        <div>{allowedIncreasedSlippage ? "1.00%" : "0.30%"}</div>
-      </div>
-
-      <div className="mt-2 h-[1px] w-full bg-grey" />
-
-      <div className={rowStyle}>
-        <div>Mark Price</div>
-        <div>{markPrice ? formatPriceInfo(markPrice) : "-"}</div>
-      </div>
-
-      <div className={rowStyle}>
-        <div>Entry Price</div>
-        <div>{entryPrice ? formatPriceInfo(entryPrice) : "-"}</div>
-      </div>
-
-      <div className={rowStyle}>
-        <div>Liq. Price</div>
-        <div>
-          {position.liquidationPrice
-            ? formatPriceInfo(nativeToUi(position.liquidationPrice, 6))
-            : "-"}
+        <div className={rowStyle}>
+          <div className="text-txtfade">Allowed slippage</div>
+          <div>{allowedIncreasedSlippage ? "1.00%" : "0.30%"}</div>
         </div>
-      </div>
 
-      <div className="mt-2 h-[1px] w-full bg-grey" />
+        <div className="mt-2 h-[1px] w-full bg-grey" />
 
-      <div className={rowStyle}>
-        <div>Size</div>
-        <div className="flex">
-          {input ? (
-            <>
-              {formatPriceInfo(nativeToUi(position.collateralUsd, 6))}
-              {
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src="images/arrow-right.svg" alt="arrow right" />
-              }
-              {formatPriceInfo(nativeToUi(position.collateralUsd, 6) - input)}
-            </>
-          ) : null}
+        <div className={rowStyle}>
+          <div className="text-txtfade">Mark Price</div>
+          <div>{markPrice ? formatPriceInfo(markPrice) : "-"}</div>
         </div>
-      </div>
 
-      <div className={rowStyle}>
-        <div>Collateral ({position.token.name})</div>
-        <div className="flex">
-          {input && markPrice ? (
-            <>
-              {formatNumber(
-                nativeToUi(position.collateralUsd, 6) / markPrice,
-                6
-              )}
-              {
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src="images/arrow-right.svg" alt="arrow right" />
-              }
-              {formatNumber(
-                (nativeToUi(position.collateralUsd, 6) - input) / markPrice,
-                6
-              )}
-            </>
-          ) : null}
+        <div className={rowStyle}>
+          <div className="text-txtfade">Entry Price</div>
+          <div>{entryPrice ? formatPriceInfo(entryPrice) : "-"}</div>
         </div>
-      </div>
 
-      <div className={rowStyle}>
-        <div>PnL</div>
-        <div>{pnl && markPrice ? formatPriceInfo(pnl, true) : null}</div>
-      </div>
+        <div className={rowStyle}>
+          <div className="text-txtfade">Liq. Price</div>
+          <div>
+            {position.liquidationPrice
+              ? formatPriceInfo(nativeToUi(position.liquidationPrice, 6))
+              : "-"}
+          </div>
+        </div>
 
-      <div className={rowStyle}>
-        <div>Fees</div>
-        <div>TODO</div>
+        <div className="mt-2 h-[1px] w-full bg-grey" />
+
+        <div className={rowStyle}>
+          <div className="text-txtfade">Size</div>
+          <div className="flex">
+            {!input
+              ? formatPriceInfo(nativeToUi(position.collateralUsd, 6))
+              : null}
+
+            {input ? (
+              <>
+                {formatPriceInfo(nativeToUi(position.collateralUsd, 6))}
+                {
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="images/arrow-right.svg" alt="arrow right" />
+                }
+                {formatPriceInfo(nativeToUi(position.collateralUsd, 6) - input)}
+              </>
+            ) : null}
+          </div>
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-txtfade">Collateral ({position.token.name})</div>
+          <div className="flex">
+            {!input && markPrice
+              ? formatNumber(
+                  nativeToUi(position.collateralUsd, 6) / markPrice,
+                  6
+                )
+              : null}
+
+            {input && markPrice ? (
+              <>
+                {formatNumber(
+                  nativeToUi(position.collateralUsd, 6) / markPrice,
+                  6
+                )}
+                {
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="images/arrow-right.svg" alt="arrow right" />
+                }
+                {formatNumber(
+                  (nativeToUi(position.collateralUsd, 6) - input) / markPrice,
+                  6
+                )}
+              </>
+            ) : null}
+          </div>
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-txtfade">PnL</div>
+          <div>{pnl && markPrice ? formatPriceInfo(pnl, true) : null}</div>
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-txtfade">Fees</div>
+          <div>TODO</div>
+        </div>
       </div>
 
       <Button

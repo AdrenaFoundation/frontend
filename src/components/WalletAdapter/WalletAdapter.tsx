@@ -26,15 +26,17 @@ function WalletAdapter(
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    if (connected) return;
-
     dispatch(autoConnectWalletAction("phantom"));
-  }, [connected, dispatch]);
+
+    // Only once when page load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={twMerge(className)}>
       {!connected ? (
         <Button
+          leftIcon="images/wallet-icon.svg"
           title="Connect wallet"
           onClick={() => setOpenModal(true)}
           ref={ref}
@@ -48,7 +50,7 @@ function WalletAdapter(
             dispatch(disconnectWalletAction(wallet.adapterName));
             setOpenModal(false);
           }}
-          rightIcon="images/power-off.svg"
+          rightIcon="images/disconnect.png"
         />
       ) : null}
 

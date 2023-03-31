@@ -75,7 +75,7 @@ const Modal = ({
           <div
             className={twMerge(
               "bg-main",
-              "h-12",
+              "h-14",
               "w-full",
               "flex",
               "flex-row",
@@ -87,11 +87,11 @@ const Modal = ({
               "pr-4"
             )}
           >
-            <span className="text-xl">{title}</span>
+            <span className="text-md">{title}</span>
             {
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                className="w-4 h-4 cursor-pointer hover:opacity-90"
+                className="w-3 h-3 cursor-pointer hover:opacity-90"
                 src="/images/cross.svg"
                 alt="close icon"
                 onClick={() => close()}
