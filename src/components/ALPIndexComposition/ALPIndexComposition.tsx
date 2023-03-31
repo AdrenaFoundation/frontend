@@ -1,7 +1,7 @@
 import useALPIndexComposition from "@/hooks/useALPIndexComposition";
-import { useMediaQuery } from "react-responsive";
 import ALPIndexCompositionArray from "./ALPIndexCompositionArray";
 import ALPIndexCompositionBlocs from "./ALPIndexCompositionBlocs";
+import useBetterMediaQuery from "@/hooks/useBetterMediaQuery";
 
 export default function ALPIndexComposition({
   className,
@@ -9,7 +9,7 @@ export default function ALPIndexComposition({
   className?: string;
 }) {
   const alpIndexComposition = useALPIndexComposition();
-  const isBigScreen = useMediaQuery({ query: "(min-width: 950px)" });
+  const isBigScreen = useBetterMediaQuery("(min-width: 950px)");
 
   return (
     <div>

@@ -5,7 +5,7 @@ import ClosePosition from "../ClosePosition/ClosePosition";
 import Modal from "@/components/Modal/Modal";
 import PositionsArray from "./PositionsArray";
 import PositionsBlocs from "./PositionsBlocs";
-import { useMediaQuery } from "react-responsive";
+import useBetterMediaQuery from "@/hooks/useBetterMediaQuery";
 
 export default function Positions({
   className,
@@ -18,7 +18,7 @@ export default function Positions({
     null
   );
 
-  const isBigScreen = useMediaQuery({ query: "(min-width: 950px)" });
+  const isBigScreen = useBetterMediaQuery("(min-width: 950px)");
 
   return (
     <>
