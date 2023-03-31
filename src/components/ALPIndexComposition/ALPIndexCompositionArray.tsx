@@ -13,7 +13,13 @@ export default function ALPIndexCompositionArray({
 }) {
   return (
     <div
-      className={twMerge("bg-secondary", "border", "border-grey", className)}
+      className={twMerge(
+        "bg-secondary",
+        "border",
+        "border-grey",
+        "pb-2",
+        className
+      )}
     >
       <div className="flex h-12 w-full items-center pl-4 font-bold border-b border-grey">
         ALP Index Composition
@@ -24,7 +30,7 @@ export default function ALPIndexCompositionArray({
           (columnName) => (
             <div
               key={columnName}
-              className="flex w-40 shrink-0 grow uppercase last:justify-end"
+              className="flex w-40 shrink-0 grow uppercase last:justify-end text-txtfade"
             >
               {columnName}
             </div>

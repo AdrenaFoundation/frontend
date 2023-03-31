@@ -56,7 +56,7 @@ export default function TradingInputs({
       </div>
 
       <div className={infoStyle}>
-        <span className="text-sm">24h Change</span>
+        <span className="text-sm text-txtfade">24h Change</span>
         <span
           className={twMerge(
             "mt-0.5",
@@ -72,7 +72,7 @@ export default function TradingInputs({
       </div>
 
       <div className={infoStyle}>
-        <span className="text-sm">24h Volume</span>
+        <span className="text-sm text-txtfade">24h Volume</span>
         <span className="mt-0.5">
           {stats ? formatPriceInfo(stats[selected.name].dailyVolume) : "-"}
         </span>

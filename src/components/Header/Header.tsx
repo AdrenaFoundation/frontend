@@ -4,6 +4,9 @@ import Button from "../Button/Button";
 import WalletAdapter from "../WalletAdapter/WalletAdapter";
 
 export default function Header() {
+  const linkStyle =
+    "mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:text-txtregular text-txtfade";
+
   return (
     <div
       className={twMerge(
@@ -28,22 +31,13 @@ export default function Header() {
       </Link>
 
       <>
-        <Link
-          className="mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:opacity-90"
-          href="/dashboard"
-        >
+        <Link className={linkStyle} href="/dashboard">
           Dashboard
         </Link>
-        <Link
-          className="mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:opacity-90"
-          href="/earn"
-        >
+        <Link className={linkStyle} href="/earn">
           Earn
         </Link>
-        <Link
-          className="mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:opacity-90"
-          href="/buy"
-        >
+        <Link className={linkStyle} href="/buy">
           Buy
         </Link>
       </>
