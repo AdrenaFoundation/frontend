@@ -617,6 +617,9 @@ export class AdrenaClient {
             token,
             leverage,
             side: Object.keys(position.side)[0] as "long" | "short",
+            uiSizeUsd: nativeToUi(position.sizeUsd, 6),
+            uiCollateralUsd: nativeToUi(position.collateralUsd, 6),
+            uiPrice: nativeToUi(position.price, 6),
           },
         ];
       },
@@ -642,6 +645,20 @@ export class AdrenaClient {
       ...positionExtended,
       liquidationPrice: liquidationPrices[index],
       pnl: pnls[index],
+      uiPnl: (() => {
+        const pnl = pnls[index];
+
+        if (!pnl) return null;
+
+        if (!pnl.loss.isZero()) {
+          return nativeToUi(pnl.loss, 6) * -1;
+        }
+
+        return nativeToUi(pnl.profit, 6);
+      })(),
+      uiLiquidationPrice: liquidationPrices[index]
+        ? nativeToUi(liquidationPrices[index]!, 6)
+        : undefined,
     }));
   }
 

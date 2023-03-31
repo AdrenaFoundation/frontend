@@ -17,6 +17,11 @@ export type PositionExtended = Exclude<Position, "side"> & {
   side: "long" | "short";
   liquidationPrice?: BN;
   pnl?: ProfitAndLoss | null;
+  uiPnl?: number | null;
+  uiLiquidationPrice?: number;
+  uiSizeUsd: number;
+  uiCollateralUsd: number;
+  uiPrice: number;
 };
 
 // Alias to improve readability

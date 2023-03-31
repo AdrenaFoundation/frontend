@@ -74,7 +74,7 @@ export default function PositionsArray({
                   className={twMerge(
                     "ml-1",
                     "capitalize",
-                    position.side === "long" ? "text-green-400" : "text-red-400"
+                    `text-${position.side === "long" ? "green" : "red"}-400`
                   )}
                 >
                   {position.side}
@@ -83,31 +83,27 @@ export default function PositionsArray({
             </div>
 
             <div className={columnStyle}>
-              {!position.pnl ? "-" : null}
-
-              {position.pnl && !position.pnl.profit.isZero() ? (
-                <span className="text-green-400">
-                  {formatPriceInfo(nativeToUi(position.pnl.profit, 6))}
+              {position.uiPnl ? (
+                <span
+                  className={`text-${position.uiPnl > 0 ? "green" : "red"}-400`}
+                >
+                  {formatPriceInfo(position.uiPnl)}
                 </span>
-              ) : null}
-
-              {position.pnl && !position.pnl.loss.isZero() ? (
-                <span className="text-red-400">
-                  {formatPriceInfo(nativeToUi(position.pnl.loss, 6) * -1)}
-                </span>
-              ) : null}
+              ) : (
+                "-"
+              )}
             </div>
 
             <div className={columnStyle}>
-              {formatPriceInfo(nativeToUi(position.sizeUsd, 6))}
+              {formatPriceInfo(position.uiSizeUsd)}
             </div>
 
             <div className={columnStyle}>
-              {formatPriceInfo(nativeToUi(position.collateralUsd, 6))}
+              {formatPriceInfo(position.uiCollateralUsd)}
             </div>
 
             <div className={columnStyle}>
-              {formatPriceInfo(nativeToUi(position.price, 6))}
+              {formatPriceInfo(position.uiPrice)}
             </div>
 
             <div className={columnStyle}>
@@ -117,8 +113,8 @@ export default function PositionsArray({
             </div>
 
             <div className={columnStyle}>
-              {position.liquidationPrice
-                ? formatPriceInfo(nativeToUi(position.liquidationPrice, 6))
+              {position.uiLiquidationPrice
+                ? formatPriceInfo(position.uiLiquidationPrice)
                 : "-"}
             </div>
 

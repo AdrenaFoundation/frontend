@@ -12,10 +12,7 @@ import {
   nativeToUi,
   uiToNative,
 } from "@/utils";
-import Button from "../../Button/Button";
-import InputNumber from "../../InputNumber/InputNumber";
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
-import Select from "../../Select/Select";
 import { twMerge } from "tailwind-merge";
 import TradingInput from "../TradingInput/TradingInput";
 

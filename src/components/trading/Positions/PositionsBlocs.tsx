@@ -49,38 +49,34 @@ export default function PositionsBlocs({
 
             <div className={columnStyle}>
               <div className="text-txtfade">Size</div>
-              <div>{formatPriceInfo(nativeToUi(position.sizeUsd, 6))}</div>
+              <div>{formatPriceInfo(position.uiSizeUsd)}</div>
             </div>
 
             <div className={columnStyle}>
               <div className="text-txtfade">Collateral</div>
-              <div>
-                {formatPriceInfo(nativeToUi(position.collateralUsd, 6))}
-              </div>
+              <div>{formatPriceInfo(position.uiCollateralUsd)}</div>
             </div>
 
             <div className={columnStyle}>
               <div className="text-txtfade">PnL</div>
               <div>
-                {!position.pnl ? "-" : null}
-
-                {position.pnl && !position.pnl.profit.isZero() ? (
-                  <span className="text-green-400">
-                    {formatPriceInfo(nativeToUi(position.pnl.profit, 6))}
+                {position.uiPnl ? (
+                  <span
+                    className={`text-${
+                      position.uiPnl > 0 ? "green" : "red"
+                    }-400`}
+                  >
+                    {formatPriceInfo(position.uiPnl)}
                   </span>
-                ) : null}
-
-                {position.pnl && !position.pnl.loss.isZero() ? (
-                  <span className="text-red-400">
-                    {formatPriceInfo(nativeToUi(position.pnl.loss, 6) * -1)}
-                  </span>
-                ) : null}
+                ) : (
+                  "-"
+                )}
               </div>
             </div>
 
             <div className={columnStyle}>
               <div className="text-txtfade">Entry Price</div>
-              <div>{formatPriceInfo(nativeToUi(position.price, 6))}</div>
+              <div>{formatPriceInfo(position.uiPrice)}</div>
             </div>
 
             <div className={columnStyle}>
@@ -95,8 +91,8 @@ export default function PositionsBlocs({
             <div className={columnStyle}>
               <div className="text-txtfade">Liquidation Price</div>
               <div>
-                {position.liquidationPrice
-                  ? formatPriceInfo(nativeToUi(position.liquidationPrice, 6))
+                {position.uiLiquidationPrice
+                  ? formatPriceInfo(position.uiLiquidationPrice)
                   : "-"}
               </div>
             </div>
