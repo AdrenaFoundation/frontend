@@ -12,7 +12,7 @@ import { twMerge } from "tailwind-merge";
 import TradingInput from "../TradingInput/TradingInput";
 import Checkbox from "@/components/Checkbox/Checkbox";
 
-export default function ClosePosition({
+export default function ReduceOrClosePosition({
   className,
   position,
   onClose,
@@ -39,6 +39,16 @@ export default function ClosePosition({
       ? nativeToUi(position.pnl.profit, 6)
       : nativeToUi(position.pnl.loss, 6) * -1
     : null;
+
+  const executeBtnText = (() => {
+    if (!input) return "Enter an amount";
+
+    if (input < nativeToUi(position.collateralUsd, 6)) {
+      return "Reduce Position";
+    }
+
+    return "Close Position";
+  })();
 
   return (
     <div className={twMerge("flex", "flex-col", "h-full", className)}>
@@ -177,8 +187,10 @@ export default function ClosePosition({
 
       <Button
         className="mt-4 bg-highlight"
-        title="Close"
+        title={executeBtnText}
         onClick={() => {
+          // TODO, execute the operation
+          // then close
           onClose();
         }}
       />

@@ -1,7 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { useState } from "react";
 import { PositionExtended } from "@/types";
-import ClosePosition from "../ClosePosition/ClosePosition";
+import ReduceOrClosePosition from "../ReduceOrClosePosition/ReduceOrClosePosition";
 import Modal from "@/components/Modal/Modal";
 import PositionsArray from "./PositionsArray";
 import PositionsBlocs from "./PositionsBlocs";
@@ -14,24 +14,23 @@ export default function Positions({
   className?: string;
   positions: PositionExtended[] | null;
 }) {
-  const [closePosition, setClosePosition] = useState<PositionExtended | null>(
-    null
-  );
+  const [positionToReduceOrClose, setPositionToReduceOrClose] =
+    useState<PositionExtended | null>(null);
 
   const isBigScreen = useBetterMediaQuery("(min-width: 950px)");
 
   return (
     <>
-      {closePosition ? (
+      {positionToReduceOrClose ? (
         <Modal
-          title="Close Position"
-          close={() => setClosePosition(null)}
+          title="Reduce or Close Position"
+          close={() => setPositionToReduceOrClose(null)}
           className={twMerge("flex", "flex-col", "items-center", "p-4")}
         >
-          <ClosePosition
-            position={closePosition}
+          <ReduceOrClosePosition
+            position={positionToReduceOrClose}
             onClose={() => {
-              setClosePosition(null);
+              setPositionToReduceOrClose(null);
             }}
           />
         </Modal>
@@ -41,13 +40,13 @@ export default function Positions({
         <PositionsArray
           positions={positions}
           className={className}
-          triggerClosePosition={setClosePosition}
+          triggerReduceOrClosePosition={setPositionToReduceOrClose}
         />
       ) : (
         <PositionsBlocs
           positions={positions}
           className={className}
-          triggerClosePosition={setClosePosition}
+          triggerReduceOrClosePosition={setPositionToReduceOrClose}
         />
       )}
     </>

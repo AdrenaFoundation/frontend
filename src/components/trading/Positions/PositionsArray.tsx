@@ -7,11 +7,11 @@ import { PositionExtended } from "@/types";
 export default function PositionsArray({
   className,
   positions,
-  triggerClosePosition,
+  triggerReduceOrClosePosition,
 }: {
   className?: string;
   positions: PositionExtended[] | null;
-  triggerClosePosition: (p: PositionExtended) => void;
+  triggerReduceOrClosePosition: (p: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -44,7 +44,7 @@ export default function PositionsArray({
           </div>
         ))}
 
-        <div className="w-12">{/* Space for close action*/}</div>
+        <div className="w-16">{/* Space for close action*/}</div>
       </div>
 
       {/* Content */}
@@ -62,7 +62,7 @@ export default function PositionsArray({
               className={twMerge(
                 columnStyle,
                 "flex-col",
-                "justify-start",
+                "justify-center",
                 "items-start"
               )}
             >
@@ -123,10 +123,20 @@ export default function PositionsArray({
             </div>
 
             <Button
-              className="w-12 border-0 text-txtfade hover:text-txtregular"
-              title="Close"
+              className="w-16 border-0 text-txtfade hover:text-txtregular"
+              title={
+                <div className="flex flex-col justify-center items-center text-sm">
+                  <div>Reduce</div>
+                  <div className="flex justify-center items-center">
+                    <div className="w-full h-[1px] bg-grey shrink-0" />
+                    <div className="text-txtfade ml-1 mr-1">or</div>
+                    <div className="w-full h-[1px] bg-grey shrink-0" />
+                  </div>
+                  <div>Close</div>
+                </div>
+              }
               onClick={() => {
-                triggerClosePosition(position);
+                triggerReduceOrClosePosition(position);
               }}
             />
           </div>
