@@ -16,9 +16,9 @@ export default function SwapDetails({
   const rowStyle = "w-full flex justify-between items-center mt-2";
 
   return (
-    <div className="flex flex-col p-1 mt-4">
+    <div className="flex flex-col pl-4 pr-4 pb-4 mt-4 text-sm">
       <div className={rowStyle}>
-        <span>{tokenA.name} Price</span>
+        <span className="text-txtfade">{tokenA.name} Price</span>
         <span>
           {tokenPrices[tokenA.name]
             ? formatPriceInfo(tokenPrices[tokenA.name]!)
@@ -27,7 +27,7 @@ export default function SwapDetails({
       </div>
 
       <div className={rowStyle}>
-        <span>{tokenB.name} Price</span>
+        <span className="text-txtfade">{tokenB.name} Price</span>
         <span>
           {tokenPrices[tokenB.name]
             ? formatPriceInfo(tokenPrices[tokenB.name]!)
@@ -36,7 +36,7 @@ export default function SwapDetails({
       </div>
 
       <div className={rowStyle}>
-        <span>Available Liquidity</span>
+        <span className="text-txtfade">Available Liquidity</span>
         <span>
           {client && tokenPrices && tokenPrices[tokenB.name]
             ? formatPriceInfo(
