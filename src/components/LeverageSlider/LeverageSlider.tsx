@@ -1,6 +1,7 @@
 import Slider from "rc-slider";
 import { ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
+
 import "rc-slider/assets/index.css";
 
 export default function LeverageSlider({
@@ -19,7 +20,7 @@ export default function LeverageSlider({
         step={0.1}
         marks={[2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50].reduce(
           (acc, mark) => {
-            acc[mark] = <span className="text-white">x{mark}</span>;
+            acc[mark] = <span className="text-txtfade">x{mark}</span>;
             return acc;
           },
           {} as Record<number, ReactNode>

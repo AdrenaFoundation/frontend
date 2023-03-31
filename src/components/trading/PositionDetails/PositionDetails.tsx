@@ -8,28 +8,30 @@ export default function PositionDetails({
   tokenB,
   entryPrice,
   exitPrice,
+  className,
 }: {
   tokenB: Token;
   entryPrice: number | null;
   exitPrice: number | null;
+  className?: string;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const client = useAdrenaClient();
 
   return (
-    <div className="flex flex-col p-1 mt-4">
+    <div className={`flex flex-col p-1 text-sm ${className}`}>
       <div className="w-full flex justify-between items-center mt-1">
-        <span>Entry Price</span>
+        <span className="text-txtfade">Entry Price</span>
         <span>{entryPrice !== null ? formatPriceInfo(entryPrice) : "-"}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
-        <span>Exit Price</span>
+        <span className="text-txtfade">Exit Price</span>
         <span>{exitPrice !== null ? formatPriceInfo(exitPrice) : "-"}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
-        <span>Borrow Fee</span>
+        <span className="text-txtfade">Borrow Fee</span>
         <span>
           {client && tokenB
             ? `${formatNumber(
@@ -44,7 +46,7 @@ export default function PositionDetails({
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
-        <span>Available Liquidity</span>
+        <span className="text-txtfade">Available Liquidity</span>
         <span>
           {client && tokenB && tokenPrices && tokenPrices[tokenB.name]
             ? formatPriceInfo(

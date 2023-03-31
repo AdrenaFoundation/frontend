@@ -21,6 +21,7 @@
 
   * {
     @apply font-regular;
+    @apply text-txtregular;
   }
 }
 
@@ -37,12 +38,6 @@ body,
   height: 100%;
   display: flex;
   flex-direction: column;
-  // font-family: app-font;
-  color: white;
-}
-
-* {
-  // font-family: app-font;
 }
 
 // Hide arrows on input number

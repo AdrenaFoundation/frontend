@@ -35,8 +35,8 @@ export default function TradingInput({
         className={twMerge(
           "h-32",
           "w-32",
-          "p-8",
-          "bg-secondary",
+          "p-6",
+          "bg-third",
           "flex",
           "items-center",
           "w-full",
@@ -53,8 +53,8 @@ export default function TradingInput({
             "justify-between"
           )}
         >
-          <div>{textTopLeft}</div>
-          <div>{textTopRight}</div>
+          <div className="text-txtfade">{textTopLeft}</div>
+          <div className="text-txtfade">{textTopRight}</div>
         </div>
 
         <div className="flex w-full items-center">
@@ -62,7 +62,7 @@ export default function TradingInput({
             value={value ?? undefined}
             placeholder="0.00"
             className={twMerge(
-              "bg-secondary",
+              "bg-third",
               "border-0",
               "text-lg",
               "outline-none",
@@ -88,7 +88,7 @@ export default function TradingInput({
 
           {tokenList.length ? (
             <Select
-              className="shrink-0"
+              className="shrink-0 text-2xl"
               selected={selectedToken?.name ?? ""}
               options={tokenList.map((v) => v.name)}
               onSelect={(name) =>

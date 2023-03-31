@@ -20,15 +20,16 @@ export default function TabSelect<T extends string>({
         <div
           key={title}
           className={twMerge(
-            "p-4",
+            "p-2",
             "capitalize",
             "cursor-pointer",
             "flex",
             "items-center",
             "justify-center",
-            title === selected ? "bg-secondary" : "bg-main",
+            title === selected ? "bg-blue" : "bg-third",
             "grow",
-            "hover:opacity-90"
+            title !== selected ? "hover:bg-blue" : "",
+            title === selected ? "opacity-100" : "opacity-50"
           )}
           onClick={() => onClick(title, index)}
         >

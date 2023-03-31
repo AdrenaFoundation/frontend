@@ -217,93 +217,110 @@ export default function Trade() {
         </>
       </div>
 
-      <div className={twMerge("w-[22em]", "mt-4", "xl:mt-0", "xl:ml-4")}>
-        <TabSelect
-          selected={selectedAction}
-          tabs={[
-            { title: "long", icon: "/images/long.svg" },
-            { title: "short", icon: "/images/short.svg" },
-            { title: "swap", icon: "/images/swap.svg" },
-          ]}
-          onClick={(title, _: number) => {
-            setSelectedAction(title);
-          }}
-        />
-
-        {client && client.tokens.length && tokenA && tokenB && (
-          <>
-            <TradingInputs
-              className="mt-4"
-              actionType={selectedAction}
-              allowedTokenA={client.tokens}
-              allowedTokenB={
-                selectedAction === "swap"
-                  ? client.tokens
-                  : client.tokens.filter((t) => !t.isStable)
-              }
-              tokenA={tokenA}
-              tokenB={tokenB}
-              onChangeInputA={setInputAValue}
-              onChangeInputB={setInputBValue}
-              setTokenA={setTokenA}
-              setTokenB={setTokenB}
-              onChangeLeverage={setLeverage}
-            />
-          </>
-        )}
-
-        {/* Button to execute action */}
-        <>
-          <Button
-            className="mt-4 bg-blue"
-            title={buttonTitle}
-            onClick={handleExecuteButton}
+      <div className="flex flex-col mt-4 xl:ml-4 xl:mt-0">
+        <div
+          className={twMerge(
+            "w-[26em]",
+            "bg-secondary",
+            "p-4",
+            "border",
+            "border-grey"
+          )}
+        >
+          <TabSelect
+            selected={selectedAction}
+            tabs={[
+              { title: "long", icon: "/images/long.svg" },
+              { title: "short", icon: "/images/short.svg" },
+              { title: "swap", icon: "/images/swap.svg" },
+            ]}
+            onClick={(title, _: number) => {
+              setSelectedAction(title);
+            }}
           />
 
-          {/* to handle wallet connection, create an hidden wallet adapter */}
-          <WalletAdapter className="hidden" ref={walletAdapterRef} />
-        </>
+          {client && client.tokens.length && tokenA && tokenB && (
+            <>
+              <TradingInputs
+                className="mt-4"
+                actionType={selectedAction}
+                allowedTokenA={client.tokens}
+                allowedTokenB={
+                  selectedAction === "swap"
+                    ? client.tokens
+                    : client.tokens.filter((t) => !t.isStable)
+                }
+                tokenA={tokenA}
+                tokenB={tokenB}
+                onChangeInputA={setInputAValue}
+                onChangeInputB={setInputBValue}
+                setTokenA={setTokenA}
+                setTokenB={setTokenB}
+                onChangeLeverage={setLeverage}
+              />
+            </>
+          )}
+
+          {/* Button to execute action */}
+          <>
+            <Button
+              className="mt-4 bg-blue"
+              title={buttonTitle}
+              onClick={handleExecuteButton}
+            />
+
+            {/* to handle wallet connection, create an hidden wallet adapter */}
+            <WalletAdapter className="hidden" ref={walletAdapterRef} />
+          </>
+        </div>
 
         {/* Position details */}
-        <>
-          <div className="p-4 mt-4">
-            <div className="flex items-center">
-              <span className="capitalize">{selectedAction}</span>
+        <div
+          className={twMerge(
+            "w-[26em]",
+            "mt-4",
+            "bg-secondary",
+            "border",
+            "border-grey"
+          )}
+        >
+          <div className="flex items-center border-b border-grey p-3">
+            <span className="capitalize">{selectedAction}</span>
 
-              {selectedAction === "short" || selectedAction === "long" ? (
-                <span className="ml-1">{tokenB?.name ?? "-"}</span>
-              ) : null}
-            </div>
-
-            {tokenA && tokenB ? (
-              <>
-                {selectedAction === "short" || selectedAction === "long" ? (
-                  <PositionDetails
-                    tokenB={tokenB}
-                    entryPrice={
-                      tokenB &&
-                      inputBValue &&
-                      tokenPrices &&
-                      tokenPrices[tokenB.name]
-                        ? tokenPrices[tokenB.name]
-                        : null
-                    }
-                    exitPrice={
-                      tokenB &&
-                      inputBValue &&
-                      tokenPrices &&
-                      tokenPrices[tokenB.name]
-                        ? tokenPrices[tokenB.name]
-                        : null
-                    }
-                  />
-                ) : (
-                  <SwapDetails tokenA={tokenA} tokenB={tokenB} />
-                )}
-              </>
+            {selectedAction === "short" || selectedAction === "long" ? (
+              <span className="ml-1">{tokenB?.name ?? "-"}</span>
             ) : null}
           </div>
-        </>
+
+          {tokenA && tokenB ? (
+            <>
+              {selectedAction === "short" || selectedAction === "long" ? (
+                <PositionDetails
+                  className="p-4"
+                  tokenB={tokenB}
+                  entryPrice={
+                    tokenB &&
+                    inputBValue &&
+                    tokenPrices &&
+                    tokenPrices[tokenB.name]
+                      ? tokenPrices[tokenB.name]
+                      : null
+                  }
+                  exitPrice={
+                    tokenB &&
+                    inputBValue &&
+                    tokenPrices &&
+                    tokenPrices[tokenB.name]
+                      ? tokenPrices[tokenB.name]
+                      : null
+                  }
+                />
+              ) : (
+                <SwapDetails tokenA={tokenA} tokenB={tokenB} />
+              )}
+            </>
+          ) : null}
+        </div>
       </div>
     </div>
   );

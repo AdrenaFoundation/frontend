@@ -336,7 +336,9 @@ export default function TradingInputs({
           <>
             {/* Display leverage if short/long, otherwise display wallet balance */}
             {actionType === "short" || actionType === "long" ? (
-              <div>Leverage{`: ${leverage.toFixed(2)}x`}</div>
+              <div className="text-txtfade">
+                Leverage{`: ${leverage.toFixed(2)}x`}
+              </div>
             ) : (
               <>
                 {connected && tokenB
@@ -360,7 +362,7 @@ export default function TradingInputs({
         <>
           {/* Leverage (only in short/long) */}
           <>
-            <div className="w-full mt-6 mb-2">Leverage Slider</div>
+            <div className="w-full mt-6 mb-2 text-txtfade">Leverage Slider</div>
             <div className="w-full flex flex-col justify-center items-center">
               <LeverageSlider
                 className="w-[90%] m-auto"
@@ -371,21 +373,21 @@ export default function TradingInputs({
 
           {/* Position basic infos */}
           <>
-            <div className="p-1 mt-8">
+            <div className="p-1 mt-8 text-sm">
               <div className={infoRowStyle}>
-                <span>Collateral In</span>
+                <span className="text-txtfade">Collateral In</span>
                 <span>{actionType === "long" ? "USD" : "USDC"}</span>
               </div>
 
               <div className={infoRowStyle}>
-                <span>Leverage</span>
+                <span className="text-txtfade">Leverage</span>
                 <span>
                   {leverage !== null ? `${formatNumber(leverage, 2)}x` : "-"}
                 </span>
               </div>
 
               <div className={infoRowStyle}>
-                <span>Entry Price</span>
+                <span className="text-txtfade">Entry Price</span>
                 <span>
                   {entryPriceAndFee
                     ? formatPriceInfo(
@@ -396,12 +398,12 @@ export default function TradingInputs({
               </div>
 
               <div className={infoRowStyle}>
-                <span>Liq. Price</span>
+                <span className="text-txtfade">Liq. Price</span>
                 <span>TODO</span>
               </div>
 
               <div className={infoRowStyle}>
-                <span>Fees</span>
+                <span className="text-txtfade">Fees</span>
                 <span>
                   {entryPriceAndFee
                     ? formatPriceInfo(nativeToUi(entryPriceAndFee.fee, 6))

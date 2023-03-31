@@ -40,7 +40,7 @@ export default function PositionsArray({
           "Liq. Price",
           "", // close action
         ].map((text) => (
-          <div key={text} className={columnStyle}>
+          <div key={text} className={`${columnStyle} text-txtfade`}>
             {text}
           </div>
         ))}

@@ -26,13 +26,13 @@ export default function PositionsBlocs({
       {positions?.map((position) => (
         <div
           key={position.pubkey.toBase58()}
-          className="flex flex-col pb-4 border-b border-grey bg-secondary w-full p-4 max-w-[30em]"
+          className="flex flex-col border border-grey bg-secondary w-full max-w-[30em] ml-auto mr-auto"
         >
-          <div className="border-b border-grey pb-4">{position.token.name}</div>
+          <div className="border-b border-grey p-4">{position.token.name}</div>
 
-          <div className="flex flex-col pt-2 pb-2">
+          <div className="flex flex-col p-4">
             <div className={columnStyle}>
-              <div>Leverage</div>
+              <div className="text-txtfade">Leverage</div>
               <div className="flex">
                 <div>{formatNumber(position.leverage, 2)}x</div>
                 <div
@@ -48,19 +48,19 @@ export default function PositionsBlocs({
             </div>
 
             <div className={columnStyle}>
-              <div>Size</div>
+              <div className="text-txtfade">Size</div>
               <div>{formatPriceInfo(nativeToUi(position.sizeUsd, 6))}</div>
             </div>
 
             <div className={columnStyle}>
-              <div>Collateral</div>
+              <div className="text-txtfade">Collateral</div>
               <div>
                 {formatPriceInfo(nativeToUi(position.collateralUsd, 6))}
               </div>
             </div>
 
             <div className={columnStyle}>
-              <div>PnL</div>
+              <div className="text-txtfade">PnL</div>
               <div>
                 {!position.pnl ? "-" : null}
 
@@ -79,12 +79,12 @@ export default function PositionsBlocs({
             </div>
 
             <div className={columnStyle}>
-              <div>Entry Price</div>
+              <div className="text-txtfade">Entry Price</div>
               <div>{formatPriceInfo(nativeToUi(position.price, 6))}</div>
             </div>
 
             <div className={columnStyle}>
-              <div>Mark Price</div>
+              <div className="text-txtfade">Mark Price</div>
               <div>
                 {tokenPrices[position.token.name]
                   ? formatPriceInfo(tokenPrices[position.token.name]!)
@@ -93,7 +93,7 @@ export default function PositionsBlocs({
             </div>
 
             <div className={columnStyle}>
-              <div>Liquidation Price</div>
+              <div className="text-txtfade">Liquidation Price</div>
               <div>
                 {position.liquidationPrice
                   ? formatPriceInfo(nativeToUi(position.liquidationPrice, 6))
@@ -102,7 +102,7 @@ export default function PositionsBlocs({
             </div>
           </div>
 
-          <div className="border-t border-grey pt-2">
+          <div className="border-t border-grey p-4">
             <Button
               className="w-24 bg-blue"
               title="Close"

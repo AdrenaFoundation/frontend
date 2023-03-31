@@ -4,10 +4,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // background colors
         main: "#101124",
-        secondary: "#16182e",
+        secondary: "#16182D",
+        third: "#242842",
         blue: "#2d3ede",
-        grey: "#1e2136",
+        // border
+        grey: "#23263b",
+        // text
+        txtfade: "#8C8D97",
+        txtregular: "#E5E6E8",
       },
     },
     fontFamily: {
