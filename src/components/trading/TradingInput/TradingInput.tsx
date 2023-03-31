@@ -33,9 +33,9 @@ export default function TradingInput({
       {/* Input A */}
       <div
         className={twMerge(
-          "h-32",
+          "h-24",
           "w-32",
-          "p-6",
+          "p-4",
           "bg-third",
           "flex",
           "items-center",
@@ -53,8 +53,8 @@ export default function TradingInput({
             "justify-between"
           )}
         >
-          <div className="text-txtfade">{textTopLeft}</div>
-          <div className="text-txtfade">{textTopRight}</div>
+          <div className="text-txtfade text-sm">{textTopLeft}</div>
+          <div className="text-txtfade text-sm">{textTopRight}</div>
         </div>
 
         <div className="flex w-full items-center">
@@ -66,8 +66,7 @@ export default function TradingInput({
               "border-0",
               "text-lg",
               "outline-none",
-              "w-full",
-              "font-bold"
+              "w-full"
             )}
             onChange={onChange}
           />

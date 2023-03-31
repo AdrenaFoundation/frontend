@@ -264,7 +264,7 @@ export default function Trade() {
           {/* Button to execute action */}
           <>
             <Button
-              className="mt-4 bg-highlight"
+              className="mt-4 bg-highlight text-sm"
               title={buttonTitle}
               onClick={handleExecuteButton}
             />

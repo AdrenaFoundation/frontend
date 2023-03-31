@@ -31,8 +31,12 @@ export default function InputNumber({
         "border-0",
         "outline-none",
         "w-full",
+        "text-xl",
         className
       )}
+      style={{
+        fontSize: "1.4em",
+      }}
     />
   );
 }

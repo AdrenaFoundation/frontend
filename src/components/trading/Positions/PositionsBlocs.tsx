@@ -26,7 +26,7 @@ export default function PositionsBlocs({
       {positions?.map((position) => (
         <div
           key={position.pubkey.toBase58()}
-          className="flex flex-col border border-grey bg-secondary w-full max-w-[30em] ml-auto mr-auto"
+          className="flex flex-col border border-grey bg-secondary w-[26em] ml-auto mr-auto"
         >
           <div className="border-b border-grey p-4">{position.token.name}</div>
 

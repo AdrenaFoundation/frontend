@@ -362,7 +362,9 @@ export default function TradingInputs({
         <>
           {/* Leverage (only in short/long) */}
           <>
-            <div className="w-full mt-6 mb-2 text-txtfade">Leverage Slider</div>
+            <div className="w-full mt-6 mb-2 text-txtfade text-sm">
+              Leverage Slider
+            </div>
             <div className="w-full flex flex-col justify-center items-center">
               <LeverageSlider
                 className="w-[90%] m-auto"
@@ -373,7 +375,7 @@ export default function TradingInputs({
 
           {/* Position basic infos */}
           <>
-            <div className="p-1 mt-8 text-sm">
+            <div className="p-1 mt-6 text-sm">
               <div className={infoRowStyle}>
                 <span className="text-txtfade">Collateral In</span>
                 <span>{actionType === "long" ? "USD" : "USDC"}</span>

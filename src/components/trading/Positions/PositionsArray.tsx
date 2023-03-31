@@ -38,12 +38,13 @@ export default function PositionsArray({
           "Entry Price",
           "Mark Price",
           "Liq. Price",
-          "", // close action
         ].map((text) => (
           <div key={text} className={`${columnStyle} text-txtfade`}>
             {text}
           </div>
         ))}
+
+        <div className="w-12">{/* Space for close action*/}</div>
       </div>
 
       {/* Content */}
@@ -122,7 +123,7 @@ export default function PositionsArray({
             </div>
 
             <Button
-              className={columnStyle}
+              className="w-12 border-0 text-txtfade hover:text-txtregular"
               title="Close"
               onClick={() => {
                 triggerClosePosition(position);

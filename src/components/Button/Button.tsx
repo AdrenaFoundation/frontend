@@ -38,7 +38,9 @@ function Button(
         // eslint-disable-next-line @next/next/no-img-element
         <img src={leftIcon} className="h-4 w-4 mr-2" alt="left icon" />
       ) : null}
+
       {title}
+
       {rightIcon ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={rightIcon} className="h-4 w-4 ml-2" alt="right icon" />
