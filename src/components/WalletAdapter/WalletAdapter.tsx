@@ -1,9 +1,10 @@
 import {
+  autoConnectWalletAction,
   connectWalletAction,
   disconnectWalletAction,
 } from "@/actions/walletActions";
 import { useSelector, useDispatch } from "@/store/store";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Button from "../Button/Button";
@@ -22,6 +23,13 @@ function WalletAdapter(
   const wallet = useSelector((s) => s.wallet);
 
   const connected = !!wallet;
+
+  // When component gets created, try to auto-connect to wallet
+  useEffect(() => {
+    if (connected) return;
+
+    dispatch(autoConnectWalletAction("phantom"));
+  }, [connected, dispatch]);
 
   return (
     <div className={twMerge(className)}>

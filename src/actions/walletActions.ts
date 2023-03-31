@@ -18,12 +18,12 @@ export type DisconnectWalletAction = {
 
 export type WalletAction = ConnectWalletAction | DisconnectWalletAction;
 
-export const connectWalletAction =
+export const autoConnectWalletAction =
   (adapterName: WalletAdapterName) =>
   async (dispatch: Dispatch<ConnectWalletAction>) => {
     const adapter = walletAdapters[adapterName];
 
-    adapter.on("connect", (walletPubkey: PublicKey) => {
+    const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
         type: "connect",
         payload: {
@@ -33,7 +33,42 @@ export const connectWalletAction =
       });
 
       console.log("Connected!");
-    });
+    };
+
+    adapter.on("connect", connectFn);
+
+    try {
+      await adapter.autoConnect();
+    } catch (err) {
+      console.log(
+        new Error(`unable to auto-connect to wallet ${adapterName}`),
+        {
+          err,
+        }
+      );
+
+      adapter.removeListener("connect", connectFn);
+    }
+  };
+
+export const connectWalletAction =
+  (adapterName: WalletAdapterName) =>
+  async (dispatch: Dispatch<ConnectWalletAction>) => {
+    const adapter = walletAdapters[adapterName];
+
+    const connectFn = (walletPubkey: PublicKey) => {
+      dispatch({
+        type: "connect",
+        payload: {
+          adapterName,
+          walletAddress: walletPubkey.toBase58(),
+        },
+      });
+
+      console.log("Connected!");
+    };
+
+    adapter.on("connect", connectFn);
 
     try {
       await adapter.connect();
@@ -41,6 +76,8 @@ export const connectWalletAction =
       console.log(new Error(`unable to connect to wallet ${adapterName}`), {
         err,
       });
+
+      adapter.removeListener("connect", connectFn);
     }
   };
 
