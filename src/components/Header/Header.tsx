@@ -23,7 +23,10 @@ export default function Header() {
         "sm:p-0"
       )}
     >
-      <Link className="font-bold sm:ml-6 sm:mr-6 uppercase" href="/">
+      <Link
+        className="font-bold sm:ml-6 sm:mr-6 uppercase mb-2 sm:mb-0"
+        href="/"
+      >
         {
           // eslint-disable-next-line @next/next/no-img-element
           <img src="images/logo.png" className="h-5" alt="logo" />
