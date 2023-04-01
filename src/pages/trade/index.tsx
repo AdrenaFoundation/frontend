@@ -4,7 +4,7 @@ import { BN } from "@project-serum/anchor";
 
 import TabSelect from "@/components/TabSelect/TabSelect";
 import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPricesChange";
-import { Token } from "@/types";
+import { PositionExtended, Token } from "@/types";
 import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
 import TradingInputs from "@/components/trading/TradingInputs/TradingInputs";
 import Button from "@/components/Button/Button";
@@ -40,6 +40,12 @@ export default function Trade() {
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
+  // There is one position max per side per custody
+  // If the position exist for the selected custody, store it in this variable
+  const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(
+    null
+  );
+
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
 
@@ -64,6 +70,18 @@ export default function Trade() {
     client,
     selectedAction,
   ]);
+
+  // Check for opened position
+  useEffect(() => {
+    if (!tokenB) return;
+    if (!positions) return setOpenedPosition(null);
+
+    const relatedPosition = positions.find((position) =>
+      position.token.mint.equals(tokenB.mint)
+    );
+
+    setOpenedPosition(relatedPosition ?? null);
+  }, [positions, tokenB]);
 
   const handleExecuteButton = async () => {
     if (!connected || !client) {
@@ -175,7 +193,6 @@ export default function Trade() {
             }
             selected={tokenB}
             onChange={(t: Token) => {
-              console.log("SetTokenB", t);
               setTokenB(t);
             }}
           />
@@ -252,6 +269,7 @@ export default function Trade() {
                 }
                 tokenA={tokenA}
                 tokenB={tokenB}
+                openedPosition={openedPosition}
                 onChangeInputA={setInputAValue}
                 onChangeInputB={setInputBValue}
                 setTokenA={setTokenA}

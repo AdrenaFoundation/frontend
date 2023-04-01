@@ -35,3 +35,8 @@ export const TOKEN_INFO_LIBRARY = {
 export const walletAdapters: Record<WalletAdapterName, Adapter> = {
   phantom: new PhantomWalletAdapter(),
 };
+
+export const RATE_DECIMALS = 9;
+export const PRICE_DECIMALS = 6;
+export const USD_DECIMALS = 6;
+export const LP_DECIMALS = 6;

@@ -38,7 +38,9 @@ const useListenToPythTokenPricesChange = (): PythConnection | null => {
   }, [connection, client]);
 
   useEffect(() => {
-    if (!pythConnection || !dispatch) return;
+    if (!pythConnection || !dispatch) {
+      return;
+    }
 
     pythConnection.onPriceChange((product: Product, price: PriceData) => {
       // sample output:

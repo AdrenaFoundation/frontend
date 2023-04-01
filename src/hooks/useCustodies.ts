@@ -21,7 +21,10 @@ const useCustodies = (): CustodyExtended[] | null => {
     // Avoid rewritting fetchCustodies for no reason
     // eslint-disable-next-line react-hooks/exhaustive-deps
     mainPool
-      ? mainPool.tokens.reduce((acc, t) => `${acc}/${t.custody.toBase58()}`, "")
+      ? mainPool.custodies.reduce(
+          (acc, custody) => `${acc}/${custody.toBase58()}`,
+          ""
+        )
       : null,
   ]);
 

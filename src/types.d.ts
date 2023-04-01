@@ -22,6 +22,7 @@ export type PositionExtended = Exclude<Position, "side"> & {
   uiSizeUsd: number;
   uiCollateralUsd: number;
   uiPrice: number;
+  uiCollateralAmount: number;
 };
 
 // Alias to improve readability

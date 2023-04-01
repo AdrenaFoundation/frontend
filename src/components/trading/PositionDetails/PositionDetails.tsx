@@ -1,8 +1,13 @@
+import { RATE_DECIMALS } from "@/constant";
 import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
-import { formatNumber, formatPriceInfo, getCustodyLiquidity } from "@/utils";
-import { BN } from "@project-serum/anchor";
+import {
+  formatNumber,
+  formatPriceInfo,
+  getCustodyLiquidity,
+  nativeToUi,
+} from "@/utils";
 
 export default function PositionDetails({
   tokenB,
@@ -35,11 +40,12 @@ export default function PositionDetails({
         <span>
           {client && tokenB
             ? `${formatNumber(
-                client
-                  .getCustodyByMint(tokenB.mint)
-                  .borrowRateState.currentRate.mul(new BN(100))
-                  .toNumber(),
-                4
+                nativeToUi(
+                  client.getCustodyByMint(tokenB.mint).borrowRateState
+                    .currentRate,
+                  RATE_DECIMALS
+                ),
+                RATE_DECIMALS
               )}% / hr`
             : "-"}
         </span>

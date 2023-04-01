@@ -1171,6 +1171,88 @@
       ]
     },
     {
+      "name": "getAddLiquidityAmountAndFee",
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "custodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "GetAddLiquidityAmountAndFeeParams"
+          }
+        }
+      ],
+      "returns": {
+        "defined": "AmountAndFee"
+      }
+    },
+    {
+      "name": "getRemoveLiquidityAmountAndFee",
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "custodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "GetRemoveLiquidityAmountAndFeeParams"
+          }
+        }
+      ],
+      "returns": {
+        "defined": "AmountAndFee"
+      }
+    },
+    {
       "name": "getEntryPriceAndFee",
       "accounts": [
         {
@@ -1802,10 +1884,16 @@
             "type": "string"
           },
           {
-            "name": "tokens",
+            "name": "custodies",
+            "type": {
+              "vec": "publicKey"
+            }
+          },
+          {
+            "name": "ratios",
             "type": {
               "vec": {
-                "defined": "PoolToken"
+                "defined": "TokenRatios"
               }
             }
           },
@@ -1952,16 +2040,12 @@
             }
           },
           {
-            "name": "targetRatio",
-            "type": "u64"
-          },
-          {
-            "name": "minRatio",
-            "type": "u64"
-          },
-          {
-            "name": "maxRatio",
-            "type": "u64"
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": "TokenRatios"
+              }
+            }
           }
         ]
       }
@@ -1972,7 +2056,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "amount",
+            "name": "amountIn",
+            "type": "u64"
+          },
+          {
+            "name": "minLpAmountOut",
             "type": "u64"
           }
         ]
@@ -1997,6 +2085,18 @@
         "fields": [
           {
             "name": "price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetAddLiquidityAmountAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amountIn",
             "type": "u64"
           }
         ]
@@ -2042,7 +2142,16 @@
       "name": "GetLiquidationPriceParams",
       "type": {
         "kind": "struct",
-        "fields": []
+        "fields": [
+          {
+            "name": "addCollateral",
+            "type": "u64"
+          },
+          {
+            "name": "removeCollateral",
+            "type": "u64"
+          }
+        ]
       }
     },
     {
@@ -2069,6 +2178,18 @@
       "type": {
         "kind": "struct",
         "fields": []
+      }
+    },
+    {
+      "name": "GetRemoveLiquidityAmountAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lpAmountIn",
+            "type": "u64"
+          }
+        ]
       }
     },
     {
@@ -2176,7 +2297,16 @@
       "name": "RemoveCustodyParams",
       "type": {
         "kind": "struct",
-        "fields": []
+        "fields": [
+          {
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": "TokenRatios"
+              }
+            }
+          }
+        ]
       }
     },
     {
@@ -2185,7 +2315,11 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "lpAmount",
+            "name": "lpAmountIn",
+            "type": "u64"
+          },
+          {
+            "name": "minAmountOut",
             "type": "u64"
           }
         ]
@@ -2250,16 +2384,12 @@
             }
           },
           {
-            "name": "targetRatio",
-            "type": "u64"
-          },
-          {
-            "name": "minRatio",
-            "type": "u64"
-          },
-          {
-            "name": "maxRatio",
-            "type": "u64"
+            "name": "ratios",
+            "type": {
+              "vec": {
+                "defined": "TokenRatios"
+              }
+            }
           }
         ]
       }
@@ -2443,15 +2573,27 @@
             }
           },
           {
-            "name": "maxIncrease",
+            "name": "ratioMult",
             "type": "u64"
           },
           {
-            "name": "maxDecrease",
+            "name": "utilizationMult",
             "type": "u64"
           },
           {
-            "name": "swap",
+            "name": "swapIn",
+            "type": "u64"
+          },
+          {
+            "name": "swapOut",
+            "type": "u64"
+          },
+          {
+            "name": "stableSwapIn",
+            "type": "u64"
+          },
+          {
+            "name": "stableSwapOut",
             "type": "u64"
           },
           {
@@ -2741,11 +2883,11 @@
             "type": "u64"
           },
           {
-            "name": "weightedLeverage",
+            "name": "weightedPrice",
             "type": "u128"
           },
           {
-            "name": "totalLeverage",
+            "name": "totalQuantity",
             "type": "u128"
           },
           {
@@ -2822,6 +2964,22 @@
         "fields": [
           {
             "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AmountAndFee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
             "type": "u64"
           },
           {
@@ -2928,24 +3086,20 @@
       }
     },
     {
-      "name": "PoolToken",
+      "name": "TokenRatios",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "custody",
-            "type": "publicKey"
-          },
-          {
-            "name": "targetRatio",
+            "name": "target",
             "type": "u64"
           },
           {
-            "name": "minRatio",
+            "name": "min",
             "type": "u64"
           },
           {
-            "name": "maxRatio",
+            "name": "max",
             "type": "u64"
           }
         ]
@@ -3025,6 +3179,26 @@
           },
           {
             "name": "Pyth"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AumCalcMode",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Min"
+          },
+          {
+            "name": "Max"
+          },
+          {
+            "name": "Last"
+          },
+          {
+            "name": "EMA"
           }
         ]
       }
@@ -3137,56 +3311,61 @@
     },
     {
       "code": 6014,
+      "name": "InvalidPoolConfig",
+      "msg": "Invalid pool config"
+    },
+    {
+      "code": 6015,
       "name": "InvalidCustodyConfig",
       "msg": "Invalid custody config"
     },
     {
-      "code": 6015,
+      "code": 6016,
       "name": "InsufficientAmountReturned",
       "msg": "Insufficient token amount returned"
     },
     {
-      "code": 6016,
+      "code": 6017,
       "name": "MaxPriceSlippage",
       "msg": "Price slippage limit exceeded"
     },
     {
-      "code": 6017,
+      "code": 6018,
       "name": "MaxLeverage",
       "msg": "Position leverage limit exceeded"
     },
     {
-      "code": 6018,
+      "code": 6019,
       "name": "CustodyAmountLimit",
       "msg": "Custody amount limit exceeded"
     },
     {
-      "code": 6019,
+      "code": 6020,
       "name": "PositionAmountLimit",
       "msg": "Position amount limit exceeded"
     },
     {
-      "code": 6020,
+      "code": 6021,
       "name": "TokenRatioOutOfRange",
       "msg": "Token ratio out of range"
     },
     {
-      "code": 6021,
+      "code": 6022,
       "name": "UnsupportedToken",
       "msg": "Token is not supported"
     },
     {
-      "code": 6022,
+      "code": 6023,
       "name": "InstructionNotAllowed",
       "msg": "Instruction is not allowed at this time"
     },
     {
-      "code": 6023,
+      "code": 6024,
       "name": "MaxUtilization",
       "msg": "Token utilization limit exceeded"
     }
   ],
   "metadata": {
-    "address": "CMcky3KoHk78YVP9LGe6PFbjwWomrfGxya3difDT2EQo"
+    "address": "H1byJyMjQ3gUrtrrav5FV7yV3Jo6pT8YePtNkdGgoa1P"
   }
 }

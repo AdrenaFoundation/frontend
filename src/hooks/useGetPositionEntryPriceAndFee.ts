@@ -1,8 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BN } from "@project-serum/anchor";
 import { Token, NewPositionPricesAndFee } from "@/types";
 import useAdrenaClient from "./useAdrenaClient";
-import { PublicKey } from "@solana/web3.js";
+
+type Params = {
+  token: Token;
+  collateral: BN;
+  size: BN;
+  side: "long" | "short";
+};
 
 // TRICKS:
 //
@@ -14,44 +20,51 @@ import { PublicKey } from "@solana/web3.js";
 // Wait for the pending request to be resolved to trigger another one
 let pendingRequest: boolean = false;
 let waitingList: boolean = false;
+let waitingListParam: Params | null = null;
 
 const useGetPositionEntryPriceAndFee = (
-  params: {
-    token: Token;
-    collateral: BN;
-    size: BN;
-    side: "long" | "short";
-  } | null
+  params: Params | null
 ): NewPositionPricesAndFee | null => {
   const client = useAdrenaClient();
 
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);
 
-  const fetchPositionEntryPricesAndFee = useCallback(async () => {
-    if (!client || !params) return;
+  useEffect(() => {
+    const doFetch = async (params: Params | null) => {
+      if (!client || !params) return;
 
-    // Data is already loading
-    if (pendingRequest) {
-      waitingList = true;
-      return;
-    }
+      const entryPriceAndFee = await client.getEntryPriceAndFee(params);
 
-    pendingRequest = true;
+      setEntryPriceAndFee(entryPriceAndFee);
+    };
 
-    const entryPriceAndFee = await client.getEntryPriceAndFee(params);
+    // Handle buffering of doFetch call
+    (async (params: Params | null) => {
+      if (!client || !params) return;
 
-    pendingRequest = false;
+      // Data is already loading
+      if (pendingRequest) {
+        waitingList = true;
+        waitingListParam = params;
+        return;
+      }
 
-    setEntryPriceAndFee(entryPriceAndFee);
+      pendingRequest = true;
 
-    // Call itself again to get fresher data
-    if (waitingList) {
-      waitingList = false;
+      await doFetch(params);
 
-      setTimeout(() => fetchPositionEntryPricesAndFee());
-    }
+      pendingRequest = false;
 
+      // Call itself again to get fresher data
+      if (waitingList) {
+        waitingList = false;
+        const waitingListParamCopy = waitingListParam;
+        waitingListParam = null;
+
+        setTimeout(() => doFetch(waitingListParamCopy));
+      }
+    })(params);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // React detect changes when there are no change
@@ -63,10 +76,6 @@ const useGetPositionEntryPriceAndFee = (
         }`
       : null,
   ]);
-
-  useEffect(() => {
-    fetchPositionEntryPricesAndFee();
-  }, [fetchPositionEntryPricesAndFee]);
 
   return entryPriceAndFee;
 };

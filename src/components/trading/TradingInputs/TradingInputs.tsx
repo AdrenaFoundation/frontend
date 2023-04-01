@@ -3,7 +3,7 @@ import { BN } from "@project-serum/anchor";
 import useGetPositionEntryPriceAndFee from "@/hooks/useGetPositionEntryPriceAndFee";
 import { TokenPricesState } from "@/reducers/tokenPricesReducer";
 import { useSelector } from "@/store/store";
-import { Token } from "@/types";
+import { PositionExtended, Token } from "@/types";
 import {
   DISPLAY_NUMBER_PRECISION,
   formatNumber,
@@ -15,6 +15,7 @@ import {
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
 import { twMerge } from "tailwind-merge";
 import TradingInput from "../TradingInput/TradingInput";
+import PositionInfos from "./PositionInfos";
 
 function recalculateInputs({
   mainInput,
@@ -90,6 +91,7 @@ export default function TradingInputs({
   tokenB,
   allowedTokenA,
   allowedTokenB,
+  openedPosition,
   onChangeInputA,
   onChangeInputB,
   setTokenA,
@@ -102,6 +104,7 @@ export default function TradingInputs({
   tokenB: Token;
   allowedTokenA: Token[];
   allowedTokenB: Token[];
+  openedPosition: PositionExtended | null;
   onChangeInputA: (v: number | null) => void;
   onChangeInputB: (v: number | null) => void;
   setTokenA: (t: Token | null) => void;
@@ -127,20 +130,6 @@ export default function TradingInputs({
   const [priceB, setPriceB] = useState<number | null>(null);
 
   const [leverage, setLeverage] = useState<number>(1);
-
-  const entryPriceAndFee = useGetPositionEntryPriceAndFee(
-    (actionType === "short" || actionType === "long") &&
-      tokenB &&
-      inputB &&
-      inputB > 0
-      ? {
-          token: tokenB,
-          collateral: uiToNative(inputB, 6).div(new BN(leverage)),
-          size: uiToNative(inputB, 6),
-          side: actionType,
-        }
-      : null
-  );
 
   // Propagate changes to upper component
   {
@@ -378,46 +367,14 @@ export default function TradingInputs({
           </>
 
           {/* Position basic infos */}
-          <>
-            <div className="p-1 mt-6 text-sm">
-              <div className={infoRowStyle}>
-                <span className="text-txtfade">Collateral In</span>
-                <span>{actionType === "long" ? "USD" : "USDC"}</span>
-              </div>
-
-              <div className={infoRowStyle}>
-                <span className="text-txtfade">Leverage</span>
-                <span>
-                  {leverage !== null ? `${formatNumber(leverage, 2)}x` : "-"}
-                </span>
-              </div>
-
-              <div className={infoRowStyle}>
-                <span className="text-txtfade">Entry Price</span>
-                <span>
-                  {entryPriceAndFee
-                    ? formatPriceInfo(
-                        nativeToUi(entryPriceAndFee.entryPrice, 6)
-                      )
-                    : "-"}
-                </span>
-              </div>
-
-              <div className={infoRowStyle}>
-                <span className="text-txtfade">Liq. Price</span>
-                <span>TODO</span>
-              </div>
-
-              <div className={infoRowStyle}>
-                <span className="text-txtfade">Fees</span>
-                <span>
-                  {entryPriceAndFee
-                    ? formatPriceInfo(nativeToUi(entryPriceAndFee.fee, 6))
-                    : "-"}
-                </span>
-              </div>
-            </div>
-          </>
+          <PositionInfos
+            className="mt-8 text-sm"
+            side={actionType}
+            tokenB={tokenB}
+            inputB={inputB}
+            leverage={leverage}
+            openedPosition={openedPosition}
+          />
         </>
       ) : null}
     </div>

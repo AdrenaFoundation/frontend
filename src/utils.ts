@@ -73,7 +73,7 @@ export function formatPercentage(nb: number | null): string {
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {
-  return nb.div(new BN(10 ** decimals)).toNumber();
+  return nb.toNumber() / 10 ** decimals;
 }
 
 export function uiToNative(nb: number, decimals: number): BN {

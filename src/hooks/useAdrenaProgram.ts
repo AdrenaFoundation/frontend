@@ -18,20 +18,17 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
 );
 
 const useAdrenaProgram = (): {
-  readOnly: Program<Perpetuals> | null;
-  readWrite: Program<Perpetuals> | null;
+  program: Program<Perpetuals> | null;
+  readOnlyProgram: Program<Perpetuals> | null;
 } => {
   const connection = useConnection();
   const wallet = useWallet();
-  const [program, setProgram] = useState<{
-    readOnly: Program<Perpetuals> | null;
-    readWrite: Program<Perpetuals> | null;
-  }>({
-    readOnly: null,
-    readWrite: null,
-  });
 
-  const createProgram = useCallback(async () => {
+  const [program, setProgram] = useState<Program<Perpetuals> | null>(null);
+  const [readOnlyProgram, setReadOnlyProgram] =
+    useState<Program<Perpetuals> | null>(null);
+
+  const createReadOnlyProgram = useCallback(async () => {
     if (!connection) return;
 
     const readOnlyProvider = new AnchorProvider(
@@ -64,31 +61,38 @@ const useAdrenaProgram = (): {
       }).bind(readOnlyProvider);
     }
 
-    setProgram({
-      readOnly: new Program(
+    setReadOnlyProgram(
+      new Program(PERPETUALS_IDL, AdrenaClient.programId, readOnlyProvider)
+    );
+  }, [connection]);
+
+  const createProgram = useCallback(async () => {
+    if (!connection || !wallet) return;
+
+    setProgram(
+      new Program(
         PERPETUALS_IDL,
         AdrenaClient.programId,
-        readOnlyProvider
-      ),
-
-      readWrite: wallet
-        ? new Program(
-            PERPETUALS_IDL,
-            AdrenaClient.programId,
-            new AnchorProvider(connection, wallet, {
-              commitment: "processed",
-              skipPreflight: true,
-            })
-          )
-        : null,
-    });
+        new AnchorProvider(connection, wallet, {
+          commitment: "processed",
+          skipPreflight: true,
+        })
+      )
+    );
   }, [connection, wallet]);
+
+  useEffect(() => {
+    createReadOnlyProgram();
+  }, [createReadOnlyProgram]);
 
   useEffect(() => {
     createProgram();
   }, [createProgram]);
 
-  return program;
+  return {
+    program,
+    readOnlyProgram,
+  };
 };
 
 export default useAdrenaProgram;

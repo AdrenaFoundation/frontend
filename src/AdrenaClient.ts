@@ -47,7 +47,7 @@ export class AdrenaClient {
   // @TODO, adapt to mainnet/devnet
   // Handle one pool only for now
   public static mainPoolAddress = new PublicKey(
-    "58W6atpSm8ZUz5rRjWLzNwPrpdukZzwz6rJuf5kPYARj"
+    "8bUQMkrKeiTwpfc9HmjiveB92k5Rq4d2b1HYwaNsR8dS"
   );
 
   public static lpTokenMint = PublicKey.findProgramAddressSync(
@@ -55,9 +55,9 @@ export class AdrenaClient {
     AdrenaClient.programId
   )[0];
 
-  constructor(
-    protected adrenaProgram: Program<Perpetuals> | null,
+  protected adrenaProgram: Program<Perpetuals> | null = null;
 
+  constructor(
     // Adrena Program with readonly provider
     protected readonlyAdrenaProgram: Program<Perpetuals>,
     public mainPool: Pool,
@@ -65,11 +65,15 @@ export class AdrenaClient {
     public tokens: Token[]
   ) {}
 
+  public setAdrenaProgram(program: Program<Perpetuals> | null) {
+    this.adrenaProgram = program;
+  }
+
   public static async initialize(
-    adrenaProgram: Program<Perpetuals> | null,
     readonlyAdrenaProgram: Program<Perpetuals>
   ): Promise<AdrenaClient> {
     const mainPool = await AdrenaClient.loadMainPool(readonlyAdrenaProgram);
+
     const custodies = await AdrenaClient.loadCustodies(
       readonlyAdrenaProgram,
       mainPool
@@ -96,26 +100,20 @@ export class AdrenaClient {
           isStable: custody.isStable,
           image: infos.image,
           // loadCustodies gets the custodies on the same order as in the main pool
-          custody: mainPool.tokens[i].custody,
+          custody: mainPool.custodies[i],
           coingeckoId: infos.coingeckoId,
         };
       })
       .filter((token) => !!token) as Token[];
 
-    return new AdrenaClient(
-      adrenaProgram,
-      readonlyAdrenaProgram,
-      mainPool,
-      custodies,
-      tokens
-    );
+    return new AdrenaClient(readonlyAdrenaProgram, mainPool, custodies, tokens);
   }
 
   /*
    * LOADERS
    */
 
-  public static loadMainPool(
+  public static async loadMainPool(
     adrenaProgram: Program<Perpetuals>
   ): Promise<Pool> {
     return adrenaProgram.account.pool.fetch(AdrenaClient.mainPoolAddress);
@@ -126,7 +124,7 @@ export class AdrenaClient {
     mainPool: Pool
   ): Promise<CustodyExtended[]> {
     const result = await adrenaProgram.account.custody.fetchMultiple(
-      mainPool.tokens.map((token) => token.custody)
+      mainPool.custodies
     );
 
     // No custodies should be null
@@ -135,14 +133,12 @@ export class AdrenaClient {
     }
 
     return (result as Custody[]).map((custody, i) => {
-      const mainPoolToken = mainPool.tokens[i];
-
       return {
         ...custody,
-        pubkey: mainPoolToken.custody,
-        minRatio: mainPoolToken.minRatio,
-        maxRatio: mainPoolToken.maxRatio,
-        targetRatio: mainPoolToken.targetRatio,
+        pubkey: mainPool.custodies[i],
+        minRatio: mainPool.ratios[i].min,
+        maxRatio: mainPool.ratios[i].max,
+        targetRatio: mainPool.ratios[i].target,
       };
     });
   }
@@ -154,11 +150,13 @@ export class AdrenaClient {
   protected async buildAddLiquidityTx({
     owner,
     mint,
-    amount,
+    amountIn,
+    minLpAmountOut,
   }: {
     owner: PublicKey;
     mint: PublicKey;
-    amount: BN;
+    amountIn: BN;
+    minLpAmountOut: BN;
   }) {
     if (!this.adrenaProgram) {
       throw new Error("adrena program not ready");
@@ -170,7 +168,7 @@ export class AdrenaClient {
     // Load custodies in same order as declared in mainPool
     const untypedCustodies =
       await this.adrenaProgram.account.custody.fetchMultiple(
-        this.mainPool.tokens.map(({ custody }) => custody)
+        this.mainPool.custodies
       );
 
     if (untypedCustodies.find((custodies) => !custodies)) {
@@ -181,7 +179,9 @@ export class AdrenaClient {
 
     const custodyOracleAccount =
       custodies[
-        this.mainPool.tokens.findIndex((t) => t.custody.equals(custodyAddress))
+        this.mainPool.custodies.findIndex((custody) =>
+          custody.equals(custodyAddress)
+        )
       ].oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
@@ -189,7 +189,8 @@ export class AdrenaClient {
 
     return this.adrenaProgram.methods
       .addLiquidity({
-        amount,
+        amountIn,
+        minLpAmountOut,
       })
       .accounts({
         owner,
@@ -205,13 +206,13 @@ export class AdrenaClient {
       })
       .remainingAccounts([
         // needs to provide all custodies and theirs oracles
-        ...this.mainPool.tokens.map(({ custody }) => ({
+        ...this.mainPool.custodies.map((custody) => ({
           pubkey: custody,
           isSigner: false,
           isWritable: false,
         })),
 
-        ...this.mainPool.tokens.map((_, index) => ({
+        ...this.mainPool.custodies.map((_, index) => ({
           pubkey: custodies[index].oracle.oracleAccount,
           isSigner: false,
           isWritable: false,
@@ -222,7 +223,8 @@ export class AdrenaClient {
   public async addLiquidity(params: {
     owner: PublicKey;
     mint: PublicKey;
-    amount: BN;
+    amountIn: BN;
+    minLpAmountOut: BN;
   }): Promise<string> {
     return this.signAndExecuteTx(
       await (await this.buildAddLiquidityTx(params)).transaction()
@@ -544,8 +546,12 @@ export class AdrenaClient {
 
   public async getPositionLiquidationPrice({
     position,
+    addCollateral,
+    removeCollateral,
   }: {
     position: PositionExtended;
+    addCollateral: BN;
+    removeCollateral: BN;
   }): Promise<BN | null> {
     if (!this.readonlyAdrenaProgram.views) {
       return null;
@@ -560,7 +566,10 @@ export class AdrenaClient {
     }
 
     return this.readonlyAdrenaProgram.views.getLiquidationPrice(
-      {},
+      {
+        addCollateral: new BN(0),
+        removeCollateral: new BN(0),
+      },
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
@@ -620,6 +629,10 @@ export class AdrenaClient {
             uiSizeUsd: nativeToUi(position.sizeUsd, 6),
             uiCollateralUsd: nativeToUi(position.collateralUsd, 6),
             uiPrice: nativeToUi(position.price, 6),
+            uiCollateralAmount: nativeToUi(
+              position.collateralAmount,
+              token.decimals
+            ),
           },
         ];
       },
@@ -630,7 +643,11 @@ export class AdrenaClient {
     const [liquidationPrices, pnls] = await Promise.all([
       Promise.all(
         positionsExtended.map((positionExtended) =>
-          this.getPositionLiquidationPrice({ position: positionExtended })
+          this.getPositionLiquidationPrice({
+            position: positionExtended,
+            addCollateral: new BN(0),
+            removeCollateral: new BN(0),
+          })
         )
       ),
       Promise.all(
