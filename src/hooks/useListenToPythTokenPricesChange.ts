@@ -60,6 +60,10 @@ const useListenToPythTokenPricesChange = (
 
     // Start listening for price change events.
     pythConnection.start();
+
+    return () => {
+      pythConnection.stop();
+    };
   }, [pythConnection, dispatch]);
 
   return pythConnection;
