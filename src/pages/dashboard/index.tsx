@@ -1,6 +1,7 @@
 import { twMerge } from 'tailwind-merge';
 
-import ALPIndexComposition from '@/components/ALPIndexComposition/ALPIndexComposition';
+import ALPIndexComposition from '@/components/dashboard/ALPIndexComposition/ALPIndexComposition';
+import Overview from '@/components/dashboard/Overview/Overview';
 import useAdrenaClient from '@/hooks/useAdrenaClient';
 import useConnection from '@/hooks/useConnection';
 import useCustodies from '@/hooks/useCustodies';
@@ -29,6 +30,12 @@ export default function Trade() {
         'bg-main',
       )}
     >
+      <div className="text-3xl mt-6">Stats</div>
+
+      <Overview className="mt-4 mb-4" aum={mainPool?.aumUsd ?? null} />
+
+      <div className="text-3xl mt-6">Tokens</div>
+
       <ALPIndexComposition client={client} custodies={custodies} />
     </div>
   );
