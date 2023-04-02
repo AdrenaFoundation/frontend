@@ -1,6749 +1,6737 @@
 export type Perpetuals = {
-  "version": "0.1.0",
-  "name": "perpetuals",
-  "instructions": [
+  version: '0.1.0';
+  name: 'perpetuals';
+  instructions: [
     {
-      "name": "init",
-      "accounts": [
+      name: 'init';
+      accounts: [
         {
-          "name": "upgradeAuthority",
-          "isMut": true,
-          "isSigner": true
+          name: 'upgradeAuthority';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetualsProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetualsProgramData",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetualsProgramData';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "InitParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'InitParams';
+          };
+        },
+      ];
     },
     {
-      "name": "addPool",
-      "accounts": [
+      name: 'addPool';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddPoolParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'AddPoolParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "removePool",
-      "accounts": [
+      name: 'removePool';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemovePoolParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'RemovePoolParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "addCustody",
-      "accounts": [
+      name: 'addCustody';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenMint",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyTokenMint';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddCustodyParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'AddCustodyParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "removeCustody",
-      "accounts": [
+      name: 'removeCustody';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemoveCustodyParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'RemoveCustodyParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "setAdminSigners",
-      "accounts": [
+      name: 'setAdminSigners';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetAdminSignersParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'SetAdminSignersParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "setCustodyConfig",
-      "accounts": [
+      name: 'setCustodyConfig';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetCustodyConfigParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'SetCustodyConfigParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "setPermissions",
-      "accounts": [
+      name: 'setPermissions';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetPermissionsParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'SetPermissionsParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "withdrawFees",
-      "accounts": [
+      name: 'withdrawFees';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "receivingTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "WithdrawFeesParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'WithdrawFeesParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "withdrawSolFees",
-      "accounts": [
+      name: 'withdrawSolFees';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "WithdrawSolFeesParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'WithdrawSolFeesParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "upgradeCustody",
-      "accounts": [
+      name: 'upgradeCustody';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "UpgradeCustodyParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'UpgradeCustodyParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "testInit",
-      "accounts": [
+      name: 'testInit';
+      accounts: [
         {
-          "name": "upgradeAuthority",
-          "isMut": true,
-          "isSigner": true
+          name: 'upgradeAuthority';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "TestInitParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'TestInitParams';
+          };
+        },
+      ];
     },
     {
-      "name": "setTestOraclePrice",
-      "accounts": [
+      name: 'setTestOraclePrice';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "oracleAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'oracleAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetTestOraclePriceParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'SetTestOraclePriceParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "setTestTime",
-      "accounts": [
+      name: 'setTestTime';
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetTestTimeParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'SetTestTimeParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "swap",
-      "accounts": [
+      name: 'swap';
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "receivingCustody",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingCustody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "receivingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'receivingCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "receivingCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "dispensingCustody",
-          "isMut": true,
-          "isSigner": false
+          name: 'dispensingCustody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "dispensingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'dispensingCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "dispensingCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'dispensingCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SwapParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'SwapParams';
+          };
+        },
+      ];
     },
     {
-      "name": "addLiquidity",
-      "accounts": [
+      name: 'addLiquidity';
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "lpTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddLiquidityParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'AddLiquidityParams';
+          };
+        },
+      ];
     },
     {
-      "name": "removeLiquidity",
-      "accounts": [
+      name: 'removeLiquidity';
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "lpTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemoveLiquidityParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'RemoveLiquidityParams';
+          };
+        },
+      ];
     },
     {
-      "name": "openPosition",
-      "accounts": [
+      name: 'openPosition';
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "OpenPositionParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'OpenPositionParams';
+          };
+        },
+      ];
     },
     {
-      "name": "addCollateral",
-      "accounts": [
+      name: 'addCollateral';
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddCollateralParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'AddCollateralParams';
+          };
+        },
+      ];
     },
     {
-      "name": "removeCollateral",
-      "accounts": [
+      name: 'removeCollateral';
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemoveCollateralParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'RemoveCollateralParams';
+          };
+        },
+      ];
     },
     {
-      "name": "closePosition",
-      "accounts": [
+      name: 'closePosition';
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "ClosePositionParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'ClosePositionParams';
+          };
+        },
+      ];
     },
     {
-      "name": "liquidate",
-      "accounts": [
+      name: 'liquidate';
+      accounts: [
         {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
+          name: 'signer';
+          isMut: true;
+          isSigner: true;
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "rewardsReceivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'rewardsReceivingAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "LiquidateParams"
-          }
-        }
-      ]
+          name: 'params';
+          type: {
+            defined: 'LiquidateParams';
+          };
+        },
+      ];
     },
     {
-      "name": "getAddLiquidityAmountAndFee",
-      "accounts": [
+      name: 'getAddLiquidityAmountAndFee';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "lpTokenMint",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'lpTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetAddLiquidityAmountAndFeeParams"
-          }
-        }
-      ],
-      "returns": {
-        "defined": "AmountAndFee"
-      }
+          name: 'params';
+          type: {
+            defined: 'GetAddLiquidityAmountAndFeeParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'AmountAndFee';
+      };
     },
     {
-      "name": "getRemoveLiquidityAmountAndFee",
-      "accounts": [
+      name: 'getRemoveLiquidityAmountAndFee';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "lpTokenMint",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'lpTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetRemoveLiquidityAmountAndFeeParams"
-          }
-        }
-      ],
-      "returns": {
-        "defined": "AmountAndFee"
-      }
+          name: 'params';
+          type: {
+            defined: 'GetRemoveLiquidityAmountAndFeeParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'AmountAndFee';
+      };
     },
     {
-      "name": "getEntryPriceAndFee",
-      "accounts": [
+      name: 'getEntryPriceAndFee';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetEntryPriceAndFeeParams"
-          }
-        }
-      ],
-      "returns": {
-        "defined": "NewPositionPricesAndFee"
-      }
+          name: 'params';
+          type: {
+            defined: 'GetEntryPriceAndFeeParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'NewPositionPricesAndFee';
+      };
     },
     {
-      "name": "getExitPriceAndFee",
-      "accounts": [
+      name: 'getExitPriceAndFee';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetExitPriceAndFeeParams"
-          }
-        }
-      ],
-      "returns": {
-        "defined": "PriceAndFee"
-      }
+          name: 'params';
+          type: {
+            defined: 'GetExitPriceAndFeeParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'PriceAndFee';
+      };
     },
     {
-      "name": "getPnl",
-      "accounts": [
+      name: 'getPnl';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetPnlParams"
-          }
-        }
-      ],
-      "returns": {
-        "defined": "ProfitAndLoss"
-      }
+          name: 'params';
+          type: {
+            defined: 'GetPnlParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'ProfitAndLoss';
+      };
     },
     {
-      "name": "getLiquidationPrice",
-      "accounts": [
+      name: 'getLiquidationPrice';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetLiquidationPriceParams"
-          }
-        }
-      ],
-      "returns": "u64"
+          name: 'params';
+          type: {
+            defined: 'GetLiquidationPriceParams';
+          };
+        },
+      ];
+      returns: 'u64';
     },
     {
-      "name": "getLiquidationState",
-      "accounts": [
+      name: 'getLiquidationState';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetLiquidationStateParams"
-          }
-        }
-      ],
-      "returns": "u8"
+          name: 'params';
+          type: {
+            defined: 'GetLiquidationStateParams';
+          };
+        },
+      ];
+      returns: 'u8';
     },
     {
-      "name": "getOraclePrice",
-      "accounts": [
+      name: 'getOraclePrice';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetOraclePriceParams"
-          }
-        }
-      ],
-      "returns": "u64"
+          name: 'params';
+          type: {
+            defined: 'GetOraclePriceParams';
+          };
+        },
+      ];
+      returns: 'u64';
     },
     {
-      "name": "getSwapAmountAndFees",
-      "accounts": [
+      name: 'getSwapAmountAndFees';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "receivingCustody",
-          "isMut": false,
-          "isSigner": false
+          name: 'receivingCustody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "receivingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'receivingCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "dispensingCustody",
-          "isMut": false,
-          "isSigner": false
+          name: 'dispensingCustody';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "dispensingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'dispensingCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetSwapAmountAndFeesParams"
-          }
-        }
-      ],
-      "returns": {
-        "defined": "SwapAmountAndFees"
-      }
+          name: 'params';
+          type: {
+            defined: 'GetSwapAmountAndFeesParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'SwapAmountAndFees';
+      };
     },
     {
-      "name": "getAssetsUnderManagement",
-      "accounts": [
+      name: 'getAssetsUnderManagement';
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetAssetsUnderManagementParams"
-          }
-        }
-      ],
-      "returns": "u128"
-    }
-  ],
-  "accounts": [
+          name: 'params';
+          type: {
+            defined: 'GetAssetsUnderManagementParams';
+          };
+        },
+      ];
+      returns: 'u128';
+    },
+  ];
+  accounts: [
     {
-      "name": "custody",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'custody';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "pool",
-            "type": "publicKey"
+            name: 'pool';
+            type: 'publicKey';
           },
           {
-            "name": "mint",
-            "type": "publicKey"
+            name: 'mint';
+            type: 'publicKey';
           },
           {
-            "name": "tokenAccount",
-            "type": "publicKey"
+            name: 'tokenAccount';
+            type: 'publicKey';
           },
           {
-            "name": "decimals",
-            "type": "u8"
+            name: 'decimals';
+            type: 'u8';
           },
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable';
+            type: 'bool';
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle';
+            type: {
+              defined: 'OracleParams';
+            };
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "PricingParams"
-            }
+            name: 'pricing';
+            type: {
+              defined: 'PricingParams';
+            };
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions';
+            type: {
+              defined: 'Permissions';
+            };
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees';
+            type: {
+              defined: 'Fees';
+            };
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate';
+            type: {
+              defined: 'BorrowRateParams';
+            };
           },
           {
-            "name": "assets",
-            "type": {
-              "defined": "Assets"
-            }
+            name: 'assets';
+            type: {
+              defined: 'Assets';
+            };
           },
           {
-            "name": "collectedFees",
-            "type": {
-              "defined": "FeesStats"
-            }
+            name: 'collectedFees';
+            type: {
+              defined: 'FeesStats';
+            };
           },
           {
-            "name": "volumeStats",
-            "type": {
-              "defined": "VolumeStats"
-            }
+            name: 'volumeStats';
+            type: {
+              defined: 'VolumeStats';
+            };
           },
           {
-            "name": "tradeStats",
-            "type": {
-              "defined": "TradeStats"
-            }
+            name: 'tradeStats';
+            type: {
+              defined: 'TradeStats';
+            };
           },
           {
-            "name": "longPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'longPositions';
+            type: {
+              defined: 'PositionStats';
+            };
           },
           {
-            "name": "shortPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'shortPositions';
+            type: {
+              defined: 'PositionStats';
+            };
           },
           {
-            "name": "borrowRateState",
-            "type": {
-              "defined": "BorrowRateState"
-            }
+            name: 'borrowRateState';
+            type: {
+              defined: 'BorrowRateState';
+            };
           },
           {
-            "name": "bump",
-            "type": "u8"
+            name: 'bump';
+            type: 'u8';
           },
           {
-            "name": "tokenAccountBump",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'tokenAccountBump';
+            type: 'u8';
+          },
+        ];
+      };
     },
     {
-      "name": "deprecatedCustody",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'deprecatedCustody';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "pool",
-            "type": "publicKey"
+            name: 'pool';
+            type: 'publicKey';
           },
           {
-            "name": "mint",
-            "type": "publicKey"
+            name: 'mint';
+            type: 'publicKey';
           },
           {
-            "name": "tokenAccount",
-            "type": "publicKey"
+            name: 'tokenAccount';
+            type: 'publicKey';
           },
           {
-            "name": "decimals",
-            "type": "u8"
+            name: 'decimals';
+            type: 'u8';
           },
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable';
+            type: 'bool';
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle';
+            type: {
+              defined: 'OracleParams';
+            };
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "DeprecatedPricingParams"
-            }
+            name: 'pricing';
+            type: {
+              defined: 'DeprecatedPricingParams';
+            };
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions';
+            type: {
+              defined: 'Permissions';
+            };
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees';
+            type: {
+              defined: 'Fees';
+            };
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate';
+            type: {
+              defined: 'BorrowRateParams';
+            };
           },
           {
-            "name": "assets",
-            "type": {
-              "defined": "Assets"
-            }
+            name: 'assets';
+            type: {
+              defined: 'Assets';
+            };
           },
           {
-            "name": "collectedFees",
-            "type": {
-              "defined": "FeesStats"
-            }
+            name: 'collectedFees';
+            type: {
+              defined: 'FeesStats';
+            };
           },
           {
-            "name": "volumeStats",
-            "type": {
-              "defined": "VolumeStats"
-            }
+            name: 'volumeStats';
+            type: {
+              defined: 'VolumeStats';
+            };
           },
           {
-            "name": "tradeStats",
-            "type": {
-              "defined": "TradeStats"
-            }
+            name: 'tradeStats';
+            type: {
+              defined: 'TradeStats';
+            };
           },
           {
-            "name": "longPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'longPositions';
+            type: {
+              defined: 'PositionStats';
+            };
           },
           {
-            "name": "shortPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'shortPositions';
+            type: {
+              defined: 'PositionStats';
+            };
           },
           {
-            "name": "borrowRateState",
-            "type": {
-              "defined": "BorrowRateState"
-            }
+            name: 'borrowRateState';
+            type: {
+              defined: 'BorrowRateState';
+            };
           },
           {
-            "name": "bump",
-            "type": "u8"
+            name: 'bump';
+            type: 'u8';
           },
           {
-            "name": "tokenAccountBump",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'tokenAccountBump';
+            type: 'u8';
+          },
+        ];
+      };
     },
     {
-      "name": "multisig",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'multisig';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "numSigners",
-            "type": "u8"
+            name: 'numSigners';
+            type: 'u8';
           },
           {
-            "name": "numSigned",
-            "type": "u8"
+            name: 'numSigned';
+            type: 'u8';
           },
           {
-            "name": "minSignatures",
-            "type": "u8"
+            name: 'minSignatures';
+            type: 'u8';
           },
           {
-            "name": "instructionAccountsLen",
-            "type": "u8"
+            name: 'instructionAccountsLen';
+            type: 'u8';
           },
           {
-            "name": "instructionDataLen",
-            "type": "u16"
+            name: 'instructionDataLen';
+            type: 'u16';
           },
           {
-            "name": "instructionHash",
-            "type": "u64"
+            name: 'instructionHash';
+            type: 'u64';
           },
           {
-            "name": "signers",
-            "type": {
-              "array": [
-                "publicKey",
-                6
-              ]
-            }
+            name: 'signers';
+            type: {
+              array: ['publicKey', 6];
+            };
           },
           {
-            "name": "signed",
-            "type": {
-              "array": [
-                "bool",
-                6
-              ]
-            }
+            name: 'signed';
+            type: {
+              array: ['bool', 6];
+            };
           },
           {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'bump';
+            type: 'u8';
+          },
+        ];
+      };
     },
     {
-      "name": "testOracle",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'testOracle';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price';
+            type: 'u64';
           },
           {
-            "name": "expo",
-            "type": "i32"
+            name: 'expo';
+            type: 'i32';
           },
           {
-            "name": "conf",
-            "type": "u64"
+            name: 'conf';
+            type: 'u64';
           },
           {
-            "name": "publishTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'publishTime';
+            type: 'i64';
+          },
+        ];
+      };
     },
     {
-      "name": "perpetuals",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'perpetuals';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions';
+            type: {
+              defined: 'Permissions';
+            };
           },
           {
-            "name": "pools",
-            "type": {
-              "vec": "publicKey"
-            }
+            name: 'pools';
+            type: {
+              vec: 'publicKey';
+            };
           },
           {
-            "name": "transferAuthorityBump",
-            "type": "u8"
+            name: 'transferAuthorityBump';
+            type: 'u8';
           },
           {
-            "name": "perpetualsBump",
-            "type": "u8"
+            name: 'perpetualsBump';
+            type: 'u8';
           },
           {
-            "name": "inceptionTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'inceptionTime';
+            type: 'i64';
+          },
+        ];
+      };
     },
     {
-      "name": "pool",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'pool';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "name",
-            "type": "string"
+            name: 'name';
+            type: 'string';
           },
           {
-            "name": "custodies",
-            "type": {
-              "vec": "publicKey"
-            }
+            name: 'custodies';
+            type: {
+              vec: 'publicKey';
+            };
           },
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
+            name: 'ratios';
+            type: {
+              vec: {
+                defined: 'TokenRatios';
+              };
+            };
           },
           {
-            "name": "aumUsd",
-            "type": "u128"
+            name: 'aumUsd';
+            type: 'u128';
           },
           {
-            "name": "bump",
-            "type": "u8"
+            name: 'bump';
+            type: 'u8';
           },
           {
-            "name": "lpTokenBump",
-            "type": "u8"
+            name: 'lpTokenBump';
+            type: 'u8';
           },
           {
-            "name": "inceptionTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'inceptionTime';
+            type: 'i64';
+          },
+        ];
+      };
     },
     {
-      "name": "position",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'position';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "owner",
-            "type": "publicKey"
+            name: 'owner';
+            type: 'publicKey';
           },
           {
-            "name": "pool",
-            "type": "publicKey"
+            name: 'pool';
+            type: 'publicKey';
           },
           {
-            "name": "custody",
-            "type": "publicKey"
+            name: 'custody';
+            type: 'publicKey';
           },
           {
-            "name": "openTime",
-            "type": "i64"
+            name: 'openTime';
+            type: 'i64';
           },
           {
-            "name": "updateTime",
-            "type": "i64"
+            name: 'updateTime';
+            type: 'i64';
           },
           {
-            "name": "side",
-            "type": {
-              "defined": "Side"
-            }
+            name: 'side';
+            type: {
+              defined: 'Side';
+            };
           },
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price';
+            type: 'u64';
           },
           {
-            "name": "sizeUsd",
-            "type": "u64"
+            name: 'sizeUsd';
+            type: 'u64';
           },
           {
-            "name": "collateralUsd",
-            "type": "u64"
+            name: 'collateralUsd';
+            type: 'u64';
           },
           {
-            "name": "unrealizedProfitUsd",
-            "type": "u64"
+            name: 'unrealizedProfitUsd';
+            type: 'u64';
           },
           {
-            "name": "unrealizedLossUsd",
-            "type": "u64"
+            name: 'unrealizedLossUsd';
+            type: 'u64';
           },
           {
-            "name": "cumulativeInterestSnapshot",
-            "type": "u128"
+            name: 'cumulativeInterestSnapshot';
+            type: 'u128';
           },
           {
-            "name": "lockedAmount",
-            "type": "u64"
+            name: 'lockedAmount';
+            type: 'u64';
           },
           {
-            "name": "collateralAmount",
-            "type": "u64"
+            name: 'collateralAmount';
+            type: 'u64';
           },
           {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    }
-  ],
-  "types": [
+            name: 'bump';
+            type: 'u8';
+          },
+        ];
+      };
+    },
+  ];
+  types: [
     {
-      "name": "AddCollateralParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddCollateralParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "collateral",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'collateral';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "AddCustodyParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddCustodyParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable';
+            type: 'bool';
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle';
+            type: {
+              defined: 'OracleParams';
+            };
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "PricingParams"
-            }
+            name: 'pricing';
+            type: {
+              defined: 'PricingParams';
+            };
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions';
+            type: {
+              defined: 'Permissions';
+            };
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees';
+            type: {
+              defined: 'Fees';
+            };
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate';
+            type: {
+              defined: 'BorrowRateParams';
+            };
           },
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
-          }
-        ]
-      }
+            name: 'ratios';
+            type: {
+              vec: {
+                defined: 'TokenRatios';
+              };
+            };
+          },
+        ];
+      };
     },
     {
-      "name": "AddLiquidityParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddLiquidityParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
+            name: 'amountIn';
+            type: 'u64';
           },
           {
-            "name": "minLpAmountOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'minLpAmountOut';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "AddPoolParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddPoolParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "name",
-            "type": "string"
-          }
-        ]
-      }
+            name: 'name';
+            type: 'string';
+          },
+        ];
+      };
     },
     {
-      "name": "ClosePositionParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'ClosePositionParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'price';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "GetAddLiquidityAmountAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetAddLiquidityAmountAndFeeParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amountIn';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "GetAssetsUnderManagementParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetAssetsUnderManagementParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
     },
     {
-      "name": "GetEntryPriceAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetEntryPriceAndFeeParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "collateral",
-            "type": "u64"
+            name: 'collateral';
+            type: 'u64';
           },
           {
-            "name": "size",
-            "type": "u64"
+            name: 'size';
+            type: 'u64';
           },
           {
-            "name": "side",
-            "type": {
-              "defined": "Side"
-            }
-          }
-        ]
-      }
+            name: 'side';
+            type: {
+              defined: 'Side';
+            };
+          },
+        ];
+      };
     },
     {
-      "name": "GetExitPriceAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetExitPriceAndFeeParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
     },
     {
-      "name": "GetLiquidationPriceParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetLiquidationPriceParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "addCollateral",
-            "type": "u64"
+            name: 'addCollateral';
+            type: 'u64';
           },
           {
-            "name": "removeCollateral",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'removeCollateral';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "GetLiquidationStateParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetLiquidationStateParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
     },
     {
-      "name": "GetOraclePriceParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetOraclePriceParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "ema",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'ema';
+            type: 'bool';
+          },
+        ];
+      };
     },
     {
-      "name": "GetPnlParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetPnlParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
     },
     {
-      "name": "GetRemoveLiquidityAmountAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetRemoveLiquidityAmountAndFeeParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "lpAmountIn",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'lpAmountIn';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "GetSwapAmountAndFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetSwapAmountAndFeesParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amountIn';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "InitParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'InitParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "minSignatures",
-            "type": "u8"
+            name: 'minSignatures';
+            type: 'u8';
           },
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap';
+            type: 'bool';
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition';
+            type: 'bool';
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition';
+            type: 'bool';
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange';
+            type: 'bool';
+          },
+        ];
+      };
     },
     {
-      "name": "LiquidateParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'LiquidateParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
     },
     {
-      "name": "OpenPositionParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'OpenPositionParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price';
+            type: 'u64';
           },
           {
-            "name": "collateral",
-            "type": "u64"
+            name: 'collateral';
+            type: 'u64';
           },
           {
-            "name": "size",
-            "type": "u64"
+            name: 'size';
+            type: 'u64';
           },
           {
-            "name": "side",
-            "type": {
-              "defined": "Side"
-            }
-          }
-        ]
-      }
+            name: 'side';
+            type: {
+              defined: 'Side';
+            };
+          },
+        ];
+      };
     },
     {
-      "name": "RemoveCollateralParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'RemoveCollateralParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "collateralUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'collateralUsd';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "RemoveCustodyParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'RemoveCustodyParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
-          }
-        ]
-      }
+            name: 'ratios';
+            type: {
+              vec: {
+                defined: 'TokenRatios';
+              };
+            };
+          },
+        ];
+      };
     },
     {
-      "name": "RemoveLiquidityParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'RemoveLiquidityParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "lpAmountIn",
-            "type": "u64"
+            name: 'lpAmountIn';
+            type: 'u64';
           },
           {
-            "name": "minAmountOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'minAmountOut';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "RemovePoolParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'RemovePoolParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
     },
     {
-      "name": "SetAdminSignersParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetAdminSignersParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "minSignatures",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'minSignatures';
+            type: 'u8';
+          },
+        ];
+      };
     },
     {
-      "name": "SetCustodyConfigParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetCustodyConfigParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable';
+            type: 'bool';
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle';
+            type: {
+              defined: 'OracleParams';
+            };
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "PricingParams"
-            }
+            name: 'pricing';
+            type: {
+              defined: 'PricingParams';
+            };
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions';
+            type: {
+              defined: 'Permissions';
+            };
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees';
+            type: {
+              defined: 'Fees';
+            };
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate';
+            type: {
+              defined: 'BorrowRateParams';
+            };
           },
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
-          }
-        ]
-      }
+            name: 'ratios';
+            type: {
+              vec: {
+                defined: 'TokenRatios';
+              };
+            };
+          },
+        ];
+      };
     },
     {
-      "name": "SetPermissionsParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetPermissionsParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap';
+            type: 'bool';
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition';
+            type: 'bool';
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition';
+            type: 'bool';
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange';
+            type: 'bool';
+          },
+        ];
+      };
     },
     {
-      "name": "SetTestOraclePriceParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetTestOraclePriceParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price';
+            type: 'u64';
           },
           {
-            "name": "expo",
-            "type": "i32"
+            name: 'expo';
+            type: 'i32';
           },
           {
-            "name": "conf",
-            "type": "u64"
+            name: 'conf';
+            type: 'u64';
           },
           {
-            "name": "publishTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'publishTime';
+            type: 'i64';
+          },
+        ];
+      };
     },
     {
-      "name": "SetTestTimeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetTestTimeParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "time",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'time';
+            type: 'i64';
+          },
+        ];
+      };
     },
     {
-      "name": "SwapParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SwapParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
+            name: 'amountIn';
+            type: 'u64';
           },
           {
-            "name": "minAmountOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'minAmountOut';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "TestInitParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'TestInitParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "minSignatures",
-            "type": "u8"
+            name: 'minSignatures';
+            type: 'u8';
           },
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap';
+            type: 'bool';
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition';
+            type: 'bool';
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition';
+            type: 'bool';
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange';
+            type: 'bool';
+          },
+        ];
+      };
     },
     {
-      "name": "UpgradeCustodyParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'UpgradeCustodyParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
     },
     {
-      "name": "WithdrawFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'WithdrawFeesParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amount';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "WithdrawSolFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'WithdrawSolFeesParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amount';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "Fees",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'Fees';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "mode",
-            "type": {
-              "defined": "FeesMode"
-            }
+            name: 'mode';
+            type: {
+              defined: 'FeesMode';
+            };
           },
           {
-            "name": "ratioMult",
-            "type": "u64"
+            name: 'ratioMult';
+            type: 'u64';
           },
           {
-            "name": "utilizationMult",
-            "type": "u64"
+            name: 'utilizationMult';
+            type: 'u64';
           },
           {
-            "name": "swapIn",
-            "type": "u64"
+            name: 'swapIn';
+            type: 'u64';
           },
           {
-            "name": "swapOut",
-            "type": "u64"
+            name: 'swapOut';
+            type: 'u64';
           },
           {
-            "name": "stableSwapIn",
-            "type": "u64"
+            name: 'stableSwapIn';
+            type: 'u64';
           },
           {
-            "name": "stableSwapOut",
-            "type": "u64"
+            name: 'stableSwapOut';
+            type: 'u64';
           },
           {
-            "name": "addLiquidity",
-            "type": "u64"
+            name: 'addLiquidity';
+            type: 'u64';
           },
           {
-            "name": "removeLiquidity",
-            "type": "u64"
+            name: 'removeLiquidity';
+            type: 'u64';
           },
           {
-            "name": "openPosition",
-            "type": "u64"
+            name: 'openPosition';
+            type: 'u64';
           },
           {
-            "name": "closePosition",
-            "type": "u64"
+            name: 'closePosition';
+            type: 'u64';
           },
           {
-            "name": "liquidation",
-            "type": "u64"
+            name: 'liquidation';
+            type: 'u64';
           },
           {
-            "name": "protocolShare",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'protocolShare';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "FeesStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'FeesStats';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "swapUsd",
-            "type": "u64"
+            name: 'swapUsd';
+            type: 'u64';
           },
           {
-            "name": "addLiquidityUsd",
-            "type": "u64"
+            name: 'addLiquidityUsd';
+            type: 'u64';
           },
           {
-            "name": "removeLiquidityUsd",
-            "type": "u64"
+            name: 'removeLiquidityUsd';
+            type: 'u64';
           },
           {
-            "name": "openPositionUsd",
-            "type": "u64"
+            name: 'openPositionUsd';
+            type: 'u64';
           },
           {
-            "name": "closePositionUsd",
-            "type": "u64"
+            name: 'closePositionUsd';
+            type: 'u64';
           },
           {
-            "name": "liquidationUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'liquidationUsd';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "VolumeStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'VolumeStats';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "swapUsd",
-            "type": "u64"
+            name: 'swapUsd';
+            type: 'u64';
           },
           {
-            "name": "addLiquidityUsd",
-            "type": "u64"
+            name: 'addLiquidityUsd';
+            type: 'u64';
           },
           {
-            "name": "removeLiquidityUsd",
-            "type": "u64"
+            name: 'removeLiquidityUsd';
+            type: 'u64';
           },
           {
-            "name": "openPositionUsd",
-            "type": "u64"
+            name: 'openPositionUsd';
+            type: 'u64';
           },
           {
-            "name": "closePositionUsd",
-            "type": "u64"
+            name: 'closePositionUsd';
+            type: 'u64';
           },
           {
-            "name": "liquidationUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'liquidationUsd';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "TradeStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'TradeStats';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "profitUsd",
-            "type": "u64"
+            name: 'profitUsd';
+            type: 'u64';
           },
           {
-            "name": "lossUsd",
-            "type": "u64"
+            name: 'lossUsd';
+            type: 'u64';
           },
           {
-            "name": "oiLongUsd",
-            "type": "u64"
+            name: 'oiLongUsd';
+            type: 'u64';
           },
           {
-            "name": "oiShortUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'oiShortUsd';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "Assets",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'Assets';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "collateral",
-            "type": "u64"
+            name: 'collateral';
+            type: 'u64';
           },
           {
-            "name": "protocolFees",
-            "type": "u64"
+            name: 'protocolFees';
+            type: 'u64';
           },
           {
-            "name": "owned",
-            "type": "u64"
+            name: 'owned';
+            type: 'u64';
           },
           {
-            "name": "locked",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'locked';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "OracleParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'OracleParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "oracleAccount",
-            "type": "publicKey"
+            name: 'oracleAccount';
+            type: 'publicKey';
           },
           {
-            "name": "oracleType",
-            "type": {
-              "defined": "OracleType"
-            }
+            name: 'oracleType';
+            type: {
+              defined: 'OracleType';
+            };
           },
           {
-            "name": "maxPriceError",
-            "type": "u64"
+            name: 'maxPriceError';
+            type: 'u64';
           },
           {
-            "name": "maxPriceAgeSec",
-            "type": "u32"
-          }
-        ]
-      }
+            name: 'maxPriceAgeSec';
+            type: 'u32';
+          },
+        ];
+      };
     },
     {
-      "name": "PricingParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'PricingParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "useEma",
-            "type": "bool"
+            name: 'useEma';
+            type: 'bool';
           },
           {
-            "name": "useUnrealizedPnlInAum",
-            "type": "bool"
+            name: 'useUnrealizedPnlInAum';
+            type: 'bool';
           },
           {
-            "name": "tradeSpreadLong",
-            "type": "u64"
+            name: 'tradeSpreadLong';
+            type: 'u64';
           },
           {
-            "name": "tradeSpreadShort",
-            "type": "u64"
+            name: 'tradeSpreadShort';
+            type: 'u64';
           },
           {
-            "name": "swapSpread",
-            "type": "u64"
+            name: 'swapSpread';
+            type: 'u64';
           },
           {
-            "name": "minInitialLeverage",
-            "type": "u64"
+            name: 'minInitialLeverage';
+            type: 'u64';
           },
           {
-            "name": "maxInitialLeverage",
-            "type": "u64"
+            name: 'maxInitialLeverage';
+            type: 'u64';
           },
           {
-            "name": "maxLeverage",
-            "type": "u64"
+            name: 'maxLeverage';
+            type: 'u64';
           },
           {
-            "name": "maxPayoffMult",
-            "type": "u64"
+            name: 'maxPayoffMult';
+            type: 'u64';
           },
           {
-            "name": "maxUtilization",
-            "type": "u64"
+            name: 'maxUtilization';
+            type: 'u64';
           },
           {
-            "name": "maxPositionLockedUsd",
-            "type": "u64"
+            name: 'maxPositionLockedUsd';
+            type: 'u64';
           },
           {
-            "name": "maxTotalLockedUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'maxTotalLockedUsd';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "BorrowRateParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'BorrowRateParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "baseRate",
-            "type": "u64"
+            name: 'baseRate';
+            type: 'u64';
           },
           {
-            "name": "slope1",
-            "type": "u64"
+            name: 'slope1';
+            type: 'u64';
           },
           {
-            "name": "slope2",
-            "type": "u64"
+            name: 'slope2';
+            type: 'u64';
           },
           {
-            "name": "optimalUtilization",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'optimalUtilization';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "BorrowRateState",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'BorrowRateState';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "currentRate",
-            "type": "u64"
+            name: 'currentRate';
+            type: 'u64';
           },
           {
-            "name": "cumulativeInterest",
-            "type": "u128"
+            name: 'cumulativeInterest';
+            type: 'u128';
           },
           {
-            "name": "lastUpdate",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'lastUpdate';
+            type: 'i64';
+          },
+        ];
+      };
     },
     {
-      "name": "PositionStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'PositionStats';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "openPositions",
-            "type": "u64"
+            name: 'openPositions';
+            type: 'u64';
           },
           {
-            "name": "collateralUsd",
-            "type": "u64"
+            name: 'collateralUsd';
+            type: 'u64';
           },
           {
-            "name": "sizeUsd",
-            "type": "u64"
+            name: 'sizeUsd';
+            type: 'u64';
           },
           {
-            "name": "lockedAmount",
-            "type": "u64"
+            name: 'lockedAmount';
+            type: 'u64';
           },
           {
-            "name": "weightedPrice",
-            "type": "u128"
+            name: 'weightedPrice';
+            type: 'u128';
           },
           {
-            "name": "totalQuantity",
-            "type": "u128"
+            name: 'totalQuantity';
+            type: 'u128';
           },
           {
-            "name": "cumulativeInterestUsd",
-            "type": "u64"
+            name: 'cumulativeInterestUsd';
+            type: 'u64';
           },
           {
-            "name": "cumulativeInterestSnapshot",
-            "type": "u128"
-          }
-        ]
-      }
+            name: 'cumulativeInterestSnapshot';
+            type: 'u128';
+          },
+        ];
+      };
     },
     {
-      "name": "DeprecatedPricingParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'DeprecatedPricingParams';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "useEma",
-            "type": "bool"
+            name: 'useEma';
+            type: 'bool';
           },
           {
-            "name": "useUnrealizedPnlInAum",
-            "type": "bool"
+            name: 'useUnrealizedPnlInAum';
+            type: 'bool';
           },
           {
-            "name": "tradeSpreadLong",
-            "type": "u64"
+            name: 'tradeSpreadLong';
+            type: 'u64';
           },
           {
-            "name": "tradeSpreadShort",
-            "type": "u64"
+            name: 'tradeSpreadShort';
+            type: 'u64';
           },
           {
-            "name": "swapSpread",
-            "type": "u64"
+            name: 'swapSpread';
+            type: 'u64';
           },
           {
-            "name": "minInitialLeverage",
-            "type": "u64"
+            name: 'minInitialLeverage';
+            type: 'u64';
           },
           {
-            "name": "maxLeverage",
-            "type": "u64"
+            name: 'maxLeverage';
+            type: 'u64';
           },
           {
-            "name": "maxPayoffMult",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'maxPayoffMult';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "OraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'OraclePrice';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price';
+            type: 'u64';
           },
           {
-            "name": "exponent",
-            "type": "i32"
-          }
-        ]
-      }
+            name: 'exponent';
+            type: 'i32';
+          },
+        ];
+      };
     },
     {
-      "name": "PriceAndFee",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'PriceAndFee';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price';
+            type: 'u64';
           },
           {
-            "name": "fee",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'fee';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "AmountAndFee",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AmountAndFee';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amount",
-            "type": "u64"
+            name: 'amount';
+            type: 'u64';
           },
           {
-            "name": "fee",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'fee';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "NewPositionPricesAndFee",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'NewPositionPricesAndFee';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "entryPrice",
-            "type": "u64"
+            name: 'entryPrice';
+            type: 'u64';
           },
           {
-            "name": "liquidationPrice",
-            "type": "u64"
+            name: 'liquidationPrice';
+            type: 'u64';
           },
           {
-            "name": "fee",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'fee';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "SwapAmountAndFees",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SwapAmountAndFees';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "amountOut",
-            "type": "u64"
+            name: 'amountOut';
+            type: 'u64';
           },
           {
-            "name": "feeIn",
-            "type": "u64"
+            name: 'feeIn';
+            type: 'u64';
           },
           {
-            "name": "feeOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'feeOut';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "ProfitAndLoss",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'ProfitAndLoss';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "profit",
-            "type": "u64"
+            name: 'profit';
+            type: 'u64';
           },
           {
-            "name": "loss",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'loss';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "Permissions",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'Permissions';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap';
+            type: 'bool';
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity';
+            type: 'bool';
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition';
+            type: 'bool';
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition';
+            type: 'bool';
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal';
+            type: 'bool';
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange';
+            type: 'bool';
+          },
+        ];
+      };
     },
     {
-      "name": "TokenRatios",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'TokenRatios';
+      type: {
+        kind: 'struct';
+        fields: [
           {
-            "name": "target",
-            "type": "u64"
+            name: 'target';
+            type: 'u64';
           },
           {
-            "name": "min",
-            "type": "u64"
+            name: 'min';
+            type: 'u64';
           },
           {
-            "name": "max",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'max';
+            type: 'u64';
+          },
+        ];
+      };
     },
     {
-      "name": "FeesMode",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'FeesMode';
+      type: {
+        kind: 'enum';
+        variants: [
           {
-            "name": "Fixed"
+            name: 'Fixed';
           },
           {
-            "name": "Linear"
-          }
-        ]
-      }
+            name: 'Linear';
+          },
+        ];
+      };
     },
     {
-      "name": "AdminInstruction",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'AdminInstruction';
+      type: {
+        kind: 'enum';
+        variants: [
           {
-            "name": "AddPool"
+            name: 'AddPool';
           },
           {
-            "name": "RemovePool"
+            name: 'RemovePool';
           },
           {
-            "name": "AddCustody"
+            name: 'AddCustody';
           },
           {
-            "name": "RemoveCustody"
+            name: 'RemoveCustody';
           },
           {
-            "name": "SetAdminSigners"
+            name: 'SetAdminSigners';
           },
           {
-            "name": "SetCustodyConfig"
+            name: 'SetCustodyConfig';
           },
           {
-            "name": "SetPermissions"
+            name: 'SetPermissions';
           },
           {
-            "name": "SetBorrowRate"
+            name: 'SetBorrowRate';
           },
           {
-            "name": "WithdrawFees"
+            name: 'WithdrawFees';
           },
           {
-            "name": "WithdrawSolFees"
+            name: 'WithdrawSolFees';
           },
           {
-            "name": "SetTestOraclePrice"
+            name: 'SetTestOraclePrice';
           },
           {
-            "name": "SetTestTime"
+            name: 'SetTestTime';
           },
           {
-            "name": "UpgradeCustody"
-          }
-        ]
-      }
+            name: 'UpgradeCustody';
+          },
+        ];
+      };
     },
     {
-      "name": "OracleType",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'OracleType';
+      type: {
+        kind: 'enum';
+        variants: [
           {
-            "name": "None"
+            name: 'None';
           },
           {
-            "name": "Test"
+            name: 'Test';
           },
           {
-            "name": "Pyth"
-          }
-        ]
-      }
+            name: 'Pyth';
+          },
+        ];
+      };
     },
     {
-      "name": "AumCalcMode",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'AumCalcMode';
+      type: {
+        kind: 'enum';
+        variants: [
           {
-            "name": "Min"
+            name: 'Min';
           },
           {
-            "name": "Max"
+            name: 'Max';
           },
           {
-            "name": "Last"
+            name: 'Last';
           },
           {
-            "name": "EMA"
-          }
-        ]
-      }
+            name: 'EMA';
+          },
+        ];
+      };
     },
     {
-      "name": "Side",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'Side';
+      type: {
+        kind: 'enum';
+        variants: [
           {
-            "name": "None"
+            name: 'None';
           },
           {
-            "name": "Long"
+            name: 'Long';
           },
           {
-            "name": "Short"
-          }
-        ]
-      }
+            name: 'Short';
+          },
+        ];
+      };
     },
     {
-      "name": "CollateralChange",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'CollateralChange';
+      type: {
+        kind: 'enum';
+        variants: [
           {
-            "name": "None"
+            name: 'None';
           },
           {
-            "name": "Add"
+            name: 'Add';
           },
           {
-            "name": "Remove"
-          }
-        ]
-      }
-    }
-  ],
-  "errors": [
+            name: 'Remove';
+          },
+        ];
+      };
+    },
+  ];
+  errors: [
     {
-      "code": 6000,
-      "name": "MultisigAccountNotAuthorized",
-      "msg": "Account is not authorized to sign this instruction"
+      code: 6000;
+      name: 'MultisigAccountNotAuthorized';
+      msg: 'Account is not authorized to sign this instruction';
     },
     {
-      "code": 6001,
-      "name": "MultisigAlreadySigned",
-      "msg": "Account has already signed this instruction"
+      code: 6001;
+      name: 'MultisigAlreadySigned';
+      msg: 'Account has already signed this instruction';
     },
     {
-      "code": 6002,
-      "name": "MultisigAlreadyExecuted",
-      "msg": "This instruction has already been executed"
+      code: 6002;
+      name: 'MultisigAlreadyExecuted';
+      msg: 'This instruction has already been executed';
     },
     {
-      "code": 6003,
-      "name": "MathOverflow",
-      "msg": "Overflow in arithmetic operation"
+      code: 6003;
+      name: 'MathOverflow';
+      msg: 'Overflow in arithmetic operation';
     },
     {
-      "code": 6004,
-      "name": "UnsupportedOracle",
-      "msg": "Unsupported price oracle"
+      code: 6004;
+      name: 'UnsupportedOracle';
+      msg: 'Unsupported price oracle';
     },
     {
-      "code": 6005,
-      "name": "InvalidOracleAccount",
-      "msg": "Invalid oracle account"
+      code: 6005;
+      name: 'InvalidOracleAccount';
+      msg: 'Invalid oracle account';
     },
     {
-      "code": 6006,
-      "name": "InvalidOracleState",
-      "msg": "Invalid oracle state"
+      code: 6006;
+      name: 'InvalidOracleState';
+      msg: 'Invalid oracle state';
     },
     {
-      "code": 6007,
-      "name": "StaleOraclePrice",
-      "msg": "Stale oracle price"
+      code: 6007;
+      name: 'StaleOraclePrice';
+      msg: 'Stale oracle price';
     },
     {
-      "code": 6008,
-      "name": "InvalidOraclePrice",
-      "msg": "Invalid oracle price"
+      code: 6008;
+      name: 'InvalidOraclePrice';
+      msg: 'Invalid oracle price';
     },
     {
-      "code": 6009,
-      "name": "InvalidEnvironment",
-      "msg": "Instruction is not allowed in production"
+      code: 6009;
+      name: 'InvalidEnvironment';
+      msg: 'Instruction is not allowed in production';
     },
     {
-      "code": 6010,
-      "name": "InvalidPoolState",
-      "msg": "Invalid pool state"
+      code: 6010;
+      name: 'InvalidPoolState';
+      msg: 'Invalid pool state';
     },
     {
-      "code": 6011,
-      "name": "InvalidCustodyState",
-      "msg": "Invalid custody state"
+      code: 6011;
+      name: 'InvalidCustodyState';
+      msg: 'Invalid custody state';
     },
     {
-      "code": 6012,
-      "name": "InvalidPositionState",
-      "msg": "Invalid position state"
+      code: 6012;
+      name: 'InvalidPositionState';
+      msg: 'Invalid position state';
     },
     {
-      "code": 6013,
-      "name": "InvalidPerpetualsConfig",
-      "msg": "Invalid perpetuals config"
+      code: 6013;
+      name: 'InvalidPerpetualsConfig';
+      msg: 'Invalid perpetuals config';
     },
     {
-      "code": 6014,
-      "name": "InvalidPoolConfig",
-      "msg": "Invalid pool config"
+      code: 6014;
+      name: 'InvalidPoolConfig';
+      msg: 'Invalid pool config';
     },
     {
-      "code": 6015,
-      "name": "InvalidCustodyConfig",
-      "msg": "Invalid custody config"
+      code: 6015;
+      name: 'InvalidCustodyConfig';
+      msg: 'Invalid custody config';
     },
     {
-      "code": 6016,
-      "name": "InsufficientAmountReturned",
-      "msg": "Insufficient token amount returned"
+      code: 6016;
+      name: 'InsufficientAmountReturned';
+      msg: 'Insufficient token amount returned';
     },
     {
-      "code": 6017,
-      "name": "MaxPriceSlippage",
-      "msg": "Price slippage limit exceeded"
+      code: 6017;
+      name: 'MaxPriceSlippage';
+      msg: 'Price slippage limit exceeded';
     },
     {
-      "code": 6018,
-      "name": "MaxLeverage",
-      "msg": "Position leverage limit exceeded"
+      code: 6018;
+      name: 'MaxLeverage';
+      msg: 'Position leverage limit exceeded';
     },
     {
-      "code": 6019,
-      "name": "CustodyAmountLimit",
-      "msg": "Custody amount limit exceeded"
+      code: 6019;
+      name: 'CustodyAmountLimit';
+      msg: 'Custody amount limit exceeded';
     },
     {
-      "code": 6020,
-      "name": "PositionAmountLimit",
-      "msg": "Position amount limit exceeded"
+      code: 6020;
+      name: 'PositionAmountLimit';
+      msg: 'Position amount limit exceeded';
     },
     {
-      "code": 6021,
-      "name": "TokenRatioOutOfRange",
-      "msg": "Token ratio out of range"
+      code: 6021;
+      name: 'TokenRatioOutOfRange';
+      msg: 'Token ratio out of range';
     },
     {
-      "code": 6022,
-      "name": "UnsupportedToken",
-      "msg": "Token is not supported"
+      code: 6022;
+      name: 'UnsupportedToken';
+      msg: 'Token is not supported';
     },
     {
-      "code": 6023,
-      "name": "InstructionNotAllowed",
-      "msg": "Instruction is not allowed at this time"
+      code: 6023;
+      name: 'InstructionNotAllowed';
+      msg: 'Instruction is not allowed at this time';
     },
     {
-      "code": 6024,
-      "name": "MaxUtilization",
-      "msg": "Token utilization limit exceeded"
-    }
-  ]
+      code: 6024;
+      name: 'MaxUtilization';
+      msg: 'Token utilization limit exceeded';
+    },
+  ];
 };
 
 export const IDL: Perpetuals = {
-  "version": "0.1.0",
-  "name": "perpetuals",
-  "instructions": [
+  version: '0.1.0',
+  name: 'perpetuals',
+  instructions: [
     {
-      "name": "init",
-      "accounts": [
+      name: 'init',
+      accounts: [
         {
-          "name": "upgradeAuthority",
-          "isMut": true,
-          "isSigner": true
+          name: 'upgradeAuthority',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetualsProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetualsProgramData",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetualsProgramData',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "InitParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'InitParams',
+          },
+        },
+      ],
     },
     {
-      "name": "addPool",
-      "accounts": [
+      name: 'addPool',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddPoolParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'AddPoolParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "removePool",
-      "accounts": [
+      name: 'removePool',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemovePoolParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'RemovePoolParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "addCustody",
-      "accounts": [
+      name: 'addCustody',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenMint",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyTokenMint',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddCustodyParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'AddCustodyParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "removeCustody",
-      "accounts": [
+      name: 'removeCustody',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemoveCustodyParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'RemoveCustodyParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "setAdminSigners",
-      "accounts": [
+      name: 'setAdminSigners',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        }
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetAdminSignersParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'SetAdminSignersParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "setCustodyConfig",
-      "accounts": [
+      name: 'setCustodyConfig',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
-        }
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetCustodyConfigParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'SetCustodyConfigParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "setPermissions",
-      "accounts": [
+      name: 'setPermissions',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
-        }
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetPermissionsParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'SetPermissionsParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "withdrawFees",
-      "accounts": [
+      name: 'withdrawFees',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "receivingTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "WithdrawFeesParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'WithdrawFeesParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "withdrawSolFees",
-      "accounts": [
+      name: 'withdrawSolFees',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
-        }
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "WithdrawSolFeesParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'WithdrawSolFeesParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "upgradeCustody",
-      "accounts": [
+      name: 'upgradeCustody',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "UpgradeCustodyParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'UpgradeCustodyParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "testInit",
-      "accounts": [
+      name: 'testInit',
+      accounts: [
         {
-          "name": "upgradeAuthority",
-          "isMut": true,
-          "isSigner": true
+          name: 'upgradeAuthority',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "TestInitParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'TestInitParams',
+          },
+        },
+      ],
     },
     {
-      "name": "setTestOraclePrice",
-      "accounts": [
+      name: 'setTestOraclePrice',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": true,
-          "isSigner": true
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "oracleAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'oracleAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetTestOraclePriceParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'SetTestOraclePriceParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "setTestTime",
-      "accounts": [
+      name: 'setTestTime',
+      accounts: [
         {
-          "name": "admin",
-          "isMut": false,
-          "isSigner": true
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
         },
         {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
-        }
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SetTestTimeParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'SetTestTimeParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "swap",
-      "accounts": [
+      name: 'swap',
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "receivingCustody",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingCustody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "receivingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'receivingCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "receivingCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "dispensingCustody",
-          "isMut": true,
-          "isSigner": false
+          name: 'dispensingCustody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "dispensingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'dispensingCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "dispensingCustodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'dispensingCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "SwapParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'SwapParams',
+          },
+        },
+      ],
     },
     {
-      "name": "addLiquidity",
-      "accounts": [
+      name: 'addLiquidity',
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "lpTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddLiquidityParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'AddLiquidityParams',
+          },
+        },
+      ],
     },
     {
-      "name": "removeLiquidity",
-      "accounts": [
+      name: 'removeLiquidity',
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "lpTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "lpTokenMint",
-          "isMut": true,
-          "isSigner": false
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemoveLiquidityParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'RemoveLiquidityParams',
+          },
+        },
+      ],
     },
     {
-      "name": "openPosition",
-      "accounts": [
+      name: 'openPosition',
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "OpenPositionParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'OpenPositionParams',
+          },
+        },
+      ],
     },
     {
-      "name": "addCollateral",
-      "accounts": [
+      name: 'addCollateral',
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "AddCollateralParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'AddCollateralParams',
+          },
+        },
+      ],
     },
     {
-      "name": "removeCollateral",
-      "accounts": [
+      name: 'removeCollateral',
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "RemoveCollateralParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'RemoveCollateralParams',
+          },
+        },
+      ],
     },
     {
-      "name": "closePosition",
-      "accounts": [
+      name: 'closePosition',
+      accounts: [
         {
-          "name": "owner",
-          "isMut": true,
-          "isSigner": true
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "ClosePositionParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'ClosePositionParams',
+          },
+        },
+      ],
     },
     {
-      "name": "liquidate",
-      "accounts": [
+      name: 'liquidate',
+      accounts: [
         {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
+          name: 'signer',
+          isMut: true,
+          isSigner: true,
         },
         {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "rewardsReceivingAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'rewardsReceivingAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": true,
-          "isSigner": false
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": true,
-          "isSigner": false
+          name: 'position',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": true,
-          "isSigner": false
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyTokenAccount",
-          "isMut": true,
-          "isSigner": false
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
         },
         {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "LiquidateParams"
-          }
-        }
-      ]
+          name: 'params',
+          type: {
+            defined: 'LiquidateParams',
+          },
+        },
+      ],
     },
     {
-      "name": "getAddLiquidityAmountAndFee",
-      "accounts": [
+      name: 'getAddLiquidityAmountAndFee',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "lpTokenMint",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'lpTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetAddLiquidityAmountAndFeeParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetAddLiquidityAmountAndFeeParams',
+          },
+        },
       ],
-      "returns": {
-        "defined": "AmountAndFee"
-      }
+      returns: {
+        defined: 'AmountAndFee',
+      },
     },
     {
-      "name": "getRemoveLiquidityAmountAndFee",
-      "accounts": [
+      name: 'getRemoveLiquidityAmountAndFee',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "lpTokenMint",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'lpTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetRemoveLiquidityAmountAndFeeParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetRemoveLiquidityAmountAndFeeParams',
+          },
+        },
       ],
-      "returns": {
-        "defined": "AmountAndFee"
-      }
+      returns: {
+        defined: 'AmountAndFee',
+      },
     },
     {
-      "name": "getEntryPriceAndFee",
-      "accounts": [
+      name: 'getEntryPriceAndFee',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetEntryPriceAndFeeParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetEntryPriceAndFeeParams',
+          },
+        },
       ],
-      "returns": {
-        "defined": "NewPositionPricesAndFee"
-      }
+      returns: {
+        defined: 'NewPositionPricesAndFee',
+      },
     },
     {
-      "name": "getExitPriceAndFee",
-      "accounts": [
+      name: 'getExitPriceAndFee',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetExitPriceAndFeeParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetExitPriceAndFeeParams',
+          },
+        },
       ],
-      "returns": {
-        "defined": "PriceAndFee"
-      }
+      returns: {
+        defined: 'PriceAndFee',
+      },
     },
     {
-      "name": "getPnl",
-      "accounts": [
+      name: 'getPnl',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetPnlParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetPnlParams',
+          },
+        },
       ],
-      "returns": {
-        "defined": "ProfitAndLoss"
-      }
+      returns: {
+        defined: 'ProfitAndLoss',
+      },
     },
     {
-      "name": "getLiquidationPrice",
-      "accounts": [
+      name: 'getLiquidationPrice',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetLiquidationPriceParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetLiquidationPriceParams',
+          },
+        },
       ],
-      "returns": "u64"
+      returns: 'u64',
     },
     {
-      "name": "getLiquidationState",
-      "accounts": [
+      name: 'getLiquidationState',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "position",
-          "isMut": false,
-          "isSigner": false
+          name: 'position',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetLiquidationStateParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetLiquidationStateParams',
+          },
+        },
       ],
-      "returns": "u8"
+      returns: 'u8',
     },
     {
-      "name": "getOraclePrice",
-      "accounts": [
+      name: 'getOraclePrice',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custody",
-          "isMut": false,
-          "isSigner": false
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "custodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetOraclePriceParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetOraclePriceParams',
+          },
+        },
       ],
-      "returns": "u64"
+      returns: 'u64',
     },
     {
-      "name": "getSwapAmountAndFees",
-      "accounts": [
+      name: 'getSwapAmountAndFees',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "receivingCustody",
-          "isMut": false,
-          "isSigner": false
+          name: 'receivingCustody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "receivingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
+          name: 'receivingCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "dispensingCustody",
-          "isMut": false,
-          "isSigner": false
+          name: 'dispensingCustody',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "dispensingCustodyOracleAccount",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'dispensingCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetSwapAmountAndFeesParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetSwapAmountAndFeesParams',
+          },
+        },
       ],
-      "returns": {
-        "defined": "SwapAmountAndFees"
-      }
+      returns: {
+        defined: 'SwapAmountAndFees',
+      },
     },
     {
-      "name": "getAssetsUnderManagement",
-      "accounts": [
+      name: 'getAssetsUnderManagement',
+      accounts: [
         {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
         },
         {
-          "name": "pool",
-          "isMut": false,
-          "isSigner": false
-        }
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+        },
       ],
-      "args": [
+      args: [
         {
-          "name": "params",
-          "type": {
-            "defined": "GetAssetsUnderManagementParams"
-          }
-        }
+          name: 'params',
+          type: {
+            defined: 'GetAssetsUnderManagementParams',
+          },
+        },
       ],
-      "returns": "u128"
-    }
+      returns: 'u128',
+    },
   ],
-  "accounts": [
+  accounts: [
     {
-      "name": "custody",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'custody',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "pool",
-            "type": "publicKey"
+            name: 'pool',
+            type: 'publicKey',
           },
           {
-            "name": "mint",
-            "type": "publicKey"
+            name: 'mint',
+            type: 'publicKey',
           },
           {
-            "name": "tokenAccount",
-            "type": "publicKey"
+            name: 'tokenAccount',
+            type: 'publicKey',
           },
           {
-            "name": "decimals",
-            "type": "u8"
+            name: 'decimals',
+            type: 'u8',
           },
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable',
+            type: 'bool',
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle',
+            type: {
+              defined: 'OracleParams',
+            },
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "PricingParams"
-            }
+            name: 'pricing',
+            type: {
+              defined: 'PricingParams',
+            },
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions',
+            type: {
+              defined: 'Permissions',
+            },
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees',
+            type: {
+              defined: 'Fees',
+            },
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate',
+            type: {
+              defined: 'BorrowRateParams',
+            },
           },
           {
-            "name": "assets",
-            "type": {
-              "defined": "Assets"
-            }
+            name: 'assets',
+            type: {
+              defined: 'Assets',
+            },
           },
           {
-            "name": "collectedFees",
-            "type": {
-              "defined": "FeesStats"
-            }
+            name: 'collectedFees',
+            type: {
+              defined: 'FeesStats',
+            },
           },
           {
-            "name": "volumeStats",
-            "type": {
-              "defined": "VolumeStats"
-            }
+            name: 'volumeStats',
+            type: {
+              defined: 'VolumeStats',
+            },
           },
           {
-            "name": "tradeStats",
-            "type": {
-              "defined": "TradeStats"
-            }
+            name: 'tradeStats',
+            type: {
+              defined: 'TradeStats',
+            },
           },
           {
-            "name": "longPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'longPositions',
+            type: {
+              defined: 'PositionStats',
+            },
           },
           {
-            "name": "shortPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'shortPositions',
+            type: {
+              defined: 'PositionStats',
+            },
           },
           {
-            "name": "borrowRateState",
-            "type": {
-              "defined": "BorrowRateState"
-            }
+            name: 'borrowRateState',
+            type: {
+              defined: 'BorrowRateState',
+            },
           },
           {
-            "name": "bump",
-            "type": "u8"
+            name: 'bump',
+            type: 'u8',
           },
           {
-            "name": "tokenAccountBump",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'tokenAccountBump',
+            type: 'u8',
+          },
+        ],
+      },
     },
     {
-      "name": "deprecatedCustody",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'deprecatedCustody',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "pool",
-            "type": "publicKey"
+            name: 'pool',
+            type: 'publicKey',
           },
           {
-            "name": "mint",
-            "type": "publicKey"
+            name: 'mint',
+            type: 'publicKey',
           },
           {
-            "name": "tokenAccount",
-            "type": "publicKey"
+            name: 'tokenAccount',
+            type: 'publicKey',
           },
           {
-            "name": "decimals",
-            "type": "u8"
+            name: 'decimals',
+            type: 'u8',
           },
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable',
+            type: 'bool',
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle',
+            type: {
+              defined: 'OracleParams',
+            },
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "DeprecatedPricingParams"
-            }
+            name: 'pricing',
+            type: {
+              defined: 'DeprecatedPricingParams',
+            },
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions',
+            type: {
+              defined: 'Permissions',
+            },
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees',
+            type: {
+              defined: 'Fees',
+            },
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate',
+            type: {
+              defined: 'BorrowRateParams',
+            },
           },
           {
-            "name": "assets",
-            "type": {
-              "defined": "Assets"
-            }
+            name: 'assets',
+            type: {
+              defined: 'Assets',
+            },
           },
           {
-            "name": "collectedFees",
-            "type": {
-              "defined": "FeesStats"
-            }
+            name: 'collectedFees',
+            type: {
+              defined: 'FeesStats',
+            },
           },
           {
-            "name": "volumeStats",
-            "type": {
-              "defined": "VolumeStats"
-            }
+            name: 'volumeStats',
+            type: {
+              defined: 'VolumeStats',
+            },
           },
           {
-            "name": "tradeStats",
-            "type": {
-              "defined": "TradeStats"
-            }
+            name: 'tradeStats',
+            type: {
+              defined: 'TradeStats',
+            },
           },
           {
-            "name": "longPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'longPositions',
+            type: {
+              defined: 'PositionStats',
+            },
           },
           {
-            "name": "shortPositions",
-            "type": {
-              "defined": "PositionStats"
-            }
+            name: 'shortPositions',
+            type: {
+              defined: 'PositionStats',
+            },
           },
           {
-            "name": "borrowRateState",
-            "type": {
-              "defined": "BorrowRateState"
-            }
+            name: 'borrowRateState',
+            type: {
+              defined: 'BorrowRateState',
+            },
           },
           {
-            "name": "bump",
-            "type": "u8"
+            name: 'bump',
+            type: 'u8',
           },
           {
-            "name": "tokenAccountBump",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'tokenAccountBump',
+            type: 'u8',
+          },
+        ],
+      },
     },
     {
-      "name": "multisig",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'multisig',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "numSigners",
-            "type": "u8"
+            name: 'numSigners',
+            type: 'u8',
           },
           {
-            "name": "numSigned",
-            "type": "u8"
+            name: 'numSigned',
+            type: 'u8',
           },
           {
-            "name": "minSignatures",
-            "type": "u8"
+            name: 'minSignatures',
+            type: 'u8',
           },
           {
-            "name": "instructionAccountsLen",
-            "type": "u8"
+            name: 'instructionAccountsLen',
+            type: 'u8',
           },
           {
-            "name": "instructionDataLen",
-            "type": "u16"
+            name: 'instructionDataLen',
+            type: 'u16',
           },
           {
-            "name": "instructionHash",
-            "type": "u64"
+            name: 'instructionHash',
+            type: 'u64',
           },
           {
-            "name": "signers",
-            "type": {
-              "array": [
-                "publicKey",
-                6
-              ]
-            }
+            name: 'signers',
+            type: {
+              array: ['publicKey', 6],
+            },
           },
           {
-            "name": "signed",
-            "type": {
-              "array": [
-                "bool",
-                6
-              ]
-            }
+            name: 'signed',
+            type: {
+              array: ['bool', 6],
+            },
           },
           {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'bump',
+            type: 'u8',
+          },
+        ],
+      },
     },
     {
-      "name": "testOracle",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'testOracle',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price',
+            type: 'u64',
           },
           {
-            "name": "expo",
-            "type": "i32"
+            name: 'expo',
+            type: 'i32',
           },
           {
-            "name": "conf",
-            "type": "u64"
+            name: 'conf',
+            type: 'u64',
           },
           {
-            "name": "publishTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'publishTime',
+            type: 'i64',
+          },
+        ],
+      },
     },
     {
-      "name": "perpetuals",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'perpetuals',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions',
+            type: {
+              defined: 'Permissions',
+            },
           },
           {
-            "name": "pools",
-            "type": {
-              "vec": "publicKey"
-            }
+            name: 'pools',
+            type: {
+              vec: 'publicKey',
+            },
           },
           {
-            "name": "transferAuthorityBump",
-            "type": "u8"
+            name: 'transferAuthorityBump',
+            type: 'u8',
           },
           {
-            "name": "perpetualsBump",
-            "type": "u8"
+            name: 'perpetualsBump',
+            type: 'u8',
           },
           {
-            "name": "inceptionTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'inceptionTime',
+            type: 'i64',
+          },
+        ],
+      },
     },
     {
-      "name": "pool",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'pool',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "name",
-            "type": "string"
+            name: 'name',
+            type: 'string',
           },
           {
-            "name": "custodies",
-            "type": {
-              "vec": "publicKey"
-            }
+            name: 'custodies',
+            type: {
+              vec: 'publicKey',
+            },
           },
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
+            name: 'ratios',
+            type: {
+              vec: {
+                defined: 'TokenRatios',
+              },
+            },
           },
           {
-            "name": "aumUsd",
-            "type": "u128"
+            name: 'aumUsd',
+            type: 'u128',
           },
           {
-            "name": "bump",
-            "type": "u8"
+            name: 'bump',
+            type: 'u8',
           },
           {
-            "name": "lpTokenBump",
-            "type": "u8"
+            name: 'lpTokenBump',
+            type: 'u8',
           },
           {
-            "name": "inceptionTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'inceptionTime',
+            type: 'i64',
+          },
+        ],
+      },
     },
     {
-      "name": "position",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'position',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "owner",
-            "type": "publicKey"
+            name: 'owner',
+            type: 'publicKey',
           },
           {
-            "name": "pool",
-            "type": "publicKey"
+            name: 'pool',
+            type: 'publicKey',
           },
           {
-            "name": "custody",
-            "type": "publicKey"
+            name: 'custody',
+            type: 'publicKey',
           },
           {
-            "name": "openTime",
-            "type": "i64"
+            name: 'openTime',
+            type: 'i64',
           },
           {
-            "name": "updateTime",
-            "type": "i64"
+            name: 'updateTime',
+            type: 'i64',
           },
           {
-            "name": "side",
-            "type": {
-              "defined": "Side"
-            }
+            name: 'side',
+            type: {
+              defined: 'Side',
+            },
           },
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price',
+            type: 'u64',
           },
           {
-            "name": "sizeUsd",
-            "type": "u64"
+            name: 'sizeUsd',
+            type: 'u64',
           },
           {
-            "name": "collateralUsd",
-            "type": "u64"
+            name: 'collateralUsd',
+            type: 'u64',
           },
           {
-            "name": "unrealizedProfitUsd",
-            "type": "u64"
+            name: 'unrealizedProfitUsd',
+            type: 'u64',
           },
           {
-            "name": "unrealizedLossUsd",
-            "type": "u64"
+            name: 'unrealizedLossUsd',
+            type: 'u64',
           },
           {
-            "name": "cumulativeInterestSnapshot",
-            "type": "u128"
+            name: 'cumulativeInterestSnapshot',
+            type: 'u128',
           },
           {
-            "name": "lockedAmount",
-            "type": "u64"
+            name: 'lockedAmount',
+            type: 'u64',
           },
           {
-            "name": "collateralAmount",
-            "type": "u64"
+            name: 'collateralAmount',
+            type: 'u64',
           },
           {
-            "name": "bump",
-            "type": "u8"
-          }
-        ]
-      }
-    }
+            name: 'bump',
+            type: 'u8',
+          },
+        ],
+      },
+    },
   ],
-  "types": [
+  types: [
     {
-      "name": "AddCollateralParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddCollateralParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "collateral",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'collateral',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "AddCustodyParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddCustodyParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable',
+            type: 'bool',
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle',
+            type: {
+              defined: 'OracleParams',
+            },
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "PricingParams"
-            }
+            name: 'pricing',
+            type: {
+              defined: 'PricingParams',
+            },
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions',
+            type: {
+              defined: 'Permissions',
+            },
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees',
+            type: {
+              defined: 'Fees',
+            },
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate',
+            type: {
+              defined: 'BorrowRateParams',
+            },
           },
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
-          }
-        ]
-      }
+            name: 'ratios',
+            type: {
+              vec: {
+                defined: 'TokenRatios',
+              },
+            },
+          },
+        ],
+      },
     },
     {
-      "name": "AddLiquidityParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddLiquidityParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
+            name: 'amountIn',
+            type: 'u64',
           },
           {
-            "name": "minLpAmountOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'minLpAmountOut',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "AddPoolParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AddPoolParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "name",
-            "type": "string"
-          }
-        ]
-      }
+            name: 'name',
+            type: 'string',
+          },
+        ],
+      },
     },
     {
-      "name": "ClosePositionParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'ClosePositionParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'price',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "GetAddLiquidityAmountAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetAddLiquidityAmountAndFeeParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amountIn',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "GetAssetsUnderManagementParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetAssetsUnderManagementParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
     },
     {
-      "name": "GetEntryPriceAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetEntryPriceAndFeeParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "collateral",
-            "type": "u64"
+            name: 'collateral',
+            type: 'u64',
           },
           {
-            "name": "size",
-            "type": "u64"
+            name: 'size',
+            type: 'u64',
           },
           {
-            "name": "side",
-            "type": {
-              "defined": "Side"
-            }
-          }
-        ]
-      }
+            name: 'side',
+            type: {
+              defined: 'Side',
+            },
+          },
+        ],
+      },
     },
     {
-      "name": "GetExitPriceAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetExitPriceAndFeeParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
     },
     {
-      "name": "GetLiquidationPriceParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetLiquidationPriceParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "addCollateral",
-            "type": "u64"
+            name: 'addCollateral',
+            type: 'u64',
           },
           {
-            "name": "removeCollateral",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'removeCollateral',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "GetLiquidationStateParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetLiquidationStateParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
     },
     {
-      "name": "GetOraclePriceParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetOraclePriceParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "ema",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'ema',
+            type: 'bool',
+          },
+        ],
+      },
     },
     {
-      "name": "GetPnlParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'GetPnlParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
     },
     {
-      "name": "GetRemoveLiquidityAmountAndFeeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetRemoveLiquidityAmountAndFeeParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "lpAmountIn",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'lpAmountIn',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "GetSwapAmountAndFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'GetSwapAmountAndFeesParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amountIn',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "InitParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'InitParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "minSignatures",
-            "type": "u8"
+            name: 'minSignatures',
+            type: 'u8',
           },
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap',
+            type: 'bool',
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition',
+            type: 'bool',
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition',
+            type: 'bool',
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange',
+            type: 'bool',
+          },
+        ],
+      },
     },
     {
-      "name": "LiquidateParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'LiquidateParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
     },
     {
-      "name": "OpenPositionParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'OpenPositionParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price',
+            type: 'u64',
           },
           {
-            "name": "collateral",
-            "type": "u64"
+            name: 'collateral',
+            type: 'u64',
           },
           {
-            "name": "size",
-            "type": "u64"
+            name: 'size',
+            type: 'u64',
           },
           {
-            "name": "side",
-            "type": {
-              "defined": "Side"
-            }
-          }
-        ]
-      }
+            name: 'side',
+            type: {
+              defined: 'Side',
+            },
+          },
+        ],
+      },
     },
     {
-      "name": "RemoveCollateralParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'RemoveCollateralParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "collateralUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'collateralUsd',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "RemoveCustodyParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'RemoveCustodyParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
-          }
-        ]
-      }
+            name: 'ratios',
+            type: {
+              vec: {
+                defined: 'TokenRatios',
+              },
+            },
+          },
+        ],
+      },
     },
     {
-      "name": "RemoveLiquidityParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'RemoveLiquidityParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "lpAmountIn",
-            "type": "u64"
+            name: 'lpAmountIn',
+            type: 'u64',
           },
           {
-            "name": "minAmountOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'minAmountOut',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "RemovePoolParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'RemovePoolParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
     },
     {
-      "name": "SetAdminSignersParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetAdminSignersParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "minSignatures",
-            "type": "u8"
-          }
-        ]
-      }
+            name: 'minSignatures',
+            type: 'u8',
+          },
+        ],
+      },
     },
     {
-      "name": "SetCustodyConfigParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetCustodyConfigParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "isStable",
-            "type": "bool"
+            name: 'isStable',
+            type: 'bool',
           },
           {
-            "name": "oracle",
-            "type": {
-              "defined": "OracleParams"
-            }
+            name: 'oracle',
+            type: {
+              defined: 'OracleParams',
+            },
           },
           {
-            "name": "pricing",
-            "type": {
-              "defined": "PricingParams"
-            }
+            name: 'pricing',
+            type: {
+              defined: 'PricingParams',
+            },
           },
           {
-            "name": "permissions",
-            "type": {
-              "defined": "Permissions"
-            }
+            name: 'permissions',
+            type: {
+              defined: 'Permissions',
+            },
           },
           {
-            "name": "fees",
-            "type": {
-              "defined": "Fees"
-            }
+            name: 'fees',
+            type: {
+              defined: 'Fees',
+            },
           },
           {
-            "name": "borrowRate",
-            "type": {
-              "defined": "BorrowRateParams"
-            }
+            name: 'borrowRate',
+            type: {
+              defined: 'BorrowRateParams',
+            },
           },
           {
-            "name": "ratios",
-            "type": {
-              "vec": {
-                "defined": "TokenRatios"
-              }
-            }
-          }
-        ]
-      }
+            name: 'ratios',
+            type: {
+              vec: {
+                defined: 'TokenRatios',
+              },
+            },
+          },
+        ],
+      },
     },
     {
-      "name": "SetPermissionsParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetPermissionsParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap',
+            type: 'bool',
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition',
+            type: 'bool',
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition',
+            type: 'bool',
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange',
+            type: 'bool',
+          },
+        ],
+      },
     },
     {
-      "name": "SetTestOraclePriceParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetTestOraclePriceParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price',
+            type: 'u64',
           },
           {
-            "name": "expo",
-            "type": "i32"
+            name: 'expo',
+            type: 'i32',
           },
           {
-            "name": "conf",
-            "type": "u64"
+            name: 'conf',
+            type: 'u64',
           },
           {
-            "name": "publishTime",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'publishTime',
+            type: 'i64',
+          },
+        ],
+      },
     },
     {
-      "name": "SetTestTimeParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SetTestTimeParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "time",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'time',
+            type: 'i64',
+          },
+        ],
+      },
     },
     {
-      "name": "SwapParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SwapParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amountIn",
-            "type": "u64"
+            name: 'amountIn',
+            type: 'u64',
           },
           {
-            "name": "minAmountOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'minAmountOut',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "TestInitParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'TestInitParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "minSignatures",
-            "type": "u8"
+            name: 'minSignatures',
+            type: 'u8',
           },
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap',
+            type: 'bool',
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition',
+            type: 'bool',
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition',
+            type: 'bool',
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange',
+            type: 'bool',
+          },
+        ],
+      },
     },
     {
-      "name": "UpgradeCustodyParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
+      name: 'UpgradeCustodyParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
     },
     {
-      "name": "WithdrawFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'WithdrawFeesParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amount',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "WithdrawSolFeesParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'WithdrawSolFeesParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'amount',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "Fees",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'Fees',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "mode",
-            "type": {
-              "defined": "FeesMode"
-            }
+            name: 'mode',
+            type: {
+              defined: 'FeesMode',
+            },
           },
           {
-            "name": "ratioMult",
-            "type": "u64"
+            name: 'ratioMult',
+            type: 'u64',
           },
           {
-            "name": "utilizationMult",
-            "type": "u64"
+            name: 'utilizationMult',
+            type: 'u64',
           },
           {
-            "name": "swapIn",
-            "type": "u64"
+            name: 'swapIn',
+            type: 'u64',
           },
           {
-            "name": "swapOut",
-            "type": "u64"
+            name: 'swapOut',
+            type: 'u64',
           },
           {
-            "name": "stableSwapIn",
-            "type": "u64"
+            name: 'stableSwapIn',
+            type: 'u64',
           },
           {
-            "name": "stableSwapOut",
-            "type": "u64"
+            name: 'stableSwapOut',
+            type: 'u64',
           },
           {
-            "name": "addLiquidity",
-            "type": "u64"
+            name: 'addLiquidity',
+            type: 'u64',
           },
           {
-            "name": "removeLiquidity",
-            "type": "u64"
+            name: 'removeLiquidity',
+            type: 'u64',
           },
           {
-            "name": "openPosition",
-            "type": "u64"
+            name: 'openPosition',
+            type: 'u64',
           },
           {
-            "name": "closePosition",
-            "type": "u64"
+            name: 'closePosition',
+            type: 'u64',
           },
           {
-            "name": "liquidation",
-            "type": "u64"
+            name: 'liquidation',
+            type: 'u64',
           },
           {
-            "name": "protocolShare",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'protocolShare',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "FeesStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'FeesStats',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "swapUsd",
-            "type": "u64"
+            name: 'swapUsd',
+            type: 'u64',
           },
           {
-            "name": "addLiquidityUsd",
-            "type": "u64"
+            name: 'addLiquidityUsd',
+            type: 'u64',
           },
           {
-            "name": "removeLiquidityUsd",
-            "type": "u64"
+            name: 'removeLiquidityUsd',
+            type: 'u64',
           },
           {
-            "name": "openPositionUsd",
-            "type": "u64"
+            name: 'openPositionUsd',
+            type: 'u64',
           },
           {
-            "name": "closePositionUsd",
-            "type": "u64"
+            name: 'closePositionUsd',
+            type: 'u64',
           },
           {
-            "name": "liquidationUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'liquidationUsd',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "VolumeStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'VolumeStats',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "swapUsd",
-            "type": "u64"
+            name: 'swapUsd',
+            type: 'u64',
           },
           {
-            "name": "addLiquidityUsd",
-            "type": "u64"
+            name: 'addLiquidityUsd',
+            type: 'u64',
           },
           {
-            "name": "removeLiquidityUsd",
-            "type": "u64"
+            name: 'removeLiquidityUsd',
+            type: 'u64',
           },
           {
-            "name": "openPositionUsd",
-            "type": "u64"
+            name: 'openPositionUsd',
+            type: 'u64',
           },
           {
-            "name": "closePositionUsd",
-            "type": "u64"
+            name: 'closePositionUsd',
+            type: 'u64',
           },
           {
-            "name": "liquidationUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'liquidationUsd',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "TradeStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'TradeStats',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "profitUsd",
-            "type": "u64"
+            name: 'profitUsd',
+            type: 'u64',
           },
           {
-            "name": "lossUsd",
-            "type": "u64"
+            name: 'lossUsd',
+            type: 'u64',
           },
           {
-            "name": "oiLongUsd",
-            "type": "u64"
+            name: 'oiLongUsd',
+            type: 'u64',
           },
           {
-            "name": "oiShortUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'oiShortUsd',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "Assets",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'Assets',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "collateral",
-            "type": "u64"
+            name: 'collateral',
+            type: 'u64',
           },
           {
-            "name": "protocolFees",
-            "type": "u64"
+            name: 'protocolFees',
+            type: 'u64',
           },
           {
-            "name": "owned",
-            "type": "u64"
+            name: 'owned',
+            type: 'u64',
           },
           {
-            "name": "locked",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'locked',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "OracleParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'OracleParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "oracleAccount",
-            "type": "publicKey"
+            name: 'oracleAccount',
+            type: 'publicKey',
           },
           {
-            "name": "oracleType",
-            "type": {
-              "defined": "OracleType"
-            }
+            name: 'oracleType',
+            type: {
+              defined: 'OracleType',
+            },
           },
           {
-            "name": "maxPriceError",
-            "type": "u64"
+            name: 'maxPriceError',
+            type: 'u64',
           },
           {
-            "name": "maxPriceAgeSec",
-            "type": "u32"
-          }
-        ]
-      }
+            name: 'maxPriceAgeSec',
+            type: 'u32',
+          },
+        ],
+      },
     },
     {
-      "name": "PricingParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'PricingParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "useEma",
-            "type": "bool"
+            name: 'useEma',
+            type: 'bool',
           },
           {
-            "name": "useUnrealizedPnlInAum",
-            "type": "bool"
+            name: 'useUnrealizedPnlInAum',
+            type: 'bool',
           },
           {
-            "name": "tradeSpreadLong",
-            "type": "u64"
+            name: 'tradeSpreadLong',
+            type: 'u64',
           },
           {
-            "name": "tradeSpreadShort",
-            "type": "u64"
+            name: 'tradeSpreadShort',
+            type: 'u64',
           },
           {
-            "name": "swapSpread",
-            "type": "u64"
+            name: 'swapSpread',
+            type: 'u64',
           },
           {
-            "name": "minInitialLeverage",
-            "type": "u64"
+            name: 'minInitialLeverage',
+            type: 'u64',
           },
           {
-            "name": "maxInitialLeverage",
-            "type": "u64"
+            name: 'maxInitialLeverage',
+            type: 'u64',
           },
           {
-            "name": "maxLeverage",
-            "type": "u64"
+            name: 'maxLeverage',
+            type: 'u64',
           },
           {
-            "name": "maxPayoffMult",
-            "type": "u64"
+            name: 'maxPayoffMult',
+            type: 'u64',
           },
           {
-            "name": "maxUtilization",
-            "type": "u64"
+            name: 'maxUtilization',
+            type: 'u64',
           },
           {
-            "name": "maxPositionLockedUsd",
-            "type": "u64"
+            name: 'maxPositionLockedUsd',
+            type: 'u64',
           },
           {
-            "name": "maxTotalLockedUsd",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'maxTotalLockedUsd',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "BorrowRateParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'BorrowRateParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "baseRate",
-            "type": "u64"
+            name: 'baseRate',
+            type: 'u64',
           },
           {
-            "name": "slope1",
-            "type": "u64"
+            name: 'slope1',
+            type: 'u64',
           },
           {
-            "name": "slope2",
-            "type": "u64"
+            name: 'slope2',
+            type: 'u64',
           },
           {
-            "name": "optimalUtilization",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'optimalUtilization',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "BorrowRateState",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'BorrowRateState',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "currentRate",
-            "type": "u64"
+            name: 'currentRate',
+            type: 'u64',
           },
           {
-            "name": "cumulativeInterest",
-            "type": "u128"
+            name: 'cumulativeInterest',
+            type: 'u128',
           },
           {
-            "name": "lastUpdate",
-            "type": "i64"
-          }
-        ]
-      }
+            name: 'lastUpdate',
+            type: 'i64',
+          },
+        ],
+      },
     },
     {
-      "name": "PositionStats",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'PositionStats',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "openPositions",
-            "type": "u64"
+            name: 'openPositions',
+            type: 'u64',
           },
           {
-            "name": "collateralUsd",
-            "type": "u64"
+            name: 'collateralUsd',
+            type: 'u64',
           },
           {
-            "name": "sizeUsd",
-            "type": "u64"
+            name: 'sizeUsd',
+            type: 'u64',
           },
           {
-            "name": "lockedAmount",
-            "type": "u64"
+            name: 'lockedAmount',
+            type: 'u64',
           },
           {
-            "name": "weightedPrice",
-            "type": "u128"
+            name: 'weightedPrice',
+            type: 'u128',
           },
           {
-            "name": "totalQuantity",
-            "type": "u128"
+            name: 'totalQuantity',
+            type: 'u128',
           },
           {
-            "name": "cumulativeInterestUsd",
-            "type": "u64"
+            name: 'cumulativeInterestUsd',
+            type: 'u64',
           },
           {
-            "name": "cumulativeInterestSnapshot",
-            "type": "u128"
-          }
-        ]
-      }
+            name: 'cumulativeInterestSnapshot',
+            type: 'u128',
+          },
+        ],
+      },
     },
     {
-      "name": "DeprecatedPricingParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'DeprecatedPricingParams',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "useEma",
-            "type": "bool"
+            name: 'useEma',
+            type: 'bool',
           },
           {
-            "name": "useUnrealizedPnlInAum",
-            "type": "bool"
+            name: 'useUnrealizedPnlInAum',
+            type: 'bool',
           },
           {
-            "name": "tradeSpreadLong",
-            "type": "u64"
+            name: 'tradeSpreadLong',
+            type: 'u64',
           },
           {
-            "name": "tradeSpreadShort",
-            "type": "u64"
+            name: 'tradeSpreadShort',
+            type: 'u64',
           },
           {
-            "name": "swapSpread",
-            "type": "u64"
+            name: 'swapSpread',
+            type: 'u64',
           },
           {
-            "name": "minInitialLeverage",
-            "type": "u64"
+            name: 'minInitialLeverage',
+            type: 'u64',
           },
           {
-            "name": "maxLeverage",
-            "type": "u64"
+            name: 'maxLeverage',
+            type: 'u64',
           },
           {
-            "name": "maxPayoffMult",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'maxPayoffMult',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "OraclePrice",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'OraclePrice',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price',
+            type: 'u64',
           },
           {
-            "name": "exponent",
-            "type": "i32"
-          }
-        ]
-      }
+            name: 'exponent',
+            type: 'i32',
+          },
+        ],
+      },
     },
     {
-      "name": "PriceAndFee",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'PriceAndFee',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "price",
-            "type": "u64"
+            name: 'price',
+            type: 'u64',
           },
           {
-            "name": "fee",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'fee',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "AmountAndFee",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'AmountAndFee',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amount",
-            "type": "u64"
+            name: 'amount',
+            type: 'u64',
           },
           {
-            "name": "fee",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'fee',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "NewPositionPricesAndFee",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'NewPositionPricesAndFee',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "entryPrice",
-            "type": "u64"
+            name: 'entryPrice',
+            type: 'u64',
           },
           {
-            "name": "liquidationPrice",
-            "type": "u64"
+            name: 'liquidationPrice',
+            type: 'u64',
           },
           {
-            "name": "fee",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'fee',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "SwapAmountAndFees",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'SwapAmountAndFees',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "amountOut",
-            "type": "u64"
+            name: 'amountOut',
+            type: 'u64',
           },
           {
-            "name": "feeIn",
-            "type": "u64"
+            name: 'feeIn',
+            type: 'u64',
           },
           {
-            "name": "feeOut",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'feeOut',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "ProfitAndLoss",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'ProfitAndLoss',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "profit",
-            "type": "u64"
+            name: 'profit',
+            type: 'u64',
           },
           {
-            "name": "loss",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'loss',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "Permissions",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'Permissions',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "allowSwap",
-            "type": "bool"
+            name: 'allowSwap',
+            type: 'bool',
           },
           {
-            "name": "allowAddLiquidity",
-            "type": "bool"
+            name: 'allowAddLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
+            name: 'allowRemoveLiquidity',
+            type: 'bool',
           },
           {
-            "name": "allowOpenPosition",
-            "type": "bool"
+            name: 'allowOpenPosition',
+            type: 'bool',
           },
           {
-            "name": "allowClosePosition",
-            "type": "bool"
+            name: 'allowClosePosition',
+            type: 'bool',
           },
           {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
+            name: 'allowPnlWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
+            name: 'allowCollateralWithdrawal',
+            type: 'bool',
           },
           {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
+            name: 'allowSizeChange',
+            type: 'bool',
+          },
+        ],
+      },
     },
     {
-      "name": "TokenRatios",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: 'TokenRatios',
+      type: {
+        kind: 'struct',
+        fields: [
           {
-            "name": "target",
-            "type": "u64"
+            name: 'target',
+            type: 'u64',
           },
           {
-            "name": "min",
-            "type": "u64"
+            name: 'min',
+            type: 'u64',
           },
           {
-            "name": "max",
-            "type": "u64"
-          }
-        ]
-      }
+            name: 'max',
+            type: 'u64',
+          },
+        ],
+      },
     },
     {
-      "name": "FeesMode",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'FeesMode',
+      type: {
+        kind: 'enum',
+        variants: [
           {
-            "name": "Fixed"
+            name: 'Fixed',
           },
           {
-            "name": "Linear"
-          }
-        ]
-      }
+            name: 'Linear',
+          },
+        ],
+      },
     },
     {
-      "name": "AdminInstruction",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'AdminInstruction',
+      type: {
+        kind: 'enum',
+        variants: [
           {
-            "name": "AddPool"
+            name: 'AddPool',
           },
           {
-            "name": "RemovePool"
+            name: 'RemovePool',
           },
           {
-            "name": "AddCustody"
+            name: 'AddCustody',
           },
           {
-            "name": "RemoveCustody"
+            name: 'RemoveCustody',
           },
           {
-            "name": "SetAdminSigners"
+            name: 'SetAdminSigners',
           },
           {
-            "name": "SetCustodyConfig"
+            name: 'SetCustodyConfig',
           },
           {
-            "name": "SetPermissions"
+            name: 'SetPermissions',
           },
           {
-            "name": "SetBorrowRate"
+            name: 'SetBorrowRate',
           },
           {
-            "name": "WithdrawFees"
+            name: 'WithdrawFees',
           },
           {
-            "name": "WithdrawSolFees"
+            name: 'WithdrawSolFees',
           },
           {
-            "name": "SetTestOraclePrice"
+            name: 'SetTestOraclePrice',
           },
           {
-            "name": "SetTestTime"
+            name: 'SetTestTime',
           },
           {
-            "name": "UpgradeCustody"
-          }
-        ]
-      }
+            name: 'UpgradeCustody',
+          },
+        ],
+      },
     },
     {
-      "name": "OracleType",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'OracleType',
+      type: {
+        kind: 'enum',
+        variants: [
           {
-            "name": "None"
+            name: 'None',
           },
           {
-            "name": "Test"
+            name: 'Test',
           },
           {
-            "name": "Pyth"
-          }
-        ]
-      }
+            name: 'Pyth',
+          },
+        ],
+      },
     },
     {
-      "name": "AumCalcMode",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'AumCalcMode',
+      type: {
+        kind: 'enum',
+        variants: [
           {
-            "name": "Min"
+            name: 'Min',
           },
           {
-            "name": "Max"
+            name: 'Max',
           },
           {
-            "name": "Last"
+            name: 'Last',
           },
           {
-            "name": "EMA"
-          }
-        ]
-      }
+            name: 'EMA',
+          },
+        ],
+      },
     },
     {
-      "name": "Side",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'Side',
+      type: {
+        kind: 'enum',
+        variants: [
           {
-            "name": "None"
+            name: 'None',
           },
           {
-            "name": "Long"
+            name: 'Long',
           },
           {
-            "name": "Short"
-          }
-        ]
-      }
+            name: 'Short',
+          },
+        ],
+      },
     },
     {
-      "name": "CollateralChange",
-      "type": {
-        "kind": "enum",
-        "variants": [
+      name: 'CollateralChange',
+      type: {
+        kind: 'enum',
+        variants: [
           {
-            "name": "None"
+            name: 'None',
           },
           {
-            "name": "Add"
+            name: 'Add',
           },
           {
-            "name": "Remove"
-          }
-        ]
-      }
-    }
+            name: 'Remove',
+          },
+        ],
+      },
+    },
   ],
-  "errors": [
+  errors: [
     {
-      "code": 6000,
-      "name": "MultisigAccountNotAuthorized",
-      "msg": "Account is not authorized to sign this instruction"
+      code: 6000,
+      name: 'MultisigAccountNotAuthorized',
+      msg: 'Account is not authorized to sign this instruction',
     },
     {
-      "code": 6001,
-      "name": "MultisigAlreadySigned",
-      "msg": "Account has already signed this instruction"
+      code: 6001,
+      name: 'MultisigAlreadySigned',
+      msg: 'Account has already signed this instruction',
     },
     {
-      "code": 6002,
-      "name": "MultisigAlreadyExecuted",
-      "msg": "This instruction has already been executed"
+      code: 6002,
+      name: 'MultisigAlreadyExecuted',
+      msg: 'This instruction has already been executed',
     },
     {
-      "code": 6003,
-      "name": "MathOverflow",
-      "msg": "Overflow in arithmetic operation"
+      code: 6003,
+      name: 'MathOverflow',
+      msg: 'Overflow in arithmetic operation',
     },
     {
-      "code": 6004,
-      "name": "UnsupportedOracle",
-      "msg": "Unsupported price oracle"
+      code: 6004,
+      name: 'UnsupportedOracle',
+      msg: 'Unsupported price oracle',
     },
     {
-      "code": 6005,
-      "name": "InvalidOracleAccount",
-      "msg": "Invalid oracle account"
+      code: 6005,
+      name: 'InvalidOracleAccount',
+      msg: 'Invalid oracle account',
     },
     {
-      "code": 6006,
-      "name": "InvalidOracleState",
-      "msg": "Invalid oracle state"
+      code: 6006,
+      name: 'InvalidOracleState',
+      msg: 'Invalid oracle state',
     },
     {
-      "code": 6007,
-      "name": "StaleOraclePrice",
-      "msg": "Stale oracle price"
+      code: 6007,
+      name: 'StaleOraclePrice',
+      msg: 'Stale oracle price',
     },
     {
-      "code": 6008,
-      "name": "InvalidOraclePrice",
-      "msg": "Invalid oracle price"
+      code: 6008,
+      name: 'InvalidOraclePrice',
+      msg: 'Invalid oracle price',
     },
     {
-      "code": 6009,
-      "name": "InvalidEnvironment",
-      "msg": "Instruction is not allowed in production"
+      code: 6009,
+      name: 'InvalidEnvironment',
+      msg: 'Instruction is not allowed in production',
     },
     {
-      "code": 6010,
-      "name": "InvalidPoolState",
-      "msg": "Invalid pool state"
+      code: 6010,
+      name: 'InvalidPoolState',
+      msg: 'Invalid pool state',
     },
     {
-      "code": 6011,
-      "name": "InvalidCustodyState",
-      "msg": "Invalid custody state"
+      code: 6011,
+      name: 'InvalidCustodyState',
+      msg: 'Invalid custody state',
     },
     {
-      "code": 6012,
-      "name": "InvalidPositionState",
-      "msg": "Invalid position state"
+      code: 6012,
+      name: 'InvalidPositionState',
+      msg: 'Invalid position state',
     },
     {
-      "code": 6013,
-      "name": "InvalidPerpetualsConfig",
-      "msg": "Invalid perpetuals config"
+      code: 6013,
+      name: 'InvalidPerpetualsConfig',
+      msg: 'Invalid perpetuals config',
     },
     {
-      "code": 6014,
-      "name": "InvalidPoolConfig",
-      "msg": "Invalid pool config"
+      code: 6014,
+      name: 'InvalidPoolConfig',
+      msg: 'Invalid pool config',
     },
     {
-      "code": 6015,
-      "name": "InvalidCustodyConfig",
-      "msg": "Invalid custody config"
+      code: 6015,
+      name: 'InvalidCustodyConfig',
+      msg: 'Invalid custody config',
     },
     {
-      "code": 6016,
-      "name": "InsufficientAmountReturned",
-      "msg": "Insufficient token amount returned"
+      code: 6016,
+      name: 'InsufficientAmountReturned',
+      msg: 'Insufficient token amount returned',
     },
     {
-      "code": 6017,
-      "name": "MaxPriceSlippage",
-      "msg": "Price slippage limit exceeded"
+      code: 6017,
+      name: 'MaxPriceSlippage',
+      msg: 'Price slippage limit exceeded',
     },
     {
-      "code": 6018,
-      "name": "MaxLeverage",
-      "msg": "Position leverage limit exceeded"
+      code: 6018,
+      name: 'MaxLeverage',
+      msg: 'Position leverage limit exceeded',
     },
     {
-      "code": 6019,
-      "name": "CustodyAmountLimit",
-      "msg": "Custody amount limit exceeded"
+      code: 6019,
+      name: 'CustodyAmountLimit',
+      msg: 'Custody amount limit exceeded',
     },
     {
-      "code": 6020,
-      "name": "PositionAmountLimit",
-      "msg": "Position amount limit exceeded"
+      code: 6020,
+      name: 'PositionAmountLimit',
+      msg: 'Position amount limit exceeded',
     },
     {
-      "code": 6021,
-      "name": "TokenRatioOutOfRange",
-      "msg": "Token ratio out of range"
+      code: 6021,
+      name: 'TokenRatioOutOfRange',
+      msg: 'Token ratio out of range',
     },
     {
-      "code": 6022,
-      "name": "UnsupportedToken",
-      "msg": "Token is not supported"
+      code: 6022,
+      name: 'UnsupportedToken',
+      msg: 'Token is not supported',
     },
     {
-      "code": 6023,
-      "name": "InstructionNotAllowed",
-      "msg": "Instruction is not allowed at this time"
+      code: 6023,
+      name: 'InstructionNotAllowed',
+      msg: 'Instruction is not allowed at this time',
     },
     {
-      "code": 6024,
-      "name": "MaxUtilization",
-      "msg": "Token utilization limit exceeded"
-    }
-  ]
+      code: 6024,
+      name: 'MaxUtilization',
+      msg: 'Token utilization limit exceeded',
+    },
+  ],
 };

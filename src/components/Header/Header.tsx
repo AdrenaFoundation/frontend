@@ -1,26 +1,26 @@
-import Link from "next/link";
-import { twMerge } from "tailwind-merge";
-import Button from "../Button/Button";
-import WalletAdapter from "../WalletAdapter/WalletAdapter";
+import Link from 'next/link';
+import { twMerge } from 'tailwind-merge';
+import Button from '../Button/Button';
+import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header() {
   const linkStyle =
-    "mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:text-txtregular text-txtfade";
+    'mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:text-txtregular text-txtfade';
 
   return (
     <div
       className={twMerge(
-        "flex",
-        "bg-main",
-        "w-full",
-        "items-center",
-        "border-b",
-        "border-grey",
-        "sm:h-20",
-        "flex-col",
-        "sm:flex-row",
-        "p-4",
-        "sm:p-0"
+        'flex',
+        'bg-main',
+        'w-full',
+        'items-center',
+        'border-b',
+        'border-grey',
+        'sm:h-20',
+        'flex-col',
+        'sm:flex-row',
+        'p-4',
+        'sm:p-0',
       )}
     >
       <Link
@@ -48,7 +48,9 @@ export default function Header() {
       <Button
         className="bg-highlight sm:ml-auto w-full sm:w-20 mt-2 sm:mt-0"
         title={<Link href="/trade">Trade</Link>}
-        onClick={() => {}}
+        onClick={() => {
+          // TODO
+        }}
       />
 
       <WalletAdapter className="sm:ml-4 sm:mr-6 w-full sm:w-auto mt-2 sm:mt-0" />

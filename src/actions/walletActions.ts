@@ -1,11 +1,11 @@
-import { Dispatch } from "@reduxjs/toolkit";
-import { PublicKey } from "@solana/web3.js";
-import { Wallet } from "@project-serum/anchor";
-import { WalletAdapterName } from "@/types";
-import { walletAdapters } from "@/constant";
+import { Dispatch } from '@reduxjs/toolkit';
+import { PublicKey } from '@solana/web3.js';
+import { Wallet } from '@project-serum/anchor';
+import { WalletAdapterName } from '@/types';
+import { walletAdapters } from '@/constant';
 
 export type ConnectWalletAction = {
-  type: "connect";
+  type: 'connect';
   payload: {
     adapterName: WalletAdapterName;
     walletAddress: string;
@@ -13,7 +13,7 @@ export type ConnectWalletAction = {
 };
 
 export type DisconnectWalletAction = {
-  type: "disconnect";
+  type: 'disconnect';
 };
 
 export type WalletAction = ConnectWalletAction | DisconnectWalletAction;
@@ -25,17 +25,17 @@ export const autoConnectWalletAction =
 
     const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
-        type: "connect",
+        type: 'connect',
         payload: {
           adapterName,
           walletAddress: walletPubkey.toBase58(),
         },
       });
 
-      console.log("Connected!");
+      console.log('Connected!');
     };
 
-    adapter.on("connect", connectFn);
+    adapter.on('connect', connectFn);
 
     try {
       await adapter.autoConnect();
@@ -44,10 +44,10 @@ export const autoConnectWalletAction =
         new Error(`unable to auto-connect to wallet ${adapterName}`),
         {
           err,
-        }
+        },
       );
 
-      adapter.removeListener("connect", connectFn);
+      adapter.removeListener('connect', connectFn);
     }
   };
 
@@ -58,17 +58,17 @@ export const connectWalletAction =
 
     const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
-        type: "connect",
+        type: 'connect',
         payload: {
           adapterName,
           walletAddress: walletPubkey.toBase58(),
         },
       });
 
-      console.log("Connected!");
+      console.log('Connected!');
     };
 
-    adapter.on("connect", connectFn);
+    adapter.on('connect', connectFn);
 
     try {
       await adapter.connect();
@@ -77,7 +77,7 @@ export const connectWalletAction =
         err,
       });
 
-      adapter.removeListener("connect", connectFn);
+      adapter.removeListener('connect', connectFn);
     }
   };
 
@@ -86,12 +86,12 @@ export const disconnectWalletAction =
   async (dispatch: Dispatch<DisconnectWalletAction>) => {
     const adapter = walletAdapters[adapterName];
 
-    adapter.on("disconnect", () => {
+    adapter.on('disconnect', () => {
       dispatch({
-        type: "disconnect",
+        type: 'disconnect',
       });
 
-      console.log("Disconnected!");
+      console.log('Disconnected!');
     });
 
     try {
@@ -101,7 +101,7 @@ export const disconnectWalletAction =
         new Error(`unable to disconnect from wallet ${adapterName}`),
         {
           err,
-        }
+        },
       );
     }
   };

@@ -1,4 +1,4 @@
-import { twMerge } from "tailwind-merge";
+import { twMerge } from 'tailwind-merge';
 
 export default function Checkbox({
   checked,
@@ -13,15 +13,15 @@ export default function Checkbox({
     <div
       className={twMerge(
         className,
-        "h-3",
-        "w-3",
-        "border",
-        "border-white",
-        "rounded-[0.1em]",
-        "cursor-pointer",
-        "flex",
-        "justify-center",
-        "items-center"
+        'h-3',
+        'w-3',
+        'border',
+        'border-white',
+        'rounded-[0.1em]',
+        'cursor-pointer',
+        'flex',
+        'justify-center',
+        'items-center',
       )}
       onClick={() => onChange(!checked)}
     >

@@ -1,11 +1,11 @@
-import { twMerge } from "tailwind-merge";
-import { useState } from "react";
-import { PositionExtended } from "@/types";
-import ReduceOrClosePosition from "../ReduceOrClosePosition/ReduceOrClosePosition";
-import Modal from "@/components/Modal/Modal";
-import PositionsArray from "./PositionsArray";
-import PositionsBlocs from "./PositionsBlocs";
-import useBetterMediaQuery from "@/hooks/useBetterMediaQuery";
+import { twMerge } from 'tailwind-merge';
+import { useState } from 'react';
+import { PositionExtended } from '@/types';
+import ReduceOrClosePosition from '../ReduceOrClosePosition/ReduceOrClosePosition';
+import Modal from '@/components/Modal/Modal';
+import PositionsArray from './PositionsArray';
+import PositionsBlocs from './PositionsBlocs';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 export default function Positions({
   className,
@@ -17,7 +17,7 @@ export default function Positions({
   const [positionToReduceOrClose, setPositionToReduceOrClose] =
     useState<PositionExtended | null>(null);
 
-  const isBigScreen = useBetterMediaQuery("(min-width: 950px)");
+  const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
   return (
     <>
@@ -25,7 +25,7 @@ export default function Positions({
         <Modal
           title="Reduce or Close Position"
           close={() => setPositionToReduceOrClose(null)}
-          className={twMerge("flex", "flex-col", "items-center", "p-4")}
+          className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
         >
           <ReduceOrClosePosition
             position={positionToReduceOrClose}

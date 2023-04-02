@@ -1,8 +1,8 @@
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
-import { AnchorProvider, BN, Program } from "@project-serum/anchor";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import PerpetualsJson from "@/target/perpetuals.json";
-import { Perpetuals } from "@/target/perpetuals";
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+import { AnchorProvider, BN, Program } from '@project-serum/anchor';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import PerpetualsJson from '@/target/perpetuals.json';
+import { Perpetuals } from '@/target/perpetuals';
 import {
   Custody,
   CustodyExtended,
@@ -12,47 +12,47 @@ import {
   Position,
   PositionExtended,
   ProfitAndLoss,
-} from "./types";
-import { findATAAddressSync, nativeToUi } from "./utils";
-import { TOKEN_INFO_LIBRARY } from "./constant";
+} from './types';
+import { findATAAddressSync, nativeToUi } from './utils';
+import { PRICE_DECIMALS, TOKEN_INFO_LIBRARY } from './constant';
 
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);
 
   public static perpetualsAddress = PublicKey.findProgramAddressSync(
-    [Buffer.from("perpetuals")],
-    AdrenaClient.programId
+    [Buffer.from('perpetuals')],
+    AdrenaClient.programId,
   )[0];
 
   public static multisigAddress = PublicKey.findProgramAddressSync(
-    [Buffer.from("multisig")],
-    AdrenaClient.programId
+    [Buffer.from('multisig')],
+    AdrenaClient.programId,
   )[0];
 
   public static transferAuthority = PublicKey.findProgramAddressSync(
-    [Buffer.from("transfer_authority")],
-    AdrenaClient.programId
+    [Buffer.from('transfer_authority')],
+    AdrenaClient.programId,
   )[0];
 
   public static perpetuals = PublicKey.findProgramAddressSync(
-    [Buffer.from("perpetuals")],
-    AdrenaClient.programId
+    [Buffer.from('perpetuals')],
+    AdrenaClient.programId,
   )[0];
 
   public static programData = PublicKey.findProgramAddressSync(
     [AdrenaClient.programId.toBuffer()],
-    new PublicKey("BPFLoaderUpgradeab1e11111111111111111111111")
+    new PublicKey('BPFLoaderUpgradeab1e11111111111111111111111'),
   )[0];
 
   // @TODO, adapt to mainnet/devnet
   // Handle one pool only for now
   public static mainPoolAddress = new PublicKey(
-    "8bUQMkrKeiTwpfc9HmjiveB92k5Rq4d2b1HYwaNsR8dS"
+    '8bUQMkrKeiTwpfc9HmjiveB92k5Rq4d2b1HYwaNsR8dS',
   );
 
   public static lpTokenMint = PublicKey.findProgramAddressSync(
-    [Buffer.from("lp_token_mint"), AdrenaClient.mainPoolAddress.toBuffer()],
-    AdrenaClient.programId
+    [Buffer.from('lp_token_mint'), AdrenaClient.mainPoolAddress.toBuffer()],
+    AdrenaClient.programId,
   )[0];
 
   protected adrenaProgram: Program<Perpetuals> | null = null;
@@ -62,7 +62,7 @@ export class AdrenaClient {
     protected readonlyAdrenaProgram: Program<Perpetuals>,
     public mainPool: Pool,
     public custodies: CustodyExtended[],
-    public tokens: Token[]
+    public tokens: Token[],
   ) {}
 
   public setAdrenaProgram(program: Program<Perpetuals> | null) {
@@ -70,13 +70,13 @@ export class AdrenaClient {
   }
 
   public static async initialize(
-    readonlyAdrenaProgram: Program<Perpetuals>
+    readonlyAdrenaProgram: Program<Perpetuals>,
   ): Promise<AdrenaClient> {
     const mainPool = await AdrenaClient.loadMainPool(readonlyAdrenaProgram);
 
     const custodies = await AdrenaClient.loadCustodies(
       readonlyAdrenaProgram,
-      mainPool
+      mainPool,
     );
 
     const tokens: Token[] = custodies
@@ -114,22 +114,22 @@ export class AdrenaClient {
    */
 
   public static async loadMainPool(
-    adrenaProgram: Program<Perpetuals>
+    adrenaProgram: Program<Perpetuals>,
   ): Promise<Pool> {
     return adrenaProgram.account.pool.fetch(AdrenaClient.mainPoolAddress);
   }
 
   public static async loadCustodies(
     adrenaProgram: Program<Perpetuals>,
-    mainPool: Pool
+    mainPool: Pool,
   ): Promise<CustodyExtended[]> {
     const result = await adrenaProgram.account.custody.fetchMultiple(
-      mainPool.custodies
+      mainPool.custodies,
     );
 
     // No custodies should be null
     if (result.find((c) => c === null)) {
-      throw new Error("Error loading custodies");
+      throw new Error('Error loading custodies');
     }
 
     return (result as Custody[]).map((custody, i) => {
@@ -159,7 +159,7 @@ export class AdrenaClient {
     minLpAmountOut: BN;
   }) {
     if (!this.adrenaProgram) {
-      throw new Error("adrena program not ready");
+      throw new Error('adrena program not ready');
     }
 
     const custodyAddress = this.findCustodyAddress(mint);
@@ -168,11 +168,11 @@ export class AdrenaClient {
     // Load custodies in same order as declared in mainPool
     const untypedCustodies =
       await this.adrenaProgram.account.custody.fetchMultiple(
-        this.mainPool.custodies
+        this.mainPool.custodies,
       );
 
     if (untypedCustodies.find((custodies) => !custodies)) {
-      throw new Error("Cannot load custodies");
+      throw new Error('Cannot load custodies');
     }
 
     const custodies: Custody[] = untypedCustodies as Custody[];
@@ -180,7 +180,7 @@ export class AdrenaClient {
     const custodyOracleAccount =
       custodies[
         this.mainPool.custodies.findIndex((custody) =>
-          custody.equals(custodyAddress)
+          custody.equals(custodyAddress),
         )
       ].oracle.oracleAccount;
 
@@ -227,7 +227,7 @@ export class AdrenaClient {
     minLpAmountOut: BN;
   }): Promise<string> {
     return this.signAndExecuteTx(
-      await (await this.buildAddLiquidityTx(params)).transaction()
+      await (await this.buildAddLiquidityTx(params)).transaction(),
     );
   }
 
@@ -244,10 +244,10 @@ export class AdrenaClient {
     price: BN;
     collateral: BN;
     size: BN;
-    side: "long" | "short";
+    side: 'long' | 'short';
   }) {
     if (!this.adrenaProgram) {
-      throw new Error("adrena program not ready");
+      throw new Error('adrena program not ready');
     }
 
     const custodyAddress = this.findCustodyAddress(mint);
@@ -260,7 +260,7 @@ export class AdrenaClient {
 
     const position = this.findPositionAddress(owner, custodyAddress, side);
 
-    console.log("Open position", {
+    console.log('Open position', {
       price: price.mul(new BN(10_000)).div(new BN(9_000)).toString(),
       collateral: collateral.toString(),
       size: size.toString(),
@@ -306,7 +306,7 @@ export class AdrenaClient {
     mintB: PublicKey;
   }) {
     if (!this.adrenaProgram) {
-      throw new Error("adrena program not ready");
+      throw new Error('adrena program not ready');
     }
 
     const fundingAccount = findATAAddressSync(owner, mintA);
@@ -363,10 +363,10 @@ export class AdrenaClient {
     price: BN;
     collateral: BN;
     size: BN;
-    side: "long" | "short";
+    side: 'long' | 'short';
   }): Promise<string> {
     return this.signAndExecuteTx(
-      await this.buildOpenPositionTx(params).transaction()
+      await this.buildOpenPositionTx(params).transaction(),
     );
   }
 
@@ -390,7 +390,7 @@ export class AdrenaClient {
     amountA: BN;
     collateral: BN;
     size: BN;
-    side: "long" | "short";
+    side: 'long' | 'short';
   }) {
     // If mint are same, no need for swap
     if (mintA.equals(mintB)) {
@@ -438,20 +438,20 @@ export class AdrenaClient {
     price: BN;
   }): Promise<string> {
     if (!this.adrenaProgram) {
-      throw new Error("adrena program not ready");
+      throw new Error('adrena program not ready');
     }
 
     const custody = this.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody)
+      custody.pubkey.equals(position.custody),
     );
 
     if (!custody) {
-      throw new Error("Cannot find custody related to position");
+      throw new Error('Cannot find custody related to position');
     }
 
     const custodyOracleAccount = custody.oracle.oracleAccount;
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint
+      custody.mint,
     );
 
     const receivingAccount = findATAAddressSync(position.owner, custody.mint);
@@ -488,7 +488,7 @@ export class AdrenaClient {
     token: Token;
     collateral: BN;
     size: BN;
-    side: "long" | "short";
+    side: 'long' | 'short';
   }): Promise<NewPositionPricesAndFee | null> {
     if (!this.readonlyAdrenaProgram.views) {
       return null;
@@ -509,7 +509,7 @@ export class AdrenaClient {
           custody: token.custody,
           custodyOracleAccount: custody.oracle.oracleAccount,
         },
-      }
+      },
     );
   }
 
@@ -523,11 +523,11 @@ export class AdrenaClient {
     }
 
     const custody = this.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody)
+      custody.pubkey.equals(position.custody),
     );
 
     if (!custody) {
-      throw new Error("Cannot find custody related to position");
+      throw new Error('Cannot find custody related to position');
     }
 
     return this.readonlyAdrenaProgram.views.getPnl(
@@ -540,7 +540,7 @@ export class AdrenaClient {
           custody: custody.pubkey,
           custodyOracleAccount: custody.oracle.oracleAccount,
         },
-      }
+      },
     );
   }
 
@@ -558,17 +558,17 @@ export class AdrenaClient {
     }
 
     const custody = this.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody)
+      custody.pubkey.equals(position.custody),
     );
 
     if (!custody) {
-      throw new Error("Cannot find custody related to position");
+      throw new Error('Cannot find custody related to position');
     }
 
     return this.readonlyAdrenaProgram.views.getLiquidationPrice(
       {
-        addCollateral: new BN(0),
-        removeCollateral: new BN(0),
+        addCollateral,
+        removeCollateral,
       },
       {
         accounts: {
@@ -578,7 +578,7 @@ export class AdrenaClient {
           custody: custody.pubkey,
           custodyOracleAccount: custody.oracle.oracleAccount,
         },
-      }
+      },
     );
   }
 
@@ -587,15 +587,15 @@ export class AdrenaClient {
     const possiblePositionAddresses = this.tokens.reduce(
       (acc, token) => [
         ...acc,
-        this.findPositionAddress(user, token.custody, "long"),
-        this.findPositionAddress(user, token.custody, "short"),
+        this.findPositionAddress(user, token.custody, 'long'),
+        this.findPositionAddress(user, token.custody, 'short'),
       ],
-      [] as PublicKey[]
+      [] as PublicKey[],
     );
 
     const positions =
       (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
-        possiblePositionAddresses
+        possiblePositionAddresses,
       )) as (Position | null)[];
 
     // Create extended positions
@@ -625,18 +625,18 @@ export class AdrenaClient {
             pubkey: possiblePositionAddresses[index],
             token,
             leverage,
-            side: Object.keys(position.side)[0] as "long" | "short",
+            side: Object.keys(position.side)[0] as 'long' | 'short',
             uiSizeUsd: nativeToUi(position.sizeUsd, 6),
             uiCollateralUsd: nativeToUi(position.collateralUsd, 6),
             uiPrice: nativeToUi(position.price, 6),
             uiCollateralAmount: nativeToUi(
               position.collateralAmount,
-              token.decimals
+              token.decimals,
             ),
           },
         ];
       },
-      []
+      [],
     );
 
     // Get liquidation price + pnl
@@ -647,13 +647,13 @@ export class AdrenaClient {
             position: positionExtended,
             addCollateral: new BN(0),
             removeCollateral: new BN(0),
-          })
-        )
+          }),
+        ),
       ),
       Promise.all(
         positionsExtended.map((positionExtended) =>
-          this.getPnL({ position: positionExtended })
-        )
+          this.getPnL({ position: positionExtended }),
+        ),
       ),
     ]);
 
@@ -673,9 +673,13 @@ export class AdrenaClient {
 
         return nativeToUi(pnl.profit, 6);
       })(),
-      uiLiquidationPrice: liquidationPrices[index]
-        ? nativeToUi(liquidationPrices[index]!, 6)
-        : undefined,
+      uiLiquidationPrice: ((): number | undefined => {
+        const liquidationPrice = liquidationPrices[index];
+
+        if (!liquidationPrice) return undefined;
+
+        return nativeToUi(liquidationPrice, PRICE_DECIMALS);
+      })(),
     }));
   }
 
@@ -694,7 +698,7 @@ export class AdrenaClient {
 
   protected async signAndExecuteTx(transaction: Transaction): Promise<string> {
     if (!this.adrenaProgram) {
-      throw new Error("adrena program not ready");
+      throw new Error('adrena program not ready');
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
@@ -714,10 +718,10 @@ export class AdrenaClient {
       signedTransaction.serialize({
         requireAllSignatures: false,
         verifySignatures: false,
-      })
+      }),
     );
 
-    console.log("tx:", txHash);
+    console.log('tx:', txHash);
 
     await connection.confirmTransaction(txHash);
 
@@ -727,33 +731,33 @@ export class AdrenaClient {
   public findCustodyAddress(mint: PublicKey): PublicKey {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from("custody"),
+        Buffer.from('custody'),
         AdrenaClient.mainPoolAddress.toBuffer(),
         mint.toBuffer(),
       ],
-      AdrenaClient.programId
+      AdrenaClient.programId,
     )[0];
   }
 
   public findCustodyTokenAccountAddress(mint: PublicKey) {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from("custody_token_account"),
+        Buffer.from('custody_token_account'),
         AdrenaClient.mainPoolAddress.toBuffer(),
         mint.toBuffer(),
       ],
-      AdrenaClient.programId
+      AdrenaClient.programId,
     )[0];
   }
 
   public findPositionAddress(
     owner: PublicKey,
     custody: PublicKey,
-    side: "long" | "short"
+    side: 'long' | 'short',
   ) {
     return PublicKey.findProgramAddressSync(
       [
-        Buffer.from("position"),
+        Buffer.from('position'),
         owner.toBuffer(),
         AdrenaClient.mainPoolAddress.toBuffer(),
         custody.toBuffer(),
@@ -764,7 +768,7 @@ export class AdrenaClient {
           }[side],
         ]),
       ],
-      AdrenaClient.programId
+      AdrenaClient.programId,
     )[0];
   }
 }

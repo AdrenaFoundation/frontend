@@ -1,8 +1,8 @@
-import { twMerge } from "tailwind-merge";
-import Button from "@/components/Button/Button";
-import { useSelector } from "@/store/store";
-import { formatNumber, formatPriceInfo, nativeToUi } from "@/utils";
-import { PositionExtended } from "@/types";
+import { twMerge } from 'tailwind-merge';
+import Button from '@/components/Button/Button';
+import { useSelector } from '@/store/store';
+import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
+import { PositionExtended } from '@/types';
 
 export default function PositionsBlocs({
   className,
@@ -15,10 +15,10 @@ export default function PositionsBlocs({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  const columnStyle = "flex w-full justify-between";
+  const columnStyle = 'flex w-full justify-between';
 
   return (
-    <div className={twMerge("w-full", "flex", "flex-wrap", className)}>
+    <div className={twMerge('w-full', 'flex', 'flex-wrap', className)}>
       {!positions?.length ? (
         <div className="mt-5 mb-5 ml-auto mr-auto">No opened position</div>
       ) : null}
@@ -37,9 +37,11 @@ export default function PositionsBlocs({
                 <div>{formatNumber(position.leverage, 2)}x</div>
                 <div
                   className={twMerge(
-                    "ml-1",
-                    "capitalize",
-                    position.side === "long" ? "text-green-400" : "text-red-400"
+                    'ml-1',
+                    'capitalize',
+                    position.side === 'long'
+                      ? 'text-green-400'
+                      : 'text-red-400',
                   )}
                 >
                   {position.side}
@@ -63,13 +65,13 @@ export default function PositionsBlocs({
                 {position.uiPnl ? (
                   <span
                     className={`text-${
-                      position.uiPnl > 0 ? "green" : "red"
+                      position.uiPnl > 0 ? 'green' : 'red'
                     }-400`}
                   >
                     {formatPriceInfo(position.uiPnl)}
                   </span>
                 ) : (
-                  "-"
+                  '-'
                 )}
               </div>
             </div>
@@ -84,7 +86,7 @@ export default function PositionsBlocs({
               <div>
                 {tokenPrices[position.token.name]
                   ? formatPriceInfo(tokenPrices[position.token.name]!)
-                  : "-"}
+                  : '-'}
               </div>
             </div>
 
@@ -93,7 +95,7 @@ export default function PositionsBlocs({
               <div>
                 {position.uiLiquidationPrice
                   ? formatPriceInfo(position.uiLiquidationPrice)
-                  : "-"}
+                  : '-'}
               </div>
             </div>
           </div>

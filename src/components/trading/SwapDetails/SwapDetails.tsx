@@ -1,7 +1,7 @@
-import { AdrenaClient } from "@/AdrenaClient";
-import { useSelector } from "@/store/store";
-import { Token } from "@/types";
-import { formatPriceInfo, getCustodyLiquidity } from "@/utils";
+import { AdrenaClient } from '@/AdrenaClient';
+import { useSelector } from '@/store/store';
+import { Token } from '@/types';
+import { formatPriceInfo, getCustodyLiquidity } from '@/utils';
 
 export default function SwapDetails({
   tokenA,
@@ -14,7 +14,7 @@ export default function SwapDetails({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  const rowStyle = "w-full flex justify-between items-center mt-2";
+  const rowStyle = 'w-full flex justify-between items-center mt-2';
 
   return (
     <div className="flex flex-col pl-4 pr-4 pb-4 mt-4 text-sm">
@@ -23,7 +23,7 @@ export default function SwapDetails({
         <span>
           {tokenPrices[tokenA.name]
             ? formatPriceInfo(tokenPrices[tokenA.name]!)
-            : "-"}
+            : '-'}
         </span>
       </div>
 
@@ -32,7 +32,7 @@ export default function SwapDetails({
         <span>
           {tokenPrices[tokenB.name]
             ? formatPriceInfo(tokenPrices[tokenB.name]!)
-            : "-"}
+            : '-'}
         </span>
       </div>
 
@@ -43,10 +43,10 @@ export default function SwapDetails({
             ? formatPriceInfo(
                 getCustodyLiquidity(
                   client.getCustodyByMint(tokenB.mint),
-                  tokenPrices[tokenB.name]!
-                )
+                  tokenPrices[tokenB.name]!,
+                ),
               )
-            : "-"}
+            : '-'}
         </span>
       </div>
     </div>

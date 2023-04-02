@@ -1,20 +1,20 @@
-import { useEffect, ReactNode, useState } from "react";
-import { createPortal } from "react-dom";
-import { twMerge } from "tailwind-merge";
+import { useEffect, ReactNode, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { twMerge } from 'tailwind-merge';
 
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
-    null
+    null,
   );
 
   useEffect(() => {
     // Look for container in the DOM
-    const container = document.getElementById("modal-container");
+    const container = document.getElementById('modal-container');
 
     if (!container) {
       // Should never happens
-      throw new Error("Portal container not found");
+      throw new Error('Portal container not found');
     }
 
     setPortalContainer(container);
@@ -40,27 +40,27 @@ const Modal = ({
 }) => {
   useEffect(() => {
     const handler = (evt: KeyboardEvent) => {
-      if (evt.key !== "Escape") return;
+      if (evt.key !== 'Escape') return;
 
       close();
     };
 
-    window.addEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
 
-    return () => window.removeEventListener("keydown", handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [close]);
 
   return (
     <PortalContainer>
       <div
         className={twMerge(
-          "fixed",
-          "w-full",
-          "h-full",
-          "flex",
-          "justify-center",
-          "items-center",
-          "z-[100]"
+          'fixed',
+          'w-full',
+          'h-full',
+          'flex',
+          'justify-center',
+          'items-center',
+          'z-[100]',
         )}
       >
         <div
@@ -74,17 +74,17 @@ const Modal = ({
         >
           <div
             className={twMerge(
-              "bg-main",
-              "h-14",
-              "w-full",
-              "flex",
-              "flex-row",
-              "items-center",
-              "justify-between",
-              "border-b",
-              "border-grey",
-              "pl-4",
-              "pr-4"
+              'bg-main',
+              'h-14',
+              'w-full',
+              'flex',
+              'flex-row',
+              'items-center',
+              'justify-between',
+              'border-b',
+              'border-grey',
+              'pl-4',
+              'pr-4',
             )}
           >
             <span className="text-md">{title}</span>
@@ -99,7 +99,7 @@ const Modal = ({
             }
           </div>
 
-          <div className={className ?? ""}>{children}</div>
+          <div className={className ?? ''}>{children}</div>
         </div>
       </div>
     </PortalContainer>

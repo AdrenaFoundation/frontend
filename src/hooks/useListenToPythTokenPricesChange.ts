@@ -1,39 +1,39 @@
-import { setTokenPriceAction } from "@/actions/tokenPricesActions";
-import { useDispatch } from "@/store/store";
+import { setTokenPriceAction } from '@/actions/tokenPricesActions';
+import { useDispatch } from '@/store/store';
 import {
   getPythProgramKeyForCluster,
   PriceData,
   Product,
   PythConnection,
-} from "@pythnetwork/client";
-import { Connection, PublicKey } from "@solana/web3.js";
-import { useEffect, useState } from "react";
-import { AdrenaClient } from "@/AdrenaClient";
+} from '@pythnetwork/client';
+import { Connection, PublicKey } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
+import { AdrenaClient } from '@/AdrenaClient';
 
 const useListenToPythTokenPricesChange = (
   client: AdrenaClient | null,
-  connection: Connection | null
+  connection: Connection | null,
 ): PythConnection | null => {
   const dispatch = useDispatch();
 
   const [pythConnection, setPythConnection] = useState<PythConnection | null>(
-    null
+    null,
   );
 
   useEffect(() => {
     if (!connection || !client) return;
 
     const feedIds: PublicKey[] = client.tokens.map(
-      (token) => client.getCustodyByMint(token.mint).oracle.oracleAccount
+      (token) => client.getCustodyByMint(token.mint).oracle.oracleAccount,
     );
 
     setPythConnection(
       new PythConnection(
         connection,
-        getPythProgramKeyForCluster("devnet"),
-        "confirmed",
-        feedIds
-      )
+        getPythProgramKeyForCluster('devnet'),
+        'confirmed',
+        feedIds,
+      ),
     );
   }, [connection, client]);
 
@@ -48,11 +48,11 @@ const useListenToPythTokenPricesChange = (
       // console.log(`${product.symbol}: $${price.price} \xB1$${price.confidence} Status: ${PriceStatus[price.status]}`);
 
       // Symbol looks like SOL/USD, BTC/USD or like Crypto.ETH/USD etc.
-      let [tokenName] = product.symbol.split("/");
+      let [tokenName] = product.symbol.split('/');
 
       // Remove Crypto. prefix
       if (/Crypto\./.test(tokenName)) {
-        tokenName = tokenName.slice("Crypto.".length);
+        tokenName = tokenName.slice('Crypto.'.length);
       }
 
       dispatch(setTokenPriceAction(tokenName, price.price ?? null));

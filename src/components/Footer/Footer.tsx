@@ -1,19 +1,19 @@
-import { twMerge } from "tailwind-merge";
-import Image from "next/image";
-import Link from "next/link";
+import { twMerge } from 'tailwind-merge';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
     <div
       className={twMerge(
-        "flex",
-        "w-full",
-        "h-20",
-        "bg-secondary",
-        "border-t",
-        "border-grey",
-        "justify-center",
-        "items-center"
+        'flex',
+        'w-full',
+        'h-20',
+        'bg-secondary',
+        'border-t',
+        'border-grey',
+        'justify-center',
+        'items-center',
       )}
     >
       <Link

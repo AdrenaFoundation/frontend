@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import useAdrenaProgram from "./useAdrenaProgram";
-import { AdrenaClient } from "@/AdrenaClient";
+import { useCallback, useEffect, useState } from 'react';
+import useAdrenaProgram from './useAdrenaProgram';
+import { AdrenaClient } from '@/AdrenaClient';
 
 const useAdrenaClient = (): AdrenaClient | null => {
   const { program, readOnlyProgram } = useAdrenaProgram();

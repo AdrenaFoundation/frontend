@@ -1,5 +1,5 @@
-import { WalletAdapterName } from "@/types";
-import { WalletAction } from "../actions/walletActions";
+import { WalletAdapterName } from '@/types';
+import { WalletAction } from '../actions/walletActions';
 
 export type WalletState = {
   adapterName: WalletAdapterName;
@@ -11,12 +11,12 @@ const initialState: WalletState = null;
 
 export default function walletReducer(
   state = initialState,
-  action: WalletAction
+  action: WalletAction,
 ) {
   switch (action.type) {
-    case "connect":
+    case 'connect':
       return action.payload;
-    case "disconnect":
+    case 'disconnect':
       return initialState;
     default:
       return state;

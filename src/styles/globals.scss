@@ -6,17 +6,17 @@
 @layer base {
   @font-face {
     font-family: regular;
-    src: url("/fonts/Louis George Cafe.ttf");
+    src: url('/fonts/Louis George Cafe.ttf');
   }
 
   @font-face {
     font-family: thin;
-    src: url("/fonts/Louis George Cafe Light.ttf");
+    src: url('/fonts/Louis George Cafe Light.ttf');
   }
 
   @font-face {
     font-family: bold;
-    src: url("/fonts/Louis George Cafe Bold.ttf");
+    src: url('/fonts/Louis George Cafe Bold.ttf');
   }
 
   * {
@@ -50,7 +50,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }

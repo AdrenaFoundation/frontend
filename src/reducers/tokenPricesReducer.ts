@@ -1,5 +1,5 @@
-import { TokenName } from "@/types";
-import { TokenPricesAction } from "../actions/tokenPricesActions";
+import { TokenName } from '@/types';
+import { TokenPricesAction } from '../actions/tokenPricesActions';
 
 export type TokenPricesState = Record<TokenName, number | null>;
 
@@ -7,10 +7,10 @@ const initialState: TokenPricesState = {};
 
 export default function tokenPricesReducer(
   state = initialState,
-  action: TokenPricesAction
+  action: TokenPricesAction,
 ) {
   switch (action.type) {
-    case "setTokenPrice":
+    case 'setTokenPrice':
       return {
         ...state,
         [action.payload.tokenName]: action.payload.price,

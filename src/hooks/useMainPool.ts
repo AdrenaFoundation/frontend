@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { Pool } from "@/types";
-import { AdrenaClient } from "@/AdrenaClient";
+import { useCallback, useEffect, useState } from 'react';
+import { Pool } from '@/types';
+import { AdrenaClient } from '@/AdrenaClient';
 
 // TODO: Reload periodically?
 const useMainPool = (client: AdrenaClient | null): Pool | null => {

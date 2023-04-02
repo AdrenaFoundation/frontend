@@ -1,4 +1,4 @@
-import { twMerge } from "tailwind-merge";
+import { twMerge } from 'tailwind-merge';
 
 export default function TabSelect<T extends string>({
   selected,
@@ -15,21 +15,21 @@ export default function TabSelect<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={twMerge("flex", className)}>
+    <div className={twMerge('flex', className)}>
       {tabs.map(({ title, icon }, index) => (
         <div
           key={title}
           className={twMerge(
-            "p-2",
-            "capitalize",
-            "cursor-pointer",
-            "flex",
-            "items-center",
-            "justify-center",
-            title === selected ? "bg-highlight" : "bg-third",
-            "grow",
-            title !== selected ? "hover:bg-highlight" : "",
-            title === selected ? "opacity-100" : "opacity-50"
+            'p-2',
+            'capitalize',
+            'cursor-pointer',
+            'flex',
+            'items-center',
+            'justify-center',
+            title === selected ? 'bg-highlight' : 'bg-third',
+            'grow',
+            title !== selected ? 'hover:bg-highlight' : '',
+            title === selected ? 'opacity-100' : 'opacity-50',
           )}
           onClick={() => onClick(title, index)}
         >

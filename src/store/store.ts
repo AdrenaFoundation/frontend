@@ -1,12 +1,12 @@
-import tokenPricesReducer from "@/reducers/tokenPricesReducer";
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import tokenPricesReducer from '@/reducers/tokenPricesReducer';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import {
   TypedUseSelectorHook,
   useSelector as defaultUseSelector,
   useDispatch as defaultUseDispatch,
-} from "react-redux";
-import walletReducer from "../reducers/walletReducer";
-import walletBalancesReducer from "../reducers/walletBalancesReducer";
+} from 'react-redux';
+import walletReducer from '../reducers/walletReducer';
+import walletBalancesReducer from '../reducers/walletBalancesReducer';
 
 const rootReducer = combineReducers({
   wallet: walletReducer,

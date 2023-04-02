@@ -1,10 +1,8 @@
-import { useSelector } from "@/store/store";
-import { CustodyExtended, Token } from "@/types";
-import { nativeToUi } from "@/utils";
-import { useCallback, useEffect, useState } from "react";
-import useAdrenaClient from "./useAdrenaClient";
-import useCustodies from "./useCustodies";
-import { AdrenaClient } from "@/AdrenaClient";
+import { useSelector } from '@/store/store';
+import { CustodyExtended, Token } from '@/types';
+import { nativeToUi } from '@/utils';
+import { useCallback, useEffect, useState } from 'react';
+import { AdrenaClient } from '@/AdrenaClient';
 
 export type TokenInfo = {
   token: Token;
@@ -19,7 +17,7 @@ export type ALPIndexComposition = TokenInfo[];
 
 const useALPIndexComposition = (
   client: AdrenaClient | null,
-  custodies: CustodyExtended[] | null
+  custodies: CustodyExtended[] | null,
 ) => {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -33,7 +31,7 @@ const useALPIndexComposition = (
       const price = tokenPrices[token.name];
 
       const custody = custodies?.find((custody) =>
-        custody.pubkey.equals(token.custody)
+        custody.pubkey.equals(token.custody),
       );
 
       const poolUsdValue =

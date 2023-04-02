@@ -1,6 +1,6 @@
-import { ALPIndexComposition } from "@/hooks/useALPIndexComposition";
-import { formatPercentage, formatPriceInfo } from "@/utils";
-import { twMerge } from "tailwind-merge";
+import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
+import { formatPercentage, formatPriceInfo } from '@/utils';
+import { twMerge } from 'tailwind-merge';
 
 export default function ALPIndexCompositionBlocs({
   alpIndexComposition,
@@ -12,7 +12,7 @@ export default function ALPIndexCompositionBlocs({
   if (!alpIndexComposition) return null;
 
   return (
-    <div className={twMerge("flex", "flex-wrap", "justify-evenly", className)}>
+    <div className={twMerge('flex', 'flex-wrap', 'justify-evenly', className)}>
       {alpIndexComposition.map((composition) => (
         <div
           key={composition.token.name}
@@ -34,7 +34,7 @@ export default function ALPIndexCompositionBlocs({
             <div className="flex w-full justify-between">
               <div>Price</div>
               <div className="flex">
-                {composition.price ? formatPriceInfo(composition.price) : "-"}
+                {composition.price ? formatPriceInfo(composition.price) : '-'}
               </div>
             </div>
 
@@ -43,7 +43,7 @@ export default function ALPIndexCompositionBlocs({
               <div className="flex">
                 {composition.poolUsdValue
                   ? formatPriceInfo(composition.poolUsdValue)
-                  : "-"}
+                  : '-'}
               </div>
             </div>
 

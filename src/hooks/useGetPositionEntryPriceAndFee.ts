@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { BN } from "@project-serum/anchor";
-import { Token, NewPositionPricesAndFee } from "@/types";
-import { AdrenaClient } from "@/AdrenaClient";
+import { useEffect, useState } from 'react';
+import { BN } from '@project-serum/anchor';
+import { Token, NewPositionPricesAndFee } from '@/types';
+import { AdrenaClient } from '@/AdrenaClient';
 
 type Params = {
   token: Token;
   collateral: BN;
   size: BN;
-  side: "long" | "short";
+  side: 'long' | 'short';
 };
 
 // TRICKS:
@@ -18,13 +18,13 @@ type Params = {
 //
 // Solution:
 // Wait for the pending request to be resolved to trigger another one
-let pendingRequest: boolean = false;
-let waitingList: boolean = false;
+let pendingRequest = false;
+let waitingList = false;
 let waitingListParam: Params | null = null;
 
 const useGetPositionEntryPriceAndFee = (
   params: Params | null,
-  client: AdrenaClient | null
+  client: AdrenaClient | null,
 ): NewPositionPricesAndFee | null => {
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);

@@ -1,11 +1,11 @@
-import { BN } from "@project-serum/anchor";
-import Image from "next/image";
-import useGetPositionEntryPriceAndFee from "@/hooks/useGetPositionEntryPriceAndFee";
-import { PositionExtended, Token } from "@/types";
-import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from "@/utils";
-import { twMerge } from "tailwind-merge";
-import { PRICE_DECIMALS } from "@/constant";
-import { AdrenaClient } from "@/AdrenaClient";
+import { BN } from '@project-serum/anchor';
+import Image from 'next/image';
+import useGetPositionEntryPriceAndFee from '@/hooks/useGetPositionEntryPriceAndFee';
+import { PositionExtended, Token } from '@/types';
+import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
+import { twMerge } from 'tailwind-merge';
+import { PRICE_DECIMALS } from '@/constant';
+import { AdrenaClient } from '@/AdrenaClient';
 
 export default function PositionInfos({
   className,
@@ -16,7 +16,7 @@ export default function PositionInfos({
   openedPosition,
   client,
 }: {
-  side: "short" | "long";
+  side: 'short' | 'long';
   className?: string;
   tokenB: Token;
   inputB: number | null;
@@ -33,32 +33,32 @@ export default function PositionInfos({
           side,
         }
       : null,
-    client
+    client,
   );
 
-  const infoRowStyle = "w-full flex justify-between items-center mt-1";
+  const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 
   return (
-    <div className={twMerge("relative", "flex", "flex-col", className)}>
+    <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       <div className={infoRowStyle}>
         <span className="text-txtfade">Collateral In</span>
-        <span>{side === "long" ? "USD" : "USDC"}</span>
+        <span>{side === 'long' ? 'USD' : 'USDC'}</span>
       </div>
 
       <div className={infoRowStyle}>
         <span className="text-txtfade">Leverage</span>
-        <span>{leverage !== null ? `${formatNumber(leverage, 2)}x` : "-"}</span>
+        <span>{leverage !== null ? `${formatNumber(leverage, 2)}x` : '-'}</span>
       </div>
 
       <div className={infoRowStyle}>
         <span className="text-txtfade">Entry Price</span>
         <span className="flex">
           {(() => {
-            if (!entryPriceAndFee || !inputB) return "-";
+            if (!entryPriceAndFee || !inputB) return '-';
 
             const newEntryPrice = nativeToUi(
               entryPriceAndFee.entryPrice,
-              PRICE_DECIMALS
+              PRICE_DECIMALS,
             );
 
             if (openedPosition) {
@@ -89,15 +89,15 @@ export default function PositionInfos({
         <span className="text-txtfade">Liq. Price</span>
         <span className="flex">
           {(() => {
-            if (!entryPriceAndFee || !inputB) return "-";
+            if (!entryPriceAndFee || !inputB) return '-';
 
             const newLiquidationPrice = nativeToUi(
               entryPriceAndFee.liquidationPrice,
-              PRICE_DECIMALS
+              PRICE_DECIMALS,
             );
 
             if (openedPosition) {
-              if (!openedPosition.uiLiquidationPrice) return "-";
+              if (!openedPosition.uiLiquidationPrice) return '-';
 
               return (
                 <>
@@ -129,7 +129,7 @@ export default function PositionInfos({
         <span>
           {entryPriceAndFee
             ? formatPriceInfo(nativeToUi(entryPriceAndFee.fee, 6))
-            : "-"}
+            : '-'}
         </span>
       </div>
     </div>

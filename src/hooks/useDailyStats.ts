@@ -1,6 +1,6 @@
-import { Token } from "@/types";
-import { useCallback, useEffect, useState } from "react";
-import { AdrenaClient } from "@/AdrenaClient";
+import { Token } from '@/types';
+import { useCallback, useEffect, useState } from 'react';
+import { AdrenaClient } from '@/AdrenaClient';
 
 export interface Stats {
   token: Token;
@@ -28,8 +28,8 @@ const useDailyStats = (client: AdrenaClient | null) => {
         `https://api.coingecko.com/api/v3/simple/price?ids=${client.tokens
           .map((token) => token.coingeckoId)
           .join(
-            ","
-          )}&vs_currencies=USD&include_24hr_vol=true&include_24hr_change=true`
+            ',',
+          )}&vs_currencies=USD&include_24hr_vol=true&include_24hr_change=true`,
       );
 
       const data: FetchedData = await response.json();
@@ -48,10 +48,10 @@ const useDailyStats = (client: AdrenaClient | null) => {
               dailyVolume: usd_24h_vol,
             },
           };
-        }, {} as Record<string, Stats>)
+        }, {} as Record<string, Stats>),
       );
     } catch (err) {
-      console.log("Ignore coinguecko api error", err);
+      console.log('Ignore coinguecko api error', err);
     }
   }, [client]);
 

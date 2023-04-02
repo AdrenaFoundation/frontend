@@ -2,13 +2,13 @@ import {
   autoConnectWalletAction,
   connectWalletAction,
   disconnectWalletAction,
-} from "@/actions/walletActions";
-import { useSelector, useDispatch } from "@/store/store";
-import React, { useEffect } from "react";
-import { useState } from "react";
-import { twMerge } from "tailwind-merge";
-import Button from "../Button/Button";
-import Modal from "../Modal/Modal";
+} from '@/actions/walletActions';
+import { useSelector, useDispatch } from '@/store/store';
+import React, { useEffect } from 'react';
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+import Button from '../Button/Button';
+import Modal from '../Modal/Modal';
 
 function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 4)}..${address.slice(address.length - 4)}`;
@@ -16,7 +16,7 @@ function getAbbrevWalletAddress(address: string) {
 
 function WalletAdapter(
   { className }: { className?: string },
-  ref?: React.Ref<HTMLDivElement>
+  ref?: React.Ref<HTMLDivElement>,
 ) {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -26,7 +26,7 @@ function WalletAdapter(
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    dispatch(autoConnectWalletAction("phantom"));
+    dispatch(autoConnectWalletAction('phantom'));
 
     // Only once when page load
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,39 +59,39 @@ function WalletAdapter(
           title="Select wallet"
           close={() => setOpenModal(false)}
           className={twMerge(
-            "w-64",
-            "h-32",
-            "flex",
-            "flex-col",
-            "items-center",
-            "justify-center"
+            'w-64',
+            'h-32',
+            'flex',
+            'flex-col',
+            'items-center',
+            'justify-center',
           )}
         >
           <div
             className={twMerge(
-              "w-full",
-              "h-full",
-              "flex",
-              "flex-col",
-              "justify-evenly",
-              "items-center"
+              'w-full',
+              'h-full',
+              'flex',
+              'flex-col',
+              'justify-evenly',
+              'items-center',
             )}
             onClick={() => {
-              dispatch(connectWalletAction("phantom"));
+              dispatch(connectWalletAction('phantom'));
               setOpenModal(false);
             }}
           >
             <div
               className={twMerge(
-                "flex",
-                "p-2",
-                "border",
-                "border-grey",
-                "items-center",
-                "w-40",
-                "justify-around",
-                "cursor-pointer",
-                "hover:opacity-90"
+                'flex',
+                'p-2',
+                'border',
+                'border-grey',
+                'items-center',
+                'w-40',
+                'justify-around',
+                'cursor-pointer',
+                'hover:opacity-90',
               )}
             >
               {

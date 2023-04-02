@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { TokenPricesState } from "@/reducers/tokenPricesReducer";
-import { useSelector } from "@/store/store";
-import { PositionExtended, Token } from "@/types";
+import { useEffect, useState } from 'react';
+import { TokenPricesState } from '@/reducers/tokenPricesReducer';
+import { useSelector } from '@/store/store';
+import { PositionExtended, Token } from '@/types';
 import {
   DISPLAY_NUMBER_PRECISION,
   formatNumber,
   INPUT_PRECISION,
-} from "@/utils";
-import LeverageSlider from "../../LeverageSlider/LeverageSlider";
-import { twMerge } from "tailwind-merge";
-import TradingInput from "../TradingInput/TradingInput";
-import PositionInfos from "./PositionInfos";
-import { AdrenaClient } from "@/AdrenaClient";
+} from '@/utils';
+import LeverageSlider from '../../LeverageSlider/LeverageSlider';
+import { twMerge } from 'tailwind-merge';
+import TradingInput from '../TradingInput/TradingInput';
+import PositionInfos from './PositionInfos';
+import { AdrenaClient } from '@/AdrenaClient';
 
 function recalculateInputs({
   mainInput,
@@ -76,7 +76,7 @@ function recalculateInputs({
 
   secondaryInput.setPrice(secondaryPrice);
   secondaryInput.setInput(
-    Number((secondaryPrice / secondaryTokenPrice).toFixed(INPUT_PRECISION))
+    Number((secondaryPrice / secondaryTokenPrice).toFixed(INPUT_PRECISION)),
   );
 }
 
@@ -95,7 +95,7 @@ export default function TradingInputs({
   onChangeLeverage,
   client,
 }: {
-  actionType: "short" | "long" | "swap";
+  actionType: 'short' | 'long' | 'swap';
   className?: string;
   tokenA: Token;
   tokenB: Token;
@@ -117,8 +117,8 @@ export default function TradingInputs({
 
   // Keep track of the last input modified by the user
   // We consider it as the reference value
-  const [manualUserInput, setManualUserInput] = useState<null | "A" | "B">(
-    null
+  const [manualUserInput, setManualUserInput] = useState<null | 'A' | 'B'>(
+    null,
   );
 
   const [inputA, setInputA] = useState<number | null>(null);
@@ -148,7 +148,7 @@ export default function TradingInputs({
 
   // Set leverage to 1 when swapping
   useEffect(() => {
-    if (actionType === "swap") {
+    if (actionType === 'swap') {
       setLeverage(1);
     }
   }, [actionType]);
@@ -161,20 +161,20 @@ export default function TradingInputs({
     setInputB(inputA);
 
     // Because we switch sides, the manual user input is the opposite one
-    setManualUserInput(manualUserInput === "A" ? "B" : "A");
+    setManualUserInput(manualUserInput === 'A' ? 'B' : 'A');
 
     // if tokenB is not allowed, use default value
     setTokenA(
       allowedTokenA.find((token) => token.mint.equals(tokenB.mint))
         ? tokenB
-        : allowedTokenA[0]
+        : allowedTokenA[0],
     );
 
     // if tokenA is not allowed, use default value
     setTokenB(
       allowedTokenB.find((token) => token.mint.equals(tokenA.mint))
         ? tokenA
-        : allowedTokenB[0]
+        : allowedTokenB[0],
     );
   };
 
@@ -195,7 +195,7 @@ export default function TradingInputs({
     };
 
     // inputA is the reference
-    if (manualUserInput === "A") {
+    if (manualUserInput === 'A') {
       return recalculateInputs({
         mainInput: inputAInfos,
         secondaryInput: inputBInfos,
@@ -205,7 +205,7 @@ export default function TradingInputs({
     }
 
     // inputB is the reference
-    if (manualUserInput === "B") {
+    if (manualUserInput === 'B') {
       return recalculateInputs({
         mainInput: inputBInfos,
         secondaryInput: inputAInfos,
@@ -227,19 +227,17 @@ export default function TradingInputs({
   ]);
 
   const handleInputAChange = (v: number | null) => {
-    setManualUserInput("A");
+    setManualUserInput('A');
     setInputA(v);
   };
 
   const handleInputBChange = (v: number | null) => {
-    setManualUserInput("B");
+    setManualUserInput('B');
     setInputB(v);
   };
 
-  const infoRowStyle = "w-full flex justify-between items-center mt-1";
-
   return (
-    <div className={twMerge("relative", "flex", "flex-col", className)}>
+    <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       {/* Input A */}
       <TradingInput
         textTopLeft={
@@ -254,7 +252,7 @@ export default function TradingInputs({
           <>
             {connected && tokenA
               ? `Balance: ${(
-                  walletTokenBalances?.[tokenA.name] ?? "0"
+                  walletTokenBalances?.[tokenA.name] ?? '0'
                 ).toLocaleString()}`
               : null}
           </>
@@ -277,26 +275,26 @@ export default function TradingInputs({
       {/* Switch AB */}
       <div
         className={twMerge(
-          "w-full",
-          "h-4",
-          "overflow-visible",
-          "flex",
-          "justify-center",
-          "items-center",
-          "z-[2]"
+          'w-full',
+          'h-4',
+          'overflow-visible',
+          'flex',
+          'justify-center',
+          'items-center',
+          'z-[2]',
         )}
       >
         <div
           className={twMerge(
-            "bg-highlight",
-            "flex",
-            "rounded-full",
-            "p-1",
-            "w-7",
-            "h-7",
-            "cursor-pointer",
-            "items-center",
-            "justify-center"
+            'bg-highlight',
+            'flex',
+            'rounded-full',
+            'p-1',
+            'w-7',
+            'h-7',
+            'cursor-pointer',
+            'items-center',
+            'justify-center',
           )}
           onClick={() => switchAB()}
         >
@@ -313,9 +311,9 @@ export default function TradingInputs({
           <>
             {
               {
-                long: "Long",
-                short: "Short",
-                swap: "Receive",
+                long: 'Long',
+                short: 'Short',
+                swap: 'Receive',
               }[actionType]
             }
             {priceB !== null
@@ -326,7 +324,7 @@ export default function TradingInputs({
         textTopRight={
           <>
             {/* Display leverage if short/long, otherwise display wallet balance */}
-            {actionType === "short" || actionType === "long" ? (
+            {actionType === 'short' || actionType === 'long' ? (
               <div className="text-txtfade">
                 Leverage{`: ${leverage.toFixed(2)}x`}
               </div>
@@ -334,7 +332,7 @@ export default function TradingInputs({
               <>
                 {connected && tokenB
                   ? `Balance: ${(
-                      walletTokenBalances?.[tokenB.name] ?? "0"
+                      walletTokenBalances?.[tokenB.name] ?? '0'
                     ).toLocaleString()}`
                   : null}
               </>
@@ -349,7 +347,7 @@ export default function TradingInputs({
         onChange={handleInputBChange}
       />
 
-      {actionType === "short" || actionType === "long" ? (
+      {actionType === 'short' || actionType === 'long' ? (
         <>
           {/* Leverage (only in short/long) */}
           <>

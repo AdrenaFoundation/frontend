@@ -1,8 +1,6 @@
-import useALPIndexComposition, {
-  ALPIndexComposition,
-} from "@/hooks/useALPIndexComposition";
-import { formatPercentage, formatPriceInfo } from "@/utils";
-import { twMerge } from "tailwind-merge";
+import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
+import { formatPercentage, formatPriceInfo } from '@/utils';
+import { twMerge } from 'tailwind-merge';
 
 export default function ALPIndexCompositionArray({
   alpIndexComposition,
@@ -14,11 +12,11 @@ export default function ALPIndexCompositionArray({
   return (
     <div
       className={twMerge(
-        "bg-secondary",
-        "border",
-        "border-grey",
-        "pb-2",
-        className
+        'bg-secondary',
+        'border',
+        'border-grey',
+        'pb-2',
+        className,
       )}
     >
       <div className="flex h-12 w-full items-center pl-4 font-bold border-b border-grey">
@@ -26,7 +24,7 @@ export default function ALPIndexCompositionArray({
       </div>
 
       <div className="flex h-12 w-full items-center pl-4 pr-4">
-        {["Token", "Price", "Pool", "Weight", "Utilization"].map(
+        {['Token', 'Price', 'Pool', 'Weight', 'Utilization'].map(
           (columnName) => (
             <div
               key={columnName}
@@ -34,7 +32,7 @@ export default function ALPIndexCompositionArray({
             >
               {columnName}
             </div>
-          )
+          ),
         )}
       </div>
 
@@ -59,13 +57,13 @@ export default function ALPIndexCompositionArray({
                 </div>
 
                 <div className="flex items-center w-40 shrink-0 grow">
-                  {composition.price ? formatPriceInfo(composition.price) : "-"}
+                  {composition.price ? formatPriceInfo(composition.price) : '-'}
                 </div>
 
                 <div className="flex items-center w-40 shrink-0 grow">
                   {composition.poolUsdValue
                     ? formatPriceInfo(composition.poolUsdValue)
-                    : "-"}
+                    : '-'}
                 </div>
 
                 <div className="flex items-center w-40 shrink-0 grow">

@@ -1,14 +1,13 @@
-import { AdrenaClient } from "@/AdrenaClient";
-import { RATE_DECIMALS } from "@/constant";
-import useAdrenaClient from "@/hooks/useAdrenaClient";
-import { useSelector } from "@/store/store";
-import { Token } from "@/types";
+import { AdrenaClient } from '@/AdrenaClient';
+import { RATE_DECIMALS } from '@/constant';
+import { useSelector } from '@/store/store';
+import { Token } from '@/types';
 import {
   formatNumber,
   formatPriceInfo,
   getCustodyLiquidity,
   nativeToUi,
-} from "@/utils";
+} from '@/utils';
 
 export default function PositionDetails({
   tokenB,
@@ -29,12 +28,12 @@ export default function PositionDetails({
     <div className={`flex flex-col p-1 text-sm ${className}`}>
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Entry Price</span>
-        <span>{entryPrice !== null ? formatPriceInfo(entryPrice) : "-"}</span>
+        <span>{entryPrice !== null ? formatPriceInfo(entryPrice) : '-'}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Exit Price</span>
-        <span>{exitPrice !== null ? formatPriceInfo(exitPrice) : "-"}</span>
+        <span>{exitPrice !== null ? formatPriceInfo(exitPrice) : '-'}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
@@ -45,11 +44,11 @@ export default function PositionDetails({
                 nativeToUi(
                   client.getCustodyByMint(tokenB.mint).borrowRateState
                     .currentRate,
-                  RATE_DECIMALS
+                  RATE_DECIMALS,
                 ),
-                RATE_DECIMALS
+                RATE_DECIMALS,
               )}% / hr`
-            : "-"}
+            : '-'}
         </span>
       </div>
 
@@ -60,10 +59,11 @@ export default function PositionDetails({
             ? formatPriceInfo(
                 getCustodyLiquidity(
                   client.getCustodyByMint(tokenB.mint),
-                  tokenPrices[tokenB.name]!
-                )
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  tokenPrices[tokenB.name]!,
+                ),
               )
-            : "-"}
+            : '-'}
         </span>
       </div>
     </div>

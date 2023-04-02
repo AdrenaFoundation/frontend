@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { twMerge } from "tailwind-merge";
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 export default function Select<T extends string>({
   className,
@@ -15,16 +15,16 @@ export default function Select<T extends string>({
   const [opened, setOpened] = useState<boolean>(false);
 
   return (
-    <div className={twMerge("relative", className)}>
+    <div className={twMerge('relative', className)}>
       <div
         className={twMerge(
-          "flex",
-          "justify-center",
-          "items-center",
-          "cursor-pointer",
-          "h-4",
-          "whitespace-nowrap",
-          "hover:opacity-90"
+          'flex',
+          'justify-center',
+          'items-center',
+          'cursor-pointer',
+          'h-4',
+          'whitespace-nowrap',
+          'hover:opacity-90',
         )}
         onClick={() => setOpened(!opened)}
       >
@@ -41,15 +41,15 @@ export default function Select<T extends string>({
 
       <div
         className={twMerge(
-          "flex-col",
-          "absolute",
-          "top-8",
-          "right-0",
-          "bg-secondary",
-          "border",
-          "border-grey",
-          "z-[2]",
-          opened ? "flex" : "hidden"
+          'flex-col',
+          'absolute',
+          'top-8',
+          'right-0',
+          'bg-secondary',
+          'border',
+          'border-grey',
+          'z-[2]',
+          opened ? 'flex' : 'hidden',
         )}
       >
         {options
@@ -57,18 +57,18 @@ export default function Select<T extends string>({
           .map((option) => (
             <div
               className={twMerge(
-                "pt-2",
-                "pb-2",
-                "pl-4",
-                "pr-4",
-                "cursor-pointer",
-                "flex",
-                "items-center",
-                "justify-center",
-                "whitespace-nowrap",
-                "border-b",
-                "border-grey",
-                "hover:opacity-90"
+                'pt-2',
+                'pb-2',
+                'pl-4',
+                'pr-4',
+                'cursor-pointer',
+                'flex',
+                'items-center',
+                'justify-center',
+                'whitespace-nowrap',
+                'border-b',
+                'border-grey',
+                'hover:opacity-90',
               )}
               onClick={() => {
                 onSelect(option);

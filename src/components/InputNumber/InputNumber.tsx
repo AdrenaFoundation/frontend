@@ -1,4 +1,4 @@
-import { twMerge } from "tailwind-merge";
+import { twMerge } from 'tailwind-merge';
 
 export default function InputNumber({
   value,
@@ -14,7 +14,7 @@ export default function InputNumber({
   return (
     <input
       type="number"
-      value={value ?? ""}
+      value={value ?? ''}
       onChange={(v) => {
         if (!v.target.value.length) {
           return onChange(null);
@@ -27,15 +27,15 @@ export default function InputNumber({
       }}
       placeholder={placeholder}
       className={twMerge(
-        "bg-secondary",
-        "border-0",
-        "outline-none",
-        "w-full",
-        "text-xl",
-        className
+        'bg-secondary',
+        'border-0',
+        'outline-none',
+        'w-full',
+        'text-xl',
+        className,
       )}
       style={{
-        fontSize: "1.4em",
+        fontSize: '1.4em',
       }}
     />
   );

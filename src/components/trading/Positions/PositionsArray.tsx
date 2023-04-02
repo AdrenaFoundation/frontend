@@ -1,8 +1,8 @@
-import { twMerge } from "tailwind-merge";
-import Button from "@/components/Button/Button";
-import { useSelector } from "@/store/store";
-import { formatNumber, formatPriceInfo, nativeToUi } from "@/utils";
-import { PositionExtended } from "@/types";
+import { twMerge } from 'tailwind-merge';
+import Button from '@/components/Button/Button';
+import { useSelector } from '@/store/store';
+import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
+import { PositionExtended } from '@/types';
 
 export default function PositionsArray({
   className,
@@ -15,29 +15,29 @@ export default function PositionsArray({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  const columnStyle = "flex min-w-[5em] w-20 grow shrink-0 items-center";
+  const columnStyle = 'flex min-w-[5em] w-20 grow shrink-0 items-center';
 
   return (
     <div
       className={twMerge(
-        "bg-secondary",
-        "border",
-        "border-grey",
-        "flex",
-        "flex-col",
-        className
+        'bg-secondary',
+        'border',
+        'border-grey',
+        'flex',
+        'flex-col',
+        className,
       )}
     >
       {/* Header */}
       <div className="flex pb-4 border-b border-grey w-full p-4">
         {[
-          "Position",
-          "Net Value",
-          "Size",
-          "Collateral",
-          "Entry Price",
-          "Mark Price",
-          "Liq. Price",
+          'Position',
+          'Net Value',
+          'Size',
+          'Collateral',
+          'Entry Price',
+          'Mark Price',
+          'Liq. Price',
         ].map((text) => (
           <div key={text} className={`${columnStyle} text-txtfade`}>
             {text}
@@ -61,9 +61,9 @@ export default function PositionsArray({
             <div
               className={twMerge(
                 columnStyle,
-                "flex-col",
-                "justify-center",
-                "items-start"
+                'flex-col',
+                'justify-center',
+                'items-start',
               )}
             >
               <div>{position.token.name}</div>
@@ -72,9 +72,9 @@ export default function PositionsArray({
                 <div>{formatNumber(position.leverage, 2)}x</div>
                 <div
                   className={twMerge(
-                    "ml-1",
-                    "capitalize",
-                    `text-${position.side === "long" ? "green" : "red"}-400`
+                    'ml-1',
+                    'capitalize',
+                    `text-${position.side === 'long' ? 'green' : 'red'}-400`,
                   )}
                 >
                   {position.side}
@@ -85,12 +85,12 @@ export default function PositionsArray({
             <div className={columnStyle}>
               {position.uiPnl ? (
                 <span
-                  className={`text-${position.uiPnl > 0 ? "green" : "red"}-400`}
+                  className={`text-${position.uiPnl > 0 ? 'green' : 'red'}-400`}
                 >
                   {formatPriceInfo(position.uiPnl)}
                 </span>
               ) : (
-                "-"
+                '-'
               )}
             </div>
 
@@ -109,13 +109,13 @@ export default function PositionsArray({
             <div className={columnStyle}>
               {tokenPrices[position.token.name]
                 ? formatPriceInfo(tokenPrices[position.token.name]!)
-                : "-"}
+                : '-'}
             </div>
 
             <div className={columnStyle}>
               {position.uiLiquidationPrice
                 ? formatPriceInfo(position.uiLiquidationPrice)
-                : "-"}
+                : '-'}
             </div>
 
             <Button

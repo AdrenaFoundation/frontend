@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
-import { PositionExtended } from "@/types";
-import { useSelector } from "@/store/store";
-import { PublicKey } from "@solana/web3.js";
-import { AdrenaClient } from "@/AdrenaClient";
+import { useCallback, useEffect, useState } from 'react';
+import { PositionExtended } from '@/types';
+import { useSelector } from '@/store/store';
+import { PublicKey } from '@solana/web3.js';
+import { AdrenaClient } from '@/AdrenaClient';
 
 // TODO: Reload periodically?
 const usePositions = (client: AdrenaClient | null) => {
@@ -13,7 +13,7 @@ const usePositions = (client: AdrenaClient | null) => {
     if (!client || !wallet?.walletAddress) return;
 
     setPositions(
-      await client.loadUserPositions(new PublicKey(wallet.walletAddress))
+      await client.loadUserPositions(new PublicKey(wallet.walletAddress)),
     );
   }, [client, wallet]);
 

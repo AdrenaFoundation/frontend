@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
-import { twMerge } from "tailwind-merge";
+import React, { ReactNode } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 function Button(
   {
@@ -15,21 +15,21 @@ function Button(
     leftIcon?: string;
     rightIcon?: string;
   },
-  ref?: React.Ref<HTMLDivElement>
+  ref?: React.Ref<HTMLDivElement>,
 ) {
   return (
     <div
       className={twMerge(
-        "flex",
-        "p-2",
-        "items-center",
-        "justify-center",
-        "cursor-pointer",
-        "rounded",
-        "border",
-        "border-grey",
-        "hover:opacity-90",
-        className
+        'flex',
+        'p-2',
+        'items-center',
+        'justify-center',
+        'cursor-pointer',
+        'rounded',
+        'border',
+        'border-grey',
+        'hover:opacity-90',
+        className,
       )}
       onClick={() => onClick()}
       ref={ref}
