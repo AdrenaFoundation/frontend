@@ -60,3 +60,7 @@ input[type='number'] {
   background-color: #197e67 !important;
   border-left: 8px solid #197e67 !important;
 }
+
+.rnc__notification-close-mark::after {
+  font-size: 2em !important;
+}

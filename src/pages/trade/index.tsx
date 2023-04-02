@@ -19,7 +19,12 @@ import usePositions from '@/hooks/usePositions';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { uiToNative } from '@/utils';
+import {
+  addNotification,
+  addNotificationWithTxHash,
+  TransactionErrorTxHash,
+  uiToNative,
+} from '@/utils';
 
 type Action = 'long' | 'short' | 'swap';
 
@@ -93,28 +98,48 @@ export default function Trade() {
     }
 
     if (!tokenA || !tokenB || !inputAValue || !inputBValue || !leverage) {
-      console.log('Missing data to open position');
-      return;
+      return addNotification({
+        type: 'info',
+        title: 'Cannot open position',
+        message: 'Missing informations',
+      });
     }
 
     const tokenBPrice = tokenPrices[tokenB.name];
     if (!tokenBPrice) {
-      return;
+      return addNotification({
+        type: 'info',
+        title: 'Cannot open position',
+        message: `Missing ${tokenB.name} price`,
+      });
     }
 
     if (selectedAction === 'swap') {
-      await client.swap({
-        owner: new PublicKey(wallet.walletAddress),
-        amountIn: uiToNative(inputAValue, 6),
+      try {
+        const txHash = await client.swap({
+          owner: new PublicKey(wallet.walletAddress),
+          amountIn: uiToNative(inputAValue, 6),
 
-        // TODO
-        // How to handle slippage?
-        // the inputBValue should take fees into account, for now it doesn't.
-        minAmountOut: new BN(0),
-        mintA: tokenA.mint,
-        mintB: tokenB.mint,
-      });
-      return;
+          // TODO
+          // How to handle slippage?
+          // the inputBValue should take fees into account, for now it doesn't.
+          minAmountOut: new BN(0),
+          mintA: tokenA.mint,
+          mintB: tokenB.mint,
+        });
+
+        return addNotificationWithTxHash({
+          type: 'success',
+          title: 'Successfull Swap',
+          txHash,
+        });
+      } catch (e: unknown | TransactionErrorTxHash) {
+        return addNotificationWithTxHash({
+          type: 'danger',
+          title: 'Error Swapping',
+          txHash: e instanceof TransactionErrorTxHash ? e.txHash : null,
+        });
+      }
     }
 
     const entryPriceAndFee = await client.getEntryPriceAndFee({
@@ -127,21 +152,40 @@ export default function Trade() {
     });
 
     if (!entryPriceAndFee) {
-      throw new Error('Cannot calculate proper entry price');
+      return addNotification({
+        type: 'info',
+        title: 'Cannot calculate entry price',
+      });
     }
 
-    await client.openPositionWithSwap({
-      owner: new PublicKey(wallet.walletAddress),
-      mintA: tokenA.mint,
-      mintB: tokenB.mint,
-      amountA: uiToNative(inputAValue, tokenA.decimals),
-      price: entryPriceAndFee.entryPrice,
-      collateral: uiToNative(inputBValue, tokenB.decimals).div(
-        new BN(leverage),
-      ),
-      size: uiToNative(inputBValue, tokenB.decimals),
-      side: selectedAction,
-    });
+    try {
+      const txHash = await client.openPositionWithSwap({
+        owner: new PublicKey(wallet.walletAddress),
+        mintA: tokenA.mint,
+        mintB: tokenB.mint,
+        amountA: uiToNative(inputAValue, tokenA.decimals),
+        price: entryPriceAndFee.entryPrice,
+        collateral: uiToNative(inputBValue, tokenB.decimals).div(
+          new BN(leverage),
+        ),
+        size: uiToNative(inputBValue, tokenB.decimals),
+        side: selectedAction,
+      });
+
+      return addNotificationWithTxHash({
+        type: 'success',
+        title: 'Successfully Opened Position',
+        txHash,
+      });
+    } catch (e: unknown | TransactionErrorTxHash) {
+      console.log('ERROR', e);
+
+      return addNotificationWithTxHash({
+        type: 'danger',
+        title: 'Error Opening Position',
+        txHash: e instanceof TransactionErrorTxHash ? e.txHash : null,
+      });
+    }
   };
 
   const buttonTitle = (() => {

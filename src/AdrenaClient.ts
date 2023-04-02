@@ -1,6 +1,12 @@
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+import {
+  PublicKey,
+  RpcResponseAndContext,
+  SignatureResult,
+  SystemProgram,
+  Transaction,
+} from '@solana/web3.js';
 
 import { Perpetuals } from '@/target/perpetuals';
 import PerpetualsJson from '@/target/perpetuals.json';
@@ -16,7 +22,11 @@ import {
   ProfitAndLoss,
   Token,
 } from './types';
-import { findATAAddressSync, nativeToUi } from './utils';
+import {
+  findATAAddressSync,
+  nativeToUi,
+  TransactionErrorTxHash,
+} from './utils';
 
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);
@@ -727,7 +737,17 @@ export class AdrenaClient {
 
     console.log(`tx: https://explorer.solana.com/tx/${txHash}?cluster=devnet`);
 
-    await connection.confirmTransaction(txHash);
+    let result: RpcResponseAndContext<SignatureResult> | null = null;
+
+    try {
+      result = await connection.confirmTransaction(txHash);
+    } catch (e) {
+      throw new TransactionErrorTxHash(txHash);
+    }
+
+    if (result.value.err) {
+      throw new TransactionErrorTxHash(txHash);
+    }
 
     return txHash;
   }

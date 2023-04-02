@@ -4,6 +4,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
+import Link from 'next/link';
 import { ReactNode } from 'react';
 import { Store } from 'react-notifications-component';
 
@@ -87,23 +88,58 @@ export function getTokenNameByMint(mint: PublicKey): string {
 export function addNotification({
   title,
   message,
+  type,
   duration = 'regular',
 }: {
   title: string;
+  type?: 'success' | 'danger' | 'info';
   message?: ReactNode;
-  duration?: 'fast' | 'regular';
+  duration?: 'fast' | 'regular' | 'long';
 }) {
   Store.addNotification({
     title,
     message,
-    type: 'success',
+    type,
     container: 'bottom-right',
     animationIn: ['animate__animated', 'animate__fadeIn'],
     animationOut: ['animate__animated', 'animate__fadeOut'],
     dismiss: {
-      duration: duration === 'fast' ? 1_000 : 5_000,
+      duration: { fast: 1_000, regular: 5_000, long: 10_000 }[duration],
       onScreen: false,
       pauseOnHover: true,
+      showIcon: true,
+      click: false,
     },
   });
+}
+
+export function addNotificationWithTxHash({
+  txHash,
+  ...params
+}: Omit<Parameters<typeof addNotification>[0], 'message' | 'duration'> & {
+  txHash: string | null;
+}) {
+  const message = txHash ? (
+    <Link href={get_tx_explorer(txHash)} target="_blank" className="underline">
+      View transaction
+    </Link>
+  ) : (
+    ''
+  );
+
+  addNotification({
+    ...params,
+    message,
+    duration: 'long',
+  });
+}
+
+// TODO: handle devnet/mainnet
+export function get_tx_explorer(txHash: string): string {
+  return `https://explorer.solana.com/tx/${txHash}?cluster=devnet`;
+}
+
+// Thrown as error when a transaction fails
+export class TransactionErrorTxHash {
+  constructor(public readonly txHash: string) {}
 }
