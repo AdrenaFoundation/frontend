@@ -1,8 +1,8 @@
 import { Dispatch } from '@reduxjs/toolkit';
 import { PublicKey } from '@solana/web3.js';
-import { Wallet } from '@project-serum/anchor';
-import { WalletAdapterName } from '@/types';
+
 import { walletAdapters } from '@/constant';
+import { WalletAdapterName } from '@/types';
 
 export type ConnectWalletAction = {
   type: 'connect';

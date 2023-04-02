@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CustodyExtended, Pool } from '@/types';
+
 import { AdrenaClient } from '@/AdrenaClient';
+import { CustodyExtended, Pool } from '@/types';
 
 // TODO: needs to refresh periodically to access new informations
 const useCustodies = (

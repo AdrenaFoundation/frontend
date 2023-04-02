@@ -1,4 +1,5 @@
 import { WalletAdapterName } from '@/types';
+
 import { WalletAction } from '../actions/walletActions';
 
 export type WalletState = {

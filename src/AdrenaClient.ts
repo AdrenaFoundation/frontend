@@ -1,20 +1,22 @@
-import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import PerpetualsJson from '@/target/perpetuals.json';
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+
 import { Perpetuals } from '@/target/perpetuals';
+import PerpetualsJson from '@/target/perpetuals.json';
+
+import { PRICE_DECIMALS, TOKEN_INFO_LIBRARY } from './constant';
 import {
   Custody,
   CustodyExtended,
-  Token,
   NewPositionPricesAndFee,
   Pool,
   Position,
   PositionExtended,
   ProfitAndLoss,
+  Token,
 } from './types';
 import { findATAAddressSync, nativeToUi } from './utils';
-import { PRICE_DECIMALS, TOKEN_INFO_LIBRARY } from './constant';
 
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);

@@ -1,7 +1,8 @@
 import { Wallet } from '@project-serum/anchor';
 import { useEffect, useState } from 'react';
-import { useSelector } from '@/store/store';
+
 import { walletAdapters } from '@/constant';
+import { useSelector } from '@/store/store';
 
 const useWallet = () => {
   const walletState = useSelector((s) => s.wallet);

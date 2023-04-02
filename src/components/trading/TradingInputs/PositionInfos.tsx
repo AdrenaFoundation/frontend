@@ -1,11 +1,12 @@
 import { BN } from '@project-serum/anchor';
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
+
+import { AdrenaClient } from '@/AdrenaClient';
+import { PRICE_DECIMALS } from '@/constant';
 import useGetPositionEntryPriceAndFee from '@/hooks/useGetPositionEntryPriceAndFee';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
-import { twMerge } from 'tailwind-merge';
-import { PRICE_DECIMALS } from '@/constant';
-import { AdrenaClient } from '@/AdrenaClient';
 
 export default function PositionInfos({
   className,

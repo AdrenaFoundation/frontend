@@ -1,5 +1,3 @@
-import { setTokenPriceAction } from '@/actions/tokenPricesActions';
-import { useDispatch } from '@/store/store';
 import {
   getPythProgramKeyForCluster,
   PriceData,
@@ -8,7 +6,10 @@ import {
 } from '@pythnetwork/client';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
+
+import { setTokenPriceAction } from '@/actions/tokenPricesActions';
 import { AdrenaClient } from '@/AdrenaClient';
+import { useDispatch } from '@/store/store';
 
 const useListenToPythTokenPricesChange = (
   client: AdrenaClient | null,

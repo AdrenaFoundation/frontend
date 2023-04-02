@@ -1,11 +1,13 @@
-import { twMerge } from 'tailwind-merge';
 import { useState } from 'react';
-import { PositionExtended } from '@/types';
-import ReduceOrClosePosition from '../ReduceOrClosePosition/ReduceOrClosePosition';
+import { twMerge } from 'tailwind-merge';
+
 import Modal from '@/components/Modal/Modal';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { PositionExtended } from '@/types';
+
+import ReduceOrClosePosition from '../ReduceOrClosePosition/ReduceOrClosePosition';
 import PositionsArray from './PositionsArray';
 import PositionsBlocs from './PositionsBlocs';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 export default function Positions({
   className,

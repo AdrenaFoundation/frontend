@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
-import { PositionExtended } from '@/types';
-import { useSelector } from '@/store/store';
 import { PublicKey } from '@solana/web3.js';
+import { useCallback, useEffect, useState } from 'react';
+
 import { AdrenaClient } from '@/AdrenaClient';
+import { useSelector } from '@/store/store';
+import { PositionExtended } from '@/types';
 
 // TODO: Reload periodically?
 const usePositions = (client: AdrenaClient | null) => {

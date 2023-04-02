@@ -1,8 +1,9 @@
-import { Tooltip } from 'react-tooltip';
 import Head from 'next/head';
 import { ReactNode } from 'react';
-import Header from '../../Header/Header';
+import { Tooltip } from 'react-tooltip';
+
 import Footer from '../../Footer/Footer';
+import Header from '../../Header/Header';
 
 const RootLayout = ({ children }: { children: ReactNode }) => (
   <>

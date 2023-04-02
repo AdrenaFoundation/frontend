@@ -1,11 +1,12 @@
-import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
-import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
-import ALPIndexComposition from '@/components/ALPIndexComposition/ALPIndexComposition';
 import { twMerge } from 'tailwind-merge';
+
+import ALPIndexComposition from '@/components/ALPIndexComposition/ALPIndexComposition';
 import useAdrenaClient from '@/hooks/useAdrenaClient';
-import useCustodies from '@/hooks/useCustodies';
-import useMainPool from '@/hooks/useMainPool';
 import useConnection from '@/hooks/useConnection';
+import useCustodies from '@/hooks/useCustodies';
+import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
+import useMainPool from '@/hooks/useMainPool';
+import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 
 export default function Trade() {
   const client = useAdrenaClient();

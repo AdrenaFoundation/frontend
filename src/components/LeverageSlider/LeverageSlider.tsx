@@ -1,8 +1,8 @@
+import 'rc-slider/assets/index.css';
+
 import Slider from 'rc-slider';
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
-
-import 'rc-slider/assets/index.css';
 
 export default function LeverageSlider({
   className,

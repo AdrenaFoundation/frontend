@@ -1,12 +1,14 @@
+import React, { useEffect } from 'react';
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+
 import {
   autoConnectWalletAction,
   connectWalletAction,
   disconnectWalletAction,
 } from '@/actions/walletActions';
-import { useSelector, useDispatch } from '@/store/store';
-import React, { useEffect } from 'react';
-import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+import { useDispatch, useSelector } from '@/store/store';
+
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
 

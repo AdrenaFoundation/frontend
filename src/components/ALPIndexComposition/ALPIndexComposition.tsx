@@ -1,9 +1,10 @@
+import { AdrenaClient } from '@/AdrenaClient';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { CustodyExtended } from '@/types';
+
 import ALPIndexCompositionArray from './ALPIndexCompositionArray';
 import ALPIndexCompositionBlocs from './ALPIndexCompositionBlocs';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { AdrenaClient } from '@/AdrenaClient';
-import { CustodyExtended } from '@/types';
 
 export default function ALPIndexComposition({
   className,

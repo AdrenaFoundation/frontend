@@ -1,9 +1,11 @@
+import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
+
+import { Token } from '@/types';
+
 import Button from '../../Button/Button';
 import InputNumber from '../../InputNumber/InputNumber';
 import Select from '../../Select/Select';
-import { Token } from '@/types';
-import { ReactNode } from 'react';
 
 export default function TradingInput({
   className,

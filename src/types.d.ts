@@ -1,5 +1,6 @@
-import { AnchorTypes } from './IdlTypeParser';
 import { Perpetuals } from '@/target/perpetuals';
+
+import { AnchorTypes } from './IdlTypeParser';
 
 export type WalletAdapterName = 'phantom';
 

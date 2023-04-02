@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+
+import { AdrenaClient } from '@/AdrenaClient';
 import { TokenPricesState } from '@/reducers/tokenPricesReducer';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -7,11 +10,10 @@ import {
   formatNumber,
   INPUT_PRECISION,
 } from '@/utils';
+
 import LeverageSlider from '../../LeverageSlider/LeverageSlider';
-import { twMerge } from 'tailwind-merge';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
-import { AdrenaClient } from '@/AdrenaClient';
 
 function recalculateInputs({
   mainInput,

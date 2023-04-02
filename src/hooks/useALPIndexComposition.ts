@@ -1,8 +1,9 @@
+import { useCallback, useEffect, useState } from 'react';
+
+import { AdrenaClient } from '@/AdrenaClient';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, Token } from '@/types';
 import { nativeToUi } from '@/utils';
-import { useCallback, useEffect, useState } from 'react';
-import { AdrenaClient } from '@/AdrenaClient';
 
 export type TokenInfo = {
   token: Token;

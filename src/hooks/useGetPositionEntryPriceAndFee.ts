@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
 import { BN } from '@project-serum/anchor';
-import { Token, NewPositionPricesAndFee } from '@/types';
+import { useEffect, useState } from 'react';
+
 import { AdrenaClient } from '@/AdrenaClient';
+import { NewPositionPricesAndFee, Token } from '@/types';
 
 type Params = {
   token: Token;

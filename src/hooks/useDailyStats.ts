@@ -1,6 +1,7 @@
-import { Token } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
+
 import { AdrenaClient } from '@/AdrenaClient';
+import { Token } from '@/types';
 
 export interface Stats {
   token: Token;

@@ -1,26 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-import { PublicKey } from '@solana/web3.js';
 import { BN } from '@project-serum/anchor';
+import { PublicKey } from '@solana/web3.js';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import TabSelect from '@/components/TabSelect/TabSelect';
-import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
-import { PositionExtended, Token } from '@/types';
-import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
-import TradingInputs from '@/components/trading/TradingInputs/TradingInputs';
 import Button from '@/components/Button/Button';
-import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
-import { useSelector } from '@/store/store';
-import TradingChart from '@/components/trading/TradingChart/TradingChart';
-import SwapDetails from '@/components/trading/SwapDetails/SwapDetails';
+import TabSelect from '@/components/TabSelect/TabSelect';
 import PositionDetails from '@/components/trading/PositionDetails/PositionDetails';
-import useAdrenaClient from '@/hooks/useAdrenaClient';
-import { uiToNative } from '@/utils';
 import Positions from '@/components/trading/Positions/Positions';
+import SwapDetails from '@/components/trading/SwapDetails/SwapDetails';
+import TradingChart from '@/components/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/trading/TradingChartHeader/TradingChartHeader';
-import usePositions from '@/hooks/usePositions';
-import useConnection from '@/hooks/useConnection';
+import TradingInputs from '@/components/trading/TradingInputs/TradingInputs';
+import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { PRICE_DECIMALS } from '@/constant';
+import useAdrenaClient from '@/hooks/useAdrenaClient';
+import useConnection from '@/hooks/useConnection';
+import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
+import usePositions from '@/hooks/usePositions';
+import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
+import { useSelector } from '@/store/store';
+import { PositionExtended, Token } from '@/types';
+import { uiToNative } from '@/utils';
 
 type Action = 'long' | 'short' | 'swap';
 

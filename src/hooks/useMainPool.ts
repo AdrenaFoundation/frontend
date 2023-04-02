@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Pool } from '@/types';
+
 import { AdrenaClient } from '@/AdrenaClient';
+import { Pool } from '@/types';
 
 // TODO: Reload periodically?
 const useMainPool = (client: AdrenaClient | null): Pool | null => {

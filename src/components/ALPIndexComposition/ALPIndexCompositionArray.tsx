@@ -1,6 +1,7 @@
+import { twMerge } from 'tailwind-merge';
+
 import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
 import { formatPercentage, formatPriceInfo } from '@/utils';
-import { twMerge } from 'tailwind-merge';
 
 export default function ALPIndexCompositionArray({
   alpIndexComposition,

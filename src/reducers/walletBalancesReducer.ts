@@ -1,4 +1,5 @@
 import { TokenName } from '@/types';
+
 import { WalletBalancesAction } from '../actions/walletBalancesActions';
 
 export type WalletBalancesState = Record<TokenName, number | null> | null;

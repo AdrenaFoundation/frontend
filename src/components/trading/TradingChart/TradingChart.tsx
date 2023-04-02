@@ -5,6 +5,7 @@ import { Token } from '@/types';
 let tvScriptLoadingPromise: Promise<unknown>;
 
 // We don't have access to proper type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Widget = any;
 
 export default function TradingChart({ token }: { token: Token }) {
@@ -15,6 +16,8 @@ export default function TradingChart({ token }: { token: Token }) {
     function createWidget() {
       if (document.getElementById('chart-area') && 'TradingView' in window) {
         setWidget(
+          // Force to any because we don't have access to the type of TradingView
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           new (window.TradingView as any).widget({
             container_id: 'chart-area',
             width: '100%',

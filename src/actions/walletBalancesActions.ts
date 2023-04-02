@@ -1,5 +1,6 @@
-import { TokenName } from '@/types';
 import { Dispatch } from '@reduxjs/toolkit';
+
+import { TokenName } from '@/types';
 
 export type SetTokenBalancesAction = {
   type: 'setTokenBalances';

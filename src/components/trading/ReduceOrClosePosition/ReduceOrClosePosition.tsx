@@ -1,4 +1,8 @@
+import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
+
 import Button from '@/components/Button/Button';
+import Checkbox from '@/components/Checkbox/Checkbox';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import {
@@ -7,10 +11,8 @@ import {
   formatPriceInfo,
   nativeToUi,
 } from '@/utils';
-import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
+
 import TradingInput from '../TradingInput/TradingInput';
-import Checkbox from '@/components/Checkbox/Checkbox';
 
 export default function ReduceOrClosePosition({
   className,

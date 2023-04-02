@@ -1,8 +1,9 @@
 import { twMerge } from 'tailwind-merge';
+
 import Button from '@/components/Button/Button';
 import { useSelector } from '@/store/store';
-import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
 import { PositionExtended } from '@/types';
+import { formatNumber, formatPriceInfo } from '@/utils';
 
 export default function PositionsArray({
   className,
@@ -108,7 +109,8 @@ export default function PositionsArray({
 
             <div className={columnStyle}>
               {tokenPrices[position.token.name]
-                ? formatPriceInfo(tokenPrices[position.token.name]!)
+                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  formatPriceInfo(tokenPrices[position.token.name]!)
                 : '-'}
             </div>
 
