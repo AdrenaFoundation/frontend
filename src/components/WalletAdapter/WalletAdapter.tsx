@@ -24,7 +24,6 @@ function WalletAdapter({ className }: { className?: string }) {
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    console.log('>>> Call auto connect');
     dispatch(autoConnectWalletAction('phantom'));
 
     // Only once when page load

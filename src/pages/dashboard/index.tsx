@@ -36,7 +36,11 @@ export default function Trade() {
 
       <div className="text-3xl mt-6">Tokens</div>
 
-      <ALPIndexComposition client={client} custodies={custodies} />
+      <ALPIndexComposition
+        client={client}
+        custodies={custodies}
+        className="mt-4"
+      />
     </div>
   );
 }
