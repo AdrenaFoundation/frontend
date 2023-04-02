@@ -117,14 +117,29 @@ export default function Trade() {
       });
     }
 
+    const entryPriceAndFee = await client.getEntryPriceAndFee({
+      token: tokenB,
+      collateral: uiToNative(inputBValue, tokenB.decimals).div(
+        new BN(leverage),
+      ),
+      size: uiToNative(inputBValue, tokenB.decimals),
+      side: selectedAction,
+    });
+
+    if (!entryPriceAndFee) {
+      throw new Error('Cannot calculate proper entry price');
+    }
+
     return client.openPositionWithSwap({
       owner: new PublicKey(wallet.walletAddress),
       mintA: tokenA.mint,
-      mintB: tokenA.mint,
-      amountA: uiToNative(inputAValue, 6),
-      price: uiToNative(tokenBPrice, PRICE_DECIMALS),
-      collateral: uiToNative(inputBValue, 6).div(new BN(leverage)),
-      size: uiToNative(inputBValue, 6),
+      mintB: tokenB.mint,
+      amountA: uiToNative(inputAValue, tokenA.decimals),
+      price: entryPriceAndFee.entryPrice,
+      collateral: uiToNative(inputBValue, tokenB.decimals).div(
+        new BN(leverage),
+      ),
+      size: uiToNative(inputBValue, tokenB.decimals),
       side: selectedAction,
     });
   };

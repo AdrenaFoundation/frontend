@@ -270,10 +270,9 @@ export class AdrenaClient {
 
     return this.adrenaProgram.methods
       .openPosition({
-        // TODO
-        // HOW TO HANDLE SLIPPAGE?
-        // For now use 10% slippage
-        price: price.mul(new BN(10_000)).div(new BN(9_000)),
+        // TODO: Handle slippage properly based on the actual price + fees + small slippage.
+        // For now use 0.3% slippage
+        price: price.mul(new BN(10_000)).div(new BN(9_970)),
         collateral,
         size,
         side: { [side]: {} },
@@ -410,9 +409,9 @@ export class AdrenaClient {
       this.buildSwapTx({
         owner,
         amountIn: amountA,
-        // collateral take into account swap fees
-        // TODO: should we add some slippage?
-        minAmountOut: collateral,
+        // TODO: collateral should take into account swap fees
+        // For now apply fixed 10% so it always pass
+        minAmountOut: collateral.mul(new BN(9_000)).div(new BN(10_000)),
         mintA,
         mintB,
       }).instruction(),
@@ -721,9 +720,12 @@ export class AdrenaClient {
         requireAllSignatures: false,
         verifySignatures: false,
       }),
+      {
+        skipPreflight: true,
+      },
     );
 
-    console.log('tx:', txHash);
+    console.log(`tx: https://explorer.solana.com/tx/${txHash}?cluster=devnet`);
 
     await connection.confirmTransaction(txHash);
 
