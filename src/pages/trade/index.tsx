@@ -86,7 +86,7 @@ export default function Trade() {
     setOpenedPosition(relatedPosition ?? null);
   }, [positions, tokenB]);
 
-  const handleExecuteButton = async () => {
+  const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !client || !dispatch) {
       dispatch(openCloseConnectionModalAction(true));
       return;
@@ -103,7 +103,7 @@ export default function Trade() {
     }
 
     if (selectedAction === 'swap') {
-      return client.swap({
+      await client.swap({
         owner: new PublicKey(wallet.walletAddress),
         amountIn: uiToNative(inputAValue, 6),
 
@@ -114,6 +114,7 @@ export default function Trade() {
         mintA: tokenA.mint,
         mintB: tokenB.mint,
       });
+      return;
     }
 
     const entryPriceAndFee = await client.getEntryPriceAndFee({
@@ -129,7 +130,7 @@ export default function Trade() {
       throw new Error('Cannot calculate proper entry price');
     }
 
-    return client.openPositionWithSwap({
+    await client.openPositionWithSwap({
       owner: new PublicKey(wallet.walletAddress),
       mintA: tokenA.mint,
       mintB: tokenB.mint,
@@ -301,6 +302,7 @@ export default function Trade() {
           <Button
             className="mt-4 bg-highlight text-sm"
             title={buttonTitle}
+            activateLoadingIcon={true}
             onClick={handleExecuteButton}
           />
         </div>

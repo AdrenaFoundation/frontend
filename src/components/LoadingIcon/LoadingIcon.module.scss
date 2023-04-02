@@ -1,0 +1,61 @@
+.LoadingIcon {
+  width: 1vmax;
+  height: 1vmax;
+  border-right: 1px solid #ffffff;
+  border-radius: 100%;
+  animation: spinRight 800ms linear infinite;
+
+  $spinner_speed: 0.675s;
+  $spinner_radius: 80%;
+  $spinner_fill_radius: 90px;
+
+  $spinner_size: 1em;
+  $spinner_thickness: 0.1em;
+  $spinner_inner_circle: $spinner_size - $spinner_thickness;
+
+  $spinner_color: transparent;
+  $spinner_bg: transparent;
+  $spinner_inner_bg: transparent;
+
+  border-radius: 80%;
+  display: block;
+  height: $spinner_size;
+  width: $spinner_size;
+  animation: spin $spinner_speed linear 0s infinite normal;
+  background: $spinner_bg;
+
+  &:before,
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+  }
+
+  &:before {
+    border-radius: 0 $spinner_fill_radius $spinner_fill_radius 0;
+    height: $spinner_size;
+    width: 50%;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    background: $spinner_color;
+    background-image: linear-gradient($spinner_bg, $spinner_color);
+  }
+
+  &:after {
+    border-radius: $spinner_radius;
+    height: $spinner_inner_circle;
+    width: $spinner_inner_circle;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    background: $spinner_inner_bg;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

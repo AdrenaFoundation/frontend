@@ -1,5 +1,7 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+
+import LoadingIcon from '../LoadingIcon/LoadingIcon';
 
 function Button(
   {
@@ -8,30 +10,48 @@ function Button(
     className,
     leftIcon,
     rightIcon,
+    disabled,
+    activateLoadingIcon,
   }: {
     title: ReactNode;
-    onClick: () => void;
+    onClick: () => Promise<void> | void;
     className?: string;
     leftIcon?: string;
     rightIcon?: string;
+    disabled?: boolean;
+    activateLoadingIcon?: boolean;
   },
   ref?: React.Ref<HTMLDivElement>,
 ) {
+  const [loading, setLoading] = useState<boolean>(false);
+
   return (
     <div
       className={twMerge(
+        'relative',
         'flex',
-        'p-2',
+        'pt-2 pb-2 pl-4 pr-4',
         'items-center',
         'justify-center',
-        'cursor-pointer',
         'rounded',
         'border',
         'border-grey',
-        'hover:opacity-90',
+        !disabled && !loading && 'hover:opacity-90',
+        disabled || loading ? 'cursor-not-allowed' : 'cursor-pointer',
+        (disabled || loading) && 'opacity-80',
         className,
       )}
-      onClick={() => onClick()}
+      onClick={() => {
+        if (disabled || loading) {
+          return;
+        }
+
+        (async () => {
+          setLoading(true);
+          await onClick();
+          setLoading(false);
+        })();
+      }}
       ref={ref}
     >
       {leftIcon ? (
@@ -45,6 +65,8 @@ function Button(
         // eslint-disable-next-line @next/next/no-img-element
         <img src={rightIcon} className="h-4 w-4 ml-2" alt="right icon" />
       ) : null}
+
+      {loading && activateLoadingIcon ? <LoadingIcon className="ml-4" /> : null}
     </div>
   );
 }
