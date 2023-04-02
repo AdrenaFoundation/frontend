@@ -11,7 +11,7 @@ import walletBalancesReducer from '../reducers/walletBalancesReducer';
 import walletReducer from '../reducers/walletReducer';
 
 const rootReducer = combineReducers({
-  wallet: walletReducer,
+  walletState: walletReducer,
   tokenPrices: tokenPricesReducer,
   walletTokenBalances: walletBalancesReducer,
 });

@@ -1,8 +1,9 @@
 import { BN } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/Button/Button';
 import TabSelect from '@/components/TabSelect/TabSelect';
 import PositionDetails from '@/components/trading/PositionDetails/PositionDetails';
@@ -11,14 +12,12 @@ import SwapDetails from '@/components/trading/SwapDetails/SwapDetails';
 import TradingChart from '@/components/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/trading/TradingChartHeader/TradingChartHeader';
 import TradingInputs from '@/components/trading/TradingInputs/TradingInputs';
-import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
-import { PRICE_DECIMALS } from '@/constant';
 import useAdrenaClient from '@/hooks/useAdrenaClient';
 import useConnection from '@/hooks/useConnection';
 import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
 import usePositions from '@/hooks/usePositions';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { uiToNative } from '@/utils';
 
@@ -28,13 +27,13 @@ export default function Trade() {
   const connection = useConnection();
   const client = useAdrenaClient();
   const positions = usePositions(client);
+  const dispatch = useDispatch();
 
   useListenToPythTokenPricesChange(client, connection);
   useWatchWalletBalance(client, connection);
 
   const [selectedAction, setSelectedAction] = useState<Action>('long');
-  const walletAdapterRef = useRef<HTMLDivElement>(null);
-  const wallet = useSelector((s) => s.wallet);
+  const wallet = useSelector((s) => s.walletState.wallet);
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -88,8 +87,8 @@ export default function Trade() {
   }, [positions, tokenB]);
 
   const handleExecuteButton = async () => {
-    if (!connected || !client) {
-      walletAdapterRef.current?.click();
+    if (!connected || !client || !dispatch) {
+      dispatch(openCloseConnectionModalAction(true));
       return;
     }
 
@@ -299,16 +298,11 @@ export default function Trade() {
           )}
 
           {/* Button to execute action */}
-          <>
-            <Button
-              className="mt-4 bg-highlight text-sm"
-              title={buttonTitle}
-              onClick={handleExecuteButton}
-            />
-
-            {/* to handle wallet connection, create an hidden wallet adapter */}
-            <WalletAdapter className="hidden" ref={walletAdapterRef} />
-          </>
+          <Button
+            className="mt-4 bg-highlight text-sm"
+            title={buttonTitle}
+            onClick={handleExecuteButton}
+          />
         </div>
 
         {/* Position details */}

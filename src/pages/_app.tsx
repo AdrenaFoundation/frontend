@@ -1,5 +1,4 @@
 import '@/styles/globals.scss';
-import 'react-tooltip/dist/react-tooltip.css';
 
 import type { AppProps } from 'next/app';
 import { Provider } from 'react-redux';

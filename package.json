@@ -33,6 +33,7 @@
     "rc-slider": "^10.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-notifications-component": "^4.0.1",
     "react-redux": "^8.0.5",
     "react-responsive": "^9.0.2",
     "react-tooltip": "^5.10.1",

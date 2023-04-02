@@ -5,7 +5,7 @@ import { walletAdapters } from '@/constant';
 import { useSelector } from '@/store/store';
 
 const useWallet = () => {
-  const walletState = useSelector((s) => s.wallet);
+  const walletState = useSelector((s) => s.walletState.wallet);
 
   const [wallet, setWallet] = useState<Wallet | null>(null);
 

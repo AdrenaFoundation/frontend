@@ -54,3 +54,9 @@ input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+// Override Notification library css
+.rnc__notification-item--success {
+  background-color: #197e67 !important;
+  border-left: 8px solid #197e67 !important;
+}

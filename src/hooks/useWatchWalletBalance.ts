@@ -13,7 +13,7 @@ const useWatchWalletBalance = (
   connection: Connection | null,
 ) => {
   const dispatch = useDispatch();
-  const wallet = useSelector((s) => s.wallet);
+  const wallet = useSelector((s) => s.walletState.wallet);
 
   const loadWalletBalances = useCallback(async () => {
     if (!connection || !wallet || !dispatch || !client) return;

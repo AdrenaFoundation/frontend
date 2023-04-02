@@ -1,5 +1,9 @@
+import 'react-notifications-component/dist/theme.css';
+import 'react-tooltip/dist/react-tooltip.css';
+
 import Head from 'next/head';
 import { ReactNode } from 'react';
+import { ReactNotifications } from 'react-notifications-component';
 import { Tooltip } from 'react-tooltip';
 
 import Footer from '../../Footer/Footer';
@@ -17,6 +21,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => (
     <Header />
 
     {children}
+
+    <ReactNotifications />
 
     <Footer />
 

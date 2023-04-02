@@ -7,7 +7,7 @@ import { PositionExtended } from '@/types';
 
 // TODO: Reload periodically?
 const usePositions = (client: AdrenaClient | null) => {
-  const wallet = useSelector((s) => s.wallet);
+  const wallet = useSelector((s) => s.walletState.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
 
   const loadPositions = useCallback(async () => {

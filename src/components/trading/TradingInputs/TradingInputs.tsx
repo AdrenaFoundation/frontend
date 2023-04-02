@@ -111,7 +111,7 @@ export default function TradingInputs({
   onChangeLeverage: (v: number) => void;
   client: AdrenaClient | null;
 }) {
-  const wallet = useSelector((s) => s.wallet);
+  const wallet = useSelector((s) => s.walletState);
   const connected = !!wallet;
 
   const tokenPrices = useSelector((s) => s.tokenPrices);

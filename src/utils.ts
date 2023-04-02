@@ -4,6 +4,8 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
+import { ReactNode } from 'react';
+import { Store } from 'react-notifications-component';
 
 import { TOKEN_INFO_LIBRARY } from './constant';
 import { Custody } from './types';
@@ -80,4 +82,28 @@ export function uiToNative(nb: number, decimals: number): BN {
 
 export function getTokenNameByMint(mint: PublicKey): string {
   return TOKEN_INFO_LIBRARY[mint.toBase58()]?.name ?? 'Unknown';
+}
+
+export function addNotification({
+  title,
+  message,
+  duration = 'regular',
+}: {
+  title: string;
+  message?: ReactNode;
+  duration?: 'fast' | 'regular';
+}) {
+  Store.addNotification({
+    title,
+    message,
+    type: 'success',
+    container: 'bottom-right',
+    animationIn: ['animate__animated', 'animate__fadeIn'],
+    animationOut: ['animate__animated', 'animate__fadeOut'],
+    dismiss: {
+      duration: duration === 'fast' ? 1_000 : 5_000,
+      onScreen: false,
+      pauseOnHover: true,
+    },
+  });
 }

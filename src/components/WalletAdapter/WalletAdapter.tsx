@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
   autoConnectWalletAction,
   connectWalletAction,
   disconnectWalletAction,
+  openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { useDispatch, useSelector } from '@/store/store';
 
@@ -16,18 +16,15 @@ function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 4)}..${address.slice(address.length - 4)}`;
 }
 
-function WalletAdapter(
-  { className }: { className?: string },
-  ref?: React.Ref<HTMLDivElement>,
-) {
+function WalletAdapter({ className }: { className?: string }) {
   const dispatch = useDispatch();
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const wallet = useSelector((s) => s.wallet);
+  const { wallet, modalIsOpen } = useSelector((s) => s.walletState);
 
   const connected = !!wallet;
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
+    console.log('>>> Call auto connect');
     dispatch(autoConnectWalletAction('phantom'));
 
     // Only once when page load
@@ -40,8 +37,7 @@ function WalletAdapter(
         <Button
           leftIcon="images/wallet-icon.svg"
           title="Connect wallet"
-          onClick={() => setOpenModal(true)}
-          ref={ref}
+          onClick={() => dispatch(openCloseConnectionModalAction(true))}
         />
       ) : null}
 
@@ -50,16 +46,16 @@ function WalletAdapter(
           title={getAbbrevWalletAddress(wallet.walletAddress)}
           onClick={() => {
             dispatch(disconnectWalletAction(wallet.adapterName));
-            setOpenModal(false);
+            dispatch(openCloseConnectionModalAction(false));
           }}
           rightIcon="images/disconnect.png"
         />
       ) : null}
 
-      {openModal ? (
+      {modalIsOpen ? (
         <Modal
           title="Select wallet"
-          close={() => setOpenModal(false)}
+          close={() => dispatch(openCloseConnectionModalAction(false))}
           className={twMerge(
             'w-64',
             'h-32',
@@ -80,7 +76,7 @@ function WalletAdapter(
             )}
             onClick={() => {
               dispatch(connectWalletAction('phantom'));
-              setOpenModal(false);
+              dispatch(openCloseConnectionModalAction(false));
             }}
           >
             <div
@@ -113,4 +109,4 @@ function WalletAdapter(
   );
 }
 
-export default React.forwardRef(WalletAdapter);
+export default WalletAdapter;

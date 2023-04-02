@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 
 import { walletAdapters } from '@/constant';
 import { WalletAdapterName } from '@/types';
+import { addNotification } from '@/utils';
 
 export type ConnectWalletAction = {
   type: 'connect';
@@ -16,7 +17,26 @@ export type DisconnectWalletAction = {
   type: 'disconnect';
 };
 
-export type WalletAction = ConnectWalletAction | DisconnectWalletAction;
+export type OpenCloseConnectionModalAction = {
+  type: 'openCloseConnectionModal';
+
+  // true = open
+  payload: boolean;
+};
+
+export type WalletAction =
+  | ConnectWalletAction
+  | DisconnectWalletAction
+  | OpenCloseConnectionModalAction;
+
+export const openCloseConnectionModalAction =
+  (open: boolean) =>
+  async (dispatch: Dispatch<OpenCloseConnectionModalAction>) => {
+    dispatch({
+      type: 'openCloseConnectionModal',
+      payload: open,
+    });
+  };
 
 export const autoConnectWalletAction =
   (adapterName: WalletAdapterName) =>
@@ -32,10 +52,10 @@ export const autoConnectWalletAction =
         },
       });
 
-      console.log('Connected!');
+      addNotification({ title: 'Wallet connected', duration: 'fast' });
     };
 
-    adapter.on('connect', connectFn);
+    adapter.once('connect', connectFn);
 
     try {
       await adapter.autoConnect();
@@ -65,10 +85,10 @@ export const connectWalletAction =
         },
       });
 
-      console.log('Connected!');
+      addNotification({ title: 'Wallet connected', duration: 'fast' });
     };
 
-    adapter.on('connect', connectFn);
+    adapter.once('connect', connectFn);
 
     try {
       await adapter.connect();
@@ -91,7 +111,10 @@ export const disconnectWalletAction =
         type: 'disconnect',
       });
 
-      console.log('Disconnected!');
+      addNotification({
+        title: 'Wallet disconnected',
+        duration: 'fast',
+      });
     });
 
     try {
