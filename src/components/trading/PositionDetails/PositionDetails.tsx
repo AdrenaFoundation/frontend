@@ -1,3 +1,4 @@
+import { AdrenaClient } from "@/AdrenaClient";
 import { RATE_DECIMALS } from "@/constant";
 import useAdrenaClient from "@/hooks/useAdrenaClient";
 import { useSelector } from "@/store/store";
@@ -14,14 +15,15 @@ export default function PositionDetails({
   entryPrice,
   exitPrice,
   className,
+  client,
 }: {
   tokenB: Token;
   entryPrice: number | null;
   exitPrice: number | null;
   className?: string;
+  client: AdrenaClient | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const client = useAdrenaClient();
 
   return (
     <div className={`flex flex-col p-1 text-sm ${className}`}>

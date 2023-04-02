@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
-import { BN } from "@project-serum/anchor";
-import useGetPositionEntryPriceAndFee from "@/hooks/useGetPositionEntryPriceAndFee";
 import { TokenPricesState } from "@/reducers/tokenPricesReducer";
 import { useSelector } from "@/store/store";
 import { PositionExtended, Token } from "@/types";
 import {
   DISPLAY_NUMBER_PRECISION,
   formatNumber,
-  formatPriceInfo,
   INPUT_PRECISION,
-  nativeToUi,
-  uiToNative,
 } from "@/utils";
 import LeverageSlider from "../../LeverageSlider/LeverageSlider";
 import { twMerge } from "tailwind-merge";
 import TradingInput from "../TradingInput/TradingInput";
 import PositionInfos from "./PositionInfos";
+import { AdrenaClient } from "@/AdrenaClient";
 
 function recalculateInputs({
   mainInput,
@@ -97,6 +93,7 @@ export default function TradingInputs({
   setTokenA,
   setTokenB,
   onChangeLeverage,
+  client,
 }: {
   actionType: "short" | "long" | "swap";
   className?: string;
@@ -110,6 +107,7 @@ export default function TradingInputs({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   onChangeLeverage: (v: number) => void;
+  client: AdrenaClient | null;
 }) {
   const wallet = useSelector((s) => s.wallet);
   const connected = !!wallet;
@@ -374,6 +372,7 @@ export default function TradingInputs({
             inputB={inputB}
             leverage={leverage}
             openedPosition={openedPosition}
+            client={client}
           />
         </>
       ) : null}

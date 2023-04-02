@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BN } from "@project-serum/anchor";
 import { Token, NewPositionPricesAndFee } from "@/types";
-import useAdrenaClient from "./useAdrenaClient";
+import { AdrenaClient } from "@/AdrenaClient";
 
 type Params = {
   token: Token;
@@ -23,10 +23,9 @@ let waitingList: boolean = false;
 let waitingListParam: Params | null = null;
 
 const useGetPositionEntryPriceAndFee = (
-  params: Params | null
+  params: Params | null,
+  client: AdrenaClient | null
 ): NewPositionPricesAndFee | null => {
-  const client = useAdrenaClient();
-
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);
 

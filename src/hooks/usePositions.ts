@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { PositionExtended } from "@/types";
-import useAdrenaClient from "./useAdrenaClient";
 import { useSelector } from "@/store/store";
 import { PublicKey } from "@solana/web3.js";
+import { AdrenaClient } from "@/AdrenaClient";
 
-const usePositions = () => {
-  const client = useAdrenaClient();
+// TODO: Reload periodically?
+const usePositions = (client: AdrenaClient | null) => {
   const wallet = useSelector((s) => s.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
 

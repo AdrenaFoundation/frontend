@@ -6,16 +6,16 @@ import {
   Product,
   PythConnection,
 } from "@pythnetwork/client";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
-import useAdrenaClient from "./useAdrenaClient";
-import useConnection from "./useConnection";
+import { AdrenaClient } from "@/AdrenaClient";
 
-const useListenToPythTokenPricesChange = (): PythConnection | null => {
+const useListenToPythTokenPricesChange = (
+  client: AdrenaClient | null,
+  connection: Connection | null
+): PythConnection | null => {
   const dispatch = useDispatch();
-  const client = useAdrenaClient();
 
-  const connection = useConnection();
   const [pythConnection, setPythConnection] = useState<PythConnection | null>(
     null
   );

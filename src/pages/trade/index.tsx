@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@project-serum/anchor";
+import { twMerge } from "tailwind-merge";
 
 import TabSelect from "@/components/TabSelect/TabSelect";
 import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPricesChange";
@@ -18,22 +19,24 @@ import { uiToNative } from "@/utils";
 import Positions from "@/components/trading/Positions/Positions";
 import TradingChartHeader from "@/components/trading/TradingChartHeader/TradingChartHeader";
 import usePositions from "@/hooks/usePositions";
-import { twMerge } from "tailwind-merge";
+import useConnection from "@/hooks/useConnection";
 
 type Action = "long" | "short" | "swap";
 
 export default function Trade() {
-  useListenToPythTokenPricesChange();
-  useWatchWalletBalance();
-
+  const connection = useConnection();
   const client = useAdrenaClient();
+  const positions = usePositions(client);
+
+  useListenToPythTokenPricesChange(client, connection);
+  useWatchWalletBalance(client, connection);
+
   const [selectedAction, setSelectedAction] = useState<Action>("long");
   const walletAdapterRef = useRef<HTMLDivElement>(null);
   const wallet = useSelector((s) => s.wallet);
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const positions = usePositions();
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
@@ -195,6 +198,7 @@ export default function Trade() {
             onChange={(t: Token) => {
               setTokenB(t);
             }}
+            client={client}
           />
         ) : null}
 
@@ -275,6 +279,7 @@ export default function Trade() {
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 onChangeLeverage={setLeverage}
+                client={client}
               />
             </>
           )}
@@ -332,9 +337,10 @@ export default function Trade() {
                       ? tokenPrices[tokenB.name]
                       : null
                   }
+                  client={client}
                 />
               ) : (
-                <SwapDetails tokenA={tokenA} tokenB={tokenB} />
+                <SwapDetails tokenA={tokenA} tokenB={tokenB} client={client} />
               )}
             </>
           ) : null}

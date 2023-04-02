@@ -1,4 +1,4 @@
-import useAdrenaClient from "@/hooks/useAdrenaClient";
+import { AdrenaClient } from "@/AdrenaClient";
 import { useSelector } from "@/store/store";
 import { Token } from "@/types";
 import { formatPriceInfo, getCustodyLiquidity } from "@/utils";
@@ -6,12 +6,13 @@ import { formatPriceInfo, getCustodyLiquidity } from "@/utils";
 export default function SwapDetails({
   tokenA,
   tokenB,
+  client,
 }: {
   tokenA: Token;
   tokenB: Token;
+  client: AdrenaClient | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const client = useAdrenaClient();
 
   const rowStyle = "w-full flex justify-between items-center mt-2";
 

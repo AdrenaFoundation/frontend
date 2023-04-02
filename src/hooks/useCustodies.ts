@@ -1,32 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import useMainPool from "./useMainPool";
-import useAdrenaClient from "./useAdrenaClient";
-import { CustodyExtended } from "@/types";
+import { CustodyExtended, Pool } from "@/types";
+import { AdrenaClient } from "@/AdrenaClient";
 
 // TODO: needs to refresh periodically to access new informations
-const useCustodies = (): CustodyExtended[] | null => {
-  const client = useAdrenaClient();
-  const mainPool = useMainPool();
-
+const useCustodies = (
+  client: AdrenaClient | null,
+  mainPool: Pool | null
+): CustodyExtended[] | null => {
   const [custodies, setCustodies] = useState<CustodyExtended[] | null>(null);
 
   const fetchCustodies = useCallback(async () => {
     if (!client || !mainPool) return;
 
     setCustodies(client.custodies);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    !!client,
-    // Avoid rewritting fetchCustodies for no reason
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    mainPool
-      ? mainPool.custodies.reduce(
-          (acc, custody) => `${acc}/${custody.toBase58()}`,
-          ""
-        )
-      : null,
-  ]);
+  }, [client, mainPool]);
 
   useEffect(() => {
     fetchCustodies();

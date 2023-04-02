@@ -1,17 +1,17 @@
 import { useDispatch, useSelector } from "@/store/store";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { useCallback, useEffect } from "react";
 import { findATAAddressSync } from "@/utils";
-import useConnection from "./useConnection";
 import { setWalletTokenBalancesAction } from "@/actions/walletBalancesActions";
 import { TokenName } from "@/types";
-import useAdrenaClient from "./useAdrenaClient";
+import { AdrenaClient } from "@/AdrenaClient";
 
 // TODO: Make it responsive to wallet token balance change
-const useWatchWalletBalance = () => {
+const useWatchWalletBalance = (
+  client: AdrenaClient | null,
+  connection: Connection | null
+) => {
   const dispatch = useDispatch();
-  const connection = useConnection();
-  const client = useAdrenaClient();
   const wallet = useSelector((s) => s.wallet);
 
   const loadWalletBalances = useCallback(async () => {

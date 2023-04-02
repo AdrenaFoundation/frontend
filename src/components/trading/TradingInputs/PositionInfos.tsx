@@ -5,6 +5,7 @@ import { PositionExtended, Token } from "@/types";
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from "@/utils";
 import { twMerge } from "tailwind-merge";
 import { PRICE_DECIMALS } from "@/constant";
+import { AdrenaClient } from "@/AdrenaClient";
 
 export default function PositionInfos({
   className,
@@ -13,6 +14,7 @@ export default function PositionInfos({
   inputB,
   leverage,
   openedPosition,
+  client,
 }: {
   side: "short" | "long";
   className?: string;
@@ -20,6 +22,7 @@ export default function PositionInfos({
   inputB: number | null;
   leverage: number;
   openedPosition: PositionExtended | null;
+  client: AdrenaClient | null;
 }) {
   const entryPriceAndFee = useGetPositionEntryPriceAndFee(
     tokenB && inputB && inputB > 0
@@ -29,7 +32,8 @@ export default function PositionInfos({
           size: uiToNative(inputB, tokenB.decimals),
           side,
         }
-      : null
+      : null,
+    client
   );
 
   const infoRowStyle = "w-full flex justify-between items-center mt-1";

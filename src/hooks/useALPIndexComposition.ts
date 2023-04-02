@@ -1,9 +1,10 @@
 import { useSelector } from "@/store/store";
-import { Token } from "@/types";
+import { CustodyExtended, Token } from "@/types";
 import { nativeToUi } from "@/utils";
 import { useCallback, useEffect, useState } from "react";
 import useAdrenaClient from "./useAdrenaClient";
 import useCustodies from "./useCustodies";
+import { AdrenaClient } from "@/AdrenaClient";
 
 export type TokenInfo = {
   token: Token;
@@ -16,10 +17,11 @@ export type TokenInfo = {
 
 export type ALPIndexComposition = TokenInfo[];
 
-const useALPIndexComposition = () => {
-  const client = useAdrenaClient();
+const useALPIndexComposition = (
+  client: AdrenaClient | null,
+  custodies: CustodyExtended[] | null
+) => {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const custodies = useCustodies();
 
   const [alpIndexComposition, setALPIndexComposition] =
     useState<ALPIndexComposition | null>(null);

@@ -1,6 +1,6 @@
 import { Token } from "@/types";
 import { useCallback, useEffect, useState } from "react";
-import useAdrenaClient from "./useAdrenaClient";
+import { AdrenaClient } from "@/AdrenaClient";
 
 export interface Stats {
   token: Token;
@@ -17,8 +17,7 @@ type FetchedData = {
   };
 };
 
-const useDailyStats = () => {
-  const client = useAdrenaClient();
+const useDailyStats = (client: AdrenaClient | null) => {
   const [stats, setStats] = useState<null | Record<string, Stats>>(null);
 
   const loadStats = useCallback(async () => {

@@ -2,10 +2,19 @@ import useListenToPythTokenPricesChange from "@/hooks/useListenToPythTokenPrices
 import useWatchWalletBalance from "@/hooks/useWatchWalletBalance";
 import ALPIndexComposition from "@/components/ALPIndexComposition/ALPIndexComposition";
 import { twMerge } from "tailwind-merge";
+import useAdrenaClient from "@/hooks/useAdrenaClient";
+import useCustodies from "@/hooks/useCustodies";
+import useMainPool from "@/hooks/useMainPool";
+import useConnection from "@/hooks/useConnection";
 
 export default function Trade() {
-  useListenToPythTokenPricesChange();
-  useWatchWalletBalance();
+  const client = useAdrenaClient();
+  const connection = useConnection();
+  const mainPool = useMainPool(client);
+  const custodies = useCustodies(client, mainPool);
+
+  useListenToPythTokenPricesChange(client, connection);
+  useWatchWalletBalance(client, connection);
 
   return (
     <div
@@ -19,7 +28,7 @@ export default function Trade() {
         "bg-main"
       )}
     >
-      <ALPIndexComposition />
+      <ALPIndexComposition client={client} custodies={custodies} />
     </div>
   );
 }
