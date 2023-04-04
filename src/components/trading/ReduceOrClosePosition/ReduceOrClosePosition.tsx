@@ -6,10 +6,12 @@ import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/Button/Button';
 import Checkbox from '@/components/Checkbox/Checkbox';
 import { USD_DECIMALS } from '@/constant';
+import useGetPositionExitPriceAndFee from '@/hooks/useGetPositionExitPriceAndFee';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import {
   addFailedTxNotification,
+  addNotification,
   addSuccessTxNotification,
   DISPLAY_NUMBER_PRECISION,
   formatNumber,
@@ -37,6 +39,7 @@ export default function ReduceOrClosePosition({
     useState<boolean>(false);
   const [input, setInput] = useState<number | null>(null);
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const priceAndFee = useGetPositionExitPriceAndFee(position, client);
 
   const markPrice: number | null = tokenPrices[position.token.name];
 
@@ -88,26 +91,25 @@ export default function ReduceOrClosePosition({
   const doFullClose = async () => {
     if (!client || !markPrice) return;
 
-    const price = uiToNative(markPrice, USD_DECIMALS);
-
-    const priceWithSlippage = price.add(
-      price
-        .mul(new BN(allowedIncreasedSlippage ? 1 : 0.3 * 100))
-        .div(new BN(10_000)),
-    );
-
-    // TODO: Price should be calculated correctly using getExitPriceAndFee views
-    // Price we use now do not account for fees, making position close to fail all the time due to slippage
-    // Instead, to make it work now, we use High artificial Slippage
-    const artificialSlippageToDeleteLater = priceWithSlippage
-      .mul(new BN(10_000))
-      .div(new BN(9_000));
-
     try {
+      const priceAndFee = await client.getExitPriceAndFee({
+        position,
+      });
+
+      if (!priceAndFee) {
+        return addNotification({
+          title: 'Cannot calculate position closing price',
+          type: 'info',
+        });
+      }
+
+      const priceWithSlippage = priceAndFee.price
+        .mul(new BN(10_000 - (allowedIncreasedSlippage ? 1 : 0.3 * 100)))
+        .div(new BN(10_000));
+
       const txHash = await client.closePosition({
         position,
-        // price: priceWithSlippage,
-        price: artificialSlippageToDeleteLater,
+        price: priceWithSlippage,
       });
 
       addSuccessTxNotification({
@@ -285,7 +287,11 @@ export default function ReduceOrClosePosition({
 
         <div className={rowStyle}>
           <div className="text-txtfade">Fees</div>
-          <div>TODO</div>
+          <div>
+            {priceAndFee
+              ? formatPriceInfo(nativeToUi(priceAndFee.fee, USD_DECIMALS))
+              : '-'}
+          </div>
         </div>
       </div>
 

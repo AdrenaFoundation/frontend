@@ -19,6 +19,7 @@ import {
   Pool,
   Position,
   PositionExtended,
+  PriceAndFee,
   ProfitAndLoss,
   Token,
 } from './types';
@@ -621,6 +622,37 @@ export class AdrenaClient {
     );
   }
 
+  public async getExitPriceAndFee({
+    position,
+  }: {
+    position: PositionExtended;
+  }): Promise<PriceAndFee | null> {
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody),
+    );
+
+    if (!custody) {
+      throw new Error('Cannot find custody related to position');
+    }
+
+    return this.readonlyAdrenaProgram.views.getExitPriceAndFee(
+      {},
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: AdrenaClient.mainPoolAddress,
+          position: position.pubkey,
+          custody: position.custody,
+          custodyOracleAccount: custody.oracle.oracleAccount,
+        },
+      },
+    );
+  }
+
   public async getPnL({
     position,
   }: {
@@ -836,6 +868,11 @@ export class AdrenaClient {
           requireAllSignatures: false,
           verifySignatures: false,
         }),
+        // Uncomment to force the transaction to be send
+        // And get a transaction to analyze
+        /*{
+          skipPreflight: true,
+        },*/
       );
     } catch (err) {
       throw parseTransactionError(this.adrenaProgram, err);
@@ -848,11 +885,18 @@ export class AdrenaClient {
     try {
       result = await connection.confirmTransaction(txHash);
     } catch (err) {
-      throw parseTransactionError(this.adrenaProgram, err);
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+      adrenaError.setTxHash(txHash);
+      throw adrenaError;
     }
 
     if (result.value.err) {
-      throw parseTransactionError(this.adrenaProgram, result.value.err);
+      const adrenaError = parseTransactionError(
+        this.adrenaProgram,
+        result.value.err,
+      );
+      adrenaError.setTxHash(txHash);
+      throw adrenaError;
     }
 
     return txHash;

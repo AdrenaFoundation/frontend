@@ -187,9 +187,13 @@ export function get_tx_explorer(txHash: string): string {
 // Thrown as error when a transaction fails
 export class AdrenaTransactionError {
   constructor(
-    public readonly txHash: string | null,
+    public txHash: string | null,
     public readonly errorString: string,
   ) {}
+
+  public setTxHash(txHash: string): void {
+    this.txHash = txHash;
+  }
 }
 
 export function parseTransactionError(
