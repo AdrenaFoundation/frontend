@@ -20,9 +20,9 @@ import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import {
+  addFailedTxNotification,
   addNotification,
-  addNotificationWithTxHash,
-  TransactionErrorTxHash,
+  addSuccessTxNotification,
   uiToNative,
 } from '@/utils';
 
@@ -31,7 +31,7 @@ type Action = 'long' | 'short' | 'swap';
 export default function Trade() {
   const connection = useConnection();
   const client = useAdrenaClient();
-  const positions = usePositions(client);
+  const { positions, triggerPositionsReload } = usePositions(client);
   const dispatch = useDispatch();
 
   useListenToPythTokenPricesChange(client, connection);
@@ -128,16 +128,14 @@ export default function Trade() {
           mintB: tokenB.mint,
         });
 
-        return addNotificationWithTxHash({
-          type: 'success',
+        return addSuccessTxNotification({
           title: 'Successfull Swap',
           txHash,
         });
-      } catch (e: unknown | TransactionErrorTxHash) {
-        return addNotificationWithTxHash({
-          type: 'danger',
+      } catch (error) {
+        return addFailedTxNotification({
           title: 'Error Swapping',
-          txHash: e instanceof TransactionErrorTxHash ? e.txHash : null,
+          error,
         });
       }
     }
@@ -172,18 +170,14 @@ export default function Trade() {
         side: selectedAction,
       });
 
-      return addNotificationWithTxHash({
-        type: 'success',
+      return addSuccessTxNotification({
         title: 'Successfully Opened Position',
         txHash,
       });
-    } catch (e: unknown | TransactionErrorTxHash) {
-      console.log('ERROR', e);
-
-      return addNotificationWithTxHash({
-        type: 'danger',
+    } catch (error) {
+      return addFailedTxNotification({
         title: 'Error Opening Position',
-        txHash: e instanceof TransactionErrorTxHash ? e.txHash : null,
+        error,
       });
     }
   };
@@ -290,7 +284,11 @@ export default function Trade() {
             <>
               <div className="mb-4">Positions ({positions.length})</div>
 
-              <Positions positions={positions} />
+              <Positions
+                positions={positions}
+                client={client}
+                triggerPositionsReload={triggerPositionsReload}
+              />
             </>
           ) : null}
         </>

@@ -11,7 +11,7 @@ import {
 import { Perpetuals } from '@/target/perpetuals';
 import PerpetualsJson from '@/target/perpetuals.json';
 
-import { PRICE_DECIMALS, TOKEN_INFO_LIBRARY } from './constant';
+import { PRICE_DECIMALS, TOKEN_INFO_LIBRARY, USD_DECIMALS } from './constant';
 import {
   Custody,
   CustodyExtended,
@@ -23,9 +23,10 @@ import {
   Token,
 } from './types';
 import {
+  AdrenaTransactionError,
   findATAAddressSync,
   nativeToUi,
-  TransactionErrorTxHash,
+  parseTransactionError,
 } from './utils';
 
 export class AdrenaClient {
@@ -467,23 +468,119 @@ export class AdrenaClient {
 
     const receivingAccount = findATAAddressSync(position.owner, custody.mint);
 
-    return this.adrenaProgram.methods
-      .closePosition({
-        price,
-      })
-      .accounts({
-        owner: position.owner,
-        receivingAccount,
-        transferAuthority: AdrenaClient.transferAuthority,
-        perpetuals: AdrenaClient.perpetuals,
-        pool: AdrenaClient.mainPoolAddress,
-        position: position.pubkey,
-        custody: position.custody,
-        custodyOracleAccount,
-        custodyTokenAccount,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .rpc();
+    return this.signAndExecuteTx(
+      await this.adrenaProgram.methods
+        .closePosition({
+          price,
+        })
+        .accounts({
+          owner: position.owner,
+          receivingAccount,
+          transferAuthority: AdrenaClient.transferAuthority,
+          perpetuals: AdrenaClient.perpetuals,
+          pool: AdrenaClient.mainPoolAddress,
+          position: position.pubkey,
+          custody: position.custody,
+          custodyOracleAccount,
+          custodyTokenAccount,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .transaction(),
+    );
+  }
+
+  public async addCollateral({
+    position,
+    collateral,
+  }: {
+    position: PositionExtended;
+    collateral: BN;
+  }): Promise<string> {
+    if (!this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody),
+    );
+
+    if (!custody) {
+      throw new Error('Cannot find custody related to position');
+    }
+
+    const custodyOracleAccount = custody.oracle.oracleAccount;
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+      custody.mint,
+    );
+
+    const fundingAccount = findATAAddressSync(position.owner, custody.mint);
+
+    return this.signAndExecuteTx(
+      await this.adrenaProgram.methods
+        .addCollateral({
+          collateral,
+        })
+        .accounts({
+          owner: position.owner,
+          fundingAccount,
+          transferAuthority: AdrenaClient.transferAuthority,
+          perpetuals: AdrenaClient.perpetuals,
+          pool: AdrenaClient.mainPoolAddress,
+          position: position.pubkey,
+          custody: position.custody,
+          custodyOracleAccount,
+          custodyTokenAccount,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .transaction(),
+    );
+  }
+
+  public async removeCollateral({
+    position,
+    collateralUsd,
+  }: {
+    position: PositionExtended;
+    collateralUsd: BN;
+  }): Promise<string> {
+    if (!this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody),
+    );
+
+    if (!custody) {
+      throw new Error('Cannot find custody related to position');
+    }
+
+    const custodyOracleAccount = custody.oracle.oracleAccount;
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+      custody.mint,
+    );
+
+    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+
+    return this.signAndExecuteTx(
+      await this.adrenaProgram.methods
+        .removeCollateral({
+          collateralUsd,
+        })
+        .accounts({
+          owner: position.owner,
+          receivingAccount,
+          transferAuthority: AdrenaClient.transferAuthority,
+          perpetuals: AdrenaClient.perpetuals,
+          pool: AdrenaClient.mainPoolAddress,
+          position: position.pubkey,
+          custody: position.custody,
+          custodyOracleAccount,
+          custodyTokenAccount,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .transaction(),
+    );
   }
 
   /*
@@ -679,10 +776,10 @@ export class AdrenaClient {
         if (!pnl) return null;
 
         if (!pnl.loss.isZero()) {
-          return nativeToUi(pnl.loss, 6) * -1;
+          return nativeToUi(pnl.loss, USD_DECIMALS) * -1;
         }
 
-        return nativeToUi(pnl.profit, 6);
+        return nativeToUi(pnl.profit, USD_DECIMALS);
       })(),
       uiLiquidationPrice: ((): number | undefined => {
         const liquidationPrice = liquidationPrices[index];
@@ -721,19 +818,28 @@ export class AdrenaClient {
 
     transaction.feePayer = wallet.publicKey;
 
-    const signedTransaction = await wallet.signTransaction(transaction);
+    let signedTransaction: Transaction;
+
+    try {
+      signedTransaction = await wallet.signTransaction(transaction);
+    } catch (err) {
+      throw new AdrenaTransactionError(null, 'User rejected the request');
+    }
 
     // VersionnedTransaction are not handled by anchor client yet, will be released in 0.27.0
     // https://github.com/coral-xyz/anchor/blob/master/CHANGELOG.md
-    const txHash = await connection.sendRawTransaction(
-      signedTransaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      }),
-      {
-        skipPreflight: true,
-      },
-    );
+    let txHash: string;
+
+    try {
+      txHash = await connection.sendRawTransaction(
+        signedTransaction.serialize({
+          requireAllSignatures: false,
+          verifySignatures: false,
+        }),
+      );
+    } catch (err) {
+      throw parseTransactionError(this.adrenaProgram, err);
+    }
 
     console.log(`tx: https://explorer.solana.com/tx/${txHash}?cluster=devnet`);
 
@@ -741,12 +847,12 @@ export class AdrenaClient {
 
     try {
       result = await connection.confirmTransaction(txHash);
-    } catch (e) {
-      throw new TransactionErrorTxHash(txHash);
+    } catch (err) {
+      throw parseTransactionError(this.adrenaProgram, err);
     }
 
     if (result.value.err) {
-      throw new TransactionErrorTxHash(txHash);
+      throw parseTransactionError(this.adrenaProgram, result.value.err);
     }
 
     return txHash;

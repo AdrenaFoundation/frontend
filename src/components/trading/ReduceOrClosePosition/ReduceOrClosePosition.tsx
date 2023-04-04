@@ -1,15 +1,21 @@
+import { BN } from '@project-serum/anchor';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/Button/Button';
 import Checkbox from '@/components/Checkbox/Checkbox';
+import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import {
+  addFailedTxNotification,
+  addSuccessTxNotification,
   DISPLAY_NUMBER_PRECISION,
   formatNumber,
   formatPriceInfo,
   nativeToUi,
+  uiToNative,
 } from '@/utils';
 
 import TradingInput from '../TradingInput/TradingInput';
@@ -17,11 +23,15 @@ import TradingInput from '../TradingInput/TradingInput';
 export default function ReduceOrClosePosition({
   className,
   position,
+  triggerPositionsReload,
   onClose,
+  client,
 }: {
   className?: string;
   position: PositionExtended;
+  triggerPositionsReload: () => void;
   onClose: () => void;
+  client: AdrenaClient | null;
 }) {
   const [allowedIncreasedSlippage, setAllowedIncreasedSlippage] =
     useState<boolean>(false);
@@ -52,6 +62,85 @@ export default function ReduceOrClosePosition({
     return 'Close Position';
   })();
 
+  const doPartialClose = async () => {
+    if (!client || !input) return;
+
+    try {
+      const txHash = await client.removeCollateral({
+        position,
+        collateralUsd: uiToNative(input, USD_DECIMALS),
+      });
+
+      addSuccessTxNotification({
+        title: 'Successfull Position Reducing',
+        txHash,
+      });
+
+      triggerPositionsReload();
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Reducing Position',
+        error,
+      });
+    }
+  };
+
+  const doFullClose = async () => {
+    if (!client || !markPrice) return;
+
+    const price = uiToNative(markPrice, USD_DECIMALS);
+
+    const priceWithSlippage = price.add(
+      price
+        .mul(new BN(allowedIncreasedSlippage ? 1 : 0.3 * 100))
+        .div(new BN(10_000)),
+    );
+
+    // TODO: Price should be calculated correctly using getExitPriceAndFee views
+    // Price we use now do not account for fees, making position close to fail all the time due to slippage
+    // Instead, to make it work now, we use High artificial Slippage
+    const artificialSlippageToDeleteLater = priceWithSlippage
+      .mul(new BN(10_000))
+      .div(new BN(9_000));
+
+    try {
+      const txHash = await client.closePosition({
+        position,
+        // price: priceWithSlippage,
+        price: artificialSlippageToDeleteLater,
+      });
+
+      addSuccessTxNotification({
+        title: 'Successfull Position Close',
+        txHash,
+      });
+
+      triggerPositionsReload();
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Closing Position',
+        error,
+      });
+    }
+  };
+
+  const handleExecute = async () => {
+    if (!input) return;
+
+    if (input > position.uiCollateralUsd) {
+      setInput(position.uiCollateralUsd);
+      return;
+    }
+
+    if (input < position.uiCollateralUsd) {
+      await doPartialClose();
+    } else {
+      await doFullClose();
+    }
+
+    onClose();
+  };
+
   return (
     <div className={twMerge('flex', 'flex-col', 'h-full', className)}>
       <TradingInput
@@ -67,9 +156,7 @@ export default function ReduceOrClosePosition({
           </>
         }
         textTopRight={
-          <>
-            {`Max: ${formatNumber(nativeToUi(position.collateralUsd, 6), 2)}`}
-          </>
+          <>{`Max: ${formatNumber(position.uiCollateralUsd, USD_DECIMALS)}`}</>
         }
         value={input}
         maxButton={true}
@@ -84,11 +171,34 @@ export default function ReduceOrClosePosition({
         }}
         onChange={setInput}
         onMaxButtonClick={() => {
-          setInput(nativeToUi(position.collateralUsd, 6));
+          setInput(position.uiCollateralUsd);
         }}
       />
 
       <div className="flex flex-col text-sm">
+        <div className="flex w-full justify-evenly mt-4">
+          {[25, 50, 75, 100].map((percentage) => (
+            <div
+              key={percentage}
+              className="cursor-pointer text-txtfade hover:text-txtregular"
+              onClick={() => {
+                setInput(
+                  Number(
+                    formatNumber(
+                      (position.uiCollateralUsd * percentage) / 100,
+                      USD_DECIMALS,
+                    ),
+                  ),
+                );
+              }}
+            >
+              {percentage}%
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-2 h-[1px] w-full bg-grey" />
+
         <div className={`${rowStyle} mt-4`}>
           <div className="text-txtfade">Allow up to 1% slippage</div>
           <div className="flex items-center">
@@ -119,8 +229,8 @@ export default function ReduceOrClosePosition({
         <div className={rowStyle}>
           <div className="text-txtfade">Liq. Price</div>
           <div>
-            {position.liquidationPrice
-              ? formatPriceInfo(nativeToUi(position.liquidationPrice, 6))
+            {position.uiLiquidationPrice
+              ? formatPriceInfo(position.uiLiquidationPrice)
               : '-'}
           </div>
         </div>
@@ -130,18 +240,16 @@ export default function ReduceOrClosePosition({
         <div className={rowStyle}>
           <div className="text-txtfade">Size</div>
           <div className="flex">
-            {!input
-              ? formatPriceInfo(nativeToUi(position.collateralUsd, 6))
-              : null}
+            {!input ? formatPriceInfo(position.uiCollateralUsd) : null}
 
             {input ? (
               <>
-                {formatPriceInfo(nativeToUi(position.collateralUsd, 6))}
+                {formatPriceInfo(position.uiCollateralUsd)}
                 {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src="images/arrow-right.svg" alt="arrow right" />
                 }
-                {formatPriceInfo(nativeToUi(position.collateralUsd, 6) - input)}
+                {formatPriceInfo(position.uiCollateralUsd - input)}
               </>
             ) : null}
           </div>
@@ -151,24 +259,18 @@ export default function ReduceOrClosePosition({
           <div className="text-txtfade">Collateral ({position.token.name})</div>
           <div className="flex">
             {!input && markPrice
-              ? formatNumber(
-                  nativeToUi(position.collateralUsd, 6) / markPrice,
-                  6,
-                )
+              ? formatNumber(position.uiCollateralUsd / markPrice, 6)
               : null}
 
             {input && markPrice ? (
               <>
-                {formatNumber(
-                  nativeToUi(position.collateralUsd, 6) / markPrice,
-                  6,
-                )}
+                {formatNumber(position.uiCollateralUsd / markPrice, 6)}
                 {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src="images/arrow-right.svg" alt="arrow right" />
                 }
                 {formatNumber(
-                  (nativeToUi(position.collateralUsd, 6) - input) / markPrice,
+                  (position.uiCollateralUsd - input) / markPrice,
                   6,
                 )}
               </>
@@ -190,11 +292,8 @@ export default function ReduceOrClosePosition({
       <Button
         className="mt-4 bg-highlight"
         title={executeBtnText}
-        onClick={() => {
-          // TODO, execute the operation
-          // then close
-          onClose();
-        }}
+        activateLoadingIcon={true}
+        onClick={() => handleExecute()}
       />
     </div>
   );

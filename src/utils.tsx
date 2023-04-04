@@ -1,4 +1,4 @@
-import { BN } from '@project-serum/anchor';
+import { BN, Program } from '@project-serum/anchor';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
@@ -7,6 +7,8 @@ import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { Store } from 'react-notifications-component';
+
+import { Perpetuals } from '@/target/perpetuals';
 
 import { TOKEN_INFO_LIBRARY } from './constant';
 import { Custody } from './types';
@@ -113,10 +115,13 @@ export function addNotification({
   });
 }
 
-export function addNotificationWithTxHash({
+export function addSuccessTxNotification({
   txHash,
   ...params
-}: Omit<Parameters<typeof addNotification>[0], 'message' | 'duration'> & {
+}: Omit<
+  Parameters<typeof addNotification>[0],
+  'message' | 'duration' | 'type'
+> & {
   txHash: string | null;
 }) {
   const message = txHash ? (
@@ -129,6 +134,46 @@ export function addNotificationWithTxHash({
 
   addNotification({
     ...params,
+    type: 'success',
+    message,
+    duration: 'long',
+  });
+}
+
+export function addFailedTxNotification({
+  error,
+  ...params
+}: Omit<
+  Parameters<typeof addNotification>[0],
+  'message' | 'duration' | 'type'
+> & {
+  error: AdrenaTransactionError | unknown;
+}) {
+  const message = (() => {
+    if (error instanceof AdrenaTransactionError) {
+      if (error.txHash) {
+        return (
+          <Link
+            href={get_tx_explorer(error.txHash)}
+            target="_blank"
+            className="underline"
+          >
+            View transaction
+          </Link>
+        );
+      }
+
+      return String(error.errorString);
+    }
+
+    return typeof error === 'object'
+      ? JSON.stringify(error, null, 2)
+      : String(error);
+  })();
+
+  addNotification({
+    ...params,
+    type: 'danger',
     message,
     duration: 'long',
   });
@@ -140,6 +185,34 @@ export function get_tx_explorer(txHash: string): string {
 }
 
 // Thrown as error when a transaction fails
-export class TransactionErrorTxHash {
-  constructor(public readonly txHash: string) {}
+export class AdrenaTransactionError {
+  constructor(
+    public readonly txHash: string | null,
+    public readonly errorString: string,
+  ) {}
+}
+
+export function parseTransactionError(
+  adrenaProgram: Program<Perpetuals>,
+  err: unknown,
+) {
+  // Check for Adrena Program Errors
+  //
+  const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
+
+  if (match) {
+    const errorCode = parseInt(match[1], 16);
+
+    const idlError = adrenaProgram.idl.errors.find(
+      ({ code }) => code === errorCode,
+    );
+
+    // Transaction failed in preflight, there is no TxHash
+    return new AdrenaTransactionError(
+      null,
+      idlError?.msg ?? `Error code: ${errorCode}`,
+    );
+  }
+
+  return new AdrenaTransactionError(null, JSON.stringify(err, null, 2));
 }

@@ -61,6 +61,11 @@ input[type='number'] {
   border-left: 8px solid #197e67 !important;
 }
 
+.rnc__notification-close-mark {
+  background-color: transparent !important;
+  border: 0 !important;
+}
+
 .rnc__notification-close-mark::after {
   font-size: 2em !important;
 }
