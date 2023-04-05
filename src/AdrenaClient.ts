@@ -656,7 +656,7 @@ export class AdrenaClient {
   public async getPnL({
     position,
   }: {
-    position: PositionExtended;
+    position: Pick<PositionExtended, 'custody' | 'pubkey'>;
   }): Promise<ProfitAndLoss | null> {
     if (!this.readonlyAdrenaProgram.views) {
       return null;
@@ -689,7 +689,7 @@ export class AdrenaClient {
     addCollateral,
     removeCollateral,
   }: {
-    position: PositionExtended;
+    position: Pick<PositionExtended, 'custody' | 'pubkey'>;
     addCollateral: BN;
     removeCollateral: BN;
   }): Promise<BN | null> {
@@ -740,7 +740,11 @@ export class AdrenaClient {
 
     // Create extended positions
     const positionsExtended = positions.reduce(
-      (acc: PositionExtended[], position: Position | null, index: number) => {
+      (
+        acc: Omit<PositionExtended, 'leverage'>[],
+        position: Position | null,
+        index: number,
+      ) => {
         if (!position) {
           return acc;
         }
@@ -754,17 +758,12 @@ export class AdrenaClient {
           return acc;
         }
 
-        const leverage =
-          nativeToUi(position.sizeUsd, 6) /
-          nativeToUi(position.collateralUsd, 6);
-
         return [
           ...acc,
           {
             ...position,
             pubkey: possiblePositionAddresses[index],
             token,
-            leverage,
             side: Object.keys(position.side)[0] as 'long' | 'short',
             uiSizeUsd: nativeToUi(position.sizeUsd, 6),
             uiCollateralUsd: nativeToUi(position.collateralUsd, 6),
@@ -798,11 +797,9 @@ export class AdrenaClient {
     ]);
 
     // Insert them in positions extended
-    return positionsExtended.map((positionExtended, index) => ({
-      ...positionExtended,
-      liquidationPrice: liquidationPrices[index],
-      pnl: pnls[index],
-      uiPnl: (() => {
+    return positionsExtended.map((positionExtended, index) => {
+      const pnl = pnls[index];
+      const uiPnl = (() => {
         const pnl = pnls[index];
 
         if (!pnl) return null;
@@ -812,15 +809,27 @@ export class AdrenaClient {
         }
 
         return nativeToUi(pnl.profit, USD_DECIMALS);
-      })(),
-      uiLiquidationPrice: ((): number | undefined => {
-        const liquidationPrice = liquidationPrices[index];
+      })();
 
-        if (!liquidationPrice) return undefined;
+      const leverage =
+        nativeToUi(positionExtended.sizeUsd, USD_DECIMALS) /
+        (positionExtended.uiCollateralUsd + (uiPnl ?? 0));
 
-        return nativeToUi(liquidationPrice, PRICE_DECIMALS);
-      })(),
-    }));
+      return {
+        ...positionExtended,
+        liquidationPrice: liquidationPrices[index],
+        pnl,
+        leverage,
+        uiPnl,
+        uiLiquidationPrice: ((): number | undefined => {
+          const liquidationPrice = liquidationPrices[index];
+
+          if (!liquidationPrice) return undefined;
+
+          return nativeToUi(liquidationPrice, PRICE_DECIMALS);
+        })(),
+      };
+    });
   }
 
   /*
@@ -870,9 +879,9 @@ export class AdrenaClient {
         }),
         // Uncomment to force the transaction to be send
         // And get a transaction to analyze
-        /*{
+        {
           skipPreflight: true,
-        },*/
+        },
       );
     } catch (err) {
       throw parseTransactionError(this.adrenaProgram, err);

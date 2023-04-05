@@ -69,7 +69,7 @@ export default function PositionsArray({
             >
               <div>{position.token.name}</div>
 
-              <div className="flex">
+              <div className="flex text-sm">
                 <div>{formatNumber(position.leverage, 2)}x</div>
                 <div
                   className={twMerge(

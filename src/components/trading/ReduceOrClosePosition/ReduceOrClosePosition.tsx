@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/Button/Button';
 import Checkbox from '@/components/Checkbox/Checkbox';
-import { USD_DECIMALS } from '@/constant';
+import { BPS, USD_DECIMALS } from '@/constant';
 import useGetPositionExitPriceAndFee from '@/hooks/useGetPositionExitPriceAndFee';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -43,20 +43,47 @@ export default function ReduceOrClosePosition({
 
   const markPrice: number | null = tokenPrices[position.token.name];
 
-  const entryPrice: number =
-    nativeToUi(position.collateralUsd, 6) /
-    nativeToUi(position.collateralAmount, position.token.decimals);
+  const entryPrice: number | null = priceAndFee
+    ? nativeToUi(priceAndFee.price, 6)
+    : null;
 
   const rowStyle = 'w-full flex justify-between mt-2';
 
-  const pnl = position.pnl
-    ? !position.pnl.profit.isZero()
-      ? nativeToUi(position.pnl.profit, 6)
-      : nativeToUi(position.pnl.loss, 6) * -1
-    : null;
+  const updatedLeverage: number | null = (() => {
+    if (!input) return null;
+
+    // PnL is taken into account when calculating new position leverage
+    const newPositionUsd =
+      position.uiCollateralUsd - input + (position.uiPnl ?? 0);
+
+    if (newPositionUsd <= 0) {
+      return newPositionUsd;
+    }
+
+    return position.uiSizeUsd / newPositionUsd;
+  })();
+
+  const maxAuthorizedLeverage: number | null = (() => {
+    const maxLeverageBN = client?.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody),
+    )?.pricing.maxLeverage;
+
+    if (!maxLeverageBN) return null;
+
+    return maxLeverageBN.toNumber() / BPS;
+  })();
+
+  const overMaxAuthorizedLeverage: boolean | null =
+    maxAuthorizedLeverage === null || updatedLeverage === null
+      ? null
+      : updatedLeverage < 0 || updatedLeverage > maxAuthorizedLeverage;
 
   const executeBtnText = (() => {
     if (!input) return 'Enter an amount';
+
+    if (overMaxAuthorizedLeverage) {
+      return 'Leverage over limit';
+    }
 
     if (input < nativeToUi(position.collateralUsd, 6)) {
       return 'Reduce Position';
@@ -258,6 +285,36 @@ export default function ReduceOrClosePosition({
         </div>
 
         <div className={rowStyle}>
+          <div className="text-txtfade">Leverage</div>
+          <div className="flex">
+            {updatedLeverage !== 0 ? (
+              <div>{formatNumber(position.leverage, 2)}x</div>
+            ) : (
+              '-'
+            )}
+            {input && updatedLeverage ? (
+              <>
+                {
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="images/arrow-right.svg" alt="arrow right" />
+                }
+                <div
+                  className={twMerge(
+                    overMaxAuthorizedLeverage && 'text-red-400',
+                  )}
+                >
+                  {updatedLeverage > 0 ? (
+                    `${formatNumber(updatedLeverage, 2)}x`
+                  ) : (
+                    <span>OVER LIMIT</span>
+                  )}
+                </div>
+              </>
+            ) : null}
+          </div>
+        </div>
+
+        <div className={rowStyle}>
           <div className="text-txtfade">Collateral ({position.token.name})</div>
           <div className="flex">
             {!input && markPrice
@@ -282,7 +339,11 @@ export default function ReduceOrClosePosition({
 
         <div className={rowStyle}>
           <div className="text-txtfade">PnL</div>
-          <div>{pnl && markPrice ? formatPriceInfo(pnl, true) : null}</div>
+          <div>
+            {position.uiPnl && markPrice
+              ? formatPriceInfo(position.uiPnl, true)
+              : null}
+          </div>
         </div>
 
         <div className={rowStyle}>
@@ -300,6 +361,7 @@ export default function ReduceOrClosePosition({
         title={executeBtnText}
         activateLoadingIcon={true}
         onClick={() => handleExecute()}
+        disabled={!!overMaxAuthorizedLeverage}
       />
     </div>
   );
