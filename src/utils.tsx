@@ -67,12 +67,12 @@ export function formatPriceInfo(price: number, displayPlusSymbol = false) {
   return `$${formatNumber(price, 2, displayPlusSymbol)}`;
 }
 
-export function formatPercentage(nb: number | null): string {
+export function formatPercentage(nb: number | null, precision = 2): string {
   if (nb === null) {
     return '-';
   }
 
-  return `${Number(nb / 100).toFixed(2)}%`;
+  return `${Number(nb).toFixed(precision)}%`;
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {

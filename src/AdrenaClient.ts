@@ -17,6 +17,7 @@ import {
   CustodyExtended,
   NewPositionPricesAndFee,
   Pool,
+  PoolExtended,
   Position,
   PositionExtended,
   PriceAndFee,
@@ -74,7 +75,7 @@ export class AdrenaClient {
   constructor(
     // Adrena Program with readonly provider
     protected readonlyAdrenaProgram: Program<Perpetuals>,
-    public mainPool: Pool,
+    public mainPool: PoolExtended,
     public custodies: CustodyExtended[],
     public tokens: Token[],
   ) {}
@@ -120,7 +121,46 @@ export class AdrenaClient {
       })
       .filter((token) => !!token) as Token[];
 
-    return new AdrenaClient(readonlyAdrenaProgram, mainPool, custodies, tokens);
+    const mainPoolExtended: PoolExtended = {
+      ...mainPool,
+      uiAumUsd: nativeToUi(mainPool.aumUsd, USD_DECIMALS),
+      uiTotalFeeCollected: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          Object.values(custody.collectedFees).reduce(
+            (total, custodyFee) => total + nativeToUi(custodyFee, USD_DECIMALS),
+            0,
+          ),
+        0,
+      ),
+      uiLongPositions: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          Object.values(custody.longPositions).reduce(
+            (total, longPosition) =>
+              total + nativeToUi(longPosition, USD_DECIMALS),
+            0,
+          ),
+        0,
+      ),
+      uiShortPositions: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          Object.values(custody.shortPositions).reduce(
+            (total, shortPosition) =>
+              total + nativeToUi(shortPosition, USD_DECIMALS),
+            0,
+          ),
+        0,
+      ),
+    };
+
+    return new AdrenaClient(
+      readonlyAdrenaProgram,
+      mainPoolExtended,
+      custodies,
+      tokens,
+    );
   }
 
   /*

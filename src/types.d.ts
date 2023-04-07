@@ -26,6 +26,13 @@ export type PositionExtended = Exclude<Position, 'side'> & {
   uiCollateralAmount: number;
 };
 
+export type PoolExtended = Pool & {
+  uiTotalFeeCollected: number;
+  uiLongPositions: number;
+  uiShortPositions: number;
+  uiAumUsd: number;
+};
+
 // Alias to improve readability
 export type TokenName = string;
 

@@ -1,14 +1,15 @@
-import { BN } from '@project-serum/anchor';
-
-import { USD_DECIMALS } from '@/constant';
-import { formatPriceInfo, nativeToUi } from '@/utils';
+import { formatPriceInfo } from '@/utils';
 
 export default function Overview({
   className,
-  aum,
+  uiAumUsd,
+  uiLongPositions,
+  uiShortPositions,
 }: {
   className?: string;
-  aum: BN | null;
+  uiAumUsd: number | null;
+  uiLongPositions: number | null;
+  uiShortPositions: number | null;
 }) {
   return (
     <div
@@ -20,8 +21,22 @@ export default function Overview({
       <div className="p-4 text-sm flex flex-col w-full">
         <div className="flex w-full justify-between">
           <div className="text-txtfade">AUM</div>
+          <div>{uiAumUsd != null ? formatPriceInfo(uiAumUsd) : '-'}</div>
+        </div>
+
+        <div className="flex w-full justify-between">
+          <div className="text-txtfade">Long Positions</div>
           <div>
-            {aum ? formatPriceInfo(nativeToUi(aum, USD_DECIMALS)) : '-'}
+            {uiLongPositions !== null ? formatPriceInfo(uiLongPositions) : '-'}
+          </div>
+        </div>
+
+        <div className="flex w-full justify-between">
+          <div className="text-txtfade">Short Positions</div>
+          <div>
+            {uiShortPositions !== null
+              ? formatPriceInfo(uiShortPositions)
+              : '-'}
           </div>
         </div>
       </div>

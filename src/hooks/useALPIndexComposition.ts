@@ -1,3 +1,4 @@
+import { BN } from '@project-serum/anchor';
 import { useCallback, useEffect, useState } from 'react';
 
 import { AdrenaClient } from '@/AdrenaClient';
@@ -8,7 +9,7 @@ import { nativeToUi } from '@/utils';
 export type TokenInfo = {
   token: Token;
   price: number | null;
-  poolUsdValue: number | null;
+  custodyUsdValue: number | null;
   currentRatio: number | null;
   targetRatio: number | null;
   utilization: number | null;
@@ -35,29 +36,33 @@ const useALPIndexComposition = (
         custody.pubkey.equals(token.custody),
       );
 
-      const poolUsdValue =
+      const custodyUsdValue =
         custody && price
           ? nativeToUi(custody.assets.owned, token.decimals) * price
           : null;
 
-      const currentRatio = poolUsdValue
-        ? (poolUsdValue * 10_000) / nativeToUi(client.mainPool.aumUsd, 6)
-        : null;
+      const currentRatio =
+        custodyUsdValue !== null
+          ? (custodyUsdValue * 100) / client.mainPool.uiAumUsd
+          : null;
 
       const utilization = (() => {
         if (!custody) return null;
 
         if (custody.assets.locked.isZero()) return 0;
 
-        return custody.assets.owned.div(custody.assets.locked).toNumber();
+        return (
+          (nativeToUi(custody.assets.locked, custody.decimals) * 100) /
+          nativeToUi(custody.assets.owned, custody.decimals)
+        );
       })();
 
       return {
         token,
         price,
-        poolUsdValue,
+        custodyUsdValue,
         currentRatio,
-        targetRatio: custody?.targetRatio ?? null,
+        targetRatio: custody ? custody.targetRatio / 100 : null,
         utilization,
       };
     });

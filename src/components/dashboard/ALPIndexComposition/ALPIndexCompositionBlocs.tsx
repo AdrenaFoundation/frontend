@@ -42,8 +42,8 @@ export default function ALPIndexCompositionBlocs({
             <div className="flex w-full justify-between">
               <div>Pool</div>
               <div className="flex">
-                {composition.poolUsdValue
-                  ? formatPriceInfo(composition.poolUsdValue)
+                {composition.custodyUsdValue
+                  ? formatPriceInfo(composition.custodyUsdValue)
                   : '-'}
               </div>
             </div>
@@ -60,7 +60,7 @@ export default function ALPIndexCompositionBlocs({
             <div className="flex w-full justify-between">
               <div>Utilization</div>
               <div className="flex justify-end">
-                {formatPercentage(composition.utilization)}
+                {formatPercentage(composition.utilization, 4)}
               </div>
             </div>
           </div>

@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { AdrenaClient } from '@/AdrenaClient';
-import { CustodyExtended, Pool } from '@/types';
+import { CustodyExtended, PoolExtended } from '@/types';
 
 // TODO: needs to refresh periodically to access new informations
 const useCustodies = (
   client: AdrenaClient | null,
-  mainPool: Pool | null,
+  mainPool: PoolExtended | null,
 ): CustodyExtended[] | null => {
   const [custodies, setCustodies] = useState<CustodyExtended[] | null>(null);
 

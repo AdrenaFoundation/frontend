@@ -62,8 +62,8 @@ export default function ALPIndexCompositionArray({
                 </div>
 
                 <div className="flex items-center w-40 shrink-0 grow">
-                  {composition.poolUsdValue
-                    ? formatPriceInfo(composition.poolUsdValue)
+                  {composition.custodyUsdValue
+                    ? formatPriceInfo(composition.custodyUsdValue)
                     : '-'}
                 </div>
 
@@ -74,7 +74,7 @@ export default function ALPIndexCompositionArray({
                 </div>
 
                 <div className="flex items-center w-40 shrink-0 grow justify-end">
-                  {formatPercentage(composition.utilization)}
+                  {formatPercentage(composition.utilization, 4)}
                 </div>
               </div>
             ))}
