@@ -11,6 +11,8 @@ export type TokenInfo = {
   custodyUsdValue: number | null;
   currentRatio: number | null;
   targetRatio: number | null;
+  minRatio: number | null;
+  maxRatio: number | null;
   utilization: number | null;
 };
 
@@ -62,6 +64,8 @@ const useALPIndexComposition = (
         custodyUsdValue,
         currentRatio,
         targetRatio: custody ? custody.targetRatio / 100 : null,
+        minRatio: custody ? custody.minRatio / 100 : null,
+        maxRatio: custody ? custody.maxRatio / 100 : null,
         utilization,
       };
     });

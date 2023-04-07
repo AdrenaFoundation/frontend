@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import { twMerge } from 'tailwind-merge';
 
 import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
@@ -50,11 +51,38 @@ export default function ALPIndexCompositionBlocs({
 
             <div className="flex w-full justify-between">
               <div>Weight</div>
-              <div className="flex">
-                <span>{formatPercentage(composition.currentRatio)}</span>
-                <span className="ml-1 mr-1">/</span>
-                <span>{formatPercentage(composition.targetRatio)}</span>
-              </div>
+
+              <Tippy
+                content={
+                  <div className="text-sm w-60 flex flex-col justify-around">
+                    <div className="flex w-full justify-between">
+                      <div className="text-txtfade">Current Weight:</div>
+                      <div>{formatPercentage(composition.currentRatio)}</div>
+                    </div>
+                    <div className="flex w-full justify-between">
+                      <div className="text-txtfade">Target Weight:</div>
+                      <div>{formatPercentage(composition.targetRatio)}</div>
+                    </div>
+                    <div className="flex w-full justify-between">
+                      <div className="text-txtfade">Minimum Weight:</div>
+                      <div>{formatPercentage(composition.minRatio)}</div>
+                    </div>
+                    <div className="flex w-full justify-between">
+                      <div className="text-txtfade">Maximum Weight:</div>
+                      <div>{formatPercentage(composition.maxRatio)}</div>
+                    </div>
+                  </div>
+                }
+                placement="bottom"
+              >
+                <div className="flex">
+                  <div className="flex tooltip-target">
+                    <span>{formatPercentage(composition.currentRatio)}</span>
+                    <span className="ml-1 mr-1">/</span>
+                    <span>{formatPercentage(composition.targetRatio)}</span>
+                  </div>
+                </div>
+              </Tippy>
             </div>
 
             <div className="flex w-full justify-between">

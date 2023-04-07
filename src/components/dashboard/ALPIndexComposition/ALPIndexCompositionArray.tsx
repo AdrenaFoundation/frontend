@@ -79,6 +79,14 @@ export default function ALPIndexCompositionArray({
                         <div className="text-txtfade">Target Weight:</div>
                         <div>{formatPercentage(composition.targetRatio)}</div>
                       </div>
+                      <div className="flex w-full justify-between">
+                        <div className="text-txtfade">Minimum Weight:</div>
+                        <div>{formatPercentage(composition.minRatio)}</div>
+                      </div>
+                      <div className="flex w-full justify-between">
+                        <div className="text-txtfade">Maximum Weight:</div>
+                        <div>{formatPercentage(composition.maxRatio)}</div>
+                      </div>
                     </div>
                   }
                   placement="bottom"

@@ -35,14 +35,14 @@ export default function Trade() {
 
       <div className="flex justify-evenly">
         <Overview
-          className="mt-4 mb-4"
+          className="m-4"
           uiAumUsd={mainPool?.uiAumUsd ?? null}
           uiLongPositions={mainPool?.uiLongPositions ?? null}
           uiShortPositions={mainPool?.uiShortPositions ?? null}
         />
 
         <Stats
-          className="mt-4 mb-4"
+          className="m-4"
           totalCollectedFees={mainPool?.uiTotalFeeCollected ?? null}
           totalVolume={mainPool?.uiTotalVolume ?? null}
         />
