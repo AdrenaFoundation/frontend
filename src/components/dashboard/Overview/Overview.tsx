@@ -1,5 +1,6 @@
 import { BN } from '@project-serum/anchor';
 
+import { USD_DECIMALS } from '@/constant';
 import { formatPriceInfo, nativeToUi } from '@/utils';
 
 export default function Overview({
@@ -19,7 +20,9 @@ export default function Overview({
       <div className="p-4 text-sm flex flex-col w-full">
         <div className="flex w-full justify-between">
           <div className="text-txtfade">AUM</div>
-          <div>{aum ? formatPriceInfo(nativeToUi(aum, 6)) : '-'}</div>
+          <div>
+            {aum ? formatPriceInfo(nativeToUi(aum, USD_DECIMALS)) : '-'}
+          </div>
         </div>
       </div>
     </div>

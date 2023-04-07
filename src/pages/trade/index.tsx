@@ -118,7 +118,7 @@ export default function Trade() {
       try {
         const txHash = await client.swap({
           owner: new PublicKey(wallet.walletAddress),
-          amountIn: uiToNative(inputAValue, 6),
+          amountIn: uiToNative(inputAValue, tokenA.decimals),
 
           // TODO
           // How to handle slippage?
@@ -156,6 +156,36 @@ export default function Trade() {
       });
     }
 
+    // Position is already opened, add collateral to it
+    if (openedPosition) {
+      try {
+        const txHash = await client.swapAndAddCollateralToPosition({
+          position: openedPosition,
+          mintIn: tokenA.mint,
+          amountIn: uiToNative(inputAValue, tokenA.decimals),
+          // TODO
+          // How to handle slippage?
+          // the inputBValue should take fees into account, for now it doesn't.
+          minAmountOut: new BN(0),
+          addedCollateral: uiToNative(inputBValue, tokenB.decimals).div(
+            new BN(leverage),
+          ),
+        });
+
+        triggerPositionsReload();
+
+        return addSuccessTxNotification({
+          title: 'Successfully Increase Position',
+          txHash,
+        });
+      } catch (error) {
+        return addFailedTxNotification({
+          title: 'Error Increasing Position',
+          error,
+        });
+      }
+    }
+
     try {
       const txHash = await client.openPositionWithSwap({
         owner: new PublicKey(wallet.walletAddress),
@@ -169,6 +199,8 @@ export default function Trade() {
         size: uiToNative(inputBValue, tokenB.decimals),
         side: selectedAction,
       });
+
+      triggerPositionsReload();
 
       return addSuccessTxNotification({
         title: 'Successfully Opened Position',
@@ -209,7 +241,20 @@ export default function Trade() {
       return `Insufficient ${tokenA.name} balance`;
     }
 
-    return 'Execute';
+    if (openedPosition) {
+      if (selectedAction === 'short') {
+        return 'Reduce Position';
+      }
+      if (selectedAction === 'long') {
+        return 'Increase Position';
+      }
+    }
+
+    if (selectedAction === 'swap') {
+      return 'Swap';
+    }
+
+    return 'Open Position';
   })();
 
   return (

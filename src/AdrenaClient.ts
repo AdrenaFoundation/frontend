@@ -383,6 +383,53 @@ export class AdrenaClient {
     );
   }
 
+  public async closePosition({
+    position,
+    price,
+  }: {
+    position: PositionExtended;
+    price: BN;
+  }): Promise<string> {
+    if (!this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody),
+    );
+
+    if (!custody) {
+      throw new Error('Cannot find custody related to position');
+    }
+
+    const custodyOracleAccount = custody.oracle.oracleAccount;
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+      custody.mint,
+    );
+
+    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+
+    return this.signAndExecuteTx(
+      await this.adrenaProgram.methods
+        .closePosition({
+          price,
+        })
+        .accounts({
+          owner: position.owner,
+          receivingAccount,
+          transferAuthority: AdrenaClient.transferAuthority,
+          perpetuals: AdrenaClient.perpetuals,
+          pool: AdrenaClient.mainPoolAddress,
+          position: position.pubkey,
+          custody: position.custody,
+          custodyOracleAccount,
+          custodyTokenAccount,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .transaction(),
+    );
+  }
+
   // If tokenA is different than tokenB
   // Needs to swap tokenA for tokenB first
   // before opening position with tokenB
@@ -443,60 +490,46 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
-  public async closePosition({
+  public async swapAndAddCollateralToPosition({
     position,
-    price,
+    mintIn,
+    amountIn,
+    minAmountOut,
+    addedCollateral,
   }: {
     position: PositionExtended;
-    price: BN;
+    mintIn: PublicKey;
+    amountIn: BN;
+    minAmountOut: BN;
+    addedCollateral: BN;
   }): Promise<string> {
-    if (!this.adrenaProgram) {
-      throw new Error('adrena program not ready');
-    }
+    const [swapTx, addCollateralTx] = await Promise.all([
+      this.buildSwapTx({
+        owner: position.owner,
+        amountIn,
+        minAmountOut,
+        mintA: mintIn,
+        mintB: position.token.mint,
+      }).instruction(),
+      this.buildAddCollateralTx({
+        position,
+        collateral: addedCollateral,
+      }).instruction(),
+    ]);
 
-    const custody = this.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody),
-    );
+    const transaction = new Transaction();
+    transaction.add(swapTx, addCollateralTx);
 
-    if (!custody) {
-      throw new Error('Cannot find custody related to position');
-    }
-
-    const custodyOracleAccount = custody.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
-
-    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
-
-    return this.signAndExecuteTx(
-      await this.adrenaProgram.methods
-        .closePosition({
-          price,
-        })
-        .accounts({
-          owner: position.owner,
-          receivingAccount,
-          transferAuthority: AdrenaClient.transferAuthority,
-          perpetuals: AdrenaClient.perpetuals,
-          pool: AdrenaClient.mainPoolAddress,
-          position: position.pubkey,
-          custody: position.custody,
-          custodyOracleAccount,
-          custodyTokenAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        })
-        .transaction(),
-    );
+    return this.signAndExecuteTx(transaction);
   }
 
-  public async addCollateral({
+  public buildAddCollateralTx({
     position,
     collateral,
   }: {
     position: PositionExtended;
     collateral: BN;
-  }): Promise<string> {
+  }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
@@ -516,25 +549,22 @@ export class AdrenaClient {
 
     const fundingAccount = findATAAddressSync(position.owner, custody.mint);
 
-    return this.signAndExecuteTx(
-      await this.adrenaProgram.methods
-        .addCollateral({
-          collateral,
-        })
-        .accounts({
-          owner: position.owner,
-          fundingAccount,
-          transferAuthority: AdrenaClient.transferAuthority,
-          perpetuals: AdrenaClient.perpetuals,
-          pool: AdrenaClient.mainPoolAddress,
-          position: position.pubkey,
-          custody: position.custody,
-          custodyOracleAccount,
-          custodyTokenAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        })
-        .transaction(),
-    );
+    return this.adrenaProgram.methods
+      .addCollateral({
+        collateral,
+      })
+      .accounts({
+        owner: position.owner,
+        fundingAccount,
+        transferAuthority: AdrenaClient.transferAuthority,
+        perpetuals: AdrenaClient.perpetuals,
+        pool: AdrenaClient.mainPoolAddress,
+        position: position.pubkey,
+        custody: position.custody,
+        custodyOracleAccount,
+        custodyTokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      });
   }
 
   public async removeCollateral({
