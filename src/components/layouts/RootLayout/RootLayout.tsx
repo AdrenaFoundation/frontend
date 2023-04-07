@@ -1,10 +1,8 @@
 import 'react-notifications-component/dist/theme.css';
-import 'react-tooltip/dist/react-tooltip.css';
 
 import Head from 'next/head';
 import { ReactNode } from 'react';
 import { ReactNotifications } from 'react-notifications-component';
-import { Tooltip } from 'react-tooltip';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
@@ -29,8 +27,6 @@ const RootLayout = ({ children }: { children: ReactNode }) => (
     <div className="absolute top-0 right-0 overflow-hidden w-full">
       <div id="modal-container"></div>
     </div>
-
-    <Tooltip id="tooltip-id" />
   </>
 );
 
