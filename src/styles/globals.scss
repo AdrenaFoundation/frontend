@@ -25,6 +25,12 @@
   }
 }
 
+@layer utilities {
+  .tooltip-target {
+    @apply border-b border-dashed border-[#8C8D97];
+  }
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

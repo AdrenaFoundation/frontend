@@ -75,7 +75,7 @@ export default function ALPIndexCompositionArray({
                         <div className="text-txtfade">Current Weight:</div>
                         <div>{formatPercentage(composition.currentRatio)}</div>
                       </div>
-                      <div className="flex w-full justify-around">
+                      <div className="flex w-full justify-between">
                         <div className="text-txtfade">Target Weight:</div>
                         <div>{formatPercentage(composition.targetRatio)}</div>
                       </div>
@@ -84,9 +84,11 @@ export default function ALPIndexCompositionArray({
                   placement="bottom"
                 >
                   <div className="flex items-center w-40 shrink-0 grow">
-                    <span>{formatPercentage(composition.currentRatio)}</span>
-                    <span className="ml-1 mr-1">/</span>
-                    <span>{formatPercentage(composition.targetRatio)}</span>
+                    <div className="flex tooltip-target">
+                      <span>{formatPercentage(composition.currentRatio)}</span>
+                      <span className="ml-1 mr-1">/</span>
+                      <span>{formatPercentage(composition.targetRatio)}</span>
+                    </div>
                   </div>
                 </Tippy>
 
