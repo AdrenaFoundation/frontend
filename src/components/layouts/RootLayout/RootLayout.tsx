@@ -1,4 +1,5 @@
 import 'react-notifications-component/dist/theme.css';
+import 'tippy.js/dist/tippy.css';
 
 import Head from 'next/head';
 import { ReactNode } from 'react';

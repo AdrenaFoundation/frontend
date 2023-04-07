@@ -16,6 +16,7 @@
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-wallets": "^0.19.15",
     "@solana/web3.js": "^1.73.3",
+    "@tippyjs/react": "^4.2.6",
     "@types/bn.js": "^5.1.1",
     "@types/node": "18.15.3",
     "@types/rc-slider": "^9.3.1",

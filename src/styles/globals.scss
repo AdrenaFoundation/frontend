@@ -69,3 +69,24 @@ input[type='number'] {
 .rnc__notification-close-mark::after {
   font-size: 2em !important;
 }
+
+// Tooltips
+
+.tippy-box {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  background-color: black !important;
+}
+
+.tippy-arrow {
+  color: black !important;
+}
+
+.tippy-content {
+  padding: 0 !important;
+
+  div:first {
+    display: flex;
+  }
+}
