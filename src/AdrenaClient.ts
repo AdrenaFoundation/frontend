@@ -153,6 +153,15 @@ export class AdrenaClient {
           ),
         0,
       ),
+      uiTotalVolume: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          Object.values(custody.volumeStats).reduce(
+            (total, volume) => total + nativeToUi(volume, USD_DECIMALS),
+            0,
+          ),
+        0,
+      ),
     };
 
     return new AdrenaClient(

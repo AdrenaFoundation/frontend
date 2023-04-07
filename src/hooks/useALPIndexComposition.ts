@@ -1,4 +1,3 @@
-import { BN } from '@project-serum/anchor';
 import { useCallback, useEffect, useState } from 'react';
 
 import { AdrenaClient } from '@/AdrenaClient';

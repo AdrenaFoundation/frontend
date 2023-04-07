@@ -44,6 +44,7 @@ export default function Trade() {
         <Stats
           className="mt-4 mb-4"
           totalCollectedFees={mainPool?.uiTotalFeeCollected ?? null}
+          totalVolume={mainPool?.uiTotalVolume ?? null}
         />
       </div>
 

@@ -30,6 +30,10 @@ export default function TabSelect<T extends string>({
             'grow',
             title !== selected ? 'hover:bg-highlight' : '',
             title === selected ? 'opacity-100' : 'opacity-50',
+            'first:rounded-tl',
+            'first:rounded-bl',
+            'last:rounded-tr',
+            'last:rounded-br',
           )}
           onClick={() => onClick(title, index)}
         >

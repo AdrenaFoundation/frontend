@@ -3,9 +3,11 @@ import { formatPriceInfo } from '@/utils';
 export default function Stats({
   className,
   totalCollectedFees,
+  totalVolume,
 }: {
   className?: string;
   totalCollectedFees: number | null;
+  totalVolume: number | null;
 }) {
   return (
     <div
@@ -20,6 +22,10 @@ export default function Stats({
           <div>
             {totalCollectedFees ? formatPriceInfo(totalCollectedFees) : '-'}
           </div>
+        </div>
+        <div className="flex w-full justify-between">
+          <div className="text-txtfade">Total Volume</div>
+          <div>{totalVolume ? formatPriceInfo(totalVolume) : '-'}</div>
         </div>
       </div>
     </div>
