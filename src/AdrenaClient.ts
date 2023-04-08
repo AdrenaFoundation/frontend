@@ -134,23 +134,13 @@ export class AdrenaClient {
         0,
       ),
       uiLongPositions: custodies.reduce(
-        (tmp, custody) =>
-          tmp +
-          Object.values(custody.longPositions).reduce(
-            (total, longPosition) =>
-              total + nativeToUi(longPosition, USD_DECIMALS),
-            0,
-          ),
+        (total, custody) =>
+          total + nativeToUi(custody.longPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
       uiShortPositions: custodies.reduce(
-        (tmp, custody) =>
-          tmp +
-          Object.values(custody.shortPositions).reduce(
-            (total, shortPosition) =>
-              total + nativeToUi(shortPosition, USD_DECIMALS),
-            0,
-          ),
+        (total, custody) =>
+          total + nativeToUi(custody.shortPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
       uiTotalVolume: custodies.reduce(
@@ -160,6 +150,26 @@ export class AdrenaClient {
             (total, volume) => total + nativeToUi(volume, USD_DECIMALS),
             0,
           ),
+        0,
+      ),
+      uiOiLongUsd: custodies.reduce(
+        (total, custody) =>
+          total + nativeToUi(custody.tradeStats.oiLongUsd, USD_DECIMALS),
+        0,
+      ),
+      uiOiShortUsd: custodies.reduce(
+        (total, custody) =>
+          total + nativeToUi(custody.tradeStats.oiShortUsd, USD_DECIMALS),
+        0,
+      ),
+      nbOpenLongPositions: custodies.reduce(
+        (total, custody) =>
+          total + custody.longPositions.openPositions.toNumber(),
+        0,
+      ),
+      nbOpenShortPositions: custodies.reduce(
+        (total, custody) =>
+          total + custody.shortPositions.openPositions.toNumber(),
         0,
       ),
     };

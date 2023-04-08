@@ -5,11 +5,15 @@ export default function Overview({
   uiAumUsd,
   uiLongPositions,
   uiShortPositions,
+  nbOpenLongPositions,
+  nbOpenShortPositions,
 }: {
   className?: string;
   uiAumUsd: number | null;
   uiLongPositions: number | null;
   uiShortPositions: number | null;
+  nbOpenLongPositions: number | null;
+  nbOpenShortPositions: number | null;
 }) {
   return (
     <div
@@ -37,6 +41,18 @@ export default function Overview({
             {uiShortPositions !== null
               ? formatPriceInfo(uiShortPositions)
               : '-'}
+          </div>
+        </div>
+
+        <div className="flex w-full justify-between">
+          <div className="text-txtfade">Active Long Positions</div>
+          <div>{nbOpenLongPositions !== null ? nbOpenLongPositions : '-'}</div>
+        </div>
+
+        <div className="flex w-full justify-between">
+          <div className="text-txtfade">Active Short Positions</div>
+          <div>
+            {nbOpenShortPositions !== null ? nbOpenShortPositions : '-'}
           </div>
         </div>
       </div>

@@ -13,7 +13,6 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
-  DISPLAY_NUMBER_PRECISION,
   formatNumber,
   formatPriceInfo,
   nativeToUi,
@@ -73,10 +72,13 @@ export default function ReduceOrClosePosition({
     return maxLeverageBN.toNumber() / BPS;
   })();
 
+  const closing = input == position.uiCollateralUsd;
+
   const overMaxAuthorizedLeverage: boolean | null =
     maxAuthorizedLeverage === null || updatedLeverage === null
       ? null
-      : updatedLeverage < 0 || updatedLeverage > maxAuthorizedLeverage;
+      : (updatedLeverage < 0 || updatedLeverage > maxAuthorizedLeverage) &&
+        !closing;
 
   const executeBtnText = (() => {
     if (!input) return 'Enter an amount';
@@ -85,7 +87,7 @@ export default function ReduceOrClosePosition({
       return 'Leverage over limit';
     }
 
-    if (input < nativeToUi(position.collateralUsd, 6)) {
+    if (!closing) {
       return 'Reduce Position';
     }
 
@@ -161,10 +163,10 @@ export default function ReduceOrClosePosition({
       return;
     }
 
-    if (input < position.uiCollateralUsd) {
-      await doPartialClose();
-    } else {
+    if (closing) {
       await doFullClose();
+    } else {
+      await doPartialClose();
     }
 
     onClose();
@@ -177,10 +179,7 @@ export default function ReduceOrClosePosition({
           <>
             Close
             {input && markPrice
-              ? `: ${formatNumber(
-                  input / markPrice,
-                  DISPLAY_NUMBER_PRECISION,
-                )} ${position.token.name}`
+              ? `: ${formatNumber(input / markPrice, 6)} ${position.token.name}`
               : null}
           </>
         }
@@ -287,30 +286,36 @@ export default function ReduceOrClosePosition({
         <div className={rowStyle}>
           <div className="text-txtfade">Leverage</div>
           <div className="flex">
-            {updatedLeverage !== 0 ? (
-              <div>{formatNumber(position.leverage, 2)}x</div>
-            ) : (
+            {closing ? (
               '-'
-            )}
-            {input && updatedLeverage ? (
+            ) : (
               <>
-                {
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src="images/arrow-right.svg" alt="arrow right" />
-                }
-                <div
-                  className={twMerge(
-                    overMaxAuthorizedLeverage && 'text-red-400',
-                  )}
-                >
-                  {updatedLeverage > 0 ? (
-                    `${formatNumber(updatedLeverage, 2)}x`
-                  ) : (
-                    <span>OVER LIMIT</span>
-                  )}
-                </div>
+                {updatedLeverage !== 0 ? (
+                  <div>{formatNumber(position.leverage, 2)}x</div>
+                ) : (
+                  '-'
+                )}
+                {input && updatedLeverage ? (
+                  <>
+                    {
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src="images/arrow-right.svg" alt="arrow right" />
+                    }
+                    <div
+                      className={twMerge(
+                        overMaxAuthorizedLeverage && 'text-red-400',
+                      )}
+                    >
+                      {updatedLeverage > 0 ? (
+                        `${formatNumber(updatedLeverage, 2)}x`
+                      ) : (
+                        <span>OVER LIMIT</span>
+                      )}
+                    </div>
+                  </>
+                ) : null}
               </>
-            ) : null}
+            )}
           </div>
         </div>
 

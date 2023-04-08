@@ -13,9 +13,6 @@ import { Perpetuals } from '@/target/perpetuals';
 import { TOKEN_INFO_LIBRARY } from './constant';
 import { Custody } from './types';
 
-export const DISPLAY_NUMBER_PRECISION = 6;
-export const INPUT_PRECISION = 8;
-
 export function findATAAddressSync(
   wallet: PublicKey,
   mint: PublicKey,

@@ -32,6 +32,10 @@ export type PoolExtended = Pool & {
   uiShortPositions: number;
   uiAumUsd: number;
   uiTotalVolume: number;
+  uiOiLongUsd: number;
+  uiOiShortUsd: number;
+  nbOpenLongPositions: number;
+  nbOpenShortPositions: number;
 };
 
 // Alias to improve readability

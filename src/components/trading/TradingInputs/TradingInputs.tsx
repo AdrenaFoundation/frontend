@@ -2,14 +2,11 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
+import { USD_DECIMALS } from '@/constant';
 import { TokenPricesState } from '@/reducers/tokenPricesReducer';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import {
-  DISPLAY_NUMBER_PRECISION,
-  formatNumber,
-  INPUT_PRECISION,
-} from '@/utils';
+import { formatNumber } from '@/utils';
 
 import LeverageSlider from '../../LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
@@ -78,7 +75,7 @@ function recalculateInputs({
 
   secondaryInput.setPrice(secondaryPrice);
   secondaryInput.setInput(
-    Number((secondaryPrice / secondaryTokenPrice).toFixed(INPUT_PRECISION)),
+    Number((secondaryPrice / secondaryTokenPrice).toFixed(8)),
   );
 }
 
@@ -246,7 +243,7 @@ export default function TradingInputs({
           <>
             Pay
             {priceA !== null
-              ? `: ${formatNumber(priceA, DISPLAY_NUMBER_PRECISION)} USD`
+              ? `: ${formatNumber(priceA, USD_DECIMALS)} USD`
               : null}
           </>
         }
@@ -319,7 +316,7 @@ export default function TradingInputs({
               }[actionType]
             }
             {priceB !== null
-              ? `: ${formatNumber(priceB, DISPLAY_NUMBER_PRECISION)} USD`
+              ? `: ${formatNumber(priceB, USD_DECIMALS)} USD`
               : null}
           </>
         }
