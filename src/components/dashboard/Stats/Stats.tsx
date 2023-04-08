@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 import { formatPriceInfo } from '@/utils';
 
 export default function Stats({
@@ -11,9 +13,16 @@ export default function Stats({
 }) {
   return (
     <div
-      className={`border border-grey bg-secondary flex flex-col w-[30em] max-w-full ${
-        className ?? ''
-      }`}
+      className={twMerge(
+        'border',
+        'border-grey',
+        'bg-secondary',
+        'flex',
+        'flex-col',
+        'w-[30em]',
+        'max-w-full',
+        className,
+      )}
     >
       <div className="p-4 border-b border-grey">Total Stats</div>
       <div className="p-4 text-sm flex flex-col w-full">

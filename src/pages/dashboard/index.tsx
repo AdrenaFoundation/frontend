@@ -33,16 +33,16 @@ export default function Trade() {
     >
       <div className="text-3xl mt-6">Stats</div>
 
-      <div className="flex justify-evenly">
+      <div className="flex justify-evenly flex-col sm:flex-row mt-8 sm:mt-4 md:mt-0">
         <Overview
-          className="m-4"
+          className="sm:m-4"
           uiAumUsd={mainPool?.uiAumUsd ?? null}
           uiLongPositions={mainPool?.uiLongPositions ?? null}
           uiShortPositions={mainPool?.uiShortPositions ?? null}
         />
 
         <Stats
-          className="m-4"
+          className="mt-4 sm:mt-0 sm:m-4"
           totalCollectedFees={mainPool?.uiTotalFeeCollected ?? null}
           totalVolume={mainPool?.uiTotalVolume ?? null}
         />
