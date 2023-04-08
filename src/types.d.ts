@@ -36,6 +36,8 @@ export type PoolExtended = Pool & {
   uiOiShortUsd: number;
   nbOpenLongPositions: number;
   nbOpenShortPositions: number;
+  averageLongLeverage: number;
+  averageShortLeverage: number;
 };
 
 // Alias to improve readability

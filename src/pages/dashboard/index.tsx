@@ -41,6 +41,8 @@ export default function Trade() {
           uiShortPositions={mainPool?.uiShortPositions ?? null}
           nbOpenLongPositions={mainPool?.nbOpenLongPositions ?? null}
           nbOpenShortPositions={mainPool?.nbOpenShortPositions ?? null}
+          averageLongLeverage={mainPool?.averageLongLeverage ?? null}
+          averageShortLeverage={mainPool?.averageShortLeverage ?? null}
         />
 
         <Stats

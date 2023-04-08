@@ -84,6 +84,40 @@ export class AdrenaClient {
     this.adrenaProgram = program;
   }
 
+  public static calculateAverageLeverage(
+    custodies: CustodyExtended[],
+    type: 'short' | 'long',
+  ): number {
+    const access: 'shortPositions' | 'longPositions' = `${type}Positions`;
+
+    const { totalLeverage, totalNbPosition } = custodies.reduce(
+      ({ totalLeverage, totalNbPosition }, custody) => {
+        if (custody[access].collateralUsd.isZero()) {
+          return {
+            totalLeverage,
+            totalNbPosition,
+          };
+        }
+
+        return {
+          totalNbPosition:
+            totalNbPosition + custody[access].openPositions.toNumber(),
+          totalLeverage:
+            totalLeverage +
+            (nativeToUi(custody[access].sizeUsd, USD_DECIMALS) /
+              nativeToUi(custody[access].collateralUsd, USD_DECIMALS)) *
+              custody[access].openPositions.toNumber(),
+        };
+      },
+      {
+        totalLeverage: 0,
+        totalNbPosition: 0,
+      },
+    );
+
+    return totalLeverage / totalNbPosition;
+  }
+
   public static async initialize(
     readonlyAdrenaProgram: Program<Perpetuals>,
   ): Promise<AdrenaClient> {
@@ -171,6 +205,14 @@ export class AdrenaClient {
         (total, custody) =>
           total + custody.shortPositions.openPositions.toNumber(),
         0,
+      ),
+      averageLongLeverage: AdrenaClient.calculateAverageLeverage(
+        custodies,
+        'long',
+      ),
+      averageShortLeverage: AdrenaClient.calculateAverageLeverage(
+        custodies,
+        'short',
       ),
     };
 
