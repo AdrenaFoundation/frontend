@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
-import Modal from '@/components/Modal/Modal';
+import Modal from '@/components/common/Modal/Modal';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 

@@ -1,7 +1,7 @@
 import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
-import Select from '@/components/Select/Select';
+import Select from '@/components/common/Select/Select';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';

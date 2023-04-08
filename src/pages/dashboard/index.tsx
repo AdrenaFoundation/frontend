@@ -1,8 +1,8 @@
 import { twMerge } from 'tailwind-merge';
 
-import ALPIndexComposition from '@/components/dashboard/ALPIndexComposition/ALPIndexComposition';
-import Overview from '@/components/dashboard/Overview/Overview';
-import Stats from '@/components/dashboard/Stats/Stats';
+import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
+import Overview from '@/components/pages/dashboard/Overview/Overview';
+import Stats from '@/components/pages/dashboard/Stats/Stats';
 import useAdrenaClient from '@/hooks/useAdrenaClient';
 import useConnection from '@/hooks/useConnection';
 import useCustodies from '@/hooks/useCustodies';

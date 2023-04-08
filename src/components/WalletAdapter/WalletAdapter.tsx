@@ -9,8 +9,8 @@ import {
 } from '@/actions/walletActions';
 import { useDispatch, useSelector } from '@/store/store';
 
-import Button from '../Button/Button';
-import Modal from '../Modal/Modal';
+import Button from '../common/Button/Button';
+import Modal from '../common/Modal/Modal';
 
 function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 4)}..${address.slice(address.length - 4)}`;

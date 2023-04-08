@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
-import Button from '@/components/Button/Button';
-import Checkbox from '@/components/Checkbox/Checkbox';
+import Button from '@/components/common/Button/Button';
+import Checkbox from '@/components/common/Checkbox/Checkbox';
 import { BPS, USD_DECIMALS } from '@/constant';
 import useGetPositionExitPriceAndFee from '@/hooks/useGetPositionExitPriceAndFee';
 import { useSelector } from '@/store/store';

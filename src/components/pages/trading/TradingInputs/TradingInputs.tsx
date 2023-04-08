@@ -8,7 +8,7 @@ import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber } from '@/utils';
 
-import LeverageSlider from '../../LeverageSlider/LeverageSlider';
+import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
 

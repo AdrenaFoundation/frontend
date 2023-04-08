@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '../Button/Button';
+import Button from '../common/Button/Button';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header() {

@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/Button/Button';
+import Button from '@/components/common/Button/Button';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
