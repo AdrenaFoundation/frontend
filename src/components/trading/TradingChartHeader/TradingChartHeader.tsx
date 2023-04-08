@@ -82,7 +82,7 @@ export default function TradingInputs({
       <div className={infoStyle}>
         <span className="text-sm text-txtfade">24h Volume</span>
         <span className="mt-0.5">
-          {stats ? formatPriceInfo(stats[selected.name].dailyVolume) : '-'}
+          {formatPriceInfo(stats?.[selected.name].dailyVolume ?? null)}
         </span>
       </div>
     </div>

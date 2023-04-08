@@ -59,13 +59,11 @@ export default function ALPIndexCompositionArray({
                 </div>
 
                 <div className="flex items-center w-40 shrink-0 grow">
-                  {composition.price ? formatPriceInfo(composition.price) : '-'}
+                  {formatPriceInfo(composition.price)}
                 </div>
 
                 <div className="flex items-center w-40 shrink-0 grow">
-                  {composition.custodyUsdValue
-                    ? formatPriceInfo(composition.custodyUsdValue)
-                    : '-'}
+                  {formatPriceInfo(composition.custodyUsdValue)}
                 </div>
 
                 <Tippy

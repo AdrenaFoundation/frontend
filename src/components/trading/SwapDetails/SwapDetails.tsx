@@ -23,12 +23,12 @@ export default function SwapDetails({
     <div className="flex flex-col pl-4 pr-4 pb-4 mt-4 text-sm">
       <div className={rowStyle}>
         <span className="text-txtfade">{tokenA.name} Price</span>
-        <span>{priceA ? formatPriceInfo(priceA) : '-'}</span>
+        <span>{formatPriceInfo(priceA)}</span>
       </div>
 
       <div className={rowStyle}>
         <span className="text-txtfade">{tokenB.name} Price</span>
-        <span>{priceB ? formatPriceInfo(priceB) : '-'}</span>
+        <span>{formatPriceInfo(priceB)}</span>
       </div>
 
       <div className={rowStyle}>

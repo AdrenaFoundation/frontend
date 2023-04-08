@@ -115,9 +115,7 @@ export default function PositionsArray({
             </div>
 
             <div className={columnStyle}>
-              {position.uiLiquidationPrice
-                ? formatPriceInfo(position.uiLiquidationPrice)
-                : '-'}
+              {formatPriceInfo(position.uiLiquidationPrice ?? null)}
             </div>
 
             <Button

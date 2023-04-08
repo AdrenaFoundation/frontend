@@ -51,7 +51,14 @@ export function getCustodyLiquidity(
   );
 }
 
-export function formatPriceInfo(price: number, displayPlusSymbol = false) {
+export function formatPriceInfo(
+  price: number | null | undefined,
+  displayPlusSymbol = false,
+) {
+  if (price === null || typeof price === 'undefined') {
+    return '-';
+  }
+
   // If the price is very low, display it as it is, to not display $0
   if (price < 0.00999999999999 && price > 0) {
     return `$${price}`;
@@ -64,8 +71,11 @@ export function formatPriceInfo(price: number, displayPlusSymbol = false) {
   return `$${formatNumber(price, 2, displayPlusSymbol)}`;
 }
 
-export function formatPercentage(nb: number | null, precision = 2): string {
-  if (nb === null) {
+export function formatPercentage(
+  nb: number | null | undefined,
+  precision = 2,
+): string {
+  if (nb === null || typeof nb === 'undefined') {
     return '-';
   }
 

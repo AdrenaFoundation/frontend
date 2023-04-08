@@ -28,13 +28,11 @@ export default function Stats({
       <div className="p-4 text-sm flex flex-col w-full">
         <div className="flex w-full justify-between">
           <div className="text-txtfade">Total Fees</div>
-          <div>
-            {totalCollectedFees ? formatPriceInfo(totalCollectedFees) : '-'}
-          </div>
+          <div>{formatPriceInfo(totalCollectedFees)}</div>
         </div>
         <div className="flex w-full justify-between">
           <div className="text-txtfade">Total Volume</div>
-          <div>{totalVolume ? formatPriceInfo(totalVolume) : '-'}</div>
+          <div>{formatPriceInfo(totalVolume)}</div>
         </div>
       </div>
     </div>

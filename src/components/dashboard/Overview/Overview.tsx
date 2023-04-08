@@ -1,4 +1,4 @@
-import { formatNumber, formatPercentage, formatPriceInfo } from '@/utils';
+import { formatNumber, formatPriceInfo } from '@/utils';
 
 export default function Overview({
   className,
@@ -29,23 +29,17 @@ export default function Overview({
       <div className="p-4 text-sm flex flex-col w-full">
         <div className="flex w-full justify-between">
           <div className="text-txtfade">AUM</div>
-          <div>{uiAumUsd != null ? formatPriceInfo(uiAumUsd) : '-'}</div>
+          <div>{formatPriceInfo(uiAumUsd)}</div>
         </div>
 
         <div className="flex w-full justify-between">
           <div className="text-txtfade">Long Positions</div>
-          <div>
-            {uiLongPositions !== null ? formatPriceInfo(uiLongPositions) : '-'}
-          </div>
+          <div>{formatPriceInfo(uiLongPositions)}</div>
         </div>
 
         <div className="flex w-full justify-between">
           <div className="text-txtfade">Short Positions</div>
-          <div>
-            {uiShortPositions !== null
-              ? formatPriceInfo(uiShortPositions)
-              : '-'}
-          </div>
+          <div>{formatPriceInfo(uiShortPositions)}</div>
         </div>
 
         <div className="flex w-full justify-between">

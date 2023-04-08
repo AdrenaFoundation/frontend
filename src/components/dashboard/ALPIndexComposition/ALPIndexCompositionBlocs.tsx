@@ -55,17 +55,13 @@ export default function ALPIndexCompositionBlocs({
           <div className="flex flex-col w-full mt-4">
             <div className="flex w-full justify-between">
               <div>Price</div>
-              <div className="flex">
-                {composition.price ? formatPriceInfo(composition.price) : '-'}
-              </div>
+              <div className="flex">{formatPriceInfo(composition.price)}</div>
             </div>
 
             <div className="flex w-full justify-between">
               <div>Pool</div>
               <div className="flex">
-                {composition.custodyUsdValue
-                  ? formatPriceInfo(composition.custodyUsdValue)
-                  : '-'}
+                {formatPriceInfo(composition.custodyUsdValue)}
               </div>
             </div>
 

@@ -246,21 +246,17 @@ export default function ReduceOrClosePosition({
 
         <div className={rowStyle}>
           <div className="text-txtfade">Mark Price</div>
-          <div>{markPrice ? formatPriceInfo(markPrice) : '-'}</div>
+          <div>{formatPriceInfo(markPrice)}</div>
         </div>
 
         <div className={rowStyle}>
           <div className="text-txtfade">Entry Price</div>
-          <div>{entryPrice ? formatPriceInfo(entryPrice) : '-'}</div>
+          <div>{formatPriceInfo(entryPrice)}</div>
         </div>
 
         <div className={rowStyle}>
           <div className="text-txtfade">Liq. Price</div>
-          <div>
-            {position.uiLiquidationPrice
-              ? formatPriceInfo(position.uiLiquidationPrice)
-              : '-'}
-          </div>
+          <div>{formatPriceInfo(position.uiLiquidationPrice ?? null)}</div>
         </div>
 
         <div className="mt-2 h-[1px] w-full bg-grey" />

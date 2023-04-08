@@ -84,21 +84,12 @@ export default function PositionsBlocs({
 
             <div className={columnStyle}>
               <div className="text-txtfade">Mark Price</div>
-              <div>
-                {tokenPrices[position.token.name]
-                  ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    formatPriceInfo(tokenPrices[position.token.name]!)
-                  : '-'}
-              </div>
+              <div>{formatPriceInfo(tokenPrices[position.token.name])}</div>
             </div>
 
             <div className={columnStyle}>
               <div className="text-txtfade">Liquidation Price</div>
-              <div>
-                {position.uiLiquidationPrice
-                  ? formatPriceInfo(position.uiLiquidationPrice)
-                  : '-'}
-              </div>
+              <div>{formatPriceInfo(position.uiLiquidationPrice ?? null)}</div>
             </div>
           </div>
 

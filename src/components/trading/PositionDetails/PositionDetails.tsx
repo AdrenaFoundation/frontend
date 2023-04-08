@@ -28,12 +28,12 @@ export default function PositionDetails({
     <div className={`flex flex-col p-1 text-sm ${className}`}>
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Entry Price</span>
-        <span>{entryPrice !== null ? formatPriceInfo(entryPrice) : '-'}</span>
+        <span>{formatPriceInfo(entryPrice)}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Exit Price</span>
-        <span>{exitPrice !== null ? formatPriceInfo(exitPrice) : '-'}</span>
+        <span>{formatPriceInfo(exitPrice)}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
