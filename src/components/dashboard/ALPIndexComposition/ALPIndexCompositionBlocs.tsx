@@ -14,11 +14,31 @@ export default function ALPIndexCompositionBlocs({
   if (!alpIndexComposition) return null;
 
   return (
-    <div className={twMerge('flex', 'flex-wrap', 'justify-evenly', className)}>
+    <div
+      className={twMerge(
+        'flex',
+        'flex-col',
+        'sm:flex-row',
+        'flex-wrap',
+        'justify-evenly',
+        className,
+      )}
+    >
       {alpIndexComposition.map((composition) => (
         <div
           key={composition.token.name}
-          className="flex flex-col w-[45%] bg-secondary border border-grey justify-evenly mt-4 p-4"
+          className={twMerge(
+            'flex',
+            'flex-col',
+            'sm:w-[45%]',
+            'w-full',
+            'bg-secondary',
+            'border',
+            'border-grey',
+            'justify-evenly',
+            'mt-4',
+            'p-4',
+          )}
         >
           <div className="flex items-center border-b border-grey pb-2">
             {
