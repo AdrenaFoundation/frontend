@@ -19,9 +19,11 @@ type Params = {
 //
 // Solution:
 // Wait for the pending request to be resolved to trigger another one
+// With 30s between two requests
 let pendingRequest = false;
 let waitingList = false;
 let waitingListParam: Params | null = null;
+let lastRequestDate: number | null = null;
 
 const useGetPositionEntryPriceAndFee = (
   params: Params | null,
@@ -40,7 +42,7 @@ const useGetPositionEntryPriceAndFee = (
     };
 
     // Handle buffering of doFetch call
-    (async (params: Params | null) => {
+    const handleRefreshRequest = async (params: Params | null) => {
       if (!client || !params) return;
 
       // Data is already loading
@@ -50,31 +52,48 @@ const useGetPositionEntryPriceAndFee = (
         return;
       }
 
+      // We made a fetch not a while ago, delays
+      if (lastRequestDate !== null && Date.now() - lastRequestDate < 30_000) {
+        // We casted one request less than 30s ago, delay
+        waitingList = true;
+        waitingListParam = params;
+        return;
+      }
+
       pendingRequest = true;
 
       await doFetch(params);
 
-      pendingRequest = false;
+      lastRequestDate = Date.now();
 
+      // If there is a call waiting list
       // Call itself again to get fresher data
       if (waitingList) {
         waitingList = false;
-        const waitingListParamCopy = waitingListParam;
-        waitingListParam = null;
 
-        setTimeout(() => doFetch(waitingListParamCopy));
+        setTimeout(() => {
+          const waitingListParamCopy = waitingListParam;
+          waitingListParam = null;
+          doFetch(waitingListParamCopy);
+        }, 30_000 - (Date.now() - lastRequestDate));
+        return;
       }
-    })(params);
+
+      pendingRequest = false;
+    };
+
+    handleRefreshRequest(params);
+    // Handle dependencoes manually because react detects unrelated changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    // React detect changes when there are no change
-    // Compute a string easy for react to compare
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!client,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     params
-      ? `${params.collateral.toString()}/${params.size.toString()}/${params.token.mint.toBase58()}/${
+      ? `${params.collateral.toString()}/${
           params.side
-        }`
-      : null,
+        }/${params.size.toString()}/${params.token.name}`
+      : '-',
   ]);
 
   return entryPriceAndFee;
