@@ -43,3 +43,8 @@ export const USD_DECIMALS = 6;
 export const LP_DECIMALS = 6;
 
 export const BPS = 10_000;
+
+export const MAIN_RPC =
+  'https://rpc-devnet.helius.xyz/?api-key=6b2d1f79-4a44-4546-9488-baa1d8bac2d1';
+export const PYTH_ORACLE_RPC =
+  'https://rpc-devnet.helius.xyz/?api-key=431b0e44-1447-409d-8b1e-29731b6ba71e';

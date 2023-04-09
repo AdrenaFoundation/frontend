@@ -1,11 +1,14 @@
+import { Connection } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { AdrenaClient } from '@/AdrenaClient';
 
 import useAdrenaProgram from './useAdrenaProgram';
 
-const useAdrenaClient = (): AdrenaClient | null => {
-  const { program, readOnlyProgram } = useAdrenaProgram();
+const useAdrenaClient = (
+  connection: Connection | null,
+): AdrenaClient | null => {
+  const { program, readOnlyProgram } = useAdrenaProgram(connection);
   const [client, setClient] = useState<AdrenaClient | null>(null);
 
   const createClient = useCallback(async () => {

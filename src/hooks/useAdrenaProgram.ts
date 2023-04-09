@@ -1,12 +1,11 @@
 import { AnchorProvider, Program } from '@project-serum/anchor';
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
-import { Keypair, Transaction } from '@solana/web3.js';
+import { Connection, Keypair, Transaction } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import { IDL as PERPETUALS_IDL, Perpetuals } from '@/target/perpetuals';
 
-import useConnection from './useConnection';
 import useWallet from './useWallet';
 
 // default user to launch show basic pool data, etc
@@ -19,11 +18,12 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
   ]),
 );
 
-const useAdrenaProgram = (): {
+const useAdrenaProgram = (
+  connection: Connection | null,
+): {
   program: Program<Perpetuals> | null;
   readOnlyProgram: Program<Perpetuals> | null;
 } => {
-  const connection = useConnection();
   const wallet = useWallet();
 
   const [program, setProgram] = useState<Program<Perpetuals> | null>(null);

@@ -18,6 +18,8 @@ const useWatchWalletBalance = (
   const loadWalletBalances = useCallback(async () => {
     if (!connection || !wallet || !dispatch || !client) return;
 
+    console.log('Load balance changes');
+
     const balances = await Promise.all(
       client.tokens.map(async ({ mint }) => {
         const ata = findATAAddressSync(

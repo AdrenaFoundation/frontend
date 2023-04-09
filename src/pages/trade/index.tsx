@@ -12,10 +12,11 @@ import SwapDetails from '@/components/pages/trading/SwapDetails/SwapDetails';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingInputs from '@/components/pages/trading/TradingInputs/TradingInputs';
+import { MAIN_RPC, PYTH_ORACLE_RPC } from '@/constant';
 import useAdrenaClient from '@/hooks/useAdrenaClient';
 import useConnection from '@/hooks/useConnection';
-import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
 import usePositions from '@/hooks/usePositions';
+import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -29,13 +30,14 @@ import {
 type Action = 'long' | 'short' | 'swap';
 
 export default function Trade() {
-  const connection = useConnection();
-  const client = useAdrenaClient();
+  const mainConnection = useConnection(MAIN_RPC);
+  const pythConnection = useConnection(PYTH_ORACLE_RPC);
+  const client = useAdrenaClient(mainConnection);
   const { positions, triggerPositionsReload } = usePositions(client);
   const dispatch = useDispatch();
 
-  useListenToPythTokenPricesChange(client, connection);
-  useWatchWalletBalance(client, connection);
+  useWatchTokenPrices(client, pythConnection);
+  useWatchWalletBalance(client, mainConnection);
 
   const [selectedAction, setSelectedAction] = useState<Action>('long');
   const wallet = useSelector((s) => s.walletState.wallet);

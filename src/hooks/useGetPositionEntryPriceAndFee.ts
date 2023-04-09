@@ -2,6 +2,7 @@ import { BN } from '@project-serum/anchor';
 import { useEffect, useState } from 'react';
 
 import { AdrenaClient } from '@/AdrenaClient';
+import RequestBufferer from '@/RequestBufferer';
 import { NewPositionPricesAndFee, Token } from '@/types';
 
 type Params = {
@@ -11,19 +12,8 @@ type Params = {
   side: 'long' | 'short';
 };
 
-// TRICKS:
-//
-// Issue:
-// When users plays with leverage slider
-// it triggers hundred of getEntryPriceAndFee requests
-//
-// Solution:
-// Wait for the pending request to be resolved to trigger another one
-// With 30s between two requests
-let pendingRequest = false;
-let waitingList = false;
-let waitingListParam: Params | null = null;
-let lastRequestDate: number | null = null;
+// Every price change trigger this call, be careful to not overcall it or it will overflow the RPC
+const MINIMUM_TIME_BETWEEN_REQUESTS_IN_MS = 10_000;
 
 const useGetPositionEntryPriceAndFee = (
   params: Params | null,
@@ -32,62 +22,49 @@ const useGetPositionEntryPriceAndFee = (
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);
 
+  const [requestBuffered, setRequestBufferer] = useState<RequestBufferer<{
+    params: Params;
+    client: AdrenaClient;
+  }> | null>(null);
+
   useEffect(() => {
-    const doFetch = async (params: Params | null) => {
-      if (!client || !params) return;
+    setRequestBufferer(
+      new RequestBufferer(
+        MINIMUM_TIME_BETWEEN_REQUESTS_IN_MS,
+        async ({
+          params,
+          client,
+        }: {
+          params: Params;
+          client: AdrenaClient;
+        }) => {
+          console.log('Execute get entry price and fee');
 
-      const entryPriceAndFee = await client.getEntryPriceAndFee(params);
+          const entryPriceAndFee = await client.getEntryPriceAndFee(params);
 
-      setEntryPriceAndFee(entryPriceAndFee);
-    };
+          setEntryPriceAndFee(entryPriceAndFee);
+        },
+      ),
+    );
 
-    // Handle buffering of doFetch call
-    const handleRefreshRequest = async (params: Params | null) => {
-      if (!client || !params) return;
+    // Manually set dependencies to avoid unwanted renders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!client]);
 
-      // Data is already loading
-      if (pendingRequest) {
-        waitingList = true;
-        waitingListParam = params;
-        return;
-      }
+  useEffect(() => {
+    if (!requestBuffered || !params || !client) return;
 
-      // We made a fetch not a while ago, delays
-      if (lastRequestDate !== null && Date.now() - lastRequestDate < 30_000) {
-        // We casted one request less than 30s ago, delay
-        waitingList = true;
-        waitingListParam = params;
-        return;
-      }
-
-      pendingRequest = true;
-
-      await doFetch(params);
-
-      lastRequestDate = Date.now();
-
-      // If there is a call waiting list
-      // Call itself again to get fresher data
-      if (waitingList) {
-        waitingList = false;
-
-        setTimeout(() => {
-          const waitingListParamCopy = waitingListParam;
-          waitingListParam = null;
-          doFetch(waitingListParamCopy);
-        }, 30_000 - (Date.now() - lastRequestDate));
-        return;
-      }
-
-      pendingRequest = false;
-    };
-
-    handleRefreshRequest(params);
+    requestBuffered.executeFunc({
+      params,
+      client,
+    });
     // Handle dependencoes manually because react detects unrelated changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // eslint-disable-next-line react-hooks/exhaustive-deps
     !!client,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!requestBuffered,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     params
       ? `${params.collateral.toString()}/${

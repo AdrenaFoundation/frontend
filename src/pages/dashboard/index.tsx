@@ -3,21 +3,24 @@ import { twMerge } from 'tailwind-merge';
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Overview from '@/components/pages/dashboard/Overview/Overview';
 import Stats from '@/components/pages/dashboard/Stats/Stats';
+import { MAIN_RPC, PYTH_ORACLE_RPC } from '@/constant';
 import useAdrenaClient from '@/hooks/useAdrenaClient';
 import useConnection from '@/hooks/useConnection';
 import useCustodies from '@/hooks/useCustodies';
-import useListenToPythTokenPricesChange from '@/hooks/useListenToPythTokenPricesChange';
 import useMainPool from '@/hooks/useMainPool';
+import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 
 export default function Trade() {
-  const client = useAdrenaClient();
-  const connection = useConnection();
+  const mainConnection = useConnection(MAIN_RPC);
+  const pythConnection = useConnection(PYTH_ORACLE_RPC);
+  const client = useAdrenaClient(mainConnection);
   const mainPool = useMainPool(client);
   const custodies = useCustodies(client, mainPool);
 
-  useListenToPythTokenPricesChange(client, connection);
-  useWatchWalletBalance(client, connection);
+  useWatchTokenPrices(client, pythConnection);
+  // useListenToPythTokenPricesChange(client, pythConnection);
+  useWatchWalletBalance(client, mainConnection);
 
   return (
     <div
