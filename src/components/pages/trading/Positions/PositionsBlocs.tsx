@@ -52,24 +52,22 @@ export default function PositionsBlocs({
 
             <div className={columnStyle}>
               <div className="text-txtfade">Size</div>
-              <div>{formatPriceInfo(position.uiSizeUsd)}</div>
+              <div>{formatPriceInfo(position.sizeUsd)}</div>
             </div>
 
             <div className={columnStyle}>
               <div className="text-txtfade">Collateral</div>
-              <div>{formatPriceInfo(position.uiCollateralUsd)}</div>
+              <div>{formatPriceInfo(position.collateralUsd)}</div>
             </div>
 
             <div className={columnStyle}>
               <div className="text-txtfade">PnL</div>
               <div>
-                {position.uiPnl ? (
+                {position.pnl ? (
                   <span
-                    className={`text-${
-                      position.uiPnl > 0 ? 'green' : 'red'
-                    }-400`}
+                    className={`text-${position.pnl > 0 ? 'green' : 'red'}-400`}
                   >
-                    {formatPriceInfo(position.uiPnl)}
+                    {formatPriceInfo(position.pnl)}
                   </span>
                 ) : (
                   '-'
@@ -79,7 +77,7 @@ export default function PositionsBlocs({
 
             <div className={columnStyle}>
               <div className="text-txtfade">Entry Price</div>
-              <div>{formatPriceInfo(position.uiPrice)}</div>
+              <div>{formatPriceInfo(position.price)}</div>
             </div>
 
             <div className={columnStyle}>
@@ -89,7 +87,7 @@ export default function PositionsBlocs({
 
             <div className={columnStyle}>
               <div className="text-txtfade">Liquidation Price</div>
-              <div>{formatPriceInfo(position.uiLiquidationPrice ?? null)}</div>
+              <div>{formatPriceInfo(position.liquidationPrice ?? null)}</div>
             </div>
           </div>
 

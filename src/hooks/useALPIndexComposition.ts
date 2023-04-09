@@ -39,22 +39,24 @@ const useALPIndexComposition = (
 
       const custodyUsdValue =
         custody && price
-          ? nativeToUi(custody.assets.owned, token.decimals) * price
+          ? nativeToUi(custody.nativeObject.assets.owned, token.decimals) *
+            price
           : null;
 
       const currentRatio =
         custodyUsdValue !== null
-          ? (custodyUsdValue * 100) / client.mainPool.uiAumUsd
+          ? (custodyUsdValue * 100) / client.mainPool.aumUsd
           : null;
 
       const utilization = (() => {
         if (!custody) return null;
 
-        if (custody.assets.locked.isZero()) return 0;
+        if (custody.nativeObject.assets.locked.isZero()) return 0;
 
         return (
-          (nativeToUi(custody.assets.locked, custody.decimals) * 100) /
-          nativeToUi(custody.assets.owned, custody.decimals)
+          (nativeToUi(custody.nativeObject.assets.locked, custody.decimals) *
+            100) /
+          nativeToUi(custody.nativeObject.assets.owned, custody.decimals)
         );
       })();
 

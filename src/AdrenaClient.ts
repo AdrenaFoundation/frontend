@@ -11,7 +11,12 @@ import {
 import { Perpetuals } from '@/target/perpetuals';
 import PerpetualsJson from '@/target/perpetuals.json';
 
-import { PRICE_DECIMALS, TOKEN_INFO_LIBRARY, USD_DECIMALS } from './constant';
+import {
+  BPS,
+  PRICE_DECIMALS,
+  TOKEN_INFO_LIBRARY,
+  USD_DECIMALS,
+} from './constant';
 import {
   Custody,
   CustodyExtended,
@@ -92,7 +97,7 @@ export class AdrenaClient {
 
     const { totalLeverage, totalNbPosition } = custodies.reduce(
       ({ totalLeverage, totalNbPosition }, custody) => {
-        if (custody[access].collateralUsd.isZero()) {
+        if (custody.nativeObject[access].collateralUsd.isZero()) {
           return {
             totalLeverage,
             totalNbPosition,
@@ -101,12 +106,16 @@ export class AdrenaClient {
 
         return {
           totalNbPosition:
-            totalNbPosition + custody[access].openPositions.toNumber(),
+            totalNbPosition +
+            custody.nativeObject[access].openPositions.toNumber(),
           totalLeverage:
             totalLeverage +
-            (nativeToUi(custody[access].sizeUsd, USD_DECIMALS) /
-              nativeToUi(custody[access].collateralUsd, USD_DECIMALS)) *
-              custody[access].openPositions.toNumber(),
+            (nativeToUi(custody.nativeObject[access].sizeUsd, USD_DECIMALS) /
+              nativeToUi(
+                custody.nativeObject[access].collateralUsd,
+                USD_DECIMALS,
+              )) *
+              custody.nativeObject[access].openPositions.toNumber(),
         };
       },
       {
@@ -156,54 +165,57 @@ export class AdrenaClient {
       .filter((token) => !!token) as Token[];
 
     const mainPoolExtended: PoolExtended = {
-      ...mainPool,
-      uiAumUsd: nativeToUi(mainPool.aumUsd, USD_DECIMALS),
-      uiTotalFeeCollected: custodies.reduce(
+      aumUsd: nativeToUi(mainPool.aumUsd, USD_DECIMALS),
+      totalFeeCollected: custodies.reduce(
         (tmp, custody) =>
           tmp +
-          Object.values(custody.collectedFees).reduce(
+          Object.values(custody.nativeObject.collectedFees).reduce(
             (total, custodyFee) => total + nativeToUi(custodyFee, USD_DECIMALS),
             0,
           ),
         0,
       ),
-      uiLongPositions: custodies.reduce(
+      longPositions: custodies.reduce(
         (total, custody) =>
-          total + nativeToUi(custody.longPositions.sizeUsd, USD_DECIMALS),
+          total +
+          nativeToUi(custody.nativeObject.longPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
-      uiShortPositions: custodies.reduce(
+      shortPositions: custodies.reduce(
         (total, custody) =>
-          total + nativeToUi(custody.shortPositions.sizeUsd, USD_DECIMALS),
+          total +
+          nativeToUi(custody.nativeObject.shortPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
-      uiTotalVolume: custodies.reduce(
+      totalVolume: custodies.reduce(
         (tmp, custody) =>
           tmp +
-          Object.values(custody.volumeStats).reduce(
+          Object.values(custody.nativeObject.volumeStats).reduce(
             (total, volume) => total + nativeToUi(volume, USD_DECIMALS),
             0,
           ),
         0,
       ),
-      uiOiLongUsd: custodies.reduce(
+      oiLongUsd: custodies.reduce(
         (total, custody) =>
-          total + nativeToUi(custody.tradeStats.oiLongUsd, USD_DECIMALS),
+          total +
+          nativeToUi(custody.nativeObject.tradeStats.oiLongUsd, USD_DECIMALS),
         0,
       ),
-      uiOiShortUsd: custodies.reduce(
+      oiShortUsd: custodies.reduce(
         (total, custody) =>
-          total + nativeToUi(custody.tradeStats.oiShortUsd, USD_DECIMALS),
+          total +
+          nativeToUi(custody.nativeObject.tradeStats.oiShortUsd, USD_DECIMALS),
         0,
       ),
       nbOpenLongPositions: custodies.reduce(
         (total, custody) =>
-          total + custody.longPositions.openPositions.toNumber(),
+          total + custody.nativeObject.longPositions.openPositions.toNumber(),
         0,
       ),
       nbOpenShortPositions: custodies.reduce(
         (total, custody) =>
-          total + custody.shortPositions.openPositions.toNumber(),
+          total + custody.nativeObject.shortPositions.openPositions.toNumber(),
         0,
       ),
       averageLongLeverage: AdrenaClient.calculateAverageLeverage(
@@ -214,6 +226,9 @@ export class AdrenaClient {
         custodies,
         'short',
       ),
+
+      custodies: mainPool.custodies,
+      nativeObject: mainPool,
     };
 
     return new AdrenaClient(
@@ -249,11 +264,18 @@ export class AdrenaClient {
 
     return (result as Custody[]).map((custody, i) => {
       return {
-        ...custody,
+        isStable: custody.isStable,
+        mint: custody.mint,
+        decimals: custody.decimals,
         pubkey: mainPool.custodies[i],
-        minRatio: mainPool.ratios[i].min,
-        maxRatio: mainPool.ratios[i].max,
-        targetRatio: mainPool.ratios[i].target,
+        minRatio: mainPool.ratios[i].min.toNumber(),
+        maxRatio: mainPool.ratios[i].max.toNumber(),
+        targetRatio: mainPool.ratios[i].target.toNumber(),
+        maxLeverage: custody.pricing.maxLeverage.toNumber() / BPS,
+        nativeObject: custody,
+        liquidity:
+          Number(custody.assets.owned.sub(custody.assets.locked)) /
+          10 ** custody.decimals,
       };
     });
   }
@@ -369,7 +391,7 @@ export class AdrenaClient {
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
 
     const custodyOracleAccount =
-      this.getCustodyByMint(mint).oracle.oracleAccount;
+      this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
 
@@ -430,13 +452,13 @@ export class AdrenaClient {
     const receivingCustodyTokenAccount =
       this.findCustodyTokenAccountAddress(mintA);
     const receivingCustodyOracleAccount =
-      this.getCustodyByMint(mintA).oracle.oracleAccount;
+      this.getCustodyByMint(mintA).nativeObject.oracle.oracleAccount;
 
     const dispensingCustody = this.findCustodyAddress(mintB);
     const dispensingCustodyTokenAccount =
       this.findCustodyTokenAccountAddress(mintB);
     const dispensingCustodyOracleAccount =
-      this.getCustodyByMint(mintB).oracle.oracleAccount;
+      this.getCustodyByMint(mintB).nativeObject.oracle.oracleAccount;
 
     return this.adrenaProgram.methods
       .swap({
@@ -503,7 +525,7 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    const custodyOracleAccount = custody.oracle.oracleAccount;
+    const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
@@ -643,7 +665,7 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    const custodyOracleAccount = custody.oracle.oracleAccount;
+    const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
@@ -687,7 +709,7 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    const custodyOracleAccount = custody.oracle.oracleAccount;
+    const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
@@ -747,7 +769,7 @@ export class AdrenaClient {
           perpetuals: AdrenaClient.perpetualsAddress,
           pool: AdrenaClient.mainPoolAddress,
           custody: token.custody,
-          custodyOracleAccount: custody.oracle.oracleAccount,
+          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
         },
       },
     );
@@ -778,7 +800,7 @@ export class AdrenaClient {
           pool: AdrenaClient.mainPoolAddress,
           position: position.pubkey,
           custody: position.custody,
-          custodyOracleAccount: custody.oracle.oracleAccount,
+          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
         },
       },
     );
@@ -809,7 +831,7 @@ export class AdrenaClient {
           pool: AdrenaClient.mainPoolAddress,
           position: position.pubkey,
           custody: custody.pubkey,
-          custodyOracleAccount: custody.oracle.oracleAccount,
+          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
         },
       },
     );
@@ -847,7 +869,7 @@ export class AdrenaClient {
           pool: AdrenaClient.mainPoolAddress,
           position: position.pubkey,
           custody: custody.pubkey,
-          custodyOracleAccount: custody.oracle.oracleAccount,
+          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
         },
       },
     );
@@ -892,17 +914,19 @@ export class AdrenaClient {
         return [
           ...acc,
           {
-            ...position,
+            custody: position.custody,
+            owner: position.owner,
             pubkey: possiblePositionAddresses[index],
             token,
             side: Object.keys(position.side)[0] as 'long' | 'short',
-            uiSizeUsd: nativeToUi(position.sizeUsd, 6),
-            uiCollateralUsd: nativeToUi(position.collateralUsd, 6),
-            uiPrice: nativeToUi(position.price, 6),
-            uiCollateralAmount: nativeToUi(
+            sizeUsd: nativeToUi(position.sizeUsd, 6),
+            collateralUsd: nativeToUi(position.collateralUsd, 6),
+            price: nativeToUi(position.price, 6),
+            collateralAmount: nativeToUi(
               position.collateralAmount,
               token.decimals,
             ),
+            nativeObject: position,
           },
         ];
       },
@@ -929,8 +953,7 @@ export class AdrenaClient {
 
     // Insert them in positions extended
     return positionsExtended.map((positionExtended, index) => {
-      const pnl = pnls[index];
-      const uiPnl = (() => {
+      const pnl = (() => {
         const pnl = pnls[index];
 
         if (!pnl) return null;
@@ -943,16 +966,16 @@ export class AdrenaClient {
       })();
 
       const leverage =
-        nativeToUi(positionExtended.sizeUsd, USD_DECIMALS) /
-        (positionExtended.uiCollateralUsd + (uiPnl ?? 0));
+        positionExtended.sizeUsd /
+        (positionExtended.collateralUsd + (pnl ?? 0));
 
       return {
         ...positionExtended,
-        liquidationPrice: liquidationPrices[index],
-        pnl,
+        // liquidationPrice: liquidationPrices[index],
+        // pnl,
         leverage,
-        uiPnl,
-        uiLiquidationPrice: ((): number | undefined => {
+        pnl,
+        liquidationPrice: ((): number | undefined => {
           const liquidationPrice = liquidationPrices[index];
 
           if (!liquidationPrice) return undefined;
@@ -967,7 +990,7 @@ export class AdrenaClient {
    * UTILS
    */
 
-  public getCustodyByMint(mint: PublicKey): Custody {
+  public getCustodyByMint(mint: PublicKey): CustodyExtended {
     const custody = this.custodies.find((custody) => custody.mint.equals(mint));
 
     if (!custody)

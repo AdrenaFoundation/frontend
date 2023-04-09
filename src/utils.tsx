@@ -11,7 +11,7 @@ import { Store } from 'react-notifications-component';
 import { Perpetuals } from '@/target/perpetuals';
 
 import { TOKEN_INFO_LIBRARY } from './constant';
-import { Custody } from './types';
+import { CustodyExtended } from './types';
 
 export function findATAAddressSync(
   wallet: PublicKey,
@@ -38,17 +38,6 @@ export function formatNumber(
   }
 
   return str;
-}
-
-export function getCustodyLiquidity(
-  custody: Custody,
-  tokenCurrentPrice: number,
-): number {
-  return (
-    (tokenCurrentPrice *
-      Number(custody.assets.owned.sub(custody.assets.locked))) /
-    10 ** custody.decimals
-  );
 }
 
 export function formatPriceInfo(

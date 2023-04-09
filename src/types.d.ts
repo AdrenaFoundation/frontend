@@ -1,43 +1,66 @@
+import { PublicKey } from '@solana/web3.js';
+
 import { Perpetuals } from '@/target/perpetuals';
 
 import { AnchorTypes } from './IdlTypeParser';
 
 export type WalletAdapterName = 'phantom';
 
-export type CustodyExtended = Custody & {
+export type CustodyExtended = {
+  // Formatted data
   pubkey: PublicKey;
-  targetRatio: BN;
-  maxRatio: BN;
-  minRatio: BN;
+  mint: PublicKey;
+  isStable: boolean;
+  decimals: number;
+  maxLeverage: number;
+  targetRatio: number;
+  maxRatio: number;
+  minRatio: number;
+
+  // Expressed in tokens
+  // Do liquidity * tokenPrice to get liquidityUsd
+  liquidity: number;
+
+  // Onchain data
+  nativeObject: Custody;
 };
 
-export type PositionExtended = Exclude<Position, 'side'> & {
+export type PositionExtended = {
+  // Formatted data
+  custody: PublicKey;
+  owner: PublicKey;
   pubkey: PublicKey;
   leverage: number;
   token: Token;
   side: 'long' | 'short';
-  liquidationPrice?: BN;
-  pnl?: ProfitAndLoss | null;
-  uiPnl?: number | null;
-  uiLiquidationPrice?: number;
-  uiSizeUsd: number;
-  uiCollateralUsd: number;
-  uiPrice: number;
-  uiCollateralAmount: number;
+  pnl?: number | null;
+  liquidationPrice?: number;
+  sizeUsd: number;
+  collateralUsd: number;
+  price: number;
+  collateralAmount: number;
+
+  // Onchain data
+  nativeObject: Position;
 };
 
-export type PoolExtended = Pool & {
-  uiTotalFeeCollected: number;
-  uiLongPositions: number;
-  uiShortPositions: number;
-  uiAumUsd: number;
-  uiTotalVolume: number;
-  uiOiLongUsd: number;
-  uiOiShortUsd: number;
+export type PoolExtended = {
+  // Formatted data
+  totalFeeCollected: number;
+  longPositions: number;
+  shortPositions: number;
+  aumUsd: number;
+  totalVolume: number;
+  oiLongUsd: number;
+  oiShortUsd: number;
   nbOpenLongPositions: number;
   nbOpenShortPositions: number;
   averageLongLeverage: number;
   averageShortLeverage: number;
+  custodies: PublicKey[];
+
+  // Onchain data
+  nativeObject: Pool;
 };
 
 // Alias to improve readability

@@ -1,7 +1,7 @@
 import { AdrenaClient } from '@/AdrenaClient';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatPriceInfo, getCustodyLiquidity } from '@/utils';
+import { formatPriceInfo } from '@/utils';
 
 export default function SwapDetails({
   tokenA,
@@ -36,10 +36,7 @@ export default function SwapDetails({
         <span>
           {client && tokenPrices && priceB
             ? formatPriceInfo(
-                getCustodyLiquidity(
-                  client.getCustodyByMint(tokenB.mint),
-                  priceB,
-                ),
+                client.getCustodyByMint(tokenB.mint).liquidity * priceB,
               )
             : '-'}
         </span>

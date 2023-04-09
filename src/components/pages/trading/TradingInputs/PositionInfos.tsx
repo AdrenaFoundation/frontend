@@ -66,7 +66,7 @@ export default function PositionInfos({
               return (
                 <>
                   {/* Opened position entry price */}
-                  <div>{formatPriceInfo(openedPosition.uiPrice)}</div>
+                  <div>{formatPriceInfo(openedPosition.price)}</div>
 
                   <Image
                     src="images/arrow-right.svg"
@@ -98,14 +98,12 @@ export default function PositionInfos({
             );
 
             if (openedPosition) {
-              if (!openedPosition.uiLiquidationPrice) return '-';
+              if (!openedPosition.liquidationPrice) return '-';
 
               return (
                 <>
                   {/* Opened position liquidation price */}
-                  <div>
-                    {formatPriceInfo(openedPosition.uiLiquidationPrice)}
-                  </div>
+                  <div>{formatPriceInfo(openedPosition.liquidationPrice)}</div>
 
                   <Image
                     src="images/arrow-right.svg"

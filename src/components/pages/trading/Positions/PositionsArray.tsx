@@ -84,11 +84,11 @@ export default function PositionsArray({
             </div>
 
             <div className={columnStyle}>
-              {position.uiPnl ? (
+              {position.pnl ? (
                 <span
-                  className={`text-${position.uiPnl > 0 ? 'green' : 'red'}-400`}
+                  className={`text-${position.pnl > 0 ? 'green' : 'red'}-400`}
                 >
-                  {formatPriceInfo(position.uiPnl)}
+                  {formatPriceInfo(position.pnl)}
                 </span>
               ) : (
                 '-'
@@ -96,16 +96,14 @@ export default function PositionsArray({
             </div>
 
             <div className={columnStyle}>
-              {formatPriceInfo(position.uiSizeUsd)}
+              {formatPriceInfo(position.sizeUsd)}
             </div>
 
             <div className={columnStyle}>
-              {formatPriceInfo(position.uiCollateralUsd)}
+              {formatPriceInfo(position.collateralUsd)}
             </div>
 
-            <div className={columnStyle}>
-              {formatPriceInfo(position.uiPrice)}
-            </div>
+            <div className={columnStyle}>{formatPriceInfo(position.price)}</div>
 
             <div className={columnStyle}>
               {tokenPrices[position.token.name]
@@ -115,7 +113,7 @@ export default function PositionsArray({
             </div>
 
             <div className={columnStyle}>
-              {formatPriceInfo(position.uiLiquidationPrice ?? null)}
+              {formatPriceInfo(position.liquidationPrice ?? null)}
             </div>
 
             <Button

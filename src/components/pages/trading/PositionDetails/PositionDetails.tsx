@@ -2,12 +2,7 @@ import { AdrenaClient } from '@/AdrenaClient';
 import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import {
-  formatNumber,
-  formatPriceInfo,
-  getCustodyLiquidity,
-  nativeToUi,
-} from '@/utils';
+import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
 
 export default function PositionDetails({
   tokenB,
@@ -42,8 +37,8 @@ export default function PositionDetails({
           {client && tokenB
             ? `${formatNumber(
                 nativeToUi(
-                  client.getCustodyByMint(tokenB.mint).borrowRateState
-                    .currentRate,
+                  client.getCustodyByMint(tokenB.mint).nativeObject
+                    .borrowRateState.currentRate,
                   RATE_DECIMALS,
                 ),
                 RATE_DECIMALS,
@@ -57,11 +52,9 @@ export default function PositionDetails({
         <span>
           {client && tokenB && tokenPrices && tokenPrices[tokenB.name]
             ? formatPriceInfo(
-                getCustodyLiquidity(
-                  client.getCustodyByMint(tokenB.mint),
+                client.getCustodyByMint(tokenB.mint).liquidity *
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   tokenPrices[tokenB.name]!,
-                ),
               )
             : '-'}
         </span>

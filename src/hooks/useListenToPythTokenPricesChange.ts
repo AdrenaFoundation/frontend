@@ -25,7 +25,8 @@ const useListenToPythTokenPricesChange = (
     if (!connection || !client) return;
 
     const feedIds: PublicKey[] = client.tokens.map(
-      (token) => client.getCustodyByMint(token.mint).oracle.oracleAccount,
+      (token) =>
+        client.getCustodyByMint(token.mint).nativeObject.oracle.oracleAccount,
     );
 
     setPythConnection(

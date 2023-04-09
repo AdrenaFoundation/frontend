@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
-import { BPS, USD_DECIMALS } from '@/constant';
+import { USD_DECIMALS } from '@/constant';
 import useGetPositionExitPriceAndFee from '@/hooks/useGetPositionExitPriceAndFee';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -52,27 +52,20 @@ export default function ReduceOrClosePosition({
     if (!input) return null;
 
     // PnL is taken into account when calculating new position leverage
-    const newPositionUsd =
-      position.uiCollateralUsd - input + (position.uiPnl ?? 0);
+    const newPositionUsd = position.collateralUsd - input + (position.pnl ?? 0);
 
     if (newPositionUsd <= 0) {
       return newPositionUsd;
     }
 
-    return position.uiSizeUsd / newPositionUsd;
+    return position.sizeUsd / newPositionUsd;
   })();
 
-  const maxAuthorizedLeverage: number | null = (() => {
-    const maxLeverageBN = client?.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody),
-    )?.pricing.maxLeverage;
+  const maxAuthorizedLeverage =
+    client?.custodies.find((custody) => custody.pubkey.equals(position.custody))
+      ?.maxLeverage ?? null;
 
-    if (!maxLeverageBN) return null;
-
-    return maxLeverageBN.toNumber() / BPS;
-  })();
-
-  const closing = input == position.uiCollateralUsd;
+  const closing = input == position.collateralUsd;
 
   const overMaxAuthorizedLeverage: boolean | null =
     maxAuthorizedLeverage === null || updatedLeverage === null
@@ -158,8 +151,8 @@ export default function ReduceOrClosePosition({
   const handleExecute = async () => {
     if (!input) return;
 
-    if (input > position.uiCollateralUsd) {
-      setInput(position.uiCollateralUsd);
+    if (input > position.collateralUsd) {
+      setInput(position.collateralUsd);
       return;
     }
 
@@ -184,7 +177,7 @@ export default function ReduceOrClosePosition({
           </>
         }
         textTopRight={
-          <>{`Max: ${formatNumber(position.uiCollateralUsd, USD_DECIMALS)}`}</>
+          <>{`Max: ${formatNumber(position.collateralUsd, USD_DECIMALS)}`}</>
         }
         value={input}
         maxButton={true}
@@ -199,7 +192,7 @@ export default function ReduceOrClosePosition({
         }}
         onChange={setInput}
         onMaxButtonClick={() => {
-          setInput(position.uiCollateralUsd);
+          setInput(position.collateralUsd);
         }}
       />
 
@@ -213,7 +206,7 @@ export default function ReduceOrClosePosition({
                 setInput(
                   Number(
                     formatNumber(
-                      (position.uiCollateralUsd * percentage) / 100,
+                      (position.collateralUsd * percentage) / 100,
                       USD_DECIMALS,
                     ),
                   ),
@@ -256,7 +249,7 @@ export default function ReduceOrClosePosition({
 
         <div className={rowStyle}>
           <div className="text-txtfade">Liq. Price</div>
-          <div>{formatPriceInfo(position.uiLiquidationPrice ?? null)}</div>
+          <div>{formatPriceInfo(position.liquidationPrice ?? null)}</div>
         </div>
 
         <div className="mt-2 h-[1px] w-full bg-grey" />
@@ -264,16 +257,16 @@ export default function ReduceOrClosePosition({
         <div className={rowStyle}>
           <div className="text-txtfade">Size</div>
           <div className="flex">
-            {!input ? formatPriceInfo(position.uiCollateralUsd) : null}
+            {!input ? formatPriceInfo(position.collateralUsd) : null}
 
             {input ? (
               <>
-                {formatPriceInfo(position.uiCollateralUsd)}
+                {formatPriceInfo(position.collateralUsd)}
                 {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src="images/arrow-right.svg" alt="arrow right" />
                 }
-                {formatPriceInfo(position.uiCollateralUsd - input)}
+                {formatPriceInfo(position.collateralUsd - input)}
               </>
             ) : null}
           </div>
@@ -319,20 +312,17 @@ export default function ReduceOrClosePosition({
           <div className="text-txtfade">Collateral ({position.token.name})</div>
           <div className="flex">
             {!input && markPrice
-              ? formatNumber(position.uiCollateralUsd / markPrice, 6)
+              ? formatNumber(position.collateralUsd / markPrice, 6)
               : null}
 
             {input && markPrice ? (
               <>
-                {formatNumber(position.uiCollateralUsd / markPrice, 6)}
+                {formatNumber(position.collateralUsd / markPrice, 6)}
                 {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src="images/arrow-right.svg" alt="arrow right" />
                 }
-                {formatNumber(
-                  (position.uiCollateralUsd - input) / markPrice,
-                  6,
-                )}
+                {formatNumber((position.collateralUsd - input) / markPrice, 6)}
               </>
             ) : null}
           </div>
@@ -341,8 +331,8 @@ export default function ReduceOrClosePosition({
         <div className={rowStyle}>
           <div className="text-txtfade">PnL</div>
           <div>
-            {position.uiPnl && markPrice
-              ? formatPriceInfo(position.uiPnl, true)
+            {position.pnl && markPrice
+              ? formatPriceInfo(position.pnl, true)
               : null}
           </div>
         </div>

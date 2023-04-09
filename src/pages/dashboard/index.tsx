@@ -36,9 +36,9 @@ export default function Trade() {
       <div className="flex justify-evenly flex-col sm:flex-row mt-8 sm:mt-4 md:mt-0">
         <Overview
           className="sm:m-4"
-          uiAumUsd={mainPool?.uiAumUsd ?? null}
-          uiLongPositions={mainPool?.uiLongPositions ?? null}
-          uiShortPositions={mainPool?.uiShortPositions ?? null}
+          aumUsd={mainPool?.aumUsd ?? null}
+          longPositions={mainPool?.longPositions ?? null}
+          shortPositions={mainPool?.shortPositions ?? null}
           nbOpenLongPositions={mainPool?.nbOpenLongPositions ?? null}
           nbOpenShortPositions={mainPool?.nbOpenShortPositions ?? null}
           averageLongLeverage={mainPool?.averageLongLeverage ?? null}
@@ -47,8 +47,8 @@ export default function Trade() {
 
         <Stats
           className="mt-4 sm:mt-0 sm:m-4"
-          totalCollectedFees={mainPool?.uiTotalFeeCollected ?? null}
-          totalVolume={mainPool?.uiTotalVolume ?? null}
+          totalCollectedFees={mainPool?.totalFeeCollected ?? null}
+          totalVolume={mainPool?.totalVolume ?? null}
         />
       </div>
 

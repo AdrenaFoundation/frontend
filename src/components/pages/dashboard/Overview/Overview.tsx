@@ -2,18 +2,18 @@ import { formatNumber, formatPriceInfo } from '@/utils';
 
 export default function Overview({
   className,
-  uiAumUsd,
-  uiLongPositions,
-  uiShortPositions,
+  aumUsd,
+  longPositions,
+  shortPositions,
   nbOpenLongPositions,
   nbOpenShortPositions,
   averageLongLeverage,
   averageShortLeverage,
 }: {
   className?: string;
-  uiAumUsd: number | null;
-  uiLongPositions: number | null;
-  uiShortPositions: number | null;
+  aumUsd: number | null;
+  longPositions: number | null;
+  shortPositions: number | null;
   nbOpenLongPositions: number | null;
   nbOpenShortPositions: number | null;
   averageLongLeverage: number | null;
@@ -29,17 +29,17 @@ export default function Overview({
       <div className="p-4 text-sm flex flex-col w-full">
         <div className="flex w-full justify-between">
           <div className="text-txtfade">AUM</div>
-          <div>{formatPriceInfo(uiAumUsd)}</div>
+          <div>{formatPriceInfo(aumUsd)}</div>
         </div>
 
         <div className="flex w-full justify-between">
           <div className="text-txtfade">Long Positions</div>
-          <div>{formatPriceInfo(uiLongPositions)}</div>
+          <div>{formatPriceInfo(longPositions)}</div>
         </div>
 
         <div className="flex w-full justify-between">
           <div className="text-txtfade">Short Positions</div>
-          <div>{formatPriceInfo(uiShortPositions)}</div>
+          <div>{formatPriceInfo(shortPositions)}</div>
         </div>
 
         <div className="flex w-full justify-between">
