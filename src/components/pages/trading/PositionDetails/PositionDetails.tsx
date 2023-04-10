@@ -2,7 +2,7 @@ import { AdrenaClient } from '@/AdrenaClient';
 import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
+import { formatNumber, formatPriceInfo } from '@/utils';
 
 export default function PositionDetails({
   tokenB,
@@ -19,6 +19,8 @@ export default function PositionDetails({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
+  const custody = client?.getCustodyByMint(tokenB.mint) ?? null;
+
   return (
     <div className={`flex flex-col p-1 text-sm ${className}`}>
       <div className="w-full flex justify-between items-center mt-1">
@@ -34,15 +36,8 @@ export default function PositionDetails({
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Borrow Fee</span>
         <span>
-          {client && tokenB
-            ? `${formatNumber(
-                nativeToUi(
-                  client.getCustodyByMint(tokenB.mint).nativeObject
-                    .borrowRateState.currentRate,
-                  RATE_DECIMALS,
-                ),
-                RATE_DECIMALS,
-              )}% / hr`
+          {custody && tokenB
+            ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}% / hr`
             : '-'}
         </span>
       </div>
@@ -50,9 +45,9 @@ export default function PositionDetails({
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Available Liquidity</span>
         <span>
-          {client && tokenB && tokenPrices && tokenPrices[tokenB.name]
+          {custody && tokenB && tokenPrices && tokenPrices[tokenB.name]
             ? formatPriceInfo(
-                client.getCustodyByMint(tokenB.mint).liquidity *
+                custody.liquidity *
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   tokenPrices[tokenB.name]!,
               )

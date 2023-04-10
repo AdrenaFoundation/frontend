@@ -86,12 +86,14 @@ export default function Trade() {
     if (!tokenB) return;
     if (!positions) return setOpenedPosition(null);
 
-    const relatedPosition = positions.find((position) =>
-      position.token.mint.equals(tokenB.mint),
+    const relatedPosition = positions.find(
+      (position) =>
+        position.token.mint.equals(tokenB.mint) &&
+        position.side === selectedAction,
     );
 
     setOpenedPosition(relatedPosition ?? null);
-  }, [positions, tokenB]);
+  }, [positions, selectedAction, tokenB]);
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !client || !dispatch) {

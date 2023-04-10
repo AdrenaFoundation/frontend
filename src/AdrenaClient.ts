@@ -14,6 +14,7 @@ import PerpetualsJson from '@/target/perpetuals.json';
 import {
   BPS,
   PRICE_DECIMALS,
+  RATE_DECIMALS,
   TOKEN_INFO_LIBRARY,
   USD_DECIMALS,
 } from './constant';
@@ -226,8 +227,8 @@ export class AdrenaClient {
         custodies,
         'short',
       ),
-
       custodies: mainPool.custodies,
+      //
       nativeObject: mainPool,
     };
 
@@ -263,19 +264,27 @@ export class AdrenaClient {
     }
 
     return (result as Custody[]).map((custody, i) => {
+      const ratios = mainPool.ratios[i];
+
       return {
         isStable: custody.isStable,
         mint: custody.mint,
         decimals: custody.decimals,
         pubkey: mainPool.custodies[i],
-        minRatio: mainPool.ratios[i].min.toNumber(),
-        maxRatio: mainPool.ratios[i].max.toNumber(),
-        targetRatio: mainPool.ratios[i].target.toNumber(),
+        minRatio: ratios.min.toNumber(),
+        maxRatio: ratios.max.toNumber(),
+        targetRatio: ratios.target.toNumber(),
         maxLeverage: custody.pricing.maxLeverage.toNumber() / BPS,
+        liquidity: nativeToUi(
+          custody.assets.owned.sub(custody.assets.locked),
+          custody.decimals,
+        ),
+        borrowFee: nativeToUi(
+          custody.borrowRateState.currentRate,
+          RATE_DECIMALS,
+        ),
+        //
         nativeObject: custody,
-        liquidity:
-          Number(custody.assets.owned.sub(custody.assets.locked)) /
-          10 ** custody.decimals,
       };
     });
   }
@@ -397,17 +406,22 @@ export class AdrenaClient {
 
     const position = this.findPositionAddress(owner, custodyAddress, side);
 
+    // TODO
+    // Think and use proper slippage, for now use 0.3%
+    const priceWithSlippage =
+      side === 'long'
+        ? price.mul(new BN(10_000)).div(new BN(9_970))
+        : price.mul(new BN(9_970)).div(new BN(10_000));
+
     console.log('Open position', {
-      price: price.mul(new BN(10_000)).div(new BN(9_000)).toString(),
+      price: priceWithSlippage.toString(),
       collateral: collateral.toString(),
       size: size.toString(),
     });
 
     return this.adrenaProgram.methods
       .openPosition({
-        // TODO: Handle slippage properly based on the actual price + fees + small slippage.
-        // For now use 0.3% slippage
-        price: price.mul(new BN(10_000)).div(new BN(9_970)),
+        price: priceWithSlippage,
         collateral,
         size,
         side: { [side]: {} },
@@ -592,8 +606,8 @@ export class AdrenaClient {
         owner,
         amountIn: amountA,
         // TODO: collateral should take into account swap fees
-        // For now apply fixed 10% so it always pass
-        minAmountOut: collateral.mul(new BN(9_000)).div(new BN(10_000)),
+        // For now disable slippage
+        minAmountOut: new BN(0),
         mintA,
         mintB,
       }).instruction(),
@@ -926,6 +940,7 @@ export class AdrenaClient {
               position.collateralAmount,
               token.decimals,
             ),
+            //
             nativeObject: position,
           },
         ];
