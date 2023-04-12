@@ -1046,11 +1046,11 @@ export class AdrenaClient {
           requireAllSignatures: false,
           verifySignatures: false,
         }),
-        // Uncomment to force the transaction to be send
+        // Uncomment to force the transaction to be sent
         // And get a transaction to analyze
-        {
-          skipPreflight: true,
-        },
+        // {
+        //  skipPreflight: true,
+        // },
       );
     } catch (err) {
       throw parseTransactionError(this.adrenaProgram, err);
