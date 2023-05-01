@@ -10,6 +10,8 @@ function Button(
     className,
     leftIcon,
     rightIcon,
+    rightIconClassName,
+    leftIconClassName,
     disabled,
     activateLoadingIcon,
   }: {
@@ -18,6 +20,8 @@ function Button(
     className?: string;
     leftIcon?: string;
     rightIcon?: string;
+    rightIconClassName?: string;
+    leftIconClassName?: string;
     disabled?: boolean;
     activateLoadingIcon?: boolean;
   },
@@ -56,14 +60,22 @@ function Button(
     >
       {leftIcon ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={leftIcon} className="h-6 w-6 mr-2" alt="left icon" />
+        <img
+          src={leftIcon}
+          className={`h-6 w-6 mr-2 ${leftIconClassName}`}
+          alt="left icon"
+        />
       ) : null}
 
       {title}
 
       {rightIcon ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={rightIcon} className="h-4 w-4 ml-2" alt="right icon" />
+        <img
+          src={rightIcon}
+          className={`h-4 w-4 ml-2 ${rightIconClassName}`}
+          alt="right icon"
+        />
       ) : null}
 
       {loading && activateLoadingIcon ? <LoadingIcon className="ml-4" /> : null}

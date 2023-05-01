@@ -19,7 +19,6 @@ export default function Trade() {
   const custodies = useCustodies(client, mainPool);
 
   useWatchTokenPrices(client, pythConnection);
-  // useListenToPythTokenPricesChange(client, pythConnection);
   useWatchWalletBalance(client, mainConnection);
 
   return (
