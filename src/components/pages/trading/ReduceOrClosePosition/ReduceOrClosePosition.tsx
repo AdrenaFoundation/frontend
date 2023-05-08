@@ -125,9 +125,16 @@ export default function ReduceOrClosePosition({
         });
       }
 
-      const priceWithSlippage = priceAndFee.price
-        .mul(new BN(10_000 - (allowedIncreasedSlippage ? 1 : 0.3 * 100)))
-        .div(new BN(10_000));
+      const slippageInBps = allowedIncreasedSlippage ? 1 : 0.3 * 100;
+
+      const priceWithSlippage =
+        position.side === 'short'
+          ? priceAndFee.price
+              .div(new BN(10_000 - slippageInBps))
+              .mul(new BN(10_000))
+          : priceAndFee.price
+              .mul(new BN(10_000 - slippageInBps))
+              .div(new BN(10_000));
 
       const txHash = await client.closePosition({
         position,

@@ -546,6 +546,11 @@ export class AdrenaClient {
 
     const receivingAccount = findATAAddressSync(position.owner, custody.mint);
 
+    console.log('Close position:', {
+      position: position.pubkey.toBase58(),
+      price: price.toString(),
+    });
+
     return this.signAndExecuteTx(
       await this.adrenaProgram.methods
         .closePosition({
