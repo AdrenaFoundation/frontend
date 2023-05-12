@@ -28,6 +28,7 @@ const useDailyStats = (client: AdrenaClient | null) => {
       const response = await fetch(
         `https://api.coingecko.com/api/v3/simple/price?ids=${client.tokens
           .map((token) => token.coingeckoId)
+          .filter((coingeckoId) => !!coingeckoId)
           .join(
             ',',
           )}&vs_currencies=USD&include_24hr_vol=true&include_24hr_change=true`,
@@ -37,6 +38,8 @@ const useDailyStats = (client: AdrenaClient | null) => {
 
       setStats(
         client.tokens.reduce((acc, token) => {
+          if (!token.coingeckoId) return acc;
+
           const { usd, usd_24h_change, usd_24h_vol } = data[token.coingeckoId];
 
           return {

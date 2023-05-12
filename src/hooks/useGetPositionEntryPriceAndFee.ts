@@ -13,7 +13,7 @@ type Params = {
 };
 
 // Every price change trigger this call, be careful to not overcall it or it will overflow the RPC
-const MINIMUM_TIME_BETWEEN_REQUESTS_IN_MS = 10_000;
+const MINIMUM_TIME_BETWEEN_REQUESTS_IN_MS = 5_000;
 
 const useGetPositionEntryPriceAndFee = (
   params: Params | null,
@@ -53,6 +53,8 @@ const useGetPositionEntryPriceAndFee = (
 
   useEffect(() => {
     if (!requestBuffered || !params || !client) return;
+
+    console.log('Get entry price and fee');
 
     requestBuffered.executeFunc({
       params,

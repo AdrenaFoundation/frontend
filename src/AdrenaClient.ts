@@ -19,6 +19,7 @@ import {
   USD_DECIMALS,
 } from './constant';
 import {
+  AmountAndFee,
   Custody,
   CustodyExtended,
   NewPositionPricesAndFee,
@@ -68,13 +69,21 @@ export class AdrenaClient {
   // @TODO, adapt to mainnet/devnet
   // Handle one pool only for now
   public static mainPoolAddress = new PublicKey(
-    '8bUQMkrKeiTwpfc9HmjiveB92k5Rq4d2b1HYwaNsR8dS',
+    'HeYMEZSUHtzN3ryUi6uUJ3jzHd3obMTWADjF8xEcBZY5',
   );
 
   public static lpTokenMint = PublicKey.findProgramAddressSync(
     [Buffer.from('lp_token_mint'), AdrenaClient.mainPoolAddress.toBuffer()],
     AdrenaClient.programId,
   )[0];
+
+  public static alpToken: Token = {
+    mint: AdrenaClient.lpTokenMint,
+    name: 'ALP',
+    decimals: 6,
+    isStable: false,
+    image: '/images/usdc.svg',
+  };
 
   protected adrenaProgram: Program<Perpetuals> | null = null;
 
@@ -771,6 +780,12 @@ export class AdrenaClient {
     size: BN;
     side: 'long' | 'short';
   }): Promise<NewPositionPricesAndFee | null> {
+    if (!token.custody) {
+      throw new Error(
+        'Cannot get entry price and fee for a token without custody',
+      );
+    }
+
     if (!this.readonlyAdrenaProgram.views) {
       return null;
     }
@@ -896,14 +911,15 @@ export class AdrenaClient {
 
   // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
   public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
-    const possiblePositionAddresses = this.tokens.reduce(
-      (acc, token) => [
+    const possiblePositionAddresses = this.tokens.reduce((acc, token) => {
+      if (!token.custody) return acc;
+
+      return [
         ...acc,
         this.findPositionAddress(user, token.custody, 'long'),
         this.findPositionAddress(user, token.custody, 'short'),
-      ],
-      [] as PublicKey[],
-    );
+      ];
+    }, [] as PublicKey[]);
 
     const positions =
       (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
@@ -922,8 +938,9 @@ export class AdrenaClient {
         }
 
         const token =
-          this.tokens.find((token) => token.custody.equals(position.custody)) ??
-          null;
+          this.tokens.find(
+            (token) => token.custody && token.custody.equals(position.custody),
+          ) ?? null;
 
         // Ignore position with unknown tokens
         if (!token) {
@@ -971,6 +988,11 @@ export class AdrenaClient {
       ),
     ]);
 
+    console.log(
+      'Positions:',
+      positionsExtended.map((x) => x.pubkey.toBase58()),
+    );
+
     // Insert them in positions extended
     return positionsExtended.map((positionExtended, index) => {
       const pnl = (() => {
@@ -1004,6 +1026,66 @@ export class AdrenaClient {
         })(),
       };
     });
+  }
+
+  public async getAddLiquidityAmountAndFee({
+    amountIn,
+    token,
+  }: {
+    amountIn: BN;
+    token: Token;
+  }): Promise<AmountAndFee | null> {
+    if (!token.custody) {
+      throw new Error(
+        'Cannot get add liquidity amount and fee for a token without custody',
+      );
+    }
+
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    const custody = this.getCustodyByMint(token.mint);
+
+    console.log('Get Add Liquidity Amount And Fee', {
+      amountIn: amountIn.toString(),
+      decimals: token.decimals,
+      perpetuals: AdrenaClient.perpetualsAddress.toBase58(),
+      pool: AdrenaClient.mainPoolAddress.toBase58(),
+      custody: token.custody.toBase58(),
+      custodyOracleAccount:
+        custody.nativeObject.oracle.oracleAccount.toBase58(),
+      lpTokenMint: AdrenaClient.lpTokenMint.toBase58(),
+    });
+
+    return this.readonlyAdrenaProgram.views.getAddLiquidityAmountAndFee(
+      {
+        amountIn,
+      },
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: AdrenaClient.mainPoolAddress,
+          custody: token.custody,
+          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+          lpTokenMint: AdrenaClient.lpTokenMint,
+        },
+        remainingAccounts: [
+          // needs to provide all custodies and theirs oracles
+          ...this.mainPool.custodies.map((custody) => ({
+            pubkey: custody,
+            isSigner: false,
+            isWritable: false,
+          })),
+
+          ...this.mainPool.custodies.map((_, index) => ({
+            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
+            isSigner: false,
+            isWritable: false,
+          })),
+        ],
+      },
+    );
   }
 
   /*

@@ -22,19 +22,8 @@ export default class RequestBufferer<T> {
 
   // Trigger execute
   public async executeFunc(params: T) {
-    // Data is already loading
+    // Data is already loading/we are in the cooldown period
     if (this.pendingRequest) {
-      this.waitingList = true;
-      this.waitingListParam = params;
-      return;
-    }
-
-    // We made a fetch not a while ago, delays
-    if (
-      this.lastRequestDate !== null &&
-      Date.now() - this.lastRequestDate < this.timeBetweenRequestInMs
-    ) {
-      // We casted one request less than 30s ago, delay
       this.waitingList = true;
       this.waitingListParam = params;
       return;
@@ -42,24 +31,26 @@ export default class RequestBufferer<T> {
 
     this.pendingRequest = true;
 
+    // Wipe the waiting list
+    this.waitingList = false;
+
+    // call the function with latests params
     await this.func(params);
 
     this.lastRequestDate = Date.now();
 
-    // If there is a call waiting list
-    // Call itself again to get fresher data
-    if (this.waitingList) {
-      this.waitingList = false;
+    // After cooldown period, switch back pendingRequest flag
+    setTimeout(async () => {
+      this.pendingRequest = false;
 
-      setTimeout(() => {
+      // Trigger the call to execute what's in the waitingList
+      if (this.waitingList) {
         const waitingListParamCopy = this.waitingListParam as T;
         this.waitingListParam = null;
+        this.waitingList = false;
 
-        this.func(waitingListParamCopy);
-      }, this.timeBetweenRequestInMs - (Date.now() - this.lastRequestDate));
-      return;
-    }
-
-    this.pendingRequest = false;
+        await this.executeFunc(waitingListParamCopy);
+      }
+    }, this.timeBetweenRequestInMs - (Date.now() - this.lastRequestDate));
   }
 }

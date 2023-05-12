@@ -70,12 +70,12 @@ export type TokenName = string;
 
 export interface Token {
   mint: PublicKey;
-  name: string;
+  name: TokenName;
   decimals: number;
   isStable: boolean;
-  custody: PublicKey;
   image: string;
-  coingeckoId: string;
+  custody?: PublicKey;
+  coingeckoId?: string;
 }
 
 export type PerpetualsTypes = AnchorTypes<
@@ -165,6 +165,7 @@ export type FeesMode = Defined['FeesMode'];
 export type OracleType = Defined['OracleType'];
 export type Side = Defined['Side'];
 export type GetEntryPriceAndFeeParams = Defined['GetEntryPriceAndFeeParams'];
+export type AmountAndFee = Defined['AmountAndFee'];
 
 //
 // Program

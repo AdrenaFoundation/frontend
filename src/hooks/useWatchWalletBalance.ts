@@ -20,8 +20,10 @@ const useWatchWalletBalance = (
 
     console.log('Load balance changes');
 
+    const tokens = [...client.tokens, AdrenaClient.alpToken];
+
     const balances = await Promise.all(
-      client.tokens.map(async ({ mint }) => {
+      tokens.map(async ({ mint }) => {
         const ata = findATAAddressSync(
           new PublicKey(wallet.walletAddress),
           mint,
@@ -40,7 +42,7 @@ const useWatchWalletBalance = (
     dispatch(
       setWalletTokenBalancesAction(
         balances.reduce((acc, balance, index) => {
-          acc[client.tokens[index].name] = balance;
+          acc[tokens[index].name] = balance;
 
           return acc;
         }, {} as Record<TokenName, number | null>),

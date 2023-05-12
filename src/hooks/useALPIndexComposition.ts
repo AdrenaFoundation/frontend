@@ -33,8 +33,8 @@ const useALPIndexComposition = (
     const alpIndexComposition = client.tokens.map((token) => {
       const price = tokenPrices[token.name];
 
-      const custody = custodies?.find((custody) =>
-        custody.pubkey.equals(token.custody),
+      const custody = custodies?.find(
+        (custody) => token.custody && custody.pubkey.equals(token.custody),
       );
 
       const custodyUsdValue =

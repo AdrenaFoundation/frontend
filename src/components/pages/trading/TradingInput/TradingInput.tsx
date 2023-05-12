@@ -9,6 +9,7 @@ import Select from '../../../common/Select/Select';
 
 export default function TradingInput({
   className,
+  disabled,
   textTopLeft,
   textTopRight,
   value,
@@ -20,6 +21,7 @@ export default function TradingInput({
   onMaxButtonClick,
 }: {
   className?: string;
+  disabled?: boolean;
   textTopLeft?: ReactNode;
   textTopRight?: ReactNode;
   value?: number | null;
@@ -61,6 +63,7 @@ export default function TradingInput({
 
         <div className="flex w-full items-center">
           <InputNumber
+            disabled={disabled}
             value={value ?? undefined}
             placeholder="0.00"
             className={twMerge(

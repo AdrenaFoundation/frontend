@@ -2,11 +2,13 @@ import { twMerge } from 'tailwind-merge';
 
 export default function InputNumber({
   value,
+  disabled,
   onChange,
   placeholder,
   className,
 }: {
   value?: number;
+  disabled?: boolean;
   onChange: (value: number | null) => void;
   placeholder?: string;
   className?: string;
@@ -14,6 +16,7 @@ export default function InputNumber({
   return (
     <input
       type="number"
+      disabled={disabled}
       value={value ?? ''}
       onChange={(v) => {
         if (!v.target.value.length) {
