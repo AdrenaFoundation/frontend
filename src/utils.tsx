@@ -3,7 +3,7 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { Store } from 'react-notifications-component';
@@ -11,7 +11,6 @@ import { Store } from 'react-notifications-component';
 import { Perpetuals } from '@/target/perpetuals';
 
 import { TOKEN_INFO_LIBRARY } from './constant';
-import { CustodyExtended } from './types';
 
 export function findATAAddressSync(
   wallet: PublicKey,
@@ -215,4 +214,11 @@ export function parseTransactionError(
   }
 
   return new AdrenaTransactionError(null, JSON.stringify(err, null, 2));
+}
+
+export async function isATAInitialized(
+  connection: Connection,
+  address: PublicKey,
+): Promise<boolean> {
+  return !!(await connection.getAccountInfo(address));
 }

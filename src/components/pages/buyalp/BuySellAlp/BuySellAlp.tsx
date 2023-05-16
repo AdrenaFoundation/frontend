@@ -1,10 +1,18 @@
+import { PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
+import {
+  addFailedTxNotification,
+  addSuccessTxNotification,
+  uiToNative,
+} from '@/utils';
 
 import BuySellAlpInputs from '../BuySellAlpInputs/BuySellAlpInputs';
 
@@ -30,8 +38,63 @@ export default function BuySellAlp({
     setCollateralToken(client.tokens[0]);
   }, [client]);
 
-  const handleExecuteButton = () => {
-    //
+  const handleExecuteButton = async () => {
+    if (
+      !client ||
+      !wallet?.walletAddress ||
+      !collateralInput ||
+      !collateralToken ||
+      !alpInput
+    ) {
+      console.log('Missing some info');
+      return;
+    }
+
+    if (selectedAction === 'buy') {
+      try {
+        const txHash = await client.addLiquidity({
+          owner: new PublicKey(wallet.walletAddress),
+          amountIn: uiToNative(collateralInput, collateralToken.decimals),
+          mint: collateralToken.mint,
+
+          // TODO: Apply proper slippage
+          minLpAmountOut: new BN(0),
+        });
+
+        return addSuccessTxNotification({
+          title: 'Successfull Transaction',
+          txHash,
+        });
+      } catch (error) {
+        console.log('error', error);
+        return addFailedTxNotification({
+          title: 'Error Buying ALP',
+          error,
+        });
+      }
+    }
+
+    // "sell"
+    try {
+      const txHash = await client.removeLiquidity({
+        owner: new PublicKey(wallet.walletAddress),
+        mint: collateralToken.mint,
+        lpAmountIn: uiToNative(alpInput, AdrenaClient.alpToken.decimals),
+
+        // TODO: Apply proper slippage
+        minAmountOut: new BN(0),
+      });
+
+      return addSuccessTxNotification({
+        title: 'Successfull Transaction',
+        txHash,
+      });
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Selling ALP',
+        error,
+      });
+    }
   };
 
   const buttonTitle = (() => {
@@ -52,35 +115,42 @@ export default function BuySellAlp({
     const walletCollateralTokenBalance =
       walletTokenBalances?.[collateralToken.name];
 
+    const walletAlpTokenBalance =
+      walletTokenBalances?.[AdrenaClient.alpToken.name];
+
     // Loading, should happens quickly
     if (typeof walletCollateralTokenBalance === 'undefined') {
       return '...';
     }
 
-    /*
     // If user wallet balance doesn't have enough tokens, tell user
-    if (!walletTokenABalance || inputAValue > walletTokenABalance) {
-      return `Insufficient ${tokenA.name} balance`;
+    if (
+      selectedAction === 'buy' &&
+      ((walletCollateralTokenBalance != null &&
+        collateralInput > walletCollateralTokenBalance) ||
+        walletCollateralTokenBalance === null)
+    ) {
+      return `Insufficient ${collateralToken.name} balance`;
     }
 
-    if (openedPosition) {
-      if (selectedAction === 'short') {
-        return 'Reduce Position';
-      }
-      if (selectedAction === 'long') {
-        return 'Increase Position';
-      }
+    // If user wallet balance doesn't have enough tokens, tell user
+    if (
+      selectedAction === 'sell' &&
+      ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
+        walletAlpTokenBalance === null)
+    ) {
+      return `Insufficient ${AdrenaClient.alpToken.name} balance`;
     }
 
-    if (selectedAction === 'swap') {
-      return 'Swap';
-    }*/
+    if (selectedAction === 'buy') {
+      return `Buy ${AdrenaClient.alpToken.name}`;
+    }
 
-    return 'Open Position';
+    return `Sell ${AdrenaClient.alpToken.name}`;
   })();
 
   return (
-    <div className={className}>
+    <div className={twMerge(className)}>
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'buy' }, { title: 'sell' }]}

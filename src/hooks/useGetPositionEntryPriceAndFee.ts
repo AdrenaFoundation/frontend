@@ -38,8 +38,6 @@ const useGetPositionEntryPriceAndFee = (
           params: Params;
           client: AdrenaClient;
         }) => {
-          console.log('Execute get entry price and fee');
-
           const entryPriceAndFee = await client.getEntryPriceAndFee(params);
 
           setEntryPriceAndFee(entryPriceAndFee);
@@ -53,8 +51,6 @@ const useGetPositionEntryPriceAndFee = (
 
   useEffect(() => {
     if (!requestBuffered || !params || !client) return;
-
-    console.log('Get entry price and fee');
 
     requestBuffered.executeFunc({
       params,

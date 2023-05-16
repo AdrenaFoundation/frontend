@@ -70,53 +70,127 @@ export default function BuySellAlpInputs({
   };
 
   // When price change or input change, recalculate displayed price
-  useEffect(() => {
-    (async () => {
-      const collateralTokenPrice = tokenPrices[collateralToken.name];
+  {
+    // Adapt displayed prices when token prices change
+    useEffect(() => {
+      const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
+      const alpTokenPrice = tokenPrices[alpToken.name] ?? null;
 
-      // Missing infos to calculate prices
-      if (collateralInput === null || collateralTokenPrice === null) {
-        setAlpPrice(null);
-        setCollateralPrice(null);
-        return;
+      if (collateralTokenPrice !== null && collateralInput !== null) {
+        setCollateralPrice(collateralInput * collateralTokenPrice);
       }
 
-      const collateralPrice = collateralInput * collateralTokenPrice;
+      if (alpTokenPrice !== null && alpInput !== null) {
+        setAlpPrice(alpTokenPrice * alpInput);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+      // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      collateralToken && tokenPrices[collateralToken.name],
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      alpToken && tokenPrices[alpToken.name],
+    ]);
 
-      setCollateralPrice(collateralPrice);
+    useEffect(() => {
+      (async () => {
+        const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
+        const alpTokenPrice = tokenPrices[collateralToken.name] ?? null;
 
-      //
-      // TODO:
-      // - Makes the add liquidity amount and fee to not trigger too often? Not sure
-      // - Add a loader on ALP input when recalculating
+        if (collateralTokenPrice !== null && collateralInput !== null) {
+          setCollateralPrice(collateralInput * collateralTokenPrice);
+        }
 
-      try {
-        const amountAndFee = await client.getAddLiquidityAmountAndFee({
-          amountIn: uiToNative(collateralInput, collateralToken.decimals),
-          token: collateralToken,
-        });
+        if (alpTokenPrice !== null && alpInput !== null) {
+          setAlpPrice(alpTokenPrice * alpInput);
+        }
 
-        if (!amountAndFee) {
-          setAlpPrice(null);
+        if (actionType === 'buy') {
+          // missing informations
+          if (collateralInput === null || alpTokenPrice === null) {
+            setAlpInput(null);
+            setAlpPrice(null);
+            setCollateralPrice(null);
+            return;
+          }
+
+          //
+          // TODO:
+          // - Makes the add liquidity amount and fee to not trigger too often? Not sure
+          // - Add a loader on ALP input when recalculating
+
+          try {
+            const amountAndFee = await client.getAddLiquidityAmountAndFee({
+              amountIn: uiToNative(collateralInput, collateralToken.decimals),
+              token: collateralToken,
+            });
+
+            if (!amountAndFee) {
+              setAlpInput(null);
+              setAlpPrice(null);
+              return;
+            }
+
+            setAlpInput(nativeToUi(amountAndFee.amount, alpToken.decimals));
+            setAlpPrice(
+              alpTokenPrice *
+                (nativeToUi(amountAndFee.amount, alpToken.decimals) -
+                  nativeToUi(amountAndFee.fee, alpToken.decimals)),
+            );
+          } catch (e) {
+            console.log('e', e);
+            setAlpPrice(null);
+          }
+
           return;
         }
 
-        setAlpInput(nativeToUi(amountAndFee.amount, alpToken.decimals));
-        setAlpPrice(
-          collateralPrice - nativeToUi(amountAndFee.fee, alpToken.decimals),
-        );
-      } catch (e) {
-        console.log('e', e);
-        setAlpPrice(null);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    collateralInput,
-    // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    collateralToken && tokenPrices[collateralToken.name],
-  ]);
+        if (actionType === 'sell') {
+          // missing informations
+          if (alpInput === null || collateralTokenPrice === null) {
+            setCollateralInput(null);
+            setCollateralPrice(null);
+            setAlpPrice(null);
+            return;
+          }
+
+          //
+          // TODO:
+          // - Makes the add liquidity amount and fee to not trigger too often? Not sure
+          // - Add a loader on ALP input when recalculating
+
+          try {
+            const amountAndFee = await client.getRemoveLiquidityAmountAndFee({
+              lpAmountIn: uiToNative(alpInput, alpToken.decimals),
+              token: collateralToken,
+            });
+
+            if (!amountAndFee) {
+              setCollateralInput(null);
+              setCollateralPrice(null);
+              return;
+            }
+
+            setCollateralInput(
+              nativeToUi(amountAndFee.amount, collateralToken.decimals),
+            );
+            setCollateralPrice(
+              collateralTokenPrice *
+                (nativeToUi(amountAndFee.amount, collateralToken.decimals) -
+                  nativeToUi(amountAndFee.fee, collateralToken.decimals)),
+            );
+          } catch (e) {
+            console.log('e', e);
+            setCollateralInput(null);
+            setCollateralPrice(null);
+          }
+
+          return;
+        }
+      })();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [collateralInput, alpInput]);
+  }
 
   const handleAlpInputChange = (v: number | null) => {
     setAlpInput(v);
@@ -128,7 +202,7 @@ export default function BuySellAlpInputs({
 
   const alpInputComponent = (
     <TradingInput
-      disabled={true}
+      disabled={actionType === 'buy'}
       textTopLeft={
         <>
           {actionType === 'buy' ? 'Receive' : 'Pay'}
@@ -147,9 +221,12 @@ export default function BuySellAlpInputs({
         </>
       }
       value={alpInput}
-      maxButton={false}
+      maxButton={actionType === 'sell'}
       selectedToken={alpToken}
       tokenList={[alpToken]}
+      onMaxButtonClick={() => {
+        setAlpInput(walletTokenBalances?.[alpToken.name] ?? 0);
+      }}
       onTokenSelect={() => {
         // only one token
       }}
@@ -159,6 +236,7 @@ export default function BuySellAlpInputs({
 
   const collateralComponent = (
     <TradingInput
+      disabled={actionType === 'sell'}
       textTopLeft={
         <>
           {actionType === 'buy' ? 'Pay' : 'Receive'}
@@ -178,9 +256,12 @@ export default function BuySellAlpInputs({
         </>
       }
       value={collateralInput}
-      maxButton={false}
+      maxButton={actionType === 'buy'}
       selectedToken={collateralToken}
       tokenList={allowedCollateralTokens}
+      onMaxButtonClick={() => {
+        setCollateralInput(walletTokenBalances?.[collateralToken.name] ?? 0);
+      }}
       onTokenSelect={setCollateralToken}
       onChange={handleCollateralInputChange}
     />

@@ -1,11 +1,16 @@
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
-import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import {
+  createAssociatedTokenAccountInstruction,
+  TOKEN_PROGRAM_ID,
+} from '@solana/spl-token';
+import {
+  Connection,
   PublicKey,
   RpcResponseAndContext,
   SignatureResult,
   SystemProgram,
   Transaction,
+  TransactionInstruction,
 } from '@solana/web3.js';
 
 import { Perpetuals } from '@/target/perpetuals';
@@ -34,6 +39,7 @@ import {
 import {
   AdrenaTransactionError,
   findATAAddressSync,
+  isATAInitialized,
   nativeToUi,
   parseTransactionError,
 } from './utils';
@@ -313,7 +319,7 @@ export class AdrenaClient {
     amountIn: BN;
     minLpAmountOut: BN;
   }) {
-    if (!this.adrenaProgram) {
+    if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
@@ -342,6 +348,18 @@ export class AdrenaClient {
     const fundingAccount = findATAAddressSync(owner, mint);
     const lpTokenAccount = findATAAddressSync(owner, AdrenaClient.lpTokenMint);
 
+    const preInstructions: TransactionInstruction[] = [];
+
+    if (!(await isATAInitialized(this.connection, lpTokenAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: lpTokenAccount,
+          mint: AdrenaClient.lpTokenMint,
+          owner,
+        }),
+      );
+    }
+
     return this.adrenaProgram.methods
       .addLiquidity({
         amountIn,
@@ -350,6 +368,92 @@ export class AdrenaClient {
       .accounts({
         owner,
         fundingAccount,
+        lpTokenAccount,
+        transferAuthority: AdrenaClient.transferAuthority,
+        perpetuals: AdrenaClient.perpetualsAddress,
+        pool: AdrenaClient.mainPoolAddress,
+        custody: custodyAddress,
+        custodyOracleAccount,
+        custodyTokenAccount,
+        lpTokenMint: AdrenaClient.lpTokenMint,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .remainingAccounts([
+        // needs to provide all custodies and theirs oracles
+        ...this.mainPool.custodies.map((custody) => ({
+          pubkey: custody,
+          isSigner: false,
+          isWritable: false,
+        })),
+
+        ...this.mainPool.custodies.map((_, index) => ({
+          pubkey: custodies[index].oracle.oracleAccount,
+          isSigner: false,
+          isWritable: false,
+        })),
+      ])
+      .preInstructions(preInstructions);
+  }
+
+  public async addLiquidity(params: {
+    owner: PublicKey;
+    mint: PublicKey;
+    amountIn: BN;
+    minLpAmountOut: BN;
+  }): Promise<string> {
+    return this.signAndExecuteTx(
+      await (await this.buildAddLiquidityTx(params)).transaction(),
+    );
+  }
+
+  protected async buildRemoveLiquidityTx({
+    owner,
+    mint,
+    lpAmountIn,
+    minAmountOut,
+  }: {
+    owner: PublicKey;
+    mint: PublicKey;
+    lpAmountIn: BN;
+    minAmountOut: BN;
+  }) {
+    if (!this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const custodyAddress = this.findCustodyAddress(mint);
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
+
+    // Load custodies in same order as declared in mainPool
+    const untypedCustodies =
+      await this.adrenaProgram.account.custody.fetchMultiple(
+        this.mainPool.custodies,
+      );
+
+    if (untypedCustodies.find((custodies) => !custodies)) {
+      throw new Error('Cannot load custodies');
+    }
+
+    const custodies: Custody[] = untypedCustodies as Custody[];
+
+    const custodyOracleAccount =
+      custodies[
+        this.mainPool.custodies.findIndex((custody) =>
+          custody.equals(custodyAddress),
+        )
+      ].oracle.oracleAccount;
+
+    const receivingAccount = findATAAddressSync(owner, mint);
+    const lpTokenAccount = findATAAddressSync(owner, AdrenaClient.lpTokenMint);
+
+    return this.adrenaProgram.methods
+      .removeLiquidity({
+        lpAmountIn,
+        minAmountOut,
+      })
+      .accounts({
+        owner,
+        receivingAccount,
         lpTokenAccount,
         transferAuthority: AdrenaClient.transferAuthority,
         perpetuals: AdrenaClient.perpetualsAddress,
@@ -375,14 +479,14 @@ export class AdrenaClient {
       ]);
   }
 
-  public async addLiquidity(params: {
+  public async removeLiquidity(params: {
     owner: PublicKey;
     mint: PublicKey;
-    amountIn: BN;
-    minLpAmountOut: BN;
+    lpAmountIn: BN;
+    minAmountOut: BN;
   }): Promise<string> {
     return this.signAndExecuteTx(
-      await (await this.buildAddLiquidityTx(params)).transaction(),
+      await (await this.buildRemoveLiquidityTx(params)).transaction(),
     );
   }
 
@@ -654,6 +758,14 @@ export class AdrenaClient {
     minAmountOut: BN;
     addedCollateral: BN;
   }): Promise<string> {
+    console.log('swapAndAddCollateralToPosition', {
+      position: position.pubkey.toBase58(),
+      mintIn: mintIn.toBase58(),
+      amountIn: amountIn.toString(),
+      minAmountOut: minAmountOut.toString(),
+      addedCollateral: addedCollateral.toString(),
+    });
+
     const [swapTx, addCollateralTx] = await Promise.all([
       this.buildSwapTx({
         owner: position.owner,
@@ -672,6 +784,21 @@ export class AdrenaClient {
     transaction.add(swapTx, addCollateralTx);
 
     return this.signAndExecuteTx(transaction);
+  }
+
+  public async addCollateralToPosition({
+    position,
+    addedCollateral,
+  }: {
+    position: PositionExtended;
+    addedCollateral: BN;
+  }) {
+    return this.signAndExecuteTx(
+      await this.buildAddCollateralTx({
+        position,
+        collateral: addedCollateral,
+      }).transaction(),
+    );
   }
 
   public buildAddCollateralTx({
@@ -1088,6 +1215,66 @@ export class AdrenaClient {
     );
   }
 
+  public async getRemoveLiquidityAmountAndFee({
+    lpAmountIn,
+    token,
+  }: {
+    lpAmountIn: BN;
+    token: Token;
+  }): Promise<AmountAndFee | null> {
+    if (!token.custody) {
+      throw new Error(
+        'Cannot get add liquidity amount and fee for a token without custody',
+      );
+    }
+
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    const custody = this.getCustodyByMint(token.mint);
+
+    console.log('Get Remove Liquidity Amount And Fee', {
+      lpAmountIn: lpAmountIn.toString(),
+      decimals: token.decimals,
+      perpetuals: AdrenaClient.perpetualsAddress.toBase58(),
+      pool: AdrenaClient.mainPoolAddress.toBase58(),
+      custody: token.custody.toBase58(),
+      custodyOracleAccount:
+        custody.nativeObject.oracle.oracleAccount.toBase58(),
+      lpTokenMint: AdrenaClient.lpTokenMint.toBase58(),
+    });
+
+    return this.readonlyAdrenaProgram.views.getRemoveLiquidityAmountAndFee(
+      {
+        lpAmountIn,
+      },
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: AdrenaClient.mainPoolAddress,
+          custody: token.custody,
+          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+          lpTokenMint: AdrenaClient.lpTokenMint,
+        },
+        remainingAccounts: [
+          // needs to provide all custodies and theirs oracles
+          ...this.mainPool.custodies.map((custody) => ({
+            pubkey: custody,
+            isSigner: false,
+            isWritable: false,
+          })),
+
+          ...this.mainPool.custodies.map((_, index) => ({
+            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
+            isSigner: false,
+            isWritable: false,
+          })),
+        ],
+      },
+    );
+  }
+
   /*
    * UTILS
    */
@@ -1102,15 +1289,14 @@ export class AdrenaClient {
   }
 
   protected async signAndExecuteTx(transaction: Transaction): Promise<string> {
-    if (!this.adrenaProgram) {
+    if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-    const connection = this.adrenaProgram.provider.connection;
 
     transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
+      await this.connection.getLatestBlockhash()
     ).blockhash;
 
     transaction.feePayer = wallet.publicKey;
@@ -1128,16 +1314,16 @@ export class AdrenaClient {
     let txHash: string;
 
     try {
-      txHash = await connection.sendRawTransaction(
+      txHash = await this.connection.sendRawTransaction(
         signedTransaction.serialize({
           requireAllSignatures: false,
           verifySignatures: false,
         }),
         // Uncomment to force the transaction to be sent
         // And get a transaction to analyze
-        // {
-        //  skipPreflight: true,
-        // },
+        {
+          skipPreflight: true,
+        },
       );
     } catch (err) {
       throw parseTransactionError(this.adrenaProgram, err);
@@ -1148,7 +1334,7 @@ export class AdrenaClient {
     let result: RpcResponseAndContext<SignatureResult> | null = null;
 
     try {
-      result = await connection.confirmTransaction(txHash);
+      result = await this.connection.confirmTransaction(txHash);
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txHash);
@@ -1209,5 +1395,30 @@ export class AdrenaClient {
       ],
       AdrenaClient.programId,
     )[0];
+  }
+
+  public createATAInstruction({
+    ataAddress,
+    mint,
+    owner,
+    payer = owner,
+  }: {
+    ataAddress: PublicKey;
+    mint: PublicKey;
+    owner: PublicKey;
+    payer?: PublicKey;
+  }) {
+    return createAssociatedTokenAccountInstruction(
+      payer,
+      ataAddress,
+      owner,
+      mint,
+    );
+  }
+
+  public get connection(): Connection | null {
+    if (!this.adrenaProgram) return null;
+
+    return this.adrenaProgram.provider.connection;
   }
 }

@@ -163,18 +163,25 @@ export default function Trade() {
     // Position is already opened, add collateral to it
     if (openedPosition) {
       try {
-        const txHash = await client.swapAndAddCollateralToPosition({
-          position: openedPosition,
-          mintIn: tokenA.mint,
-          amountIn: uiToNative(inputAValue, tokenA.decimals),
-          // TODO
-          // How to handle slippage?
-          // the inputBValue should take fees into account, for now it doesn't.
-          minAmountOut: new BN(0),
-          addedCollateral: uiToNative(inputBValue, tokenB.decimals).div(
-            new BN(leverage),
-          ),
-        });
+        const txHash = tokenA.mint.equals(tokenB.mint)
+          ? await client.addCollateralToPosition({
+              position: openedPosition,
+              addedCollateral: uiToNative(inputBValue, tokenB.decimals).div(
+                new BN(leverage),
+              ),
+            })
+          : await client.swapAndAddCollateralToPosition({
+              position: openedPosition,
+              mintIn: tokenA.mint,
+              amountIn: uiToNative(inputAValue, tokenA.decimals),
+              // TODO
+              // How to handle slippage?
+              // the inputBValue should take fees into account, for now it doesn't.
+              minAmountOut: new BN(0),
+              addedCollateral: uiToNative(inputBValue, tokenB.decimals).div(
+                new BN(leverage),
+              ),
+            });
 
         triggerPositionsReload();
 
