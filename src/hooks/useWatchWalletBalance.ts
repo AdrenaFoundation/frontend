@@ -1,5 +1,5 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { setWalletTokenBalancesAction } from '@/actions/walletBalancesActions';
 import { AdrenaClient } from '@/AdrenaClient';
@@ -11,7 +11,10 @@ import { findATAAddressSync } from '@/utils';
 const useWatchWalletBalance = (
   client: AdrenaClient | null,
   connection: Connection | null,
-) => {
+): {
+  triggerWalletTokenBalancesReload: () => void;
+} => {
+  const [trickReload, triggerReload] = useState<number>(0);
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
 
@@ -48,11 +51,18 @@ const useWatchWalletBalance = (
         }, {} as Record<TokenName, number | null>),
       ),
     );
-  }, [connection, wallet, dispatch, client]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connection, wallet, dispatch, client, trickReload]);
 
   useEffect(() => {
     loadWalletBalances();
   }, [loadWalletBalances]);
+
+  return {
+    triggerWalletTokenBalancesReload: () => {
+      triggerReload(trickReload + 1);
+    },
+  };
 };
 
 export default useWatchWalletBalance;

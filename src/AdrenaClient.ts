@@ -461,6 +461,7 @@ export class AdrenaClient {
         custody: custodyAddress,
         custodyOracleAccount,
         custodyTokenAccount,
+        lpTokenMint: AdrenaClient.lpTokenMint,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .remainingAccounts([

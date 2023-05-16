@@ -189,7 +189,7 @@ export default function BuySellAlpInputs({
         }
       })();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [collateralInput, alpInput]);
+    }, [collateralInput, alpInput, collateralToken]);
   }
 
   const handleAlpInputChange = (v: number | null) => {
@@ -262,7 +262,11 @@ export default function BuySellAlpInputs({
       onMaxButtonClick={() => {
         setCollateralInput(walletTokenBalances?.[collateralToken.name] ?? 0);
       }}
-      onTokenSelect={setCollateralToken}
+      onTokenSelect={(t: Token) => {
+        setCollateralInput(null);
+        setCollateralPrice(null);
+        setCollateralToken(t);
+      }}
       onChange={handleCollateralInputChange}
     />
   );

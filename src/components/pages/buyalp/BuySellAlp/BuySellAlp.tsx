@@ -19,9 +19,11 @@ import BuySellAlpInputs from '../BuySellAlpInputs/BuySellAlpInputs';
 export default function BuySellAlp({
   className,
   client,
+  triggerWalletTokenBalancesReload,
 }: {
   className?: string;
   client: AdrenaClient | null;
+  triggerWalletTokenBalancesReload: () => void;
 }) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const connected = !!wallet;
@@ -61,12 +63,15 @@ export default function BuySellAlp({
           minLpAmountOut: new BN(0),
         });
 
+        triggerWalletTokenBalancesReload();
+
         return addSuccessTxNotification({
           title: 'Successfull Transaction',
           txHash,
         });
       } catch (error) {
         console.log('error', error);
+
         return addFailedTxNotification({
           title: 'Error Buying ALP',
           error,
@@ -85,11 +90,15 @@ export default function BuySellAlp({
         minAmountOut: new BN(0),
       });
 
+      triggerWalletTokenBalancesReload();
+
       return addSuccessTxNotification({
         title: 'Successfull Transaction',
         txHash,
       });
     } catch (error) {
+      console.log('error', error);
+
       return addFailedTxNotification({
         title: 'Error Selling ALP',
         error,

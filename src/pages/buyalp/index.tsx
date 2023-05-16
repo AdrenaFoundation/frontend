@@ -15,7 +15,10 @@ export default function BuyALP() {
   const mainPool = useMainPool(client);
 
   useWatchTokenPrices(client, pythConnection);
-  useWatchWalletBalance(client, mainConnection);
+  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance(
+    client,
+    mainConnection,
+  );
 
   return (
     <div
@@ -30,11 +33,15 @@ export default function BuyALP() {
       )}
     >
       <div className="text-4xl font-bold mb-8 mt-4">Buy / Sell ALP</div>
-      <div>
+      <div className="mt-6 mb-6">
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
 
-      <BuySellAlp client={client} />
+      <BuySellAlp
+        className={'max-w-[40em] w-[40%] min-w-[25em] m-auto'}
+        client={client}
+        triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+      />
     </div>
   );
 }
