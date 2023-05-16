@@ -5,15 +5,16 @@ import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 // Leverage colors
-/*
+
 // GMX Style
 const colorA = '#2d3ed5';
 const colorB = '#232743';
-*/
 
 // ADRENA Style
+/*
 const colorA = '#36538f';
 const colorB = '#1e222d';
+*/
 
 export default function LeverageSlider({
   className,
