@@ -4,6 +4,17 @@ import Slider from 'rc-slider';
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+// Leverage colors
+/*
+// GMX Style
+const colorA = '#2d3ed5';
+const colorB = '#232743';
+*/
+
+// ADRENA Style
+const colorA = '#36538f';
+const colorB = '#1e222d';
+
 export default function LeverageSlider({
   className,
   onChange,
@@ -26,22 +37,22 @@ export default function LeverageSlider({
           {} as Record<number, ReactNode>,
         )}
         railStyle={{
-          backgroundColor: '#232743',
+          backgroundColor: colorB,
         }}
         trackStyle={{
-          backgroundColor: '#2d3ed5',
+          backgroundColor: colorA,
         }}
         handleStyle={{
-          backgroundColor: '#232743',
-          borderColor: '#2d3ed5',
+          backgroundColor: colorB,
+          borderColor: colorA,
         }}
         activeDotStyle={{
-          backgroundColor: '#2d3ed5',
-          borderColor: '#2d3ed5',
+          backgroundColor: colorA,
+          borderColor: colorA,
         }}
         dotStyle={{
-          backgroundColor: '#232743',
-          borderColor: '#232743',
+          backgroundColor: colorB,
+          borderColor: colorB,
         }}
         // Use as number because we don't use the slider as a range
         onChange={(v) => onChange(v as number)}

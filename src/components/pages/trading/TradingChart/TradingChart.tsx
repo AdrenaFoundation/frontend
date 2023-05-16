@@ -15,38 +15,44 @@ export default function TradingChart({ token }: { token: Token }) {
   useEffect(() => {
     function createWidget() {
       if (document.getElementById('chart-area') && 'TradingView' in window) {
-        setWidget(
-          // Force to any because we don't have access to the type of TradingView
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          new (window.TradingView as any).widget({
-            container_id: 'chart-area',
-            width: '100%',
-            height: '100%',
-            autosize: true,
-            symbol: `PYTH:${token.name}USD`,
-            interval: 'D',
-            timezone: 'UTC',
-            theme: 'dark',
-            style: '1',
-            locale: 'en',
-            save_image: true,
-            allow_symbol_change: false,
-            editablewatchlist: false,
-            hotlist: false,
-            hidevolume: true,
-            disabled_features: [
-              'symbol_search_hot_key',
-              'header_compare',
-              'compare_symbol',
-              'border_around_the_chart',
-              'add_to_watchlist',
-            ],
-            enabled_features: [
-              'header_fullscreen_button',
-              'hide_left_toolbar_by_default',
-            ],
-          }),
-        );
+        // Force to any because we don't have access to the type of TradingView
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const widget = new (window.TradingView as any).widget({
+          container_id: 'chart-area',
+          width: '100%',
+          height: '100%',
+          autosize: true,
+          symbol: `PYTH:${token.name}USD`,
+          interval: 'D',
+          timezone: 'UTC',
+          style: '1',
+          toolbar_bg: 'transparent',
+          locale: 'en',
+          save_image: true,
+          allow_symbol_change: false,
+          editablewatchlist: false,
+          hotlist: false,
+          hidevolume: true,
+          disabled_features: [
+            'symbol_search_hot_key',
+            'header_compare',
+            'compare_symbol',
+            'border_around_the_chart',
+            'add_to_watchlist',
+          ],
+          enabled_features: [
+            'header_fullscreen_button',
+            'hide_left_toolbar_by_default',
+          ],
+
+          // Styling
+          theme: 'dark',
+        });
+
+        console.log('widget', widget);
+        console.log('window.TradingView', window.TradingView);
+
+        setWidget(widget);
       }
     }
 
