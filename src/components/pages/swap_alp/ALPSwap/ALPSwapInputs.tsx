@@ -9,7 +9,7 @@ import { formatNumber, nativeToUi, uiToNative } from '@/utils';
 
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
-export default function BuySellAlpInputs({
+export default function ALPSwapInputs({
   actionType,
   className,
   alpToken,

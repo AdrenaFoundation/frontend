@@ -1,18 +1,16 @@
 import { twMerge } from 'tailwind-merge';
 
-import BuySellAlp from '@/components/pages/buyalp/BuySellAlp/BuySellAlp';
+import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
 import { MAIN_RPC, PYTH_ORACLE_RPC } from '@/constant';
 import useAdrenaClient from '@/hooks/useAdrenaClient';
 import useConnection from '@/hooks/useConnection';
-import useMainPool from '@/hooks/useMainPool';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 
-export default function BuyALP() {
+export default function SwapALP() {
   const mainConnection = useConnection(MAIN_RPC);
   const pythConnection = useConnection(PYTH_ORACLE_RPC);
   const client = useAdrenaClient(mainConnection);
-  const mainPool = useMainPool(client);
 
   useWatchTokenPrices(client, pythConnection);
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance(
@@ -37,7 +35,7 @@ export default function BuyALP() {
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
 
-      <BuySellAlp
+      <ALPSwap
         className={'max-w-[40em] w-[40%] min-w-[25em] m-auto'}
         client={client}
         triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}

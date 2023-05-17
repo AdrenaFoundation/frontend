@@ -50,7 +50,7 @@ export default function Buy() {
           </div>
           <div className="mt-4">
             <Button
-              title={<Link href="/buyalp">Buy</Link>}
+              title={<Link href="/swap_alp">Buy</Link>}
               className="bg-highlight w-20"
               onClick={() => {
                 // TODO: Jump to buy ALP page

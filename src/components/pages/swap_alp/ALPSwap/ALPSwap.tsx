@@ -14,9 +14,9 @@ import {
   uiToNative,
 } from '@/utils';
 
-import BuySellAlpInputs from '../BuySellAlpInputs/BuySellAlpInputs';
+import ALPSwapInputs from './ALPSwapInputs';
 
-export default function BuySellAlp({
+export default function ALPSwap({
   className,
   client,
   triggerWalletTokenBalancesReload,
@@ -170,7 +170,7 @@ export default function BuySellAlp({
 
       {client && collateralToken ? (
         <>
-          <BuySellAlpInputs
+          <ALPSwapInputs
             className="mt-4"
             client={client}
             actionType={selectedAction}
