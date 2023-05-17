@@ -1,10 +1,36 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '../common/Button/Button';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header() {
+  const { pathname } = useRouter();
+
+  // Specific header for landing page
+  if (pathname === '/') {
+    return (
+      <div
+        className={twMerge(
+          'flex',
+          'bg-main',
+          'w-full',
+          'justify-center',
+          'items-center',
+          'border-b',
+          'border-grey',
+          'sm:h-20',
+        )}
+      >
+        {
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="images/logo.svg" className="h-12" alt="logo" />
+        }
+      </div>
+    );
+  }
+
   const linkStyle =
     'mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:text-txtregular text-txtfade';
 

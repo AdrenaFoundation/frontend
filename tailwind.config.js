@@ -5,7 +5,6 @@ module.exports = {
     extend: {
       colors: {
         // background colors
-        /*
         // ADRENA Style
         main: '#171717',
         secondary: '#1E1D1D',
@@ -14,8 +13,8 @@ module.exports = {
 
         // border
         grey: '#2A2A2A',
-        */
 
+        /*
         // GMX Style
         main: '#101124',
         secondary: '#16182D',
@@ -24,6 +23,7 @@ module.exports = {
 
         // border
         grey: '#23263b',
+        */
 
         // text
         txtfade: '#8C8D97',
@@ -37,6 +37,7 @@ module.exports = {
       regular: ['regular'],
       thin: ['thin'],
       bold: ['bold'],
+      specialmonster: ['specialmonster'],
     },
   },
   plugins: [],

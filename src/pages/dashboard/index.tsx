@@ -11,7 +11,7 @@ import useMainPool from '@/hooks/useMainPool';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 
-export default function Trade() {
+export default function Dashboard() {
   const mainConnection = useConnection(MAIN_RPC);
   const pythConnection = useConnection(PYTH_ORACLE_RPC);
   const client = useAdrenaClient(mainConnection);

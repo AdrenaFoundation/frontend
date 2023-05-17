@@ -5,6 +5,11 @@
 
 @layer base {
   @font-face {
+    font-family: specialmonster;
+    src: url('/fonts/Pink Blue.ttf');
+  }
+
+  @font-face {
     font-family: regular;
     src: url('/fonts/Louis George Cafe.ttf');
   }
