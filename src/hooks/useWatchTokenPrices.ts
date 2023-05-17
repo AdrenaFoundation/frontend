@@ -9,10 +9,10 @@ import { setTokenPriceAction } from '@/actions/tokenPricesActions';
 import { AdrenaClient } from '@/AdrenaClient';
 import { useDispatch } from '@/store/store';
 
-let interval: NodeJS.Timeout | null = null;
+let pythPriceInterval: NodeJS.Timeout | null = null;
 
 // 2 requests are made when fetching prices
-const PRICE_LOADING_INTERVAL_IN_MS = 3_000;
+const PYTH_PRICE_LOADING_INTERVAL_IN_MS = 3_000;
 
 const useWatchTokenPrices = (
   client: AdrenaClient | null,
@@ -34,7 +34,7 @@ const useWatchTokenPrices = (
     );
   }, [connection, client]);
 
-  const loadPrices = useCallback(async () => {
+  const loadPythPrices = useCallback(async () => {
     if (!pythClient || !dispatch || !client) return;
 
     const feedIds: PublicKey[] = client.tokens.map(
@@ -57,23 +57,22 @@ const useWatchTokenPrices = (
       return;
     }
 
-    // Load all prices
-    loadPrices();
+    loadPythPrices();
 
     setInterval(() => {
-      loadPrices();
-    }, PRICE_LOADING_INTERVAL_IN_MS);
+      loadPythPrices();
+    }, PYTH_PRICE_LOADING_INTERVAL_IN_MS);
 
     return () => {
-      if (!interval) return;
+      if (!pythPriceInterval) return;
 
-      clearInterval(interval);
+      clearInterval(pythPriceInterval);
 
-      interval = null;
+      pythPriceInterval = null;
     };
     // Manually handle dependencies to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadPrices]);
+  }, [loadPythPrices]);
 };
 
 export default useWatchTokenPrices;

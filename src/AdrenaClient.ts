@@ -1156,6 +1156,38 @@ export class AdrenaClient {
     });
   }
 
+  public async getAssetsUnderManagement(): Promise<BN | null> {
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    return this.readonlyAdrenaProgram.views.getAssetsUnderManagement(
+      {},
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: AdrenaClient.mainPoolAddress,
+        },
+        remainingAccounts: [
+          // needs to provide all custodies and theirs oracles
+          ...this.mainPool.custodies.map((custody) => ({
+            pubkey: custody,
+            isSigner: false,
+            isWritable: false,
+          })),
+
+          ...this.mainPool.custodies.map((_, index) => ({
+            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
+            isSigner: false,
+            isWritable: false,
+          })),
+        ],
+      },
+    );
+  }
+
+  // fees are expressed in collateral token
+  // amount is expressed in LP
   public async getAddLiquidityAmountAndFee({
     amountIn,
     token,
@@ -1216,6 +1248,8 @@ export class AdrenaClient {
     );
   }
 
+  // fees are expressed in collateral token
+  // amount is expressed in collateral token
   public async getRemoveLiquidityAmountAndFee({
     lpAmountIn,
     token,

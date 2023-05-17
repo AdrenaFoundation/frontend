@@ -10,6 +10,7 @@ import Select from '../../../common/Select/Select';
 export default function TradingInput({
   className,
   disabled,
+  loading,
   textTopLeft,
   textTopRight,
   value,
@@ -22,6 +23,7 @@ export default function TradingInput({
 }: {
   className?: string;
   disabled?: boolean;
+  loading?: boolean;
   textTopLeft?: ReactNode;
   textTopRight?: ReactNode;
   value?: number | null;
@@ -62,19 +64,23 @@ export default function TradingInput({
         </div>
 
         <div className="flex w-full items-center">
-          <InputNumber
-            disabled={disabled}
-            value={value ?? undefined}
-            placeholder="0.00"
-            className={twMerge(
-              'bg-third',
-              'border-0',
-              'text-lg',
-              'outline-none',
-              'w-full',
-            )}
-            onChange={onChange}
-          />
+          {loading ? (
+            <span className="w-full text-txtfade">loading ...</span>
+          ) : (
+            <InputNumber
+              disabled={disabled}
+              value={value ?? undefined}
+              placeholder="0.00"
+              className={twMerge(
+                'bg-third',
+                'border-0',
+                'text-lg',
+                'outline-none',
+                'w-full',
+              )}
+              onChange={onChange}
+            />
+          )}
 
           {maxButton ? (
             <Button

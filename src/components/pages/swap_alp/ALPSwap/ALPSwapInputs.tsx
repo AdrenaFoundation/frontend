@@ -9,6 +9,10 @@ import { formatNumber, nativeToUi, uiToNative } from '@/utils';
 
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
+// use the counter to handle asynchronous multiple loading
+// always ignore outdated informations
+let loadingCounter = 0;
+
 export default function ALPSwapInputs({
   actionType,
   className,
@@ -19,6 +23,7 @@ export default function ALPSwapInputs({
   onChangeCollateralInput,
   setActionType,
   setCollateralToken,
+  setFees,
   client,
 }: {
   actionType: 'buy' | 'sell';
@@ -30,6 +35,7 @@ export default function ALPSwapInputs({
   onChangeCollateralInput: (v: number | null) => void;
   setActionType: (a: 'buy' | 'sell') => void;
   setCollateralToken: (t: Token | null) => void;
+  setFees: (f: number | null) => void;
   client: AdrenaClient;
 }) {
   const wallet = useSelector((s) => s.walletState);
@@ -43,6 +49,8 @@ export default function ALPSwapInputs({
 
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
+
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   // Propagate changes to upper component
   {
@@ -63,13 +71,19 @@ export default function ALPSwapInputs({
   const switchBuySell = () => {
     if (!alpToken || !collateralToken) return;
 
-    setAlpInput(collateralInput);
-    setCollateralInput(alpInput);
-
     setActionType(actionType === 'buy' ? 'sell' : 'buy');
   };
 
-  // When price change or input change, recalculate displayed price
+  // Reset all when changing action type
+  useEffect(() => {
+    setAlpInput(null);
+    setCollateralInput(null);
+    setFees(null);
+    setAlpPrice(null);
+    setCollateralPrice(null);
+  }, [actionType, setFees]);
+
+  // When price change or input change, recalculate inputs and displayed price
   {
     // Adapt displayed prices when token prices change
     useEffect(() => {
@@ -93,103 +107,142 @@ export default function ALPSwapInputs({
     ]);
 
     useEffect(() => {
-      (async () => {
-        const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
-        const alpTokenPrice = tokenPrices[collateralToken.name] ?? null;
+      // Ignore the event as it is not the editable input
+      if (actionType === 'buy') return;
 
-        if (collateralTokenPrice !== null && collateralInput !== null) {
-          setCollateralPrice(collateralInput * collateralTokenPrice);
-        }
+      const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
 
-        if (alpTokenPrice !== null && alpInput !== null) {
-          setAlpPrice(alpTokenPrice * alpInput);
-        }
+      // missing informations or empty input
+      if (alpInput === null || collateralTokenPrice === null) {
+        // deprecate current loading
+        setLoading(false);
+        loadingCounter += 1;
 
-        if (actionType === 'buy') {
-          // missing informations
-          if (collateralInput === null || alpTokenPrice === null) {
+        setCollateralInput(null);
+        setCollateralPrice(null);
+        setAlpPrice(null);
+        setFees(null);
+        return;
+      }
+
+      setLoading(true);
+
+      const localLoadingCounter = ++loadingCounter;
+
+      setFees(null);
+
+      client
+        .getRemoveLiquidityAmountAndFee({
+          lpAmountIn: uiToNative(alpInput, alpToken.decimals),
+          token: collateralToken,
+        })
+        .then((amountAndFee) => {
+          // Verify that information is not outdated
+          // If loaderCounter doesn't match it means
+          // an other request has been casted due to input change
+          if (localLoadingCounter !== loadingCounter) {
+            return;
+          }
+
+          if (!amountAndFee) {
+            setCollateralInput(null);
+            setCollateralPrice(null);
+            setFees(null);
+            return;
+          }
+
+          console.log('amountAndFee', {
+            amount: amountAndFee.amount.toString(),
+            fee: amountAndFee.fee.toString(),
+          });
+
+          setCollateralInput(
+            nativeToUi(amountAndFee.amount, collateralToken.decimals),
+          );
+
+          setCollateralPrice(
+            collateralTokenPrice *
+              nativeToUi(amountAndFee.amount, collateralToken.decimals),
+          );
+
+          setFees(nativeToUi(amountAndFee.fee, collateralToken.decimals));
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.log('e', e);
+          setCollateralInput(null);
+          setCollateralPrice(null);
+          setLoading(false);
+        });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [alpInput, collateralToken]);
+
+    useEffect(() => {
+      // Ignore the event as it is not the editable input
+      if (actionType === 'sell') return;
+
+      const alpTokenPrice = tokenPrices[alpToken.name] ?? null;
+
+      // missing informations or empty input
+      if (collateralInput === null || alpTokenPrice === null) {
+        // deprecate current loading
+        setLoading(false);
+        loadingCounter += 1;
+
+        setAlpInput(null);
+        setAlpPrice(null);
+        setCollateralPrice(null);
+        setFees(null);
+        return;
+      }
+
+      setLoading(true);
+
+      const localLoadingCounter = ++loadingCounter;
+
+      setFees(null);
+
+      client
+        .getAddLiquidityAmountAndFee({
+          amountIn: uiToNative(collateralInput, collateralToken.decimals),
+          token: collateralToken,
+        })
+        .then((amountAndFee) => {
+          // Verify that information is not outdated
+          // If loaderCounter doesn't match it means
+          // an other request has been casted due to input change
+          if (localLoadingCounter !== loadingCounter) {
+            console.log('Ignore deprecated result');
+            return;
+          }
+
+          if (!amountAndFee) {
             setAlpInput(null);
             setAlpPrice(null);
-            setCollateralPrice(null);
+            setFees(null);
             return;
           }
 
-          //
-          // TODO:
-          // - Makes the add liquidity amount and fee to not trigger too often? Not sure
-          // - Add a loader on ALP input when recalculating
+          console.log('amountAndFee', {
+            amount: amountAndFee.amount.toString(),
+            fee: amountAndFee.fee.toString(),
+          });
 
-          try {
-            const amountAndFee = await client.getAddLiquidityAmountAndFee({
-              amountIn: uiToNative(collateralInput, collateralToken.decimals),
-              token: collateralToken,
-            });
+          setAlpInput(nativeToUi(amountAndFee.amount, alpToken.decimals));
+          setAlpPrice(
+            alpTokenPrice * nativeToUi(amountAndFee.amount, alpToken.decimals),
+          );
 
-            if (!amountAndFee) {
-              setAlpInput(null);
-              setAlpPrice(null);
-              return;
-            }
-
-            setAlpInput(nativeToUi(amountAndFee.amount, alpToken.decimals));
-            setAlpPrice(
-              alpTokenPrice *
-                (nativeToUi(amountAndFee.amount, alpToken.decimals) -
-                  nativeToUi(amountAndFee.fee, alpToken.decimals)),
-            );
-          } catch (e) {
-            console.log('e', e);
-            setAlpPrice(null);
-          }
-
-          return;
-        }
-
-        if (actionType === 'sell') {
-          // missing informations
-          if (alpInput === null || collateralTokenPrice === null) {
-            setCollateralInput(null);
-            setCollateralPrice(null);
-            setAlpPrice(null);
-            return;
-          }
-
-          //
-          // TODO:
-          // - Makes the add liquidity amount and fee to not trigger too often? Not sure
-          // - Add a loader on ALP input when recalculating
-
-          try {
-            const amountAndFee = await client.getRemoveLiquidityAmountAndFee({
-              lpAmountIn: uiToNative(alpInput, alpToken.decimals),
-              token: collateralToken,
-            });
-
-            if (!amountAndFee) {
-              setCollateralInput(null);
-              setCollateralPrice(null);
-              return;
-            }
-
-            setCollateralInput(
-              nativeToUi(amountAndFee.amount, collateralToken.decimals),
-            );
-            setCollateralPrice(
-              collateralTokenPrice *
-                (nativeToUi(amountAndFee.amount, collateralToken.decimals) -
-                  nativeToUi(amountAndFee.fee, collateralToken.decimals)),
-            );
-          } catch (e) {
-            console.log('e', e);
-            setCollateralInput(null);
-            setCollateralPrice(null);
-          }
-
-          return;
-        }
-      })();
+          setFees(nativeToUi(amountAndFee.fee, collateralToken.decimals));
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.log('e', e);
+          setAlpPrice(null);
+          setLoading(false);
+        });
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [collateralInput, alpInput, collateralToken]);
+    }, [collateralInput, collateralToken]);
   }
 
   const handleAlpInputChange = (v: number | null) => {
@@ -202,6 +255,7 @@ export default function ALPSwapInputs({
 
   const alpInputComponent = (
     <TradingInput
+      loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       textTopLeft={
         <>
@@ -236,6 +290,7 @@ export default function ALPSwapInputs({
 
   const collateralComponent = (
     <TradingInput
+      loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
       textTopLeft={
         <>
@@ -263,8 +318,16 @@ export default function ALPSwapInputs({
         setCollateralInput(walletTokenBalances?.[collateralToken.name] ?? 0);
       }}
       onTokenSelect={(t: Token) => {
-        setCollateralInput(null);
-        setCollateralPrice(null);
+        if (actionType === 'buy') {
+          setAlpInput(null);
+          setAlpPrice(null);
+          setFees(null);
+        } else {
+          setCollateralInput(null);
+          setCollateralPrice(null);
+          setFees(null);
+        }
+
         setCollateralToken(t);
       }}
       onChange={handleCollateralInputChange}

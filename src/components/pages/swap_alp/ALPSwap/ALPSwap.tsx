@@ -11,6 +11,7 @@ import { Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
+  formatNumber,
   uiToNative,
 } from '@/utils';
 
@@ -33,6 +34,7 @@ export default function ALPSwap({
   const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
   const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
+  const [fees, setFees] = useState<number | null>(null);
 
   useEffect(() => {
     if (!client || !client.tokens.length) return;
@@ -181,7 +183,19 @@ export default function ALPSwap({
             onChangeCollateralInput={setCollateralInput}
             setActionType={setSelectedAction}
             setCollateralToken={setCollateralToken}
+            setFees={setFees}
           />
+
+          <div className="flex w-full justify-between mt-4">
+            <span>Fees</span>
+            <span>
+              {fees !== null
+                ? `${formatNumber(fees, collateralToken.decimals)} ${
+                    collateralToken.name
+                  }`
+                : '-'}
+            </span>
+          </div>
 
           {/* Button to execute action */}
           <Button
