@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import { AdrenaClient } from '@/AdrenaClient';
 import { useSelector } from '@/store/store';
 
-export default function ALPSwap({
+export default function ALPInfo({
   className,
   client,
 }: {

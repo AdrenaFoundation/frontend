@@ -81,6 +81,10 @@ export default function ALPSwapInputs({
     setFees(null);
     setAlpPrice(null);
     setCollateralPrice(null);
+
+    // deprecate current loading
+    setLoading(false);
+    loadingCounter += 1;
   }, [actionType, setFees]);
 
   // When price change or input change, recalculate inputs and displayed price
@@ -145,6 +149,7 @@ export default function ALPSwapInputs({
           }
 
           if (!amountAndFee) {
+            setLoading(false);
             setCollateralInput(null);
             setCollateralPrice(null);
             setFees(null);
@@ -217,6 +222,7 @@ export default function ALPSwapInputs({
           }
 
           if (!amountAndFee) {
+            setLoading(false);
             setAlpInput(null);
             setAlpPrice(null);
             setFees(null);
