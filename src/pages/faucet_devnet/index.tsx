@@ -16,7 +16,6 @@ import {
   uiToNative,
 } from '@/utils';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function FaucetDevnet({ client }: PageProps) {
   const wallet = useWallet();
   const pythConnection = useConnection(PYTH_ORACLE_RPC);

@@ -58,13 +58,8 @@ export class AdrenaClient {
     AdrenaClient.programId,
   )[0];
 
-  public static transferAuthority = PublicKey.findProgramAddressSync(
+  public static transferAuthorityAddress = PublicKey.findProgramAddressSync(
     [Buffer.from('transfer_authority')],
-    AdrenaClient.programId,
-  )[0];
-
-  public static perpetuals = PublicKey.findProgramAddressSync(
-    [Buffer.from('perpetuals')],
     AdrenaClient.programId,
   )[0];
 
@@ -373,7 +368,7 @@ export class AdrenaClient {
         owner,
         fundingAccount,
         lpTokenAccount,
-        transferAuthority: AdrenaClient.transferAuthority,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
         pool: AdrenaClient.mainPoolAddress,
         custody: custodyAddress,
@@ -459,7 +454,7 @@ export class AdrenaClient {
         owner,
         receivingAccount,
         lpTokenAccount,
-        transferAuthority: AdrenaClient.transferAuthority,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
         pool: AdrenaClient.mainPoolAddress,
         custody: custodyAddress,
@@ -547,7 +542,7 @@ export class AdrenaClient {
       .accounts({
         owner,
         fundingAccount,
-        transferAuthority: AdrenaClient.transferAuthority,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
         pool: AdrenaClient.mainPoolAddress,
         position,
@@ -601,8 +596,8 @@ export class AdrenaClient {
         owner,
         fundingAccount,
         receivingAccount,
-        transferAuthority: AdrenaClient.transferAuthority,
-        perpetuals: AdrenaClient.perpetuals,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        perpetuals: AdrenaClient.perpetualsAddress,
         pool: AdrenaClient.mainPoolAddress,
         receivingCustody,
         receivingCustodyOracleAccount,
@@ -677,8 +672,8 @@ export class AdrenaClient {
         .accounts({
           owner: position.owner,
           receivingAccount,
-          transferAuthority: AdrenaClient.transferAuthority,
-          perpetuals: AdrenaClient.perpetuals,
+          transferAuthority: AdrenaClient.transferAuthorityAddress,
+          perpetuals: AdrenaClient.perpetualsAddress,
           pool: AdrenaClient.mainPoolAddress,
           position: position.pubkey,
           custody: position.custody,
@@ -839,8 +834,8 @@ export class AdrenaClient {
       .accounts({
         owner: position.owner,
         fundingAccount,
-        transferAuthority: AdrenaClient.transferAuthority,
-        perpetuals: AdrenaClient.perpetuals,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        perpetuals: AdrenaClient.perpetualsAddress,
         pool: AdrenaClient.mainPoolAddress,
         position: position.pubkey,
         custody: position.custody,
@@ -884,8 +879,8 @@ export class AdrenaClient {
         .accounts({
           owner: position.owner,
           receivingAccount,
-          transferAuthority: AdrenaClient.transferAuthority,
-          perpetuals: AdrenaClient.perpetuals,
+          transferAuthority: AdrenaClient.transferAuthorityAddress,
+          perpetuals: AdrenaClient.perpetualsAddress,
           pool: AdrenaClient.mainPoolAddress,
           position: position.pubkey,
           custody: position.custody,

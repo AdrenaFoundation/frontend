@@ -80,6 +80,7 @@ export default function Header({ client }: { client: AdrenaClient | null }) {
         {PageLink('/dashboard', 'Dashboard')}
         {PageLink('/earn', 'Earn')}
         {PageLink('/buy', 'Buy')}
+        {PageLink('/onchain_info', 'Onchain Info')}
         {client?.cluster === 'devnet'
           ? PageLink('/faucet_devnet', 'Faucet')
           : null}
