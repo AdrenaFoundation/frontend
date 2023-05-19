@@ -31,9 +31,9 @@ export default function SwapALP({ client }: PageProps) {
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
 
-      <div className="flex w-full flex-row flex-wrap mt-12">
+      <div className="flex w-full flex-row flex-wrap mt-12 justify-around">
         <ALPInfo
-          className="max-w-[40em] w-[40%] min-w-[25em]"
+          className="max-w-[40em] w-[40%] min-w-[25em] pb-2"
           client={client}
         />
 
