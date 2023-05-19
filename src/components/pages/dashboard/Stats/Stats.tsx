@@ -11,6 +11,8 @@ export default function Stats({
   totalCollectedFees: number | null;
   totalVolume: number | null;
 }) {
+  const rowClasses = 'flex w-full justify-between mt-2';
+
   return (
     <div
       className={twMerge(
@@ -25,12 +27,12 @@ export default function Stats({
       )}
     >
       <div className="p-4 border-b border-grey">Total Stats</div>
-      <div className="p-4 text-sm flex flex-col w-full">
-        <div className="flex w-full justify-between">
+      <div className="pr-4 pt-2 pb-4 pl-4 text-sm flex flex-col w-full">
+        <div className={rowClasses}>
           <div className="text-txtfade">Total Fees</div>
           <div>{formatPriceInfo(totalCollectedFees)}</div>
         </div>
-        <div className="flex w-full justify-between">
+        <div className={rowClasses}>
           <div className="text-txtfade">Total Volume</div>
           <div>{formatPriceInfo(totalVolume)}</div>
         </div>

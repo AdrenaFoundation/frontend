@@ -19,6 +19,8 @@ export default function Overview({
   averageLongLeverage: number | null;
   averageShortLeverage: number | null;
 }) {
+  const rowClasses = 'flex w-full justify-between mt-2';
+
   return (
     <div
       className={`border border-grey bg-secondary flex flex-col w-[30em] max-w-full ${
@@ -26,35 +28,35 @@ export default function Overview({
       }`}
     >
       <div className="p-4 border-b border-grey">Overview</div>
-      <div className="p-4 text-sm flex flex-col w-full">
-        <div className="flex w-full justify-between">
+      <div className="pb-4 pl-4 pr-4 pt-2 text-sm flex flex-col w-full">
+        <div className={rowClasses}>
           <div className="text-txtfade">AUM</div>
           <div>{formatPriceInfo(aumUsd)}</div>
         </div>
 
-        <div className="flex w-full justify-between">
+        <div className={rowClasses}>
           <div className="text-txtfade">Long Positions</div>
           <div>{formatPriceInfo(longPositions)}</div>
         </div>
 
-        <div className="flex w-full justify-between">
+        <div className={rowClasses}>
           <div className="text-txtfade">Short Positions</div>
           <div>{formatPriceInfo(shortPositions)}</div>
         </div>
 
-        <div className="flex w-full justify-between">
+        <div className={rowClasses}>
           <div className="text-txtfade">Active Long Positions</div>
           <div>{nbOpenLongPositions !== null ? nbOpenLongPositions : '-'}</div>
         </div>
 
-        <div className="flex w-full justify-between">
+        <div className={rowClasses}>
           <div className="text-txtfade">Active Short Positions</div>
           <div>
             {nbOpenShortPositions !== null ? nbOpenShortPositions : '-'}
           </div>
         </div>
 
-        <div className="flex w-full justify-between">
+        <div className={rowClasses}>
           <div className="text-txtfade">Average Long Leverage</div>
           <div>
             {averageLongLeverage
@@ -63,7 +65,7 @@ export default function Overview({
           </div>
         </div>
 
-        <div className="flex w-full justify-between">
+        <div className={rowClasses}>
           <div className="text-txtfade">Average Short Leverage</div>
           <div>
             {averageShortLeverage
