@@ -1,13 +1,10 @@
-import { AdrenaClient } from '@/AdrenaClient';
 import { TokenName } from '@/types';
 
 import { TokenPricesAction } from '../actions/tokenPricesActions';
 
 export type TokenPricesState = Record<TokenName, number | null>;
 
-const initialState: TokenPricesState = {
-  [AdrenaClient.alpToken.name]: 1,
-};
+const initialState: TokenPricesState = {};
 
 export default function tokenPricesReducer(
   state = initialState,

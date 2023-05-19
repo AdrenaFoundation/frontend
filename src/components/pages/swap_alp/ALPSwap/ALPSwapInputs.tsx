@@ -23,7 +23,7 @@ export default function ALPSwapInputs({
   onChangeCollateralInput,
   setActionType,
   setCollateralToken,
-  setFees,
+  setFeesUsd,
   client,
 }: {
   actionType: 'buy' | 'sell';
@@ -35,7 +35,7 @@ export default function ALPSwapInputs({
   onChangeCollateralInput: (v: number | null) => void;
   setActionType: (a: 'buy' | 'sell') => void;
   setCollateralToken: (t: Token | null) => void;
-  setFees: (f: number | null) => void;
+  setFeesUsd: (f: number | null) => void;
   client: AdrenaClient;
 }) {
   const wallet = useSelector((s) => s.walletState);
@@ -78,14 +78,14 @@ export default function ALPSwapInputs({
   useEffect(() => {
     setAlpInput(null);
     setCollateralInput(null);
-    setFees(null);
+    setFeesUsd(null);
     setAlpPrice(null);
     setCollateralPrice(null);
 
     // deprecate current loading
     setLoading(false);
     loadingCounter += 1;
-  }, [actionType, setFees]);
+  }, [actionType, setFeesUsd]);
 
   // When price change or input change, recalculate inputs and displayed price
   {
@@ -125,7 +125,7 @@ export default function ALPSwapInputs({
         setCollateralInput(null);
         setCollateralPrice(null);
         setAlpPrice(null);
-        setFees(null);
+        setFeesUsd(null);
         return;
       }
 
@@ -133,7 +133,7 @@ export default function ALPSwapInputs({
 
       const localLoadingCounter = ++loadingCounter;
 
-      setFees(null);
+      setFeesUsd(null);
 
       client
         .getRemoveLiquidityAmountAndFee({
@@ -152,7 +152,7 @@ export default function ALPSwapInputs({
             setLoading(false);
             setCollateralInput(null);
             setCollateralPrice(null);
-            setFees(null);
+            setFeesUsd(null);
             return;
           }
 
@@ -170,7 +170,10 @@ export default function ALPSwapInputs({
               nativeToUi(amountAndFee.amount, collateralToken.decimals),
           );
 
-          setFees(nativeToUi(amountAndFee.fee, collateralToken.decimals));
+          setFeesUsd(
+            collateralTokenPrice *
+              nativeToUi(amountAndFee.fee, collateralToken.decimals),
+          );
           setLoading(false);
         })
         .catch((e) => {
@@ -187,9 +190,14 @@ export default function ALPSwapInputs({
       if (actionType === 'sell') return;
 
       const alpTokenPrice = tokenPrices[alpToken.name] ?? null;
+      const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
 
       // missing informations or empty input
-      if (collateralInput === null || alpTokenPrice === null) {
+      if (
+        collateralInput === null ||
+        alpTokenPrice === null ||
+        collateralTokenPrice === null
+      ) {
         // deprecate current loading
         setLoading(false);
         loadingCounter += 1;
@@ -197,7 +205,7 @@ export default function ALPSwapInputs({
         setAlpInput(null);
         setAlpPrice(null);
         setCollateralPrice(null);
-        setFees(null);
+        setFeesUsd(null);
         return;
       }
 
@@ -205,7 +213,7 @@ export default function ALPSwapInputs({
 
       const localLoadingCounter = ++loadingCounter;
 
-      setFees(null);
+      setFeesUsd(null);
 
       client
         .getAddLiquidityAmountAndFee({
@@ -225,7 +233,7 @@ export default function ALPSwapInputs({
             setLoading(false);
             setAlpInput(null);
             setAlpPrice(null);
-            setFees(null);
+            setFeesUsd(null);
             return;
           }
 
@@ -239,7 +247,10 @@ export default function ALPSwapInputs({
             alpTokenPrice * nativeToUi(amountAndFee.amount, alpToken.decimals),
           );
 
-          setFees(nativeToUi(amountAndFee.fee, collateralToken.decimals));
+          setFeesUsd(
+            collateralTokenPrice *
+              nativeToUi(amountAndFee.fee, collateralToken.decimals),
+          );
           setLoading(false);
         })
         .catch((e) => {
@@ -327,11 +338,11 @@ export default function ALPSwapInputs({
         if (actionType === 'buy') {
           setAlpInput(null);
           setAlpPrice(null);
-          setFees(null);
+          setFeesUsd(null);
         } else {
           setCollateralInput(null);
           setCollateralPrice(null);
-          setFees(null);
+          setFeesUsd(null);
         }
 
         setCollateralToken(t);

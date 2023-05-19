@@ -636,7 +636,7 @@ export type Perpetuals = {
       accounts: [
         {
           name: 'owner';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -1552,6 +1552,35 @@ export type Perpetuals = {
       ];
       returns: 'u128';
     },
+    {
+      name: 'getLpTokenPrice';
+      accounts: [
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'GetLpTokenPriceParams';
+          };
+        },
+      ];
+      returns: 'u64';
+    },
   ];
   accounts: [
     {
@@ -2156,6 +2185,13 @@ export type Perpetuals = {
     },
     {
       name: 'GetLiquidationStateParams';
+      type: {
+        kind: 'struct';
+        fields: [];
+      };
+    },
+    {
+      name: 'GetLpTokenPriceParams';
       type: {
         kind: 'struct';
         fields: [];
@@ -4005,7 +4041,7 @@ export const IDL: Perpetuals = {
       accounts: [
         {
           name: 'owner',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -4921,6 +4957,35 @@ export const IDL: Perpetuals = {
       ],
       returns: 'u128',
     },
+    {
+      name: 'getLpTokenPrice',
+      accounts: [
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'GetLpTokenPriceParams',
+          },
+        },
+      ],
+      returns: 'u64',
+    },
   ],
   accounts: [
     {
@@ -5525,6 +5590,13 @@ export const IDL: Perpetuals = {
     },
     {
       name: 'GetLiquidationStateParams',
+      type: {
+        kind: 'struct',
+        fields: [],
+      },
+    },
+    {
+      name: 'GetLpTokenPriceParams',
       type: {
         kind: 'struct',
         fields: [],

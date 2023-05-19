@@ -71,7 +71,7 @@ export class AdrenaClient {
   // @TODO, adapt to mainnet/devnet
   // Handle one pool only for now
   public static mainPoolAddress = new PublicKey(
-    'HeYMEZSUHtzN3ryUi6uUJ3jzHd3obMTWADjF8xEcBZY5',
+    '5P2488ScKJYZdbyr2EyfreUgDnXVk64E5a5az2fJCDZE',
   );
 
   public static lpTokenMint = PublicKey.findProgramAddressSync(
@@ -1289,6 +1289,37 @@ export class AdrenaClient {
           pool: AdrenaClient.mainPoolAddress,
           custody: token.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+          lpTokenMint: AdrenaClient.lpTokenMint,
+        },
+        remainingAccounts: [
+          // needs to provide all custodies and theirs oracles
+          ...this.mainPool.custodies.map((custody) => ({
+            pubkey: custody,
+            isSigner: false,
+            isWritable: false,
+          })),
+
+          ...this.mainPool.custodies.map((_, index) => ({
+            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
+            isSigner: false,
+            isWritable: false,
+          })),
+        ],
+      },
+    );
+  }
+
+  public async getLpTokenPrice(): Promise<BN | null> {
+    if (!this.readonlyAdrenaProgram.views || !this.adrenaProgram) {
+      return null;
+    }
+
+    return this.readonlyAdrenaProgram.views.getLpTokenPrice(
+      {},
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: AdrenaClient.mainPoolAddress,
           lpTokenMint: AdrenaClient.lpTokenMint,
         },
         remainingAccounts: [

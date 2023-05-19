@@ -6,12 +6,14 @@ import { twMerge } from 'tailwind-merge';
 import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
   formatNumber,
+  formatPriceInfo,
   uiToNative,
 } from '@/utils';
 
@@ -34,7 +36,7 @@ export default function ALPSwap({
   const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
   const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
-  const [fees, setFees] = useState<number | null>(null);
+  const [feesUsd, setFeesUsd] = useState<number | null>(null);
 
   useEffect(() => {
     if (!client || !client.tokens.length) return;
@@ -183,18 +185,12 @@ export default function ALPSwap({
             onChangeCollateralInput={setCollateralInput}
             setActionType={setSelectedAction}
             setCollateralToken={setCollateralToken}
-            setFees={setFees}
+            setFeesUsd={setFeesUsd}
           />
 
           <div className="flex w-full justify-between mt-4">
             <span>Fees</span>
-            <span>
-              {fees !== null
-                ? `${formatNumber(fees, collateralToken.decimals)} ${
-                    collateralToken.name
-                  }`
-                : '-'}
-            </span>
+            <span>{formatPriceInfo(feesUsd)}</span>
           </div>
 
           {/* Button to execute action */}
