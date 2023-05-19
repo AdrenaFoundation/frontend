@@ -6,13 +6,11 @@ import { twMerge } from 'tailwind-merge';
 import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
-  formatNumber,
   formatPriceInfo,
   uiToNative,
 } from '@/utils';
