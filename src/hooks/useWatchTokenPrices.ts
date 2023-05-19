@@ -90,7 +90,7 @@ const useWatchTokenPrices = (
         price ? nativeToUi(price, USD_DECIMALS) : null,
       ),
     );
-  }, [client]);
+  }, [client, dispatch]);
 
   useEffect(() => {
     if (!client || !dispatch) {
