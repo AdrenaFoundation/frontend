@@ -12,11 +12,6 @@ import SwapDetails from '@/components/pages/trading/SwapDetails/SwapDetails';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingInputs from '@/components/pages/trading/TradingInputs/TradingInputs';
-import { PYTH_ORACLE_RPC } from '@/constant';
-import useConnection from '@/hooks/useConnection';
-import usePositions from '@/hooks/usePositions';
-import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
-import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
 import {
@@ -28,17 +23,16 @@ import {
 
 type Action = 'long' | 'short' | 'swap';
 
-export default function Trade({ client }: PageProps) {
-  const pythConnection = useConnection(PYTH_ORACLE_RPC);
-  const { positions, triggerPositionsReload } = usePositions(client);
+export default function Trade({
+  client,
+  positions,
+  connected,
+  wallet,
+  triggerPositionsReload,
+}: PageProps) {
   const dispatch = useDispatch();
 
-  useWatchTokenPrices(client, pythConnection);
-  useWatchWalletBalance(client);
-
   const [selectedAction, setSelectedAction] = useState<Action>('long');
-  const wallet = useSelector((s) => s.walletState.wallet);
-  const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -93,7 +87,7 @@ export default function Trade({ client }: PageProps) {
   }, [positions, selectedAction, tokenB]);
 
   const handleExecuteButton = async (): Promise<void> => {
-    if (!connected || !client || !dispatch) {
+    if (!connected || !client || !dispatch || !wallet) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
@@ -118,7 +112,7 @@ export default function Trade({ client }: PageProps) {
     if (selectedAction === 'swap') {
       try {
         const txHash = await client.swap({
-          owner: new PublicKey(wallet.walletAddress),
+          owner: new PublicKey(wallet.publicKey),
           amountIn: uiToNative(inputAValue, tokenA.decimals),
 
           // TODO
@@ -196,7 +190,7 @@ export default function Trade({ client }: PageProps) {
 
     try {
       const txHash = await client.openPositionWithSwap({
-        owner: new PublicKey(wallet.walletAddress),
+        owner: new PublicKey(wallet.publicKey),
         mintA: tokenA.mint,
         mintB: tokenB.mint,
         amountA: uiToNative(inputAValue, tokenA.decimals),

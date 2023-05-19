@@ -2,10 +2,7 @@ import { transferChecked } from '@solana/spl-token';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
-import { devnetFaucetBankWallet, PYTH_ORACLE_RPC } from '@/constant';
-import useConnection from '@/hooks/useConnection';
-import useWallet from '@/hooks/useWallet';
-import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
+import { devnetFaucetBankWallet } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import {
@@ -16,12 +13,7 @@ import {
   uiToNative,
 } from '@/utils';
 
-export default function FaucetDevnet({ client }: PageProps) {
-  const wallet = useWallet();
-  const pythConnection = useConnection(PYTH_ORACLE_RPC);
-
-  useWatchTokenPrices(client, pythConnection);
-
+export default function FaucetDevnet({ client, wallet }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [pendingTx, setPendingTx] = useState<boolean>(false);

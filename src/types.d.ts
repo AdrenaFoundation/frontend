@@ -1,3 +1,4 @@
+import { Wallet } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 
 import { Perpetuals } from '@/target/perpetuals';
@@ -9,6 +10,13 @@ export type WalletAdapterName = 'phantom';
 
 export type PageProps = {
   client: AdrenaClient | null;
+  mainPool: PoolExtended | null;
+  custodies: CustodyExtended[] | null;
+  wallet: Wallet | null;
+  triggerWalletTokenBalancesReload: () => void;
+  positions: PositionExtended[] | null;
+  triggerPositionsReload: () => void;
+  connected: boolean;
 };
 
 export type CustodyExtended = {

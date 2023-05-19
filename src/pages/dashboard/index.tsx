@@ -3,22 +3,9 @@ import { twMerge } from 'tailwind-merge';
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Overview from '@/components/pages/dashboard/Overview/Overview';
 import Stats from '@/components/pages/dashboard/Stats/Stats';
-import { PYTH_ORACLE_RPC } from '@/constant';
-import useConnection from '@/hooks/useConnection';
-import useCustodies from '@/hooks/useCustodies';
-import useMainPool from '@/hooks/useMainPool';
-import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
-import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import { PageProps } from '@/types';
 
-export default function Dashboard({ client }: PageProps) {
-  const pythConnection = useConnection(PYTH_ORACLE_RPC);
-  const mainPool = useMainPool(client);
-  const custodies = useCustodies(client, mainPool);
-
-  useWatchTokenPrices(client, pythConnection);
-  useWatchWalletBalance(client);
-
+export default function Dashboard({ client, mainPool, custodies }: PageProps) {
   return (
     <div
       className={twMerge(
