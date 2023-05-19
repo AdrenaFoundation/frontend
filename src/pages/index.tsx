@@ -54,22 +54,3 @@ export default function Home() {
     </main>
   );
 }
-
-/*
-        <Link
-          href="/trade"
-          className="w-[10em]"
-          style={{
-            marginLeft: 'calc(50% - 5em)',
-            marginTop: '25%',
-          }}
-        >
-          <Button
-            className="bg-secondary flex p-4 shadow-[3px_3px_0_0_rgba(0,0,0,0.3)] shadow-white"
-            title="Start Trading"
-            onClick={() => {
-              // nothing
-            }}
-          />
-        </Link>
-  */
