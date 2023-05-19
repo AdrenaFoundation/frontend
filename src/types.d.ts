@@ -2,9 +2,14 @@ import { PublicKey } from '@solana/web3.js';
 
 import { Perpetuals } from '@/target/perpetuals';
 
+import { AdrenaClient } from './AdrenaClient';
 import { AnchorTypes } from './IdlTypeParser';
 
 export type WalletAdapterName = 'phantom';
+
+export type PageProps = {
+  client: AdrenaClient | null;
+};
 
 export type CustodyExtended = {
   // Formatted data

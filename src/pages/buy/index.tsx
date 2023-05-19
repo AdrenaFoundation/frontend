@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import { PageProps } from '@/types';
 
-export default function Buy() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function Buy(_: PageProps) {
   return (
     <div
       className={twMerge(

@@ -5,10 +5,18 @@ import Head from 'next/head';
 import { ReactNode } from 'react';
 import { ReactNotifications } from 'react-notifications-component';
 
+import { AdrenaClient } from '@/AdrenaClient';
+
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
-const RootLayout = ({ children }: { children: ReactNode }) => (
+const RootLayout = ({
+  children,
+  client,
+}: {
+  children: ReactNode;
+  client: AdrenaClient | null;
+}) => (
   <>
     <Head>
       <title>Adrena</title>
@@ -17,7 +25,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => (
       <link rel="icon" href="/favicon.ico" />
     </Head>
 
-    <Header />
+    <Header client={client} />
 
     {children}
 

@@ -2,11 +2,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 
+import { AdrenaClient } from '@/AdrenaClient';
+
 import Button from '../common/Button/Button';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
-export default function Header() {
+export default function Header({ client }: { client: AdrenaClient | null }) {
   const { pathname } = useRouter();
+
+  console.log('client?.cluster', client?.cluster);
 
   // Specific header for landing page
   if (pathname === '/') {
@@ -70,6 +74,11 @@ export default function Header() {
         <Link className={linkStyle} href="/buy">
           Buy
         </Link>
+        {client?.cluster === 'devnet' ? (
+          <Link className={linkStyle} href="/faucet_devnet">
+            Faucet
+          </Link>
+        ) : null}
       </>
 
       <Button

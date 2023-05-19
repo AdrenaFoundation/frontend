@@ -1,22 +1,17 @@
 import { twMerge } from 'tailwind-merge';
 
 import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
-import { MAIN_RPC, PYTH_ORACLE_RPC } from '@/constant';
-import useAdrenaClient from '@/hooks/useAdrenaClient';
+import { PYTH_ORACLE_RPC } from '@/constant';
 import useConnection from '@/hooks/useConnection';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
+import { PageProps } from '@/types';
 
-export default function SwapALP() {
-  const mainConnection = useConnection(MAIN_RPC);
+export default function SwapALP({ client }: PageProps) {
   const pythConnection = useConnection(PYTH_ORACLE_RPC);
-  const client = useAdrenaClient(mainConnection);
 
   useWatchTokenPrices(client, pythConnection);
-  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance(
-    client,
-    mainConnection,
-  );
+  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance(client);
 
   return (
     <div

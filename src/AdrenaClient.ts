@@ -4,6 +4,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
+  Cluster,
   Connection,
   PublicKey,
   RpcResponseAndContext,
@@ -99,6 +100,7 @@ export class AdrenaClient {
     public mainPool: PoolExtended,
     public custodies: CustodyExtended[],
     public tokens: Token[],
+    public readonly cluster: Cluster,
   ) {}
 
   public setAdrenaProgram(program: Program<Perpetuals> | null) {
@@ -145,6 +147,7 @@ export class AdrenaClient {
 
   public static async initialize(
     readonlyAdrenaProgram: Program<Perpetuals>,
+    cluster: Cluster,
   ): Promise<AdrenaClient> {
     const mainPool = await AdrenaClient.loadMainPool(readonlyAdrenaProgram);
 
@@ -252,6 +255,7 @@ export class AdrenaClient {
       mainPoolExtended,
       custodies,
       tokens,
+      cluster,
     );
   }
 

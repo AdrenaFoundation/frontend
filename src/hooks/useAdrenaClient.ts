@@ -14,7 +14,8 @@ const useAdrenaClient = (
   const createClient = useCallback(async () => {
     if (!readOnlyProgram) return;
 
-    setClient(await AdrenaClient.initialize(readOnlyProgram));
+    // TODO: handle devnet/mainnet
+    setClient(await AdrenaClient.initialize(readOnlyProgram, 'devnet'));
   }, [readOnlyProgram]);
 
   useEffect(() => {

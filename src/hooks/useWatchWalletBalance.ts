@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setWalletTokenBalancesAction } from '@/actions/walletBalancesActions';
@@ -10,7 +10,6 @@ import { findATAAddressSync } from '@/utils';
 // TODO: Make it responsive to wallet token balance change
 const useWatchWalletBalance = (
   client: AdrenaClient | null,
-  connection: Connection | null,
 ): {
   triggerWalletTokenBalancesReload: () => void;
 } => {
@@ -19,7 +18,11 @@ const useWatchWalletBalance = (
   const wallet = useSelector((s) => s.walletState.wallet);
 
   const loadWalletBalances = useCallback(async () => {
-    if (!connection || !wallet || !dispatch || !client) return;
+    if (!wallet || !dispatch || !client) return;
+
+    const connection = client.connection;
+
+    if (!connection) return;
 
     console.log('Load balance changes');
 
@@ -52,7 +55,7 @@ const useWatchWalletBalance = (
       ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connection, wallet, dispatch, client, trickReload]);
+  }, [wallet, dispatch, client, trickReload]);
 
   useEffect(() => {
     loadWalletBalances();
