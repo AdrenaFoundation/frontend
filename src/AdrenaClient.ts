@@ -1310,7 +1310,7 @@ export class AdrenaClient {
   }
 
   public async getLpTokenPrice(): Promise<BN | null> {
-    if (!this.readonlyAdrenaProgram.views || !this.adrenaProgram) {
+    if (!this.readonlyAdrenaProgram.views) {
       return null;
     }
 

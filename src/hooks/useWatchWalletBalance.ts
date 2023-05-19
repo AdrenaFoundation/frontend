@@ -18,13 +18,17 @@ const useWatchWalletBalance = (
   const wallet = useSelector((s) => s.walletState.wallet);
 
   const loadWalletBalances = useCallback(async () => {
-    if (!wallet || !dispatch || !client) return;
+    if (!wallet || !dispatch || !client) {
+      return;
+    }
 
     const connection = client.connection;
 
-    if (!connection) return;
+    if (!connection) {
+      return;
+    }
 
-    console.log('Load balance changes');
+    console.log('Load user wallet token balances');
 
     const tokens = [...client.tokens, AdrenaClient.alpToken];
 
@@ -55,7 +59,7 @@ const useWatchWalletBalance = (
       ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, dispatch, client, trickReload]);
+  }, [wallet, dispatch, client, client?.connection, trickReload]);
 
   useEffect(() => {
     loadWalletBalances();

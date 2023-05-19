@@ -161,7 +161,15 @@ export default function ALPSwap({
   })();
 
   return (
-    <div className={twMerge(className)}>
+    <div
+      className={twMerge(
+        className,
+        'border',
+        'border-grey',
+        'bg-secondary',
+        'p-4',
+      )}
+    >
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'buy' }, { title: 'sell' }]}
