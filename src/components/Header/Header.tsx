@@ -10,8 +10,6 @@ import WalletAdapter from '../WalletAdapter/WalletAdapter';
 export default function Header({ client }: { client: AdrenaClient | null }) {
   const { pathname } = useRouter();
 
-  console.log('client?.cluster', client?.cluster);
-
   // Specific header for landing page
   if (pathname === '/') {
     return (
@@ -35,8 +33,22 @@ export default function Header({ client }: { client: AdrenaClient | null }) {
     );
   }
 
-  const linkStyle =
-    'mt-2 sm:mt-0 sm:ml-6 cursor-pointer hover:text-txtregular text-txtfade';
+  const PageLink = (url: string, title: string) => (
+    <Link
+      className={twMerge(
+        'mt-2',
+        'sm:mt-0',
+        'sm:ml-6',
+        'cursor-pointer',
+        'hover:text-txtregular',
+        'text-txtfade',
+        pathname === url && 'text-white',
+      )}
+      href={url}
+    >
+      {title}
+    </Link>
+  );
 
   return (
     <div
@@ -65,27 +77,19 @@ export default function Header({ client }: { client: AdrenaClient | null }) {
       </Link>
 
       <>
-        <Link className={linkStyle} href="/dashboard">
-          Dashboard
-        </Link>
-        <Link className={linkStyle} href="/earn">
-          Earn
-        </Link>
-        <Link className={linkStyle} href="/buy">
-          Buy
-        </Link>
-        {client?.cluster === 'devnet' ? (
-          <Link className={linkStyle} href="/faucet_devnet">
-            Faucet
-          </Link>
-        ) : null}
+        {PageLink('/dashboard', 'Dashboard')}
+        {PageLink('/earn', 'Earn')}
+        {PageLink('/buy', 'Buy')}
+        {client?.cluster === 'devnet'
+          ? PageLink('/faucet_devnet', 'Faucet')
+          : null}
       </>
 
       <Button
         className="bg-highlight sm:ml-auto w-full sm:w-20 mt-2 sm:mt-0"
         title={<Link href="/trade">Trade</Link>}
         onClick={() => {
-          // TODO
+          // nothing
         }}
       />
 
