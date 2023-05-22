@@ -1,4 +1,6 @@
-import { transferChecked } from '@solana/spl-token';
+import { NATIVE_MINT, transferChecked } from '@solana/spl-token';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { Connection } from '@solana/web3.js';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
@@ -9,6 +11,7 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
+  AdrenaTransactionError,
   findATAAddressSync,
   uiToNative,
 } from '@/utils';
@@ -77,6 +80,49 @@ export default function FaucetDevnet({ client, wallet }: PageProps) {
     }
   };
 
+  const airdropDevnetSol = async () => {
+    if (!client || !wallet) return;
+
+    // Use official RPC for airdrop
+    const connection = new Connection('https://api.devnet.solana.com');
+
+    let txHash: string | null = null;
+
+    try {
+      txHash = await connection.requestAirdrop(
+        wallet.publicKey,
+        LAMPORTS_PER_SOL,
+      );
+
+      const signatureResult = await connection.confirmTransaction(txHash);
+
+      if (signatureResult.value.err) {
+        throw signatureResult.value.err;
+      }
+
+      setPendingTx(false);
+
+      return addSuccessTxNotification({
+        title: 'Successfull Transaction',
+        txHash,
+      });
+    } catch (error) {
+      setPendingTx(false);
+
+      return addFailedTxNotification({
+        title: 'Airdrop Failed',
+        error: new AdrenaTransactionError(
+          txHash,
+          (
+            error as {
+              message?: string;
+            }
+          )?.message ?? String(error),
+        ),
+      });
+    }
+  };
+
   return (
     <div className="w-full h-full bg-main flex flex-col items-center">
       {client?.tokens?.map((token) => (
@@ -86,11 +132,16 @@ export default function FaucetDevnet({ client, wallet }: PageProps) {
             activateLoadingIcon={true}
             className="bg-secondary w-[30em]"
             title={`Get ${token.name}`}
-            onClick={() => sendDevnetTokens(token)}
+            onClick={() =>
+              token.mint.equals(NATIVE_MINT)
+                ? airdropDevnetSol()
+                : sendDevnetTokens(token)
+            }
           />
 
           <div className="text-xs mt-4 text-txtfade">
-            $10k worth of token at a time
+            {token.mint.equals(NATIVE_MINT) ? 'Aidroped 1 ' : '$10k worth of '}
+            token at a time
           </div>
 
           <div className="text-xs mt-2 text-txtfade">
