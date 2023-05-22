@@ -1,9 +1,18 @@
 import { BN, Program } from '@project-serum/anchor';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
+  createAssociatedTokenAccountIdempotentInstruction,
+  createCloseAccountInstruction,
+  createSyncNativeInstruction,
+  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
-import { Connection, PublicKey } from '@solana/web3.js';
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  TransactionInstruction,
+} from '@solana/web3.js';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { Store } from 'react-notifications-component';
@@ -221,4 +230,69 @@ export async function isATAInitialized(
   address: PublicKey,
 ): Promise<boolean> {
   return !!(await connection.getAccountInfo(address));
+}
+
+export async function getTokenAccountBalanceNullable(
+  connection: Connection,
+  ata: PublicKey,
+): Promise<BN | null> {
+  try {
+    return new BN((await connection.getTokenAccountBalance(ata)).value.amount);
+  } catch {
+    return null;
+  }
+}
+
+// Make sure the WSOL ATA is created and having enough tokens
+export async function createPrepareWSOLAccountInstructions({
+  amount,
+  connection,
+  owner,
+  wsolATA,
+}: {
+  amount: BN;
+  connection: Connection;
+  owner: PublicKey;
+  wsolATA: PublicKey;
+}) {
+  const currentWSOLBalance =
+    (await getTokenAccountBalanceNullable(connection, wsolATA)) ?? new BN(0);
+
+  const instructions: TransactionInstruction[] = [
+    createAssociatedTokenAccountIdempotentInstruction(
+      owner,
+      wsolATA,
+      owner,
+      NATIVE_MINT,
+    ),
+  ];
+
+  // enough WSOL available
+  if (amount.isZero() || currentWSOLBalance >= amount) {
+    return instructions;
+  }
+
+  return [
+    ...instructions,
+
+    // Transfer missing tokens
+    SystemProgram.transfer({
+      fromPubkey: owner,
+      toPubkey: wsolATA,
+      lamports: amount.sub(currentWSOLBalance).toNumber(),
+    }),
+
+    // Sync
+    createSyncNativeInstruction(wsolATA),
+  ];
+}
+
+export function createCloseWSOLAccountInstruction({
+  wsolATA,
+  owner,
+}: {
+  wsolATA: PublicKey;
+  owner: PublicKey;
+}): TransactionInstruction {
+  return createCloseAccountInstruction(wsolATA, owner, owner);
 }

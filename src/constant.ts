@@ -1,3 +1,4 @@
+import { NATIVE_MINT } from '@solana/spl-token';
 import { Adapter } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
@@ -9,21 +10,25 @@ export const TOKEN_INFO_LIBRARY = {
     name: 'USDC',
     image: '/images/usdc.svg',
     coingeckoId: 'usd-coin',
+    decimals: 6,
   },
   '3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr': {
     name: 'ETH',
     image: '/images/eth.svg',
     coingeckoId: 'ethereum',
+    decimals: 6,
   },
   HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM: {
     name: 'BTC',
     image: '/images/btc.svg',
     coingeckoId: 'bitcoin',
+    decimals: 6,
   },
-  EtX1Uagb44Yp5p4hsqjwAwF3mKaQTMizCyvC1CsyHAQN: {
+  [NATIVE_MINT.toBase58()]: {
     name: 'SOL',
     image: '/images/sol.svg',
     coingeckoId: 'solana',
+    decimals: 9,
   },
 } as Record<
   string,
@@ -31,6 +36,7 @@ export const TOKEN_INFO_LIBRARY = {
     name: string;
     image: string;
     coingeckoId: string;
+    decimals: number;
   }
 >;
 
@@ -42,6 +48,7 @@ export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 6;
 export const USD_DECIMALS = 6;
 export const LP_DECIMALS = 6;
+export const SOL_DECIMALS = 9;
 
 export const BPS = 10_000;
 

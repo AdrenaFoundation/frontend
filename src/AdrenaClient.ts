@@ -1,6 +1,7 @@
 import { AnchorProvider, BN, Program } from '@project-serum/anchor';
 import {
   createAssociatedTokenAccountInstruction,
+  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
@@ -39,6 +40,8 @@ import {
 } from './types';
 import {
   AdrenaTransactionError,
+  createCloseWSOLAccountInstruction,
+  createPrepareWSOLAccountInstructions,
   findATAAddressSync,
   isATAInitialized,
   nativeToUi,
@@ -71,7 +74,7 @@ export class AdrenaClient {
   // @TODO, adapt to mainnet/devnet
   // Handle one pool only for now
   public static mainPoolAddress = new PublicKey(
-    '5P2488ScKJYZdbyr2EyfreUgDnXVk64E5a5az2fJCDZE',
+    'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',
   );
 
   public static lpTokenMint = PublicKey.findProgramAddressSync(
@@ -158,6 +161,7 @@ export class AdrenaClient {
               name: string;
               image: string;
               coingeckoId: string;
+              decimals: number;
             }
           | undefined = TOKEN_INFO_LIBRARY[custody.mint.toBase58()];
 
@@ -168,7 +172,7 @@ export class AdrenaClient {
         return {
           mint: custody.mint,
           name: infos.name,
-          decimals: 6,
+          decimals: infos.decimals,
           isStable: custody.isStable,
           image: infos.image,
           // loadCustodies gets the custodies on the same order as in the main pool
@@ -322,8 +326,9 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const custodyAddress = this.findCustodyAddress(mint);
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
+    const custodyAddress = AdrenaClient.findCustodyAddress(mint);
+    const custodyTokenAccount =
+      AdrenaClient.findCustodyTokenAccountAddress(mint);
 
     // Load custodies in same order as declared in mainPool
     const untypedCustodies =
@@ -335,14 +340,8 @@ export class AdrenaClient {
       throw new Error('Cannot load custodies');
     }
 
-    const custodies: Custody[] = untypedCustodies as Custody[];
-
     const custodyOracleAccount =
-      custodies[
-        this.mainPool.custodies.findIndex((custody) =>
-          custody.equals(custodyAddress),
-        )
-      ].oracle.oracleAccount;
+      this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
     const lpTokenAccount = findATAAddressSync(owner, AdrenaClient.lpTokenMint);
@@ -377,32 +376,63 @@ export class AdrenaClient {
         lpTokenMint: AdrenaClient.lpTokenMint,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .remainingAccounts([
-        // needs to provide all custodies and theirs oracles
-        ...this.mainPool.custodies.map((custody) => ({
-          pubkey: custody,
-          isSigner: false,
-          isWritable: false,
-        })),
-
-        ...this.mainPool.custodies.map((_, index) => ({
-          pubkey: custodies[index].oracle.oracleAccount,
-          isSigner: false,
-          isWritable: false,
-        })),
-      ])
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .preInstructions(preInstructions);
   }
 
-  public async addLiquidity(params: {
+  public async addLiquidity({
+    owner,
+    mint,
+    amountIn,
+    minLpAmountOut,
+  }: {
     owner: PublicKey;
     mint: PublicKey;
     amountIn: BN;
     minLpAmountOut: BN;
   }): Promise<string> {
-    return this.signAndExecuteTx(
-      await (await this.buildAddLiquidityTx(params)).transaction(),
-    );
+    if (!this.connection) {
+      throw new Error('not connected');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (mint.equals(NATIVE_MINT)) {
+      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
+
+      // Make sure there are enough WSOL available in WSOL ATA
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          amount: amountIn,
+          connection: this.connection,
+          owner,
+          wsolATA,
+        })),
+      );
+
+      // Close the WSOL account after all is done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA,
+          owner,
+        }),
+      );
+    }
+
+    const transaction = await (
+      await this.buildAddLiquidityTx({
+        owner,
+        mint,
+        amountIn,
+        minLpAmountOut,
+      })
+    )
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
   protected async buildRemoveLiquidityTx({
@@ -416,31 +446,16 @@ export class AdrenaClient {
     lpAmountIn: BN;
     minAmountOut: BN;
   }) {
-    if (!this.adrenaProgram) {
+    if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
-    const custodyAddress = this.findCustodyAddress(mint);
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
-
-    // Load custodies in same order as declared in mainPool
-    const untypedCustodies =
-      await this.adrenaProgram.account.custody.fetchMultiple(
-        this.mainPool.custodies,
-      );
-
-    if (untypedCustodies.find((custodies) => !custodies)) {
-      throw new Error('Cannot load custodies');
-    }
-
-    const custodies: Custody[] = untypedCustodies as Custody[];
+    const custodyAddress = AdrenaClient.findCustodyAddress(mint);
+    const custodyTokenAccount =
+      AdrenaClient.findCustodyTokenAccountAddress(mint);
 
     const custodyOracleAccount =
-      custodies[
-        this.mainPool.custodies.findIndex((custody) =>
-          custody.equals(custodyAddress),
-        )
-      ].oracle.oracleAccount;
+      this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
 
     const receivingAccount = findATAAddressSync(owner, mint);
     const lpTokenAccount = findATAAddressSync(owner, AdrenaClient.lpTokenMint);
@@ -463,31 +478,62 @@ export class AdrenaClient {
         lpTokenMint: AdrenaClient.lpTokenMint,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .remainingAccounts([
-        // needs to provide all custodies and theirs oracles
-        ...this.mainPool.custodies.map((custody) => ({
-          pubkey: custody,
-          isSigner: false,
-          isWritable: false,
-        })),
-
-        ...this.mainPool.custodies.map((_, index) => ({
-          pubkey: custodies[index].oracle.oracleAccount,
-          isSigner: false,
-          isWritable: false,
-        })),
-      ]);
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts());
   }
 
-  public async removeLiquidity(params: {
+  public async removeLiquidity({
+    owner,
+    mint,
+    lpAmountIn,
+    minAmountOut,
+  }: {
     owner: PublicKey;
     mint: PublicKey;
     lpAmountIn: BN;
     minAmountOut: BN;
   }): Promise<string> {
-    return this.signAndExecuteTx(
-      await (await this.buildRemoveLiquidityTx(params)).transaction(),
-    );
+    if (!this.connection) {
+      throw new Error('not connected');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (mint.equals(NATIVE_MINT)) {
+      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
+
+      // Create WSOL account
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          amount: new BN(0),
+          connection: this.connection,
+          owner,
+          wsolATA,
+        })),
+      );
+
+      // Close the WSOL account after all is done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA,
+          owner,
+        }),
+      );
+    }
+
+    const transaction = await (
+      await this.buildRemoveLiquidityTx({
+        owner,
+        mint,
+        lpAmountIn,
+        minAmountOut,
+      })
+    )
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
   protected buildOpenPositionTx({
@@ -509,15 +555,20 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const custodyAddress = this.findCustodyAddress(mint);
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
+    const custodyAddress = AdrenaClient.findCustodyAddress(mint);
+    const custodyTokenAccount =
+      AdrenaClient.findCustodyTokenAccountAddress(mint);
 
     const custodyOracleAccount =
       this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
 
-    const position = this.findPositionAddress(owner, custodyAddress, side);
+    const position = AdrenaClient.findPositionAddress(
+      owner,
+      custodyAddress,
+      side,
+    );
 
     // TODO
     // Think and use proper slippage, for now use 0.3%
@@ -568,22 +619,22 @@ export class AdrenaClient {
     mintA: PublicKey;
     mintB: PublicKey;
   }) {
-    if (!this.adrenaProgram) {
+    if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
     const fundingAccount = findATAAddressSync(owner, mintA);
     const receivingAccount = findATAAddressSync(owner, mintB);
 
-    const receivingCustody = this.findCustodyAddress(mintA);
+    const receivingCustody = AdrenaClient.findCustodyAddress(mintA);
     const receivingCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(mintA);
+      AdrenaClient.findCustodyTokenAccountAddress(mintA);
     const receivingCustodyOracleAccount =
       this.getCustodyByMint(mintA).nativeObject.oracle.oracleAccount;
 
-    const dispensingCustody = this.findCustodyAddress(mintB);
+    const dispensingCustody = AdrenaClient.findCustodyAddress(mintB);
     const dispensingCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(mintB);
+      AdrenaClient.findCustodyTokenAccountAddress(mintB);
     const dispensingCustodyOracleAccount =
       this.getCustodyByMint(mintB).nativeObject.oracle.oracleAccount;
 
@@ -610,17 +661,72 @@ export class AdrenaClient {
   }
 
   // swap tokenA for tokenB
-  public async swap(params: {
+  public async swap({
+    owner,
+    amountIn,
+    minAmountOut,
+    mintA,
+    mintB,
+  }: {
     owner: PublicKey;
     amountIn: BN;
     minAmountOut: BN;
     mintA: PublicKey;
     mintB: PublicKey;
   }): Promise<string> {
-    return this.signAndExecuteTx(await this.buildSwapTx(params).transaction());
+    if (!this.connection) {
+      throw new Error('not connected');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (mintA.equals(NATIVE_MINT) || mintB.equals(NATIVE_MINT)) {
+      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
+
+      // Make sure there are enough WSOL available in WSOL ATA
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          // mintA means swapping WSOL
+          // mintB means receiving WSOl
+          amount: mintA.equals(NATIVE_MINT) ? amountIn : new BN(0),
+          connection: this.connection,
+          owner,
+          wsolATA,
+        })),
+      );
+
+      // Close the WSOL account after all done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA,
+          owner,
+        }),
+      );
+    }
+
+    const transaction = await this.buildSwapTx({
+      owner,
+      amountIn,
+      minAmountOut,
+      mintA,
+      mintB,
+    })
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
-  public async openPosition(params: {
+  public async openPosition({
+    owner,
+    mint,
+    price,
+    collateral,
+    size,
+    side,
+  }: {
     owner: PublicKey;
     mint: PublicKey;
     price: BN;
@@ -628,9 +734,50 @@ export class AdrenaClient {
     size: BN;
     side: 'long' | 'short';
   }): Promise<string> {
-    return this.signAndExecuteTx(
-      await this.buildOpenPositionTx(params).transaction(),
-    );
+    if (!this.connection) {
+      throw new Error('not connected');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (mint.equals(NATIVE_MINT)) {
+      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
+
+      // Make sure there are enough WSOL available in WSOL ATA
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          // TODO: provide just enough
+          // 10% pre-provided
+          amount: new BN(Math.ceil(collateral.toNumber() * 1.1)),
+          connection: this.connection,
+          owner,
+          wsolATA,
+        })),
+      );
+
+      // Close the WSOL account after all done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA,
+          owner,
+        }),
+      );
+    }
+
+    const transaction = await this.buildOpenPositionTx({
+      owner,
+      mint,
+      price,
+      collateral,
+      size,
+      side,
+    })
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
   public async closePosition({
@@ -640,7 +787,7 @@ export class AdrenaClient {
     position: PositionExtended;
     price: BN;
   }): Promise<string> {
-    if (!this.adrenaProgram) {
+    if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
@@ -653,7 +800,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+    const custodyTokenAccount = AdrenaClient.findCustodyTokenAccountAddress(
       custody.mint,
     );
 
@@ -663,6 +810,29 @@ export class AdrenaClient {
       position: position.pubkey.toBase58(),
       price: price.toString(),
     });
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (position.token.mint.equals(NATIVE_MINT)) {
+      // Make sure the WSOL ATA exists
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          amount: new BN(0),
+          connection: this.connection,
+          owner: position.owner,
+          wsolATA: receivingAccount,
+        })),
+      );
+
+      // Close the WSOL account after all done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA: receivingAccount,
+          owner: position.owner,
+        }),
+      );
+    }
 
     return this.signAndExecuteTx(
       await this.adrenaProgram.methods
@@ -681,6 +851,8 @@ export class AdrenaClient {
           custodyTokenAccount,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
+        .preInstructions(preInstructions)
+        .postInstructions(postInstructions)
         .transaction(),
     );
   }
@@ -707,6 +879,10 @@ export class AdrenaClient {
     size: BN;
     side: 'long' | 'short';
   }) {
+    if (!this.connection) {
+      throw new Error('no connection');
+    }
+
     // If mint are same, no need for swap
     if (mintA.equals(mintB)) {
       return this.openPosition({
@@ -717,6 +893,36 @@ export class AdrenaClient {
         size,
         side,
       });
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (mintA.equals(NATIVE_MINT) || mintB.equals(NATIVE_MINT)) {
+      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
+
+      // Make sure there are enough WSOL available in WSOL ATA
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          // mintA means swap WSOL
+          // mintB means position is in WSOL
+          // TODO: provide right enough
+          amount: mintA.equals(NATIVE_MINT)
+            ? new BN(amountA.toNumber() * 1.1)
+            : new BN(0),
+          connection: this.connection,
+          owner,
+          wsolATA,
+        })),
+      );
+
+      // Close the WSOL account after all done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA,
+          owner,
+        }),
+      );
     }
 
     const [swapTx, openPositionTx] = await Promise.all([
@@ -740,7 +946,12 @@ export class AdrenaClient {
     ]);
 
     const transaction = new Transaction();
-    transaction.add(swapTx, openPositionTx);
+    transaction.add(
+      ...preInstructions,
+      swapTx,
+      openPositionTx,
+      ...postInstructions,
+    );
 
     return this.signAndExecuteTx(transaction);
   }
@@ -758,6 +969,10 @@ export class AdrenaClient {
     minAmountOut: BN;
     addedCollateral: BN;
   }): Promise<string> {
+    if (!this.connection) {
+      throw new Error('no connection');
+    }
+
     console.log('swapAndAddCollateralToPosition', {
       position: position.pubkey.toBase58(),
       mintIn: mintIn.toBase58(),
@@ -765,6 +980,47 @@ export class AdrenaClient {
       minAmountOut: minAmountOut.toString(),
       addedCollateral: addedCollateral.toString(),
     });
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    const custody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody),
+    );
+
+    if (!custody) {
+      throw new Error('Cannot find custody related to position');
+    }
+
+    // No need for swap
+    if (mintIn.equals(custody.mint)) {
+      return this.addCollateralToPosition({
+        position,
+        addedCollateral,
+      });
+    }
+
+    if (mintIn.equals(NATIVE_MINT) || custody.mint.equals(NATIVE_MINT)) {
+      const wsolATA = findATAAddressSync(position.owner, NATIVE_MINT);
+
+      // Make sure enough WSOL are avaialble for swap
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          amount: mintIn.equals(NATIVE_MINT) ? amountIn : new BN(0),
+          connection: this.connection,
+          owner: position.owner,
+          wsolATA,
+        })),
+      );
+
+      // Close the WSOL account after all done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA,
+          owner: position.owner,
+        }),
+      );
+    }
 
     const [swapTx, addCollateralTx] = await Promise.all([
       this.buildSwapTx({
@@ -774,6 +1030,7 @@ export class AdrenaClient {
         mintA: mintIn,
         mintB: position.token.mint,
       }).instruction(),
+
       this.buildAddCollateralTx({
         position,
         collateral: addedCollateral,
@@ -781,7 +1038,12 @@ export class AdrenaClient {
     ]);
 
     const transaction = new Transaction();
-    transaction.add(swapTx, addCollateralTx);
+    transaction.add(
+      ...preInstructions,
+      swapTx,
+      addCollateralTx,
+      ...postInstructions,
+    );
 
     return this.signAndExecuteTx(transaction);
   }
@@ -793,12 +1055,44 @@ export class AdrenaClient {
     position: PositionExtended;
     addedCollateral: BN;
   }) {
-    return this.signAndExecuteTx(
-      await this.buildAddCollateralTx({
-        position,
-        collateral: addedCollateral,
-      }).transaction(),
-    );
+    if (!this.connection) {
+      throw new Error('not connected');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (position.token.mint.equals(NATIVE_MINT)) {
+      const wsolATA = findATAAddressSync(position.owner, NATIVE_MINT);
+
+      // Make sure there are enough WSOL available in WSOL ATA
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          amount: addedCollateral,
+          connection: this.connection,
+          owner: position.owner,
+          wsolATA,
+        })),
+      );
+
+      // Close the WSOL account after all is done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA,
+          owner: position.owner,
+        }),
+      );
+    }
+
+    const transaction = await this.buildAddCollateralTx({
+      position,
+      collateral: addedCollateral,
+    })
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
   public buildAddCollateralTx({
@@ -808,7 +1102,7 @@ export class AdrenaClient {
     position: PositionExtended;
     collateral: BN;
   }) {
-    if (!this.adrenaProgram) {
+    if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
@@ -821,7 +1115,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+    const custodyTokenAccount = AdrenaClient.findCustodyTokenAccountAddress(
       custody.mint,
     );
 
@@ -852,7 +1146,7 @@ export class AdrenaClient {
     position: PositionExtended;
     collateralUsd: BN;
   }): Promise<string> {
-    if (!this.adrenaProgram) {
+    if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
@@ -865,11 +1159,34 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+    const custodyTokenAccount = AdrenaClient.findCustodyTokenAccountAddress(
       custody.mint,
     );
 
     const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    if (position.token.mint.equals(NATIVE_MINT)) {
+      // Make sure the WSOL ATA exists
+      preInstructions.push(
+        ...(await createPrepareWSOLAccountInstructions({
+          amount: new BN(0),
+          connection: this.connection,
+          owner: position.owner,
+          wsolATA: receivingAccount,
+        })),
+      );
+
+      // Close the WSOL account after all is done
+      postInstructions.push(
+        createCloseWSOLAccountInstruction({
+          wsolATA: receivingAccount,
+          owner: position.owner,
+        }),
+      );
+    }
 
     return this.signAndExecuteTx(
       await this.adrenaProgram.methods
@@ -888,6 +1205,8 @@ export class AdrenaClient {
           custodyTokenAccount,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
+        .preInstructions(preInstructions)
+        .postInstructions(postInstructions)
         .transaction(),
     );
   }
@@ -1043,8 +1362,8 @@ export class AdrenaClient {
 
       return [
         ...acc,
-        this.findPositionAddress(user, token.custody, 'long'),
-        this.findPositionAddress(user, token.custody, 'short'),
+        AdrenaClient.findPositionAddress(user, token.custody, 'long'),
+        AdrenaClient.findPositionAddress(user, token.custody, 'short'),
       ];
     }, [] as PublicKey[]);
 
@@ -1167,20 +1486,7 @@ export class AdrenaClient {
           perpetuals: AdrenaClient.perpetualsAddress,
           pool: AdrenaClient.mainPoolAddress,
         },
-        remainingAccounts: [
-          // needs to provide all custodies and theirs oracles
-          ...this.mainPool.custodies.map((custody) => ({
-            pubkey: custody,
-            isSigner: false,
-            isWritable: false,
-          })),
-
-          ...this.mainPool.custodies.map((_, index) => ({
-            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
-            isSigner: false,
-            isWritable: false,
-          })),
-        ],
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
     );
   }
@@ -1229,20 +1535,7 @@ export class AdrenaClient {
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
           lpTokenMint: AdrenaClient.lpTokenMint,
         },
-        remainingAccounts: [
-          // needs to provide all custodies and theirs oracles
-          ...this.mainPool.custodies.map((custody) => ({
-            pubkey: custody,
-            isSigner: false,
-            isWritable: false,
-          })),
-
-          ...this.mainPool.custodies.map((_, index) => ({
-            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
-            isSigner: false,
-            isWritable: false,
-          })),
-        ],
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
     );
   }
@@ -1291,20 +1584,7 @@ export class AdrenaClient {
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
           lpTokenMint: AdrenaClient.lpTokenMint,
         },
-        remainingAccounts: [
-          // needs to provide all custodies and theirs oracles
-          ...this.mainPool.custodies.map((custody) => ({
-            pubkey: custody,
-            isSigner: false,
-            isWritable: false,
-          })),
-
-          ...this.mainPool.custodies.map((_, index) => ({
-            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
-            isSigner: false,
-            isWritable: false,
-          })),
-        ],
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
     );
   }
@@ -1322,20 +1602,7 @@ export class AdrenaClient {
           pool: AdrenaClient.mainPoolAddress,
           lpTokenMint: AdrenaClient.lpTokenMint,
         },
-        remainingAccounts: [
-          // needs to provide all custodies and theirs oracles
-          ...this.mainPool.custodies.map((custody) => ({
-            pubkey: custody,
-            isSigner: false,
-            isWritable: false,
-          })),
-
-          ...this.mainPool.custodies.map((_, index) => ({
-            pubkey: this.custodies[index].nativeObject.oracle.oracleAccount,
-            isSigner: false,
-            isWritable: false,
-          })),
-        ],
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
     );
   }
@@ -1343,6 +1610,39 @@ export class AdrenaClient {
   /*
    * UTILS
    */
+
+  // Some instructions requires to provide all custody + custody oracle account
+  // as reamining accounts
+  protected prepareCustodiesForRemainingAccounts(): {
+    pubkey: PublicKey;
+    isSigner: boolean;
+    isWritable: boolean;
+  }[] {
+    return [
+      // needs to provide all custodies and theirs oracles
+      // in the same order as they appears in the main pool
+      ...this.mainPool.custodies.map((custody) => ({
+        pubkey: custody,
+        isSigner: false,
+        isWritable: false,
+      })),
+
+      ...this.mainPool.custodies.map((pubkey) => {
+        const custody = this.custodies.find((custody) =>
+          custody.pubkey.equals(pubkey),
+        );
+
+        // Should never happens
+        if (!custody) throw new Error('Custody not found');
+
+        return {
+          pubkey: custody.nativeObject.oracle.oracleAccount,
+          isSigner: false,
+          isWritable: false,
+        };
+      }),
+    ];
+  }
 
   public getCustodyByMint(mint: PublicKey): CustodyExtended {
     const custody = this.custodies.find((custody) => custody.mint.equals(mint));
@@ -1418,7 +1718,7 @@ export class AdrenaClient {
     return txHash;
   }
 
-  public findCustodyAddress(mint: PublicKey): PublicKey {
+  public static findCustodyAddress(mint: PublicKey): PublicKey {
     return PublicKey.findProgramAddressSync(
       [
         Buffer.from('custody'),
@@ -1429,7 +1729,7 @@ export class AdrenaClient {
     )[0];
   }
 
-  public findCustodyTokenAccountAddress(mint: PublicKey) {
+  public static findCustodyTokenAccountAddress(mint: PublicKey) {
     return PublicKey.findProgramAddressSync(
       [
         Buffer.from('custody_token_account'),
@@ -1440,7 +1740,7 @@ export class AdrenaClient {
     )[0];
   }
 
-  public findPositionAddress(
+  public static findPositionAddress(
     owner: PublicKey,
     custody: PublicKey,
     side: 'long' | 'short',
