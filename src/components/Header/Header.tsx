@@ -84,6 +84,7 @@ export default function Header({ client }: { client: AdrenaClient | null }) {
         {client?.cluster === 'devnet'
           ? PageLink('/faucet_devnet', 'Faucet')
           : null}
+        {PageLink('https://www.gitbook.com/', 'Docs')}
       </>
 
       <Button

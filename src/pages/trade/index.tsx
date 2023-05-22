@@ -1,5 +1,6 @@
 import { BN } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -35,11 +36,14 @@ export default function Trade({
   const [selectedAction, setSelectedAction] = useState<Action>('long');
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const router = useRouter();
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
+
+  const [isInitialized, setIsInitialize] = useState<boolean>(false);
 
   // There is one position max per side per custody
   // If the position exist for the selected custody, store it in this variable
@@ -50,26 +54,104 @@ export default function Trade({
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (!tokenA || !tokenB) return;
+
+    // Save the trading pair on URL
+    router.replace({
+      query: {
+        ...router.query,
+        pair: `${tokenA.name}_${tokenB.name}`,
+        action: selectedAction,
+      },
+    });
+  }, [router, tokenA, tokenB, selectedAction]);
+
   // Setup
   useEffect(() => {
     if (!client) return;
 
-    if (!tokenA) {
-      setTokenA(client.tokens[0]);
+    const tokenACandidate = client.tokens;
+
+    // First initialization of the component
+    // Load trading pair and action type (long/short/swap) from URL
+    if (!isInitialized) {
+      setIsInitialize(true);
+
+      const action = router.query.action;
+
+      // bad/empty url query params
+      if (
+        typeof action !== 'string' ||
+        !['long', 'short', 'swap'].includes(action)
+      ) {
+        return;
+      }
+
+      // Set the proper action
+      setSelectedAction(action as Action);
+
+      const tokenBCandidate =
+        action === 'swap'
+          ? client.tokens
+          : client.tokens.filter((t) => !t.isStable);
+
+      const possiblePair = router.query.pair;
+
+      // bad url
+      if (!possiblePair || possiblePair instanceof Array) {
+        return;
+      }
+
+      const pair = possiblePair.split('_');
+
+      // bad URL
+      if (pair.length !== 2) {
+        return;
+      }
+
+      const [tokenAName, tokenBName] = pair;
+
+      const tokenA = tokenACandidate.find((token) => token.name === tokenAName);
+      const tokenB = tokenBCandidate.find((token) => token.name === tokenBName);
+
+      // bad URL
+      if (!tokenA || !tokenB) {
+        return;
+      }
+
+      setTokenA(tokenA);
+      setTokenB(tokenB);
+      return;
     }
 
-    if (!tokenB) {
-      setTokenB(
-        selectedAction === 'swap'
-          ? client.tokens[0]
-          : client.tokens.filter((t) => !t.isStable)[0],
-      );
+    const tokenBCandidate =
+      selectedAction === 'swap'
+        ? client.tokens
+        : client.tokens.filter((t) => !t.isStable);
+
+    // If token is not set or token is not allowed, set default token
+    if (
+      !tokenA ||
+      !tokenACandidate.find((token) => token.name === tokenA.name)
+    ) {
+      setTokenA(tokenACandidate[0]);
     }
+
+    // If token is not set or token is not allowed, set default token
+    if (
+      !tokenB ||
+      !tokenBCandidate.find((token) => token.name === tokenB.name)
+    ) {
+      setTokenB(tokenBCandidate[0]);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // Only call when the user get initialized or we change of action
     client,
     selectedAction,
+    isInitialized,
   ]);
 
   // Check for opened position
