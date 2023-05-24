@@ -65,7 +65,9 @@ export default function Trade({
         action: selectedAction,
       },
     });
-  }, [router, tokenA, tokenB, selectedAction]);
+    // Use custom triggers to avoid unwanted refreshs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!router, tokenA?.name, tokenB?.name, selectedAction]);
 
   // Setup
   useEffect(() => {
