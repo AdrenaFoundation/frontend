@@ -14,6 +14,7 @@ export default function Footer() {
         'border-grey',
         'justify-center',
         'items-center',
+        'shrink-0',
       )}
     >
       <Link
@@ -37,6 +38,13 @@ export default function Footer() {
           width="20"
           height="20"
         />
+      </Link>
+
+      <Link
+        href="/terms_and_conditions"
+        className="absolute right-6 text-txtfade hover:text-white"
+      >
+        Terms and conditions
       </Link>
     </div>
   );

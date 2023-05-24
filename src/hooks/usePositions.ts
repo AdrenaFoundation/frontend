@@ -17,7 +17,12 @@ const usePositions = (
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
 
   const loadPositions = useCallback(async () => {
-    if (!client || !wallet?.walletAddress) return;
+    if (!client) return;
+
+    if (!wallet) {
+      setPositions(null);
+      return;
+    }
 
     setPositions(
       await client.loadUserPositions(new PublicKey(wallet.walletAddress)),

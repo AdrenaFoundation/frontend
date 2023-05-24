@@ -2,6 +2,7 @@ import { NATIVE_MINT, transferChecked } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Connection } from '@solana/web3.js';
 import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import { devnetFaucetBankWallet } from '@/constant';
@@ -124,31 +125,52 @@ export default function FaucetDevnet({ client, wallet }: PageProps) {
   };
 
   return (
-    <div className="w-full h-full bg-main flex flex-col items-center">
-      {client?.tokens?.map((token) => (
-        <div key={token.name} className="mt-8 flex flex-col items-center">
-          <Button
-            disabled={pendingTx}
-            activateLoadingIcon={true}
-            className="bg-secondary w-[30em]"
-            title={`Get ${token.name}`}
-            onClick={() =>
-              token.mint.equals(NATIVE_MINT)
-                ? airdropDevnetSol()
-                : sendDevnetTokens(token)
-            }
-          />
+    <div
+      className={twMerge(
+        'w-full',
+        'h-full',
+        'flex',
+        'p-4',
+        'bg-main',
+        'justify-center',
+      )}
+    >
+      <div
+        className={twMerge(
+          'w-full',
+          'flex',
+          'max-w-[1400px]',
+          'flex-col',
+          'grow',
+        )}
+      >
+        {client?.tokens?.map((token) => (
+          <div key={token.name} className="mt-8 flex flex-col items-center">
+            <Button
+              disabled={pendingTx}
+              activateLoadingIcon={true}
+              className="bg-secondary w-[30em]"
+              title={`Get ${token.name}`}
+              onClick={() =>
+                token.mint.equals(NATIVE_MINT)
+                  ? airdropDevnetSol()
+                  : sendDevnetTokens(token)
+              }
+            />
 
-          <div className="text-xs mt-4 text-txtfade">
-            {token.mint.equals(NATIVE_MINT) ? 'Aidroped 1 ' : '$10k worth of '}
-            token at a time
-          </div>
+            <div className="text-xs mt-4 text-txtfade">
+              {token.mint.equals(NATIVE_MINT)
+                ? 'Aidroped 1 '
+                : '$10k worth of '}
+              token at a time
+            </div>
 
-          <div className="text-xs mt-2 text-txtfade">
-            {token.mint.toBase58()}
+            <div className="text-xs mt-2 text-txtfade">
+              {token.mint.toBase58()}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

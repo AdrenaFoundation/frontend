@@ -106,7 +106,7 @@ export const disconnectWalletAction =
   async (dispatch: Dispatch<DisconnectWalletAction>) => {
     const adapter = walletAdapters[adapterName];
 
-    adapter.on('disconnect', () => {
+    adapter.once('disconnect', () => {
       dispatch({
         type: 'disconnect',
       });

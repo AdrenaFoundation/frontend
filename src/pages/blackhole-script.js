@@ -17,6 +17,7 @@ export default function run() {
 
   // Global Canvas Setting
   var canvas = document.getElementById('particle');
+  if (!canvas) return;
   var ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;

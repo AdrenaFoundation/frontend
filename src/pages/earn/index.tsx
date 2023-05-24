@@ -11,12 +11,21 @@ export default function Earn(_: PageProps) {
         'h-full',
         'flex',
         'p-4',
-        'overflow-auto',
-        'flex-col',
         'bg-main',
+        'justify-center',
       )}
     >
-      <div className="text-4xl font-bold mb-8 mt-4">TODO</div>
+      <div
+        className={twMerge(
+          'w-full',
+          'flex',
+          'max-w-[1400px]',
+          'flex-col',
+          'grow',
+        )}
+      >
+        <div className="text-4xl font-bold mb-8 mt-4">TODO</div>
+      </div>
     </div>
   );
 }
