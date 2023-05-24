@@ -15,7 +15,7 @@ import {
 } from '@solana/web3.js';
 import Link from 'next/link';
 import { ReactNode } from 'react';
-import { Store } from 'react-notifications-component';
+import { toast } from 'react-toastify';
 
 import { Perpetuals } from '@/target/perpetuals';
 
@@ -94,27 +94,39 @@ export function getTokenNameByMint(mint: PublicKey): string {
 export function addNotification({
   title,
   message,
-  type,
+  type = 'info',
   duration = 'regular',
 }: {
   title: string;
-  type?: 'success' | 'danger' | 'info';
+  type?: 'success' | 'error' | 'info';
   message?: ReactNode;
   duration?: 'fast' | 'regular' | 'long';
 }) {
-  Store.addNotification({
-    title,
-    message,
-    type,
-    container: 'bottom-right',
-    animationIn: ['animate__animated', 'animate__fadeIn'],
-    animationOut: ['animate__animated', 'animate__fadeOut'],
-    dismiss: {
-      duration: { fast: 1_000, regular: 5_000, long: 10_000 }[duration],
-      onScreen: false,
-      pauseOnHover: true,
-      showIcon: true,
-      click: false,
+  const content = message ? (
+    <div className="flex flex-col">
+      <div className="border-b border-white/10 pb-2 bold">{title}</div>
+      <div className="mt-4 text-sm">{message}</div>
+    </div>
+  ) : (
+    title
+  );
+
+  toast[type](content, {
+    position: 'bottom-right',
+    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration],
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: 'colored',
+    icon: false,
+    style: {
+      background: {
+        success: '#216a2a',
+        error: '#ad2f2f',
+        info: '#28638e',
+      }[type],
     },
   });
 }
@@ -177,7 +189,7 @@ export function addFailedTxNotification({
 
   addNotification({
     ...params,
-    type: 'danger',
+    type: 'error',
     message,
     duration: 'long',
   });

@@ -8,11 +8,13 @@ import { formatNumber, formatPriceInfo } from '@/utils';
 export default function PositionsBlocs({
   className,
   positions,
-  triggerReduceOrClosePosition,
+  triggerClosePosition,
+  triggerEditPositionCollateral,
 }: {
   className?: string;
   positions: PositionExtended[] | null;
-  triggerReduceOrClosePosition: (p: PositionExtended) => void;
+  triggerClosePosition: (p: PositionExtended) => void;
+  triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -94,9 +96,17 @@ export default function PositionsBlocs({
           <div className="border-t border-grey p-4">
             <Button
               className="w-36 bg-highlight"
-              title="Reduce or Close"
+              title="Close"
               onClick={() => {
-                triggerReduceOrClosePosition(position);
+                triggerClosePosition(position);
+              }}
+            />
+
+            <Button
+              className="w-36 bg-highlight ml-6"
+              title="Close"
+              onClick={() => {
+                triggerEditPositionCollateral(position);
               }}
             />
           </div>

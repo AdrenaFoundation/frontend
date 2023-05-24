@@ -40,7 +40,7 @@ export default function FaucetDevnet({ client, wallet }: PageProps) {
     if (!tokenPrice) {
       return addNotification({
         title: 'Price not found',
-        type: 'danger',
+        type: 'error',
         message: 'Cannot find token price, please retry',
         duration: 'long',
       });

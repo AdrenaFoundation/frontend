@@ -409,17 +409,13 @@ export default function Trade({
         </div>
 
         <>
-          {positions ? (
-            <>
-              <div className="mb-4">Positions ({positions.length})</div>
+          <div className="mb-4">Positions ({positions?.length ?? 0})</div>
 
-              <Positions
-                positions={positions}
-                client={client}
-                triggerPositionsReload={triggerPositionsReload}
-              />
-            </>
-          ) : null}
+          <Positions
+            positions={positions}
+            client={client}
+            triggerPositionsReload={triggerPositionsReload}
+          />
         </>
       </div>
 

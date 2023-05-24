@@ -1,14 +1,13 @@
 import { BN } from '@project-serum/anchor';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
 import { USD_DECIMALS } from '@/constant';
-import useGetPositionExitPriceAndFee from '@/hooks/useGetPositionExitPriceAndFee';
 import { useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, PriceAndFee, Token } from '@/types';
 import {
   addFailedTxNotification,
   addNotification,
@@ -21,7 +20,11 @@ import {
 
 import TradingInput from '../TradingInput/TradingInput';
 
-export default function ReduceOrClosePosition({
+// use the counter to handle asynchronous multiple loading
+// always ignore outdated informations
+let loadingCounter = 0;
+
+export default function ClosePosition({
   className,
   position,
   triggerPositionsReload,
@@ -38,13 +41,43 @@ export default function ReduceOrClosePosition({
     useState<boolean>(false);
   const [input, setInput] = useState<number | null>(null);
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const priceAndFee = useGetPositionExitPriceAndFee(position, client);
+
+  const [exitPriceAndFee, setExitPriceAndFee] = useState<PriceAndFee | null>(
+    null,
+  );
 
   const markPrice: number | null = tokenPrices[position.token.name];
 
-  const entryPrice: number | null = priceAndFee
-    ? nativeToUi(priceAndFee.price, 6)
+  const entryPrice: number | null = exitPriceAndFee
+    ? nativeToUi(exitPriceAndFee.price, 6)
     : null;
+
+  useEffect(() => {
+    if (!client || !input) {
+      return;
+    }
+
+    const localLoadingCounter = ++loadingCounter;
+
+    client
+      .getExitPriceAndFee({
+        position,
+      })
+      .then((exitPriceAndFee: PriceAndFee | null) => {
+        // Verify that information is not outdated
+        // If loaderCounter doesn't match it means
+        // an other request has been casted due to input change
+        if (localLoadingCounter !== loadingCounter) {
+          return;
+        }
+
+        setExitPriceAndFee(exitPriceAndFee);
+      })
+      .catch((e) => {
+        // Ignore error
+        console.log('error', e);
+      });
+  }, [client, position, input]);
 
   const rowStyle = 'w-full flex justify-between mt-2';
 
@@ -81,7 +114,7 @@ export default function ReduceOrClosePosition({
     }
 
     if (!closing) {
-      return 'Reduce Position';
+      return 'Partial Position Close';
     }
 
     return 'Close Position';
@@ -97,14 +130,14 @@ export default function ReduceOrClosePosition({
       });
 
       addSuccessTxNotification({
-        title: 'Successfull Position Reducing',
+        title: 'Successfull Partial Position Close',
         txHash,
       });
 
       triggerPositionsReload();
     } catch (error) {
       return addFailedTxNotification({
-        title: 'Error Reducing Position',
+        title: 'Error Partial Position Close',
         error,
       });
     }
@@ -347,8 +380,8 @@ export default function ReduceOrClosePosition({
         <div className={rowStyle}>
           <div className="text-txtfade">Fees</div>
           <div>
-            {priceAndFee
-              ? formatPriceInfo(nativeToUi(priceAndFee.fee, USD_DECIMALS))
+            {exitPriceAndFee
+              ? formatPriceInfo(nativeToUi(exitPriceAndFee.fee, USD_DECIMALS))
               : '-'}
           </div>
         </div>

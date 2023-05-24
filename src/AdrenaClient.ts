@@ -749,6 +749,9 @@ export class AdrenaClient {
         ...(await createPrepareWSOLAccountInstructions({
           // TODO: provide just enough
           // 10% pre-provided
+          // openPosition makes users to pay fees on top of added collateral
+          // fees have to be paid in WSOL, so WSOL ATA needs to have enough for
+          // both added collateral + fees
           amount: new BN(Math.ceil(collateral.toNumber() * 1.1)),
           connection: this.connection,
           owner,
@@ -1068,7 +1071,12 @@ export class AdrenaClient {
       // Make sure there are enough WSOL available in WSOL ATA
       preInstructions.push(
         ...(await createPrepareWSOLAccountInstructions({
-          amount: addedCollateral,
+          // TODO: provide just enough
+          // 10% pre-provided
+          // addCollateral makes users to pay fees on top of added collateral
+          // fees have to be paid in WSOL, so WSOL ATA needs to have enough for
+          // both added collateral + fees
+          amount: new BN(Math.ceil(addedCollateral.toNumber() * 1.1)),
           connection: this.connection,
           owner: position.owner,
           wsolATA,

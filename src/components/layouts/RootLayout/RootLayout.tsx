@@ -1,9 +1,9 @@
-import 'react-notifications-component/dist/theme.css';
 import 'tippy.js/dist/tippy.css';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 import Head from 'next/head';
 import { ReactNode } from 'react';
-import { ReactNotifications } from 'react-notifications-component';
+import { ToastContainer } from 'react-toastify';
 
 import { AdrenaClient } from '@/AdrenaClient';
 
@@ -29,7 +29,7 @@ const RootLayout = ({
 
     {children}
 
-    <ReactNotifications />
+    <ToastContainer newestOnTop />
 
     <Footer />
 

@@ -6,7 +6,8 @@ import Modal from '@/components/common/Modal/Modal';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 
-import ReduceOrClosePosition from '../ReduceOrClosePosition/ReduceOrClosePosition';
+import ClosePosition from '../ClosePosition/ClosePosition';
+import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
 import PositionsArray from './PositionsArray';
 import PositionsBlocs from './PositionsBlocs';
 
@@ -21,24 +22,45 @@ export default function Positions({
   triggerPositionsReload: () => void;
   client: AdrenaClient | null;
 }) {
-  const [positionToReduceOrClose, setPositionToReduceOrClose] =
+  const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
+
+  const [positionToEdit, setPositionToEdit] = useState<PositionExtended | null>(
+    null,
+  );
 
   const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
   return (
     <>
-      {positionToReduceOrClose ? (
+      {positionToClose ? (
         <Modal
-          title="Reduce or Close Position"
-          close={() => setPositionToReduceOrClose(null)}
+          title={`Close ${positionToClose.side} ${positionToClose.token.name} Position`}
+          close={() => setPositionToClose(null)}
           className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
         >
-          <ReduceOrClosePosition
-            position={positionToReduceOrClose}
+          <ClosePosition
+            position={positionToClose}
             triggerPositionsReload={triggerPositionsReload}
             onClose={() => {
-              setPositionToReduceOrClose(null);
+              setPositionToClose(null);
+            }}
+            client={client}
+          />
+        </Modal>
+      ) : null}
+
+      {positionToEdit ? (
+        <Modal
+          title={`Edit ${positionToEdit.side} ${positionToEdit.token.name} Position`}
+          close={() => setPositionToEdit(null)}
+          className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
+        >
+          <EditPositionCollateral
+            position={positionToEdit}
+            triggerPositionsReload={triggerPositionsReload}
+            onClose={() => {
+              setPositionToEdit(null);
             }}
             client={client}
           />
@@ -49,13 +71,15 @@ export default function Positions({
         <PositionsArray
           positions={positions}
           className={className}
-          triggerReduceOrClosePosition={setPositionToReduceOrClose}
+          triggerClosePosition={setPositionToClose}
+          triggerEditPositionCollateral={setPositionToEdit}
         />
       ) : (
         <PositionsBlocs
           positions={positions}
           className={className}
-          triggerReduceOrClosePosition={setPositionToReduceOrClose}
+          triggerClosePosition={setPositionToClose}
+          triggerEditPositionCollateral={setPositionToEdit}
         />
       )}
     </>

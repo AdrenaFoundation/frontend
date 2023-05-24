@@ -8,11 +8,13 @@ import { formatNumber, formatPriceInfo } from '@/utils';
 export default function PositionsArray({
   className,
   positions,
-  triggerReduceOrClosePosition,
+  triggerClosePosition,
+  triggerEditPositionCollateral,
 }: {
   className?: string;
   positions: PositionExtended[] | null;
-  triggerReduceOrClosePosition: (p: PositionExtended) => void;
+  triggerClosePosition: (p: PositionExtended) => void;
+  triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -45,7 +47,8 @@ export default function PositionsArray({
           </div>
         ))}
 
-        <div className="w-16">{/* Space for close action*/}</div>
+        <div className="w-10">{/* Space for close action*/}</div>
+        <div className="w-32">{/* Space for edit collateral action*/}</div>
       </div>
 
       {/* Content */}
@@ -117,20 +120,26 @@ export default function PositionsArray({
             </div>
 
             <Button
-              className="w-16 border-0 text-txtfade hover:text-txtregular"
+              className="w-10 border-0 text-txtfade hover:text-txtregular"
               title={
                 <div className="flex flex-col justify-center items-center text-sm">
-                  <div>Reduce</div>
-                  <div className="flex justify-center items-center">
-                    <div className="w-full h-[1px] bg-grey shrink-0" />
-                    <div className="text-txtfade ml-1 mr-1">or</div>
-                    <div className="w-full h-[1px] bg-grey shrink-0" />
-                  </div>
                   <div>Close</div>
                 </div>
               }
               onClick={() => {
-                triggerReduceOrClosePosition(position);
+                triggerClosePosition(position);
+              }}
+            />
+
+            <Button
+              className="w-32 border-0 text-txtfade hover:text-txtregular"
+              title={
+                <div className="flex flex-col justify-center items-center text-sm">
+                  <div>Edit Collateral</div>
+                </div>
+              }
+              onClick={() => {
+                triggerEditPositionCollateral(position);
               }}
             />
           </div>

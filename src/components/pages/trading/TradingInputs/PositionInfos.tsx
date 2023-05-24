@@ -1,12 +1,16 @@
 import { BN } from '@project-serum/anchor';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import { PRICE_DECIMALS } from '@/constant';
-import useGetPositionEntryPriceAndFee from '@/hooks/useGetPositionEntryPriceAndFee';
-import { PositionExtended, Token } from '@/types';
+import { NewPositionPricesAndFee, PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
+
+// use the counter to handle asynchronous multiple loading
+// always ignore outdated informations
+let loadingCounter = 0;
 
 export default function PositionInfos({
   className,
@@ -25,17 +29,37 @@ export default function PositionInfos({
   openedPosition: PositionExtended | null;
   client: AdrenaClient | null;
 }) {
-  const entryPriceAndFee = useGetPositionEntryPriceAndFee(
-    tokenB && inputB && inputB > 0
-      ? {
-          token: tokenB,
-          collateral: uiToNative(inputB, tokenB.decimals).div(new BN(leverage)),
-          size: uiToNative(inputB, tokenB.decimals),
-          side,
+  const [entryPriceAndFee, setEntryPriceAndFee] =
+    useState<NewPositionPricesAndFee | null>(null);
+
+  useEffect(() => {
+    if (!client || !tokenB || !inputB || inputB <= 0) {
+      return;
+    }
+
+    const localLoadingCounter = ++loadingCounter;
+
+    client
+      .getEntryPriceAndFee({
+        token: tokenB,
+        collateral: uiToNative(inputB, tokenB.decimals).div(new BN(leverage)),
+        size: uiToNative(inputB, tokenB.decimals),
+        side,
+      })
+      .then((entryPriceAndFee: NewPositionPricesAndFee | null) => {
+        // Verify that information is not outdated
+        // If loaderCounter doesn't match it means
+        // an other request has been casted due to input change
+        if (localLoadingCounter !== loadingCounter) {
+          return;
         }
-      : null,
-    client,
-  );
+
+        setEntryPriceAndFee(entryPriceAndFee);
+      })
+      .catch(() => {
+        // Ignore error
+      });
+  }, [client, inputB, leverage, side, tokenB]);
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 
