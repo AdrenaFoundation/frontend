@@ -93,7 +93,7 @@ export default function PositionsBlocs({
             </div>
           </div>
 
-          <div className="border-t border-grey p-4">
+          <div className="border-t border-grey p-4 flex justify-around">
             <Button
               className="w-36 bg-highlight"
               title="Close"
@@ -104,7 +104,7 @@ export default function PositionsBlocs({
 
             <Button
               className="w-36 bg-highlight ml-6"
-              title="Close"
+              title="Edit Collateral"
               onClick={() => {
                 triggerEditPositionCollateral(position);
               }}

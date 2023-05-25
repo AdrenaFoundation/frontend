@@ -1,7 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import Link from 'next/link';
-import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import { PageProps } from '@/types';
@@ -28,137 +27,117 @@ export default function OnchainInfo({ client }: PageProps) {
   if (!client) return <div className="w-full h-full bg-main"></div>;
 
   return (
-    <div
-      className={twMerge(
-        'w-full',
-        'flex',
-        'p-4',
-        'bg-main',
-        'justify-center',
-        'grow',
-      )}
-    >
-      <div
-        className={twMerge(
-          'w-full',
-          'h-full',
-          'flex',
-          'max-w-[1400px]',
-          'flex-col',
-          'items-center',
-        )}
-      >
-        <div className={tableClasses}>
-          <div className={titleClasses}>Main Information</div>
+    <>
+      <div className={tableClasses}>
+        <div className={titleClasses}>Main Information</div>
 
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>Cluster</div>
-            <div className={infoClasses}>{client.cluster}</div>
-          </div>
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>Cluster</div>
+          <div className={infoClasses}>{client.cluster}</div>
+        </div>
 
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>Program</div>
-            <div className={infoClasses}>
-              {solanaExplorerLink(AdrenaClient.programId)}
-            </div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>Pool</div>
-            <div className={infoClasses}>
-              {solanaExplorerLink(AdrenaClient.mainPoolAddress)}
-            </div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>Perpetuals</div>
-            <div className={infoClasses}>
-              {solanaExplorerLink(AdrenaClient.perpetualsAddress)}
-            </div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>Multisig</div>
-            <div className={infoClasses}>
-              {solanaExplorerLink(AdrenaClient.multisigAddress)}
-            </div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>Transfer Authority</div>
-            <div className={infoClasses}>
-              {solanaExplorerLink(AdrenaClient.transferAuthorityAddress)}
-            </div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>Program Data</div>
-            <div className={infoClasses}>
-              {solanaExplorerLink(AdrenaClient.programData)}
-            </div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>ALP Mint</div>
-            <div className={infoClasses}>
-              {solanaExplorerLink(AdrenaClient.alpToken.mint)}
-            </div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className={subtitleClasses}>ADX Mint</div>
-            <div className={infoClasses}>
-              {
-                // @TODO
-                '-'
-              }
-            </div>
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>Program</div>
+          <div className={infoClasses}>
+            {solanaExplorerLink(AdrenaClient.programId)}
           </div>
         </div>
 
-        {client?.custodies.map((custody) => {
-          const token = client.tokens.find((token) =>
-            token.custody?.equals(custody.pubkey),
-          );
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>Pool</div>
+          <div className={infoClasses}>
+            {solanaExplorerLink(AdrenaClient.mainPoolAddress)}
+          </div>
+        </div>
 
-          return (
-            <div className={tableClasses} key={custody.mint.toBase58()}>
-              <div className={titleClasses}>
-                {token?.name ? (
-                  <div className="flex flex-row">
-                    {token.name} Custody
-                    <Image
-                      src={token.image}
-                      alt="logo"
-                      width="25"
-                      height="25"
-                      className="ml-2"
-                    />
-                  </div>
-                ) : (
-                  `Custody ${custody.mint.toBase58().slice(0, 4)}`
-                )}
-              </div>
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>Perpetuals</div>
+          <div className={infoClasses}>
+            {solanaExplorerLink(AdrenaClient.perpetualsAddress)}
+          </div>
+        </div>
 
-              <div className={rowClasses}>
-                <div className={subtitleClasses}>Address</div>
-                <div className={infoClasses}>
-                  {solanaExplorerLink(custody.pubkey)}
-                </div>
-              </div>
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>Multisig</div>
+          <div className={infoClasses}>
+            {solanaExplorerLink(AdrenaClient.multisigAddress)}
+          </div>
+        </div>
 
-              {token ? (
-                <div className={rowClasses}>
-                  <div className={subtitleClasses}>{token.name} Mint</div>
-                  <div className={infoClasses}>
-                    {solanaExplorerLink(token.mint)}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>Transfer Authority</div>
+          <div className={infoClasses}>
+            {solanaExplorerLink(AdrenaClient.transferAuthorityAddress)}
+          </div>
+        </div>
+
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>Program Data</div>
+          <div className={infoClasses}>
+            {solanaExplorerLink(AdrenaClient.programData)}
+          </div>
+        </div>
+
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>ALP Mint</div>
+          <div className={infoClasses}>
+            {solanaExplorerLink(AdrenaClient.alpToken.mint)}
+          </div>
+        </div>
+
+        <div className={rowClasses}>
+          <div className={subtitleClasses}>ADX Mint</div>
+          <div className={infoClasses}>
+            {
+              // @TODO
+              '-'
+            }
+          </div>
+        </div>
       </div>
-    </div>
+
+      {client?.custodies.map((custody) => {
+        const token = client.tokens.find((token) =>
+          token.custody?.equals(custody.pubkey),
+        );
+
+        return (
+          <div className={tableClasses} key={custody.mint.toBase58()}>
+            <div className={titleClasses}>
+              {token?.name ? (
+                <div className="flex flex-row">
+                  {token.name} Custody
+                  <Image
+                    src={token.image}
+                    alt="logo"
+                    width="25"
+                    height="25"
+                    className="ml-2"
+                  />
+                </div>
+              ) : (
+                `Custody ${custody.mint.toBase58().slice(0, 4)}`
+              )}
+            </div>
+
+            <div className={rowClasses}>
+              <div className={subtitleClasses}>Address</div>
+              <div className={infoClasses}>
+                {solanaExplorerLink(custody.pubkey)}
+              </div>
+            </div>
+
+            {token ? (
+              <div className={rowClasses}>
+                <div className={subtitleClasses}>{token.name} Mint</div>
+                <div className={infoClasses}>
+                  {solanaExplorerLink(token.mint)}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </>
   );
 }

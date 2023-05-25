@@ -347,11 +347,7 @@ export default function Trade({
     <div
       className={twMerge(
         'w-full',
-        'h-full',
         'flex',
-        'bg-main',
-        'p-4',
-        'overflow-auto',
         'flex-col',
         'items-center',
         'xl:flex-row',

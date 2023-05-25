@@ -10,29 +10,6 @@ import WalletAdapter from '../WalletAdapter/WalletAdapter';
 export default function Header({ client }: { client: AdrenaClient | null }) {
   const { pathname } = useRouter();
 
-  // Specific header for landing page
-  if (pathname === '/') {
-    return (
-      <div
-        className={twMerge(
-          'flex',
-          'bg-main',
-          'w-full',
-          'justify-center',
-          'items-center',
-          'border-b',
-          'border-grey',
-          'sm:h-20',
-        )}
-      >
-        {
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src="images/logo.svg" className="h-12" alt="logo" />
-        }
-      </div>
-    );
-  }
-
   const PageLink = (url: string, title: string) => (
     <Link
       className={twMerge(

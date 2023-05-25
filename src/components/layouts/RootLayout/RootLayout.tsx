@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import Head from 'next/head';
 import { ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
+import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
 
@@ -27,7 +28,28 @@ const RootLayout = ({
 
     <Header client={client} />
 
-    {children}
+    <div
+      className={twMerge(
+        'w-full',
+        'grow',
+        'flex',
+        'p-4',
+        'bg-main',
+        'justify-center',
+      )}
+    >
+      <div
+        className={twMerge(
+          'w-full',
+          'flex',
+          'max-w-[1400px]',
+          'flex-col',
+          'grow',
+        )}
+      >
+        {children}
+      </div>
+    </div>
 
     <ToastContainer newestOnTop />
 
