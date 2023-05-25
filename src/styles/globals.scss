@@ -49,6 +49,7 @@ body,
   height: 100%;
   display: flex;
   flex-direction: column;
+  min-width: 375px;
 }
 
 // Hide arrows on input number

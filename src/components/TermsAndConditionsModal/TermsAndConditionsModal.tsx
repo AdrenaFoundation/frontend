@@ -30,7 +30,7 @@ function TermsAndConditionsModal({
         'flex-col',
         'items-center',
         'p-4',
-        'w-[30em]',
+        'max-w-[30em]',
         'max-h-[40em]',
       )}
     >
