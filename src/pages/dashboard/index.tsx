@@ -4,6 +4,8 @@ import Stats from '@/components/pages/dashboard/Stats/Stats';
 import { PageProps } from '@/types';
 
 export default function Dashboard({ client, mainPool, custodies }: PageProps) {
+  console.log('ENV', process.env);
+
   return (
     <>
       <div className="text-3xl mt-6">Stats</div>
