@@ -41,6 +41,7 @@ export default function Header({ client }: { client: AdrenaClient | null }) {
         'sm:flex-row',
         'p-4',
         'sm:p-0',
+        'shrink-0',
       )}
     >
       <Link

@@ -29,6 +29,21 @@ export default function App(props: AppProps) {
   );
 }
 
+function Loader(): JSX.Element {
+  return (
+    <div className="h-full w-full bg-main flex items-center justify-center">
+      {
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src="images/logo.svg"
+          alt="logo"
+          className="h-[7em] max-w-[40%] animate-pulse"
+        />
+      }
+    </div>
+  );
+}
+
 // Tricks: wrap RootLayout + component here to be able to use useConnection/useAdrenaClient
 // without getting error being out of Provider
 function AppComponent({ Component, pageProps }: AppProps) {
@@ -65,7 +80,10 @@ function AppComponent({ Component, pageProps }: AppProps) {
 
   const connected = !!wallet;
 
-  return (
+  // Before displaying the page, wait for every main data to be loaded
+  const loaded = mainConnection && pythConnection && client;
+
+  return loaded ? (
     <RootLayout client={client}>
       {
         <TermsAndConditionsModal
@@ -101,5 +119,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
         connected={connected}
       />
     </RootLayout>
+  ) : (
+    <Loader />
   );
 }

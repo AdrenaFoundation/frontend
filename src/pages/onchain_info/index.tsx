@@ -7,7 +7,7 @@ import { PageProps } from '@/types';
 
 export default function OnchainInfo({ client }: PageProps) {
   const tableClasses =
-    'flex flex-col border border-grey mt-4 grow w-[90%] max-w-[50em]';
+    'flex flex-col border border-grey mt-4 ml-auto mr-auto grow w-[90%] max-w-[50em]';
   const titleClasses = 'text-md font-bold border-b border-grey p-2';
   const rowClasses =
     'flex flex-row w-full justify-between flex-wrap max-w-full grow items-center pl-4 pt-2 pb-2 pr-4';

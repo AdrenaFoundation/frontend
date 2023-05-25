@@ -17,12 +17,23 @@ export default function PositionsBlocs({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const connected = !!useSelector((s) => s.walletState.wallet);
 
   const columnStyle = 'flex w-full justify-between';
 
   return (
     <div className={twMerge('w-full', 'flex', 'flex-wrap', className)}>
-      {!positions?.length ? (
+      {positions === null && !connected ? (
+        <div className="mt-5 mb-5 ml-auto mr-auto">
+          Waiting for wallet connection ...
+        </div>
+      ) : null}
+
+      {positions === null && connected ? (
+        <div className="mt-5 mb-5 ml-auto mr-auto">Loading ...</div>
+      ) : null}
+
+      {positions && !positions.length ? (
         <div className="mt-5 mb-5 ml-auto mr-auto">No opened position</div>
       ) : null}
 

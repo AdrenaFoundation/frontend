@@ -17,6 +17,7 @@ export default function PositionsArray({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const connected = !!useSelector((s) => s.walletState.wallet);
 
   const columnStyle = 'flex min-w-[5em] w-20 grow shrink-0 items-center';
 
@@ -53,7 +54,17 @@ export default function PositionsArray({
 
       {/* Content */}
       <div className="flex flex-col w-full bg-secondary">
-        {!positions?.length ? (
+        {positions === null && !connected ? (
+          <div className="mt-5 mb-5 ml-auto mr-auto">
+            Waiting for wallet connection ...
+          </div>
+        ) : null}
+
+        {positions === null && connected ? (
+          <div className="mt-5 mb-5 ml-auto mr-auto">Loading ...</div>
+        ) : null}
+
+        {positions && !positions.length ? (
           <div className="mt-5 mb-5 ml-auto mr-auto">No opened position</div>
         ) : null}
 

@@ -407,7 +407,9 @@ export default function Trade({
         </div>
 
         <>
-          <div className="mb-4">Positions ({positions?.length ?? 0})</div>
+          <div className="mb-4">
+            Positions {positions !== null ? `(${positions.length})` : ''}
+          </div>
 
           <Positions
             positions={positions}
