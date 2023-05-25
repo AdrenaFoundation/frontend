@@ -1,3 +1,4 @@
+import ALPDetails from '@/components/pages/dashboard/ALPDetails/ALPDetails';
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Overview from '@/components/pages/dashboard/Overview/Overview';
 import Stats from '@/components/pages/dashboard/Stats/Stats';
@@ -28,6 +29,8 @@ export default function Dashboard({ client, mainPool, custodies }: PageProps) {
       </div>
 
       <div className="text-4xl mt-6">Tokens</div>
+
+      <ALPDetails className="mt-4" client={client} custodies={custodies} />
 
       <ALPIndexComposition
         client={client}
