@@ -17,48 +17,50 @@ const RootLayout = ({
 }: {
   children: ReactNode;
   client: AdrenaClient | null;
-}) => (
-  <>
-    <Head>
-      <title>Adrena</title>
-      <meta name="description" content="Insert Description" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+}) => {
+  return (
+    <>
+      <Head>
+        <title>Adrena</title>
+        <meta name="description" content="Insert Description" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-    <Header client={client} />
+      <Header client={client} />
 
-    <div
-      className={twMerge(
-        'w-full',
-        'grow',
-        'flex',
-        'p-4',
-        'bg-main',
-        'justify-center',
-      )}
-    >
       <div
         className={twMerge(
           'w-full',
-          'flex',
-          'max-w-[1400px]',
-          'flex-col',
           'grow',
+          'flex',
+          'p-4',
+          'bg-main',
+          'justify-center',
         )}
       >
-        {children}
+        <div
+          className={twMerge(
+            'w-full',
+            'flex',
+            'max-w-[1400px]',
+            'flex-col',
+            'grow',
+          )}
+        >
+          {children}
+        </div>
       </div>
-    </div>
 
-    <ToastContainer newestOnTop />
+      <ToastContainer newestOnTop />
 
-    <Footer />
+      <Footer />
 
-    <div className="absolute top-0 right-0 overflow-hidden w-full">
-      <div id="modal-container"></div>
-    </div>
-  </>
-);
+      <div className="absolute top-0 right-0 overflow-hidden w-full">
+        <div id="modal-container"></div>
+      </div>
+    </>
+  );
+};
 
 export default RootLayout;
