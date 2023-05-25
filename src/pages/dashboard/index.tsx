@@ -30,7 +30,11 @@ export default function Dashboard({ client, mainPool, custodies }: PageProps) {
 
       <div className="text-4xl mt-6">Tokens</div>
 
-      <ALPDetails className="mt-4" client={client} custodies={custodies} />
+      <ALPDetails
+        className="mt-4 max-w-[30em]"
+        client={client}
+        custodies={custodies}
+      />
 
       <ALPIndexComposition
         client={client}

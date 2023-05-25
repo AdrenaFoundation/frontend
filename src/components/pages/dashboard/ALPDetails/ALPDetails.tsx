@@ -12,6 +12,7 @@ import { twMerge } from 'tailwind-merge';
 import { AdrenaClient } from '@/AdrenaClient';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
+import { useSelector } from '@/store/store';
 import { CustodyExtended } from '@/types';
 import { formatNumber, formatPercentage, formatPriceInfo } from '@/utils';
 
@@ -30,6 +31,8 @@ export default function ALPDetails({
 
   const composition = useALPIndexComposition(client, custodies);
   const alpTotalSupply = useALPTotalSupply(client);
+  const alpPrice =
+    useSelector((s) => s.tokenPrices?.[AdrenaClient.alpToken.name]) ?? null;
 
   // Add currentRatio of stable tokens
   const stablecoinPercentage = composition
@@ -56,7 +59,7 @@ export default function ALPDetails({
 
           <div className={rowClasses}>
             <div className="text-txtfade">Price</div>
-            <div>{formatPriceInfo(0)}</div>
+            <div>{formatPriceInfo(alpPrice)}</div>
           </div>
 
           <div className={rowClasses}>
