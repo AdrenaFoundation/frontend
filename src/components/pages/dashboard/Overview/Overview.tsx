@@ -23,12 +23,12 @@ export default function Overview({
 
   return (
     <div
-      className={`border border-grey bg-secondary flex flex-col w-[30em] max-w-full ${
+      className={`border border-grey bg-secondary flex flex-col max-w-full ${
         className ?? ''
       }`}
     >
       <div className="p-4 border-b border-grey">Overview</div>
-      <div className="pb-4 pl-4 pr-4 pt-2 text-sm flex flex-col w-full">
+      <div className="pb-4 pl-4 pr-4 pt-2 text-md flex flex-col w-full">
         <div className={rowClasses}>
           <div className="text-txtfade">AUM</div>
           <div>{formatPriceInfo(aumUsd)}</div>

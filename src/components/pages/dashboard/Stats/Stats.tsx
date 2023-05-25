@@ -21,13 +21,12 @@ export default function Stats({
         'bg-secondary',
         'flex',
         'flex-col',
-        'w-[30em]',
         'max-w-full',
         className,
       )}
     >
       <div className="p-4 border-b border-grey">Total Stats</div>
-      <div className="pr-4 pt-2 pb-4 pl-4 text-sm flex flex-col w-full">
+      <div className="pr-4 pt-2 pb-4 pl-4 text-md flex flex-col w-full">
         <div className={rowClasses}>
           <div className="text-txtfade">Total Fees</div>
           <div>{formatPriceInfo(totalCollectedFees)}</div>

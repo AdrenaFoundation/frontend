@@ -6,11 +6,11 @@ import { PageProps } from '@/types';
 export default function Dashboard({ client, mainPool, custodies }: PageProps) {
   return (
     <>
-      <div className="text-3xl mt-6">Stats</div>
+      <div className="text-4xl mt-6">Stats</div>
 
-      <div className="flex justify-evenly flex-col sm:flex-row mt-8 sm:mt-4 md:mt-0">
+      <div className="flex justify-between flex-col sm:flex-row mt-4">
         <Overview
-          className="sm:m-4"
+          className="grow sm:mr-4"
           aumUsd={mainPool?.aumUsd ?? null}
           longPositions={mainPool?.longPositions ?? null}
           shortPositions={mainPool?.shortPositions ?? null}
@@ -21,13 +21,13 @@ export default function Dashboard({ client, mainPool, custodies }: PageProps) {
         />
 
         <Stats
-          className="mt-4 sm:mt-0 sm:m-4"
+          className="mt-2 sm:mt-0 grow"
           totalCollectedFees={mainPool?.totalFeeCollected ?? null}
           totalVolume={mainPool?.totalVolume ?? null}
         />
       </div>
 
-      <div className="text-3xl mt-6">Tokens</div>
+      <div className="text-4xl mt-6">Tokens</div>
 
       <ALPIndexComposition
         client={client}
