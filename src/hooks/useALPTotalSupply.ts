@@ -1,31 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { AdrenaClient } from '@/AdrenaClient';
-
 let interval: NodeJS.Timeout | null = null;
 
 const TOTAL_SUPPLY_LOADING_INTERVAL_IN_MS = 30_000;
 
-const useALPTotalSupply = (client: AdrenaClient | null) => {
+const useALPTotalSupply = () => {
   const [totalSupply, setTotalSupply] = useState<number | null>(null);
 
   const loadTotalSupply = useCallback(async () => {
-    if (!client) return;
-
-    const connection = client.connection;
+    const connection = window.adrena.client.connection;
 
     if (!connection) return;
 
-    const supply = await connection.getTokenSupply(AdrenaClient.alpToken.mint);
+    const supply = await connection.getTokenSupply(
+      window.adrena.client.alpToken.mint,
+    );
 
     setTotalSupply(supply.value.uiAmount);
-  }, [client]);
+  }, []);
 
   useEffect(() => {
-    if (!client) {
-      return;
-    }
-
     loadTotalSupply();
 
     interval = setInterval(() => {

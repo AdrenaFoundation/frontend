@@ -19,8 +19,6 @@ import { toast } from 'react-toastify';
 
 import { Perpetuals } from '@/target/perpetuals';
 
-import { TOKEN_INFO_LIBRARY } from './constant';
-
 export function findATAAddressSync(
   wallet: PublicKey,
   mint: PublicKey,
@@ -88,7 +86,7 @@ export function uiToNative(nb: number, decimals: number): BN {
 }
 
 export function getTokenNameByMint(mint: PublicKey): string {
-  return TOKEN_INFO_LIBRARY[mint.toBase58()]?.name ?? 'Unknown';
+  return window.adrena.config.tokensInfo[mint.toBase58()]?.name ?? 'Unknown';
 }
 
 export function addNotification({

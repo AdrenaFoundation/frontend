@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import { PRICE_DECIMALS } from '@/constant';
 import { NewPositionPricesAndFee, PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
@@ -19,7 +18,6 @@ export default function PositionInfos({
   inputB,
   leverage,
   openedPosition,
-  client,
 }: {
   side: 'short' | 'long';
   className?: string;
@@ -27,19 +25,18 @@ export default function PositionInfos({
   inputB: number | null;
   leverage: number;
   openedPosition: PositionExtended | null;
-  client: AdrenaClient | null;
 }) {
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);
 
   useEffect(() => {
-    if (!client || !tokenB || !inputB || inputB <= 0) {
+    if (!tokenB || !inputB || inputB <= 0) {
       return;
     }
 
     const localLoadingCounter = ++loadingCounter;
 
-    client
+    window.adrena.client
       .getEntryPriceAndFee({
         token: tokenB,
         collateral: uiToNative(inputB, tokenB.decimals).div(new BN(leverage)),
@@ -59,7 +56,7 @@ export default function PositionInfos({
       .catch(() => {
         // Ignore error
       });
-  }, [client, inputB, leverage, side, tokenB]);
+  }, [inputB, leverage, side, tokenB]);
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 

@@ -25,7 +25,6 @@ import {
 type Action = 'long' | 'short' | 'swap';
 
 export default function Trade({
-  client,
   positions,
   connected,
   wallet,
@@ -71,9 +70,7 @@ export default function Trade({
 
   // Setup
   useEffect(() => {
-    if (!client) return;
-
-    const tokenACandidate = client.tokens;
+    const tokenACandidate = window.adrena.client.tokens;
 
     // First initialization of the component
     // Load trading pair and action type (long/short/swap) from URL
@@ -95,8 +92,8 @@ export default function Trade({
 
       const tokenBCandidate =
         action === 'swap'
-          ? client.tokens
-          : client.tokens.filter((t) => !t.isStable);
+          ? window.adrena.client.tokens
+          : window.adrena.client.tokens.filter((t) => !t.isStable);
 
       const possiblePair = router.query.pair;
 
@@ -129,8 +126,8 @@ export default function Trade({
 
     const tokenBCandidate =
       selectedAction === 'swap'
-        ? client.tokens
-        : client.tokens.filter((t) => !t.isStable);
+        ? window.adrena.client.tokens
+        : window.adrena.client.tokens.filter((t) => !t.isStable);
 
     // If token is not set or token is not allowed, set default token
     if (
@@ -151,7 +148,6 @@ export default function Trade({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // Only call when the user get initialized or we change of action
-    client,
     selectedAction,
     isInitialized,
   ]);
@@ -171,7 +167,7 @@ export default function Trade({
   }, [positions, selectedAction, tokenB]);
 
   const handleExecuteButton = async (): Promise<void> => {
-    if (!connected || !client || !dispatch || !wallet) {
+    if (!connected || !dispatch || !wallet) {
       dispatch(openCloseConnectionModalAction(true));
       return;
     }
@@ -195,7 +191,7 @@ export default function Trade({
 
     if (selectedAction === 'swap') {
       try {
-        const txHash = await client.swap({
+        const txHash = await window.adrena.client.swap({
           owner: new PublicKey(wallet.publicKey),
           amountIn: uiToNative(inputAValue, tokenA.decimals),
 
@@ -219,7 +215,7 @@ export default function Trade({
       }
     }
 
-    const entryPriceAndFee = await client.getEntryPriceAndFee({
+    const entryPriceAndFee = await window.adrena.client.getEntryPriceAndFee({
       token: tokenB,
       collateral: uiToNative(inputBValue, tokenB.decimals).div(
         new BN(leverage),
@@ -239,13 +235,13 @@ export default function Trade({
     if (openedPosition) {
       try {
         const txHash = tokenA.mint.equals(tokenB.mint)
-          ? await client.addCollateralToPosition({
+          ? await window.adrena.client.addCollateralToPosition({
               position: openedPosition,
               addedCollateral: uiToNative(inputBValue, tokenB.decimals).div(
                 new BN(leverage),
               ),
             })
-          : await client.swapAndAddCollateralToPosition({
+          : await window.adrena.client.swapAndAddCollateralToPosition({
               position: openedPosition,
               mintIn: tokenA.mint,
               amountIn: uiToNative(inputAValue, tokenA.decimals),
@@ -273,7 +269,7 @@ export default function Trade({
     }
 
     try {
-      const txHash = await client.openPositionWithSwap({
+      const txHash = await window.adrena.client.openPositionWithSwap({
         owner: new PublicKey(wallet.publicKey),
         mintA: tokenA.mint,
         mintB: tokenB.mint,
@@ -365,19 +361,18 @@ export default function Trade({
         )}
       >
         {/* Trading chart header */}
-        {client && tokenB ? (
+        {tokenB ? (
           <TradingChartHeader
             className="mb-4 pl-4 pr-4"
             tokenList={
               selectedAction === 'short' || selectedAction === 'long'
-                ? client.tokens.filter((t) => !t.isStable)
-                : client.tokens
+                ? window.adrena.client.tokens.filter((t) => !t.isStable)
+                : window.adrena.client.tokens
             }
             selected={tokenB}
             onChange={(t: Token) => {
               setTokenB(t);
             }}
-            client={client}
           />
         ) : null}
 
@@ -413,7 +408,6 @@ export default function Trade({
 
           <Positions
             positions={positions}
-            client={client}
             triggerPositionsReload={triggerPositionsReload}
           />
         </>
@@ -441,16 +435,16 @@ export default function Trade({
             }}
           />
 
-          {client && client.tokens.length && tokenA && tokenB && (
+          {window.adrena.client.tokens.length && tokenA && tokenB && (
             <>
               <TradingInputs
                 className="mt-4"
                 actionType={selectedAction}
-                allowedTokenA={client.tokens}
+                allowedTokenA={window.adrena.client.tokens}
                 allowedTokenB={
                   selectedAction === 'swap'
-                    ? client.tokens
-                    : client.tokens.filter((t) => !t.isStable)
+                    ? window.adrena.client.tokens
+                    : window.adrena.client.tokens.filter((t) => !t.isStable)
                 }
                 tokenA={tokenA}
                 tokenB={tokenB}
@@ -460,7 +454,6 @@ export default function Trade({
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 onChangeLeverage={setLeverage}
-                client={client}
               />
             </>
           )}
@@ -514,10 +507,9 @@ export default function Trade({
                       ? tokenPrices[tokenB.name]
                       : null
                   }
-                  client={client}
                 />
               ) : (
-                <SwapDetails tokenA={tokenA} tokenB={tokenB} client={client} />
+                <SwapDetails tokenA={tokenA} tokenB={tokenB} />
               )}
             </>
           ) : null}

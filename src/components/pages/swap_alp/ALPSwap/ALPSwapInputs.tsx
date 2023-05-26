@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -24,7 +23,6 @@ export default function ALPSwapInputs({
   setActionType,
   setCollateralToken,
   setFeesUsd,
-  client,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
@@ -36,7 +34,6 @@ export default function ALPSwapInputs({
   setActionType: (a: 'buy' | 'sell') => void;
   setCollateralToken: (t: Token | null) => void;
   setFeesUsd: (f: number | null) => void;
-  client: AdrenaClient;
 }) {
   const wallet = useSelector((s) => s.walletState);
   const connected = !!wallet;
@@ -135,7 +132,7 @@ export default function ALPSwapInputs({
 
       setFeesUsd(null);
 
-      client
+      window.adrena.client
         .getRemoveLiquidityAmountAndFee({
           lpAmountIn: uiToNative(alpInput, alpToken.decimals),
           token: collateralToken,
@@ -215,7 +212,7 @@ export default function ALPSwapInputs({
 
       setFeesUsd(null);
 
-      client
+      window.adrena.client
         .getAddLiquidityAmountAndFee({
           amountIn: uiToNative(collateralInput, collateralToken.decimals),
           token: collateralToken,

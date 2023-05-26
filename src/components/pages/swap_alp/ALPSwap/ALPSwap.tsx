@@ -3,7 +3,6 @@ import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { useSelector } from '@/store/store';
@@ -19,11 +18,9 @@ import ALPSwapInputs from './ALPSwapInputs';
 
 export default function ALPSwap({
   className,
-  client,
   triggerWalletTokenBalancesReload,
 }: {
   className?: string;
-  client: AdrenaClient | null;
   triggerWalletTokenBalancesReload: () => void;
 }) {
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -37,14 +34,13 @@ export default function ALPSwap({
   const [feesUsd, setFeesUsd] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!client || !client.tokens.length) return;
+    if (!window.adrena.client.tokens.length) return;
 
-    setCollateralToken(client.tokens[0]);
-  }, [client]);
+    setCollateralToken(window.adrena.client.tokens[0]);
+  }, []);
 
   const handleExecuteButton = async () => {
     if (
-      !client ||
       !wallet?.walletAddress ||
       !collateralInput ||
       !collateralToken ||
@@ -56,7 +52,7 @@ export default function ALPSwap({
 
     if (selectedAction === 'buy') {
       try {
-        const txHash = await client.addLiquidity({
+        const txHash = await window.adrena.client.addLiquidity({
           owner: new PublicKey(wallet.walletAddress),
           amountIn: uiToNative(collateralInput, collateralToken.decimals),
           mint: collateralToken.mint,
@@ -83,10 +79,13 @@ export default function ALPSwap({
 
     // "sell"
     try {
-      const txHash = await client.removeLiquidity({
+      const txHash = await window.adrena.client.removeLiquidity({
         owner: new PublicKey(wallet.walletAddress),
         mint: collateralToken.mint,
-        lpAmountIn: uiToNative(alpInput, AdrenaClient.alpToken.decimals),
+        lpAmountIn: uiToNative(
+          alpInput,
+          window.adrena.client.alpToken.decimals,
+        ),
 
         // TODO: Apply proper slippage
         minAmountOut: new BN(0),
@@ -127,7 +126,7 @@ export default function ALPSwap({
       walletTokenBalances?.[collateralToken.name];
 
     const walletAlpTokenBalance =
-      walletTokenBalances?.[AdrenaClient.alpToken.name];
+      walletTokenBalances?.[window.adrena.client.alpToken.name];
 
     // Loading, should happens quickly
     if (typeof walletCollateralTokenBalance === 'undefined') {
@@ -150,14 +149,14 @@ export default function ALPSwap({
       ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
         walletAlpTokenBalance === null)
     ) {
-      return `Insufficient ${AdrenaClient.alpToken.name} balance`;
+      return `Insufficient ${window.adrena.client.alpToken.name} balance`;
     }
 
     if (selectedAction === 'buy') {
-      return `Buy ${AdrenaClient.alpToken.name}`;
+      return `Buy ${window.adrena.client.alpToken.name}`;
     }
 
-    return `Sell ${AdrenaClient.alpToken.name}`;
+    return `Sell ${window.adrena.client.alpToken.name}`;
   })();
 
   return (
@@ -178,15 +177,14 @@ export default function ALPSwap({
         }}
       />
 
-      {client && collateralToken ? (
+      {collateralToken ? (
         <>
           <ALPSwapInputs
             className="mt-4"
-            client={client}
             actionType={selectedAction}
-            alpToken={AdrenaClient.alpToken}
+            alpToken={window.adrena.client.alpToken}
             collateralToken={collateralToken}
-            allowedCollateralTokens={client?.tokens}
+            allowedCollateralTokens={window.adrena.client.tokens}
             onChangeAlpInput={setAlpInput}
             onChangeCollateralInput={setCollateralInput}
             setActionType={setSelectedAction}

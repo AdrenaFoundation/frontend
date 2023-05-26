@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import { USD_DECIMALS } from '@/constant';
 import { TokenPricesState } from '@/reducers/tokenPricesReducer';
 import { useSelector } from '@/store/store';
@@ -92,7 +91,6 @@ export default function TradingInputs({
   setTokenA,
   setTokenB,
   onChangeLeverage,
-  client,
 }: {
   actionType: 'short' | 'long' | 'swap';
   className?: string;
@@ -106,7 +104,6 @@ export default function TradingInputs({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   onChangeLeverage: (v: number) => void;
-  client: AdrenaClient | null;
 }) {
   const wallet = useSelector((s) => s.walletState);
   const connected = !!wallet;
@@ -369,7 +366,6 @@ export default function TradingInputs({
             inputB={inputB}
             leverage={leverage}
             openedPosition={openedPosition}
-            client={client}
           />
         </>
       ) : null}

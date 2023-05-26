@@ -4,16 +4,13 @@ import { PublicKey, RpcResponseAndContext, TokenAmount } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setWalletTokenBalancesAction } from '@/actions/walletBalancesActions';
-import { AdrenaClient } from '@/AdrenaClient';
 import { SOL_DECIMALS } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { TokenName } from '@/types';
 import { findATAAddressSync, nativeToUi } from '@/utils';
 
 // TODO: Make it responsive to wallet token balance change
-const useWatchWalletBalance = (
-  client: AdrenaClient | null,
-): {
+const useWatchWalletBalance = (): {
   triggerWalletTokenBalancesReload: () => void;
 } => {
   const [trickReload, triggerReload] = useState<number>(0);
@@ -21,11 +18,11 @@ const useWatchWalletBalance = (
   const wallet = useSelector((s) => s.walletState.wallet);
 
   const loadWalletBalances = useCallback(async () => {
-    if (!wallet || !dispatch || !client) {
+    if (!wallet || !dispatch) {
       return;
     }
 
-    const connection = client.connection;
+    const connection = window.adrena.client.connection;
 
     if (!connection) {
       return;
@@ -33,7 +30,10 @@ const useWatchWalletBalance = (
 
     console.log('Load user wallet token balances');
 
-    const tokens = [...client.tokens, AdrenaClient.alpToken];
+    const tokens = [
+      ...window.adrena.client.tokens,
+      window.adrena.client.alpToken,
+    ];
 
     const balances = await Promise.all(
       tokens.map(async ({ mint }) => {
@@ -87,7 +87,7 @@ const useWatchWalletBalance = (
       ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, dispatch, client, client?.connection, trickReload]);
+  }, [wallet, dispatch, trickReload]);
 
   useEffect(() => {
     loadWalletBalances();

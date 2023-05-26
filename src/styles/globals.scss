@@ -28,6 +28,13 @@
     @apply font-regular;
     @apply text-txtregular;
   }
+
+  h1 {
+    @apply text-4xl;
+    @apply font-bold;
+    @apply mt-4;
+    @apply mb-4;
+  }
 }
 
 @layer utilities {

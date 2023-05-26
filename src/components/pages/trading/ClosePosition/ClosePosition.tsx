@@ -2,7 +2,6 @@ import { BN } from '@project-serum/anchor';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
 import { USD_DECIMALS } from '@/constant';
@@ -29,13 +28,11 @@ export default function ClosePosition({
   position,
   triggerPositionsReload,
   onClose,
-  client,
 }: {
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
   onClose: () => void;
-  client: AdrenaClient | null;
 }) {
   const [allowedIncreasedSlippage, setAllowedIncreasedSlippage] =
     useState<boolean>(false);
@@ -53,13 +50,13 @@ export default function ClosePosition({
     : null;
 
   useEffect(() => {
-    if (!client || !input) {
+    if (!input) {
       return;
     }
 
     const localLoadingCounter = ++loadingCounter;
 
-    client
+    window.adrena.client
       .getExitPriceAndFee({
         position,
       })
@@ -77,7 +74,7 @@ export default function ClosePosition({
         // Ignore error
         console.log('error', e);
       });
-  }, [client, position, input]);
+  }, [position, input]);
 
   const rowStyle = 'w-full flex justify-between mt-2';
 
@@ -95,8 +92,9 @@ export default function ClosePosition({
   })();
 
   const maxAuthorizedLeverage =
-    client?.custodies.find((custody) => custody.pubkey.equals(position.custody))
-      ?.maxLeverage ?? null;
+    window.adrena.client?.custodies.find((custody) =>
+      custody.pubkey.equals(position.custody),
+    )?.maxLeverage ?? null;
 
   const closing = input == position.collateralUsd;
 
@@ -121,10 +119,10 @@ export default function ClosePosition({
   })();
 
   const doPartialClose = async () => {
-    if (!client || !input) return;
+    if (!input) return;
 
     try {
-      const txHash = await client.removeCollateral({
+      const txHash = await window.adrena.client.removeCollateral({
         position,
         collateralUsd: uiToNative(input, USD_DECIMALS),
       });
@@ -144,10 +142,10 @@ export default function ClosePosition({
   };
 
   const doFullClose = async () => {
-    if (!client || !markPrice) return;
+    if (!markPrice) return;
 
     try {
-      const priceAndFee = await client.getExitPriceAndFee({
+      const priceAndFee = await window.adrena.client.getExitPriceAndFee({
         position,
       });
 
@@ -169,7 +167,7 @@ export default function ClosePosition({
               .mul(new BN(10_000 - slippageInBps))
               .div(new BN(10_000));
 
-      const txHash = await client.closePosition({
+      const txHash = await window.adrena.client.closePosition({
         position,
         price: priceWithSlippage,
       });

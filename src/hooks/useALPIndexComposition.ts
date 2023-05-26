@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, Token } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -18,19 +17,14 @@ export type TokenInfo = {
 
 export type ALPIndexComposition = TokenInfo[];
 
-const useALPIndexComposition = (
-  client: AdrenaClient | null,
-  custodies: CustodyExtended[] | null,
-) => {
+const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [alpIndexComposition, setALPIndexComposition] =
     useState<ALPIndexComposition | null>(null);
 
   const calculateALPIndexComposition = useCallback(async () => {
-    if (!client) return;
-
-    const alpIndexComposition = client.tokens.map((token) => {
+    const alpIndexComposition = window.adrena.client.tokens.map((token) => {
       const price = tokenPrices[token.name];
 
       const custody = custodies?.find(
@@ -45,7 +39,7 @@ const useALPIndexComposition = (
 
       const currentRatio =
         custodyUsdValue !== null
-          ? (custodyUsdValue * 100) / client.mainPool.aumUsd
+          ? (custodyUsdValue * 100) / window.adrena.client.mainPool.aumUsd
           : null;
 
       const utilization = (() => {
@@ -73,7 +67,7 @@ const useALPIndexComposition = (
     });
 
     setALPIndexComposition(alpIndexComposition);
-  }, [client, tokenPrices, custodies]);
+  }, [tokenPrices, custodies]);
 
   useEffect(() => {
     calculateALPIndexComposition();

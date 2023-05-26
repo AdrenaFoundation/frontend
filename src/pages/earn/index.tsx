@@ -4,7 +4,7 @@ import { PageProps } from '@/types';
 export default function Earn(_: PageProps) {
   return (
     <>
-      <div className="text-4xl font-bold mb-8 mt-4">TODO</div>
+      <h1>TODO</h1>
     </>
   );
 }

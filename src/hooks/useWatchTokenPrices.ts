@@ -2,11 +2,10 @@ import {
   getPythProgramKeyForCluster,
   PythHttpClient,
 } from '@pythnetwork/client';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setTokenPriceAction } from '@/actions/tokenPricesActions';
-import { AdrenaClient } from '@/AdrenaClient';
 import { USD_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { nativeToUi } from '@/utils';
@@ -18,46 +17,47 @@ let alpPriceInterval: NodeJS.Timeout | null = null;
 const PYTH_PRICE_LOADING_INTERVAL_IN_MS = 3_000;
 const ALP_PRICE_LOADING_INTERVAL_IN_MS = 10_000;
 
-const useWatchTokenPrices = (
-  client: AdrenaClient | null,
-  connection: Connection | null,
-) => {
+const useWatchTokenPrices = () => {
   const dispatch = useDispatch();
 
   const [pythClient, setPythClient] = useState<PythHttpClient | null>(null);
 
   useEffect(() => {
-    if (!connection || !client) return;
-
     setPythClient(
       new PythHttpClient(
-        connection,
+        window.adrena.pythConnection,
         getPythProgramKeyForCluster('devnet'),
         'confirmed',
       ),
     );
-  }, [connection, client]);
+  }, []);
 
   const loadPythPrices = useCallback(async () => {
-    if (!pythClient || !dispatch || !client) return;
+    if (!pythClient || !dispatch) return;
 
-    const feedIds: PublicKey[] = client.tokens.map(
+    const feedIds: PublicKey[] = window.adrena.client.tokens.map(
       (token) =>
-        client.getCustodyByMint(token.mint).nativeObject.oracle.oracleAccount,
+        window.adrena.client.getCustodyByMint(token.mint).nativeObject.oracle
+          .oracleAccount,
     );
 
     const prices = await pythClient.getAssetPricesFromAccounts(feedIds);
 
     // Store the prices in Store
     prices.map(({ price }, index) => {
-      dispatch(setTokenPriceAction(client.tokens[index].name, price ?? null));
+      dispatch(
+        setTokenPriceAction(
+          window.adrena.client.tokens[index].name,
+          price ?? null,
+        ),
+      );
     });
     // Manually handle dependencies to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!pythClient, !!client, dispatch]);
+  }, [!!pythClient, , dispatch]);
 
   useEffect(() => {
-    if (!pythClient || !client || !dispatch) {
+    if (!pythClient || !window.adrena.client || !dispatch) {
       return;
     }
 
@@ -80,20 +80,18 @@ const useWatchTokenPrices = (
   }, [loadPythPrices]);
 
   const loadALPTokenPrice = useCallback(async () => {
-    if (!client) return;
-
-    const price = await client.getLpTokenPrice();
+    const price = await window.adrena.client.getLpTokenPrice();
 
     dispatch(
       setTokenPriceAction(
-        AdrenaClient.alpToken.name,
+        window.adrena.client.alpToken.name,
         price ? nativeToUi(price, USD_DECIMALS) : null,
       ),
     );
-  }, [client, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
-    if (!client || !dispatch) {
+    if (!dispatch) {
       return;
     }
 

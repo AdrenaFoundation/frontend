@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AdrenaClient } from '@/AdrenaClient';
 import { PageProps } from '@/types';
 
-export default function OnchainInfo({ client }: PageProps) {
+export default function OnchainInfo({}: PageProps) {
   const tableClasses =
     'flex flex-col border border-grey mt-4 ml-auto mr-auto grow w-[90%] max-w-[50em]';
   const titleClasses = 'text-md font-bold border-b border-grey p-2';
@@ -24,8 +24,6 @@ export default function OnchainInfo({ client }: PageProps) {
     </Link>
   );
 
-  if (!client) return <div className="w-full h-full bg-main"></div>;
-
   return (
     <>
       <div className={tableClasses}>
@@ -33,7 +31,7 @@ export default function OnchainInfo({ client }: PageProps) {
 
         <div className={rowClasses}>
           <div className={subtitleClasses}>Cluster</div>
-          <div className={infoClasses}>{client.cluster}</div>
+          <div className={infoClasses}>{window.adrena.cluster}</div>
         </div>
 
         <div className={rowClasses}>
@@ -46,7 +44,7 @@ export default function OnchainInfo({ client }: PageProps) {
         <div className={rowClasses}>
           <div className={subtitleClasses}>Pool</div>
           <div className={infoClasses}>
-            {solanaExplorerLink(AdrenaClient.mainPoolAddress)}
+            {solanaExplorerLink(window.adrena.client.mainPool.pubkey)}
           </div>
         </div>
 
@@ -81,7 +79,7 @@ export default function OnchainInfo({ client }: PageProps) {
         <div className={rowClasses}>
           <div className={subtitleClasses}>ALP Mint</div>
           <div className={infoClasses}>
-            {solanaExplorerLink(AdrenaClient.alpToken.mint)}
+            {solanaExplorerLink(window.adrena.client.alpToken.mint)}
           </div>
         </div>
 
@@ -96,8 +94,8 @@ export default function OnchainInfo({ client }: PageProps) {
         </div>
       </div>
 
-      {client?.custodies.map((custody) => {
-        const token = client.tokens.find((token) =>
+      {window.adrena.client.custodies.map((custody) => {
+        const token = window.adrena.client.tokens.find((token) =>
           token.custody?.equals(custody.pubkey),
         );
 

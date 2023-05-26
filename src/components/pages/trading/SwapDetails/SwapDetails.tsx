@@ -1,4 +1,3 @@
-import { AdrenaClient } from '@/AdrenaClient';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatPriceInfo } from '@/utils';
@@ -6,11 +5,9 @@ import { formatPriceInfo } from '@/utils';
 export default function SwapDetails({
   tokenA,
   tokenB,
-  client,
 }: {
   tokenA: Token;
   tokenB: Token;
-  client: AdrenaClient | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -34,9 +31,10 @@ export default function SwapDetails({
       <div className={rowStyle}>
         <span className="text-txtfade">Available Liquidity</span>
         <span>
-          {client && tokenPrices && priceB
+          {tokenPrices && priceB
             ? formatPriceInfo(
-                client.getCustodyByMint(tokenB.mint).liquidity * priceB,
+                window.adrena.client.getCustodyByMint(tokenB.mint).liquidity *
+                  priceB,
               )
             : '-'}
         </span>

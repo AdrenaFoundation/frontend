@@ -1,33 +1,29 @@
 import '@/styles/globals.scss';
 
+import { AnchorProvider, Program } from '@project-serum/anchor';
 import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
+import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
-import { MAIN_RPC, PYTH_ORACLE_RPC } from '@/constant';
-import useAdrenaClient from '@/hooks/useAdrenaClient';
-import useConnection from '@/hooks/useConnection';
+import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
 import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
+import initializeApp from '@/initializeApp';
+import { IDL as PERPETUALS_IDL } from '@/target/perpetuals';
+import { SupportedCluster } from '@/types';
 
+import devnetConfiguration from '../config/devnet';
+import mainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
-
-export default function App(props: AppProps) {
-  return (
-    <Provider store={store}>
-      <CookiesProvider>
-        <AppComponent {...props} />
-      </CookiesProvider>
-    </Provider>
-  );
-}
 
 function Loader(): JSX.Element {
   return (
@@ -44,27 +40,77 @@ function Loader(): JSX.Element {
   );
 }
 
-// Tricks: wrap RootLayout + component here to be able to use useConnection/useAdrenaClient
+// Load cluster from URL then load the config and initialize the app.
+// When everything is ready load the main component
+export default function App(props: AppProps) {
+  const router = useRouter();
+  const [cluster, setCluster] = useState<SupportedCluster | null>(null);
+  const [config, setConfig] = useState<IConfiguration | null>(null);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+
+  // Load cluster from router
+  useEffect(() => {
+    const cluster = router.query['cluster'];
+
+    // Reload with default cluster if no cluster or un-recognized cluster
+    if (
+      !cluster ||
+      typeof cluster !== 'string' ||
+      !['devnet', 'mainnet'].includes(cluster)
+    ) {
+      router.replace({
+        query: { ...router.query, cluster: 'devnet' },
+      });
+      return;
+    }
+
+    setCluster(cluster as SupportedCluster);
+  }, [router]);
+
+  // Load config from cluster
+  useEffect(() => {
+    if (!cluster) return;
+
+    setConfig(
+      cluster === 'devnet' ? devnetConfiguration : mainnetConfiguration,
+    );
+  }, [cluster]);
+
+  useEffect(() => {
+    if (!config) return;
+
+    initializeApp(config).then(() => {
+      setIsInitialized(true);
+    });
+  }, [config]);
+
+  if (!isInitialized) return <Loader />;
+
+  return (
+    <Provider store={store}>
+      <CookiesProvider>
+        <AppComponent {...props} />
+      </CookiesProvider>
+    </Provider>
+  );
+}
+
+// - Display the main component
+// - Display Terms and condition modal if user haven't accepted them already
+// - Initialize program when user connects
+//
+// Tricks: wrap RootLayout + component here to be able to use hooks
 // without getting error being out of Provider
 function AppComponent({ Component, pageProps }: AppProps) {
-  //
-  //
-  // Load everything here to be re-used within underlying pages
-  //
-  //
-  const pythConnection = useConnection(PYTH_ORACLE_RPC);
-  const mainConnection = useConnection(MAIN_RPC);
+  const mainPool = useMainPool();
+  const custodies = useCustodies(mainPool);
 
-  const client = useAdrenaClient(mainConnection);
-  const mainPool = useMainPool(client);
-  const custodies = useCustodies(client, mainPool);
-
-  const { positions, triggerPositionsReload } = usePositions(client);
+  const { positions, triggerPositionsReload } = usePositions();
 
   const wallet = useWallet();
 
-  useWatchTokenPrices(client, pythConnection);
-  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance(client);
+  useWatchTokenPrices();
+  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance']);
 
@@ -78,13 +124,29 @@ function AppComponent({ Component, pageProps }: AppProps) {
     }
   }, [cookies]);
 
+  // when use load the program so we can execute txs with its wallet
+  useEffect(() => {
+    if (!wallet) {
+      window.adrena.client.setAdrenaProgram(null);
+      return;
+    }
+
+    window.adrena.client.setAdrenaProgram(
+      new Program(
+        PERPETUALS_IDL,
+        AdrenaClient.programId,
+        new AnchorProvider(window.adrena.mainConnection, wallet, {
+          commitment: 'processed',
+          skipPreflight: true,
+        }),
+      ),
+    );
+  }, [wallet]);
+
   const connected = !!wallet;
 
-  // Before displaying the page, wait for every main data to be loaded
-  const loaded = mainConnection && pythConnection && client;
-
-  return loaded ? (
-    <RootLayout client={client}>
+  return (
+    <RootLayout>
       {
         <TermsAndConditionsModal
           isOpen={isTermsAndConditionModalOpen}
@@ -109,7 +171,6 @@ function AppComponent({ Component, pageProps }: AppProps) {
 
       <Component
         {...pageProps}
-        client={client}
         mainPool={mainPool}
         custodies={custodies}
         wallet={wallet}
@@ -119,7 +180,5 @@ function AppComponent({ Component, pageProps }: AppProps) {
         connected={connected}
       />
     </RootLayout>
-  ) : (
-    <Loader />
   );
 }

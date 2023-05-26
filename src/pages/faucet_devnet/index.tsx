@@ -16,15 +16,15 @@ import {
   uiToNative,
 } from '@/utils';
 
-export default function FaucetDevnet({ client, wallet }: PageProps) {
+export default function FaucetDevnet({ wallet }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [pendingTx, setPendingTx] = useState<boolean>(false);
 
   const sendDevnetTokens = async (token: Token) => {
-    if (!client || !wallet) return;
+    if (!wallet) return;
 
-    const connection = client.connection;
+    const connection = window.adrena.client.connection;
 
     if (!connection) return;
 
@@ -81,7 +81,7 @@ export default function FaucetDevnet({ client, wallet }: PageProps) {
   };
 
   const airdropDevnetSol = async () => {
-    if (!client || !wallet) return;
+    if (!wallet) return;
 
     // Use official RPC for airdrop
     const connection = new Connection('https://api.devnet.solana.com');
@@ -125,7 +125,7 @@ export default function FaucetDevnet({ client, wallet }: PageProps) {
 
   return (
     <>
-      {client?.tokens?.map((token) => (
+      {window.adrena.client.tokens.map((token) => (
         <div key={token.name} className="mt-8 flex flex-col items-center">
           <Button
             disabled={pendingTx}

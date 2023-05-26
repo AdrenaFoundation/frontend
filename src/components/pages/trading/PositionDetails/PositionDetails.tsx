@@ -1,4 +1,3 @@
-import { AdrenaClient } from '@/AdrenaClient';
 import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -9,17 +8,15 @@ export default function PositionDetails({
   entryPrice,
   exitPrice,
   className,
-  client,
 }: {
   tokenB: Token;
   entryPrice: number | null;
   exitPrice: number | null;
   className?: string;
-  client: AdrenaClient | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  const custody = client?.getCustodyByMint(tokenB.mint) ?? null;
+  const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
   return (
     <div className={`flex flex-col p-1 text-sm ${className}`}>

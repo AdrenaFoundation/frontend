@@ -9,7 +9,6 @@ import {
 import { Doughnut } from 'react-chartjs-2';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
@@ -20,19 +19,18 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function ALPDetails({
   className,
-  client,
   custodies,
 }: {
   className?: string;
-  client: AdrenaClient | null;
   custodies: CustodyExtended[] | null;
 }) {
   const rowClasses = 'flex justify-between mt-2';
 
-  const composition = useALPIndexComposition(client, custodies);
-  const alpTotalSupply = useALPTotalSupply(client);
+  const composition = useALPIndexComposition(custodies);
+  const alpTotalSupply = useALPTotalSupply();
   const alpPrice =
-    useSelector((s) => s.tokenPrices?.[AdrenaClient.alpToken.name]) ?? null;
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.name]) ??
+    null;
 
   // Add currentRatio of stable tokens
   const stablecoinPercentage = composition
@@ -68,7 +66,7 @@ export default function ALPDetails({
               {alpTotalSupply !== null
                 ? `${formatNumber(
                     alpTotalSupply,
-                    AdrenaClient.alpToken.decimals,
+                    window.adrena.client.alpToken.decimals,
                   )} ALP`
                 : '-'}
             </div>

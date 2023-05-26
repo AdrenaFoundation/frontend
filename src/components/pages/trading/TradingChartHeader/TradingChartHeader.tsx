@@ -1,6 +1,5 @@
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import Select from '@/components/common/Select/Select';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
@@ -12,16 +11,14 @@ export default function TradingInputs({
   tokenList,
   selected,
   onChange,
-  client,
 }: {
   className?: string;
   tokenList: Token[];
   selected: Token;
   onChange: (t: Token) => void;
-  client: AdrenaClient | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const stats = useDailyStats(client);
+  const stats = useDailyStats();
 
   const infoStyle = 'flex w-1/5 flex-col ml-[5%] items-center justify-center';
 

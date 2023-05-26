@@ -5,7 +5,6 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
-  Cluster,
   Connection,
   PublicKey,
   RpcResponseAndContext,
@@ -18,13 +17,8 @@ import {
 import { Perpetuals } from '@/target/perpetuals';
 import PerpetualsJson from '@/target/perpetuals.json';
 
-import {
-  BPS,
-  PRICE_DECIMALS,
-  RATE_DECIMALS,
-  TOKEN_INFO_LIBRARY,
-  USD_DECIMALS,
-} from './constant';
+import IConfiguration from './config/IConfiguration';
+import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
 import {
   AmountAndFee,
   Custody,
@@ -71,19 +65,13 @@ export class AdrenaClient {
     new PublicKey('BPFLoaderUpgradeab1e11111111111111111111111'),
   )[0];
 
-  // @TODO, adapt to mainnet/devnet
-  // Handle one pool only for now
-  public static mainPoolAddress = new PublicKey(
-    'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',
-  );
-
-  public static lpTokenMint = PublicKey.findProgramAddressSync(
-    [Buffer.from('lp_token_mint'), AdrenaClient.mainPoolAddress.toBuffer()],
+  public lpTokenMint = PublicKey.findProgramAddressSync(
+    [Buffer.from('lp_token_mint'), this.mainPool.pubkey.toBuffer()],
     AdrenaClient.programId,
   )[0];
 
-  public static alpToken: Token = {
-    mint: AdrenaClient.lpTokenMint,
+  public alpToken: Token = {
+    mint: this.lpTokenMint,
     name: 'ALP',
     decimals: 6,
     isStable: false,
@@ -98,7 +86,6 @@ export class AdrenaClient {
     public mainPool: PoolExtended,
     public custodies: CustodyExtended[],
     public tokens: Token[],
-    public readonly cluster: Cluster,
   ) {}
 
   public setAdrenaProgram(program: Program<Perpetuals> | null) {
@@ -145,9 +132,12 @@ export class AdrenaClient {
 
   public static async initialize(
     readonlyAdrenaProgram: Program<Perpetuals>,
-    cluster: Cluster,
+    config: IConfiguration,
   ): Promise<AdrenaClient> {
-    const mainPool = await AdrenaClient.loadMainPool(readonlyAdrenaProgram);
+    const mainPool = await AdrenaClient.loadMainPool(
+      readonlyAdrenaProgram,
+      config.mainPool,
+    );
 
     const custodies = await AdrenaClient.loadCustodies(
       readonlyAdrenaProgram,
@@ -163,7 +153,7 @@ export class AdrenaClient {
               coingeckoId: string;
               decimals: number;
             }
-          | undefined = TOKEN_INFO_LIBRARY[custody.mint.toBase58()];
+          | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
           return null;
@@ -183,6 +173,7 @@ export class AdrenaClient {
       .filter((token) => !!token) as Token[];
 
     const mainPoolExtended: PoolExtended = {
+      pubkey: config.mainPool,
       aumUsd: nativeToUi(mainPool.aumUsd, USD_DECIMALS),
       totalFeeCollected: custodies.reduce(
         (tmp, custody) =>
@@ -254,7 +245,6 @@ export class AdrenaClient {
       mainPoolExtended,
       custodies,
       tokens,
-      cluster,
     );
   }
 
@@ -264,8 +254,9 @@ export class AdrenaClient {
 
   public static async loadMainPool(
     adrenaProgram: Program<Perpetuals>,
+    mainPoolAddress: PublicKey,
   ): Promise<Pool> {
-    return adrenaProgram.account.pool.fetch(AdrenaClient.mainPoolAddress);
+    return adrenaProgram.account.pool.fetch(mainPoolAddress);
   }
 
   public static async loadCustodies(
@@ -326,9 +317,8 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const custodyAddress = AdrenaClient.findCustodyAddress(mint);
-    const custodyTokenAccount =
-      AdrenaClient.findCustodyTokenAccountAddress(mint);
+    const custodyAddress = this.findCustodyAddress(mint);
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
 
     // Load custodies in same order as declared in mainPool
     const untypedCustodies =
@@ -344,7 +334,7 @@ export class AdrenaClient {
       this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
-    const lpTokenAccount = findATAAddressSync(owner, AdrenaClient.lpTokenMint);
+    const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
 
     const preInstructions: TransactionInstruction[] = [];
 
@@ -352,7 +342,7 @@ export class AdrenaClient {
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: lpTokenAccount,
-          mint: AdrenaClient.lpTokenMint,
+          mint: this.lpTokenMint,
           owner,
         }),
       );
@@ -369,11 +359,11 @@ export class AdrenaClient {
         lpTokenAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
-        pool: AdrenaClient.mainPoolAddress,
+        pool: this.mainPool.pubkey,
         custody: custodyAddress,
         custodyOracleAccount,
         custodyTokenAccount,
-        lpTokenMint: AdrenaClient.lpTokenMint,
+        lpTokenMint: this.lpTokenMint,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
@@ -450,15 +440,14 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const custodyAddress = AdrenaClient.findCustodyAddress(mint);
-    const custodyTokenAccount =
-      AdrenaClient.findCustodyTokenAccountAddress(mint);
+    const custodyAddress = this.findCustodyAddress(mint);
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
 
     const custodyOracleAccount =
       this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
 
     const receivingAccount = findATAAddressSync(owner, mint);
-    const lpTokenAccount = findATAAddressSync(owner, AdrenaClient.lpTokenMint);
+    const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
 
     return this.adrenaProgram.methods
       .removeLiquidity({
@@ -471,11 +460,11 @@ export class AdrenaClient {
         lpTokenAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
-        pool: AdrenaClient.mainPoolAddress,
+        pool: this.mainPool.pubkey,
         custody: custodyAddress,
         custodyOracleAccount,
         custodyTokenAccount,
-        lpTokenMint: AdrenaClient.lpTokenMint,
+        lpTokenMint: this.lpTokenMint,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts());
@@ -555,20 +544,15 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const custodyAddress = AdrenaClient.findCustodyAddress(mint);
-    const custodyTokenAccount =
-      AdrenaClient.findCustodyTokenAccountAddress(mint);
+    const custodyAddress = this.findCustodyAddress(mint);
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
 
     const custodyOracleAccount =
       this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
 
     const fundingAccount = findATAAddressSync(owner, mint);
 
-    const position = AdrenaClient.findPositionAddress(
-      owner,
-      custodyAddress,
-      side,
-    );
+    const position = this.findPositionAddress(owner, custodyAddress, side);
 
     // TODO
     // Think and use proper slippage, for now use 0.3%
@@ -595,7 +579,7 @@ export class AdrenaClient {
         fundingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
-        pool: AdrenaClient.mainPoolAddress,
+        pool: this.mainPool.pubkey,
         position,
         custody: custodyAddress,
         custodyOracleAccount,
@@ -626,15 +610,15 @@ export class AdrenaClient {
     const fundingAccount = findATAAddressSync(owner, mintA);
     const receivingAccount = findATAAddressSync(owner, mintB);
 
-    const receivingCustody = AdrenaClient.findCustodyAddress(mintA);
+    const receivingCustody = this.findCustodyAddress(mintA);
     const receivingCustodyTokenAccount =
-      AdrenaClient.findCustodyTokenAccountAddress(mintA);
+      this.findCustodyTokenAccountAddress(mintA);
     const receivingCustodyOracleAccount =
       this.getCustodyByMint(mintA).nativeObject.oracle.oracleAccount;
 
-    const dispensingCustody = AdrenaClient.findCustodyAddress(mintB);
+    const dispensingCustody = this.findCustodyAddress(mintB);
     const dispensingCustodyTokenAccount =
-      AdrenaClient.findCustodyTokenAccountAddress(mintB);
+      this.findCustodyTokenAccountAddress(mintB);
     const dispensingCustodyOracleAccount =
       this.getCustodyByMint(mintB).nativeObject.oracle.oracleAccount;
 
@@ -649,7 +633,7 @@ export class AdrenaClient {
         receivingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
-        pool: AdrenaClient.mainPoolAddress,
+        pool: this.mainPool.pubkey,
         receivingCustody,
         receivingCustodyOracleAccount,
         receivingCustodyTokenAccount,
@@ -803,7 +787,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = AdrenaClient.findCustodyTokenAccountAddress(
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
 
@@ -847,7 +831,7 @@ export class AdrenaClient {
           receivingAccount,
           transferAuthority: AdrenaClient.transferAuthorityAddress,
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount,
@@ -1123,7 +1107,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = AdrenaClient.findCustodyTokenAccountAddress(
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
 
@@ -1138,7 +1122,7 @@ export class AdrenaClient {
         fundingAccount,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         perpetuals: AdrenaClient.perpetualsAddress,
-        pool: AdrenaClient.mainPoolAddress,
+        pool: this.mainPool.pubkey,
         position: position.pubkey,
         custody: position.custody,
         custodyOracleAccount,
@@ -1167,7 +1151,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = AdrenaClient.findCustodyTokenAccountAddress(
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
 
@@ -1206,7 +1190,7 @@ export class AdrenaClient {
           receivingAccount,
           transferAuthority: AdrenaClient.transferAuthorityAddress,
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount,
@@ -1255,7 +1239,7 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           custody: token.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
         },
@@ -1285,7 +1269,7 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
@@ -1316,7 +1300,7 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           position: position.pubkey,
           custody: custody.pubkey,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
@@ -1354,7 +1338,7 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           position: position.pubkey,
           custody: custody.pubkey,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
@@ -1370,8 +1354,8 @@ export class AdrenaClient {
 
       return [
         ...acc,
-        AdrenaClient.findPositionAddress(user, token.custody, 'long'),
-        AdrenaClient.findPositionAddress(user, token.custody, 'short'),
+        this.findPositionAddress(user, token.custody, 'long'),
+        this.findPositionAddress(user, token.custody, 'short'),
       ];
     }, [] as PublicKey[]);
 
@@ -1492,7 +1476,7 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
         },
         remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
@@ -1524,11 +1508,11 @@ export class AdrenaClient {
       amountIn: amountIn.toString(),
       decimals: token.decimals,
       perpetuals: AdrenaClient.perpetualsAddress.toBase58(),
-      pool: AdrenaClient.mainPoolAddress.toBase58(),
+      pool: this.mainPool.pubkey.toBase58(),
       custody: token.custody.toBase58(),
       custodyOracleAccount:
         custody.nativeObject.oracle.oracleAccount.toBase58(),
-      lpTokenMint: AdrenaClient.lpTokenMint.toBase58(),
+      lpTokenMint: this.lpTokenMint.toBase58(),
     });
 
     return this.readonlyAdrenaProgram.views.getAddLiquidityAmountAndFee(
@@ -1538,10 +1522,10 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           custody: token.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
-          lpTokenMint: AdrenaClient.lpTokenMint,
+          lpTokenMint: this.lpTokenMint,
         },
         remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
@@ -1573,11 +1557,11 @@ export class AdrenaClient {
       lpAmountIn: lpAmountIn.toString(),
       decimals: token.decimals,
       perpetuals: AdrenaClient.perpetualsAddress.toBase58(),
-      pool: AdrenaClient.mainPoolAddress.toBase58(),
+      pool: this.mainPool.pubkey.toBase58(),
       custody: token.custody.toBase58(),
       custodyOracleAccount:
         custody.nativeObject.oracle.oracleAccount.toBase58(),
-      lpTokenMint: AdrenaClient.lpTokenMint.toBase58(),
+      lpTokenMint: this.lpTokenMint.toBase58(),
     });
 
     return this.readonlyAdrenaProgram.views.getRemoveLiquidityAmountAndFee(
@@ -1587,10 +1571,10 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
+          pool: this.mainPool.pubkey,
           custody: token.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
-          lpTokenMint: AdrenaClient.lpTokenMint,
+          lpTokenMint: this.lpTokenMint,
         },
         remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
@@ -1607,8 +1591,8 @@ export class AdrenaClient {
       {
         accounts: {
           perpetuals: AdrenaClient.perpetualsAddress,
-          pool: AdrenaClient.mainPoolAddress,
-          lpTokenMint: AdrenaClient.lpTokenMint,
+          pool: this.mainPool.pubkey,
+          lpTokenMint: this.lpTokenMint,
         },
         remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
       },
@@ -1726,29 +1710,29 @@ export class AdrenaClient {
     return txHash;
   }
 
-  public static findCustodyAddress(mint: PublicKey): PublicKey {
+  public findCustodyAddress(mint: PublicKey): PublicKey {
     return PublicKey.findProgramAddressSync(
       [
         Buffer.from('custody'),
-        AdrenaClient.mainPoolAddress.toBuffer(),
+        this.mainPool.pubkey.toBuffer(),
         mint.toBuffer(),
       ],
       AdrenaClient.programId,
     )[0];
   }
 
-  public static findCustodyTokenAccountAddress(mint: PublicKey) {
+  public findCustodyTokenAccountAddress(mint: PublicKey) {
     return PublicKey.findProgramAddressSync(
       [
         Buffer.from('custody_token_account'),
-        AdrenaClient.mainPoolAddress.toBuffer(),
+        this.mainPool.pubkey.toBuffer(),
         mint.toBuffer(),
       ],
       AdrenaClient.programId,
     )[0];
   }
 
-  public static findPositionAddress(
+  public findPositionAddress(
     owner: PublicKey,
     custody: PublicKey,
     side: 'long' | 'short',
@@ -1757,7 +1741,7 @@ export class AdrenaClient {
       [
         Buffer.from('position'),
         owner.toBuffer(),
-        AdrenaClient.mainPoolAddress.toBuffer(),
+        this.mainPool.pubkey.toBuffer(),
         custody.toBuffer(),
         Buffer.from([
           {

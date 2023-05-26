@@ -1,27 +1,20 @@
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import useALPCirculatingSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-export default function ALPInfo({
-  className,
-  client,
-}: {
-  className?: string;
-  client: AdrenaClient | null;
-}) {
+export default function ALPInfo({ className }: { className?: string }) {
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const lpTotalSupplyAmount = useALPCirculatingSupply(client);
+  const lpTotalSupplyAmount = useALPCirculatingSupply();
 
   const rowClasses = 'flex w-full justify-between pl-8 pr-8 mt-2';
 
-  const alpTokenPrice = tokenPrices[AdrenaClient.alpToken.name] ?? null;
+  const alpTokenPrice = tokenPrices[window.adrena.client.alpToken.name] ?? null;
 
   const userLpTokenAmount =
-    walletTokenBalances?.[AdrenaClient.alpToken.name] ?? null;
+    walletTokenBalances?.[window.adrena.client.alpToken.name] ?? null;
 
   const userLpTokenAmountUsd =
     userLpTokenAmount != null && alpTokenPrice != null
@@ -57,7 +50,10 @@ export default function ALPInfo({
             '-'
           ) : (
             <>
-              {formatNumber(userLpTokenAmount, AdrenaClient.alpToken.decimals)}{' '}
+              {formatNumber(
+                userLpTokenAmount,
+                window.adrena.client.alpToken.decimals,
+              )}{' '}
               ALP{' '}
               {userLpTokenAmountUsd
                 ? `(${formatPriceInfo(userLpTokenAmountUsd)})`
@@ -81,7 +77,7 @@ export default function ALPInfo({
             <>
               {formatNumber(
                 lpTotalSupplyAmount,
-                AdrenaClient.alpToken.decimals,
+                window.adrena.client.alpToken.decimals,
               )}{' '}
               ALP{' '}
               {lpTotalSupplyAmountUsd

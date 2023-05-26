@@ -3,7 +3,7 @@ import { PageProps } from '@/types';
 export default function TermsAndConditions({}: PageProps) {
   return (
     <>
-      <div className="text-2xl mt-6">Terms and conditions</div>
+      <h1>Terms and conditions</h1>
 
       <div className="text-sm mt-4">
         Definitio: In his Terminis et Conditionibus, <b>Website</b> refert ad

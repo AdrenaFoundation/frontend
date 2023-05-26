@@ -1,15 +1,31 @@
 import { Wallet } from '@project-serum/anchor';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 import { Perpetuals } from '@/target/perpetuals';
 
 import { AdrenaClient } from './AdrenaClient';
+import IConfiguration from './config/IConfiguration';
 import { AnchorTypes } from './IdlTypeParser';
+
+export type SupportedCluster = 'devnet' | 'mainnet';
+
+export type AdrenaGlobal = {
+  config: IConfiguration;
+  client: AdrenaClient;
+  mainConnection: Connection;
+  pythConnection: Connection;
+  cluster: SupportedCluster;
+};
+
+declare global {
+  interface Window {
+    adrena: AdrenaGlobal;
+  }
+}
 
 export type WalletAdapterName = 'phantom';
 
 export type PageProps = {
-  client: AdrenaClient | null;
   mainPool: PoolExtended | null;
   custodies: CustodyExtended[] | null;
   wallet: Wallet | null;
@@ -60,6 +76,8 @@ export type PositionExtended = {
 };
 
 export type PoolExtended = {
+  pubkey: PublicKey;
+
   // Formatted data
   totalFeeCollected: number;
   longPositions: number;

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import Modal from '@/components/common/Modal/Modal';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
@@ -15,12 +14,10 @@ export default function Positions({
   className,
   positions,
   triggerPositionsReload,
-  client,
 }: {
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
-  client: AdrenaClient | null;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -45,7 +42,6 @@ export default function Positions({
             onClose={() => {
               setPositionToClose(null);
             }}
-            client={client}
           />
         </Modal>
       ) : null}
@@ -62,7 +58,6 @@ export default function Positions({
             onClose={() => {
               setPositionToEdit(null);
             }}
-            client={client}
           />
         </Modal>
       ) : null}

@@ -6,18 +6,10 @@ import { ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
-
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
-const RootLayout = ({
-  children,
-  client,
-}: {
-  children: ReactNode;
-  client: AdrenaClient | null;
-}) => {
+const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <>
       <Head>
@@ -27,7 +19,7 @@ const RootLayout = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Header client={client} />
+      <Header />
 
       <div
         className={twMerge(

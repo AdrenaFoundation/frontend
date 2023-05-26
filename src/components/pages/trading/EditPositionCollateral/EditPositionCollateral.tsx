@@ -2,7 +2,6 @@ import { BN } from '@project-serum/anchor';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { USD_DECIMALS } from '@/constant';
@@ -28,13 +27,11 @@ export default function EditPositionCollateral({
   position,
   triggerPositionsReload,
   onClose,
-  client,
 }: {
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
   onClose: () => void;
-  client: AdrenaClient | null;
 }) {
   const [selectedAction, setSelectedAction] = useState<'deposit' | 'withdraw'>(
     'deposit',
@@ -75,13 +72,7 @@ export default function EditPositionCollateral({
   })();
 
   const { minLeverage, maxLeverage } = (() => {
-    if (!client)
-      return {
-        minLeverage: null,
-        maxLeverage: null,
-      };
-
-    const custody = client.getCustodyByMint(position.token.mint);
+    const custody = window.adrena.client.getCustodyByMint(position.token.mint);
 
     return {
       minLeverage: 1,
@@ -110,10 +101,10 @@ export default function EditPositionCollateral({
   })();
 
   const doRemoveCollateral = async () => {
-    if (!client || !input) return;
+    if (!input) return;
 
     try {
-      const txHash = await client.removeCollateral({
+      const txHash = await window.adrena.client.removeCollateral({
         position,
         collateralUsd: uiToNative(input, USD_DECIMALS),
       });
@@ -133,10 +124,10 @@ export default function EditPositionCollateral({
   };
 
   const doAddCollateral = async () => {
-    if (!client || !input) return;
+    if (!input) return;
 
     try {
-      const txHash = await client.addCollateralToPosition({
+      const txHash = await window.adrena.client.addCollateralToPosition({
         position,
         addedCollateral: uiToNative(input, position.token.decimals),
       });
@@ -156,7 +147,7 @@ export default function EditPositionCollateral({
   };
 
   useEffect(() => {
-    if (!client || !input) {
+    if (!input) {
       setAmountAndFee(null);
       setLiquidationPrice(null);
       return;
@@ -166,12 +157,12 @@ export default function EditPositionCollateral({
 
     // Load new amount and fee
     (selectedAction === 'deposit'
-      ? client.getAddLiquidityAmountAndFee({
+      ? window.adrena.client.getAddLiquidityAmountAndFee({
           amountIn: uiToNative(input, position.token.decimals),
           token: position.token,
         })
-      : client.getRemoveLiquidityAmountAndFee({
-          lpAmountIn: uiToNative(input, AdrenaClient.alpToken.decimals),
+      : window.adrena.client.getRemoveLiquidityAmountAndFee({
+          lpAmountIn: uiToNative(input, window.adrena.client.alpToken.decimals),
           token: position.token,
         })
     )
@@ -191,7 +182,7 @@ export default function EditPositionCollateral({
       });
 
     // Load new liquidation price
-    client
+    window.adrena.client
       .getPositionLiquidationPrice({
         position,
         addCollateral:
@@ -218,7 +209,7 @@ export default function EditPositionCollateral({
         // Ignore error
         console.log(e);
       });
-  }, [client, input, position, position.token, selectedAction]);
+  }, [input, position, position.token, selectedAction]);
 
   const handleExecute = async () => {
     if (!input) return;

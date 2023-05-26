@@ -2,12 +2,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
-
 import Button from '../common/Button/Button';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
-export default function Header({ client }: { client: AdrenaClient | null }) {
+export default function Header() {
   const { pathname } = useRouter();
 
   const PageLink = (url: string, title: string) => (
@@ -59,7 +57,7 @@ export default function Header({ client }: { client: AdrenaClient | null }) {
         {PageLink('/earn', 'Earn')}
         {PageLink('/buy', 'Buy')}
         {PageLink('/onchain_info', 'Onchain Info')}
-        {client?.cluster === 'devnet'
+        {window.adrena.cluster === 'devnet'
           ? PageLink('/faucet_devnet', 'Faucet')
           : null}
         {PageLink('https://www.gitbook.com/', 'Docs')}

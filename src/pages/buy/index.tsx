@@ -7,10 +7,10 @@ import { PageProps } from '@/types';
 export default function Buy(_: PageProps) {
   return (
     <>
-      <div className="text-4xl font-bold mb-8 mt-4">Buy ADX or ALP</div>
+      <h1>Buy ADX or ALP</h1>
 
-      <div className="w-full flex flex-col sm:flex-row">
-        <div className="border border-grey p-6 w-full sm:w-1/2 bg-secondary sm:mr-2">
+      <div className="w-full flex flex-col sm:flex-row mt-4">
+        <div className="border border-grey p-6 grow bg-secondary sm:mr-2 flex flex-col">
           <div className="text-3xl">ADX</div>
           <div className="mt-4">
             ADX is the utility and governance token. Accrues 30% of the
@@ -33,12 +33,13 @@ export default function Buy(_: PageProps) {
           </div>
         </div>
 
-        <div className="border border-grey p-6 w-full sm:w-1/2 bg-secondary sm:ml-2 mt-6 sm:mt-0">
+        <div className="border border-grey p-6 grow bg-secondary sm:ml-2 mt-6 sm:mt-0 flex flex-col">
           <div className="text-3xl">ALP</div>
           <div className="mt-4">
             ALP is the liquidity provider token. Accrues 70% of the
             platform&apos;s generated fees.
           </div>
+
           <div className="mt-4">
             <Button
               title={<Link href="/swap_alp">Buy</Link>}

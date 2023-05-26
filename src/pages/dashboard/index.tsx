@@ -4,10 +4,10 @@ import Overview from '@/components/pages/dashboard/Overview/Overview';
 import Stats from '@/components/pages/dashboard/Stats/Stats';
 import { PageProps } from '@/types';
 
-export default function Dashboard({ client, mainPool, custodies }: PageProps) {
+export default function Dashboard({ mainPool, custodies }: PageProps) {
   return (
     <>
-      <div className="text-4xl mt-6">Stats</div>
+      <h1>Stats</h1>
 
       <div className="flex justify-between flex-col sm:flex-row mt-4">
         <Overview
@@ -30,17 +30,9 @@ export default function Dashboard({ client, mainPool, custodies }: PageProps) {
 
       <div className="text-4xl mt-6">Tokens</div>
 
-      <ALPDetails
-        className="mt-4 max-w-[30em]"
-        client={client}
-        custodies={custodies}
-      />
+      <ALPDetails className="mt-4 max-w-[30em]" custodies={custodies} />
 
-      <ALPIndexComposition
-        client={client}
-        custodies={custodies}
-        className="mt-4"
-      />
+      <ALPIndexComposition custodies={custodies} className="mt-4" />
     </>
   );
 }
