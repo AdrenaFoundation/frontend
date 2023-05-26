@@ -25,7 +25,6 @@ export default function FaucetDevnet({ wallet }: PageProps) {
     if (!wallet) return;
 
     const connection = window.adrena.client.connection;
-
     if (!connection) return;
 
     const fromATA = findATAAddressSync(

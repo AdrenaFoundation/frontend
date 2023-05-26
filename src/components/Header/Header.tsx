@@ -12,11 +12,13 @@ export default function Header() {
     <Link
       className={twMerge(
         'mt-2',
-        'sm:mt-0',
-        'sm:ml-6',
+        'lg:mt-0',
+        'lg:ml-6',
         'cursor-pointer',
         'hover:text-txtregular',
         'text-txtfade',
+        'shrink-0',
+        'whitespace-nowrap',
         pathname === url && 'text-white',
       )}
       href={url}
@@ -34,22 +36,28 @@ export default function Header() {
         'items-center',
         'border-b',
         'border-grey',
-        'sm:h-20',
         'flex-col',
-        'sm:flex-row',
         'p-4',
-        'sm:p-0',
         'shrink-0',
+        'lg:h-20',
+        'lg:flex-row',
+        'lg:p-0',
       )}
     >
       <Link
-        className="font-bold sm:ml-6 sm:mr-6 uppercase mb-2 sm:mb-0"
+        className="font-bold lg:ml-6 lg:mr-6 uppercase mb-2 lg:mb-0 relative"
         href="/"
       >
         {
           // eslint-disable-next-line @next/next/no-img-element
-          <img src="images/logo.svg" className="h-12" alt="logo" />
+          <img src="images/logo.svg" className="h-12 shrink-0" alt="logo" />
         }
+
+        {window.adrena.cluster === 'devnet' ? (
+          <span className="absolute font-specialmonster text-highlight bottom-[-0.6em] right-[-0.5em]">
+            Devnet
+          </span>
+        ) : null}
       </Link>
 
       <>
@@ -64,14 +72,14 @@ export default function Header() {
       </>
 
       <Button
-        className="bg-highlight sm:ml-auto w-full sm:w-20 mt-2 sm:mt-0"
+        className="bg-highlight lg:ml-auto w-full lg:w-20 mt-2 lg:mt-0"
         title={<Link href="/trade">Trade</Link>}
         onClick={() => {
           // nothing
         }}
       />
 
-      <WalletAdapter className="sm:ml-4 sm:mr-6 w-full sm:w-auto mt-2 sm:mt-0" />
+      <WalletAdapter className="lg:ml-4 lg:mr-4 w-full lg:w-auto mt-2 lg:mt-0" />
     </div>
   );
 }

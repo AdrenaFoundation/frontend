@@ -50,7 +50,11 @@ export default function App(props: AppProps) {
 
   // Load cluster from router
   useEffect(() => {
+    if (!router || !router.query) return;
+
     const cluster = router.query['cluster'];
+
+    console.log('Load', cluster, 'from URL');
 
     // Reload with default cluster if no cluster or un-recognized cluster
     if (
@@ -58,9 +62,13 @@ export default function App(props: AppProps) {
       typeof cluster !== 'string' ||
       !['devnet', 'mainnet'].includes(cluster)
     ) {
-      router.replace({
-        query: { ...router.query, cluster: 'devnet' },
-      });
+      router.replace(
+        {
+          query: { ...router.query, cluster: 'devnet' },
+        },
+        undefined,
+        { shallow: false },
+      );
       return;
     }
 
