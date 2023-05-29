@@ -10,7 +10,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     <>
       <h1>Stats</h1>
 
-      <div className="flex justify-between flex-col sm:flex-row mt-4">
+      <div className="flex justify-between flex-col sm:flex-row">
         <Overview
           className="grow sm:mr-4"
           aumUsd={mainPool?.aumUsd ?? null}
