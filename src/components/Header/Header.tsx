@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '../common/Button/Button';
+import Menu from '../common/Menu/Menu';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header() {
@@ -101,25 +102,29 @@ export default function Header() {
           }}
         />
 
-        {isThreeDotMenuOpen ? (
-          <div className="absolute flex border border-grey bg-main right-4 p-4 flex-col items-start">
-            <div className="text-xs pb-2 mb-2">Clusters</div>
+        <Menu
+          className="right-6 mt-2"
+          open={isThreeDotMenuOpen}
+          onClose={() => {
+            setIsThreeDotMenuOpen(false);
+          }}
+        >
+          <div className="text-sm pb-2 mb-2">Clusters</div>
 
-            <Button
-              className="whitespace-nowrap text-sm text-txtfade hover:text-white border-0 p-0"
-              title={window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet'}
-              onClick={() => {
-                router.replace({
-                  query: {
-                    ...router.query,
-                    cluster:
-                      window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet',
-                  },
-                });
-              }}
-            />
-          </div>
-        ) : null}
+          <Button
+            className="whitespace-nowrap text-md text-txtfade hover:text-white border-0 p-0"
+            title={window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet'}
+            onClick={() => {
+              router.replace({
+                query: {
+                  ...router.query,
+                  cluster:
+                    window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet',
+                },
+              });
+            }}
+          />
+        </Menu>
       </div>
     </div>
   );
