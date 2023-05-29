@@ -70,12 +70,25 @@ export class AdrenaClient {
     AdrenaClient.programId,
   )[0];
 
+  public lmTokenMint = PublicKey.findProgramAddressSync(
+    [Buffer.from('lm_token_mint')],
+    AdrenaClient.programId,
+  )[0];
+
   public alpToken: Token = {
     mint: this.lpTokenMint,
     name: 'ALP',
     decimals: 6,
     isStable: false,
-    image: '/images/usdc.svg',
+    image: '/images/alp.png',
+  };
+
+  public adxToken: Token = {
+    mint: this.lmTokenMint,
+    name: 'ADX',
+    decimals: 6,
+    isStable: false,
+    image: '/images/adx.png',
   };
 
   protected adrenaProgram: Program<Perpetuals> | null = null;

@@ -1,3 +1,4 @@
+import ADXDetails from '@/components/pages/dashboard/ADXDetails/ADXDetails';
 import ALPDetails from '@/components/pages/dashboard/ALPDetails/ALPDetails';
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Overview from '@/components/pages/dashboard/Overview/Overview';
@@ -30,7 +31,10 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
 
       <div className="text-4xl mt-6">Tokens</div>
 
-      <ALPDetails className="mt-4 max-w-[30em]" custodies={custodies} />
+      <div className="flex justify-between flex-col sm:flex-row mt-4">
+        <ALPDetails className="grow sm:mr-4" custodies={custodies} />
+        <ADXDetails className="mt-2 sm:mt-0 grow" custodies={custodies} />
+      </div>
 
       <ALPIndexComposition custodies={custodies} className="mt-4" />
     </>

@@ -10,15 +10,15 @@ import Image from 'next/image';
 import { Doughnut } from 'react-chartjs-2';
 import { twMerge } from 'tailwind-merge';
 
+import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
-import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
 import { CustodyExtended } from '@/types';
 import { formatNumber, formatPercentage, formatPriceInfo } from '@/utils';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function ALPDetails({
+export default function ADXDetails({
   className,
   custodies,
 }: {
@@ -28,22 +28,20 @@ export default function ALPDetails({
   const rowClasses = 'flex justify-between mt-2';
 
   const composition = useALPIndexComposition(custodies);
-  const alpTotalSupply = useALPTotalSupply();
-  const alpPrice =
-    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.name]) ??
+  const adxTotalSupply = useADXTotalSupply();
+  const adxPrice =
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.name]) ??
     null;
 
   const marketCap =
-    alpPrice !== null && alpTotalSupply != null
-      ? alpPrice * alpTotalSupply
+    adxPrice !== null && adxTotalSupply != null
+      ? adxPrice * adxTotalSupply
       : null;
 
-  // Add currentRatio of stable tokens
-  const stablecoinPercentage = composition
-    ? composition.reduce((total, comp) => {
-        return total + (comp.token.isStable ? comp.currentRatio ?? 0 : 0);
-      }, 0)
-    : null;
+  // @TODO plug to staking system
+  const staked = 0;
+  const vested = 0;
+  const liquid = 100;
 
   return (
     <div
@@ -61,28 +59,28 @@ export default function ALPDetails({
         <div className="flex flex-col grow">
           <div className="pb-2 border-b border-grey flex items-center">
             <Image
-              src={window.adrena.client.alpToken.image}
-              alt="ALP icon"
+              src={window.adrena.client.adxToken.image}
+              alt="ADX icon"
               className="h-8 mr-2"
               height="32"
               width="32"
             />
-            ALP
+            ADX
           </div>
 
           <div className={rowClasses}>
             <div className="text-txtfade">Price</div>
-            <div>{formatPriceInfo(alpPrice)}</div>
+            <div>{formatPriceInfo(adxPrice)}</div>
           </div>
 
           <div className={rowClasses}>
             <div className="text-txtfade">Supply</div>
             <div>
-              {alpTotalSupply !== null
+              {adxTotalSupply !== null
                 ? `${formatNumber(
-                    alpTotalSupply,
-                    window.adrena.client.alpToken.decimals,
-                  )} ALP`
+                    adxTotalSupply,
+                    window.adrena.client.adxToken.decimals,
+                  )} ADX`
                 : '-'}
             </div>
           </div>
@@ -90,11 +88,6 @@ export default function ALPDetails({
           <div className={rowClasses}>
             <div className="text-txtfade">Market Cap</div>
             <div>{formatPriceInfo(marketCap)}</div>
-          </div>
-
-          <div className={rowClasses}>
-            <div className="text-txtfade">Stablecoin Percentage</div>
-            <div>{formatPercentage(stablecoinPercentage, 2)}</div>
           </div>
         </div>
 
@@ -119,14 +112,14 @@ export default function ALPDetails({
         >
           {composition ? (
             <>
-              <div className="absolute">Composition</div>
+              <div className="absolute">Distribution</div>
               <Doughnut
                 data={{
-                  labels: composition.map((comp) => comp.token.name),
+                  labels: ['staked', 'vested', 'liquid'],
                   datasets: [
                     {
                       label: 'ALP Pool',
-                      data: composition.map((comp) => comp.currentRatio),
+                      data: [staked, vested, liquid],
                       backgroundColor: [
                         'rgba(255, 99, 132, 1)',
                         'rgba(54, 162, 235, 1)',
