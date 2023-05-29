@@ -86,7 +86,7 @@ export default function Header() {
 
       <WalletAdapter className="lg:ml-4 w-full lg:w-auto mt-2 lg:mt-0" />
 
-      <div className="relative">
+      <div className="relative mt-4 lg:mt-0 self-end lg:self-center">
         <Button
           className="border-0 lg:ml-4 lg:mr-4 p-0"
           title={

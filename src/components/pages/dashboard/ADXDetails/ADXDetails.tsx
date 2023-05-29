@@ -103,6 +103,7 @@ export default function ADXDetails({
             'items-center',
             'justify-center',
             'mt-4',
+            'pl-4',
             'sm:mt-0',
             'ml-auto',
             'mr-auto',

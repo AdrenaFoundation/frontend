@@ -111,6 +111,7 @@ export default function ALPDetails({
             'justify-center',
             'mt-4',
             'sm:mt-0',
+            'pl-4',
             'ml-auto',
             'mr-auto',
             'sm:ml-0',
