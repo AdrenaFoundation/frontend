@@ -50,6 +50,7 @@ export default function Menu({
         'flex',
         'flex-col',
         'items-start',
+        'z-10',
         className,
       )}
     >

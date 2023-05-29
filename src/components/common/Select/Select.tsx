@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '../Button/Button';
+import Menu from '../Menu/Menu';
+
 export default function Select<T extends string>({
   className,
   selected,
@@ -39,47 +42,27 @@ export default function Select<T extends string>({
         ) : null}
       </div>
 
-      <div
-        className={twMerge(
-          'flex-col',
-          'absolute',
-          'top-8',
-          'right-0',
-          'bg-secondary',
-          'border',
-          'border-grey',
-          'z-[2]',
-          opened ? 'flex' : 'hidden',
-        )}
+      <Menu
+        className="right-1 mt-2"
+        open={opened}
+        onClose={() => {
+          setOpened(false);
+        }}
       >
         {options
           .filter((option) => option !== selected)
           .map((option) => (
-            <div
-              className={twMerge(
-                'pt-2',
-                'pb-2',
-                'pl-4',
-                'pr-4',
-                'cursor-pointer',
-                'flex',
-                'items-center',
-                'justify-center',
-                'whitespace-nowrap',
-                'border-b',
-                'border-grey',
-                'hover:opacity-90',
-              )}
+            <Button
+              className="whitespace-nowrap text-md text-txtfade hover:text-white mt-1 border-0 p-0"
+              title={option}
               onClick={() => {
                 onSelect(option);
                 setOpened(false);
               }}
               key={option}
-            >
-              {option}
-            </div>
+            />
           ))}
-      </div>
+      </Menu>
     </div>
   );
 }
