@@ -1,13 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '../common/Button/Button';
-
 export default function Footer() {
-  const router = useRouter();
-
   return (
     <div
       className={twMerge(
@@ -49,22 +44,6 @@ export default function Footer() {
             height="20"
           />
         </Link>
-
-        <Button
-          className="border-0 ml-4 text-xs text-txtfade hover:text-white"
-          title={`switch to ${
-            window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet'
-          }`}
-          onClick={() => {
-            router.replace({
-              query: {
-                ...router.query,
-                cluster:
-                  window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet',
-              },
-            });
-          }}
-        />
 
         <Link
           href="/terms_and_conditions"

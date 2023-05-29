@@ -1,5 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '../common/Button/Button';
@@ -7,6 +9,8 @@ import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header() {
   const { pathname } = useRouter();
+  const router = useRouter();
+  const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState<boolean>(false);
 
   const PageLink = (url: string, title: string) => (
     <Link
@@ -79,7 +83,44 @@ export default function Header() {
         }}
       />
 
-      <WalletAdapter className="lg:ml-4 lg:mr-4 w-full lg:w-auto mt-2 lg:mt-0" />
+      <WalletAdapter className="lg:ml-4 w-full lg:w-auto mt-2 lg:mt-0" />
+
+      <div className="relative">
+        <Button
+          className="border-0 lg:ml-4 lg:mr-4 p-0"
+          title={
+            <Image
+              src="/images/dots.png"
+              alt="three dots icon"
+              width="20"
+              height="20"
+            />
+          }
+          onClick={() => {
+            setIsThreeDotMenuOpen(!isThreeDotMenuOpen);
+          }}
+        />
+
+        {isThreeDotMenuOpen ? (
+          <div className="absolute flex border border-grey bg-main right-4 p-4 flex-col items-start">
+            <div className="text-xs pb-2 mb-2">Clusters</div>
+
+            <Button
+              className="whitespace-nowrap text-sm text-txtfade hover:text-white border-0 p-0"
+              title={window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet'}
+              onClick={() => {
+                router.replace({
+                  query: {
+                    ...router.query,
+                    cluster:
+                      window.adrena.cluster === 'devnet' ? 'mainnet' : 'devnet',
+                  },
+                });
+              }}
+            />
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
