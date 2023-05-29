@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import useALPCirculatingSupply from '@/hooks/useALPTotalSupply';
@@ -37,7 +38,16 @@ export default function ALPInfo({ className }: { className?: string }) {
         'flex-col',
       )}
     >
-      <div className="text-lg bold p-4 border-b border-grey mb-6">ALP</div>
+      <div className="text-lg bold p-4 border-b border-grey mb-6 flex items-center">
+        <Image
+          src={window.adrena.client.alpToken.image}
+          alt="ALP icon"
+          className="h-8 mr-2"
+          height="32"
+          width="32"
+        />
+        ALP
+      </div>
       <div className={rowClasses}>
         <div>Price</div>
         <div>{formatPriceInfo(alpTokenPrice)}</div>
