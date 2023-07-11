@@ -42,11 +42,11 @@ class DevnetConfiguration implements IConfiguration {
 
   // Wallet: FMNkqiBPAbEWBENCp3xeLZDji2Wif8YRe7dSW89rJoN3 (Adrena RPC)
   public readonly mainRPC: string =
-    'https://rpc-devnet.helius.xyz/?api-key=a44841ba-d3da-4666-bc48-44b0a943883d';
+    'https://devnet.helius-rpc.com/?api-key=1a4f52c2-ee81-4704-9ffe-a0ff1803a4e0';
 
   // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
   public readonly pythRPC: string =
-    'https://rpc-devnet.helius.xyz/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
+    'https://devnet.helius-rpc.com/?api-key=1a4f52c2-ee81-4704-9ffe-a0ff1803a4e0';
 
   public readonly mainPool: PublicKey = new PublicKey(
     'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',

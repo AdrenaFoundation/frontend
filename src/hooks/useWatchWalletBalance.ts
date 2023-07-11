@@ -72,6 +72,7 @@ const useWatchWalletBalance = (): {
           return balance.value.uiAmount;
         } catch {
           // Cannot find ATA
+          console.log('cannot find ATA for', mint.toString());
           return null;
         }
       }),
@@ -87,7 +88,7 @@ const useWatchWalletBalance = (): {
       ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, dispatch, trickReload]);
+  }, [wallet, dispatch, trickReload, window.adrena.client.connection]);
 
   useEffect(() => {
     loadWalletBalances();
