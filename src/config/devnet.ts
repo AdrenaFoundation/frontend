@@ -40,11 +40,11 @@ class DevnetConfiguration implements IConfiguration {
     },
   };
 
-  // Wallet: FMNkqiBPAbEWBENCp3xeLZDji2Wif8YRe7dSW89rJoN3 (Adrena RPC)
+  // Wallet: 6iQqd2L4RNWRTbAgZPGxhNRtERqZJ1gNhcfsCFGvbPdK (Tyro)
   public readonly mainRPC: string =
     'https://devnet.helius-rpc.com/?api-key=1a4f52c2-ee81-4704-9ffe-a0ff1803a4e0';
 
-  // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
+  // Wallet: 6iQqd2L4RNWRTbAgZPGxhNRtERqZJ1gNhcfsCFGvbPdK (Tyro)
   public readonly pythRPC: string =
     'https://devnet.helius-rpc.com/?api-key=1a4f52c2-ee81-4704-9ffe-a0ff1803a4e0';
 
