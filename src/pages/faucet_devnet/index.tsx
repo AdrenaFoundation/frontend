@@ -1,4 +1,8 @@
-import { NATIVE_MINT, transferChecked } from '@solana/spl-token';
+import {
+  createAssociatedTokenAccountIdempotent,
+  NATIVE_MINT,
+  transferChecked,
+} from '@solana/spl-token';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Connection } from '@solana/web3.js';
 import { useState } from 'react';
@@ -50,6 +54,13 @@ export default function FaucetDevnet({ wallet }: PageProps) {
     const tokenAmount = 10_000 / tokenPrice;
 
     try {
+      await createAssociatedTokenAccountIdempotent(
+        connection,
+        devnetFaucetBankWallet,
+        token.mint,
+        wallet.publicKey,
+      );
+
       const txHash = await transferChecked(
         connection,
         devnetFaucetBankWallet,
