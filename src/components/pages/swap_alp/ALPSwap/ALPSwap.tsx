@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
-import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -19,25 +18,52 @@ import ALPSwapInputs from './ALPSwapInputs';
 export default function ALPSwap({
   className,
   triggerWalletTokenBalancesReload,
+  collateralInput,
+  setCollateralInput,
+  alpInput,
+  setAlpInput,
+  collateralToken,
+  onCollateralTokenChange,
+  feesUsd,
+  setFeesUsd,
+  allowedCollateralTokens,
+  selectedAction,
+  setSelectedAction,
+  alpPrice,
+  setAlpPrice,
+  collateralPrice,
+  setCollateralPrice,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
+  collateralInput: number | null;
+  setCollateralInput: (v: number | null) => void;
+  alpInput: number | null;
+  setAlpInput: (v: number | null) => void;
+  alpPrice: number | null;
+  setAlpPrice: (v: number | null) => void;
+  collateralToken: Token | null;
+  onCollateralTokenChange: (t: Token) => void;
+  collateralPrice: number | null;
+  setCollateralPrice: (v: number | null) => void;
+  feesUsd: number | null;
+  setFeesUsd: (v: number | null) => void;
+  allowedCollateralTokens: Token[] | null;
+  feesAndAmounts?:
+    | (
+        | void
+        | 0
+        | { tokenName: string; fees: number | null; amount: BN | undefined }
+        | null
+        | undefined
+      )[]
+    | null; // todo: fix type
+  selectedAction: 'buy' | 'sell';
+  setSelectedAction: (v: 'buy' | 'sell') => void;
 }) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
-  const [collateralToken, setCollateralToken] = useState<Token | null>(null);
-  const [alpInput, setAlpInput] = useState<number | null>(null);
-  const [collateralInput, setCollateralInput] = useState<number | null>(null);
-  const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
-  const [feesUsd, setFeesUsd] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!window.adrena.client.tokens.length) return;
-
-    setCollateralToken(window.adrena.client.tokens[0]);
-  }, []);
 
   const handleExecuteButton = async () => {
     if (
@@ -184,12 +210,18 @@ export default function ALPSwap({
             actionType={selectedAction}
             alpToken={window.adrena.client.alpToken}
             collateralToken={collateralToken}
-            allowedCollateralTokens={window.adrena.client.tokens}
+            allowedCollateralTokens={allowedCollateralTokens}
+            alpInput={alpInput}
             onChangeAlpInput={setAlpInput}
+            collateralInput={collateralInput}
             onChangeCollateralInput={setCollateralInput}
             setActionType={setSelectedAction}
-            setCollateralToken={setCollateralToken}
+            onCollateralTokenChange={onCollateralTokenChange}
             setFeesUsd={setFeesUsd}
+            alpPrice={alpPrice}
+            collateralPrice={collateralPrice}
+            setAlpPrice={setAlpPrice}
+            setCollateralPrice={setCollateralPrice}
           />
 
           <div className="flex w-full justify-between mt-4">

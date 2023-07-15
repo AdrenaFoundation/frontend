@@ -41,13 +41,15 @@ export default function Buy(_: PageProps) {
           </div>
 
           <div className="mt-4">
-            <Button
-              title={<Link href="/swap_alp">Buy</Link>}
-              className="bg-highlight w-20"
-              onClick={() => {
-                // TODO: Jump to buy ALP page
-              }}
-            />
+            <Link href="/swap_alp">
+              <Button
+                title={'Buy'}
+                className="bg-highlight w-20"
+                onClick={() => {
+                  // TODO: Jump to buy ALP page
+                }}
+              />
+            </Link>
           </div>
         </div>
       </div>

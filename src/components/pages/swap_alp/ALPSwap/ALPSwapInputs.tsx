@@ -18,21 +18,33 @@ export default function ALPSwapInputs({
   alpToken,
   collateralToken,
   allowedCollateralTokens,
+  alpInput,
   onChangeAlpInput,
+  alpPrice,
+  setAlpPrice,
+  collateralInput,
   onChangeCollateralInput,
+  collateralPrice,
+  setCollateralPrice,
   setActionType,
-  setCollateralToken,
+  onCollateralTokenChange,
   setFeesUsd,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
   alpToken: Token;
   collateralToken: Token;
-  allowedCollateralTokens: Token[];
+  collateralInput: number | null;
+  allowedCollateralTokens: Token[] | null;
+  collateralPrice: number | null;
+  setCollateralPrice: (v: number | null) => void;
+  alpInput: number | null;
   onChangeAlpInput: (v: number | null) => void;
   onChangeCollateralInput: (v: number | null) => void;
+  alpPrice: number | null;
+  setAlpPrice: (v: number | null) => void;
   setActionType: (a: 'buy' | 'sell') => void;
-  setCollateralToken: (t: Token | null) => void;
+  onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
 }) {
   const wallet = useSelector((s) => s.walletState);
@@ -41,48 +53,24 @@ export default function ALPSwapInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  const [alpInput, setAlpInput] = useState<number | null>(null);
-  const [collateralInput, setCollateralInput] = useState<number | null>(null);
-
-  const [alpPrice, setAlpPrice] = useState<number | null>(null);
-  const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
-
   const [isLoading, setLoading] = useState<boolean>(false);
-
-  // Propagate changes to upper component
-  {
-    useEffect(() => {
-      const nb = Number(alpInput);
-      onChangeAlpInput(isNaN(nb) || alpInput === null ? null : nb);
-    }, [alpInput, onChangeAlpInput]);
-
-    useEffect(() => {
-      const nb = Number(collateralInput);
-      onChangeCollateralInput(
-        isNaN(nb) || collateralInput === null ? null : nb,
-      );
-    }, [collateralInput, onChangeCollateralInput]);
-  }
 
   // Goes from "buy" to "sell"
   const switchBuySell = () => {
     if (!alpToken || !collateralToken) return;
 
-    setActionType(actionType === 'buy' ? 'sell' : 'buy');
-  };
-
-  // Reset all when changing action type
-  useEffect(() => {
-    setAlpInput(null);
-    setCollateralInput(null);
+    onChangeAlpInput(null);
+    onChangeCollateralInput(null);
     setFeesUsd(null);
     setAlpPrice(null);
     setCollateralPrice(null);
 
     // deprecate current loading
     setLoading(false);
+
     loadingCounter += 1;
-  }, [actionType, setFeesUsd]);
+    setActionType(actionType === 'buy' ? 'sell' : 'buy');
+  };
 
   // When price change or input change, recalculate inputs and displayed price
   {
@@ -119,7 +107,7 @@ export default function ALPSwapInputs({
         setLoading(false);
         loadingCounter += 1;
 
-        setCollateralInput(null);
+        onChangeCollateralInput(null);
         setCollateralPrice(null);
         setAlpPrice(null);
         setFeesUsd(null);
@@ -147,7 +135,7 @@ export default function ALPSwapInputs({
 
           if (!amountAndFee) {
             setLoading(false);
-            setCollateralInput(null);
+            onChangeCollateralInput(null);
             setCollateralPrice(null);
             setFeesUsd(null);
             return;
@@ -158,7 +146,7 @@ export default function ALPSwapInputs({
             fee: amountAndFee.fee.toString(),
           });
 
-          setCollateralInput(
+          onChangeCollateralInput(
             nativeToUi(amountAndFee.amount, collateralToken.decimals),
           );
 
@@ -175,7 +163,7 @@ export default function ALPSwapInputs({
         })
         .catch((e) => {
           console.log('e', e);
-          setCollateralInput(null);
+          onChangeCollateralInput(null);
           setCollateralPrice(null);
           setLoading(false);
         });
@@ -199,7 +187,7 @@ export default function ALPSwapInputs({
         setLoading(false);
         loadingCounter += 1;
 
-        setAlpInput(null);
+        onChangeAlpInput(null);
         setAlpPrice(null);
         setCollateralPrice(null);
         setFeesUsd(null);
@@ -228,7 +216,7 @@ export default function ALPSwapInputs({
 
           if (!amountAndFee) {
             setLoading(false);
-            setAlpInput(null);
+            onChangeAlpInput(null);
             setAlpPrice(null);
             setFeesUsd(null);
             return;
@@ -239,7 +227,7 @@ export default function ALPSwapInputs({
             fee: amountAndFee.fee.toString(),
           });
 
-          setAlpInput(nativeToUi(amountAndFee.amount, alpToken.decimals));
+          onChangeAlpInput(nativeToUi(amountAndFee.amount, alpToken.decimals));
           setAlpPrice(
             alpTokenPrice * nativeToUi(amountAndFee.amount, alpToken.decimals),
           );
@@ -260,11 +248,22 @@ export default function ALPSwapInputs({
   }
 
   const handleAlpInputChange = (v: number | null) => {
-    setAlpInput(v);
+    const nb = Number(v);
+    if (v === null || isNaN(nb)) {
+      onChangeAlpInput(null);
+      return;
+    }
+
+    onChangeAlpInput(nb);
   };
 
   const handleCollateralInputChange = (v: number | null) => {
-    setCollateralInput(v);
+    const nb = Number(v);
+    if (v === null || isNaN(nb)) {
+      onChangeCollateralInput(null);
+      return;
+    }
+    onChangeCollateralInput(nb);
   };
 
   const alpInputComponent = (
@@ -293,7 +292,7 @@ export default function ALPSwapInputs({
       selectedToken={alpToken}
       tokenList={[alpToken]}
       onMaxButtonClick={() => {
-        setAlpInput(walletTokenBalances?.[alpToken.name] ?? 0);
+        onChangeAlpInput(walletTokenBalances?.[alpToken.name] ?? 0);
       }}
       onTokenSelect={() => {
         // only one token
@@ -327,23 +326,13 @@ export default function ALPSwapInputs({
       value={collateralInput}
       maxButton={actionType === 'buy'}
       selectedToken={collateralToken}
-      tokenList={allowedCollateralTokens}
+      tokenList={allowedCollateralTokens || []}
       onMaxButtonClick={() => {
-        setCollateralInput(walletTokenBalances?.[collateralToken.name] ?? 0);
+        onChangeCollateralInput(
+          walletTokenBalances?.[collateralToken.name] ?? 0,
+        );
       }}
-      onTokenSelect={(t: Token) => {
-        if (actionType === 'buy') {
-          setAlpInput(null);
-          setAlpPrice(null);
-          setFeesUsd(null);
-        } else {
-          setCollateralInput(null);
-          setCollateralPrice(null);
-          setFeesUsd(null);
-        }
-
-        setCollateralToken(t);
-      }}
+      onTokenSelect={onCollateralTokenChange}
       onChange={handleCollateralInputChange}
     />
   );

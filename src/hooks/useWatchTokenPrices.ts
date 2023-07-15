@@ -54,7 +54,7 @@ const useWatchTokenPrices = () => {
     });
     // Manually handle dependencies to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!pythClient, , dispatch]);
+  }, [!!pythClient, dispatch]);
 
   useEffect(() => {
     if (!pythClient || !window.adrena.client || !dispatch) {
