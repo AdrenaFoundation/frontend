@@ -169,6 +169,7 @@ export default function SwapALP({
         feesAndAmounts={feesAndAmounts}
         allowedCollateralTokens={allowedCollateralTokens}
         onCollateralTokenChange={onCollateralTokenChange}
+        selectedAction={selectedAction}
       />
     </>
   );

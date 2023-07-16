@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useMemo } from 'react';
 
 import Button from '@/components/common/Button/Button';
+import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -11,6 +12,7 @@ export default function SaveOnFees({
   allowedCollateralTokens,
   feesAndAmounts,
   onCollateralTokenChange,
+  selectedAction,
 }: {
   allowedCollateralTokens: Token[] | null;
   feesAndAmounts:
@@ -23,9 +25,19 @@ export default function SaveOnFees({
       )[]
     | null; // todo: fix type
   onCollateralTokenChange: (t: Token) => void;
+  selectedAction: 'buy' | 'sell';
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const alpTotalSupply = useALPTotalSupply();
+  const alpPrice =
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.name]) ??
+    null;
+
+  const marketCap =
+    alpPrice !== null && alpTotalSupply != null
+      ? alpPrice * alpTotalSupply
+      : null;
 
   const headers: string[] = ['Token', 'Price', 'Available', 'Wallet', 'Fees'];
 
@@ -47,9 +59,27 @@ export default function SaveOnFees({
           (ctoken) => ctoken.pubkey === token.custody,
         );
 
-        // how much lp token can you buy with the collateral token
-        // get the max pool
-        const available = custody && price && custody.liquidity * price;
+        // calculates how much of the token is available for purchase/sale in usd
+        // need to get the lowest price in the last 24h and highest price in the last 24h
+        const min_token_price_24h = price; // change to lowest price in the last 24h
+        const liquidity = custody && custody.liquidity;
+
+        // setting the max pool capacity of the token as the market cap * target ratio.
+        const maxCapacity =
+          custody && marketCap && (marketCap * custody.targetRatio) / 10000;
+        const total_lp_tokens =
+          maxCapacity && maxCapacity / min_token_price_24h!;
+
+        const min_available =
+          total_lp_tokens && liquidity && total_lp_tokens - liquidity;
+
+        console.log('min_available', min_available, total_lp_tokens, liquidity);
+
+        // todo: calculate max token deposit available when selling alp
+        const max_available = null;
+
+        const available =
+          selectedAction === 'buy' ? min_available : max_available;
 
         const fees =
           feesAndAmounts &&
@@ -72,6 +102,8 @@ export default function SaveOnFees({
     tokenPrices,
     walletTokenBalances,
     feesAndAmounts,
+    selectedAction,
+    marketCap,
   ]);
 
   //better error handling
@@ -125,7 +157,9 @@ export default function SaveOnFees({
                         {formatPriceInfo(row?.price)}
                       </td>
                       <td className="text-sm p-3">
-                        {formatPriceInfo(row?.available)}
+                        {row && Math.sign(Number(row.available)) !== -1
+                          ? formatPriceInfo(row.available)
+                          : 'max capacity reached'}
                       </td>
                       <td className="text-sm p-3">
                         {row?.tokenBalance
