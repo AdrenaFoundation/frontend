@@ -7,13 +7,26 @@ export interface Stats {
   currentPrice: number;
   dailyChange: number;
   dailyVolume: number;
+  low24h: number;
+  high24h: number;
 }
 
 type FetchedData = {
-  [tokenName: string]: {
-    usd: number;
-    usd_24h_vol: number;
-    usd_24h_change: number;
+  id: string;
+  market_data: {
+    low_24h: {
+      usd: number;
+    };
+    high_24h: {
+      usd: number;
+    };
+    current_price: {
+      usd: number;
+    };
+    price_change_24h: number;
+    total_volume: {
+      usd: number;
+    };
   };
 };
 
@@ -22,31 +35,41 @@ const useDailyStats = () => {
 
   const loadStats = useCallback(async () => {
     try {
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${window.adrena.client.tokens
-          .map((token) => token.coingeckoId)
-          .filter((coingeckoId) => !!coingeckoId)
-          .join(
-            ',',
-          )}&vs_currencies=USD&include_24hr_vol=true&include_24hr_change=true`,
+      const data: FetchedData[] = await Promise.all(
+        window.adrena.client.tokens.map(async (token) => {
+          const res = await fetch(
+            `https://api.coingecko.com/api/v3/coins/${token.coingeckoId}?market_data=true?localization=false`,
+          );
+          return res.json();
+        }),
       );
 
-      const data: FetchedData = await response.json();
+      console.log('response', data);
+
+      if (!data) return;
 
       setStats(
         window.adrena.client.tokens.reduce((acc, token) => {
           if (!token.coingeckoId) return acc;
 
-          const { usd, usd_24h_change, usd_24h_vol } = data[token.coingeckoId];
+          const {
+            low_24h,
+            high_24h,
+            current_price,
+            price_change_24h,
+            total_volume,
+          } = data.find((tok) => tok.id === token.coingeckoId)!.market_data;
 
           return {
             ...acc,
 
             [token.name]: {
               token,
-              currentPrice: usd,
-              dailyChange: usd_24h_change,
-              dailyVolume: usd_24h_vol,
+              currentPrice: current_price.usd,
+              dailyChange: price_change_24h,
+              dailyVolume: total_volume.usd,
+              low24h: low_24h.usd,
+              high24h: high_24h.usd,
             },
           };
         }, {} as Record<string, Stats>),

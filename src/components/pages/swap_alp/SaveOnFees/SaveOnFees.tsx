@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
+import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -28,6 +29,7 @@ export default function SaveOnFees({
   selectedAction: 'buy' | 'sell';
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const stats = useDailyStats();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const alpTotalSupply = useALPTotalSupply();
   const alpPrice =
@@ -60,20 +62,26 @@ export default function SaveOnFees({
         );
 
         // calculates how much of the token is available for purchase/sale in usd
-        // need to get the lowest price in the last 24h and highest price in the last 24h
-        const min_token_price_24h = price; // change to lowest price in the last 24h
+
+        let token_price_change_24h: number | undefined;
+
+        if (stats) {
+          token_price_change_24h =
+            selectedAction === 'buy'
+              ? stats[token.name].low24h
+              : stats[token.name].high24h;
+        }
+
         const liquidity = custody && custody.liquidity;
 
         // setting the max pool capacity of the token as the market cap * target ratio.
         const maxCapacity =
           custody && marketCap && (marketCap * custody.targetRatio) / 10000;
         const total_lp_tokens =
-          maxCapacity && maxCapacity / min_token_price_24h!;
+          maxCapacity && maxCapacity / token_price_change_24h!;
 
         const min_available =
           total_lp_tokens && liquidity && total_lp_tokens - liquidity;
-
-        console.log('min_available', min_available, total_lp_tokens, liquidity);
 
         // todo: calculate max token deposit available when selling alp
         const max_available = null;
@@ -104,7 +112,10 @@ export default function SaveOnFees({
     feesAndAmounts,
     selectedAction,
     marketCap,
+    stats,
   ]);
+
+  console.log(alpTotalSupply); // todo: null on refresh? needs to be fixed
 
   //better error handling
   if (!allowedCollateralTokens || !walletTokenBalances) {
