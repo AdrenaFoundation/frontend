@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { useSelector } from '@/store/store';
-import { Token } from '@/types';
+import { Token, TokenName } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -49,7 +49,9 @@ export default function ALPSwap({
   feesUsd: number | null;
   setFeesUsd: (v: number | null) => void;
   allowedCollateralTokens: Token[] | null;
-  feesAndAmounts: any;
+  feesAndAmounts: Array<{
+    [tokenName: TokenName]: { fees: number | null; amount: number | null };
+  }> | null;
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
 }) {

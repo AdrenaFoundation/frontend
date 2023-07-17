@@ -141,11 +141,6 @@ export default function ALPSwapInputs({
             return;
           }
 
-          console.log('amountAndFee', {
-            amount: amountAndFee.amount.toString(),
-            fee: amountAndFee.fee.toString(),
-          });
-
           onChangeCollateralInput(
             nativeToUi(amountAndFee.amount, collateralToken.decimals),
           );
@@ -221,11 +216,6 @@ export default function ALPSwapInputs({
             setFeesUsd(null);
             return;
           }
-
-          console.log('amountAndFee', {
-            amount: amountAndFee.amount.toString(),
-            fee: amountAndFee.fee.toString(),
-          });
 
           onChangeAlpInput(nativeToUi(amountAndFee.amount, alpToken.decimals));
           setAlpPrice(

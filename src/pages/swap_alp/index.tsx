@@ -1,5 +1,4 @@
-import BN from 'bn.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
 import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
@@ -30,21 +29,23 @@ export default function SwapALP({
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
 
-  const feesAndAmountsArrayPromise = useMemo(async () => {
+  const getFeesAndAmounts = useCallback(async () => {
     const localLoadingCounter = ++loadingCounter;
+
     // Verify that information is not outdated
     // If loaderCounter doesn't match it means
     // an other request has been casted due to input change
     if (localLoadingCounter !== loadingCounter) {
       console.log('Ignore deprecated result');
-      return null;
+      return;
     }
 
-    return Promise.all(
+    const data = await Promise.all(
       window.adrena.client.tokens.map(async (token) => {
         const price = tokenPrices[token.name];
 
-        if (!price || !collateralInput || !alpInput || !collateralToken) {
+        if (!price || !collateralToken) {
+          // check for alpinput and collateralinput
           return {
             [token.name]: {
               fees: null,
@@ -66,7 +67,7 @@ export default function SwapALP({
           };
         }
 
-        const equivalentAmount = (collateralTokenPrice * input) / price;
+        const equivalentAmount = (collateralTokenPrice * input!) / price;
 
         if (equivalentAmount === 0) {
           return {
@@ -85,7 +86,7 @@ export default function SwapALP({
               })
             : window.adrena.client.getRemoveLiquidityAmountAndFee({
                 lpAmountIn: uiToNative(
-                  alpInput,
+                  alpInput!,
                   window.adrena.client.alpToken.decimals,
                 ),
                 token,
@@ -120,20 +121,27 @@ export default function SwapALP({
         }
       }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAction, alpInput, collateralToken]);
+    console.count('fetched fees and amounts...');
+    console.log('input', collateralInput, alpInput);
 
-  const getFeesAndAmounts = async () => {
-    const data = await feesAndAmountsArrayPromise;
-    console.log(data);
     setFeesAndAmounts(data);
-  };
+  }, [
+    selectedAction,
+    selectedAction === 'buy' ? collateralInput : alpInput,
+    collateralToken,
+  ]);
 
   useEffect(() => {
-    setTimeout(() => {
+    const delay = setTimeout(() => {
       return getFeesAndAmounts();
-    }, 300);
-  }, [alpInput]);
+    }, 500);
+
+    console.count('triggered');
+
+    return () => {
+      clearTimeout(delay);
+    };
+  }, [selectedAction === 'buy' ? collateralInput : alpInput]);
 
   useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
@@ -143,7 +151,7 @@ export default function SwapALP({
     }
 
     setAllowedCollateralTokens(window.adrena.client.tokens);
-  }, []);
+  }, [collateralToken]);
 
   const onCollateralTokenChange = (t: Token) => {
     if (selectedAction === 'buy') {
@@ -161,7 +169,7 @@ export default function SwapALP({
   };
 
   if (allowedCollateralTokens === null) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // proper loader
   }
 
   return (

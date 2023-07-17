@@ -34,9 +34,9 @@ export default function SaveOnFees({
   const stats = useDailyStats();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const alpTotalSupply = useALPTotalSupply();
-  const alpPrice =
-    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.name]) ??
-    null;
+  const alpPrice = useSelector(
+    (s) => s.tokenPrices?.[window.adrena.client.alpToken.name],
+  );
 
   const marketCap =
     alpPrice !== null && alpTotalSupply != null
@@ -113,8 +113,6 @@ export default function SaveOnFees({
     marketCap,
     stats,
   ]);
-
-  console.log(alpTotalSupply); // todo: null on refresh? needs to be fixed
 
   return (
     <>
