@@ -5,7 +5,7 @@ import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
 import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
 import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
 import { useSelector } from '@/store/store';
-import { PageProps, Token } from '@/types';
+import { PageProps, Token, TokenName } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
 // use the counter to handle asynchronous multiple loading
@@ -20,20 +20,9 @@ export default function SwapALP({
   const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
   const [feesUsd, setFeesUsd] = useState<number | null>(null);
-  const [feesAndAmounts, setFeesAndAmounts] = useState<
-    | (
-        | void
-        | 0
-        | {
-            tokenName: string;
-            fees: number | null;
-            amount: BN | undefined;
-          }
-        | null
-        | undefined
-      )[]
-    | null
-  >(null); // todo: fix type
+  const [feesAndAmounts, setFeesAndAmounts] = useState<Array<{
+    [tokenName: TokenName]: { fees: number | null; amount: number | null };
+  }> | null>(null);
   const [allowedCollateralTokens, setAllowedCollateralTokens] = useState<
     Token[] | null
   >(null);
@@ -41,81 +30,120 @@ export default function SwapALP({
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
 
-  const feesAndAmountsList = useMemo(() => {
-    if (!collateralInput && !alpInput && !collateralToken) return;
-
+  const feesAndAmountsArrayPromise = useMemo(async () => {
     const localLoadingCounter = ++loadingCounter;
+    // Verify that information is not outdated
+    // If loaderCounter doesn't match it means
+    // an other request has been casted due to input change
+    if (localLoadingCounter !== loadingCounter) {
+      console.log('Ignore deprecated result');
+      return null;
+    }
 
-    return window.adrena.client.tokens.map((token) => {
-      const price = tokenPrices[token.name];
-      if (!price) return;
-      const input = selectedAction === 'buy' ? collateralInput : alpInput;
+    return Promise.all(
+      window.adrena.client.tokens.map(async (token) => {
+        const price = tokenPrices[token.name];
 
-      const collateralTokenPrice =
-        collateralToken && tokenPrices[collateralToken.name];
+        if (!price || !collateralInput || !alpInput || !collateralToken) {
+          return {
+            [token.name]: {
+              fees: null,
+              amount: null,
+            },
+          };
+        }
 
-      const totalCollateralTokenPrice =
-        collateralTokenPrice && input && collateralTokenPrice * input;
+        const input = selectedAction === 'buy' ? collateralInput : alpInput;
 
-      const equivalentAmount =
-        totalCollateralTokenPrice && price && totalCollateralTokenPrice / price;
+        const collateralTokenPrice = tokenPrices[collateralToken.name];
 
-      const result =
-        equivalentAmount &&
-        (selectedAction === 'buy'
-          ? window.adrena.client.getAddLiquidityAmountAndFee({
-              amountIn: uiToNative(equivalentAmount, token.decimals),
-              token,
-            })
-          : window.adrena.client.getRemoveLiquidityAmountAndFee({
-              lpAmountIn: uiToNative(
-                alpInput || 0,
+        if (collateralTokenPrice === null) {
+          return {
+            [token.name]: {
+              fees: null,
+              amount: null,
+            },
+          };
+        }
+
+        const equivalentAmount = (collateralTokenPrice * input) / price;
+
+        if (equivalentAmount === 0) {
+          return {
+            [token.name]: {
+              fees: 0,
+              amount: 0,
+            },
+          };
+        }
+
+        try {
+          const amountAndFees = await (selectedAction === 'buy'
+            ? window.adrena.client.getAddLiquidityAmountAndFee({
+                amountIn: uiToNative(equivalentAmount, token.decimals),
+                token,
+              })
+            : window.adrena.client.getRemoveLiquidityAmountAndFee({
+                lpAmountIn: uiToNative(
+                  alpInput,
+                  window.adrena.client.alpToken.decimals,
+                ),
+                token,
+              }));
+
+          if (amountAndFees === null) {
+            return {
+              [token.name]: {
+                fees: null,
+                amount: null,
+              },
+            };
+          }
+
+          return {
+            [token.name]: {
+              fees: price * nativeToUi(amountAndFees.fee, token.decimals),
+              amount: nativeToUi(
+                amountAndFees.amount,
                 window.adrena.client.alpToken.decimals,
               ),
-              token,
-            })
-        )
-          .then((amountAndFees) => {
-            // Verify that information is not outdated
-            // If loaderCounter doesn't match it means
-            // an other request has been casted due to input change
-            if (localLoadingCounter !== loadingCounter) {
-              console.log('Ignore deprecated result');
-              return;
-            }
-
-            return {
-              tokenName: token.name,
-              fees:
-                amountAndFees &&
-                price &&
-                price * nativeToUi(amountAndFees?.fee, token.decimals),
-              amount: amountAndFees?.amount,
-            };
-          })
-          .catch((e) => {
-            console.log(e);
-            return;
-          });
-      return result;
-    });
+            },
+          };
+        } catch (e) {
+          console.log(e);
+          return {
+            [token.name]: {
+              fees: null,
+              amount: null,
+            },
+          };
+        }
+      }),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [alpInput, selectedAction, collateralInput, collateralToken]);
+  }, [selectedAction, alpInput, collateralToken]);
 
-  const getFees = useCallback(async () => {
-    if (!feesAndAmountsList) return;
-    const data = await Promise.all(feesAndAmountsList);
+  const getFeesAndAmounts = async () => {
+    const data = await feesAndAmountsArrayPromise;
+    console.log(data);
     setFeesAndAmounts(data);
-  }, [feesAndAmountsList]);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      return getFeesAndAmounts();
+    }, 300);
+  }, [alpInput]);
 
   useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
+
     if (!collateralToken) {
       setCollateralToken(window.adrena.client.tokens[0]);
     }
+
     setAllowedCollateralTokens(window.adrena.client.tokens);
-    getFees();
-  }, [getFees, collateralInput, collateralToken, alpInput]);
+  }, []);
 
   const onCollateralTokenChange = (t: Token) => {
     if (selectedAction === 'buy') {
@@ -131,6 +159,10 @@ export default function SwapALP({
     loadingCounter += 1;
     setCollateralToken(t);
   };
+
+  if (allowedCollateralTokens === null) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>

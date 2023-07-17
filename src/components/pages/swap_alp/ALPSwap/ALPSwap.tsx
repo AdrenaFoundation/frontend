@@ -49,15 +49,7 @@ export default function ALPSwap({
   feesUsd: number | null;
   setFeesUsd: (v: number | null) => void;
   allowedCollateralTokens: Token[] | null;
-  feesAndAmounts?:
-    | (
-        | void
-        | 0
-        | { tokenName: string; fees: number | null; amount: BN | undefined }
-        | null
-        | undefined
-      )[]
-    | null; // todo: fix type
+  feesAndAmounts: any;
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
 }) {
