@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
 import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
 import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token, TokenName } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
@@ -28,6 +29,9 @@ export default function SwapALP({
   const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
+  const debouncedInputs = useDebounce(
+    selectedAction === 'buy' ? collateralInput : alpInput,
+  );
 
   const getFeesAndAmounts = useCallback(async () => {
     const localLoadingCounter = ++loadingCounter;
@@ -121,27 +125,17 @@ export default function SwapALP({
         }
       }),
     );
+
     console.count('fetched fees and amounts...');
-    console.log('input', collateralInput, alpInput);
 
     setFeesAndAmounts(data);
-  }, [
-    selectedAction,
-    selectedAction === 'buy' ? collateralInput : alpInput,
-    collateralToken,
-  ]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAction, debouncedInputs, collateralToken]);
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      return getFeesAndAmounts();
-    }, 500);
-
-    console.count('triggered');
-
-    return () => {
-      clearTimeout(delay);
-    };
-  }, [selectedAction === 'buy' ? collateralInput : alpInput]);
+    getFeesAndAmounts();
+  }, [getFeesAndAmounts, debouncedInputs]);
 
   useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
@@ -184,7 +178,7 @@ export default function SwapALP({
         <ALPInfo className="grow min-w-[25em] pb-2 m-2" />
 
         <ALPSwap
-          className={'grow min-w-[25em] m-2'}
+          className={'grow w-full md:w-[5em] m-2'}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}
           setCollateralInput={setCollateralInput}

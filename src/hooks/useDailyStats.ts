@@ -44,8 +44,6 @@ const useDailyStats = () => {
         }),
       );
 
-      console.log('response', data);
-
       if (!data) return;
 
       setStats(

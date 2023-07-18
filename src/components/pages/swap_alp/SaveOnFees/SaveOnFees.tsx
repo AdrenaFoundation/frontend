@@ -65,28 +65,19 @@ export default function SaveOnFees({
       const available = (() => {
         const custody = window.adrena.client.getCustodyByMint(token.mint);
 
-        if (!stats || !marketCap || !custody) return null;
+        if (!stats || !marketCap || !custody || !price) return null;
 
-        if (selectedAction === 'buy') {
-          const lowPrice24h = stats[token.name].low24h;
+        const custodyLiquidityUsd = custody.liquidity * price;
 
-          const maxCapacity = (marketCap * custody.targetRatio) / 10_000;
+        const ratio =
+          selectedAction === 'buy' ? custody.maxRatio : custody.minRatio;
 
-          const totalLpTokens =
-            lowPrice24h === 0 ? maxCapacity : maxCapacity / lowPrice24h;
+        const availableTokens =
+          (marketCap * ratio - custodyLiquidityUsd) / (price * (1 - ratio));
 
-          const minAvailableUsd =
-            totalLpTokens - custody.liquidity * lowPrice24h;
+        const availableUsd = availableTokens * price;
 
-          return minAvailableUsd;
-        }
-
-        // const highPrice24h = stats[token.name].high24h;
-
-        // calculate max token deposit available when selling alp
-        const maxAvailableUsd = null;
-
-        return maxAvailableUsd;
+        return Math.abs(availableUsd); // discuss
       })();
 
       const fee = (() => {
@@ -147,24 +138,26 @@ export default function SaveOnFees({
                       />
                     )}
                     <div>
-                      <h3>{row.token.name}</h3>
+                      <h3 className="capitalize">{row.token.coingeckoId}</h3>
                       <p className="text-xs opacity-50">{row.token.name}</p>
                     </div>
                   </td>
-                  <td className="text-sm p-3">{formatPriceInfo(row.price)}</td>
-                  <td className="text-sm p-3">
-                    {row && Math.sign(Number(row.available)) !== -1
-                      ? formatPriceInfo(row.available)
-                      : 'max capacity reached'}
+                  <td className="text-sm p-3 min-w-[100px]">
+                    {formatPriceInfo(row.price)}
                   </td>
-                  <td className="text-sm p-3">
+                  <td className="text-sm p-3 min-w-[100px]">
+                    {row && formatPriceInfo(row.available)}
+                  </td>
+                  <td className="text-sm p-3 min-w-[250px]">
                     {row.tokenBalance
                       ? `${formatNumber(row?.tokenBalance, 2)} ${
                           row?.token.name
                         } (${formatPriceInfo(row?.balanceInUsd)})`
                       : '–'}
                   </td>
-                  <td>{row.fee ? `$${formatNumber(row.fee, 2)}` : '–'}</td>
+                  <td className="text-sm p-3 min-w-[130px]">
+                    {row.fee ? `$${formatNumber(row.fee, 2)}` : '–'}
+                  </td>
                   {row && (
                     <td>
                       <Button

@@ -17,7 +17,8 @@ const useALPTotalSupply = () => {
     );
 
     setTotalSupply(supply.value.uiAmount);
-  }, []);
+    // added this to fix a bug where the total supply was not updated on hard refreshes
+  }, [window.adrena.client.connection]);
 
   useEffect(() => {
     loadTotalSupply();
