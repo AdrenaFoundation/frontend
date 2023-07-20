@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
 import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
 import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
+import SaveOnFeesMobile from '@/components/pages/swap_alp/SaveOnFeesMobile/SaveOnFeesMobile';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token, TokenName } from '@/types';
@@ -20,9 +22,9 @@ export default function SwapALP({
   const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
   const [feesUsd, setFeesUsd] = useState<number | null>(null);
-  const [feesAndAmounts, setFeesAndAmounts] = useState<Array<{
+  const [feesAndAmounts, setFeesAndAmounts] = useState<{
     [tokenName: TokenName]: { fees: number | null; amount: number | null };
-  }> | null>(null);
+  } | null>(null);
   const [allowedCollateralTokens, setAllowedCollateralTokens] = useState<
     Token[] | null
   >(null);
@@ -31,26 +33,41 @@ export default function SwapALP({
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
   const debouncedInputs = useDebounce(
     selectedAction === 'buy' ? collateralInput : alpInput,
+    1000,
+  );
+  const [isFeesLoading, setIsFeesLoading] = useState(false);
+  const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
+
+  const marketCap = useMemo(
+    () =>
+      window.adrena.client.tokens.reduce((acc, token) => {
+        const custody = window.adrena.client.getCustodyByMint(token.mint);
+        const owned = nativeToUi(
+          custody.nativeObject.assets.owned,
+          token.decimals,
+        );
+
+        const price = tokenPrices[token.name];
+        if (price === null || owned === null) {
+          return acc;
+        }
+        return acc + owned * price;
+      }, 0),
+    [tokenPrices],
   );
 
   const getFeesAndAmounts = useCallback(async () => {
     const localLoadingCounter = ++loadingCounter;
 
-    // Verify that information is not outdated
-    // If loaderCounter doesn't match it means
-    // an other request has been casted due to input change
-    if (localLoadingCounter !== loadingCounter) {
-      console.log('Ignore deprecated result');
-      return;
-    }
-
-    const data = await Promise.all(
-      window.adrena.client.tokens.map(async (token) => {
+    const data = await window.adrena.client.tokens.reduce(
+      async (accum, token) => {
         const price = tokenPrices[token.name];
 
-        if (!price || !collateralToken) {
-          // check for alpinput and collateralinput
-          return {
+        const acc = await accum;
+
+        if (!price || !collateralToken || !alpInput || !collateralInput) {
+          return await {
+            ...acc,
             [token.name]: {
               fees: null,
               amount: null,
@@ -63,7 +80,8 @@ export default function SwapALP({
         const collateralTokenPrice = tokenPrices[collateralToken.name];
 
         if (collateralTokenPrice === null) {
-          return {
+          return await {
+            ...acc,
             [token.name]: {
               fees: null,
               amount: null,
@@ -74,7 +92,8 @@ export default function SwapALP({
         const equivalentAmount = (collateralTokenPrice * input!) / price;
 
         if (equivalentAmount === 0) {
-          return {
+          return await {
+            ...acc,
             [token.name]: {
               fees: 0,
               amount: 0,
@@ -97,7 +116,8 @@ export default function SwapALP({
               }));
 
           if (amountAndFees === null) {
-            return {
+            return await {
+              ...acc,
               [token.name]: {
                 fees: null,
                 amount: null,
@@ -105,7 +125,8 @@ export default function SwapALP({
             };
           }
 
-          return {
+          return await {
+            ...acc,
             [token.name]: {
               fees: price * nativeToUi(amountAndFees.fee, token.decimals),
               amount: nativeToUi(
@@ -117,14 +138,26 @@ export default function SwapALP({
         } catch (e) {
           console.log(e);
           return {
+            ...acc,
             [token.name]: {
               fees: null,
               amount: null,
             },
           };
         }
-      }),
+      },
+      Promise.resolve({}),
     );
+
+    setIsFeesLoading(false);
+
+    // Verify that information is not outdated
+    // If loaderCounter doesn't match it means
+    // an other request has been casted due to input change
+    if (localLoadingCounter !== loadingCounter) {
+      console.log('Ignore deprecated result');
+      return;
+    }
 
     console.count('fetched fees and amounts...');
 
@@ -136,6 +169,10 @@ export default function SwapALP({
   useEffect(() => {
     getFeesAndAmounts();
   }, [getFeesAndAmounts, debouncedInputs]);
+
+  useEffect(() => {
+    setIsFeesLoading(true);
+  }, [selectedAction === 'buy' ? collateralInput : alpInput, collateralToken]);
 
   useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
@@ -174,11 +211,11 @@ export default function SwapALP({
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
 
-      <div className="flex w-full flex-row flex-wrap mt-12 justify-around">
-        <ALPInfo className="grow min-w-[25em] pb-2 m-2" />
+      <div className="flex flex-col md:flex-row mt-12 gap-2">
+        <ALPInfo className="pb-2 m-2 w-full" marketCap={marketCap} />
 
         <ALPSwap
-          className={'grow w-full md:w-[5em] m-2'}
+          className={'w-full m-2'}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}
           setCollateralInput={setCollateralInput}
@@ -199,12 +236,25 @@ export default function SwapALP({
         />
       </div>
 
-      <SaveOnFees
-        feesAndAmounts={feesAndAmounts}
-        allowedCollateralTokens={allowedCollateralTokens}
-        onCollateralTokenChange={onCollateralTokenChange}
-        selectedAction={selectedAction}
-      />
+      {isBigScreen ? (
+        <SaveOnFees
+          feesAndAmounts={feesAndAmounts}
+          allowedCollateralTokens={allowedCollateralTokens}
+          onCollateralTokenChange={onCollateralTokenChange}
+          selectedAction={selectedAction}
+          marketCap={marketCap}
+          isFeesLoading={isFeesLoading}
+        />
+      ) : (
+        <SaveOnFeesMobile
+          feesAndAmounts={feesAndAmounts}
+          allowedCollateralTokens={allowedCollateralTokens}
+          onCollateralTokenChange={onCollateralTokenChange}
+          selectedAction={selectedAction}
+          marketCap={marketCap}
+          isFeesLoading={isFeesLoading}
+        />
+      )}
     </>
   );
 }

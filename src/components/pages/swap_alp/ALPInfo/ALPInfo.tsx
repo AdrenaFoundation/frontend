@@ -5,7 +5,13 @@ import useALPCirculatingSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-export default function ALPInfo({ className }: { className?: string }) {
+export default function ALPInfo({
+  className,
+  marketCap,
+}: {
+  className?: string;
+  marketCap: number | null;
+}) {
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const lpTotalSupplyAmount = useALPCirculatingSupply();
@@ -20,11 +26,6 @@ export default function ALPInfo({ className }: { className?: string }) {
   const userLpTokenAmountUsd =
     userLpTokenAmount != null && alpTokenPrice != null
       ? userLpTokenAmount * alpTokenPrice
-      : null;
-
-  const lpTotalSupplyAmountUsd =
-    lpTotalSupplyAmount != null && alpTokenPrice != null
-      ? lpTotalSupplyAmount * alpTokenPrice
       : null;
 
   return (
@@ -89,10 +90,7 @@ export default function ALPInfo({ className }: { className?: string }) {
                 lpTotalSupplyAmount,
                 window.adrena.client.alpToken.decimals,
               )}{' '}
-              ALP{' '}
-              {lpTotalSupplyAmountUsd
-                ? `(${formatPriceInfo(lpTotalSupplyAmountUsd)})`
-                : ''}
+              ALP {marketCap ? `(${formatPriceInfo(marketCap)})` : ''}
             </>
           ) : (
             '-'

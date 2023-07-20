@@ -1,3 +1,5 @@
+import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import { useMemo } from 'react';
 
 import Button from '@/components/common/Button/Button';
@@ -15,7 +17,7 @@ type rowsType = Array<{
   fee: number | null;
 }>;
 
-export default function SaveOnFees({
+export default function SaveOnFeesMobile({
   allowedCollateralTokens,
   feesAndAmounts,
   onCollateralTokenChange,
@@ -35,14 +37,6 @@ export default function SaveOnFees({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
-  const headers: Array<string> = [
-    'Token',
-    'Price',
-    'Available',
-    'Wallet',
-    'Fees',
-  ];
 
   const rows: rowsType = useMemo(() => {
     return allowedCollateralTokens.map((token: Token) => {
@@ -103,69 +97,71 @@ export default function SaveOnFees({
           ? 'Fees may vary depending on which asset you use to buy ALP. Enter the amount of ALP you want to purchase in the order form, then check here to compare fees.'
           : 'Fees may vary depending on which asset you sell ALP for. Enter the amount of ALP you want to redeem in the order form, then check here to compare fees.'}
       </p>
-      <div className="border border-grey bg-secondary p-4">
-        <div>
-          <table className="w-full">
-            <thead>
-              <tr>
-                {headers.map((header) => (
-                  <th className="text-lg text-left p-3 opacity-50" key={header}>
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.token.name}>
-                  <td className="text-sm p-3 flex flex-row gap-3">
-                    {
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        className="w-6 h-6"
-                        src={row.token.image}
-                        alt={`${row.token.name} logo`}
-                      />
-                    }
-                    <div>
-                      <h3 className="capitalize">{row.token.coingeckoId}</h3>
-                      <p className="text-xs opacity-50">{row.token.name}</p>
-                    </div>
-                  </td>
-                  <td className="text-sm p-3 min-w-[100px]">
-                    {formatPriceInfo(row.price)}
-                  </td>
-                  <td className="text-sm p-3 min-w-[100px]">
-                    {formatPriceInfo(row.available)}
-                  </td>
-                  <td className="text-sm p-3 min-w-[250px]">
-                    {row.tokenBalance
-                      ? `${formatNumber(row?.tokenBalance, 2)} ${
-                          row?.token.name
-                        } (${formatPriceInfo(row?.balanceInUsd)})`
-                      : '–'}
-                  </td>
-                  <td className="text-sm p-3 min-w-[130px]">
-                    {!isFeesLoading
-                      ? row.fee
-                        ? `$${formatNumber(row.fee, 2)}`
-                        : '-'
-                      : '...'}
-                  </td>
+      <div className={'flex flex-col sm:flex-row flex-wrap justify-evenly'}>
+        {rows.map((row) => (
+          <div
+            key={row.token.name}
+            className={
+              'flex flex-col sm:w-[45%] w-full bg-secondary border border-grey justify-evenly mt-4 p-4'
+            }
+          >
+            <div className="flex items-center border-b border-grey pb-2">
+              {
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="w-6 h-6"
+                  src={row.token.image}
+                  alt={`${row.token.name} logo`}
+                />
+              }
+              <span className="ml-4">{row.token.name}</span>
+            </div>
 
-                  <td>
-                    <Button
-                      className="mt-4 bg-[#343232] rounded-md text-sm"
-                      title={`buy with ${row.token.name}`}
-                      activateLoadingIcon={true}
-                      onClick={() => onCollateralTokenChange(row.token)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            <div className="flex flex-col w-full mt-4">
+              <div className="flex w-full justify-between">
+                <div>Price</div>
+                <div className="flex">{formatPriceInfo(row.price)}</div>
+              </div>
+
+              <div className="flex w-full justify-between">
+                <div>Available</div>
+                <div className="flex">{formatPriceInfo(row.available)}</div>
+              </div>
+
+              <div className="flex w-full justify-between">
+                <div>Wallet</div>
+                <div className="flex">
+                  {' '}
+                  {row.tokenBalance
+                    ? `${formatNumber(row?.tokenBalance, 2)} ${
+                        row?.token.name
+                      } (${formatPriceInfo(row?.balanceInUsd)})`
+                    : '–'}
+                </div>
+              </div>
+
+              <div className="flex w-full justify-between">
+                <div>Fees</div>
+                <div className="flex">
+                  {!isFeesLoading
+                    ? row.fee
+                      ? `$${formatNumber(row.fee, 2)}`
+                      : '-'
+                    : '...'}
+                </div>
+              </div>
+
+              <div className="flex w-full justify-between">
+                <Button
+                  className="mt-4 bg-[#343232] rounded-md text-sm"
+                  title={`buy with ${row.token.name}`}
+                  activateLoadingIcon={true}
+                  onClick={() => onCollateralTokenChange(row.token)}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );

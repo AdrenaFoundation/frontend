@@ -15,7 +15,7 @@ const useALPTotalSupply = () => {
     const supply = await connection.getTokenSupply(
       window.adrena.client.alpToken.mint,
     );
-
+    console.count('triggered');
     setTotalSupply(supply.value.uiAmount);
     // added this to fix a bug where the total supply was not updated on hard refreshes
   }, [window.adrena.client.connection]);

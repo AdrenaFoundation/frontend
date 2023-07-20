@@ -21,7 +21,7 @@ const useADXTotalSupply = () => {
     } catch (e) {
       console.log('Error loading ADX token supply', e);
     }
-  }, []);
+  }, [window.adrena.client.connection]);
 
   useEffect(() => {
     loadTotalSupply();

@@ -33,6 +33,7 @@ export default function ALPSwap({
   setAlpPrice,
   collateralPrice,
   setCollateralPrice,
+  feesAndAmounts,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
@@ -49,9 +50,9 @@ export default function ALPSwap({
   feesUsd: number | null;
   setFeesUsd: (v: number | null) => void;
   allowedCollateralTokens: Token[] | null;
-  feesAndAmounts: Array<{
+  feesAndAmounts: {
     [tokenName: TokenName]: { fees: number | null; amount: number | null };
-  }> | null;
+  } | null;
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
 }) {
@@ -216,6 +217,7 @@ export default function ALPSwap({
             collateralPrice={collateralPrice}
             setAlpPrice={setAlpPrice}
             setCollateralPrice={setCollateralPrice}
+            feesAndAmounts={feesAndAmounts}
           />
 
           <div className="flex w-full justify-between mt-4">
