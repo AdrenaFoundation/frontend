@@ -3,8 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
 import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
 import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
-import SaveOnFeesMobile from '@/components/pages/swap_alp/SaveOnFeesMobile/SaveOnFeesMobile';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token, TokenName } from '@/types';
@@ -36,7 +34,6 @@ export default function SwapALP({
     1000,
   );
   const [isFeesLoading, setIsFeesLoading] = useState(false);
-  const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
   const marketCap = useMemo(
     () =>
@@ -89,7 +86,7 @@ export default function SwapALP({
           };
         }
 
-        const equivalentAmount = (collateralTokenPrice * input!) / price;
+        const equivalentAmount = (collateralTokenPrice * input) / price;
 
         if (equivalentAmount === 0) {
           return await {
@@ -109,7 +106,7 @@ export default function SwapALP({
               })
             : window.adrena.client.getRemoveLiquidityAmountAndFee({
                 lpAmountIn: uiToNative(
-                  alpInput!,
+                  alpInput,
                   window.adrena.client.alpToken.decimals,
                 ),
                 token,
@@ -236,25 +233,14 @@ export default function SwapALP({
         />
       </div>
 
-      {isBigScreen ? (
-        <SaveOnFees
-          feesAndAmounts={feesAndAmounts}
-          allowedCollateralTokens={allowedCollateralTokens}
-          onCollateralTokenChange={onCollateralTokenChange}
-          selectedAction={selectedAction}
-          marketCap={marketCap}
-          isFeesLoading={isFeesLoading}
-        />
-      ) : (
-        <SaveOnFeesMobile
-          feesAndAmounts={feesAndAmounts}
-          allowedCollateralTokens={allowedCollateralTokens}
-          onCollateralTokenChange={onCollateralTokenChange}
-          selectedAction={selectedAction}
-          marketCap={marketCap}
-          isFeesLoading={isFeesLoading}
-        />
-      )}
+      <SaveOnFees
+        feesAndAmounts={feesAndAmounts}
+        allowedCollateralTokens={allowedCollateralTokens}
+        onCollateralTokenChange={onCollateralTokenChange}
+        selectedAction={selectedAction}
+        marketCap={marketCap}
+        isFeesLoading={isFeesLoading}
+      />
     </>
   );
 }

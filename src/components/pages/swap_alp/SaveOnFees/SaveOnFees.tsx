@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 
-import Button from '@/components/common/Button/Button';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token, TokenName } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+
+import SaveOnFeesMobile from './SaveOnFeeBlocks';
+import SaveOnFeesList from './SaveOnFeeList';
 
 type rowsType = Array<{
   token: Token;
@@ -35,14 +37,7 @@ export default function SaveOnFees({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
-  const headers: Array<string> = [
-    'Token',
-    'Price',
-    'Available',
-    'Wallet',
-    'Fees',
-  ];
+  const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
   const rows: rowsType = useMemo(() => {
     return allowedCollateralTokens.map((token: Token) => {
@@ -104,68 +99,19 @@ export default function SaveOnFees({
           : 'Fees may vary depending on which asset you sell ALP for. Enter the amount of ALP you want to redeem in the order form, then check here to compare fees.'}
       </p>
       <div className="border border-grey bg-secondary p-4">
-        <div>
-          <table className="w-full">
-            <thead>
-              <tr>
-                {headers.map((header) => (
-                  <th className="text-lg text-left p-3 opacity-50" key={header}>
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.token.name}>
-                  <td className="text-sm p-3 flex flex-row gap-3">
-                    {
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        className="w-6 h-6"
-                        src={row.token.image}
-                        alt={`${row.token.name} logo`}
-                      />
-                    }
-                    <div>
-                      <h3 className="capitalize">{row.token.coingeckoId}</h3>
-                      <p className="text-xs opacity-50">{row.token.name}</p>
-                    </div>
-                  </td>
-                  <td className="text-sm p-3 min-w-[100px]">
-                    {formatPriceInfo(row.price)}
-                  </td>
-                  <td className="text-sm p-3 min-w-[100px]">
-                    {formatPriceInfo(row.available)}
-                  </td>
-                  <td className="text-sm p-3 min-w-[250px]">
-                    {row.tokenBalance
-                      ? `${formatNumber(row?.tokenBalance, 2)} ${
-                          row?.token.name
-                        } (${formatPriceInfo(row?.balanceInUsd)})`
-                      : '–'}
-                  </td>
-                  <td className="text-sm p-3 min-w-[130px]">
-                    {!isFeesLoading
-                      ? row.fee
-                        ? `$${formatNumber(row.fee, 2)}`
-                        : '-'
-                      : '...'}
-                  </td>
-
-                  <td>
-                    <Button
-                      className="mt-4 bg-[#343232] rounded-md text-sm"
-                      title={`buy with ${row.token.name}`}
-                      activateLoadingIcon={true}
-                      onClick={() => onCollateralTokenChange(row.token)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {isBigScreen ? (
+          <SaveOnFeesList
+            rows={rows}
+            onCollateralTokenChange={onCollateralTokenChange}
+            isFeesLoading={isFeesLoading}
+          />
+        ) : (
+          <SaveOnFeesMobile
+            rows={rows}
+            onCollateralTokenChange={onCollateralTokenChange}
+            isFeesLoading={isFeesLoading}
+          />
+        )}
       </div>
     </>
   );
