@@ -13,6 +13,7 @@ type rowsType = Array<{
   fee: number | null;
   currentPoolAmount: number | null;
   currentPoolAmountUsd: number | null;
+  maxPoolCapacity: number | null;
 }>;
 
 export default function SaveOnFeesList({
@@ -83,7 +84,7 @@ export default function SaveOnFeesList({
                     <div>
                       {' '}
                       <span className="text-txtfade">Max Pool Capacity: </span>
-                      {formatPriceInfo(row.available)}
+                      {formatPriceInfo(row.maxPoolCapacity)}
                     </div>
                   </div>
                 }

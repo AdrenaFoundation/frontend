@@ -17,6 +17,7 @@ type rowsType = Array<{
   fee: number | null;
   currentPoolAmount: number | null;
   currentPoolAmountUsd: number | null;
+  maxPoolCapacity: number | null;
 }>;
 
 export default function SaveOnFees({
@@ -72,11 +73,16 @@ export default function SaveOnFees({
         return Math.abs(availableUsd);
       })();
 
-      const fee = feesAndAmounts ? feesAndAmounts[token.name].fees : null;
+      const fee = feesAndAmounts?.[token.name].fees ?? null;
 
       const currentPoolAmount = custody.liquidity;
       const currentPoolAmountUsd =
         price !== null ? custody.liquidity * price : null;
+
+      const maxPoolCapacity =
+        currentPoolAmountUsd !== null && available !== null
+          ? currentPoolAmountUsd + available
+          : null;
 
       return {
         token,
@@ -87,6 +93,7 @@ export default function SaveOnFees({
         fee,
         currentPoolAmount,
         currentPoolAmountUsd,
+        maxPoolCapacity,
       };
     });
   }, [
@@ -97,6 +104,7 @@ export default function SaveOnFees({
     selectedAction,
     marketCap,
     stats,
+    window.adrena.client.custodies,
   ]);
 
   return (
