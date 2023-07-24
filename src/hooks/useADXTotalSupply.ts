@@ -21,6 +21,8 @@ const useADXTotalSupply = () => {
     } catch (e) {
       console.log('Error loading ADX token supply', e);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.adrena.client.connection]);
 
   useEffect(() => {

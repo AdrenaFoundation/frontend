@@ -14,6 +14,7 @@ let loadingCounter = 0;
 
 export default function SwapALP({
   triggerWalletTokenBalancesReload,
+  custodies,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
@@ -38,7 +39,12 @@ export default function SwapALP({
   const marketCap = useMemo(
     () =>
       window.adrena.client.tokens.reduce((acc, token) => {
-        const custody = window.adrena.client.getCustodyByMint(token.mint);
+        const custody = custodies
+          ? custodies.find((cus) => cus.mint === token.mint)
+          : null;
+
+        if (!custody) return acc;
+
         const owned = nativeToUi(
           custody.nativeObject.assets.owned,
           token.decimals,
@@ -50,25 +56,21 @@ export default function SwapALP({
         }
         return acc + owned * price;
       }, 0),
-    [tokenPrices],
+    [tokenPrices, custodies],
   );
 
   const getFeesAndAmounts = useCallback(async () => {
     const localLoadingCounter = ++loadingCounter;
 
-    const data = await window.adrena.client.tokens.reduce(
-      async (accum, token) => {
+    const data = await Promise.all(
+      window.adrena.client.tokens.map(async (token) => {
         const price = tokenPrices[token.name];
 
-        const acc = await accum;
-
         if (!price || !collateralToken || !alpInput || !collateralInput) {
-          return await {
-            ...acc,
-            [token.name]: {
-              fees: null,
-              amount: null,
-            },
+          return {
+            tokenName: token.name,
+            fees: null,
+            amount: null,
           };
         }
 
@@ -77,24 +79,20 @@ export default function SwapALP({
         const collateralTokenPrice = tokenPrices[collateralToken.name];
 
         if (collateralTokenPrice === null) {
-          return await {
-            ...acc,
-            [token.name]: {
-              fees: null,
-              amount: null,
-            },
+          return {
+            tokenName: token.name,
+            fees: null,
+            amount: null,
           };
         }
 
         const equivalentAmount = (collateralTokenPrice * input) / price;
 
         if (equivalentAmount === 0) {
-          return await {
-            ...acc,
-            [token.name]: {
-              fees: 0,
-              amount: 0,
-            },
+          return {
+            tokenName: token.name,
+            fees: 0,
+            amount: 0,
           };
         }
 
@@ -113,38 +111,38 @@ export default function SwapALP({
               }));
 
           if (amountAndFees === null) {
-            return await {
-              ...acc,
-              [token.name]: {
-                fees: null,
-                amount: null,
-              },
+            return {
+              tokenName: token.name,
+              fees: null,
+              amount: null,
             };
           }
 
-          return await {
-            ...acc,
-            [token.name]: {
-              fees: price * nativeToUi(amountAndFees.fee, token.decimals),
-              amount: nativeToUi(
-                amountAndFees.amount,
-                window.adrena.client.alpToken.decimals,
-              ),
-            },
+          return {
+            tokenName: token.name,
+            fees: price * nativeToUi(amountAndFees.fee, token.decimals),
+            amount: nativeToUi(
+              amountAndFees.amount,
+              window.adrena.client.alpToken.decimals,
+            ),
           };
         } catch (e) {
           console.log(e);
-          return {
-            ...acc,
-            [token.name]: {
-              fees: null,
-              amount: null,
-            },
-          };
+          return { tokenName: token.name, fees: null, amount: null };
         }
-      },
-      Promise.resolve({}),
+      }),
     );
+
+    const formattedData = data.reduce((acc, token) => {
+      if (token === null) return acc;
+      return {
+        ...acc,
+        [token.tokenName]: {
+          fees: token.fees,
+          amount: token.amount,
+        },
+      };
+    }, {});
 
     setIsFeesLoading(false);
 
@@ -158,7 +156,7 @@ export default function SwapALP({
 
     console.count('fetched fees and amounts...');
 
-    setFeesAndAmounts(data);
+    setFeesAndAmounts(formattedData);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAction, debouncedInputs, collateralToken]);
@@ -169,6 +167,7 @@ export default function SwapALP({
 
   useEffect(() => {
     setIsFeesLoading(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAction === 'buy' ? collateralInput : alpInput, collateralToken]);
 
   useEffect(() => {

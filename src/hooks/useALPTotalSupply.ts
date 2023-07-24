@@ -17,7 +17,8 @@ const useALPTotalSupply = () => {
     );
     console.count('triggered');
     setTotalSupply(supply.value.uiAmount);
-    // added this to fix a bug where the total supply was not updated on hard refreshes
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.adrena.client.connection]);
 
   useEffect(() => {

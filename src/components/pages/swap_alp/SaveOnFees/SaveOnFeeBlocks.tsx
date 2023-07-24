@@ -1,3 +1,5 @@
+import Tippy from '@tippyjs/react';
+
 import Button from '@/components/common/Button/Button';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -9,6 +11,8 @@ type rowsType = Array<{
   balanceInUsd: number | null;
   available: number | null;
   fee: number | null;
+  currentPoolAmount: number | null;
+  currentPoolAmountUsd: number | null;
 }>;
 
 export default function SaveOnFeesBlocks({
@@ -49,7 +53,37 @@ export default function SaveOnFeesBlocks({
 
             <div className="flex w-full justify-between">
               <div>Available</div>
-              <div className="flex">{formatPriceInfo(row.available)}</div>
+              <Tippy
+                content={
+                  <div>
+                    {row.currentPoolAmount && (
+                      <div className="whitespace-pre">
+                        {' '}
+                        <span className="text-txtfade">
+                          Current Pool Amount:{' '}
+                        </span>
+                        {`${formatPriceInfo(row.currentPoolAmountUsd)} (${
+                          row.token.name
+                        } ${formatNumber(row.currentPoolAmount, 2)})
+                        `}
+                      </div>
+                    )}
+
+                    <div>
+                      {' '}
+                      <span className="text-txtfade">Max Pool Capacity: </span>
+                      {formatPriceInfo(row.available)}
+                    </div>
+                  </div>
+                }
+                placement="bottom"
+              >
+                <div className="flex">
+                  <div className="flex tooltip-target cursor-help">
+                    {formatPriceInfo(row.available)}
+                  </div>
+                </div>
+              </Tippy>
             </div>
 
             <div className="flex w-full justify-between">

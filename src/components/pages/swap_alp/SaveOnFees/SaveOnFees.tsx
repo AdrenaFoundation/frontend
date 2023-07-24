@@ -15,6 +15,8 @@ type rowsType = Array<{
   balanceInUsd: number | null;
   available: number | null;
   fee: number | null;
+  currentPoolAmount: number | null;
+  currentPoolAmountUsd: number | null;
 }>;
 
 export default function SaveOnFees({
@@ -49,17 +51,18 @@ export default function SaveOnFees({
 
       const balanceInUsd =
         tokenBalance !== null && price ? tokenBalance * price : null;
+      const custody = window.adrena.client.getCustodyByMint(token.mint);
 
       // calculates how much of the token is available for purchase/sale in usd
       const available = (() => {
-        const custody = window.adrena.client.getCustodyByMint(token.mint);
-
         if (!stats || !marketCap || !custody || !price) return null;
 
         const custodyLiquidityUsd = custody.liquidity * price;
 
         const ratio =
           selectedAction === 'buy' ? custody.maxRatio : custody.minRatio;
+
+        if (ratio === 1) return null;
 
         const availableTokens =
           (marketCap * ratio - custodyLiquidityUsd) / (price * (1 - ratio));
@@ -69,7 +72,11 @@ export default function SaveOnFees({
         return Math.abs(availableUsd);
       })();
 
-      const fee = feesAndAmounts && feesAndAmounts[token.name].fees;
+      const fee = feesAndAmounts ? feesAndAmounts[token.name].fees : null;
+
+      const currentPoolAmount = custody.liquidity;
+      const currentPoolAmountUsd =
+        price !== null ? custody.liquidity * price : null;
 
       return {
         token,
@@ -78,6 +85,8 @@ export default function SaveOnFees({
         balanceInUsd,
         available,
         fee,
+        currentPoolAmount,
+        currentPoolAmountUsd,
       };
     });
   }, [
