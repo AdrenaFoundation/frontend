@@ -12,6 +12,14 @@ import { nativeToUi, uiToNative } from '@/utils';
 // always ignore outdated informations
 let loadingCounter = 0;
 
+type feesAndAmountsType = {
+  [tokenName: string]: {
+    fees: number | null;
+    amount: number | null;
+    equivalentAmount: number | null;
+  };
+};
+
 export default function SwapALP({
   triggerWalletTokenBalancesReload,
   custodies,
@@ -21,9 +29,8 @@ export default function SwapALP({
   const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
   const [feesUsd, setFeesUsd] = useState<number | null>(null);
-  const [feesAndAmounts, setFeesAndAmounts] = useState<{
-    [tokenName: TokenName]: { fees: number | null; amount: number | null };
-  } | null>(null);
+  const [feesAndAmounts, setFeesAndAmounts] =
+    useState<feesAndAmountsType | null>(null);
   const [allowedCollateralTokens, setAllowedCollateralTokens] = useState<
     Token[] | null
   >(null);
@@ -71,6 +78,7 @@ export default function SwapALP({
             tokenName: token.name,
             fees: null,
             amount: null,
+            equivalentAmount: null,
           };
         }
 
@@ -83,6 +91,7 @@ export default function SwapALP({
             tokenName: token.name,
             fees: null,
             amount: null,
+            equivalentAmount: null,
           };
         }
 
@@ -93,6 +102,7 @@ export default function SwapALP({
             tokenName: token.name,
             fees: 0,
             amount: 0,
+            equivalentAmount,
           };
         }
 
@@ -115,6 +125,7 @@ export default function SwapALP({
               tokenName: token.name,
               fees: null,
               amount: null,
+              equivalentAmount,
             };
           }
 
@@ -125,10 +136,16 @@ export default function SwapALP({
               amountAndFees.amount,
               window.adrena.client.alpToken.decimals,
             ),
+            equivalentAmount,
           };
         } catch (e) {
           console.log(e);
-          return { tokenName: token.name, fees: null, amount: null };
+          return {
+            tokenName: token.name,
+            fees: null,
+            amount: null,
+            equivalentAmount,
+          };
         }
       }),
     );
@@ -140,22 +157,23 @@ export default function SwapALP({
         [token.tokenName]: {
           fees: token.fees,
           amount: token.amount,
+          equivalentAmount: token.equivalentAmount,
         },
       };
-    }, {});
-
-    setIsFeesLoading(false);
+    }, {} as feesAndAmountsType);
 
     // Verify that information is not outdated
     // If loaderCounter doesn't match it means
     // an other request has been casted due to input change
     if (localLoadingCounter !== loadingCounter) {
+      setIsFeesLoading(false);
       console.log('Ignore deprecated result');
       return;
     }
 
     console.count('fetched fees and amounts...');
 
+    setIsFeesLoading(false);
     setFeesAndAmounts(formattedData);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -236,6 +254,7 @@ export default function SwapALP({
         feesAndAmounts={feesAndAmounts}
         allowedCollateralTokens={allowedCollateralTokens}
         onCollateralTokenChange={onCollateralTokenChange}
+        setCollateralInput={setCollateralInput}
         selectedAction={selectedAction}
         marketCap={marketCap}
         isFeesLoading={isFeesLoading}

@@ -14,16 +14,19 @@ type rowsType = Array<{
   currentPoolAmount: number | null;
   currentPoolAmountUsd: number | null;
   maxPoolCapacity: number | null;
+  equivalentAmount: number | null;
 }>;
 
 export default function SaveOnFeesList({
   rows,
   onCollateralTokenChange,
   isFeesLoading,
+  setCollateralInput,
 }: {
   rows: rowsType;
   onCollateralTokenChange: (t: Token) => void;
   isFeesLoading: boolean;
+  setCollateralInput: (value: number | null) => void;
 }) {
   const headers: Array<string> = [
     'Token',
@@ -69,7 +72,7 @@ export default function SaveOnFeesList({
                 content={
                   <div>
                     {row.currentPoolAmount && (
-                      <div className="whitespace-pre">
+                      <div>
                         {' '}
                         <span className="text-txtfade">
                           Current Pool Amount:{' '}
@@ -117,7 +120,10 @@ export default function SaveOnFeesList({
                 className="mt-4 bg-[#343232] rounded-md text-sm"
                 title={`buy with ${row.token.name}`}
                 activateLoadingIcon={true}
-                onClick={() => onCollateralTokenChange(row.token)}
+                onClick={() => {
+                  onCollateralTokenChange(row.token);
+                  setCollateralInput(row.equivalentAmount);
+                }}
               />
             </td>
           </tr>

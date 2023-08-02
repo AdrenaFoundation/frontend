@@ -18,6 +18,7 @@ type rowsType = Array<{
   currentPoolAmount: number | null;
   currentPoolAmountUsd: number | null;
   maxPoolCapacity: number | null;
+  equivalentAmount: number | null;
 }>;
 
 export default function SaveOnFees({
@@ -27,15 +28,21 @@ export default function SaveOnFees({
   selectedAction,
   marketCap,
   isFeesLoading,
+  setCollateralInput,
 }: {
   allowedCollateralTokens: Token[];
   feesAndAmounts: {
-    [tokenName: TokenName]: { fees: number | null; amount: number | null };
+    [tokenName: TokenName]: {
+      fees: number | null;
+      amount: number | null;
+      equivalentAmount: number | null;
+    };
   } | null;
   onCollateralTokenChange: (t: Token) => void;
   selectedAction: 'buy' | 'sell';
   marketCap: number | null;
   isFeesLoading: boolean;
+  setCollateralInput: (value: number | null) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
@@ -44,11 +51,9 @@ export default function SaveOnFees({
 
   const rows: rowsType = useMemo(() => {
     return allowedCollateralTokens.map((token: Token) => {
-      const price = tokenPrices[token.name] ? tokenPrices[token.name] : null;
+      const price = tokenPrices[token.name] ?? null;
 
-      const tokenBalance = walletTokenBalances
-        ? walletTokenBalances[token.name]
-        : null;
+      const tokenBalance = walletTokenBalances?.[token.name] ?? null;
 
       const balanceInUsd =
         tokenBalance !== null && price ? tokenBalance * price : null;
@@ -75,6 +80,9 @@ export default function SaveOnFees({
 
       const fee = feesAndAmounts?.[token.name].fees ?? null;
 
+      const equivalentAmount =
+        feesAndAmounts?.[token.name].equivalentAmount ?? null;
+
       const currentPoolAmount = custody.liquidity;
       const currentPoolAmountUsd =
         price !== null ? custody.liquidity * price : null;
@@ -91,6 +99,7 @@ export default function SaveOnFees({
         balanceInUsd,
         available,
         fee,
+        equivalentAmount,
         currentPoolAmount,
         currentPoolAmountUsd,
         maxPoolCapacity,
@@ -121,12 +130,14 @@ export default function SaveOnFees({
             rows={rows}
             onCollateralTokenChange={onCollateralTokenChange}
             isFeesLoading={isFeesLoading}
+            setCollateralInput={setCollateralInput}
           />
         ) : (
           <SaveOnFeesMobile
             rows={rows}
             onCollateralTokenChange={onCollateralTokenChange}
             isFeesLoading={isFeesLoading}
+            setCollateralInput={setCollateralInput}
           />
         )}
       </div>
