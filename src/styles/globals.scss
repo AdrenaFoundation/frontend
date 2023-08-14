@@ -3,37 +3,63 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-light: #f5f5f5;
+  --color-dark: #080808;
+
+  --color-gray-200: #151515;
+  --color-gray-300: #2e2e2e;
+  --color-gray-400: #6f6f6f;
+  --color-gray-500: #9a9a9a;
+
+  --color-blue-200: #101241;
+  --color-blue-300: #191c7b;
+  --color-blue-400: #2126b4;
+  --color-blue-500: #2a30ee;
+
+  --color-red-200: #361212;
+  --color-red-300: #651d1d;
+  --color-red-400: #932727;
+  --color-red-500: #c13232;
+
+  --color-orange-200: #3f2612;
+  --color-orange-300: #76441c;
+  --color-orange-400: #ad6326;
+  --color-orange-500: #e48130;
+
+  --color-pink-200: #3d1325;
+  --color-pink-300: #721f43;
+  --color-pink-400: #a82a60;
+  --color-pink-500: #dd367e;
+
+  --bezier-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --bezier-smooth: cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+
 @layer base {
   @font-face {
     font-family: specialmonster;
     src: url('/fonts/Pink Blue.ttf');
   }
 
-  @font-face {
-    font-family: regular;
-    src: url('/fonts/Louis George Cafe.ttf');
-  }
+  // @font-face {
+  //   font-family: regular;
+  //   src: url('/fonts/Louis George Cafe.ttf');
+  // }
 
-  @font-face {
-    font-family: thin;
-    src: url('/fonts/Louis George Cafe Light.ttf');
-  }
+  // @font-face {
+  //   font-family: thin;
+  //   src: url('/fonts/Louis George Cafe Light.ttf');
+  // }
 
-  @font-face {
-    font-family: bold;
-    src: url('/fonts/Louis George Cafe Bold.ttf');
-  }
+  // @font-face {
+  //   font-family: bold;
+  //   src: url('/fonts/Louis George Cafe Bold.ttf');
+  // }
 
   * {
-    @apply font-regular;
-    @apply text-txtregular;
-  }
-
-  h1 {
-    @apply text-4xl;
-    @apply font-bold;
-    @apply mt-4;
-    @apply mb-4;
+    @apply font-light;
+    @apply text-light;
   }
 }
 
@@ -57,6 +83,8 @@ body,
   display: flex;
   flex-direction: column;
   min-width: 375px;
+  background-color: var(--color-dark);
+  font-family: 'Inter', sans-serif;
 }
 
 // Hide arrows on input number
@@ -67,7 +95,9 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
+html.theme-dark .group-MBOVGQRI {
+  background-color: red !important;
+}
 /* Firefox */
 input[type='number'] {
   -moz-appearance: textfield;

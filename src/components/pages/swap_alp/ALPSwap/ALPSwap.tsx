@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
-import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -16,7 +15,6 @@ import {
 import ALPSwapInputs from './ALPSwapInputs';
 
 export default function ALPSwap({
-  className,
   triggerWalletTokenBalancesReload,
   collateralInput,
   setCollateralInput,
@@ -181,15 +179,7 @@ export default function ALPSwap({
   })();
 
   return (
-    <div
-      className={twMerge(
-        className,
-        'border',
-        'border-grey',
-        'bg-secondary',
-        'p-4',
-      )}
-    >
+    <div className="bg-gray-200 border border-gray-300 lg:w-[450px] p-4 rounded-lg h-fit">
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'buy' }, { title: 'sell' }]}
@@ -221,15 +211,17 @@ export default function ALPSwap({
           />
 
           <div className="flex w-full justify-between mt-4">
-            <span>Fees</span>
-            <span>{formatPriceInfo(feesUsd)}</span>
+            <span className="text-sm opacity-50">Fees</span>
+            <span className="text-sm font-mono">
+              {formatPriceInfo(feesUsd)}
+            </span>
           </div>
 
           {/* Button to execute action */}
           <Button
-            className="mt-4 bg-highlight text-sm"
             title={buttonTitle}
-            activateLoadingIcon={true}
+            size="lg"
+            className="justify-center w-full mt-5"
             onClick={handleExecuteButton}
           />
         </>

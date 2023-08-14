@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
@@ -52,7 +53,7 @@ const Modal = ({
 
   return (
     <PortalContainer>
-      <div
+      <motion.div
         className={twMerge(
           'fixed',
           'w-full',
@@ -62,19 +63,21 @@ const Modal = ({
           'items-center',
           'z-[100]',
         )}
+        initial={{ opacity: 0, transform: 'translateY(-20px)' }}
+        animate={{ opacity: 1, transform: 'translateY(0px)' }}
+        exit={{ opacity: 0, transform: 'translateY(-20px)' }}
       >
         <div
-          className="absolute w-full h-full bg-black/70 z-[101]"
+          className="absolute w-full h-full bg-black/70 z-[101] shadow-lg"
           onClick={() => close()}
         />
 
         <div
-          className="min-w-20 min-h-10 bg-main z-[102] rounded"
+          className="min-w-20 min-h-10 z-[102] rounded-lg border border-gray-300 bg-gray-200 mx-4"
           role="dialog"
         >
           <div
             className={twMerge(
-              'bg-main',
               'h-14',
               'w-full',
               'flex',
@@ -87,12 +90,12 @@ const Modal = ({
               'pr-4',
             )}
           >
-            <span className="text-md">{title}</span>
+            <span className="text-sm opacity-50">{title}</span>
             {
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                className="w-3 h-3 cursor-pointer hover:opacity-90"
-                src="/images/cross.svg"
+                className="w-4 h-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300"
+                src="/images/icons/closeBtn.svg"
                 alt="close icon"
                 onClick={() => close()}
               />
@@ -101,7 +104,7 @@ const Modal = ({
 
           <div className={className ?? ''}>{children}</div>
         </div>
-      </div>
+      </motion.div>
     </PortalContainer>
   );
 };

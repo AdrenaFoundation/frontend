@@ -1,4 +1,6 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import { Token } from '@/types';
@@ -22,102 +24,137 @@ export default function SaveOnFeesBlocks({
   onCollateralTokenChange,
   isFeesLoading,
   setCollateralInput,
+  collateralToken,
 }: {
   rows: rowsType;
   onCollateralTokenChange: (t: Token) => void;
   isFeesLoading: boolean;
   setCollateralInput: (value: number | null) => void;
+  collateralToken: Token | null;
 }) {
+  const currentFee = rows.find(
+    (row) => row.token.name === collateralToken?.name,
+  )?.fee;
+
   return (
-    <div className={'flex flex-col md:flex-row flex-wrap justify-evenly'}>
+    <div className={'grid grid-cols-1 md:grid-cols-2 gap-3 w-full'}>
       {rows.map((row) => (
         <div
           key={row.token.name}
-          className={
-            'flex flex-col md:w-[45%] w-full bg-secondary border border-grey justify-evenly mt-4 p-4'
-          }
+          className={twMerge(
+            'flex flex-col w-full border mt-4 rounded-lg transition-border duration-300',
+            collateralToken?.name === row.token.name
+              ? 'border-[#646464]'
+              : 'border-gray-300 ',
+          )}
         >
-          <div className="flex items-center border-b border-grey pb-2">
-            {
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                className="w-6 h-6"
+          <div className="flex items-center justify-between border-b border-b-gray-300 p-3 py-2">
+            <div className="flex flex-row gap-2">
+              <Image
                 src={row.token.image}
+                width={30}
+                height={30}
                 alt={`${row.token.name} logo`}
               />
-            }
-            <span className="ml-4">{row.token.name}</span>
+              <div>
+                <p className="text-xs opacity-50 font-mono">{row.token.name}</p>
+                <h3 className="text-sm capitalize font-mono">
+                  {row.token.coingeckoId}
+                </h3>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs opacity-50 text-right">Fees</p>
+              <div className="flex flex-row items-center gap-2 justify-end text-right">
+                {currentFee &&
+                  row.fee &&
+                  collateralToken?.name !== row.token.name && (
+                    <p
+                      className={twMerge(
+                        'text-xs font-medium text-right',
+                        currentFee > row.fee
+                          ? 'text-green-500'
+                          : 'text-red-500',
+                      )}
+                    >
+                      {currentFee > row.fee ? 'Save up ' : ''}
+                      {formatPriceInfo(currentFee - row.fee)}
+                    </p>
+                  )}
+
+                <p className="text-lg font-mono text-right">
+                  {!isFeesLoading ? `${formatPriceInfo(row.fee)}` : '...'}
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col w-full mt-4">
+          <div className="flex flex-col gap-2 w-full bg-[#242424] rounded-b-lg p-3">
+            <p className="opacity-25 text-xs">Details</p>
             <div className="flex w-full justify-between">
-              <div>Price</div>
-              <div className="flex">{formatPriceInfo(row.price)}</div>
+              <p className="text-sm opacity-50">Price</p>
+              <p className="text-sm font-mono">{formatPriceInfo(row.price)}</p>
             </div>
 
             <div className="flex w-full justify-between">
-              <div>Available</div>
+              <div className="text-sm opacity-50">Available</div>
               <Tippy
                 content={
                   <div>
                     {row.currentPoolAmount && (
                       <div>
                         {' '}
-                        <span className="text-txtfade">
+                        <span className="text-sm text-txtfade">
                           Current Pool Amount:{' '}
                         </span>
-                        {`${formatPriceInfo(row.currentPoolAmountUsd)} (${
-                          row.token.name
-                        } ${formatNumber(row.currentPoolAmount, 2)})
+                        <span className="text-sm font-mono">
+                          {`${formatPriceInfo(row.currentPoolAmountUsd)} (${
+                            row.token.name
+                          } ${formatNumber(row.currentPoolAmount, 2)})
                         `}
+                        </span>
                       </div>
                     )}
 
                     <div>
                       {' '}
-                      <span className="text-txtfade">Max Pool Capacity: </span>
-                      {formatPriceInfo(row.maxPoolCapacity)}
+                      <span className="text-sm text-txtfade">
+                        Max Pool Capacity:{' '}
+                      </span>
+                      <span className="text-sm font-mono">
+                        {formatPriceInfo(row.maxPoolCapacity)}
+                      </span>
                     </div>
                   </div>
                 }
                 placement="bottom"
               >
                 <div className="flex">
-                  <div className="flex tooltip-target cursor-help">
+                  <p className="text-sm tooltip-target cursor-help font-mono">
                     {formatPriceInfo(row.available)}
-                  </div>
+                  </p>
                 </div>
               </Tippy>
             </div>
 
             <div className="flex w-full justify-between">
-              <div>Wallet</div>
-              <div className="flex">
+              <p className="text-sm opacity-50">Wallet</p>
+              <p className="text-sm font-mono">
                 {' '}
                 {row.tokenBalance
                   ? `${formatNumber(row?.tokenBalance, 2)} ${
                       row?.token.name
                     } (${formatPriceInfo(row?.balanceInUsd)})`
                   : '–'}
-              </div>
-            </div>
-
-            <div className="flex w-full justify-between">
-              <div>Fees</div>
-              <div className="flex">
-                {!isFeesLoading
-                  ? row.fee
-                    ? `$${formatNumber(row.fee, 2)}`
-                    : '-'
-                  : '...'}
-              </div>
+              </p>
             </div>
 
             <div className="flex w-full justify-between">
               <Button
-                className="mt-4 bg-[#343232] rounded-md text-sm"
-                title={`buy with ${row.token.name}`}
-                activateLoadingIcon={true}
+                className="mt-2 bg-[#313131] w-full text-xs py-2"
+                title={`Buy with ${row.token.name}`}
+                size="md"
                 onClick={() => {
                   onCollateralTokenChange(row.token);
                   setCollateralInput(row.equivalentAmount);

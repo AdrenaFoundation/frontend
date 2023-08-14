@@ -8,13 +8,10 @@ import {
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { useDispatch, useSelector } from '@/store/store';
+import { getAbbrevWalletAddress } from '@/utils';
 
 import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
-
-function getAbbrevWalletAddress(address: string) {
-  return `${address.slice(0, 4)}..${address.slice(address.length - 4)}`;
-}
 
 function WalletAdapter({ className }: { className?: string }) {
   const dispatch = useDispatch();
@@ -30,26 +27,32 @@ function WalletAdapter({ className }: { className?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <div className={twMerge(className)}>
-      {!connected ? (
-        <Button
-          leftIcon="images/wallet-icon.svg"
-          title="Connect wallet"
-          onClick={() => dispatch(openCloseConnectionModalAction(true))}
-        />
-      ) : null}
+  const handleClick = () => {
+    if (!connected) {
+      dispatch(openCloseConnectionModalAction(true));
+      return;
+    }
 
-      {connected ? (
-        <Button
-          title={getAbbrevWalletAddress(wallet.walletAddress)}
-          onClick={() => {
-            dispatch(disconnectWalletAction(wallet.adapterName));
-            dispatch(openCloseConnectionModalAction(false));
-          }}
-          rightIcon="images/disconnect.png"
-        />
-      ) : null}
+    dispatch(disconnectWalletAction(wallet.adapterName));
+    dispatch(openCloseConnectionModalAction(false));
+  };
+
+  return (
+    <div>
+      <Button
+        className={twMerge(className)}
+        title={
+          connected
+            ? getAbbrevWalletAddress(wallet.walletAddress)
+            : 'Connect wallet'
+        }
+        rightIcon={
+          connected ? '/images/disconnect.png' : '/images/wallet-icon.svg'
+        }
+        alt="wallet icon"
+        variant="outline"
+        onClick={handleClick}
+      />
 
       {modalIsOpen ? (
         <Modal

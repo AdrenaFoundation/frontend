@@ -42,7 +42,7 @@ export default function TradingInput({
           'h-24',
           'w-32',
           'p-4',
-          'bg-third',
+          'bg-dark border border-gray-300 rounded-lg',
           'flex',
           'items-center',
           'w-full',
@@ -59,8 +59,8 @@ export default function TradingInput({
             'justify-between',
           )}
         >
-          <div className="text-txtfade text-sm">{textTopLeft}</div>
-          <div className="text-txtfade text-sm">{textTopRight}</div>
+          <div className="text-txtfade text-xs font-mono">{textTopLeft}</div>
+          <div className="text-txtfade text-xs font-mono">{textTopRight}</div>
         </div>
 
         <div className="flex w-full items-center">
@@ -72,7 +72,7 @@ export default function TradingInput({
               value={value ?? undefined}
               placeholder="0.00"
               className={twMerge(
-                'bg-third',
+                'bg-dark font-mono',
                 'border-0',
                 'text-lg',
                 'outline-none',
@@ -86,7 +86,7 @@ export default function TradingInput({
             <Button
               title="MAX"
               className={twMerge(
-                'bg-highlight',
+                'bg-gray-300 opacity-50 hover:opacity-100',
                 'border-grey',
                 'mr-2',
                 'text-sm',

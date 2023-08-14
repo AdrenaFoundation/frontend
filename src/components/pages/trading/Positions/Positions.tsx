@@ -1,3 +1,4 @@
+import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -8,7 +9,7 @@ import { PositionExtended } from '@/types';
 import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
 import PositionsArray from './PositionsArray';
-import PositionsBlocs from './PositionsBlocs';
+import PositionsBlocks from './PositionsBlocks';
 
 export default function Positions({
   className,
@@ -30,47 +31,47 @@ export default function Positions({
 
   return (
     <>
-      {positionToClose ? (
-        <Modal
-          title={`Close ${positionToClose.side} ${positionToClose.token.name} Position`}
-          close={() => setPositionToClose(null)}
-          className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
-        >
-          <ClosePosition
-            position={positionToClose}
-            triggerPositionsReload={triggerPositionsReload}
-            onClose={() => {
-              setPositionToClose(null);
-            }}
-          />
-        </Modal>
-      ) : null}
-
-      {positionToEdit ? (
-        <Modal
-          title={`Edit ${positionToEdit.side} ${positionToEdit.token.name} Position`}
-          close={() => setPositionToEdit(null)}
-          className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
-        >
-          <EditPositionCollateral
-            position={positionToEdit}
-            triggerPositionsReload={triggerPositionsReload}
-            onClose={() => {
-              setPositionToEdit(null);
-            }}
-          />
-        </Modal>
-      ) : null}
+      <AnimatePresence>
+        {positionToClose && (
+          <Modal
+            title={`Close ${positionToClose.side} ${positionToClose.token.name} Position`}
+            close={() => setPositionToClose(null)}
+            className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
+          >
+            <ClosePosition
+              position={positionToClose}
+              triggerPositionsReload={triggerPositionsReload}
+              onClose={() => {
+                setPositionToClose(null);
+              }}
+            />
+          </Modal>
+        )}{' '}
+        {positionToEdit && (
+          <Modal
+            title={`Edit ${positionToEdit.side} ${positionToEdit.token.name} Position`}
+            close={() => setPositionToEdit(null)}
+            className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
+          >
+            <EditPositionCollateral
+              position={positionToEdit}
+              triggerPositionsReload={triggerPositionsReload}
+              onClose={() => {
+                setPositionToEdit(null);
+              }}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
 
       {isBigScreen ? (
         <PositionsArray
           positions={positions}
-          className={className}
           triggerClosePosition={setPositionToClose}
           triggerEditPositionCollateral={setPositionToEdit}
         />
       ) : (
-        <PositionsBlocs
+        <PositionsBlocks
           positions={positions}
           className={className}
           triggerClosePosition={setPositionToClose}

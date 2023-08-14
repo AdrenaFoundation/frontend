@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token, TokenName } from '@/types';
 
-import SaveOnFeesMobile from './SaveOnFeeBlocks';
-import SaveOnFeesList from './SaveOnFeeList';
+import SaveOnFeesBlocks from './SaveOnFeeBlocks';
 
 type rowsType = Array<{
   token: Token;
@@ -29,6 +27,7 @@ export default function SaveOnFees({
   marketCap,
   isFeesLoading,
   setCollateralInput,
+  collateralToken,
 }: {
   allowedCollateralTokens: Token[];
   feesAndAmounts: {
@@ -43,11 +42,11 @@ export default function SaveOnFees({
   marketCap: number | null;
   isFeesLoading: boolean;
   setCollateralInput: (value: number | null) => void;
+  collateralToken: Token | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
   const rows: rowsType = useMemo(() => {
     return allowedCollateralTokens.map((token: Token) => {
@@ -117,30 +116,20 @@ export default function SaveOnFees({
   ]);
 
   return (
-    <>
-      <h2 className="text-2xl mt-3">Save on fees</h2>
-      <p className="opacity-75 max-w-[700px] mb-3">
+    <div className="relative bg-gray-200 border border-gray-300 p-4 rounded-lg grow">
+      <h2 className="text-lg font-normal">Save on fees</h2>
+      <p className="text-sm opacity-75 max-w-[700px]">
         {selectedAction === 'buy'
           ? 'Fees may vary depending on which asset you use to buy ALP. Enter the amount of ALP you want to purchase in the order form, then check here to compare fees.'
           : 'Fees may vary depending on which asset you sell ALP for. Enter the amount of ALP you want to redeem in the order form, then check here to compare fees.'}
       </p>
-      <div className="border border-grey bg-secondary p-4">
-        {isBigScreen ? (
-          <SaveOnFeesList
-            rows={rows}
-            onCollateralTokenChange={onCollateralTokenChange}
-            isFeesLoading={isFeesLoading}
-            setCollateralInput={setCollateralInput}
-          />
-        ) : (
-          <SaveOnFeesMobile
-            rows={rows}
-            onCollateralTokenChange={onCollateralTokenChange}
-            isFeesLoading={isFeesLoading}
-            setCollateralInput={setCollateralInput}
-          />
-        )}
-      </div>
-    </>
+      <SaveOnFeesBlocks
+        rows={rows}
+        onCollateralTokenChange={onCollateralTokenChange}
+        isFeesLoading={isFeesLoading}
+        setCollateralInput={setCollateralInput}
+        collateralToken={collateralToken}
+      />
+    </div>
   );
 }

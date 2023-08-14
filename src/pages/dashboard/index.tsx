@@ -1,18 +1,138 @@
-import ADXDetails from '@/components/pages/dashboard/ADXDetails/ADXDetails';
-import ALPDetails from '@/components/pages/dashboard/ALPDetails/ALPDetails';
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
+import Details from '@/components/pages/dashboard/Details/Details';
 import Overview from '@/components/pages/dashboard/Overview/Overview';
-import Stats from '@/components/pages/dashboard/Stats/Stats';
+import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useALPIndexComposition from '@/hooks/useALPIndexComposition';
+import useALPTotalSupply from '@/hooks/useALPTotalSupply';
+import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
+import { formatNumber, formatPercentage, formatPriceInfo } from '@/utils';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
+  const alpTotalSupply = useALPTotalSupply();
+  const adxTotalSupply = useADXTotalSupply();
+
+  const alpPrice =
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.name]) ??
+    null;
+  const adxPrice =
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.name]) ??
+    null;
+
+  const composition = useALPIndexComposition(custodies);
+
+  // Add currentRatio of stable tokens
+  const stablecoinPercentage = composition
+    ? composition.reduce((total, comp) => {
+        return total + (comp.token.isStable ? comp.currentRatio ?? 0 : 0);
+      }, 0)
+    : null;
+
+  const ADXmarketCap =
+    adxPrice !== null && adxTotalSupply != null
+      ? adxPrice * adxTotalSupply
+      : null;
+
+  const ALPmarketCap =
+    alpPrice !== null && alpTotalSupply != null
+      ? alpPrice * alpTotalSupply
+      : null;
+
+  // @TODO plug to staking system
+  const staked = 20;
+  const vested = 30;
+  const liquid = 50;
+
+  const ADXChartData = {
+    labels: ['Staked', 'Vested', 'Liquid'],
+    datasets: [
+      {
+        label: 'ALP Pool',
+        data: [staked, vested, liquid],
+        borderRadius: 10,
+        offset: 20,
+        backgroundColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const ALPChartData = {
+    labels: composition?.map((comp) => comp.token.name),
+    datasets: [
+      {
+        label: 'ALP Pool',
+        data: composition?.map((comp) => comp.currentRatio),
+        borderRadius: 10,
+        offset: 20,
+        backgroundColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const ALPDetailsArray = [
+    { title: 'Price', value: formatPriceInfo(alpPrice) },
+    {
+      title: 'Circulating Supply',
+      value:
+        alpTotalSupply !== null
+          ? formatNumber(alpTotalSupply, window.adrena.client.alpToken.decimals)
+          : '-',
+    },
+    { title: 'Market Cap', value: formatPriceInfo(ALPmarketCap) },
+    { title: 'Stablecoin %', value: formatPercentage(stablecoinPercentage) },
+  ];
+
+  const ADXDetailsArray = [
+    { title: 'Price', value: formatPriceInfo(adxPrice) ?? '-' },
+    {
+      title: 'Total Supply',
+      value:
+        adxTotalSupply !== null
+          ? formatNumber(adxTotalSupply, window.adrena.client.alpToken.decimals)
+          : '-',
+    },
+    { title: 'Circulating Supply', value: formatPriceInfo(adxPrice) ?? '-' }, // @TODO get circulating supply
+    { title: 'Market Cap', value: formatPriceInfo(ADXmarketCap) ?? '-' },
+  ];
+
   return (
     <>
-      <h1>Stats</h1>
+      <h2 className="text-2xl mb-3 font-medium">Dashboard</h2>
 
       <div className="flex justify-between flex-col sm:flex-row">
         <Overview
-          className="grow sm:mr-4"
           aumUsd={mainPool?.aumUsd ?? null}
           longPositions={mainPool?.longPositions ?? null}
           shortPositions={mainPool?.shortPositions ?? null}
@@ -20,23 +140,21 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
           nbOpenShortPositions={mainPool?.nbOpenShortPositions ?? null}
           averageLongLeverage={mainPool?.averageLongLeverage ?? null}
           averageShortLeverage={mainPool?.averageShortLeverage ?? null}
-        />
-
-        <Stats
-          className="mt-2 sm:mt-0 grow"
           totalCollectedFees={mainPool?.totalFeeCollected ?? null}
           totalVolume={mainPool?.totalVolume ?? null}
         />
       </div>
 
-      <div className="text-4xl mt-6">Tokens</div>
+      <h2 className="text-2xl mt-7 font-medium">Tokens</h2>
 
-      <div className="flex justify-between flex-col sm:flex-row mt-4">
-        <ALPDetails className="grow sm:mr-4" custodies={custodies} />
-        <ADXDetails className="mt-2 sm:mt-0 grow" custodies={custodies} />
+      <div className="flex w-full flex-col gap-7 xl:flex-row mt-4">
+        {/* <ALPDetails className="w-full" custodies={custodies} /> */}
+        {/* <ADXDetails className="w-full" custodies={custodies} /> */}
+        <Details title="ALP" details={ALPDetailsArray} chart={ALPChartData} />
+        <Details title="ADX" details={ADXDetailsArray} chart={ADXChartData} />
       </div>
 
-      <ALPIndexComposition custodies={custodies} className="mt-4" />
+      <ALPIndexComposition custodies={custodies} className="mt-7" />
     </>
   );
 }

@@ -388,7 +388,6 @@ export default function ClosePosition({
       <Button
         className="mt-4 bg-highlight"
         title={executeBtnText}
-        activateLoadingIcon={true}
         onClick={() => handleExecute()}
         disabled={!!overMaxAuthorizedLeverage}
       />

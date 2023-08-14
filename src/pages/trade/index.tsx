@@ -355,7 +355,7 @@ export default function Trade({
         className={twMerge(
           'flex',
           'flex-col',
-          'w-full',
+          'w-full h-full',
           'xl:w-[60%]',
           'xl:max-w-[60em]',
         )}
@@ -363,7 +363,6 @@ export default function Trade({
         {/* Trading chart header */}
         {tokenB ? (
           <TradingChartHeader
-            className="mb-4 pl-4 pr-4"
             tokenList={
               selectedAction === 'short' || selectedAction === 'long'
                 ? window.adrena.client.tokens.filter((t) => !t.isStable)
@@ -378,10 +377,10 @@ export default function Trade({
 
         <div
           className={twMerge(
-            'h-[60em]',
+            'h-[90em]',
             'shrink-1',
             'grow',
-            'bg-main',
+
             'flex',
             'max-w-full',
             'max-h-[30em]',
@@ -401,35 +400,25 @@ export default function Trade({
           ) : null}
         </div>
 
-        <>
-          <div className="mb-4">
-            Positions {positions !== null ? `(${positions.length})` : ''}
-          </div>
-
+        <div className="bg-gray-200 border border-gray-300 rounded-lg p-2 h-full">
           <Positions
             positions={positions}
             triggerPositionsReload={triggerPositionsReload}
           />
-        </>
+        </div>
       </div>
 
       <div className="flex flex-col mt-4 xl:ml-4 xl:mt-0">
         <div
           className={twMerge(
-            'w-[26em]',
-            'bg-secondary',
+            'w-full md:w-[26em]',
+            'bg-gray-200 border border-gray-300 rounded-lg',
             'p-4',
-            'border',
-            'border-grey',
           )}
         >
           <TabSelect
             selected={selectedAction}
-            tabs={[
-              { title: 'long', icon: '/images/long.svg' },
-              { title: 'short', icon: '/images/short.svg' },
-              { title: 'swap', icon: '/images/swap.svg' },
-            ]}
+            tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
             onClick={(title) => {
               setSelectedAction(title);
             }}
@@ -460,9 +449,9 @@ export default function Trade({
 
           {/* Button to execute action */}
           <Button
-            className="mt-4 bg-highlight text-sm"
+            size="lg"
             title={buttonTitle}
-            activateLoadingIcon={true}
+            className="w-full justify-center mt-5"
             onClick={handleExecuteButton}
           />
         </div>
@@ -470,26 +459,24 @@ export default function Trade({
         {/* Position details */}
         <div
           className={twMerge(
-            'w-[26em]',
+            'md:w-[26em]',
             'mt-4',
-            'bg-secondary',
-            'border',
-            'border-grey',
+            'bg-gray-200 border border-gray-300 rounded-lg p-4',
           )}
         >
-          <div className="flex items-center border-b border-grey p-3">
-            <span className="capitalize">{selectedAction}</span>
-
-            {selectedAction === 'short' || selectedAction === 'long' ? (
-              <span className="ml-1">{tokenB?.name ?? '-'}</span>
-            ) : null}
+          <div className=" pb-0">
+            <span className="capitalize text-xs opacity-25">
+              {selectedAction}
+              {selectedAction === 'short' || selectedAction === 'long' ? (
+                <span> {tokenB?.name ?? '-'}</span>
+              ) : null}
+            </span>
           </div>
 
           {tokenA && tokenB ? (
             <>
               {selectedAction === 'short' || selectedAction === 'long' ? (
                 <PositionDetails
-                  className="p-4"
                   tokenB={tokenB}
                   entryPrice={
                     tokenB &&

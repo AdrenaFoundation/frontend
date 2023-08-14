@@ -268,14 +268,14 @@ export default function ALPSwapInputs({
         <>
           {actionType === 'buy' ? 'Receive' : 'Pay'}
           {alpPrice !== null
-            ? `: ${formatNumber(alpPrice, USD_DECIMALS)} USD`
+            ? ` · ${formatNumber(alpPrice, USD_DECIMALS)} USD`
             : null}
         </>
       }
       textTopRight={
         <>
           {connected && alpToken
-            ? `Balance: ${(
+            ? `Balance · ${(
                 walletTokenBalances?.[alpToken.name] ?? '0'
               ).toLocaleString()}`
             : null}
@@ -303,7 +303,7 @@ export default function ALPSwapInputs({
         <>
           {actionType === 'buy' ? 'Pay' : 'Receive'}
           {collateralPrice !== null
-            ? `: ${formatNumber(collateralPrice, USD_DECIMALS)} USD`
+            ? ` · ${formatNumber(collateralPrice, USD_DECIMALS)} USD`
             : null}
         </>
       }
@@ -311,7 +311,7 @@ export default function ALPSwapInputs({
         <>
           {/* Display wallet balance */}
           {connected && collateralToken
-            ? `Balance: ${(
+            ? `Balance · ${(
                 walletTokenBalances?.[collateralToken.name] ?? '0'
               ).toLocaleString()}`
             : null}
@@ -349,7 +349,7 @@ export default function ALPSwapInputs({
       >
         <div
           className={twMerge(
-            'bg-highlight',
+            'bg-gray-300',
             'flex',
             'rounded-full',
             'p-1',
@@ -363,7 +363,13 @@ export default function ALPSwapInputs({
         >
           {
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="/images/swap.svg" alt="swap icon" />
+            <img
+              src="/images/icons/arrow-down-up.svg"
+              alt="swap icon"
+              height="14px"
+              width="14px"
+              className="opacity-50 hover:opacity-100 transition-opacity duration-300"
+            />
           }
         </div>
       </div>

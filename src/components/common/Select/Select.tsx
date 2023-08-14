@@ -3,6 +3,9 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '../Button/Button';
 import Menu from '../Menu/Menu';
+import MenuItem from '../Menu/MenuItem';
+import MenuItems from '../Menu/MenuItems';
+import MenuSeperator from '../Menu/MenuSeperator';
 
 export default function Select<T extends string>({
   className,
@@ -31,12 +34,12 @@ export default function Select<T extends string>({
         )}
         onClick={() => setOpened(!opened)}
       >
-        <span>{selected}</span>
+        <span className="text-lg font-medium">{selected}</span>
         {options.length > 1 ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            className="h-6 w-6"
-            src="/images/chevron-down.svg"
+            className="ml-2 h-3 w-3"
+            src="/images/icons/chevron-down.svg"
             alt="chevron down"
           />
         ) : null}
@@ -49,19 +52,27 @@ export default function Select<T extends string>({
           setOpened(false);
         }}
       >
-        {options
-          .filter((option) => option !== selected)
-          .map((option) => (
-            <Button
-              className="whitespace-nowrap text-md text-txtfade hover:text-white mt-1 border-0 p-0"
-              title={option}
-              onClick={() => {
-                onSelect(option);
-                setOpened(false);
-              }}
-              key={option}
-            />
-          ))}
+        <MenuItems>
+          {options
+            .filter((option) => option !== selected)
+            .map((option, i) => (
+              <>
+                <MenuItem
+                  className="text-center text-lg"
+                  onClick={() => {
+                    onSelect(option);
+                    setOpened(false);
+                  }}
+                  key={option}
+                >
+                  {option}
+                </MenuItem>
+                {i !== options.length - 2 && (
+                  <MenuSeperator key={'sep' + option} />
+                )}
+              </>
+            ))}
+        </MenuItems>
       </Menu>
     </div>
   );

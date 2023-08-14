@@ -282,7 +282,7 @@ export default function TradingInputs({
       >
         <div
           className={twMerge(
-            'bg-highlight',
+            'bg-gray-300',
             'flex',
             'rounded-full',
             'p-1',
@@ -296,7 +296,13 @@ export default function TradingInputs({
         >
           {
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="/images/swap.svg" alt="swap icon" />
+            <img
+              src="/images/icons/arrow-down-up.svg"
+              alt="swap icon"
+              height="14px"
+              width="14px"
+              className="opacity-50 hover:opacity-100 transition-opacity duration-300"
+            />
           }
         </div>
       </div>

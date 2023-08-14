@@ -306,3 +306,7 @@ export function createCloseWSOLAccountInstruction({
 }): TransactionInstruction {
   return createCloseAccountInstruction(wsolATA, owner, owner);
 }
+
+export function getAbbrevWalletAddress(address: string) {
+  return `${address.slice(0, 6)}...${address.slice(address.length - 6)}`;
+}

@@ -12,6 +12,20 @@ export default function TradingChart({ token }: { token: Token }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
 
+  const chartOverrides = {
+    'paneProperties.background': '#16182e',
+    'paneProperties.backgroundGradientStartColor': '#16182e',
+    'paneProperties.backgroundGradientEndColor': '#16182e',
+    'paneProperties.backgroundType': 'solid',
+    'paneProperties.vertGridProperties.color': 'rgba(35, 38, 59, 1)',
+    'paneProperties.vertGridProperties.style': 2,
+    'paneProperties.horzGridProperties.color': 'rgba(35, 38, 59, 1)',
+    'paneProperties.horzGridProperties.style': 2,
+    'mainSeriesProperties.priceLineColor': '#3a3e5e',
+    'scalesProperties.textColor': '#fff',
+    'scalesProperties.lineColor': '#16182e',
+  };
+
   useEffect(() => {
     function createWidget() {
       if (document.getElementById('chart-area') && 'TradingView' in window) {
@@ -26,11 +40,12 @@ export default function TradingChart({ token }: { token: Token }) {
           interval: 'D',
           timezone: 'UTC',
           style: '1',
-          toolbar_bg: 'transparent',
           locale: 'en',
           save_image: true,
           allow_symbol_change: false,
           editablewatchlist: false,
+          backgroundColor: '#080808',
+          overrides: chartOverrides,
           hotlist: false,
           hidevolume: true,
           disabled_features: [
@@ -46,7 +61,7 @@ export default function TradingChart({ token }: { token: Token }) {
           ],
 
           // Styling
-          theme: 'dark',
+          theme: 'Dark',
         });
 
         console.log('widget', widget);

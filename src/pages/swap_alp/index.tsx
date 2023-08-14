@@ -5,7 +5,7 @@ import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
 import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
-import { PageProps, Token, TokenName } from '@/types';
+import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
 // use the counter to handle asynchronous multiple loading
@@ -219,17 +219,16 @@ export default function SwapALP({
 
   return (
     <>
-      <h1>Buy / Sell ALP</h1>
+      <h1 className="text-2xl font-normal">Buy / Sell ALP</h1>
 
-      <div className="mt-2">
+      <div className="mt-2 opacity-75">
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
 
-      <div className="flex flex-col md:flex-row mt-12 gap-2">
-        <ALPInfo className="pb-2 m-2 w-full" marketCap={marketCap} />
+      <ALPInfo marketCap={marketCap} />
 
+      <div className="flex flex-col lg:flex-row gap-5 mt-5">
         <ALPSwap
-          className={'w-full m-2'}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}
           setCollateralInput={setCollateralInput}
@@ -248,17 +247,18 @@ export default function SwapALP({
           setAlpPrice={setAlpPrice}
           setCollateralPrice={setCollateralPrice}
         />
-      </div>
 
-      <SaveOnFees
-        feesAndAmounts={feesAndAmounts}
-        allowedCollateralTokens={allowedCollateralTokens}
-        onCollateralTokenChange={onCollateralTokenChange}
-        setCollateralInput={setCollateralInput}
-        selectedAction={selectedAction}
-        marketCap={marketCap}
-        isFeesLoading={isFeesLoading}
-      />
+        <SaveOnFees
+          feesAndAmounts={feesAndAmounts}
+          allowedCollateralTokens={allowedCollateralTokens}
+          onCollateralTokenChange={onCollateralTokenChange}
+          setCollateralInput={setCollateralInput}
+          collateralToken={collateralToken}
+          selectedAction={selectedAction}
+          marketCap={marketCap}
+          isFeesLoading={isFeesLoading}
+        />
+      </div>
     </>
   );
 }

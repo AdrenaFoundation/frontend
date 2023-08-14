@@ -32,9 +32,9 @@ export default function ALPIndexCompositionBlocs({
             'flex-col',
             'sm:w-[45%]',
             'w-full',
-            'bg-secondary',
+            'border-gray-300',
+            'bg-gray-200 rounded-lg',
             'border',
-            'border-grey',
             'justify-evenly',
             'mt-4',
             'p-4',
@@ -54,38 +54,48 @@ export default function ALPIndexCompositionBlocs({
 
           <div className="flex flex-col w-full mt-4">
             <div className="flex w-full justify-between">
-              <div>Price</div>
-              <div className="flex">{formatPriceInfo(composition.price)}</div>
+              <div className="opacity-50">Price</div>
+              <div className="font-mono">
+                {formatPriceInfo(composition.price)}
+              </div>
             </div>
 
             <div className="flex w-full justify-between">
-              <div>Pool</div>
-              <div className="flex">
+              <div className="opacity-50">Pool</div>
+              <div className="font-mono">
                 {formatPriceInfo(composition.custodyUsdValue)}
               </div>
             </div>
 
             <div className="flex w-full justify-between">
-              <div>Weight</div>
+              <div className="opacity-50">Weight</div>
 
               <Tippy
                 content={
                   <div className="text-sm w-60 flex flex-col justify-around">
                     <div className="flex w-full justify-between">
-                      <div className="text-txtfade">Current Weight:</div>
-                      <div>{formatPercentage(composition.currentRatio)}</div>
+                      <div className="opacity-50">Current Weight:</div>
+                      <div className="font-mono">
+                        {formatPercentage(composition.currentRatio)}
+                      </div>
                     </div>
                     <div className="flex w-full justify-between">
-                      <div className="text-txtfade">Target Weight:</div>
-                      <div>{formatPercentage(composition.targetRatio)}</div>
+                      <div className="opacity-50">Target Weight:</div>
+                      <div className="font-mono">
+                        {formatPercentage(composition.targetRatio)}
+                      </div>
                     </div>
                     <div className="flex w-full justify-between">
-                      <div className="text-txtfade">Minimum Weight:</div>
-                      <div>{formatPercentage(composition.minRatio)}</div>
+                      <div className="opacity-50">Minimum Weight:</div>
+                      <div className="font-mono">
+                        {formatPercentage(composition.minRatio)}
+                      </div>
                     </div>
                     <div className="flex w-full justify-between">
-                      <div className="text-txtfade">Maximum Weight:</div>
-                      <div>{formatPercentage(composition.maxRatio)}</div>
+                      <div className="opacity-50">Maximum Weight:</div>
+                      <div className="font-mono">
+                        {formatPercentage(composition.maxRatio)}
+                      </div>
                     </div>
                   </div>
                 }
@@ -93,17 +103,21 @@ export default function ALPIndexCompositionBlocs({
               >
                 <div className="flex">
                   <div className="flex tooltip-target">
-                    <span>{formatPercentage(composition.currentRatio)}</span>
+                    <span className="font-mono">
+                      {formatPercentage(composition.currentRatio)}
+                    </span>
                     <span className="ml-1 mr-1">/</span>
-                    <span>{formatPercentage(composition.targetRatio)}</span>
+                    <span className="font-mono">
+                      {formatPercentage(composition.targetRatio)}
+                    </span>
                   </div>
                 </div>
               </Tippy>
             </div>
 
             <div className="flex w-full justify-between">
-              <div>Utilization</div>
-              <div className="flex justify-end">
+              <div className="opacity-50">Utilization</div>
+              <div className="flex justify-end font-mono">
                 {formatPercentage(composition.utilization, 4)}
               </div>
             </div>

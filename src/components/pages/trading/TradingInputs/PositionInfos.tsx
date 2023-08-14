@@ -64,17 +64,19 @@ export default function PositionInfos({
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       <div className={infoRowStyle}>
         <span className="text-txtfade">Collateral In</span>
-        <span>{side === 'long' ? 'USD' : 'USDC'}</span>
+        <span className="font-mono">{side === 'long' ? 'USD' : 'USDC'}</span>
       </div>
 
       <div className={infoRowStyle}>
         <span className="text-txtfade">Leverage</span>
-        <span>{leverage !== null ? `${formatNumber(leverage, 2)}x` : '-'}</span>
+        <span className="font-mono">
+          {leverage !== null ? `${formatNumber(leverage, 2)}x` : '-'}
+        </span>
       </div>
 
       <div className={infoRowStyle}>
         <span className="text-txtfade">Entry Price</span>
-        <span className="flex">
+        <span className="flex font-mono">
           {(() => {
             if (!entryPriceAndFee || !inputB) return '-';
 
@@ -109,7 +111,7 @@ export default function PositionInfos({
 
       <div className={infoRowStyle}>
         <span className="text-txtfade">Liq. Price</span>
-        <span className="flex">
+        <span className="flex font-mono">
           {(() => {
             if (!entryPriceAndFee || !inputB) return '-';
 
@@ -146,7 +148,7 @@ export default function PositionInfos({
 
       <div className={infoRowStyle}>
         <span className="text-txtfade">Fees</span>
-        <span>
+        <span className="font-mono">
           {entryPriceAndFee
             ? formatPriceInfo(nativeToUi(entryPriceAndFee.fee, 6))
             : '-'}

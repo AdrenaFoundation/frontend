@@ -18,17 +18,13 @@ export default function Buy(_: PageProps) {
           </div>
           <div className="mt-4">
             <Button
-              title={
-                <Link href="https://www.orca.so/" target="_blank">
-                  Buy on Orca
-                </Link>
-              }
+              href="https://www.orca.so/"
+              title="Buy on Orca"
               className="bg-[#F9C04E] w-44 text-black"
               onClick={() => {
                 // Not used
               }}
               rightIcon="images/orca-icon.png"
-              rightIconClassName="h-6 w-6 ml-4"
             />
           </div>
         </div>

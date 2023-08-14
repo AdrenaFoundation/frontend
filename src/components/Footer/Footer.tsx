@@ -11,7 +11,6 @@ export default function Footer() {
         'h-auto',
         'pt-4',
         'pb-4',
-        'bg-secondary',
         'border-t',
         'border-grey',
         'justify-center',
@@ -45,12 +44,12 @@ export default function Footer() {
           />
         </Link>
 
-        <Link
+        {/* <Link
           href="/terms_and_conditions"
-          className="absolute right-6 text-txtfade hover:text-white"
+          className="absolute right-6 text-txtfade hover:text-white font-mono"
         >
           Terms and conditions
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

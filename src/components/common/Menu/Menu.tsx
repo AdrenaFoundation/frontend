@@ -1,5 +1,8 @@
-import { ReactNode, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ReactNode, useRef } from 'react';
 import { twMerge } from 'tailwind-merge';
+
+import { useOnClickOutside } from '@/hooks/onClickOutside';
 
 export default function Menu({
   className,
@@ -16,45 +19,27 @@ export default function Menu({
 
   // Note 1: Clicks outside of parent trigger onClose
   // Note 2: Parent require 'relative' class
-  useEffect(() => {
-    const clickHandler = (event: MouseEvent) => {
-      const target = event.target;
-
-      // Click happened inside of parent, do nothing
-      if (target && ref.current?.parentNode?.contains(target as Node)) {
-        return;
-      }
-
-      // Click happened outside of parent, close the menu
-      return onClose();
-    };
-
-    window.addEventListener('mousedown', clickHandler);
-
-    return () => {
-      window.removeEventListener('mousedown', clickHandler);
-    };
-  }, [onClose, ref]);
-
-  if (!open) return null;
+  useOnClickOutside(ref, () => {
+    onClose();
+  });
 
   return (
-    <div
-      ref={ref}
-      className={twMerge(
-        'bg-main',
-        'p-4',
-        'absolute',
-        'border',
-        'border-grey',
-        'flex',
-        'flex-col',
-        'items-start',
-        'z-10',
-        className,
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          ref={ref}
+          initial={{ opacity: 0, scale: 0.9, y: -10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: -10 }}
+          transition={{ duration: 0.1 }}
+          className={twMerge(
+            'absolute flex flex-col border border-gray-200 bg-dark rounded-lg shadow-lg mt-2 overflow-hidden z-10 w-full',
+            className,
+          )}
+        >
+          {children}
+        </motion.div>
       )}
-    >
-      {children}
-    </div>
+    </AnimatePresence>
   );
 }

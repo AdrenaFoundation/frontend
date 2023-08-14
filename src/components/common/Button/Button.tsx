@@ -1,86 +1,80 @@
-import React, { ReactNode, useState } from 'react';
+import { Url } from 'next/dist/shared/lib/router/router';
+import Image from 'next/image';
+import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
-import LoadingIcon from '../LoadingIcon/LoadingIcon';
+// import LoadingIcon from '../LoadingIcon/LoadingIcon';
 
-function Button(
-  {
-    title,
-    onClick,
-    className,
-    leftIcon,
-    rightIcon,
-    rightIconClassName,
-    leftIconClassName,
-    disabled,
-    activateLoadingIcon,
-  }: {
-    title: ReactNode;
-    onClick: () => Promise<void> | void;
-    className?: string;
-    leftIcon?: string;
-    rightIcon?: string;
-    rightIconClassName?: string;
-    leftIconClassName?: string;
-    disabled?: boolean;
-    activateLoadingIcon?: boolean;
-  },
-  ref?: React.Ref<HTMLDivElement>,
-) {
-  const [loading, setLoading] = useState<boolean>(false);
+function Button({
+  variant = 'primary',
+  size = 'md',
+  title,
+  alt = 'icon',
+  rightIcon,
+  leftIcon,
+  className,
+  onClick,
+  href,
+  disabled,
+  ...rest
+}: {
+  title?: string;
+  rightIcon?: string;
+  leftIcon?: string;
+  alt?: string;
+  variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+  onClick?: () => void;
+  disabled?: boolean;
+  href?: Url;
+}) {
+  const variants = {
+    primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-md',
+    secondary: '',
+    danger: '',
+    text: 'opacity-50 hover:opacity-100 rounded-md',
+    outline: 'border border-gray-200 hover:bg-gray-200 rounded-md',
+  };
 
-  return (
-    <div
-      className={twMerge(
-        'relative',
-        'flex',
-        'pt-2 pb-2 pl-4 pr-4',
-        'items-center',
-        'justify-center',
-        'rounded',
-        'border',
-        'border-grey',
-        !disabled && !loading && 'hover:opacity-90',
-        disabled || loading ? 'cursor-not-allowed' : 'cursor-pointer',
-        (disabled || loading) && 'opacity-80',
-        className,
-      )}
-      onClick={() => {
-        if (disabled || loading) {
-          return;
-        }
+  const sizes = {
+    sm: 'px-2 py-1 text-xs',
+    md: 'px-4 py-1 text-sm',
+    lg: 'px-6 py-2 text-sm',
+  };
 
-        (async () => {
-          setLoading(true);
-          await onClick();
-          setLoading(false);
-        })();
-      }}
-      ref={ref}
-    >
-      {leftIcon ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={leftIcon}
-          className={`h-6 w-6 mr-2 ${leftIconClassName}`}
-          alt="left icon"
-        />
-      ) : null}
+  const StyledButton = () => {
+    return (
+      <button
+        className={twMerge(
+          'flex flex-row items-center justify-center gap-3 font-mono',
+          sizes[size],
+          variants[variant],
+          className && className,
+          'transition duration-300',
+        )}
+        disabled={disabled}
+        onClick={onClick}
+        {...rest}
+      >
+        {leftIcon && <Image src={leftIcon} alt={alt} width="12" height="12" />}
+        {title && title}
+        {rightIcon && (
+          <Image src={rightIcon} alt={alt} width="12" height="12" />
+        )}
+      </button>
+    );
+  };
 
-      {title}
+  if (href) {
+    return (
+      <Link href={href}>
+        <StyledButton />
+      </Link>
+    );
+  }
 
-      {rightIcon ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={rightIcon}
-          className={`h-4 w-4 ml-2 ${rightIconClassName}`}
-          alt="right icon"
-        />
-      ) : null}
-
-      {loading && activateLoadingIcon ? <LoadingIcon className="ml-4" /> : null}
-    </div>
-  );
+  return <StyledButton />;
 }
 
-export default React.forwardRef(Button);
+export default Button;

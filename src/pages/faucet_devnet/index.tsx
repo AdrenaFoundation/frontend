@@ -139,7 +139,6 @@ export default function FaucetDevnet({ wallet }: PageProps) {
         <div key={token.name} className="mt-8 flex flex-col items-center">
           <Button
             disabled={pendingTx}
-            activateLoadingIcon={true}
             className="bg-secondary w-[30em]"
             title={`Get ${token.name}`}
             onClick={() =>

@@ -47,8 +47,8 @@ export default function ADXDetails({
     <div
       className={twMerge(
         'border',
-        'border-grey',
-        'bg-secondary',
+        'border-gray-300',
+        'bg-gray-200 rounded-lg',
         'flex',
         'flex-col',
         className,

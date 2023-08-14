@@ -50,7 +50,7 @@ export default function EditPositionCollateral({
   const walletBalance: number | null =
     walletTokenBalances?.[position.token.name] ?? null;
 
-  const rowStyle = 'w-full flex justify-between mt-2';
+  const listStyle = 'w-full flex justify-between';
 
   const entryPrice: number = position.price;
 
@@ -227,9 +227,8 @@ export default function EditPositionCollateral({
   };
 
   return (
-    <div className={twMerge('flex', 'flex-col', 'h-full', className)}>
+    <div className={twMerge('flex flex-col gap-3 h-full', className)}>
       <TabSelect
-        className="mb-4"
         selected={selectedAction}
         tabs={[{ title: 'deposit' }, { title: 'withdraw' }]}
         onClick={(title) => {
@@ -243,7 +242,7 @@ export default function EditPositionCollateral({
       {selectedAction === 'deposit' ? (
         <TradingInput
           textTopLeft="Deposit"
-          textTopRight={`Max: ${(() => {
+          textTopRight={`Max · ${(() => {
             if (walletBalance === null) return null;
 
             return formatNumber(walletBalance, position.token.decimals);
@@ -264,13 +263,13 @@ export default function EditPositionCollateral({
             <>
               Withdraw
               {input && markPrice
-                ? `: ${formatNumber(input / markPrice, 6)} ${
+                ? ` · ${formatNumber(input / markPrice, 6)} ${
                     position.token.name
                   }`
                 : null}
             </>
           }
-          textTopRight={`Max: ${formatNumber(
+          textTopRight={`Max · ${formatNumber(
             position.collateralUsd,
             USD_DECIMALS,
           )}`}
@@ -290,38 +289,36 @@ export default function EditPositionCollateral({
         />
       )}
 
-      <div className="flex flex-col text-sm">
+      <div className="flex flex-col gap-3 text-sm mt-3">
         {selectedAction === 'withdraw' ? (
           <>
-            <div className="flex w-full justify-evenly mt-4">
-              {[25, 50, 75, 100].map((percentage) => (
-                <div
-                  key={percentage}
-                  className="cursor-pointer text-txtfade hover:text-txtregular"
-                  onClick={() => {
-                    setInput(
-                      Number(
-                        formatNumber(
-                          (position.collateralUsd * percentage) / 100,
-                          USD_DECIMALS,
-                        ),
-                      ),
-                    );
-                  }}
-                >
-                  {percentage}%
-                </div>
-              ))}
-            </div>
-            <div className="mt-2 h-[1px] w-full bg-grey" />
+            <TabSelect
+              tabs={[
+                { title: '25%' },
+                { title: '50%' },
+                { title: '75%' },
+                { title: '100%' },
+              ]}
+              onClick={(title) => {
+                setInput(
+                  Number(
+                    formatNumber(
+                      (position.collateralUsd * Number(title.split('%')[0])) /
+                        100,
+                      USD_DECIMALS,
+                    ),
+                  ),
+                );
+              }}
+            />
           </>
         ) : null}
 
-        <div className={rowStyle}>
-          <div className="text-txtfade">Leverage</div>
-          <div className="flex">
+        <div className={listStyle}>
+          <p className="text-txtfade">Leverage</p>
+          <div className="flex font-mono text-right">
             {updatedLeverage !== 0 ? (
-              <div>{formatNumber(position.leverage, 2)}x</div>
+              <p>{formatNumber(position.leverage, 2)}x</p>
             ) : (
               '-'
             )}
@@ -349,73 +346,85 @@ export default function EditPositionCollateral({
           </div>
         </div>
 
-        <div className="mt-2 h-[1px] w-full bg-grey" />
+        <div className="h-[1px] w-full bg-gray-300 rounded" />
 
-        <div className={rowStyle}>
-          <div className="text-txtfade">Mark Price</div>
-          <div>{formatPriceInfo(markPrice)}</div>
-        </div>
+        <ul className="flex flex-col gap-2">
+          <li className={listStyle}>
+            <p className="opacity-50">Mark Price</p>
+            <p className="font-mono text-right">{formatPriceInfo(markPrice)}</p>
+          </li>
+          <li className={listStyle}>
+            <p className="opacity-50">Entry Price</p>
+            <p className="font-mono text-right">
+              {formatPriceInfo(entryPrice)}
+            </p>
+          </li>
+          <li className={listStyle}>
+            <p className="opacity-50">Liq. Price</p>
+            <p className="font-mono text-right">
+              {formatPriceInfo(liquidationPrice)}
+            </p>
+          </li>
+        </ul>
 
-        <div className={rowStyle}>
-          <div className="text-txtfade">Entry Price</div>
-          <div>{formatPriceInfo(entryPrice)}</div>
-        </div>
+        <div className="h-[1px] w-full bg-gray-300 rounded" />
 
-        <div className={rowStyle}>
-          <div className="text-txtfade">Liq. Price</div>
-          <div>{formatPriceInfo(liquidationPrice)}</div>
-        </div>
+        <ul className="flex flex-col gap-2">
+          <li className={listStyle}>
+            <p className="opacity-50">Size</p>
 
-        <div className="mt-2 h-[1px] w-full bg-grey" />
+            <p className="font-mono text-right">
+              {formatPriceInfo(position.collateralUsd)}
+            </p>
+          </li>
+          <li className={listStyle}>
+            <p className="opacity-50">Collateral ({position.token.name})</p>
+            <p className="flex font-mono text-right">
+              {!input && markPrice
+                ? formatNumber(position.collateralUsd / markPrice, USD_DECIMALS)
+                : null}
 
-        <div className={rowStyle}>
-          <div className="text-txtfade">Size</div>
-          <div className="flex">{formatPriceInfo(position.collateralUsd)}</div>
-        </div>
+              {input && markPrice ? (
+                <>
+                  {formatNumber(
+                    position.collateralUsd / markPrice,
+                    USD_DECIMALS,
+                  )}
+                  {
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src="images/arrow-right.svg" alt="arrow right" />
+                  }
+                  {/* TODO: properly account for fees here on final displayed numbers */}
+                  {selectedAction === 'deposit'
+                    ? formatNumber(
+                        position.collateralUsd / markPrice + input,
+                        USD_DECIMALS,
+                      )
+                    : formatNumber(
+                        (position.collateralUsd - input) / markPrice,
+                        USD_DECIMALS,
+                      )}
+                </>
+              ) : null}
+            </p>
+          </li>
 
-        <div className={rowStyle}>
-          <div className="text-txtfade">Collateral ({position.token.name})</div>
-          <div className="flex">
-            {!input && markPrice
-              ? formatNumber(position.collateralUsd / markPrice, USD_DECIMALS)
-              : null}
-
-            {input && markPrice ? (
-              <>
-                {formatNumber(position.collateralUsd / markPrice, USD_DECIMALS)}
-                {
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src="images/arrow-right.svg" alt="arrow right" />
-                }
-                {/* TODO: properly account for fees here on final displayed numbers */}
-                {selectedAction === 'deposit'
-                  ? formatNumber(
-                      position.collateralUsd / markPrice + input,
-                      USD_DECIMALS,
-                    )
-                  : formatNumber(
-                      (position.collateralUsd - input) / markPrice,
-                      USD_DECIMALS,
-                    )}
-              </>
-            ) : null}
-          </div>
-        </div>
-
-        <div className={rowStyle}>
-          <div className="text-txtfade">Fees</div>
-          <div>
-            {amountAndFee
-              ? formatPriceInfo(nativeToUi(amountAndFee.fee, USD_DECIMALS))
-              : '-'}
-          </div>
-        </div>
+          <li className={listStyle}>
+            <p className="opacity-50">Fees</p>
+            <p className="font-mono text-right">
+              {' '}
+              {amountAndFee
+                ? formatPriceInfo(nativeToUi(amountAndFee.fee, USD_DECIMALS))
+                : '-'}
+            </p>
+          </li>
+        </ul>
       </div>
 
       <Button
-        className="mt-4 bg-highlight"
+        className="mt-4"
+        size="lg"
         title={executeBtnText}
-        activateLoadingIcon={true}
         onClick={() => handleExecute()}
         disabled={!!overMaxAuthorizedLeverage || !!overMinAuthorizedLeverage}
       />
