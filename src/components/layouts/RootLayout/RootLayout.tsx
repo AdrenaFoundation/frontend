@@ -13,7 +13,7 @@ import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
-  const isBigScreen = useBetterMediaQuery('(min-width: 1150px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 1280px)');
 
   return (
     <>
@@ -44,7 +44,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       >
         <div
           className={twMerge(
-            'w-full pt-[75px] sm:pt-[25px]',
+            `w-full pt-[75px] xl:pt-[25px]`,
             'flex',
             'max-w-[1400px]',
             'flex-col',

@@ -33,7 +33,7 @@ export default function TabSelect<T extends string>({
         x: refs[activeTab].current?.offsetLeft ?? 0,
       });
     }
-  }, [refs, activeTab]);
+  }, [activeTab]);
 
   return (
     <div className="relative flex flex-row gap-3 justify-between w-full bg-dark border border-gray-200 rounded-xl p-1">
