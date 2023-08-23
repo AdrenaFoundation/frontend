@@ -12,7 +12,7 @@ export default function OnchainInfo({}: PageProps) {
   const titleClasses = 'text-md font-normal border-b border-gray-300 p-2';
   const rowClasses = 'flex flex-row gap-1 w-full justify-between flex-wrap p-2';
   const subtitleClasses = 'w-[10em] shrink-0 flex text-sm opacity-50';
-  const infoClasses = 'flex w-[calc(100% - 10em)]  text-sm font-mono';
+  const infoClasses = 'flex w-[calc(100% - 10em)] text-sm font-mono';
 
   const solanaExplorerLink = (pubkey: PublicKey): JSX.Element => (
     <Link

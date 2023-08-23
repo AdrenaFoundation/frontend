@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -363,11 +364,11 @@ export default function ALPSwapInputs({
         >
           {
             // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src="/images/icons/arrow-down-up.svg"
               alt="swap icon"
-              height="14px"
-              width="14px"
+              height={14}
+              width={14}
               className="opacity-50 hover:opacity-100 transition-opacity duration-300"
             />
           }

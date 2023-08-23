@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '../Button/Button';
 import Menu from '../Menu/Menu';
 import MenuItem from '../Menu/MenuItem';
 import MenuItems from '../Menu/MenuItems';
@@ -46,7 +45,7 @@ export default function Select<T extends string>({
       </div>
 
       <Menu
-        className="right-1 mt-2"
+        className="right-1 mt-2 w-fit"
         open={opened}
         onClose={() => {
           setOpened(false);
@@ -57,6 +56,7 @@ export default function Select<T extends string>({
             .filter((option) => option !== selected)
             .map((option, i) => (
               <>
+                {!!i && <MenuSeperator key={'sep' + option} />}
                 <MenuItem
                   className="text-center text-lg"
                   onClick={() => {
@@ -67,9 +67,6 @@ export default function Select<T extends string>({
                 >
                   {option}
                 </MenuItem>
-                {i !== options.length - 2 && (
-                  <MenuSeperator key={'sep' + option} />
-                )}
               </>
             ))}
         </MenuItems>

@@ -2,6 +2,7 @@ import {
   ActiveElement,
   ArcElement,
   Chart as ChartJS,
+  ChartData,
   ChartEvent,
   Legend,
   Tooltip,
@@ -21,12 +22,12 @@ export default function Details({
 }: {
   title: string;
   details: { title: string; value: string | null }[];
-  chart: any; // @TODO: type this
+  chart: ChartData<'doughnut'>;
 }) {
   return (
     <div
       className={twMerge(
-        'border w-full',
+        'border sm:w-full',
         'border-gray-300',
         'bg-gray-200 rounded-lg',
         'flex',
@@ -51,7 +52,7 @@ export default function Details({
         </div>
 
         <div className="flex flex-col sm:flex-row items-center">
-          <div className="flex flex-col gap-5 sm:border-r sm:border-r-gray-300 w-full h-full p-4 md:min-w-[250px]">
+          <div className="flex flex-col gap-5 sm:border-r sm:border-r-gray-300 w-full h-full p-4 ">
             {details &&
               details.map((detail) => (
                 <div
@@ -67,7 +68,7 @@ export default function Details({
           </div>
 
           {/* chart */}
-          <div className="relative flex flex-col p-4 items-center justify-center m-auto max-w-[300px]">
+          <div className="relative flex flex-col p-4 items-center justify-center m-auto w-full lg:max-w-[300px]">
             {chart ? (
               <>
                 <div className="absolute mt-7">

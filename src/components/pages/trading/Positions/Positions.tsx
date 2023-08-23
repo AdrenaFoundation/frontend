@@ -46,7 +46,7 @@ export default function Positions({
               }}
             />
           </Modal>
-        )}{' '}
+        )}
         {positionToEdit && (
           <Modal
             title={`Edit ${positionToEdit.side} ${positionToEdit.token.name} Position`}

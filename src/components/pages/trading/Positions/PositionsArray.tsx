@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -6,6 +7,7 @@ import Menu from '@/components/common/Menu/Menu';
 import MenuItem from '@/components/common/Menu/MenuItem';
 import MenuItems from '@/components/common/Menu/MenuItems';
 import MenuSeperator from '@/components/common/Menu/MenuSeperator';
+import Loader from '@/components/Loader/Loader';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -25,6 +27,42 @@ export default function PositionsArray({
   const columnStyle = 'text-sm px-3 ';
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  if (positions === null && !connected) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center">
+        <Button
+          title="Connect Wallet"
+          variant="secondary"
+          rightIcon="/images/wallet-icon.svg"
+          className="mb-2"
+          onClick={() => {
+            false;
+          }}
+        />
+
+        <p className="text-xs opacity-50 font-normal">
+          Waiting for wallet connection
+        </p>
+      </div>
+    );
+  }
+
+  if (positions === null && connected) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (positions && !positions.length) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-xs opacity-50 font-normal">No opened position</p>
+      </div>
+    );
+  }
 
   return (
     <table className="w-full">
@@ -52,17 +90,21 @@ export default function PositionsArray({
       {/* Content */}
       <tbody>
         {positions === null && !connected ? (
-          <tr className="mt-5 mb-5 ml-auto mr-auto">
-            Waiting for wallet connection ...
+          <tr>
+            <td className={columnStyle}>Waiting for wallet connection ...</td>
           </tr>
         ) : null}
 
         {positions === null && connected ? (
-          <tr className="mt-5 mb-5 ml-auto mr-auto">Loading ...</tr>
+          <tr>
+            <td className={columnStyle}>Loading ...</td>
+          </tr>
         ) : null}
 
         {positions && !positions.length ? (
-          <tr className="mt-5 mb-5 ml-auto mr-auto">No opened position</tr>
+          <tr>
+            <td className={columnStyle}>No opened position</td>
+          </tr>
         ) : null}
 
         {positions?.map((position) => (
@@ -76,12 +118,12 @@ export default function PositionsArray({
               )}
             >
               <div className="flex flex-row gap-2">
-                {' '}
-                <img
-                  className="w-8 h-8"
+                <Image
+                  height={32}
+                  width={32}
                   src={position.token.image}
                   alt={`${position.token.name} logo`}
-                />{' '}
+                />
                 <div>
                   <span className="font-mono">{position.token.name}</span>
                   <div
@@ -138,10 +180,10 @@ export default function PositionsArray({
               {formatPriceInfo(position.liquidationPrice ?? null)}
             </td>
 
-            <td className="relative ">
+            <td className="relative">
               <Button
                 variant="text"
-                leftIcon="images/icons/threeDots.svg"
+                leftIcon="images/icons/three-dots.svg"
                 onClick={() => setIsOpen(!isOpen)}
               />
 

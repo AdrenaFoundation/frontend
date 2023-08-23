@@ -13,9 +13,9 @@ export default function TradingChart({ token }: { token: Token }) {
   const [widget, setWidget] = useState<Widget | null>(null);
 
   const chartOverrides = {
-    'paneProperties.background': '#16182e',
-    'paneProperties.backgroundGradientStartColor': '#16182e',
-    'paneProperties.backgroundGradientEndColor': '#16182e',
+    'paneProperties.background': '#151515',
+    'paneProperties.backgroundGradientStartColor': '#151515',
+    'paneProperties.backgroundGradientEndColor': '#151515',
     'paneProperties.backgroundType': 'solid',
     'paneProperties.vertGridProperties.color': 'rgba(35, 38, 59, 1)',
     'paneProperties.vertGridProperties.style': 2,
@@ -24,6 +24,7 @@ export default function TradingChart({ token }: { token: Token }) {
     'mainSeriesProperties.priceLineColor': '#3a3e5e',
     'scalesProperties.textColor': '#fff',
     'scalesProperties.lineColor': '#16182e',
+    'linetooltrendline.linecolor': '#151515',
   };
 
   useEffect(() => {
@@ -39,12 +40,16 @@ export default function TradingChart({ token }: { token: Token }) {
           symbol: `PYTH:${token.name}USD`,
           interval: 'D',
           timezone: 'UTC',
-          style: '1',
           locale: 'en',
           save_image: true,
           allow_symbol_change: false,
           editablewatchlist: false,
           backgroundColor: '#080808',
+          toolbar_bg: '#f4f7f9',
+          loading_screen: {
+            backgroundColor: '#151515',
+            foregroundColor: '#080808',
+          },
           overrides: chartOverrides,
           hotlist: false,
           hidevolume: true,
@@ -61,7 +66,8 @@ export default function TradingChart({ token }: { token: Token }) {
           ],
 
           // Styling
-          theme: 'Dark',
+          custom_css_url: '/test.css',
+          theme: 'dark',
         });
 
         console.log('widget', widget);
@@ -99,6 +105,7 @@ export default function TradingChart({ token }: { token: Token }) {
     if (!widget) return;
 
     widget.options.symbol = `PYTH:${token.name}USD`;
+
     widget.reload();
   }, [token, widget]);
 

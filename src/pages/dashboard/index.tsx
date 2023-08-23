@@ -1,3 +1,5 @@
+import { ChartData } from 'chart.js';
+
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Details from '@/components/pages/dashboard/Details/Details';
 import Overview from '@/components/pages/dashboard/Overview/Overview';
@@ -43,7 +45,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
   const vested = 30;
   const liquid = 50;
 
-  const ADXChartData = {
+  const ADXChartData: ChartData<'doughnut'> = {
     labels: ['Staked', 'Vested', 'Liquid'],
     datasets: [
       {
@@ -72,12 +74,12 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     ],
   };
 
-  const ALPChartData = {
+  const ALPChartData: ChartData<'doughnut'> = {
     labels: composition?.map((comp) => comp.token.name),
     datasets: [
       {
         label: 'ALP Pool',
-        data: composition?.map((comp) => comp.currentRatio),
+        data: composition?.map((comp) => comp.currentRatio!) || [],
         borderRadius: 10,
         offset: 20,
         backgroundColor: [
@@ -147,9 +149,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
 
       <h2 className="text-2xl mt-7 font-medium">Tokens</h2>
 
-      <div className="flex w-full flex-col gap-7 xl:flex-row mt-4">
-        {/* <ALPDetails className="w-full" custodies={custodies} /> */}
-        {/* <ADXDetails className="w-full" custodies={custodies} /> */}
+      <div className="flex w-full flex-col gap-7 lg:flex-row mt-4">
         <Details title="ALP" details={ALPDetailsArray} chart={ALPChartData} />
         <Details title="ADX" details={ADXDetailsArray} chart={ADXChartData} />
       </div>

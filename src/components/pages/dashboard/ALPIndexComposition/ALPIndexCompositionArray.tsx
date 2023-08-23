@@ -75,7 +75,7 @@ export default function ALPIndexCompositionArray({
 
                 <Tippy
                   content={
-                    <div className="text-sm w-60 flex flex-col justify-around">
+                    <div className="text-sm w-60 flex flex-col justify-between">
                       <div className="flex w-full justify-between">
                         <div className="text-txtfade">Current Weight:</div>
                         <div className="font-mono">

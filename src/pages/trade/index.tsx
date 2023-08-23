@@ -452,6 +452,7 @@ export default function Trade({
             size="lg"
             title={buttonTitle}
             className="w-full justify-center mt-5"
+            disabled={buttonTitle.includes('Insufficient')}
             onClick={handleExecuteButton}
           />
         </div>

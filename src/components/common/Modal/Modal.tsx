@@ -95,7 +95,7 @@ const Modal = ({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 className="w-4 h-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300"
-                src="/images/icons/closeBtn.svg"
+                src="/images/icons/close-btn.svg"
                 alt="close icon"
                 onClick={() => close()}
               />

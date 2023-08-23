@@ -3,8 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
-// import LoadingIcon from '../LoadingIcon/LoadingIcon';
-
 function Button({
   variant = 'primary',
   size = 'md',
@@ -31,7 +29,7 @@ function Button({
 }) {
   const variants = {
     primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-md',
-    secondary: '',
+    secondary: 'bg-gray-300 opacity-50 hover:opacity-100 rounded-md',
     danger: '',
     text: 'opacity-50 hover:opacity-100 rounded-md',
     outline: 'border border-gray-200 hover:bg-gray-200 rounded-md',
@@ -51,6 +49,7 @@ function Button({
           sizes[size],
           variants[variant],
           className && className,
+          disabled && 'opacity-25 cursor-not-allowed',
           'transition duration-300',
         )}
         disabled={disabled}

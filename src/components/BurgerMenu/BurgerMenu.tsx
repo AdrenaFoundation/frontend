@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import router, { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -17,10 +18,10 @@ export default function BurgerMenu() {
   const { pathname } = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const PAGES = [
+  const PAGES: { name: string; link: string }[] = [
     { name: 'Dashboard', link: '/dashboard' },
     { name: 'Earn', link: '/earn' },
-    { name: 'Buy', link: '/swap_alp?cluster=devnet' },
+    { name: 'Buy', link: '/swap_alp' },
     { name: 'Onchain Info', link: '/onchain_info' },
     { name: 'Faucet', link: '/faucet_devnet' },
     { name: 'Docs', link: 'https://www.gitbook.com/' },
@@ -33,7 +34,7 @@ export default function BurgerMenu() {
           className="flex items-center justify-center p-1 border w-9 h-8 border-gray-200 rounded-md hover:bg-gray-200 transition duration-300 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <img
+          <Image
             className="cursor-pointer opacity-75"
             src={`/images/icons/${isOpen ? 'cross' : 'burger-menu'}.svg`}
             alt="burger menu icon"
@@ -133,11 +134,12 @@ export default function BurgerMenu() {
             </div>
 
             <div>
-              <img
-                src="images/logo.svg"
+              <Image
+                src="/images/logo.svg"
                 className="m-auto"
                 alt="logo"
-                width="150px"
+                width={150}
+                height={150}
               />
               <Footer />
             </div>

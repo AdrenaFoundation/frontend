@@ -15,6 +15,8 @@ export default function Header() {
   const router = useRouter();
   const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState<boolean>(false);
 
+  const [isBuyOpen, setIsBuyOpen] = useState<boolean>(false);
+
   const PageLink = (url: string, title: string) => (
     <Link
       className={twMerge(
@@ -54,8 +56,46 @@ export default function Header() {
         <>
           {PageLink('/dashboard', 'Dashboard')}
           {PageLink('/earn', 'Earn')}
-          {/* {PageLink('/buy', 'Buy')} */}
-          {PageLink('/swap_alp?cluster=devnet', 'Buy')}
+          <div className="relative">
+            <p
+              className={twMerge(
+                'mt-2',
+                'lg:mt-0',
+                'lg:ml-6',
+                'cursor-pointer',
+                'hover:text-txtregular',
+                'text-txtfade',
+                'shrink-0',
+                'whitespace-nowrap',
+                'font-normal text-sm',
+                pathname === 'swap_alp' && 'text-white',
+              )}
+              onClick={() => setIsBuyOpen(!isBuyOpen)}
+            >
+              Buy
+            </p>
+            <Menu
+              open={isBuyOpen}
+              onClose={() => setIsBuyOpen(false)}
+              className="w-fit"
+            >
+              <MenuItems>
+                <MenuItem
+                  href={'/swap_alp'}
+                  onClick={() => setIsBuyOpen(false)}
+                >
+                  ALP
+                </MenuItem>
+                <MenuItem
+                  href={'https://www.orca.so/'}
+                  target="_blank"
+                  onClick={() => setIsBuyOpen(false)}
+                >
+                  ADX on Orca
+                </MenuItem>
+              </MenuItems>
+            </Menu>
+          </div>
           {PageLink('/onchain_info', 'Onchain Info')}
           {window.adrena.cluster === 'devnet'
             ? PageLink('/faucet_devnet', 'Faucet')

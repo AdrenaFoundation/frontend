@@ -221,6 +221,7 @@ export default function ALPSwap({
           <Button
             title={buttonTitle}
             size="lg"
+            disabled={buttonTitle.includes('Insufficient')}
             className="justify-center w-full mt-5"
             onClick={handleExecuteButton}
           />

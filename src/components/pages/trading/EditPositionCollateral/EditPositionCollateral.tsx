@@ -410,9 +410,8 @@ export default function EditPositionCollateral({
           </li>
 
           <li className={listStyle}>
-            <p className="opacity-50">Fees</p>
+            <p className="opacity-50">Fees </p>
             <p className="font-mono text-right">
-              {' '}
               {amountAndFee
                 ? formatPriceInfo(nativeToUi(amountAndFee.fee, USD_DECIMALS))
                 : '-'}

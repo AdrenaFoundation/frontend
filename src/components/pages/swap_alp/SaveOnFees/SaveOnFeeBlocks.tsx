@@ -2,7 +2,6 @@ import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/common/Button/Button';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
@@ -37,19 +36,30 @@ export default function SaveOnFeesBlocks({
   )?.fee;
 
   return (
-    <div className={'grid grid-cols-1 md:grid-cols-2 gap-3 w-full'}>
+    <div className={'grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-4'}>
       {rows.map((row) => (
         <div
           key={row.token.name}
           className={twMerge(
-            'flex flex-col w-full border mt-4 rounded-lg transition-border duration-300',
+            'flex flex-col w-full border rounded-lg transition-border duration-300 cursor-pointer hover:border-gray-400',
             collateralToken?.name === row.token.name
-              ? 'border-[#646464]'
-              : 'border-gray-300 ',
+              ? 'border-gray-400'
+              : 'border-gray-300',
           )}
+          onClick={() => {
+            onCollateralTokenChange(row.token);
+            setCollateralInput(row.equivalentAmount);
+          }}
         >
           <div className="flex items-center justify-between border-b border-b-gray-300 p-3 py-2">
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2 items-center">
+              <input
+                className="cursor-pointer mx-1"
+                type="radio"
+                checked={collateralToken?.name === row.token.name}
+                onChange={() => undefined}
+              />
+
               <Image
                 src={row.token.image}
                 width={30}
@@ -79,7 +89,10 @@ export default function SaveOnFeesBlocks({
                       )}
                     >
                       {currentFee > row.fee ? 'Save up ' : ''}
-                      {formatPriceInfo(currentFee - row.fee)}
+
+                      {currentFee - row.fee !== 0 && currentFee - row.fee < 0.01
+                        ? '< 0.01'
+                        : formatPriceInfo(currentFee - row.fee)}
                     </p>
                   )}
 
@@ -101,32 +114,29 @@ export default function SaveOnFeesBlocks({
               <div className="text-sm opacity-50">Available</div>
               <Tippy
                 content={
-                  <div>
+                  <ul className="flex flex-col gap-2">
                     {row.currentPoolAmount && (
-                      <div>
-                        {' '}
-                        <span className="text-sm text-txtfade">
-                          Current Pool Amount:{' '}
-                        </span>
-                        <span className="text-sm font-mono">
-                          {`${formatPriceInfo(row.currentPoolAmountUsd)} (${
+                      <li className="flex flex-row gap-2 justify-between">
+                        <p className="text-sm text-txtfade">
+                          Current Pool Amount:
+                        </p>
+                        <p className="text-sm font-mono">
+                          {` ${formatPriceInfo(row.currentPoolAmountUsd)}`}
+                          <br />
+                          {`(${formatNumber(row.currentPoolAmount, 2)} ${
                             row.token.name
-                          } ${formatNumber(row.currentPoolAmount, 2)})
-                        `}
-                        </span>
-                      </div>
+                          })`}
+                        </p>
+                      </li>
                     )}
 
-                    <div>
-                      {' '}
-                      <span className="text-sm text-txtfade">
-                        Max Pool Capacity:{' '}
-                      </span>
-                      <span className="text-sm font-mono">
-                        {formatPriceInfo(row.maxPoolCapacity)}
-                      </span>
-                    </div>
-                  </div>
+                    <li className="flex flex-row gap-2 justify-between">
+                      <p className="text-sm text-txtfade">Max Pool Capacity:</p>
+                      <p className="text-sm font-mono">
+                        {`${formatPriceInfo(row.maxPoolCapacity)}`}
+                      </p>
+                    </li>
+                  </ul>
                 }
                 placement="bottom"
               >
@@ -141,7 +151,6 @@ export default function SaveOnFeesBlocks({
             <div className="flex w-full justify-between">
               <p className="text-sm opacity-50">Wallet</p>
               <p className="text-sm font-mono">
-                {' '}
                 {row.tokenBalance
                   ? `${formatNumber(row?.tokenBalance, 2)} ${
                       row?.token.name
@@ -150,7 +159,7 @@ export default function SaveOnFeesBlocks({
               </p>
             </div>
 
-            <div className="flex w-full justify-between">
+            {/* <div className="flex w-full justify-between">
               <Button
                 className="mt-2 bg-[#313131] w-full text-xs py-2"
                 title={`Buy with ${row.token.name}`}
@@ -160,7 +169,7 @@ export default function SaveOnFeesBlocks({
                   setCollateralInput(row.equivalentAmount);
                 }}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       ))}

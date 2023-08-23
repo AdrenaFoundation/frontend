@@ -5,6 +5,7 @@ export default function TabSelect<T extends string>({
   selected,
   onClick,
   tabs,
+  className,
 }: {
   selected?: string;
   tabs: {
@@ -12,6 +13,7 @@ export default function TabSelect<T extends string>({
     icon?: string;
   }[];
   onClick: (title: T, index: number) => void;
+  className?: string;
 }) {
   const [activeElement, setActiveElement] = useState({
     width: 0,
@@ -19,7 +21,6 @@ export default function TabSelect<T extends string>({
     x: 0,
   });
 
-  console.log('selected', tabs, selected);
   const [activeTab, setActiveTab] = useState(selected ? 0 : null);
 
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
@@ -33,6 +34,7 @@ export default function TabSelect<T extends string>({
         x: refs[activeTab].current?.offsetLeft ?? 0,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   return (
@@ -50,7 +52,7 @@ export default function TabSelect<T extends string>({
         <div
           className={twMerge(
             'text-sm font-normal text-center p-1 w-full rounded-lg cursor-pointer capitalize z-10',
-
+            className && className,
             activeTab !== null && index === activeTab
               ? 'opacity-100'
               : 'opacity-50',

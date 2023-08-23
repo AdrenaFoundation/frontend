@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -58,52 +59,22 @@ function WalletAdapter({ className }: { className?: string }) {
         <Modal
           title="Select wallet"
           close={() => dispatch(openCloseConnectionModalAction(false))}
-          className={twMerge(
-            'w-64',
-            'h-32',
-            'flex',
-            'flex-col',
-            'items-center',
-            'justify-center',
-          )}
+          className="flex flex-col items-center w-64 px-3 pb-3"
         >
           <div
-            className={twMerge(
-              'w-full',
-              'h-full',
-              'flex',
-              'flex-col',
-              'justify-evenly',
-              'items-center',
-            )}
+            className="flex flex-row gap-3 items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-300 duration-300 w-full"
             onClick={() => {
               dispatch(connectWalletAction('phantom'));
               dispatch(openCloseConnectionModalAction(false));
             }}
           >
-            <div
-              className={twMerge(
-                'flex',
-                'p-2',
-                'border',
-                'border-grey',
-                'items-center',
-                'w-40',
-                'justify-around',
-                'cursor-pointer',
-                'hover:opacity-90',
-              )}
-            >
-              {
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  className="w-8 h-8"
-                  src="/images/phantom.png"
-                  alt="phantom icon"
-                />
-              }
-              <span className="text-lg">Phantom</span>
-            </div>
+            <Image
+              src="/images/phantom.png"
+              alt="phantom icon"
+              height={30}
+              width={30}
+            />
+            Phantom
           </div>
         </Modal>
       ) : null}

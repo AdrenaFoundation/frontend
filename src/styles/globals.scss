@@ -77,6 +77,12 @@
     @apply font-medium;
   }
 
+  button:focus,
+  input:focus,
+  textarea:focus {
+    @apply outline-none;
+  }
+
   * {
     @apply font-light;
     @apply text-light;
@@ -158,4 +164,23 @@ input[type='number'] {
   div:first {
     display: flex;
   }
+}
+
+input[type='radio'] {
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  font: inherit;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--color-gray-400);
+  border-radius: 50%;
+  transition: 0.3s var(--bezier-spring);
+  box-shadow: 0 0 0 0px var(--color-dark) inset;
+}
+
+input[type='radio']:checked {
+  background-color: var(--color-light);
+  border: 1px solid var(--color-light);
+  box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
