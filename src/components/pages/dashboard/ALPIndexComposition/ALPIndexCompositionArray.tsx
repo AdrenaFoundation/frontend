@@ -54,7 +54,7 @@ export default function ALPIndexCompositionArray({
                   }
                   <div>
                     <p className="ml-4 font-mono capitalize">
-                      {composition.token.name}
+                      {composition.token.symbol}
                     </p>
                     <p className="ml-4 font-mono text-sm opacity-50">
                       {composition.token.symbol}

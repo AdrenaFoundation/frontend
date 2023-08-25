@@ -110,7 +110,7 @@ export default function PositionsArray({
                   alt={`${position.token.symbol} logo`}
                 />
                 <div>
-                  <span className="font-mono">{position.token.name}</span>
+                  <span className="font-mono">{position.token.symbol}</span>
                   <div
                     className={twMerge(
                       'text-xs font-mono capitalize',

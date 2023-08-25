@@ -71,7 +71,7 @@ export default function SaveOnFeesBlocks({
                   {row.token.symbol}
                 </p>
                 <h3 className="text-sm capitalize font-mono">
-                  {row.token.name}
+                  {row.token.symbol}
                 </h3>
               </div>
             </div>
