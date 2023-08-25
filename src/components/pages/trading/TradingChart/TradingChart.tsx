@@ -37,7 +37,7 @@ export default function TradingChart({ token }: { token: Token }) {
           width: '100%',
           height: '100%',
           autosize: true,
-          symbol: `PYTH:${token.name}USD`,
+          symbol: `PYTH:${token.symbol}USD`,
           interval: 'D',
           timezone: 'UTC',
           locale: 'en',
@@ -104,7 +104,7 @@ export default function TradingChart({ token }: { token: Token }) {
   useEffect(() => {
     if (!widget) return;
 
-    widget.options.symbol = `PYTH:${token.name}USD`;
+    widget.options.symbol = `PYTH:${token.symbol}USD`;
 
     widget.reload();
   }, [token, widget]);

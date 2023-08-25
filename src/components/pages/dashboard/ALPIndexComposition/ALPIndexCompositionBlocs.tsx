@@ -16,29 +16,14 @@ export default function ALPIndexCompositionBlocs({
   return (
     <div
       className={twMerge(
-        'flex',
-        'flex-col',
-        'sm:flex-row',
-        'flex-wrap',
-        'justify-evenly',
+        'flex flex-col sm:flex-row flex-wrap justify-evenly',
         className,
       )}
     >
       {alpIndexComposition.map((composition) => (
         <div
-          key={composition.token.name}
-          className={twMerge(
-            'flex',
-            'flex-col',
-            'sm:w-[45%]',
-            'w-full',
-            'border-gray-300',
-            'bg-gray-200 rounded-lg',
-            'border',
-            'justify-evenly',
-            'mt-4',
-            'p-4',
-          )}
+          key={composition.token.symbol}
+          className="flex flex-col sm:w-[45%] w-full border-gray-300 bg-gray-200 rounded-lg border justify-evenly mt-4 p-4"
         >
           <div className="flex items-center border-b border-grey pb-2">
             {
@@ -46,10 +31,10 @@ export default function ALPIndexCompositionBlocs({
               <img
                 className="w-6 h-6"
                 src={composition.token.image}
-                alt={`${composition.token.name} logo`}
+                alt={`${composition.token.symbol} logo`}
               />
             }
-            <span className="ml-4">{composition.token.name}</span>
+            <span className="ml-4">{composition.token.symbol}</span>
           </div>
 
           <div className="flex flex-col w-full mt-4">

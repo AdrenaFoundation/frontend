@@ -32,17 +32,17 @@ export default function SaveOnFeesBlocks({
   collateralToken: Token | null;
 }) {
   const currentFee = rows.find(
-    (row) => row.token.name === collateralToken?.name,
+    (row) => row.token.symbol === collateralToken?.symbol,
   )?.fee;
 
   return (
     <div className={'grid grid-cols-1 md:grid-cols-2 gap-5 w-full mt-4'}>
       {rows.map((row) => (
         <div
-          key={row.token.name}
+          key={row.token.symbol}
           className={twMerge(
             'flex flex-col w-full border rounded-lg transition-border duration-300 cursor-pointer hover:border-gray-400',
-            collateralToken?.name === row.token.name
+            collateralToken?.symbol === row.token.symbol
               ? 'border-gray-400'
               : 'border-gray-300',
           )}
@@ -56,7 +56,7 @@ export default function SaveOnFeesBlocks({
               <input
                 className="cursor-pointer mx-1"
                 type="radio"
-                checked={collateralToken?.name === row.token.name}
+                checked={collateralToken?.symbol === row.token.symbol}
                 onChange={() => undefined}
               />
 
@@ -64,12 +64,14 @@ export default function SaveOnFeesBlocks({
                 src={row.token.image}
                 width={30}
                 height={30}
-                alt={`${row.token.name} logo`}
+                alt={`${row.token.symbol} logo`}
               />
               <div>
-                <p className="text-xs opacity-50 font-mono">{row.token.name}</p>
+                <p className="text-xs opacity-50 font-mono">
+                  {row.token.symbol}
+                </p>
                 <h3 className="text-sm capitalize font-mono">
-                  {row.token.coingeckoId}
+                  {row.token.name}
                 </h3>
               </div>
             </div>
@@ -79,7 +81,7 @@ export default function SaveOnFeesBlocks({
               <div className="flex flex-row items-center gap-2 justify-end text-right">
                 {currentFee &&
                   row.fee &&
-                  collateralToken?.name !== row.token.name && (
+                  collateralToken?.symbol !== row.token.symbol && (
                     <p
                       className={twMerge(
                         'text-xs font-medium text-right',
@@ -124,7 +126,7 @@ export default function SaveOnFeesBlocks({
                           {` ${formatPriceInfo(row.currentPoolAmountUsd)}`}
                           <br />
                           {`(${formatNumber(row.currentPoolAmount, 2)} ${
-                            row.token.name
+                            row.token.symbol
                           })`}
                         </p>
                       </li>
@@ -153,7 +155,7 @@ export default function SaveOnFeesBlocks({
               <p className="text-sm font-mono">
                 {row.tokenBalance
                   ? `${formatNumber(row?.tokenBalance, 2)} ${
-                      row?.token.name
+                      row?.token.symbol
                     } (${formatPriceInfo(row?.balanceInUsd)})`
                   : '–'}
               </p>

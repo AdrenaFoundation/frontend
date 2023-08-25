@@ -4,7 +4,7 @@ import BN from 'bn.js';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { useSelector } from '@/store/store';
-import { Token, TokenName } from '@/types';
+import { Token, TokenSymbol } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -49,7 +49,7 @@ export default function ALPSwap({
   setFeesUsd: (v: number | null) => void;
   allowedCollateralTokens: Token[] | null;
   feesAndAmounts: {
-    [tokenName: TokenName]: { fees: number | null; amount: number | null };
+    [tokenSymbol: TokenSymbol]: { fees: number | null; amount: number | null };
   } | null;
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
@@ -142,10 +142,10 @@ export default function ALPSwap({
     }
 
     const walletCollateralTokenBalance =
-      walletTokenBalances?.[collateralToken.name];
+      walletTokenBalances?.[collateralToken.symbol];
 
     const walletAlpTokenBalance =
-      walletTokenBalances?.[window.adrena.client.alpToken.name];
+      walletTokenBalances?.[window.adrena.client.alpToken.symbol];
 
     // Loading, should happens quickly
     if (typeof walletCollateralTokenBalance === 'undefined') {
@@ -159,7 +159,7 @@ export default function ALPSwap({
         collateralInput > walletCollateralTokenBalance) ||
         walletCollateralTokenBalance === null)
     ) {
-      return `Insufficient ${collateralToken.name} balance`;
+      return `Insufficient ${collateralToken.symbol} balance`;
     }
 
     // If user wallet balance doesn't have enough tokens, tell user
@@ -168,14 +168,14 @@ export default function ALPSwap({
       ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
         walletAlpTokenBalance === null)
     ) {
-      return `Insufficient ${window.adrena.client.alpToken.name} balance`;
+      return `Insufficient ${window.adrena.client.alpToken.symbol} balance`;
     }
 
     if (selectedAction === 'buy') {
-      return `Buy ${window.adrena.client.alpToken.name}`;
+      return `Buy ${window.adrena.client.alpToken.symbol}`;
     }
 
-    return `Sell ${window.adrena.client.alpToken.name}`;
+    return `Sell ${window.adrena.client.alpToken.symbol}`;
   })();
 
   return (

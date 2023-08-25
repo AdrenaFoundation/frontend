@@ -49,7 +49,7 @@ export default function ALPSwapInputs({
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   feesAndAmounts: {
-    [tokenName: string]: { fees: number | null; amount: number | null };
+    [tokenSymbol: string]: { fees: number | null; amount: number | null };
   } | null;
 }) {
   const wallet = useSelector((s) => s.walletState);
@@ -81,8 +81,8 @@ export default function ALPSwapInputs({
   {
     // Adapt displayed prices when token prices change
     useEffect(() => {
-      const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
-      const alpTokenPrice = tokenPrices[alpToken.name] ?? null;
+      const collateralTokenPrice = tokenPrices[collateralToken.symbol] ?? null;
+      const alpTokenPrice = tokenPrices[alpToken.symbol] ?? null;
 
       if (collateralTokenPrice !== null && collateralInput !== null) {
         setCollateralPrice(collateralInput * collateralTokenPrice);
@@ -95,16 +95,16 @@ export default function ALPSwapInputs({
     }, [
       // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      collateralToken && tokenPrices[collateralToken.name],
+      collateralToken && tokenPrices[collateralToken.symbol],
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      alpToken && tokenPrices[alpToken.name],
+      alpToken && tokenPrices[alpToken.symbol],
     ]);
 
     useEffect(() => {
       // Ignore the event as it is not the editable input
       if (actionType === 'buy') return;
 
-      const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
+      const collateralTokenPrice = tokenPrices[collateralToken.symbol] ?? null;
 
       // missing informations or empty input
       if (alpInput === null || collateralTokenPrice === null) {
@@ -174,8 +174,8 @@ export default function ALPSwapInputs({
       // Ignore the event as it is not the editable input
       if (actionType === 'sell') return;
 
-      const alpTokenPrice = tokenPrices[alpToken.name] ?? null;
-      const collateralTokenPrice = tokenPrices[collateralToken.name] ?? null;
+      const alpTokenPrice = tokenPrices[alpToken.symbol] ?? null;
+      const collateralTokenPrice = tokenPrices[collateralToken.symbol] ?? null;
 
       // missing informations or empty input
       if (
@@ -277,7 +277,7 @@ export default function ALPSwapInputs({
         <>
           {connected && alpToken
             ? `Balance · ${(
-                walletTokenBalances?.[alpToken.name] ?? '0'
+                walletTokenBalances?.[alpToken.symbol] ?? '0'
               ).toLocaleString()}`
             : null}
         </>
@@ -287,7 +287,7 @@ export default function ALPSwapInputs({
       selectedToken={alpToken}
       tokenList={[alpToken]}
       onMaxButtonClick={() => {
-        onChangeAlpInput(walletTokenBalances?.[alpToken.name] ?? 0);
+        onChangeAlpInput(walletTokenBalances?.[alpToken.symbol] ?? 0);
       }}
       onTokenSelect={() => {
         // only one token
@@ -313,7 +313,7 @@ export default function ALPSwapInputs({
           {/* Display wallet balance */}
           {connected && collateralToken
             ? `Balance · ${(
-                walletTokenBalances?.[collateralToken.name] ?? '0'
+                walletTokenBalances?.[collateralToken.symbol] ?? '0'
               ).toLocaleString()}`
             : null}
         </>
@@ -324,7 +324,7 @@ export default function ALPSwapInputs({
       tokenList={allowedCollateralTokens || []}
       onMaxButtonClick={() => {
         onChangeCollateralInput(
-          walletTokenBalances?.[collateralToken.name] ?? 0,
+          walletTokenBalances?.[collateralToken.symbol] ?? 0,
         );
       }}
       onTokenSelect={onCollateralTokenChange}
@@ -337,29 +337,9 @@ export default function ALPSwapInputs({
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
       {/* Switch Buy/Sell */}
-      <div
-        className={twMerge(
-          'w-full',
-          'h-4',
-          'overflow-visible',
-          'flex',
-          'justify-center',
-          'items-center',
-          'z-[2]',
-        )}
-      >
+      <div className="w-full h-4 overflow-visible flex justify-center items-center z-[2]">
         <div
-          className={twMerge(
-            'bg-gray-300',
-            'flex',
-            'rounded-full',
-            'p-1',
-            'w-7',
-            'h-7',
-            'cursor-pointer',
-            'items-center',
-            'justify-center',
-          )}
+          className="bg-gray-300 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
           onClick={() => switchBuySell()}
         >
           {

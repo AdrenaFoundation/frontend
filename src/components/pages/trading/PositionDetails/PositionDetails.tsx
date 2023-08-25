@@ -42,11 +42,11 @@ export default function PositionDetails({
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Available Liquidity</span>
         <span className="font-mono">
-          {custody && tokenB && tokenPrices && tokenPrices[tokenB.name]
+          {custody && tokenB && tokenPrices && tokenPrices[tokenB.symbol]
             ? formatPriceInfo(
                 custody.liquidity *
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  tokenPrices[tokenB.name]!,
+                  tokenPrices[tokenB.symbol]!,
               )
             : '-'}
         </span>

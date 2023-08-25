@@ -26,29 +26,27 @@ export default function TradingInputs({
   return (
     <div
       className={twMerge(
-        'flex items-center gap-5',
-        'h-14',
-        'bg-gray-200 border border-gray-300 border-b-transparent rounded-t-lg',
-        'items-center',
+        'flex items-center gap-5 h-14 bg-gray-200 border border-gray-300 border-b-transparent rounded-t-lg',
         className,
       )}
     >
       <div className="flex items-center sm:border-r sm:border-r-gray-300 h-full p-3">
         <Select
-          selected={`${selected.name} / USD`}
+          selected={`${selected.symbol} / USD`}
           options={tokenList
-            .filter((token) => token.name !== selected.name)
-            .map((token) => `${token.name} / USD`)}
+            .filter((token) => token.symbol !== selected.symbol)
+            .map((token) => `${token.symbol} / USD`)}
           onSelect={(opt: string) => {
-            const selectedTokenName = opt.slice(
+            const selectedTokenSymbol = opt.slice(
               0,
               opt.length - ' / USD'.length,
             );
             // Force linting, you cannot not find the token in the list
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const token = tokenList.find((t) => t.name === selectedTokenName)!;
+            const token = tokenList.find(
+              (t) => t.symbol === selectedTokenSymbol,
+            )!;
 
-            // Should never happens
             if (!token) return;
 
             onChange(token);
@@ -58,10 +56,10 @@ export default function TradingInputs({
 
       <div className="hidden sm:flex flex-row gap-3 p-3 items-center">
         <div className="font-mono mr-3">
-          {tokenPrices && tokenPrices[selected.name]
+          {tokenPrices && tokenPrices[selected.symbol]
             ? // Force linting, we check it just bellow
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              formatPriceInfo(tokenPrices[selected.name]!)
+              formatPriceInfo(tokenPrices[selected.symbol]!)
             : null}
         </div>
 
@@ -69,13 +67,13 @@ export default function TradingInputs({
           <span
             className={twMerge(
               'font-mono text-sm',
-              stats && stats[selected.name].dailyChange > 0
+              stats && stats[selected.symbol].dailyChange > 0
                 ? 'text-green-500'
                 : 'text-red-500',
             )}
           >
             {stats
-              ? `${formatNumber(stats[selected.name].dailyChange, 2)}%`
+              ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
               : '-'}
           </span>
           <span className="text-xs text-txtfade">24h Change</span>
@@ -83,7 +81,7 @@ export default function TradingInputs({
 
         <div className={infoStyle}>
           <span className="font-mono text-sm">
-            {formatPriceInfo(stats?.[selected.name].dailyVolume ?? null)}
+            {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
           </span>
           <span className="text-xs text-txtfade">24h Volume</span>
         </div>

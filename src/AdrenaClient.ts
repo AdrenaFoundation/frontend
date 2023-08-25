@@ -77,7 +77,8 @@ export class AdrenaClient {
 
   public alpToken: Token = {
     mint: this.lpTokenMint,
-    name: 'ALP',
+    name: 'Adrena LP Token',
+    symbol: 'ALP',
     decimals: 6,
     isStable: false,
     image: '/images/alp.png',
@@ -85,7 +86,8 @@ export class AdrenaClient {
 
   public adxToken: Token = {
     mint: this.lmTokenMint,
-    name: 'ADX',
+    name: 'Adrena LM Token',
+    symbol: 'ADX',
     decimals: 6,
     isStable: false,
     image: '/images/adx.png',
@@ -162,6 +164,7 @@ export class AdrenaClient {
         const infos:
           | {
               name: string;
+              symbol: string;
               image: string;
               coingeckoId: string;
               decimals: number;
@@ -175,6 +178,7 @@ export class AdrenaClient {
         return {
           mint: custody.mint,
           name: infos.name,
+          symbol: infos.symbol,
           decimals: infos.decimals,
           isStable: custody.isStable,
           image: infos.image,
@@ -297,6 +301,7 @@ export class AdrenaClient {
         maxRatio: ratios.max.toNumber(),
         targetRatio: ratios.target.toNumber(),
         maxLeverage: custody.pricing.maxLeverage.toNumber() / BPS,
+        owned: nativeToUi(custody.assets.owned, custody.decimals),
         liquidity: nativeToUi(
           custody.assets.owned.sub(custody.assets.locked),
           custody.decimals,

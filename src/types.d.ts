@@ -45,7 +45,7 @@ export type CustodyExtended = {
   targetRatio: number;
   maxRatio: number;
   minRatio: number;
-
+  owned: number;
   // Expressed in tokens
   // Do liquidity * tokenPrice to get liquidityUsd
   liquidity: number;
@@ -98,9 +98,11 @@ export type PoolExtended = {
 
 // Alias to improve readability
 export type TokenName = string;
+export type TokenSymbol = string;
 
 export interface Token {
   mint: PublicKey;
+  symbol: TokenSymbol;
   name: TokenName;
   decimals: number;
   isStable: boolean;

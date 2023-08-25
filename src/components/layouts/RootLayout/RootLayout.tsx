@@ -4,7 +4,6 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import Head from 'next/head';
 import { ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { twMerge } from 'tailwind-merge';
 
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -26,25 +25,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
 
       {isBigScreen ? <Header /> : <BurgerMenu />}
 
-      <div
-        className={twMerge(
-          'w-full',
-          'grow',
-          'flex',
-          'p-4',
-
-          'justify-center',
-        )}
-      >
-        <div
-          className={twMerge(
-            `w-full pt-[75px] xl:pt-[25px]`,
-            'flex',
-            'max-w-[1400px]',
-            'flex-col',
-            'grow',
-          )}
-        >
+      <div className="w-full grow flex p-4 justify-center">
+        <div className="w-full pt-[75px] xl:pt-[25px] flex max-w-[1400px] flex-col grow">
           {children}
         </div>
       </div>

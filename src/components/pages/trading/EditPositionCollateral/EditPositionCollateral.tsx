@@ -45,10 +45,10 @@ export default function EditPositionCollateral({
     position.liquidationPrice ?? null,
   );
 
-  const markPrice: number | null = tokenPrices[position.token.name];
+  const markPrice: number | null = tokenPrices[position.token.symbol];
 
   const walletBalance: number | null =
-    walletTokenBalances?.[position.token.name] ?? null;
+    walletTokenBalances?.[position.token.symbol] ?? null;
 
   const listStyle = 'w-full flex justify-between';
 
@@ -264,7 +264,7 @@ export default function EditPositionCollateral({
               Withdraw
               {input && markPrice
                 ? ` · ${formatNumber(input / markPrice, 6)} ${
-                    position.token.name
+                    position.token.symbol
                   }`
                 : null}
             </>
@@ -277,7 +277,7 @@ export default function EditPositionCollateral({
           maxButton={true}
           selectedToken={
             {
-              name: 'USD',
+              symbol: 'USD',
             } as Token
           }
           tokenList={[]}
@@ -378,7 +378,7 @@ export default function EditPositionCollateral({
             </p>
           </li>
           <li className={listStyle}>
-            <p className="opacity-50">Collateral ({position.token.name})</p>
+            <p className="opacity-50">Collateral ({position.token.symbol})</p>
             <p className="flex font-mono text-right">
               {!input && markPrice
                 ? formatNumber(position.collateralUsd / markPrice, USD_DECIMALS)

@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import React, { useEffect } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import {
   autoConnectWalletAction,
@@ -41,7 +40,7 @@ function WalletAdapter({ className }: { className?: string }) {
   return (
     <div>
       <Button
-        className={twMerge(className)}
+        className={className}
         title={
           connected
             ? getAbbrevWalletAddress(wallet.walletAddress)

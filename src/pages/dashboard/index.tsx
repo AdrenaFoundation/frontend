@@ -15,10 +15,10 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
   const adxTotalSupply = useADXTotalSupply();
 
   const alpPrice =
-    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.name]) ??
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
   const adxPrice =
-    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.name]) ??
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
 
   const composition = useALPIndexComposition(custodies);
@@ -75,7 +75,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
   };
 
   const ALPChartData: ChartData<'doughnut'> = {
-    labels: composition?.map((comp) => comp.token.name),
+    labels: composition?.map((comp) => comp.token.symbol),
     datasets: [
       {
         label: 'ALP Pool',

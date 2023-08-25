@@ -17,8 +17,6 @@ export default function StakeList({
       }[]
     | null;
 }) {
-  const columnStyle = 'text-sm py-5';
-
   return (
     <table className="w-full">
       <thead>
@@ -46,52 +44,27 @@ export default function StakeList({
               i !== stakePositions.length - 1 && 'border-b border-b-gray-300',
             )}
           >
-            <td
-              className={twMerge(
-                !!i ? columnStyle : 'text-sm pb-5',
-                'font-mono',
-              )}
-            >
+            <td className="py-5 text-sm font-mono">
               {formatNumber(position.amount, 2)} ADX
             </td>
 
-            <td
-              className={twMerge(
-                !!i ? columnStyle : 'text-sm pb-5',
-                'font-mono',
-              )}
-            >
+            <td className="py-5 text-sm font-mono">
               {formatNumber(position.multiplier, 2)}
             </td>
 
-            <td
-              className={twMerge(
-                !!i ? columnStyle : 'text-sm pb-5',
-                'font-mono',
-              )}
-            >
+            <td className="py-5 text-sm font-mono">
               {formatPriceInfo(position.rewards)}
             </td>
 
-            <td
-              className={twMerge(
-                !!i ? columnStyle : 'text-sm pb-5',
-                'font-mono',
-              )}
-            >
+            <td className="py-5 text-sm font-mono">
               {position.duration} <span className="opacity-50">days</span>
             </td>
 
-            <td
-              className={twMerge(
-                !!i ? columnStyle : 'text-sm pb-5',
-                'font-mono',
-              )}
-            >
+            <td className="py-5 text-sm font-mono">
               {formatPriceInfo(position.yield)}
             </td>
 
-            <td className={twMerge(!!i ? columnStyle : 'text-sm pb-5')}>
+            <td className="py-5 text-sm">
               <Button
                 className="w-full"
                 variant="secondary"
@@ -106,12 +79,6 @@ export default function StakeList({
                 }
                 size="sm"
               />
-              {/* <Image
-                src="/images/Icons/lock.svg"
-                width={16}
-                height={16}
-                alt={'lock icon'}
-              /> */}
             </td>
           </tr>
         ))}

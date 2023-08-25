@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { setWalletTokenBalancesAction } from '@/actions/walletBalancesActions';
 import { SOL_DECIMALS } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
-import { TokenName } from '@/types';
+import { TokenSymbol } from '@/types';
 import { findATAAddressSync, nativeToUi } from '@/utils';
 
 // TODO: Make it responsive to wallet token balance change
@@ -81,10 +81,10 @@ const useWatchWalletBalance = (): {
     dispatch(
       setWalletTokenBalancesAction(
         balances.reduce((acc, balance, index) => {
-          acc[tokens[index].name] = balance;
+          acc[tokens[index].symbol] = balance;
 
           return acc;
-        }, {} as Record<TokenName, number | null>),
+        }, {} as Record<TokenSymbol, number | null>),
       ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

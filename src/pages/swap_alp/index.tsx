@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import Loader from '@/components/Loader/Loader';
 import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
 import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
 import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
@@ -13,7 +14,7 @@ import { nativeToUi, uiToNative } from '@/utils';
 let loadingCounter = 0;
 
 type feesAndAmountsType = {
-  [tokenName: string]: {
+  [tokenSymbol: string]: {
     fees: number | null;
     amount: number | null;
     equivalentAmount: number | null;
@@ -52,16 +53,11 @@ export default function SwapALP({
 
         if (!custody) return acc;
 
-        const owned = nativeToUi(
-          custody.nativeObject.assets.owned,
-          token.decimals,
-        );
-
-        const price = tokenPrices[token.name];
-        if (price === null || owned === null) {
+        const price = tokenPrices[token.symbol];
+        if (price === null || custody.owned === null) {
           return acc;
         }
-        return acc + owned * price;
+        return acc + custody.owned * price;
       }, 0),
     [tokenPrices, custodies],
   );
@@ -71,11 +67,11 @@ export default function SwapALP({
 
     const data = await Promise.all(
       window.adrena.client.tokens.map(async (token) => {
-        const price = tokenPrices[token.name];
+        const price = tokenPrices[token.symbol];
 
         if (!price || !collateralToken || !alpInput || !collateralInput) {
           return {
-            tokenName: token.name,
+            tokenSymbol: token.symbol,
             fees: null,
             amount: null,
             equivalentAmount: null,
@@ -84,11 +80,11 @@ export default function SwapALP({
 
         const input = selectedAction === 'buy' ? collateralInput : alpInput;
 
-        const collateralTokenPrice = tokenPrices[collateralToken.name];
+        const collateralTokenPrice = tokenPrices[collateralToken.symbol];
 
         if (collateralTokenPrice === null) {
           return {
-            tokenName: token.name,
+            tokenSymbol: token.symbol,
             fees: null,
             amount: null,
             equivalentAmount: null,
@@ -99,7 +95,7 @@ export default function SwapALP({
 
         if (equivalentAmount === 0) {
           return {
-            tokenName: token.name,
+            tokenSymbol: token.symbol,
             fees: 0,
             amount: 0,
             equivalentAmount,
@@ -122,7 +118,7 @@ export default function SwapALP({
 
           if (amountAndFees === null) {
             return {
-              tokenName: token.name,
+              tokenSymbol: token.symbol,
               fees: null,
               amount: null,
               equivalentAmount,
@@ -130,7 +126,7 @@ export default function SwapALP({
           }
 
           return {
-            tokenName: token.name,
+            tokenSymbol: token.symbol,
             fees: price * nativeToUi(amountAndFees.fee, token.decimals),
             amount: nativeToUi(
               amountAndFees.amount,
@@ -141,7 +137,7 @@ export default function SwapALP({
         } catch (e) {
           console.log(e);
           return {
-            tokenName: token.name,
+            tokenSymbol: token.symbol,
             fees: null,
             amount: null,
             equivalentAmount,
@@ -154,7 +150,7 @@ export default function SwapALP({
       if (token === null) return acc;
       return {
         ...acc,
-        [token.tokenName]: {
+        [token.tokenSymbol]: {
           fees: token.fees,
           amount: token.amount,
           equivalentAmount: token.equivalentAmount,
@@ -214,7 +210,7 @@ export default function SwapALP({
   };
 
   if (allowedCollateralTokens === null) {
-    return <div>Loading...</div>; // proper loader
+    return <Loader />;
   }
 
   return (

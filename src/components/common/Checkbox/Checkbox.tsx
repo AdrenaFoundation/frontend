@@ -12,16 +12,8 @@ export default function Checkbox({
   return (
     <div
       className={twMerge(
+        'h-3 w-3 border border-white rounded-[0.1em] cursor-pointer flex justify-center items-center',
         className,
-        'h-3',
-        'w-3',
-        'border',
-        'border-white',
-        'rounded-[0.1em]',
-        'cursor-pointer',
-        'flex',
-        'justify-center',
-        'items-center',
       )}
       onClick={() => onChange(!checked)}
     >

@@ -47,7 +47,7 @@ const useWatchTokenPrices = () => {
     prices.map(({ price }, index) => {
       dispatch(
         setTokenPriceAction(
-          window.adrena.client.tokens[index].name,
+          window.adrena.client.tokens[index].symbol,
           price ?? null,
         ),
       );
@@ -84,7 +84,7 @@ const useWatchTokenPrices = () => {
 
     dispatch(
       setTokenPriceAction(
-        window.adrena.client.alpToken.name,
+        window.adrena.client.alpToken.symbol,
         price ? nativeToUi(price, USD_DECIMALS) : null,
       ),
     );

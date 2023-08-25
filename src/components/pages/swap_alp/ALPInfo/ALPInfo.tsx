@@ -11,7 +11,8 @@ export default function ALPInfo({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const lpTotalSupplyAmount = useALPCirculatingSupply();
 
-  const alpTokenPrice = tokenPrices[window.adrena.client.alpToken.name] ?? null;
+  const alpTokenPrice =
+    tokenPrices[window.adrena.client.alpToken.symbol] ?? null;
 
   const staked = 100; // TODO: plug in
   return (

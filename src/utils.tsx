@@ -86,7 +86,7 @@ export function uiToNative(nb: number, decimals: number): BN {
 }
 
 export function getTokenNameByMint(mint: PublicKey): string {
-  return window.adrena.config.tokensInfo[mint.toBase58()]?.name ?? 'Unknown';
+  return window.adrena.config.tokensInfo[mint.toBase58()]?.symbol ?? 'Unknown';
 }
 
 export function addNotification({

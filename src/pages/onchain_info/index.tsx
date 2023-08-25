@@ -101,9 +101,9 @@ export default function OnchainInfo({}: PageProps) {
         return (
           <div className={tableClasses} key={custody.mint.toBase58()}>
             <div className={titleClasses}>
-              {token?.name ? (
+              {token?.symbol ? (
                 <div className="flex flex-row">
-                  {token.name} Custody
+                  {token.symbol} Custody
                   <Image
                     src={token.image}
                     alt="logo"
@@ -126,7 +126,7 @@ export default function OnchainInfo({}: PageProps) {
 
             {token ? (
               <div className={rowClasses}>
-                <div className={subtitleClasses}>{token.name} Mint</div>
+                <div className={subtitleClasses}>{token.symbol} Mint</div>
                 <div className={infoClasses}>
                   {solanaExplorerLink(token.mint)}
                 </div>

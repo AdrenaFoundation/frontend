@@ -2,7 +2,6 @@ import { BN } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
@@ -60,13 +59,13 @@ export default function Trade({
     router.replace({
       query: {
         ...router.query,
-        pair: `${tokenA.name}_${tokenB.name}`,
+        pair: `${tokenA.symbol}_${tokenB.symbol}`,
         action: selectedAction,
       },
     });
     // Use custom triggers to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!router, tokenA?.name, tokenB?.name, selectedAction]);
+  }, [!!router, tokenA?.symbol, tokenB?.symbol, selectedAction]);
 
   // Setup
   useEffect(() => {
@@ -111,8 +110,12 @@ export default function Trade({
 
       const [tokenAName, tokenBName] = pair;
 
-      const tokenA = tokenACandidate.find((token) => token.name === tokenAName);
-      const tokenB = tokenBCandidate.find((token) => token.name === tokenBName);
+      const tokenA = tokenACandidate.find(
+        (token) => token.symbol === tokenAName,
+      );
+      const tokenB = tokenBCandidate.find(
+        (token) => token.symbol === tokenBName,
+      );
 
       // bad URL
       if (!tokenA || !tokenB) {
@@ -132,7 +135,7 @@ export default function Trade({
     // If token is not set or token is not allowed, set default token
     if (
       !tokenA ||
-      !tokenACandidate.find((token) => token.name === tokenA.name)
+      !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
     ) {
       setTokenA(tokenACandidate[0]);
     }
@@ -140,7 +143,7 @@ export default function Trade({
     // If token is not set or token is not allowed, set default token
     if (
       !tokenB ||
-      !tokenBCandidate.find((token) => token.name === tokenB.name)
+      !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
       setTokenB(tokenBCandidate[0]);
     }
@@ -180,12 +183,12 @@ export default function Trade({
       });
     }
 
-    const tokenBPrice = tokenPrices[tokenB.name];
+    const tokenBPrice = tokenPrices[tokenB.symbol];
     if (!tokenBPrice) {
       return addNotification({
         type: 'info',
         title: 'Cannot open position',
-        message: `Missing ${tokenB.name} price`,
+        message: `Missing ${tokenB.symbol} price`,
       });
     }
 
@@ -311,7 +314,7 @@ export default function Trade({
       return '...';
     }
 
-    const walletTokenABalance = walletTokenBalances?.[tokenA.name];
+    const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     // Loading, should happens quickly
     if (typeof walletTokenABalance === 'undefined') {
@@ -320,7 +323,7 @@ export default function Trade({
 
     // If user wallet balance doesn't have enough tokens, tell user
     if (!walletTokenABalance || inputAValue > walletTokenABalance) {
-      return `Insufficient ${tokenA.name} balance`;
+      return `Insufficient ${tokenA.symbol} balance`;
     }
 
     if (openedPosition) {
@@ -340,26 +343,8 @@ export default function Trade({
   })();
 
   return (
-    <div
-      className={twMerge(
-        'w-full',
-        'flex',
-        'flex-col',
-        'items-center',
-        'xl:flex-row',
-        'xl:justify-center',
-        'xl:items-start',
-      )}
-    >
-      <div
-        className={twMerge(
-          'flex',
-          'flex-col',
-          'w-full h-full',
-          'xl:w-[60%]',
-          'xl:max-w-[60em]',
-        )}
-      >
+    <div className="w-full flex flex-col items-center xl:flex-row xl:justify-center xl:items-start">
+      <div className="flex flex-col w-full h-full xl:w-[60%] xl:max-w-[60em]">
         {/* Trading chart header */}
         {tokenB ? (
           <TradingChartHeader
@@ -375,17 +360,7 @@ export default function Trade({
           />
         ) : null}
 
-        <div
-          className={twMerge(
-            'h-[90em]',
-            'shrink-1',
-            'grow',
-
-            'flex',
-            'max-w-full',
-            'max-h-[30em]',
-          )}
-        >
+        <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
           {/* Display trading chart for appropriate token */}
           {tokenA && tokenB ? (
             <>
@@ -400,7 +375,7 @@ export default function Trade({
           ) : null}
         </div>
 
-        <div className="bg-gray-200 border border-gray-300 rounded-lg p-2 h-full">
+        <div className="bg-gray-200 border border-gray-300 rounded-lg p-5 h-full">
           <Positions
             positions={positions}
             triggerPositionsReload={triggerPositionsReload}
@@ -409,13 +384,7 @@ export default function Trade({
       </div>
 
       <div className="flex flex-col mt-4 xl:ml-4 xl:mt-0">
-        <div
-          className={twMerge(
-            'w-full md:w-[26em]',
-            'bg-gray-200 border border-gray-300 rounded-lg',
-            'p-4',
-          )}
-        >
+        <div className="w-full md:w-[26em] bg-gray-200 border border-gray-300 rounded-lg p-4">
           <TabSelect
             selected={selectedAction}
             tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
@@ -458,18 +427,12 @@ export default function Trade({
         </div>
 
         {/* Position details */}
-        <div
-          className={twMerge(
-            'md:w-[26em]',
-            'mt-4',
-            'bg-gray-200 border border-gray-300 rounded-lg p-4',
-          )}
-        >
+        <div className="md:w-[26em] mt-4 bg-gray-200 border border-gray-300 rounded-lg p-4">
           <div className=" pb-0">
             <span className="capitalize text-xs opacity-25">
               {selectedAction}
               {selectedAction === 'short' || selectedAction === 'long' ? (
-                <span> {tokenB?.name ?? '-'}</span>
+                <span> {tokenB?.symbol ?? '-'}</span>
               ) : null}
             </span>
           </div>
@@ -483,16 +446,16 @@ export default function Trade({
                     tokenB &&
                     inputBValue &&
                     tokenPrices &&
-                    tokenPrices[tokenB.name]
-                      ? tokenPrices[tokenB.name]
+                    tokenPrices[tokenB.symbol]
+                      ? tokenPrices[tokenB.symbol]
                       : null
                   }
                   exitPrice={
                     tokenB &&
                     inputBValue &&
                     tokenPrices &&
-                    tokenPrices[tokenB.name]
-                      ? tokenPrices[tokenB.name]
+                    tokenPrices[tokenB.symbol]
+                      ? tokenPrices[tokenB.symbol]
                       : null
                   }
                 />

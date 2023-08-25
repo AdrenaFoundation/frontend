@@ -6,6 +6,7 @@ export default interface IConfiguration {
   readonly tokensInfo: {
     [tokenPubkey: string]: {
       name: string;
+      symbol: string;
       image: string;
       coingeckoId: string;
       decimals: number;

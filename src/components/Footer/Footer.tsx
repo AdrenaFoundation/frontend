@@ -1,26 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { twMerge } from 'tailwind-merge';
 
 export default function Footer() {
   return (
-    <div
-      className={twMerge(
-        'flex-col',
-        'w-full',
-        'h-auto',
-        'pt-4',
-        'pb-4',
-        'border-t',
-        'border-grey',
-        'justify-center',
-        'items-center',
-        'shrink-0',
-      )}
-    >
-      <div
-        className={twMerge('flex', 'w-full', 'justify-center', 'items-center')}
-      >
+    <div className="flex-col w-full h-auto pt-4 pb-4 border-t border-grey justify-center items-center shrink-0">
+      <div className="flex w-full justify-center items-center">
         <Link
           href="https://github.com/orgs/AdrenaDEX/repositories"
           target="_blank"

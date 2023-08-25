@@ -34,7 +34,7 @@ export default function Positions({
       <AnimatePresence>
         {positionToClose && (
           <Modal
-            title={`Close ${positionToClose.side} ${positionToClose.token.name} Position`}
+            title={`Close ${positionToClose.side} ${positionToClose.token.symbol} Position`}
             close={() => setPositionToClose(null)}
             className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
           >
@@ -49,7 +49,7 @@ export default function Positions({
         )}
         {positionToEdit && (
           <Modal
-            title={`Edit ${positionToEdit.side} ${positionToEdit.token.name} Position`}
+            title={`Edit ${positionToEdit.side} ${positionToEdit.token.symbol} Position`}
             close={() => setPositionToEdit(null)}
             className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
           >

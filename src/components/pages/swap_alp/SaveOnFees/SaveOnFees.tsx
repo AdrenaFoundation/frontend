@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
-import { Token, TokenName } from '@/types';
+import { Token, TokenSymbol } from '@/types';
 
 import SaveOnFeesBlocks from './SaveOnFeeBlocks';
 
@@ -31,7 +31,7 @@ export default function SaveOnFees({
 }: {
   allowedCollateralTokens: Token[];
   feesAndAmounts: {
-    [tokenName: TokenName]: {
+    [tokenSymbol: TokenSymbol]: {
       fees: number | null;
       amount: number | null;
       equivalentAmount: number | null;
@@ -50,9 +50,9 @@ export default function SaveOnFees({
 
   const rows: rowsType = useMemo(() => {
     return allowedCollateralTokens.map((token: Token) => {
-      const price = tokenPrices[token.name] ?? null;
+      const price = tokenPrices[token.symbol] ?? null;
 
-      const tokenBalance = walletTokenBalances?.[token.name] ?? null;
+      const tokenBalance = walletTokenBalances?.[token.symbol] ?? null;
 
       const balanceInUsd =
         tokenBalance !== null && price ? tokenBalance * price : null;
@@ -77,10 +77,10 @@ export default function SaveOnFees({
         return Math.abs(availableUsd);
       })();
 
-      const fee = feesAndAmounts?.[token.name].fees ?? null;
+      const fee = feesAndAmounts?.[token.symbol].fees ?? null;
 
       const equivalentAmount =
-        feesAndAmounts?.[token.name].equivalentAmount ?? null;
+        feesAndAmounts?.[token.symbol].equivalentAmount ?? null;
 
       const currentPoolAmount = custody.liquidity;
       const currentPoolAmountUsd =

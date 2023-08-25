@@ -14,10 +14,7 @@ export default function ALPIndexCompositionArray({
   return (
     <div
       className={twMerge(
-        'border-gray-300',
-        'bg-gray-200 rounded-lg',
-        'border',
-        'pb-2',
+        'border-gray-300 bg-gray-200 rounded-lg border pb-2',
         className,
       )}
     >
@@ -43,7 +40,7 @@ export default function ALPIndexCompositionArray({
           <div className="flex flex-col pl-4 pr-4">
             {alpIndexComposition.map((composition) => (
               <div
-                key={composition.token.name}
+                key={composition.token.symbol}
                 className="flex h-12 w-full items-center"
               >
                 <div className="flex items-center w-40 shrink-0 grow">
@@ -52,15 +49,15 @@ export default function ALPIndexCompositionArray({
                     <img
                       className="w-8 h-8"
                       src={composition.token.image}
-                      alt={`${composition.token.name} logo`}
+                      alt={`${composition.token.symbol} logo`}
                     />
                   }
                   <div>
                     <p className="ml-4 font-mono capitalize">
-                      {composition.token.coingeckoId}
+                      {composition.token.name}
                     </p>
                     <p className="ml-4 font-mono text-sm opacity-50">
-                      {composition.token.name}
+                      {composition.token.symbol}
                     </p>
                   </div>
                 </div>

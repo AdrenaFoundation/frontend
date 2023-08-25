@@ -43,7 +43,7 @@ export default function PositionsBlocks({
           className="flex flex-col bg-secondary border border-gray-300 rounded-lg w-full"
         >
           <div className="border-b border-grey-300 p-4">
-            {position.token.name}
+            {position.token.symbol}
           </div>
 
           <ul className="flex flex-col gap-2 p-4">
@@ -55,8 +55,7 @@ export default function PositionsBlocks({
                 </p>
                 <p
                   className={twMerge(
-                    'ml-1',
-                    'capitalize',
+                    'ml-1 capitalize',
                     position.side === 'long'
                       ? 'text-green-400'
                       : 'text-red-400',
@@ -104,7 +103,7 @@ export default function PositionsBlocks({
             <li className={columnStyle}>
               <p className="opacity-50">Mark Price</p>
               <p className="font-mono text-right">
-                {formatPriceInfo(tokenPrices[position.token.name])}
+                {formatPriceInfo(tokenPrices[position.token.symbol])}
               </p>
             </li>
 
@@ -118,9 +117,9 @@ export default function PositionsBlocks({
 
           <div className="flex gap-3 p-4">
             <Button
-              variant="text"
-              size="sm"
               className="w-full"
+              size="sm"
+              variant="secondary"
               title="Close Collateral"
               onClick={() => {
                 triggerClosePosition(position);
@@ -130,6 +129,7 @@ export default function PositionsBlocks({
             <Button
               className="w-full"
               size="sm"
+              variant="secondary"
               title="Edit Collateral"
               onClick={() => {
                 triggerEditPositionCollateral(position);

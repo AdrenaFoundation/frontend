@@ -24,7 +24,7 @@ export default function PositionsArray({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const connected = !!useSelector((s) => s.walletState.wallet);
 
-  const columnStyle = 'text-sm px-3 ';
+  const columnStyle = 'text-sm py-5';
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -80,7 +80,7 @@ export default function PositionsArray({
             'Market Price',
             'Liq. Price',
           ].map((header) => (
-            <th className="text-xs text-left p-3 opacity-50" key={header}>
+            <th className="text-xs text-left opacity-50" key={header}>
               {header}
             </th>
           ))}
@@ -89,32 +89,17 @@ export default function PositionsArray({
 
       {/* Content */}
       <tbody>
-        {positions === null && !connected ? (
-          <tr>
-            <td className={columnStyle}>Waiting for wallet connection ...</td>
-          </tr>
-        ) : null}
-
-        {positions === null && connected ? (
-          <tr>
-            <td className={columnStyle}>Loading ...</td>
-          </tr>
-        ) : null}
-
-        {positions && !positions.length ? (
-          <tr>
-            <td className={columnStyle}>No opened position</td>
-          </tr>
-        ) : null}
-
-        {positions?.map((position) => (
-          <tr key={position.pubkey.toBase58()}>
+        {positions?.map((position, i) => (
+          <tr
+            key={position.pubkey.toBase58()}
+            className={twMerge(
+              i !== positions.length - 1 && 'border-b border-b-gray-300',
+            )}
+          >
             <td
               className={twMerge(
+                'flex-col justify-center items-start',
                 columnStyle,
-                'flex-col',
-                'justify-center',
-                'items-start',
               )}
             >
               <div className="flex flex-row gap-2">
@@ -122,14 +107,13 @@ export default function PositionsArray({
                   height={32}
                   width={32}
                   src={position.token.image}
-                  alt={`${position.token.name} logo`}
+                  alt={`${position.token.symbol} logo`}
                 />
                 <div>
                   <span className="font-mono">{position.token.name}</span>
                   <div
                     className={twMerge(
-                      'text-xs font-mono',
-                      'capitalize',
+                      'text-xs font-mono capitalize',
                       `text-${position.side === 'long' ? 'green' : 'red'}-500`,
                     )}
                   >
@@ -170,9 +154,9 @@ export default function PositionsArray({
             </td>
 
             <td className={twMerge(columnStyle, 'font-mono')}>
-              {tokenPrices[position.token.name]
+              {tokenPrices[position.token.symbol]
                 ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  formatPriceInfo(tokenPrices[position.token.name]!)
+                  formatPriceInfo(tokenPrices[position.token.symbol]!)
                 : '-'}
             </td>
 

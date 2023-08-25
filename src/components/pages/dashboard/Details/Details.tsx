@@ -9,7 +9,6 @@ import {
 } from 'chart.js';
 import Image from 'next/image';
 import { Doughnut } from 'react-chartjs-2';
-import { twMerge } from 'tailwind-merge';
 
 import { formatPercentage } from '@/utils';
 
@@ -25,15 +24,7 @@ export default function Details({
   chart: ChartData<'doughnut'>;
 }) {
   return (
-    <div
-      className={twMerge(
-        'border sm:w-full',
-        'border-gray-300',
-        'bg-gray-200 rounded-lg',
-        'flex',
-        'flex-col',
-      )}
-    >
+    <div className="border sm:w-full border-gray-300 bg-gray-200 rounded-lg flex flex-col">
       <div className="flex flex-col">
         {/* infos */}
         <div className="border-b border-b-gray-300 flex items-center p-4">

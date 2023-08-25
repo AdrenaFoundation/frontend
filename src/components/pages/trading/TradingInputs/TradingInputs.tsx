@@ -270,41 +270,18 @@ export default function TradingInputs({
       />
 
       {/* Switch AB */}
-      <div
-        className={twMerge(
-          'w-full',
-          'h-4',
-          'overflow-visible',
-          'flex',
-          'justify-center',
-          'items-center',
-          'z-[2]',
-        )}
-      >
+      <div className="w-full h-4 overflow-visible flex justify-center items-center z-[2]">
         <div
-          className={twMerge(
-            'bg-gray-300',
-            'flex',
-            'rounded-full',
-            'p-1',
-            'w-7',
-            'h-7',
-            'cursor-pointer',
-            'items-center',
-            'justify-center',
-          )}
+          className="bg-gray-300 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
           onClick={() => switchAB()}
         >
-          {
-            // eslint-disable-next-line @next/next/no-img-element
-            <Image
-              src="/images/icons/arrow-down-up.svg"
-              alt="swap icon"
-              height={14}
-              width={14}
-              className="opacity-50 hover:opacity-100 transition-opacity duration-300"
-            />
-          }
+          <Image
+            src="/images/icons/arrow-down-up.svg"
+            alt="swap icon"
+            height={14}
+            width={14}
+            className="opacity-50 hover:opacity-100 transition-opacity duration-300"
+          />
         </div>
       </div>
 

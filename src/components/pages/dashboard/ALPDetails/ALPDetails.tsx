@@ -28,7 +28,7 @@ export default function ALPDetails({
   const composition = useALPIndexComposition(custodies);
   const alpTotalSupply = useALPTotalSupply();
   const alpPrice =
-    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.name]) ??
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
 
   const marketCap =
@@ -46,11 +46,7 @@ export default function ALPDetails({
   return (
     <div
       className={twMerge(
-        'border',
-        'border-gray-300',
-        'bg-gray-200 rounded-lg',
-        'flex',
-        'flex-col',
+        'border border-gray-300 bg-gray-200 rounded-lg flex flex-col',
         className,
       )}
     >
@@ -100,31 +96,13 @@ export default function ALPDetails({
           </div>
 
           {/* chart */}
-          <div
-            className={twMerge(
-              'flex',
-              'flex-col',
-              'h-[10em]',
-              'w-[10em]',
-              'relative',
-              'grow',
-              'items-center',
-              'justify-center',
-              'mt-4',
-              'sm:mt-0',
-              'pl-4',
-              'ml-auto',
-              'mr-auto',
-              'sm:ml-0',
-              'sm:mr-0',
-            )}
-          >
+          <div className="flex flex-col h-[10em] w-[10em] relative grow items-center justify-center mt-4 sm:mt-0 pl-4 ml-auto mr-auto sm:ml-0 sm:mr-0">
             {composition ? (
               <>
                 <div className="absolute">Composition</div>
                 <Doughnut
                   data={{
-                    labels: composition.map((comp) => comp.token.name),
+                    labels: composition.map((comp) => comp.token.symbol),
                     datasets: [
                       {
                         label: 'ALP Pool',

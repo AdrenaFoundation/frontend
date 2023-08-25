@@ -20,15 +20,7 @@ export default function Header() {
   const PageLink = (url: string, title: string) => (
     <Link
       className={twMerge(
-        'mt-2',
-        'lg:mt-0',
-        'lg:ml-6',
-        'cursor-pointer',
-        'hover:text-txtregular',
-        'text-txtfade',
-        'shrink-0',
-        'whitespace-nowrap',
-        'font-normal text-sm',
+        'mt-2 lg:mt-0 lg:ml-6 cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
         pathname === url && 'text-white',
       )}
       href={url}
@@ -59,15 +51,7 @@ export default function Header() {
           <div className="relative">
             <p
               className={twMerge(
-                'mt-2',
-                'lg:mt-0',
-                'lg:ml-6',
-                'cursor-pointer',
-                'hover:text-txtregular',
-                'text-txtfade',
-                'shrink-0',
-                'whitespace-nowrap',
-                'font-normal text-sm',
+                'mt-2 lg:mt-0 lg:ml-6 cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
                 pathname === 'swap_alp' && 'text-white',
               )}
               onClick={() => setIsBuyOpen(!isBuyOpen)}

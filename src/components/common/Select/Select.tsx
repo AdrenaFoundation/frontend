@@ -22,15 +22,7 @@ export default function Select<T extends string>({
   return (
     <div className={twMerge('relative', className)}>
       <div
-        className={twMerge(
-          'flex',
-          'justify-center',
-          'items-center',
-          'cursor-pointer',
-          'h-4',
-          'whitespace-nowrap',
-          'hover:opacity-90',
-        )}
+        className="flex justify-center items-center cursor-pointer h-4 whitespace-nowrap hover:opacity-90"
         onClick={() => setOpened(!opened)}
       >
         <span className="text-lg font-medium">{selected}</span>
