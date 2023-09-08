@@ -1350,8 +1350,9 @@ export class AdrenaClient {
     const userStakingThreadAuthority =
       this.getUserStakingThreadAuthority(userStaking);
 
+    console.log(lmTokenAccount.toBase58());
     const userStakingAccount =
-      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking); // needs type def
 
     if (!userStakingAccount) {
       // trying to make this work
@@ -1360,7 +1361,7 @@ export class AdrenaClient {
         stakedTokenMint,
       });
       return;
-      // preInstructions.push(instruction);
+      // move
     }
 
     if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
@@ -1379,7 +1380,7 @@ export class AdrenaClient {
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: lmTokenAccount,
-          mint: this.lmTokenMint,
+          mint: stakedTokenMint,
           owner,
         }),
       );
@@ -1387,8 +1388,38 @@ export class AdrenaClient {
 
     const stakesClaimCronThread = this.getThreadAddress(
       userStakingThreadAuthority,
-      userStakingAccount!.stakesClaimCronThreadId,
+      userStakingAccount.stakesClaimCronThreadId,
     );
+
+    console.log({
+      owner,
+      fundingAccount,
+      rewardTokenAccount,
+      lmTokenAccount,
+      stakingStakedTokenVault,
+      stakingRewardTokenVault,
+      stakingLmRewardTokenVault,
+      transferAuthority: AdrenaClient.transferAuthorityAddress,
+      userStaking,
+      staking,
+      stakesClaimCronThread,
+      userStakingThreadAuthority,
+      cortex: this.cortex,
+      perpetuals: AdrenaClient.perpetualsAddress,
+      lmTokenMint: this.lmTokenMint,
+      governanceTokenMint: this.governanceTokenMint,
+      stakingRewardTokenMint,
+      governanceRealm: this.governanceRealm,
+      governanceRealmConfig: this.governanceRealmConfig,
+      governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+      governanceGoverningTokenOwnerRecord:
+        this.getGovernanceGoverningTokenOwnerRecord(owner),
+      clockworkProgram: config.clockworkProgram,
+      governanceProgram: config.governanceProgram,
+      perpetualsProgram: this.adrenaProgram.programId,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    });
 
     const transaction = await this.adrenaProgram.methods
       .addLiquidStake({

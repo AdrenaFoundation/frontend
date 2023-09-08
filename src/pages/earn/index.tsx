@@ -19,7 +19,7 @@ export default function Earn() {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  const [lockPeriod, setLockPeriod] = useState<LockPeriod>(30);
+  const [lockPeriod, setLockPeriod] = useState<LockPeriod>(0);
 
   const [amount, setAmount] = useState<number | null>(null);
 
@@ -36,6 +36,7 @@ export default function Earn() {
     const owner = new PublicKey(wallet.walletAddress);
 
     if (lockPeriod === 0) {
+      console.log(window.adrena.client);
       return window.adrena.client.addLiquidStake({
         owner,
         amount: new BN(amount),
@@ -98,7 +99,7 @@ export default function Earn() {
   };
 
   const adxBalance =
-    walletTokenBalances?.[window.adrena.client.adxToken.decimals] ?? 0;
+    walletTokenBalances?.[window.adrena.client.adxToken.symbol];
 
   // dummy data
   const stakePositions = [
@@ -152,7 +153,7 @@ export default function Earn() {
                 <p className="text-xs opacity-50 font-medium"> Enter Amount</p>
                 <p className="text-xs font-medium">
                   <span className="opacity-50"> Balance · </span>
-                  {formatNumber(adxBalance, 2)} ADX
+                  {adxBalance ? `${formatNumber(adxBalance, 2)} ADX` : '–'}
                 </p>
               </div>
 
@@ -177,6 +178,12 @@ export default function Earn() {
                   className="absolute right-2 bottom-[20%]"
                   title="MAX"
                   variant="text"
+                  onClick={() => {
+                    if (!adxBalance) {
+                      return;
+                    }
+                    setAmount(adxBalance);
+                  }}
                 />
               </div>
             </div>

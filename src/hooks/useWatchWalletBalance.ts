@@ -33,6 +33,7 @@ const useWatchWalletBalance = (): {
     const tokens = [
       ...window.adrena.client.tokens,
       window.adrena.client.alpToken,
+      window.adrena.client.adxToken,
     ];
 
     const balances = await Promise.all(
