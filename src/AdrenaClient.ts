@@ -137,7 +137,7 @@ export class AdrenaClient {
         this.getUserStakingThreadAuthority(owner, stakedTokenMint).toBuffer(),
         threadId.toArrayLike(Buffer, 'be', 32),
       ],
-      new PublicKey(config.clockworkProgram),
+      config.clockworkProgram,
     )[0];
   };
 
