@@ -102,71 +102,51 @@ export class AdrenaClient {
     )[0];
   };
 
-  public getUserStaking = (owner: PublicKey, stakedTokenMint: PublicKey) => {
+  public getUserStaking = (owner: PublicKey, stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('user_staking'),
-        owner.toBuffer(),
-        this.staking(stakedTokenMint).toBuffer(),
-      ],
+      [Buffer.from('user_staking'), owner.toBuffer(), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
-  public getUserStakingThreadAuthority = (
-    owner: PublicKey,
-    stakedTokenMint: PublicKey,
-  ) => {
+  public getUserStakingThreadAuthority = (userStakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('user-staking-thread-authority'),
-        this.getUserStaking(owner, stakedTokenMint).toBuffer(),
-      ],
+      [Buffer.from('user-staking-thread-authority'), userStakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
   public getThreadAddress = (
-    owner: PublicKey,
-    stakedTokenMint: PublicKey,
+    userStakingThreadAuthorityPda: PublicKey,
     threadId: BN,
   ) => {
     return PublicKey.findProgramAddressSync(
       [
         Buffer.from('thread'),
-        this.getUserStakingThreadAuthority(owner, stakedTokenMint).toBuffer(),
-        threadId.toArrayLike(Buffer, 'be', 32),
+        userStakingThreadAuthorityPda.toBuffer(),
+        threadId.toArrayLike(Buffer, 'le', 8),
       ],
       config.clockworkProgram,
     )[0];
   };
 
-  public getStakingStakedTokenVaultPda = (stakedTokenMint: PublicKey) => {
+  public getStakingStakedTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('staking_staked_token_vault'),
-        this.staking(stakedTokenMint).toBuffer(),
-      ],
+      [Buffer.from('staking_staked_token_vault'), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
-  public getStakingRewardTokenVaultPda = (stakedTokenMint: PublicKey) => {
+  public getStakingRewardTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('staking_reward_token_vault'),
-        this.staking(stakedTokenMint).toBuffer(),
-      ],
+      [Buffer.from('staking_reward_token_vault'), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
 
-  public getStakingLmRewardTokenVaultPda = (stakedTokenMint: PublicKey) => {
+  public getStakingLmRewardTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('staking_lm_reward_token_vault'),
-        this.staking(stakedTokenMint).toBuffer(),
-      ],
+      [Buffer.from('staking_lm_reward_token_vault'), stakingPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
@@ -1361,7 +1341,14 @@ export class AdrenaClient {
     );
 
     const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
-    const userStaking = this.getUserStaking(owner, stakedTokenMint);
+    const staking = this.staking(stakedTokenMint);
+    const userStaking = this.getUserStaking(owner, staking);
+    const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+    const userStakingThreadAuthority =
+      this.getUserStakingThreadAuthority(userStaking);
 
     const userStakingAccount =
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
@@ -1399,12 +1386,9 @@ export class AdrenaClient {
     }
 
     const stakesClaimCronThread = this.getThreadAddress(
-      owner,
-      stakedTokenMint,
+      userStakingThreadAuthority,
       userStakingAccount!.stakesClaimCronThreadId,
     );
-
-    console.log(preInstructions, userStakingAccount);
 
     const transaction = await this.adrenaProgram.methods
       .addLiquidStake({
@@ -1415,16 +1399,14 @@ export class AdrenaClient {
         fundingAccount,
         rewardTokenAccount,
         lmTokenAccount,
-        stakingStakedTokenVault:
-          this.getStakingStakedTokenVaultPda(stakedTokenMint),
-        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
-          stakingRewardTokenMint,
-        ),
-        stakingLmRewardTokenVault:
-          this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
+        stakingStakedTokenVault,
+        stakingRewardTokenVault,
+        stakingLmRewardTokenVault,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        userStaking: this.getUserStaking(owner, stakedTokenMint),
-        staking: this.staking(stakedTokenMint),
+        userStaking,
+        staking,
+        stakesClaimCronThread,
+        userStakingThreadAuthority,
         cortex: this.cortex,
         perpetuals: AdrenaClient.perpetualsAddress,
         lmTokenMint: this.lmTokenMint,
@@ -1435,11 +1417,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecord(owner),
-        stakesClaimCronThread,
-        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
-          owner,
-          stakedTokenMint,
-        ),
         clockworkProgram: config.clockworkProgram,
         governanceProgram: config.governanceProgram,
         perpetualsProgram: this.adrenaProgram.programId,
@@ -1480,7 +1457,12 @@ export class AdrenaClient {
       stakingRewardTokenMint,
     );
 
-    const userStaking = this.getUserStaking(owner, stakedTokenMint);
+    const staking = this.staking(stakedTokenMint);
+    const userStaking = this.getUserStaking(owner, staking);
+    const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const userStakingThreadAuthority =
+      this.getUserStakingThreadAuthority(userStaking);
 
     const userStakingAccount =
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
@@ -1509,14 +1491,12 @@ export class AdrenaClient {
     const stakeResolutionThreadId = new BN(Date.now());
 
     const stakeResolutionThread = this.getThreadAddress(
-      owner,
-      stakedTokenMint,
+      userStakingThreadAuthority,
       stakeResolutionThreadId,
     );
 
     const stakesClaimCronThread = this.getThreadAddress(
-      owner,
-      stakedTokenMint,
+      userStakingThreadAuthority,
       userStakingAccount!.stakesClaimCronThreadId,
     );
 
@@ -1530,14 +1510,11 @@ export class AdrenaClient {
         owner,
         fundingAccount,
         rewardTokenAccount,
-        stakingStakedTokenVault:
-          this.getStakingStakedTokenVaultPda(stakedTokenMint),
-        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
-          stakingRewardTokenMint,
-        ),
+        stakingStakedTokenVault,
+        stakingRewardTokenVault,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        userStaking: this.getUserStaking(owner, stakedTokenMint),
-        staking: this.staking(stakedTokenMint),
+        userStaking,
+        staking,
         cortex: this.cortex,
         perpetuals: AdrenaClient.perpetualsAddress,
         lmTokenMint: this.lmTokenMint,
@@ -1550,10 +1527,7 @@ export class AdrenaClient {
           this.getGovernanceGoverningTokenOwnerRecord(owner),
         stakeResolutionThread,
         stakesClaimCronThread,
-        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
-          owner,
-          stakedTokenMint,
-        ),
+        userStakingThreadAuthority,
         clockworkProgram: config.clockworkProgram,
         governanceProgram: config.governanceProgram,
         perpetualsProgram: this.adrenaProgram.programId,
@@ -1575,6 +1549,14 @@ export class AdrenaClient {
 
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
     const stakedTokenMint = this.lmTokenMint;
+    const staking = this.staking(stakedTokenMint);
+    const userStaking = this.getUserStaking(owner, staking);
+    const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+    const userStakingThreadAuthority =
+      this.getUserStakingThreadAuthority(userStaking);
 
     if (!stakingRewardTokenMint) {
       throw new Error('USDC not found');
@@ -1585,8 +1567,7 @@ export class AdrenaClient {
 
     const threadId = new BN(Date.now());
     const stakesClaimCronThread = this.getThreadAddress(
-      owner,
-      stakedTokenMint,
+      userStakingThreadAuthority,
       threadId,
     );
 
@@ -1600,16 +1581,13 @@ export class AdrenaClient {
         rewardTokenAccount,
         stakingRewardTokenMint,
         stakesClaimCronThread,
-        stakingStakedTokenVault:
-          this.getStakingStakedTokenVaultPda(stakedTokenMint),
-        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
-          stakingRewardTokenMint,
-        ),
-        stakingLmRewardTokenVault:
-          this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
+        stakingStakedTokenVault,
+        stakingRewardTokenVault,
+        stakingLmRewardTokenVault,
+        userStaking,
+        staking,
+        userStakingThreadAuthority,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        userStaking: this.getUserStaking(owner, stakedTokenMint),
-        staking: this.staking(stakedTokenMint),
         cortex: this.cortex,
         perpetuals: AdrenaClient.perpetualsAddress,
         lmTokenMint: stakedTokenMint,
@@ -1619,10 +1597,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecord(owner),
-        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
-          owner,
-          stakedTokenMint,
-        ),
         clockworkProgram: config.clockworkProgram,
         governanceProgram: config.governanceProgram,
         perpetualsProgram: this.adrenaProgram.programId, // double check
@@ -1652,10 +1626,18 @@ export class AdrenaClient {
     const rewardTokenAccount = findATAAddressSync(owner, stakedTokenMint);
     const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
 
+    const staking = this.staking(stakedTokenMint);
+    const userStaking = this.getUserStaking(owner, staking);
+    const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+    const userStakingThreadAuthority =
+      this.getUserStakingThreadAuthority(userStaking);
+
     const threadId = new BN(Date.now());
     const stakesClaimCronThread = this.getThreadAddress(
-      owner,
-      stakedTokenMint,
+      userStakingThreadAuthority,
       threadId,
     );
 
@@ -1669,16 +1651,13 @@ export class AdrenaClient {
         rewardTokenAccount,
         stakingRewardTokenMint,
         stakesClaimCronThread,
-        stakingStakedTokenVault:
-          this.getStakingStakedTokenVaultPda(stakedTokenMint),
-        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
-          stakingRewardTokenMint,
-        ),
-        stakingLmRewardTokenVault:
-          this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
+        stakingStakedTokenVault,
+        stakingRewardTokenVault,
+        stakingLmRewardTokenVault,
+        userStaking,
+        staking,
+        userStakingThreadAuthority,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        userStaking: this.getUserStaking(owner, stakedTokenMint),
-        staking: this.staking(stakedTokenMint),
         cortex: this.cortex,
         perpetuals: AdrenaClient.perpetualsAddress,
         lmTokenMint: stakedTokenMint,
@@ -1688,10 +1667,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecord(owner),
-        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
-          owner,
-          stakedTokenMint,
-        ),
         clockworkProgram: config.clockworkProgram,
         governanceProgram: config.governanceProgram,
         perpetualsProgram: this.adrenaProgram.programId,
@@ -1724,6 +1699,14 @@ export class AdrenaClient {
       stakingRewardTokenMint,
     );
 
+    const staking = this.staking(stakedTokenMint);
+    const userStaking = this.getUserStaking(owner, staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+    const userStakingThreadAuthority =
+      this.getUserStakingThreadAuthority(userStaking);
+
     const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
 
     if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
@@ -1750,8 +1733,7 @@ export class AdrenaClient {
 
     const threadId = new BN(Date.now());
     const stakesClaimCronThread = this.getThreadAddress(
-      owner,
-      stakedTokenMint,
+      userStakingThreadAuthority,
       threadId,
     );
 
@@ -1766,22 +1748,17 @@ export class AdrenaClient {
           owner,
           rewardTokenAccount,
           lmTokenAccount,
-          staking: this.staking(stakedTokenMint),
-          userStaking: this.getUserStaking(owner, stakedTokenMint),
-          transferAuthority: AdrenaClient.transferAuthorityAddress,
-          userStakingThreadAuthority: this.getUserStakingThreadAuthority(
-            owner,
-            stakedTokenMint,
-          ),
+          staking,
+          userStaking,
+          stakingRewardTokenVault,
+          stakingLmRewardTokenVault,
+          userStakingThreadAuthority,
           stakesClaimCronThread,
+          transferAuthority: AdrenaClient.transferAuthorityAddress,
           stakesClaimPayer: config.stakesClaimPayer,
           lmTokenMint: this.lmTokenMint,
           cortex: this.cortex,
           perpetuals: AdrenaClient.perpetualsAddress,
-          stakingRewardTokenVault:
-            this.getStakingRewardTokenVaultPda(stakedTokenMint),
-          stakingLmRewardTokenVault:
-            this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
           stakingRewardTokenMint,
           perpetualsProgram: this.adrenaProgram.programId,
           clockworkProgram: config.clockworkProgram,
