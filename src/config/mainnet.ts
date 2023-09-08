@@ -48,6 +48,20 @@ class MainnetConfiguration implements IConfiguration {
     },
   };
 
+  // devnet address
+  public readonly governanceProgram: PublicKey = new PublicKey(
+    'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
+  );
+
+  // devnet address
+  public readonly clockworkProgram: PublicKey = new PublicKey(
+    'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
+  );
+
+  public readonly stakesClaimPayer: PublicKey = new PublicKey(
+    'C1ockworkPayer11111111111111111111111111111',
+  );
+
   public readonly mainRPC: string = 'https://api.mainnet-beta.solana.com';
 
   public readonly pythRPC: string = 'https://api.mainnet-beta.solana.com';

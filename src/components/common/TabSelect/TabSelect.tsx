@@ -1,13 +1,13 @@
 import { createRef, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-export default function TabSelect<T extends string>({
+export default function TabSelect<T extends string | number>({
   selected,
   onClick,
   tabs,
   className,
 }: {
-  selected?: string;
+  selected?: T;
   tabs: {
     title: T;
     icon?: string;

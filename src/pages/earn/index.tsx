@@ -9,56 +9,90 @@ import StakeList from '@/components/pages/earn/StakeList';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { formatNumber } from '@/utils';
+import { PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
+import { toast } from 'react-toastify';
+
+type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;
 
 export default function Earn() {
+  const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  const [lockPeriod, setLockPeriod] = useState<
-    '0' | '30' | '60' | '90' | '180' | '360' | '720'
-  >('0');
+  const [lockPeriod, setLockPeriod] = useState<LockPeriod>(30);
 
-  const LOCK_PERIODS = [
-    { title: '0' },
-    { title: '30' },
-    { title: '60' },
-    { title: '90' },
-    { title: '180' },
-    { title: '360' },
-    { title: '720' },
+  const [amount, setAmount] = useState<number | null>(null);
+
+  const stakeAmount = () => {
+    if (!wallet) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+    if (!amount) {
+      toast.error('Please enter an amount');
+      return;
+    }
+
+    const owner = new PublicKey(wallet.walletAddress);
+    const mint = new PublicKey(window.adrena.client.lmTokenMint);
+    const rewardTokenAccount = PublicKey.default;
+
+    if (lockPeriod === 0) {
+      return window.adrena.client.addLiquidStake({
+        owner,
+        amount: new BN(amount),
+      });
+    }
+
+    return window.adrena.client.addLockedStake({
+      owner,
+      amount: new BN(amount),
+      lockedDays: Number(lockPeriod) as LockPeriod,
+    });
+  };
+
+  const LOCK_PERIODS: { title: LockPeriod }[] = [
+    { title: 0 },
+    { title: 30 },
+    { title: 60 },
+    { title: 90 },
+    { title: 180 },
+    { title: 360 },
+    { title: 720 },
   ];
 
   const MULTIPLIERS = {
-    '0': {
+    0: {
       usdc: 1,
       adx: 0,
       votes: 1,
     },
-    '30': {
+    30: {
       usdc: 1.25,
       adx: 1,
       votes: 1.21,
     },
-    '60': {
+    60: {
       usdc: 1.56,
       adx: 1.25,
       votes: 1.33,
     },
-    '90': {
+    90: {
       usdc: 1.95,
       adx: 1.56,
       votes: 1.46,
     },
-    '180': {
+    180: {
       usdc: 2.44,
       adx: 1.95,
       votes: 1.61,
     },
-    '360': {
+    360: {
       usdc: 3.05,
       adx: 2.44,
       votes: 1.78,
     },
-    '720': {
+    720: {
       usdc: 3.81,
       adx: 3.05,
       votes: 1.95,
@@ -131,6 +165,14 @@ export default function Earn() {
                 <input
                   className="w-full bg-dark border border-gray-300 rounded-lg rounded-l-none p-3 px-4 text-xl font-mono"
                   type="number"
+                  value={amount ?? ''}
+                  onChange={(e) => {
+                    if (e.target.value === '') {
+                      setAmount(null);
+                      return;
+                    }
+                    setAmount(Number(e.target.value));
+                  }}
                   placeholder="0.00"
                 />
                 <Button
@@ -158,9 +200,7 @@ export default function Earn() {
                 selected={lockPeriod}
                 tabs={LOCK_PERIODS}
                 onClick={(title) => {
-                  setLockPeriod(
-                    title as '0' | '30' | '60' | '90' | '180' | '360' | '720',
-                  );
+                  setLockPeriod(title);
                 }}
               />
             </div>
@@ -197,9 +237,7 @@ export default function Earn() {
               className="w-full"
               size="lg"
               title="[S]take"
-              onClick={() => {
-                console.log('Stake');
-              }}
+              onClick={() => stakeAmount()}
             />
           </div>
         </div>

@@ -45,6 +45,18 @@ class DevnetConfiguration implements IConfiguration {
     },
   };
 
+  public readonly governanceProgram: PublicKey = new PublicKey(
+    'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
+  );
+
+  public readonly clockworkProgram: PublicKey = new PublicKey(
+    'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
+  );
+
+  public readonly stakesClaimPayer: PublicKey = new PublicKey(
+    'C1ockworkPayer11111111111111111111111111111',
+  );
+
   // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
   public readonly mainRPC: string =
     'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
@@ -54,7 +66,7 @@ class DevnetConfiguration implements IConfiguration {
     'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
 
   public readonly mainPool: PublicKey = new PublicKey(
-    'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',
+    'B9HJCFyrzVStCNHnAkXRMG1wDk8XS9eyKuitmvxjn2Hf',
   );
 }
 

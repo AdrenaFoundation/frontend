@@ -13,6 +13,10 @@ export default interface IConfiguration {
     };
   };
 
+  readonly governanceProgram: PublicKey;
+  readonly clockworkProgram: PublicKey;
+  readonly stakesClaimPayer: PublicKey;
+
   readonly mainRPC: string;
   readonly pythRPC: string;
 

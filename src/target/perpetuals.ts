@@ -21,6 +21,46 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'perpetuals';
           isMut: true;
           isSigner: false;
@@ -36,12 +76,30 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
         },
         {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
           isMut: false;
           isSigner: false;
         },
@@ -54,6 +112,216 @@ export type Perpetuals = {
           };
         },
       ];
+    },
+    {
+      name: 'addVest';
+      accounts: [
+        {
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'owner';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vest';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'AddVestParams';
+          };
+        },
+      ];
+      returns: 'u8';
+    },
+    {
+      name: 'claimVest';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'vest';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+      returns: 'u64';
     },
     {
       name: 'addPool';
@@ -511,50 +779,7 @@ export type Perpetuals = {
       returns: 'u8';
     },
     {
-      name: 'testInit';
-      accounts: [
-        {
-          name: 'upgradeAuthority';
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'transferAuthority';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'perpetuals';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'systemProgram';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-        },
-      ];
-      args: [
-        {
-          name: 'params';
-          type: {
-            defined: 'TestInitParams';
-          };
-        },
-      ];
-    },
-    {
-      name: 'setTestOraclePrice';
+      name: 'setCustomOraclePrice';
       accounts: [
         {
           name: 'admin';
@@ -596,11 +821,54 @@ export type Perpetuals = {
         {
           name: 'params';
           type: {
-            defined: 'SetTestOraclePriceParams';
+            defined: 'SetCustomOraclePriceParams';
           };
         },
       ];
       returns: 'u8';
+    },
+    {
+      name: 'testInit';
+      accounts: [
+        {
+          name: 'upgradeAuthority';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'TestInitParams';
+          };
+        },
+      ];
     },
     {
       name: 'setTestTime';
@@ -650,8 +918,18 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'transferAuthority';
           isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
           isSigner: false;
         },
         {
@@ -660,7 +938,32 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -695,7 +998,37 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
           isMut: false;
           isSigner: false;
         },
@@ -728,8 +1061,28 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'transferAuthority';
           isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
           isSigner: false;
         },
         {
@@ -739,6 +1092,21 @@ export type Perpetuals = {
         },
         {
           name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -758,12 +1126,37 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
         },
         {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
           isMut: false;
           isSigner: false;
         },
@@ -796,8 +1189,28 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'transferAuthority';
           isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
           isSigner: false;
         },
         {
@@ -807,6 +1220,21 @@ export type Perpetuals = {
         },
         {
           name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -826,12 +1254,37 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
         },
         {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
           isMut: false;
           isSigner: false;
         },
@@ -859,8 +1312,28 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'transferAuthority';
           isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
           isSigner: false;
         },
         {
@@ -879,6 +1352,21 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'custody';
           isMut: true;
           isSigner: false;
@@ -889,8 +1377,43 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'custodyTokenAccount';
+          name: 'collateralCustody';
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
           isSigner: false;
         },
         {
@@ -900,6 +1423,11 @@ export type Perpetuals = {
         },
         {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
           isMut: false;
           isSigner: false;
         },
@@ -932,6 +1460,11 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'perpetuals';
           isMut: false;
           isSigner: false;
@@ -957,12 +1490,27 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'custodyTokenAccount';
+          name: 'collateralCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
         },
         {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
           isMut: false;
           isSigner: false;
         },
@@ -995,6 +1543,11 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'perpetuals';
           isMut: false;
           isSigner: false;
@@ -1020,8 +1573,23 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'custodyTokenAccount';
+          name: 'collateralCustody';
           isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
           isSigner: false;
         },
         {
@@ -1053,8 +1621,28 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'transferAuthority';
           isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
           isSigner: false;
         },
         {
@@ -1073,6 +1661,21 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'custody';
           isMut: true;
           isSigner: false;
@@ -1083,12 +1686,52 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'custodyTokenAccount';
+          name: 'collateralCustody';
           isMut: true;
           isSigner: false;
         },
         {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1151,7 +1794,17 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'custodyTokenAccount';
+          name: 'collateralCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -1169,6 +1822,28 @@ export type Perpetuals = {
           };
         },
       ];
+    },
+    {
+      name: 'updatePoolAum';
+      accounts: [
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+      ];
+      args: [];
+      returns: 'u128';
     },
     {
       name: 'getAddLiquidityAmountAndFee';
@@ -1275,6 +1950,16 @@ export type Perpetuals = {
           isMut: false;
           isSigner: false;
         },
+        {
+          name: 'collateralCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
       ];
       args: [
         {
@@ -1313,6 +1998,16 @@ export type Perpetuals = {
         },
         {
           name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
           isMut: false;
           isSigner: false;
         },
@@ -1357,6 +2052,16 @@ export type Perpetuals = {
           isMut: false;
           isSigner: false;
         },
+        {
+          name: 'collateralCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
       ];
       args: [
         {
@@ -1398,6 +2103,16 @@ export type Perpetuals = {
           isMut: false;
           isSigner: false;
         },
+        {
+          name: 'collateralCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
       ];
       args: [
         {
@@ -1434,6 +2149,16 @@ export type Perpetuals = {
         },
         {
           name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
           isMut: false;
           isSigner: false;
         },
@@ -1553,6 +2278,1060 @@ export type Perpetuals = {
       returns: 'u128';
     },
     {
+      name: 'initUserStaking';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'rewardTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'userStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'userStakingThreadAuthority';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakesClaimCronThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakesClaimPayer';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clockworkProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'InitUserStakingParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'initStaking';
+      accounts: [
+        {
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'multisig';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingStakedTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'InitStakingParams';
+          };
+        },
+      ];
+      returns: 'u8';
+    },
+    {
+      name: 'addLiquidStake';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'rewardTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'userStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'stakesClaimCronThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'userStakingThreadAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clockworkProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'AddLiquidStakeParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'addLockedStake';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'rewardTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'userStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'stakeResolutionThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakesClaimCronThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'userStakingThreadAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clockworkProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'AddLockedStakeParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'removeLiquidStake';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'rewardTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'userStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'stakesClaimCronThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'userStakingThreadAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clockworkProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'RemoveLiquidStakeParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'removeLockedStake';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'rewardTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'userStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'stakesClaimCronThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'userStakingThreadAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clockworkProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'RemoveLockedStakeParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'claimStakes';
+      accounts: [
+        {
+          name: 'caller';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'rewardTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'userStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+    },
+    {
+      name: 'finalizeLockedStake';
+      accounts: [
+        {
+          name: 'caller';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'userStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'FinalizeLockedStakeParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'resolveStakingRound';
+      accounts: [
+        {
+          name: 'caller';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'stakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingLmRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'staking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+    },
+    {
       name: 'getLpTokenPrice';
       accounts: [
         {
@@ -1581,8 +3360,127 @@ export type Perpetuals = {
       ];
       returns: 'u64';
     },
+    {
+      name: 'mintLmTokensFromBucket';
+      accounts: [
+        {
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'MintLmTokensFromBucketParams';
+          };
+        },
+      ];
+      returns: 'u8';
+    },
   ];
   accounts: [
+    {
+      name: 'cortex';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'bump';
+            type: 'u8';
+          },
+          {
+            name: 'lmTokenBump';
+            type: 'u8';
+          },
+          {
+            name: 'governanceTokenBump';
+            type: 'u8';
+          },
+          {
+            name: 'inceptionEpoch';
+            type: 'u64';
+          },
+          {
+            name: 'governanceProgram';
+            type: 'publicKey';
+          },
+          {
+            name: 'governanceRealm';
+            type: 'publicKey';
+          },
+          {
+            name: 'vests';
+            type: {
+              vec: 'publicKey';
+            };
+          },
+          {
+            name: 'coreContributorBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'coreContributorBucketMintedAmount';
+            type: 'u64';
+          },
+          {
+            name: 'daoTreasuryBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'daoTreasuryBucketMintedAmount';
+            type: 'u64';
+          },
+          {
+            name: 'polBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'polBucketMintedAmount';
+            type: 'u64';
+          },
+          {
+            name: 'ecosystemBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'ecosystemBucketMintedAmount';
+            type: 'u64';
+          },
+        ];
+      };
+    },
     {
       name: 'custody';
       type: {
@@ -1606,6 +3504,10 @@ export type Perpetuals = {
           },
           {
             name: 'isStable';
+            type: 'bool';
+          },
+          {
+            name: 'isVirtual';
             type: 'bool';
           },
           {
@@ -1648,6 +3550,12 @@ export type Perpetuals = {
             name: 'collectedFees';
             type: {
               defined: 'FeesStats';
+            };
+          },
+          {
+            name: 'distributedRewards';
+            type: {
+              defined: 'RewardsStats';
             };
           },
           {
@@ -1725,7 +3633,7 @@ export type Perpetuals = {
           {
             name: 'pricing';
             type: {
-              defined: 'DeprecatedPricingParams';
+              defined: 'PricingParams';
             };
           },
           {
@@ -1756,6 +3664,12 @@ export type Perpetuals = {
             name: 'collectedFees';
             type: {
               defined: 'FeesStats';
+            };
+          },
+          {
+            name: 'distributedRewards';
+            type: {
+              defined: 'RewardsStats';
             };
           },
           {
@@ -1848,7 +3762,7 @@ export type Perpetuals = {
       };
     },
     {
-      name: 'testOracle';
+      name: 'customOracle';
       type: {
         kind: 'struct';
         fields: [
@@ -1862,6 +3776,10 @@ export type Perpetuals = {
           },
           {
             name: 'conf';
+            type: 'u64';
+          },
+          {
+            name: 'ema';
             type: 'u64';
           },
           {
@@ -1963,6 +3881,10 @@ export type Perpetuals = {
             type: 'publicKey';
           },
           {
+            name: 'collateralCustody';
+            type: 'publicKey';
+          },
+          {
             name: 'openTime';
             type: 'i64';
           },
@@ -1982,6 +3904,10 @@ export type Perpetuals = {
           },
           {
             name: 'sizeUsd';
+            type: 'u64';
+          },
+          {
+            name: 'borrowSizeUsd';
             type: 'u64';
           },
           {
@@ -2015,6 +3941,162 @@ export type Perpetuals = {
         ];
       };
     },
+    {
+      name: 'staking';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'stakingType';
+            type: {
+              defined: 'StakingType';
+            };
+          },
+          {
+            name: 'bump';
+            type: 'u8';
+          },
+          {
+            name: 'stakedTokenVaultBump';
+            type: 'u8';
+          },
+          {
+            name: 'rewardTokenVaultBump';
+            type: 'u8';
+          },
+          {
+            name: 'lmRewardTokenVaultBump';
+            type: 'u8';
+          },
+          {
+            name: 'nbLockedTokens';
+            type: 'u64';
+          },
+          {
+            name: 'stakedTokenMint';
+            type: 'publicKey';
+          },
+          {
+            name: 'stakedTokenDecimals';
+            type: 'u8';
+          },
+          {
+            name: 'rewardTokenMint';
+            type: 'publicKey';
+          },
+          {
+            name: 'rewardTokenDecimals';
+            type: 'u8';
+          },
+          {
+            name: 'resolvedRewardTokenAmount';
+            type: 'u64';
+          },
+          {
+            name: 'resolvedStakedTokenAmount';
+            type: 'u64';
+          },
+          {
+            name: 'resolvedLmRewardTokenAmount';
+            type: 'u64';
+          },
+          {
+            name: 'resolvedLmStakedTokenAmount';
+            type: 'u64';
+          },
+          {
+            name: 'currentStakingRound';
+            type: {
+              defined: 'StakingRound';
+            };
+          },
+          {
+            name: 'nextStakingRound';
+            type: {
+              defined: 'StakingRound';
+            };
+          },
+          {
+            name: 'resolvedStakingRounds';
+            type: {
+              vec: {
+                defined: 'StakingRound';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'userStaking';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'bump';
+            type: 'u8';
+          },
+          {
+            name: 'threadAuthorityBump';
+            type: 'u8';
+          },
+          {
+            name: 'stakesClaimCronThreadId';
+            type: 'u64';
+          },
+          {
+            name: 'liquidStake';
+            type: {
+              defined: 'LiquidStake';
+            };
+          },
+          {
+            name: 'lockedStakes';
+            type: {
+              vec: {
+                defined: 'LockedStake';
+              };
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'vest';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+          {
+            name: 'unlockStartTimestamp';
+            type: 'i64';
+          },
+          {
+            name: 'unlockEndTimestamp';
+            type: 'i64';
+          },
+          {
+            name: 'claimedAmount';
+            type: 'u64';
+          },
+          {
+            name: 'lastClaimTimestamp';
+            type: 'i64';
+          },
+          {
+            name: 'owner';
+            type: 'publicKey';
+          },
+          {
+            name: 'bump';
+            type: 'u8';
+          },
+        ];
+      };
+    },
   ];
   types: [
     {
@@ -2036,6 +4118,10 @@ export type Perpetuals = {
         fields: [
           {
             name: 'isStable';
+            type: 'bool';
+          },
+          {
+            name: 'isVirtual';
             type: 'bool';
           },
           {
@@ -2080,6 +4166,18 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'AddLiquidStakeParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
       name: 'AddLiquidityParams';
       type: {
         kind: 'struct';
@@ -2091,6 +4189,26 @@ export type Perpetuals = {
           {
             name: 'minLpAmountOut';
             type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'AddLockedStakeParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'stakeResolutionThreadId';
+            type: 'u64';
+          },
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+          {
+            name: 'lockedDays';
+            type: 'u32';
           },
         ];
       };
@@ -2108,12 +4226,44 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'AddVestParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+          {
+            name: 'unlockStartTimestamp';
+            type: 'i64';
+          },
+          {
+            name: 'unlockEndTimestamp';
+            type: 'i64';
+          },
+        ];
+      };
+    },
+    {
       name: 'ClosePositionParams';
       type: {
         kind: 'struct';
         fields: [
           {
             name: 'price';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'FinalizeLockedStakeParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'threadId';
             type: 'u64';
           },
         ];
@@ -2241,6 +4391,32 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'InitStakingParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'stakingType';
+            type: {
+              defined: 'StakingType';
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'InitUserStakingParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'stakesClaimCronThreadId';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
       name: 'InitParams';
       type: {
         kind: 'struct';
@@ -2281,6 +4457,22 @@ export type Perpetuals = {
             name: 'allowSizeChange';
             type: 'bool';
           },
+          {
+            name: 'coreContributorBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'daoTreasuryBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'polBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'ecosystemBucketAllocation';
+            type: 'u64';
+          },
         ];
       };
     },
@@ -2289,6 +4481,28 @@ export type Perpetuals = {
       type: {
         kind: 'struct';
         fields: [];
+      };
+    },
+    {
+      name: 'MintLmTokensFromBucketParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'bucketName';
+            type: {
+              defined: 'BucketName';
+            };
+          },
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+          {
+            name: 'reason';
+            type: 'string';
+          },
+        ];
       };
     },
     {
@@ -2346,6 +4560,18 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'RemoveLiquidStakeParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
       name: 'RemoveLiquidityParams';
       type: {
         kind: 'struct';
@@ -2356,6 +4582,18 @@ export type Perpetuals = {
           },
           {
             name: 'minAmountOut';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'RemoveLockedStakeParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'lockedStakeIndex';
             type: 'u64';
           },
         ];
@@ -2387,6 +4625,10 @@ export type Perpetuals = {
         fields: [
           {
             name: 'isStable';
+            type: 'bool';
+          },
+          {
+            name: 'isVirtual';
             type: 'bool';
           },
           {
@@ -2431,6 +4673,34 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'SetCustomOraclePriceParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'price';
+            type: 'u64';
+          },
+          {
+            name: 'expo';
+            type: 'i32';
+          },
+          {
+            name: 'conf';
+            type: 'u64';
+          },
+          {
+            name: 'ema';
+            type: 'u64';
+          },
+          {
+            name: 'publishTime';
+            type: 'i64';
+          },
+        ];
+      };
+    },
+    {
       name: 'SetPermissionsParams';
       type: {
         kind: 'struct';
@@ -2466,30 +4736,6 @@ export type Perpetuals = {
           {
             name: 'allowSizeChange';
             type: 'bool';
-          },
-        ];
-      };
-    },
-    {
-      name: 'SetTestOraclePriceParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'price';
-            type: 'u64';
-          },
-          {
-            name: 'expo';
-            type: 'i32';
-          },
-          {
-            name: 'conf';
-            type: 'u64';
-          },
-          {
-            name: 'publishTime';
-            type: 'i64';
           },
         ];
       };
@@ -2692,6 +4938,38 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'RewardsStats';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'swapLm';
+            type: 'u64';
+          },
+          {
+            name: 'addLiquidityLm';
+            type: 'u64';
+          },
+          {
+            name: 'removeLiquidityLm';
+            type: 'u64';
+          },
+          {
+            name: 'openPositionLm';
+            type: 'u64';
+          },
+          {
+            name: 'closePositionLm';
+            type: 'u64';
+          },
+          {
+            name: 'liquidationLm';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
       name: 'VolumeStats';
       type: {
         kind: 'struct';
@@ -2767,32 +5045,6 @@ export type Perpetuals = {
           {
             name: 'locked';
             type: 'u64';
-          },
-        ];
-      };
-    },
-    {
-      name: 'OracleParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'oracleAccount';
-            type: 'publicKey';
-          },
-          {
-            name: 'oracleType';
-            type: {
-              defined: 'OracleType';
-            };
-          },
-          {
-            name: 'maxPriceError';
-            type: 'u64';
-          },
-          {
-            name: 'maxPriceAgeSec';
-            type: 'u32';
           },
         ];
       };
@@ -2915,6 +5167,10 @@ export type Perpetuals = {
             type: 'u64';
           },
           {
+            name: 'borrowSizeUsd';
+            type: 'u64';
+          },
+          {
             name: 'lockedAmount';
             type: 'u64';
           },
@@ -2989,6 +5245,32 @@ export type Perpetuals = {
           {
             name: 'exponent';
             type: 'i32';
+          },
+        ];
+      };
+    },
+    {
+      name: 'OracleParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'oracleAccount';
+            type: 'publicKey';
+          },
+          {
+            name: 'oracleType';
+            type: {
+              defined: 'OracleType';
+            };
+          },
+          {
+            name: 'maxPriceError';
+            type: 'u64';
+          },
+          {
+            name: 'maxPriceAgeSec';
+            type: 'u32';
           },
         ];
       };
@@ -3142,6 +5424,142 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'StakingRound';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'startTime';
+            type: 'i64';
+          },
+          {
+            name: 'rate';
+            type: 'u64';
+          },
+          {
+            name: 'totalStake';
+            type: 'u64';
+          },
+          {
+            name: 'totalClaim';
+            type: 'u64';
+          },
+          {
+            name: 'lmRate';
+            type: 'u64';
+          },
+          {
+            name: 'lmTotalStake';
+            type: 'u64';
+          },
+          {
+            name: 'lmTotalClaim';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'LiquidStake';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+          {
+            name: 'stakeTime';
+            type: 'i64';
+          },
+          {
+            name: 'claimTime';
+            type: 'i64';
+          },
+          {
+            name: 'overlapTime';
+            type: 'i64';
+          },
+          {
+            name: 'overlapAmount';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'LockedStake';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'amount';
+            type: 'u64';
+          },
+          {
+            name: 'stakeTime';
+            type: 'i64';
+          },
+          {
+            name: 'claimTime';
+            type: 'i64';
+          },
+          {
+            name: 'lockDuration';
+            type: 'u64';
+          },
+          {
+            name: 'rewardMultiplier';
+            type: 'u32';
+          },
+          {
+            name: 'lmRewardMultiplier';
+            type: 'u32';
+          },
+          {
+            name: 'voteMultiplier';
+            type: 'u32';
+          },
+          {
+            name: 'amountWithRewardMultiplier';
+            type: 'u64';
+          },
+          {
+            name: 'amountWithLmRewardMultiplier';
+            type: 'u64';
+          },
+          {
+            name: 'resolved';
+            type: 'bool';
+          },
+          {
+            name: 'stakeResolutionThreadId';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'BucketName';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'CoreContributor';
+          },
+          {
+            name: 'DaoTreasury';
+          },
+          {
+            name: 'PoL';
+          },
+          {
+            name: 'Ecosystem';
+          },
+        ];
+      };
+    },
+    {
       name: 'FeesMode';
       type: {
         kind: 'enum';
@@ -3191,13 +5609,19 @@ export type Perpetuals = {
             name: 'WithdrawSolFees';
           },
           {
-            name: 'SetTestOraclePrice';
+            name: 'SetCustomOraclePrice';
           },
           {
             name: 'SetTestTime';
           },
           {
             name: 'UpgradeCustody';
+          },
+          {
+            name: 'MintLmTokensFromBucket';
+          },
+          {
+            name: 'InitStaking';
           },
         ];
       };
@@ -3211,7 +5635,7 @@ export type Perpetuals = {
             name: 'None';
           },
           {
-            name: 'Test';
+            name: 'Custom';
           },
           {
             name: 'Pyth';
@@ -3269,6 +5693,20 @@ export type Perpetuals = {
           },
           {
             name: 'Remove';
+          },
+        ];
+      };
+    },
+    {
+      name: 'StakingType';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'LM';
+          },
+          {
+            name: 'LP';
           },
         ];
       };
@@ -3332,73 +5770,128 @@ export type Perpetuals = {
     },
     {
       code: 6011;
+      name: 'InvalidVestState';
+      msg: 'Invalid vest state';
+    },
+    {
+      code: 6012;
+      name: 'InvalidStakeState';
+      msg: 'Invalid stake state';
+    },
+    {
+      code: 6013;
       name: 'InvalidCustodyState';
       msg: 'Invalid custody state';
     },
     {
-      code: 6012;
+      code: 6014;
+      name: 'InvalidCollateralCustody';
+      msg: 'Invalid collateral custody';
+    },
+    {
+      code: 6015;
       name: 'InvalidPositionState';
       msg: 'Invalid position state';
     },
     {
-      code: 6013;
+      code: 6016;
+      name: 'InvalidStakingRoundState';
+      msg: 'Invalid staking round state';
+    },
+    {
+      code: 6017;
       name: 'InvalidPerpetualsConfig';
       msg: 'Invalid perpetuals config';
     },
     {
-      code: 6014;
+      code: 6018;
       name: 'InvalidPoolConfig';
       msg: 'Invalid pool config';
     },
     {
-      code: 6015;
+      code: 6019;
       name: 'InvalidCustodyConfig';
       msg: 'Invalid custody config';
     },
     {
-      code: 6016;
+      code: 6020;
       name: 'InsufficientAmountReturned';
       msg: 'Insufficient token amount returned';
     },
     {
-      code: 6017;
+      code: 6021;
       name: 'MaxPriceSlippage';
       msg: 'Price slippage limit exceeded';
     },
     {
-      code: 6018;
+      code: 6022;
       name: 'MaxLeverage';
       msg: 'Position leverage limit exceeded';
     },
     {
-      code: 6019;
+      code: 6023;
       name: 'CustodyAmountLimit';
       msg: 'Custody amount limit exceeded';
     },
     {
-      code: 6020;
+      code: 6024;
       name: 'PositionAmountLimit';
       msg: 'Position amount limit exceeded';
     },
     {
-      code: 6021;
+      code: 6025;
       name: 'TokenRatioOutOfRange';
       msg: 'Token ratio out of range';
     },
     {
-      code: 6022;
+      code: 6026;
       name: 'UnsupportedToken';
       msg: 'Token is not supported';
     },
     {
-      code: 6023;
+      code: 6027;
       name: 'InstructionNotAllowed';
       msg: 'Instruction is not allowed at this time';
     },
     {
-      code: 6024;
+      code: 6028;
       name: 'MaxUtilization';
       msg: 'Token utilization limit exceeded';
+    },
+    {
+      code: 6029;
+      name: 'InvalidGovernanceProgram';
+      msg: "Governance program do not match Cortex's";
+    },
+    {
+      code: 6030;
+      name: 'InvalidGovernanceRealm';
+      msg: "Governance realm do not match Cortex's";
+    },
+    {
+      code: 6031;
+      name: 'InvalidVestingUnlockTime';
+      msg: 'Vesting unlock time is too close or passed';
+    },
+    {
+      code: 6032;
+      name: 'InvalidStakingLockingTime';
+      msg: 'Invalid staking locking time';
+    },
+    {
+      code: 6033;
+      name: 'CannotFoundStake';
+      msg: 'Cannot found stake';
+    },
+    {
+      code: 6034;
+      name: 'UnresolvedStake';
+      msg: 'Stake is not resolved';
+    },
+    {
+      code: 6035;
+      name: 'BucketMintLimit';
+      msg: 'Reached bucket mint limit';
     },
   ];
 };
@@ -3426,6 +5919,46 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: 'perpetuals',
           isMut: true,
           isSigner: false,
@@ -3441,12 +5974,30 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
         },
         {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
           isMut: false,
           isSigner: false,
         },
@@ -3459,6 +6010,216 @@ export const IDL: Perpetuals = {
           },
         },
       ],
+    },
+    {
+      name: 'addVest',
+      accounts: [
+        {
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'owner',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vest',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'AddVestParams',
+          },
+        },
+      ],
+      returns: 'u8',
+    },
+    {
+      name: 'claimVest',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'vest',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+      returns: 'u64',
     },
     {
       name: 'addPool',
@@ -3916,50 +6677,7 @@ export const IDL: Perpetuals = {
       returns: 'u8',
     },
     {
-      name: 'testInit',
-      accounts: [
-        {
-          name: 'upgradeAuthority',
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'transferAuthority',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'perpetuals',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'systemProgram',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: 'params',
-          type: {
-            defined: 'TestInitParams',
-          },
-        },
-      ],
-    },
-    {
-      name: 'setTestOraclePrice',
+      name: 'setCustomOraclePrice',
       accounts: [
         {
           name: 'admin',
@@ -4001,11 +6719,54 @@ export const IDL: Perpetuals = {
         {
           name: 'params',
           type: {
-            defined: 'SetTestOraclePriceParams',
+            defined: 'SetCustomOraclePriceParams',
           },
         },
       ],
       returns: 'u8',
+    },
+    {
+      name: 'testInit',
+      accounts: [
+        {
+          name: 'upgradeAuthority',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'TestInitParams',
+          },
+        },
+      ],
     },
     {
       name: 'setTestTime',
@@ -4055,8 +6816,18 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'transferAuthority',
           isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
           isSigner: false,
         },
         {
@@ -4065,7 +6836,32 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -4100,7 +6896,37 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
           isMut: false,
           isSigner: false,
         },
@@ -4133,8 +6959,28 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'transferAuthority',
           isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
           isSigner: false,
         },
         {
@@ -4144,6 +6990,21 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -4163,12 +7024,37 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
         },
         {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
           isMut: false,
           isSigner: false,
         },
@@ -4201,8 +7087,28 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'transferAuthority',
           isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
           isSigner: false,
         },
         {
@@ -4212,6 +7118,21 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -4231,12 +7152,37 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
         },
         {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
           isMut: false,
           isSigner: false,
         },
@@ -4264,8 +7210,28 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'transferAuthority',
           isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
           isSigner: false,
         },
         {
@@ -4284,6 +7250,21 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'custody',
           isMut: true,
           isSigner: false,
@@ -4294,8 +7275,43 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'custodyTokenAccount',
+          name: 'collateralCustody',
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
           isSigner: false,
         },
         {
@@ -4305,6 +7321,11 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
           isMut: false,
           isSigner: false,
         },
@@ -4337,6 +7358,11 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'perpetuals',
           isMut: false,
           isSigner: false,
@@ -4362,12 +7388,27 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'custodyTokenAccount',
+          name: 'collateralCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
         },
         {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
           isMut: false,
           isSigner: false,
         },
@@ -4400,6 +7441,11 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'perpetuals',
           isMut: false,
           isSigner: false,
@@ -4425,8 +7471,23 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'custodyTokenAccount',
+          name: 'collateralCustody',
           isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
           isSigner: false,
         },
         {
@@ -4458,8 +7519,28 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'transferAuthority',
           isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
           isSigner: false,
         },
         {
@@ -4478,6 +7559,21 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'custody',
           isMut: true,
           isSigner: false,
@@ -4488,12 +7584,52 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'custodyTokenAccount',
+          name: 'collateralCustody',
           isMut: true,
           isSigner: false,
         },
         {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
           isMut: false,
           isSigner: false,
         },
@@ -4556,7 +7692,17 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'custodyTokenAccount',
+          name: 'collateralCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -4574,6 +7720,28 @@ export const IDL: Perpetuals = {
           },
         },
       ],
+    },
+    {
+      name: 'updatePoolAum',
+      accounts: [
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+      ],
+      args: [],
+      returns: 'u128',
     },
     {
       name: 'getAddLiquidityAmountAndFee',
@@ -4680,6 +7848,16 @@ export const IDL: Perpetuals = {
           isMut: false,
           isSigner: false,
         },
+        {
+          name: 'collateralCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
       args: [
         {
@@ -4718,6 +7896,16 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
           isMut: false,
           isSigner: false,
         },
@@ -4762,6 +7950,16 @@ export const IDL: Perpetuals = {
           isMut: false,
           isSigner: false,
         },
+        {
+          name: 'collateralCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
       args: [
         {
@@ -4803,6 +8001,16 @@ export const IDL: Perpetuals = {
           isMut: false,
           isSigner: false,
         },
+        {
+          name: 'collateralCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
       ],
       args: [
         {
@@ -4839,6 +8047,16 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
           isMut: false,
           isSigner: false,
         },
@@ -4958,6 +8176,1060 @@ export const IDL: Perpetuals = {
       returns: 'u128',
     },
     {
+      name: 'initUserStaking',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'rewardTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'userStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'userStakingThreadAuthority',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakesClaimCronThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakesClaimPayer',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clockworkProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'InitUserStakingParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'initStaking',
+      accounts: [
+        {
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'multisig',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingStakedTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'InitStakingParams',
+          },
+        },
+      ],
+      returns: 'u8',
+    },
+    {
+      name: 'addLiquidStake',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'rewardTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'userStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'stakesClaimCronThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'userStakingThreadAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clockworkProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'AddLiquidStakeParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'addLockedStake',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'rewardTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'userStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'stakeResolutionThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakesClaimCronThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'userStakingThreadAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clockworkProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'AddLockedStakeParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'removeLiquidStake',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'rewardTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'userStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'stakesClaimCronThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'userStakingThreadAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clockworkProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'RemoveLiquidStakeParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'removeLockedStake',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'rewardTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'userStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'stakesClaimCronThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'userStakingThreadAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clockworkProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'RemoveLockedStakeParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'claimStakes',
+      accounts: [
+        {
+          name: 'caller',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'rewardTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'userStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: 'finalizeLockedStake',
+      accounts: [
+        {
+          name: 'caller',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'userStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'FinalizeLockedStakeParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'resolveStakingRound',
+      accounts: [
+        {
+          name: 'caller',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'stakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingLmRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'staking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
       name: 'getLpTokenPrice',
       accounts: [
         {
@@ -4986,8 +9258,127 @@ export const IDL: Perpetuals = {
       ],
       returns: 'u64',
     },
+    {
+      name: 'mintLmTokensFromBucket',
+      accounts: [
+        {
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'MintLmTokensFromBucketParams',
+          },
+        },
+      ],
+      returns: 'u8',
+    },
   ],
   accounts: [
+    {
+      name: 'cortex',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'bump',
+            type: 'u8',
+          },
+          {
+            name: 'lmTokenBump',
+            type: 'u8',
+          },
+          {
+            name: 'governanceTokenBump',
+            type: 'u8',
+          },
+          {
+            name: 'inceptionEpoch',
+            type: 'u64',
+          },
+          {
+            name: 'governanceProgram',
+            type: 'publicKey',
+          },
+          {
+            name: 'governanceRealm',
+            type: 'publicKey',
+          },
+          {
+            name: 'vests',
+            type: {
+              vec: 'publicKey',
+            },
+          },
+          {
+            name: 'coreContributorBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'coreContributorBucketMintedAmount',
+            type: 'u64',
+          },
+          {
+            name: 'daoTreasuryBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'daoTreasuryBucketMintedAmount',
+            type: 'u64',
+          },
+          {
+            name: 'polBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'polBucketMintedAmount',
+            type: 'u64',
+          },
+          {
+            name: 'ecosystemBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'ecosystemBucketMintedAmount',
+            type: 'u64',
+          },
+        ],
+      },
+    },
     {
       name: 'custody',
       type: {
@@ -5011,6 +9402,10 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'isStable',
+            type: 'bool',
+          },
+          {
+            name: 'isVirtual',
             type: 'bool',
           },
           {
@@ -5053,6 +9448,12 @@ export const IDL: Perpetuals = {
             name: 'collectedFees',
             type: {
               defined: 'FeesStats',
+            },
+          },
+          {
+            name: 'distributedRewards',
+            type: {
+              defined: 'RewardsStats',
             },
           },
           {
@@ -5130,7 +9531,7 @@ export const IDL: Perpetuals = {
           {
             name: 'pricing',
             type: {
-              defined: 'DeprecatedPricingParams',
+              defined: 'PricingParams',
             },
           },
           {
@@ -5161,6 +9562,12 @@ export const IDL: Perpetuals = {
             name: 'collectedFees',
             type: {
               defined: 'FeesStats',
+            },
+          },
+          {
+            name: 'distributedRewards',
+            type: {
+              defined: 'RewardsStats',
             },
           },
           {
@@ -5253,7 +9660,7 @@ export const IDL: Perpetuals = {
       },
     },
     {
-      name: 'testOracle',
+      name: 'customOracle',
       type: {
         kind: 'struct',
         fields: [
@@ -5267,6 +9674,10 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'conf',
+            type: 'u64',
+          },
+          {
+            name: 'ema',
             type: 'u64',
           },
           {
@@ -5368,6 +9779,10 @@ export const IDL: Perpetuals = {
             type: 'publicKey',
           },
           {
+            name: 'collateralCustody',
+            type: 'publicKey',
+          },
+          {
             name: 'openTime',
             type: 'i64',
           },
@@ -5387,6 +9802,10 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'sizeUsd',
+            type: 'u64',
+          },
+          {
+            name: 'borrowSizeUsd',
             type: 'u64',
           },
           {
@@ -5420,6 +9839,162 @@ export const IDL: Perpetuals = {
         ],
       },
     },
+    {
+      name: 'staking',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'stakingType',
+            type: {
+              defined: 'StakingType',
+            },
+          },
+          {
+            name: 'bump',
+            type: 'u8',
+          },
+          {
+            name: 'stakedTokenVaultBump',
+            type: 'u8',
+          },
+          {
+            name: 'rewardTokenVaultBump',
+            type: 'u8',
+          },
+          {
+            name: 'lmRewardTokenVaultBump',
+            type: 'u8',
+          },
+          {
+            name: 'nbLockedTokens',
+            type: 'u64',
+          },
+          {
+            name: 'stakedTokenMint',
+            type: 'publicKey',
+          },
+          {
+            name: 'stakedTokenDecimals',
+            type: 'u8',
+          },
+          {
+            name: 'rewardTokenMint',
+            type: 'publicKey',
+          },
+          {
+            name: 'rewardTokenDecimals',
+            type: 'u8',
+          },
+          {
+            name: 'resolvedRewardTokenAmount',
+            type: 'u64',
+          },
+          {
+            name: 'resolvedStakedTokenAmount',
+            type: 'u64',
+          },
+          {
+            name: 'resolvedLmRewardTokenAmount',
+            type: 'u64',
+          },
+          {
+            name: 'resolvedLmStakedTokenAmount',
+            type: 'u64',
+          },
+          {
+            name: 'currentStakingRound',
+            type: {
+              defined: 'StakingRound',
+            },
+          },
+          {
+            name: 'nextStakingRound',
+            type: {
+              defined: 'StakingRound',
+            },
+          },
+          {
+            name: 'resolvedStakingRounds',
+            type: {
+              vec: {
+                defined: 'StakingRound',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'userStaking',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'bump',
+            type: 'u8',
+          },
+          {
+            name: 'threadAuthorityBump',
+            type: 'u8',
+          },
+          {
+            name: 'stakesClaimCronThreadId',
+            type: 'u64',
+          },
+          {
+            name: 'liquidStake',
+            type: {
+              defined: 'LiquidStake',
+            },
+          },
+          {
+            name: 'lockedStakes',
+            type: {
+              vec: {
+                defined: 'LockedStake',
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'vest',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+          {
+            name: 'unlockStartTimestamp',
+            type: 'i64',
+          },
+          {
+            name: 'unlockEndTimestamp',
+            type: 'i64',
+          },
+          {
+            name: 'claimedAmount',
+            type: 'u64',
+          },
+          {
+            name: 'lastClaimTimestamp',
+            type: 'i64',
+          },
+          {
+            name: 'owner',
+            type: 'publicKey',
+          },
+          {
+            name: 'bump',
+            type: 'u8',
+          },
+        ],
+      },
+    },
   ],
   types: [
     {
@@ -5441,6 +10016,10 @@ export const IDL: Perpetuals = {
         fields: [
           {
             name: 'isStable',
+            type: 'bool',
+          },
+          {
+            name: 'isVirtual',
             type: 'bool',
           },
           {
@@ -5485,6 +10064,18 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'AddLiquidStakeParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
       name: 'AddLiquidityParams',
       type: {
         kind: 'struct',
@@ -5496,6 +10087,26 @@ export const IDL: Perpetuals = {
           {
             name: 'minLpAmountOut',
             type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'AddLockedStakeParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'stakeResolutionThreadId',
+            type: 'u64',
+          },
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+          {
+            name: 'lockedDays',
+            type: 'u32',
           },
         ],
       },
@@ -5513,12 +10124,44 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'AddVestParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+          {
+            name: 'unlockStartTimestamp',
+            type: 'i64',
+          },
+          {
+            name: 'unlockEndTimestamp',
+            type: 'i64',
+          },
+        ],
+      },
+    },
+    {
       name: 'ClosePositionParams',
       type: {
         kind: 'struct',
         fields: [
           {
             name: 'price',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'FinalizeLockedStakeParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'threadId',
             type: 'u64',
           },
         ],
@@ -5646,6 +10289,32 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'InitStakingParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'stakingType',
+            type: {
+              defined: 'StakingType',
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'InitUserStakingParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'stakesClaimCronThreadId',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
       name: 'InitParams',
       type: {
         kind: 'struct',
@@ -5686,6 +10355,22 @@ export const IDL: Perpetuals = {
             name: 'allowSizeChange',
             type: 'bool',
           },
+          {
+            name: 'coreContributorBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'daoTreasuryBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'polBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'ecosystemBucketAllocation',
+            type: 'u64',
+          },
         ],
       },
     },
@@ -5694,6 +10379,28 @@ export const IDL: Perpetuals = {
       type: {
         kind: 'struct',
         fields: [],
+      },
+    },
+    {
+      name: 'MintLmTokensFromBucketParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'bucketName',
+            type: {
+              defined: 'BucketName',
+            },
+          },
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+          {
+            name: 'reason',
+            type: 'string',
+          },
+        ],
       },
     },
     {
@@ -5751,6 +10458,18 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'RemoveLiquidStakeParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
       name: 'RemoveLiquidityParams',
       type: {
         kind: 'struct',
@@ -5761,6 +10480,18 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'minAmountOut',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'RemoveLockedStakeParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'lockedStakeIndex',
             type: 'u64',
           },
         ],
@@ -5792,6 +10523,10 @@ export const IDL: Perpetuals = {
         fields: [
           {
             name: 'isStable',
+            type: 'bool',
+          },
+          {
+            name: 'isVirtual',
             type: 'bool',
           },
           {
@@ -5836,6 +10571,34 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'SetCustomOraclePriceParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'price',
+            type: 'u64',
+          },
+          {
+            name: 'expo',
+            type: 'i32',
+          },
+          {
+            name: 'conf',
+            type: 'u64',
+          },
+          {
+            name: 'ema',
+            type: 'u64',
+          },
+          {
+            name: 'publishTime',
+            type: 'i64',
+          },
+        ],
+      },
+    },
+    {
       name: 'SetPermissionsParams',
       type: {
         kind: 'struct',
@@ -5871,30 +10634,6 @@ export const IDL: Perpetuals = {
           {
             name: 'allowSizeChange',
             type: 'bool',
-          },
-        ],
-      },
-    },
-    {
-      name: 'SetTestOraclePriceParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'price',
-            type: 'u64',
-          },
-          {
-            name: 'expo',
-            type: 'i32',
-          },
-          {
-            name: 'conf',
-            type: 'u64',
-          },
-          {
-            name: 'publishTime',
-            type: 'i64',
           },
         ],
       },
@@ -6097,6 +10836,38 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'RewardsStats',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'swapLm',
+            type: 'u64',
+          },
+          {
+            name: 'addLiquidityLm',
+            type: 'u64',
+          },
+          {
+            name: 'removeLiquidityLm',
+            type: 'u64',
+          },
+          {
+            name: 'openPositionLm',
+            type: 'u64',
+          },
+          {
+            name: 'closePositionLm',
+            type: 'u64',
+          },
+          {
+            name: 'liquidationLm',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
       name: 'VolumeStats',
       type: {
         kind: 'struct',
@@ -6172,32 +10943,6 @@ export const IDL: Perpetuals = {
           {
             name: 'locked',
             type: 'u64',
-          },
-        ],
-      },
-    },
-    {
-      name: 'OracleParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'oracleAccount',
-            type: 'publicKey',
-          },
-          {
-            name: 'oracleType',
-            type: {
-              defined: 'OracleType',
-            },
-          },
-          {
-            name: 'maxPriceError',
-            type: 'u64',
-          },
-          {
-            name: 'maxPriceAgeSec',
-            type: 'u32',
           },
         ],
       },
@@ -6320,6 +11065,10 @@ export const IDL: Perpetuals = {
             type: 'u64',
           },
           {
+            name: 'borrowSizeUsd',
+            type: 'u64',
+          },
+          {
             name: 'lockedAmount',
             type: 'u64',
           },
@@ -6394,6 +11143,32 @@ export const IDL: Perpetuals = {
           {
             name: 'exponent',
             type: 'i32',
+          },
+        ],
+      },
+    },
+    {
+      name: 'OracleParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'oracleAccount',
+            type: 'publicKey',
+          },
+          {
+            name: 'oracleType',
+            type: {
+              defined: 'OracleType',
+            },
+          },
+          {
+            name: 'maxPriceError',
+            type: 'u64',
+          },
+          {
+            name: 'maxPriceAgeSec',
+            type: 'u32',
           },
         ],
       },
@@ -6547,6 +11322,142 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'StakingRound',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'startTime',
+            type: 'i64',
+          },
+          {
+            name: 'rate',
+            type: 'u64',
+          },
+          {
+            name: 'totalStake',
+            type: 'u64',
+          },
+          {
+            name: 'totalClaim',
+            type: 'u64',
+          },
+          {
+            name: 'lmRate',
+            type: 'u64',
+          },
+          {
+            name: 'lmTotalStake',
+            type: 'u64',
+          },
+          {
+            name: 'lmTotalClaim',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'LiquidStake',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+          {
+            name: 'stakeTime',
+            type: 'i64',
+          },
+          {
+            name: 'claimTime',
+            type: 'i64',
+          },
+          {
+            name: 'overlapTime',
+            type: 'i64',
+          },
+          {
+            name: 'overlapAmount',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'LockedStake',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'amount',
+            type: 'u64',
+          },
+          {
+            name: 'stakeTime',
+            type: 'i64',
+          },
+          {
+            name: 'claimTime',
+            type: 'i64',
+          },
+          {
+            name: 'lockDuration',
+            type: 'u64',
+          },
+          {
+            name: 'rewardMultiplier',
+            type: 'u32',
+          },
+          {
+            name: 'lmRewardMultiplier',
+            type: 'u32',
+          },
+          {
+            name: 'voteMultiplier',
+            type: 'u32',
+          },
+          {
+            name: 'amountWithRewardMultiplier',
+            type: 'u64',
+          },
+          {
+            name: 'amountWithLmRewardMultiplier',
+            type: 'u64',
+          },
+          {
+            name: 'resolved',
+            type: 'bool',
+          },
+          {
+            name: 'stakeResolutionThreadId',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'BucketName',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'CoreContributor',
+          },
+          {
+            name: 'DaoTreasury',
+          },
+          {
+            name: 'PoL',
+          },
+          {
+            name: 'Ecosystem',
+          },
+        ],
+      },
+    },
+    {
       name: 'FeesMode',
       type: {
         kind: 'enum',
@@ -6596,13 +11507,19 @@ export const IDL: Perpetuals = {
             name: 'WithdrawSolFees',
           },
           {
-            name: 'SetTestOraclePrice',
+            name: 'SetCustomOraclePrice',
           },
           {
             name: 'SetTestTime',
           },
           {
             name: 'UpgradeCustody',
+          },
+          {
+            name: 'MintLmTokensFromBucket',
+          },
+          {
+            name: 'InitStaking',
           },
         ],
       },
@@ -6616,7 +11533,7 @@ export const IDL: Perpetuals = {
             name: 'None',
           },
           {
-            name: 'Test',
+            name: 'Custom',
           },
           {
             name: 'Pyth',
@@ -6674,6 +11591,20 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'Remove',
+          },
+        ],
+      },
+    },
+    {
+      name: 'StakingType',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'LM',
+          },
+          {
+            name: 'LP',
           },
         ],
       },
@@ -6737,73 +11668,128 @@ export const IDL: Perpetuals = {
     },
     {
       code: 6011,
+      name: 'InvalidVestState',
+      msg: 'Invalid vest state',
+    },
+    {
+      code: 6012,
+      name: 'InvalidStakeState',
+      msg: 'Invalid stake state',
+    },
+    {
+      code: 6013,
       name: 'InvalidCustodyState',
       msg: 'Invalid custody state',
     },
     {
-      code: 6012,
+      code: 6014,
+      name: 'InvalidCollateralCustody',
+      msg: 'Invalid collateral custody',
+    },
+    {
+      code: 6015,
       name: 'InvalidPositionState',
       msg: 'Invalid position state',
     },
     {
-      code: 6013,
+      code: 6016,
+      name: 'InvalidStakingRoundState',
+      msg: 'Invalid staking round state',
+    },
+    {
+      code: 6017,
       name: 'InvalidPerpetualsConfig',
       msg: 'Invalid perpetuals config',
     },
     {
-      code: 6014,
+      code: 6018,
       name: 'InvalidPoolConfig',
       msg: 'Invalid pool config',
     },
     {
-      code: 6015,
+      code: 6019,
       name: 'InvalidCustodyConfig',
       msg: 'Invalid custody config',
     },
     {
-      code: 6016,
+      code: 6020,
       name: 'InsufficientAmountReturned',
       msg: 'Insufficient token amount returned',
     },
     {
-      code: 6017,
+      code: 6021,
       name: 'MaxPriceSlippage',
       msg: 'Price slippage limit exceeded',
     },
     {
-      code: 6018,
+      code: 6022,
       name: 'MaxLeverage',
       msg: 'Position leverage limit exceeded',
     },
     {
-      code: 6019,
+      code: 6023,
       name: 'CustodyAmountLimit',
       msg: 'Custody amount limit exceeded',
     },
     {
-      code: 6020,
+      code: 6024,
       name: 'PositionAmountLimit',
       msg: 'Position amount limit exceeded',
     },
     {
-      code: 6021,
+      code: 6025,
       name: 'TokenRatioOutOfRange',
       msg: 'Token ratio out of range',
     },
     {
-      code: 6022,
+      code: 6026,
       name: 'UnsupportedToken',
       msg: 'Token is not supported',
     },
     {
-      code: 6023,
+      code: 6027,
       name: 'InstructionNotAllowed',
       msg: 'Instruction is not allowed at this time',
     },
     {
-      code: 6024,
+      code: 6028,
       name: 'MaxUtilization',
       msg: 'Token utilization limit exceeded',
+    },
+    {
+      code: 6029,
+      name: 'InvalidGovernanceProgram',
+      msg: "Governance program do not match Cortex's",
+    },
+    {
+      code: 6030,
+      name: 'InvalidGovernanceRealm',
+      msg: "Governance realm do not match Cortex's",
+    },
+    {
+      code: 6031,
+      name: 'InvalidVestingUnlockTime',
+      msg: 'Vesting unlock time is too close or passed',
+    },
+    {
+      code: 6032,
+      name: 'InvalidStakingLockingTime',
+      msg: 'Invalid staking locking time',
+    },
+    {
+      code: 6033,
+      name: 'CannotFoundStake',
+      msg: 'Cannot found stake',
+    },
+    {
+      code: 6034,
+      name: 'UnresolvedStake',
+      msg: 'Stake is not resolved',
+    },
+    {
+      code: 6035,
+      name: 'BucketMintLimit',
+      msg: 'Reached bucket mint limit',
     },
   ],
 };

@@ -31,6 +31,7 @@ import {
   PriceAndFee,
   ProfitAndLoss,
   Token,
+  TokenSymbol,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -41,6 +42,7 @@ import {
   nativeToUi,
   parseTransactionError,
 } from './utils';
+import config from './config/devnet';
 
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);
@@ -92,6 +94,122 @@ export class AdrenaClient {
     isStable: false,
     image: '/images/adx.png',
   };
+
+  public staking = (stakedTokenMint: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('staking'), stakedTokenMint.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getUserStaking = (owner: PublicKey, stakedTokenMint: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('user_staking'),
+        owner.toBuffer(),
+        this.staking(stakedTokenMint).toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getUserStakingThreadAuthority = (
+    owner: PublicKey,
+    stakedTokenMint: PublicKey,
+  ) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('user-staking-thread-authority'),
+        this.getUserStaking(owner, stakedTokenMint).toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getThreadAddress = (
+    owner: PublicKey,
+    stakedTokenMint: PublicKey,
+    threadId: BN,
+  ) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('thread'),
+        this.getUserStakingThreadAuthority(owner, stakedTokenMint).toBuffer(),
+        threadId.toArrayLike(Buffer, 'be', 32),
+      ],
+      new PublicKey(config.clockworkProgram),
+    )[0];
+  };
+
+  public getStakingStakedTokenVaultPda = (stakedTokenMint: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('staking_staked_token_vault'),
+        this.staking(stakedTokenMint).toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getStakingRewardTokenVaultPda = (stakedTokenMint: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('staking_reward_token_vault'),
+        this.staking(stakedTokenMint).toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getStakingLmRewardTokenVaultPda = (stakedTokenMint: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('staking_lm_reward_token_vault'),
+        this.staking(stakedTokenMint).toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public governanceTokenMint = PublicKey.findProgramAddressSync(
+    [Buffer.from('governance_token_mint')],
+    AdrenaClient.programId,
+  )[0];
+
+  public governanceRealm = PublicKey.findProgramAddressSync(
+    [Buffer.from('AdrenaTest')],
+    AdrenaClient.programId,
+  )[0];
+
+  public governanceGoverningTokenHolding = PublicKey.findProgramAddressSync(
+    [
+      config.governanceProgram.toBuffer(),
+      this.governanceRealm.toBuffer(),
+      this.governanceTokenMint.toBuffer(),
+    ],
+    AdrenaClient.programId,
+  )[0];
+
+  public governanceRealmConfig = PublicKey.findProgramAddressSync(
+    [Buffer.from('governance_realm_config'), this.governanceRealm.toBuffer()],
+    AdrenaClient.programId,
+  )[0];
+
+  public getGovernanceGoverningTokenOwnerRecord = (owner: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [
+        this.governanceRealm.toBuffer(),
+        this.governanceTokenMint.toBuffer(),
+        owner.toBuffer(),
+      ],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public cortex = PublicKey.findProgramAddressSync(
+    [Buffer.from('cortex')],
+    AdrenaClient.programId,
+  )[0];
 
   protected adrenaProgram: Program<Perpetuals> | null = null;
 
@@ -563,7 +681,7 @@ export class AdrenaClient {
     }
 
     const custodyAddress = this.findCustodyAddress(mint);
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
+    const collateralCustody = this.findCustodyTokenAccountAddress(mint);
 
     const custodyOracleAccount =
       this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
@@ -601,7 +719,7 @@ export class AdrenaClient {
         position,
         custody: custodyAddress,
         custodyOracleAccount,
-        custodyTokenAccount,
+        collateralCustody,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       });
@@ -805,9 +923,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
+    const collateralCustody = this.findCustodyTokenAccountAddress(custody.mint);
 
     const receivingAccount = findATAAddressSync(position.owner, custody.mint);
 
@@ -853,7 +969,7 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount,
-          custodyTokenAccount,
+          collateralCustody,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
         .preInstructions(preInstructions)
@@ -1125,9 +1241,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
+    const collateralCustody = this.findCustodyTokenAccountAddress(custody.mint);
 
     const fundingAccount = findATAAddressSync(position.owner, custody.mint);
 
@@ -1144,7 +1258,7 @@ export class AdrenaClient {
         position: position.pubkey,
         custody: position.custody,
         custodyOracleAccount,
-        custodyTokenAccount,
+        collateralCustody,
         tokenProgram: TOKEN_PROGRAM_ID,
       });
   }
@@ -1169,9 +1283,7 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
+    const collateralCustody = this.findCustodyTokenAccountAddress(custody.mint);
 
     const receivingAccount = findATAAddressSync(position.owner, custody.mint);
 
@@ -1212,11 +1324,471 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount,
-          custodyTokenAccount,
+          collateralCustody,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
+        .transaction(),
+    );
+  }
+
+  // add_liquid_stake
+  public async addLiquidStake({
+    owner,
+    amount,
+  }: {
+    owner: PublicKey;
+    amount: BN;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+
+    const stakedTokenMint = this.lmTokenMint;
+    const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
+    const rewardTokenAccount = findATAAddressSync(
+      owner,
+      stakingRewardTokenMint,
+    );
+
+    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const userStaking = this.getUserStaking(owner, stakedTokenMint);
+
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
+
+    if (!userStakingAccount) {
+      // trying to make this work
+      await this.initUserStaking({
+        owner,
+        stakedTokenMint,
+      });
+      return;
+      // preInstructions.push(instruction);
+    }
+
+    if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
+      console.log('init user reward');
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: rewardTokenAccount,
+          mint: stakingRewardTokenMint, // double check
+          owner,
+        }),
+      );
+    }
+
+    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+      console.log('init user staking');
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: lmTokenAccount,
+          mint: this.lmTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    const stakesClaimCronThread = this.getThreadAddress(
+      owner,
+      stakedTokenMint,
+      userStakingAccount!.stakesClaimCronThreadId,
+    );
+
+    console.log(preInstructions, userStakingAccount);
+
+    const transaction = await this.adrenaProgram.methods
+      .addLiquidStake({
+        amount,
+      })
+      .accounts({
+        owner,
+        fundingAccount,
+        rewardTokenAccount,
+        lmTokenAccount,
+        stakingStakedTokenVault:
+          this.getStakingStakedTokenVaultPda(stakedTokenMint),
+        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
+          stakingRewardTokenMint,
+        ),
+        stakingLmRewardTokenVault:
+          this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        userStaking: this.getUserStaking(owner, stakedTokenMint),
+        staking: this.staking(stakedTokenMint),
+        cortex: this.cortex,
+        perpetuals: AdrenaClient.perpetualsAddress,
+        lmTokenMint: this.lmTokenMint,
+        governanceTokenMint: this.governanceTokenMint,
+        stakingRewardTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecord(owner),
+        stakesClaimCronThread,
+        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
+          owner,
+          stakedTokenMint,
+        ),
+        clockworkProgram: config.clockworkProgram,
+        governanceProgram: config.governanceProgram,
+        perpetualsProgram: this.adrenaProgram.programId,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
+  }
+
+  // add_liquid_stake
+  public async addLockedStake({
+    owner,
+    amount,
+    lockedDays,
+  }: {
+    owner: PublicKey;
+    amount: BN;
+    lockedDays: 0 | 30 | 60 | 90 | 180 | 360 | 720;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+    const preInstructions: TransactionInstruction[] = [];
+
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+
+    const stakedTokenMint = this.lmTokenMint;
+    const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
+    const rewardTokenAccount = findATAAddressSync(
+      owner,
+      stakingRewardTokenMint,
+    );
+
+    const userStaking = this.getUserStaking(owner, stakedTokenMint);
+
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
+
+    if (!userStakingAccount) {
+      // trying to make this work
+      await this.initUserStaking({
+        owner,
+        stakedTokenMint,
+      });
+      return;
+      // preInstructions.push(instruction);
+    }
+
+    if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
+      console.log('init user reward');
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: rewardTokenAccount,
+          mint: stakingRewardTokenMint, // double check
+          owner,
+        }),
+      );
+    }
+
+    const stakeResolutionThreadId = new BN(Date.now());
+
+    const stakeResolutionThread = this.getThreadAddress(
+      owner,
+      stakedTokenMint,
+      stakeResolutionThreadId,
+    );
+
+    const stakesClaimCronThread = this.getThreadAddress(
+      owner,
+      stakedTokenMint,
+      userStakingAccount!.stakesClaimCronThreadId,
+    );
+
+    return this.adrenaProgram.methods
+      .addLockedStake({
+        stakeResolutionThreadId,
+        amount,
+        lockedDays,
+      })
+      .accounts({
+        owner,
+        fundingAccount,
+        rewardTokenAccount,
+        stakingStakedTokenVault:
+          this.getStakingStakedTokenVaultPda(stakedTokenMint),
+        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
+          stakingRewardTokenMint,
+        ),
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        userStaking: this.getUserStaking(owner, stakedTokenMint),
+        staking: this.staking(stakedTokenMint),
+        cortex: this.cortex,
+        perpetuals: AdrenaClient.perpetualsAddress,
+        lmTokenMint: this.lmTokenMint,
+        governanceTokenMint: this.governanceTokenMint,
+        stakingRewardTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecord(owner),
+        stakeResolutionThread,
+        stakesClaimCronThread,
+        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
+          owner,
+          stakedTokenMint,
+        ),
+        clockworkProgram: config.clockworkProgram,
+        governanceProgram: config.governanceProgram,
+        perpetualsProgram: this.adrenaProgram.programId,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      });
+  }
+
+  public async removeLiquidStake({
+    owner,
+    amount,
+  }: {
+    owner: PublicKey;
+    amount: BN;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakedTokenMint = this.lmTokenMint;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+
+    const rewardTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const lmTokenAccount = findATAAddressSync(owner, stakingRewardTokenMint);
+
+    const threadId = new BN(Date.now());
+    const stakesClaimCronThread = this.getThreadAddress(
+      owner,
+      stakedTokenMint,
+      threadId,
+    );
+
+    return this.adrenaProgram.methods
+      .removeLiquidStake({
+        amount,
+      })
+      .accounts({
+        owner,
+        lmTokenAccount,
+        rewardTokenAccount,
+        stakingRewardTokenMint,
+        stakesClaimCronThread,
+        stakingStakedTokenVault:
+          this.getStakingStakedTokenVaultPda(stakedTokenMint),
+        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
+          stakingRewardTokenMint,
+        ),
+        stakingLmRewardTokenVault:
+          this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        userStaking: this.getUserStaking(owner, stakedTokenMint),
+        staking: this.staking(stakedTokenMint),
+        cortex: this.cortex,
+        perpetuals: AdrenaClient.perpetualsAddress,
+        lmTokenMint: stakedTokenMint,
+        governanceTokenMint: this.governanceTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecord(owner),
+        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
+          owner,
+          stakedTokenMint,
+        ),
+        clockworkProgram: config.clockworkProgram,
+        governanceProgram: config.governanceProgram,
+        perpetualsProgram: this.adrenaProgram.programId, // double check
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      });
+  }
+
+  public async removeLockedStake({
+    owner,
+    lockedStakeIndex,
+  }: {
+    owner: PublicKey;
+    lockedStakeIndex: BN;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakedTokenMint = this.lmTokenMint;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+
+    const rewardTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+
+    const threadId = new BN(Date.now());
+    const stakesClaimCronThread = this.getThreadAddress(
+      owner,
+      stakedTokenMint,
+      threadId,
+    );
+
+    return this.adrenaProgram.methods
+      .removeLockedStake({
+        lockedStakeIndex,
+      })
+      .accounts({
+        owner,
+        lmTokenAccount,
+        rewardTokenAccount,
+        stakingRewardTokenMint,
+        stakesClaimCronThread,
+        stakingStakedTokenVault:
+          this.getStakingStakedTokenVaultPda(stakedTokenMint),
+        stakingRewardTokenVault: this.getStakingRewardTokenVaultPda(
+          stakingRewardTokenMint,
+        ),
+        stakingLmRewardTokenVault:
+          this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        userStaking: this.getUserStaking(owner, stakedTokenMint),
+        staking: this.staking(stakedTokenMint),
+        cortex: this.cortex,
+        perpetuals: AdrenaClient.perpetualsAddress,
+        lmTokenMint: stakedTokenMint,
+        governanceTokenMint: this.governanceTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecord(owner),
+        userStakingThreadAuthority: this.getUserStakingThreadAuthority(
+          owner,
+          stakedTokenMint,
+        ),
+        clockworkProgram: config.clockworkProgram,
+        governanceProgram: config.governanceProgram,
+        perpetualsProgram: this.adrenaProgram.programId,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      });
+  }
+
+  public async initUserStaking({
+    owner,
+    stakedTokenMint,
+  }: {
+    owner: PublicKey;
+    stakedTokenMint: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+
+    const rewardTokenAccount = findATAAddressSync(
+      owner,
+      stakingRewardTokenMint,
+    );
+
+    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+
+    if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
+      console.log('init user reward');
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: rewardTokenAccount,
+          mint: stakingRewardTokenMint, // double check
+          owner,
+        }),
+      );
+    }
+
+    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+      console.log('init user staking');
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: lmTokenAccount,
+          mint: this.lmTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    const threadId = new BN(Date.now());
+    const stakesClaimCronThread = this.getThreadAddress(
+      owner,
+      stakedTokenMint,
+      threadId,
+    );
+
+    console.log(stakesClaimCronThread.toBase58());
+
+    return this.signAndExecuteTx(
+      await this.adrenaProgram.methods
+        .initUserStaking({
+          stakesClaimCronThreadId: new BN(Date.now()),
+        })
+        .accounts({
+          owner,
+          rewardTokenAccount,
+          lmTokenAccount,
+          staking: this.staking(stakedTokenMint),
+          userStaking: this.getUserStaking(owner, stakedTokenMint),
+          transferAuthority: AdrenaClient.transferAuthorityAddress,
+          userStakingThreadAuthority: this.getUserStakingThreadAuthority(
+            owner,
+            stakedTokenMint,
+          ),
+          stakesClaimCronThread,
+          stakesClaimPayer: config.stakesClaimPayer,
+          lmTokenMint: this.lmTokenMint,
+          cortex: this.cortex,
+          perpetuals: AdrenaClient.perpetualsAddress,
+          stakingRewardTokenVault:
+            this.getStakingRewardTokenVaultPda(stakedTokenMint),
+          stakingLmRewardTokenVault:
+            this.getStakingLmRewardTokenVaultPda(stakedTokenMint),
+          stakingRewardTokenMint,
+          perpetualsProgram: this.adrenaProgram.programId,
+          clockworkProgram: config.clockworkProgram,
+          systemProgram: SystemProgram.programId,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .preInstructions(preInstructions)
         .transaction(),
     );
   }
@@ -1260,6 +1832,9 @@ export class AdrenaClient {
           pool: this.mainPool.pubkey,
           custody: token.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+          collateralCustodyOracleAccount:
+            custody.nativeObject.oracle.oracleAccount,
+          collateralCustody: token.custody,
         },
       },
     );
@@ -1291,6 +1866,9 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+          collateralCustody: position.custody,
+          collateralCustodyOracleAccount:
+            custody.nativeObject.oracle.oracleAccount,
         },
       },
     );
@@ -1322,6 +1900,9 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: custody.pubkey,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+          collateralCustodyOracleAccount:
+            custody.nativeObject.oracle.oracleAccount,
+          collateralCustody: custody.pubkey,
         },
       },
     );
@@ -1360,6 +1941,9 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: custody.pubkey,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+          collateralCustodyOracleAccount:
+            custody.nativeObject.oracle.oracleAccount,
+          collateralCustody: custody.pubkey,
         },
       },
     );
@@ -1795,5 +2379,9 @@ export class AdrenaClient {
     if (!this.adrenaProgram) return null;
 
     return this.adrenaProgram.provider.connection;
+  }
+
+  public getTokenBySymbol(symbol: TokenSymbol): Token | null {
+    return this.tokens.find((token) => token.symbol === symbol) ?? null;
   }
 }
