@@ -17,6 +17,7 @@ import {
 import { Perpetuals } from '@/target/perpetuals';
 import PerpetualsJson from '@/target/perpetuals.json';
 
+import config from './config/devnet';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
 import {
@@ -42,7 +43,6 @@ import {
   nativeToUi,
   parseTransactionError,
 } from './utils';
-import config from './config/devnet';
 
 export class AdrenaClient {
   public static programId = new PublicKey(PerpetualsJson.metadata.address);

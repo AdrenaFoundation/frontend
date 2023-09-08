@@ -1,5 +1,8 @@
+import { PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
 import Image from 'next/image';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -9,9 +12,6 @@ import StakeList from '@/components/pages/earn/StakeList';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { formatNumber } from '@/utils';
-import { PublicKey } from '@solana/web3.js';
-import BN from 'bn.js';
-import { toast } from 'react-toastify';
 
 type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;
 
@@ -34,8 +34,6 @@ export default function Earn() {
     }
 
     const owner = new PublicKey(wallet.walletAddress);
-    const mint = new PublicKey(window.adrena.client.lmTokenMint);
-    const rewardTokenAccount = PublicKey.default;
 
     if (lockPeriod === 0) {
       return window.adrena.client.addLiquidStake({
