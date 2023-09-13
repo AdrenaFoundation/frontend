@@ -164,6 +164,7 @@ export type Multisig = Accounts['multisig'];
 export type Perpetuals = Accounts['perpetuals'];
 export type Pool = Accounts['pool'];
 export type Position = Accounts['position'];
+export type UserStaking = Accounts['userStaking'];
 
 //
 // Types

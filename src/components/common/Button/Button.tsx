@@ -30,7 +30,7 @@ function Button({
   const variants = {
     primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-md',
     secondary: 'bg-gray-300 opacity-50 hover:opacity-100 rounded-md',
-    danger: '',
+    danger: 'bg-red-500 hover:bg-red-700 font-medium rounded-md',
     text: 'opacity-50 hover:opacity-100 rounded-md',
     outline: 'border border-gray-200 hover:bg-gray-200 rounded-md',
   };

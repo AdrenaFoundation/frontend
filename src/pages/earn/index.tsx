@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import Image from 'next/image';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import Button from '@/components/common/Button/Button';
@@ -9,45 +9,145 @@ import TabSelect from '@/components/common/TabSelect/TabSelect';
 import DisplayInfo from '@/components/DisplayInfo/DisplayInfo';
 import StakeBlocks from '@/components/pages/earn/StakeBlocks';
 import StakeList from '@/components/pages/earn/StakeList';
+import { STAKE_MULTIPLIERS } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
-import { formatNumber } from '@/utils';
+import { UserStaking } from '@/types';
+import {
+  addFailedTxNotification,
+  addSuccessTxNotification,
+  formatNumber,
+  nativeToUi,
+} from '@/utils';
 
 type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;
 
 export default function Earn() {
   const wallet = useSelector((s) => s.walletState.wallet);
-  const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const walletTokenBalances = useSelector((s) => s.walletTokenBalances); // need to refresh
 
   const [lockPeriod, setLockPeriod] = useState<LockPeriod>(0);
 
   const [amount, setAmount] = useState<number | null>(null);
+  const [stakingAccount, setStakingAccount] = useState<UserStaking | null>(
+    null,
+  );
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const stakeAmount = () => {
-    if (!wallet) {
+  const adxBalance =
+    walletTokenBalances?.[window.adrena.client.adxToken.symbol];
+
+  const owner = wallet && new PublicKey(wallet.walletAddress);
+
+  useEffect(() => {
+    getUserStakingAccount();
+  }, [walletTokenBalances]);
+
+  const getUserStakingAccount = async () => {
+    if (!owner) {
+      // error msg
+      return;
+    }
+
+    const stakedTokenMint = window.adrena.client.adxToken.mint;
+
+    const userStakingAccount = await window.adrena.client.getUserStakingAccount(
+      {
+        owner,
+        stakedTokenMint,
+      },
+    );
+    setStakingAccount(userStakingAccount);
+  };
+
+  const stakeAmount = async () => {
+    if (!owner) {
       toast.error('Please connect your wallet');
       return;
     }
+
     if (!amount) {
       toast.error('Please enter an amount');
       return;
     }
 
-    const owner = new PublicKey(wallet.walletAddress);
+    try {
+      const txHash =
+        lockPeriod === 0
+          ? await window.adrena.client.addLiquidStake({
+              owner,
+              amount,
+            })
+          : await window.adrena.client.addLockedStake({
+              owner,
+              amount,
+              lockedDays: Number(lockPeriod) as LockPeriod,
+            });
 
-    if (lockPeriod === 0) {
-      console.log(window.adrena.client);
-      return window.adrena.client.addLiquidStake({
-        owner,
-        amount: new BN(amount),
+      addSuccessTxNotification({
+        title: 'Successfully Staked ADX',
+        txHash,
+      });
+
+      setAmount(null);
+      setLockPeriod(0);
+      return getUserStakingAccount();
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Staking ADX',
+        error,
       });
     }
+  };
 
-    return window.adrena.client.addLockedStake({
-      owner,
-      amount: new BN(amount),
-      lockedDays: Number(lockPeriod) as LockPeriod,
-    });
+  const handleRemoveLockedStake = async (lockedStakeIndex: BN) => {
+    if (!owner) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+
+    try {
+      const txHash = await window.adrena.client.removeLockedStake({
+        owner,
+        lockedStakeIndex,
+      });
+
+      addSuccessTxNotification({
+        title: 'Successfully Removed Locked Stake',
+        txHash,
+      });
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Removing Locked Stake',
+        error,
+      });
+    }
+  };
+
+  const handleRemoveLiquidStake = async (amount: number) => {
+    if (!owner) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+
+    try {
+      const txHash = await window.adrena.client.removeLiquidStake({
+        owner,
+        amount,
+      });
+
+      addSuccessTxNotification({
+        title: 'Successfully Removed Liquid Stake',
+        txHash,
+      });
+
+      return getUserStakingAccount();
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Removing Liquid Stake',
+        error,
+      });
+    }
   };
 
   const LOCK_PERIODS: { title: LockPeriod }[] = [
@@ -60,76 +160,93 @@ export default function Earn() {
     { title: 720 },
   ];
 
-  const MULTIPLIERS = {
-    0: {
-      usdc: 1,
-      adx: 0,
-      votes: 1,
-    },
-    30: {
-      usdc: 1.25,
-      adx: 1,
-      votes: 1.21,
-    },
-    60: {
-      usdc: 1.56,
-      adx: 1.25,
-      votes: 1.33,
-    },
-    90: {
-      usdc: 1.95,
-      adx: 1.56,
-      votes: 1.46,
-    },
-    180: {
-      usdc: 2.44,
-      adx: 1.95,
-      votes: 1.61,
-    },
-    360: {
-      usdc: 3.05,
-      adx: 2.44,
-      votes: 1.78,
-    },
-    720: {
-      usdc: 3.81,
-      adx: 3.05,
-      votes: 1.95,
-    },
+  const totalLiquidStaked = stakingAccount?.liquidStake.amount.toNumber() ?? 0;
+
+  const totalLockedStake =
+    stakingAccount?.lockedStakes.reduce((acc, stake) => {
+      return acc + stake.amount.toNumber();
+    }, 0) ?? 0;
+
+  const totalStaked = nativeToUi(
+    new BN(totalLiquidStaked + totalLockedStake),
+    window.adrena.client.adxToken.decimals,
+  );
+
+  const totalReedemableLockedStake =
+    stakingAccount?.lockedStakes.reduce((acc, stake) => {
+      // check if the date is past the lock duration
+      if (stake.lockDuration.toNumber() === 0) {
+        return acc + stake.amount.toNumber();
+      }
+      return acc;
+    }, 0) ?? 0;
+
+  const totalReedemableStake = nativeToUi(
+    new BN(totalReedemableLockedStake + totalLiquidStaked),
+    window.adrena.client.adxToken.decimals,
+  );
+
+  // // dummy data
+  // const stakePositions = [
+  //   {
+  //     pubkey: '4ZY3ZH8bStniqdCZdR14xsWWvrMsCJrusobTdy4JipC',
+  //     amount: 28323323,
+  //     multiplier: 4293829,
+  //     rewards: 48293,
+  //     duration: 0,
+  //     yield: 28303,
+  //   },
+  //   {
+  //     pubkey: '4ZY3ZH8bStniqdCZdR14xsWW6vrMsJrusobTdy4JipC',
+  //     amount: 28323323,
+  //     multiplier: 4293829,
+  //     rewards: 48293,
+  //     duration: 4,
+  //     yield: 28303,
+  //   },
+  //   {
+  //     pubkey: '4ZY3ZH8bStniqdCZdR14xsWW6vr3MsCJrusobTdy4JipC',
+  //     amount: 28323323,
+  //     multiplier: 4293829,
+  //     rewards: 48293,
+  //     duration: 4,
+  //     yield: 28303,
+  //   },
+  // ];
+
+  //   {
+  //     "bump": 255,
+  //     "threadAuthorityBump": 255,
+  //     "stakesClaimCronThreadId": "018a8415bbcd",
+  //     "liquidStake": {
+  //         "amount": "01f4",
+  //         "stakeTime": "65004420",
+  //         "claimTime": "00",
+  //         "overlapTime": "00",
+  //         "overlapAmount": "00"
+  //     },
+  //     "lockedStakes": []
+  // }
+
+  const onStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (value === '') {
+      setAmount(null);
+      setErrorMessage('');
+      return;
+    }
+
+    const adx = adxBalance ?? 0;
+
+    if (Number(value) > adx) {
+      setErrorMessage('Insufficient balance');
+    } else {
+      setErrorMessage('');
+    }
+
+    setAmount(Number(value));
   };
-
-  const adxBalance =
-    walletTokenBalances?.[window.adrena.client.adxToken.symbol];
-
-  // dummy data
-  const stakePositions = [
-    {
-      pubkey: '4ZY3ZH8bStniqdCZdR14xsWWvrMsCJrusobTdy4JipC',
-      amount: 28323323,
-      multiplier: 4293829,
-      rewards: 48293,
-      duration: 0,
-      yield: 28303,
-    },
-    {
-      pubkey: '4ZY3ZH8bStniqdCZdR14xsWW6vrMsJrusobTdy4JipC',
-      amount: 28323323,
-      multiplier: 4293829,
-      rewards: 48293,
-      duration: 4,
-      yield: 28303,
-    },
-    {
-      pubkey: '4ZY3ZH8bStniqdCZdR14xsWW6vr3MsCJrusobTdy4JipC',
-      amount: 28323323,
-      multiplier: 4293829,
-      rewards: 48293,
-      duration: 4,
-      yield: 28303,
-    },
-  ];
-
-  const isBigScreen = useBetterMediaQuery('(min-width: 1150px)');
 
   return (
     <>
@@ -165,13 +282,7 @@ export default function Earn() {
                   className="w-full bg-dark border border-gray-300 rounded-lg rounded-l-none p-3 px-4 text-xl font-mono"
                   type="number"
                   value={amount ?? ''}
-                  onChange={(e) => {
-                    if (e.target.value === '') {
-                      setAmount(null);
-                      return;
-                    }
-                    setAmount(Number(e.target.value));
-                  }}
+                  onChange={onStakeAmountChange}
                   placeholder="0.00"
                 />
                 <Button
@@ -221,19 +332,19 @@ export default function Earn() {
               <li className="flex flex-row justify-between">
                 <p className="text-sm opacity-50"> USDC yield</p>
                 <p className="text-sm font-mono">
-                  {MULTIPLIERS[lockPeriod].usdc}x
+                  {STAKE_MULTIPLIERS[lockPeriod].usdc}x
                 </p>
               </li>
               <li className="flex flex-row justify-between">
                 <p className="text-sm opacity-50"> ADX token yield </p>
                 <p className="text-sm font-mono">
-                  {MULTIPLIERS[lockPeriod].adx}x
+                  {STAKE_MULTIPLIERS[lockPeriod].adx}x
                 </p>
               </li>
               <li className="flex flex-row justify-between">
                 <p className="text-sm opacity-50"> Votes </p>
                 <p className="text-sm font-mono">
-                  {MULTIPLIERS[lockPeriod].votes}x
+                  {STAKE_MULTIPLIERS[lockPeriod].votes}x
                 </p>
               </li>
             </ul>
@@ -241,7 +352,8 @@ export default function Earn() {
             <Button
               className="w-full"
               size="lg"
-              title="[S]take"
+              title={errorMessage ? errorMessage : '[S]take'}
+              disabled={!!errorMessage}
               onClick={() => stakeAmount()}
             />
           </div>
@@ -251,7 +363,7 @@ export default function Earn() {
           <DisplayInfo
             data={[
               { title: 'Total Supply', value: '129,391.23 ADX' },
-              { title: 'Circulating Supply', value: '293,930.93' },
+              { title: 'Circulating Supply', value: '293,930.93 ADX' },
               { title: 'Market Cap', value: '$193,293.89' },
               { title: 'Total Staked', value: '$193,293.89' },
             ]}
@@ -266,25 +378,44 @@ export default function Earn() {
                 </li>
                 <li className="flex flex-row justify-between">
                   <p className="text-sm opacity-50"> Total Staked</p>
-                  <p className="text-sm font-mono">
-                    {MULTIPLIERS[lockPeriod].usdc}x
-                  </p>
+                  <p className="text-sm font-mono">{totalStaked} ADX</p>
                 </li>
                 <li className="flex flex-row justify-between">
                   <p className="text-sm opacity-50"> Total Redeemable </p>
                   <p className="text-sm font-mono">
-                    {MULTIPLIERS[lockPeriod].adx}x
+                    {totalReedemableStake} ADX
                   </p>
                 </li>
               </ul>
             </div>
 
-            <h4 className="mt-4">Stakes</h4>
-            {isBigScreen ? (
-              <StakeList stakePositions={stakePositions} />
-            ) : (
-              <StakeBlocks stakePositions={stakePositions} />
-            )}
+            <div className="my-3 w-full bg-gray-300 h-[2px] rounded-full" />
+
+            <h4>Liquid Stake</h4>
+            <StakeList
+              stakePositions={stakingAccount}
+              handleRemoveLiquidStake={handleRemoveLiquidStake}
+              totalLiquidStaked={nativeToUi(
+                new BN(totalLiquidStaked),
+                window.adrena.client.adxToken.decimals,
+              )}
+            />
+
+            <div className="my-3 w-full bg-gray-300 h-[2px] rounded-full" />
+
+            <div className="flex flex-row gap-1 items-center">
+              <h4>Locked Stake</h4>
+              <Image
+                src="/images/Icons/lock.svg"
+                width={16}
+                height={16}
+                alt="lock icon"
+              />
+            </div>
+            <StakeBlocks
+              stakePositions={stakingAccount}
+              handleRemoveLockedStake={handleRemoveLockedStake}
+            />
           </div>
         </div>
       </div>
