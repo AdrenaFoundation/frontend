@@ -5,7 +5,7 @@ import { Perpetuals } from '@/target/perpetuals';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration from './config/IConfiguration';
-import { AnchorTypes } from './IdlTypeParser';
+import { AnchorTypes, ContextAccounts } from './IdlTypeParser';
 
 export type SupportedCluster = 'devnet' | 'mainnet';
 
@@ -167,7 +167,7 @@ export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
 
 //
-// Types
+// Params Types
 //
 type Defined = PerpetualsTypes['Defined'];
 
@@ -200,6 +200,37 @@ export type OracleType = Defined['OracleType'];
 export type Side = Defined['Side'];
 export type GetEntryPriceAndFeeParams = Defined['GetEntryPriceAndFeeParams'];
 export type AmountAndFee = Defined['AmountAndFee'];
+
+//
+// Accounts types
+//
+
+type Instructions = PerpetualsTypes['Instructions'];
+
+type ExtractInstructionAccounts<T = keyof Instructions> = ContextAccounts<
+  Instructions[T]['accounts']
+>;
+
+// Use accounts types to force TS typing computation. TS will then throw an error if account is missing
+export type SwapAccounts = ExtractInstructionAccounts<'swap'>;
+export type ClosePositionAccounts = ExtractInstructionAccounts<'closePosition'>;
+export type AddCollateralAccounts = ExtractInstructionAccounts<'addCollateral'>;
+export type OpenPositionAccounts = ExtractInstructionAccounts<'openPosition'>;
+export type RemoveCollateralAccounts =
+  ExtractInstructionAccounts<'removeCollateral'>;
+export type AddLiquidStakeAccounts =
+  ExtractInstructionAccounts<'addLiquidStake'>;
+export type AddLockedStakeAccounts =
+  ExtractInstructionAccounts<'addLockedStake'>;
+export type RemoveLiquidStakeAccounts =
+  ExtractInstructionAccounts<'removeLiquidStake'>;
+export type RemoveLockedStakeAccounts =
+  ExtractInstructionAccounts<'removeLockedStake'>;
+export type InitUserStakingAccounts =
+  ExtractInstructionAccounts<'initUserStaking'>;
+export type AddLiquidityAccounts = ExtractInstructionAccounts<'addLiquidity'>;
+export type RemoveLiquidityAccounts =
+  ExtractInstructionAccounts<'removeLiquidity'>;
 
 //
 // Program
