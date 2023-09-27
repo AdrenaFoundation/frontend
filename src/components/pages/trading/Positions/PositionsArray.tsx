@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -26,8 +25,6 @@ export default function PositionsArray({
 
   const columnStyle = 'text-sm py-5';
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   if (positions === null && !connected) {
     return (
       <div className="flex flex-col h-full items-center justify-center">
@@ -50,7 +47,7 @@ export default function PositionsArray({
 
   if (positions === null && connected) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full items-center justify-center opacity-50">
         <Loader />
       </div>
     );
@@ -164,19 +161,15 @@ export default function PositionsArray({
               {formatPriceInfo(position.liquidationPrice ?? null)}
             </td>
 
-            <td className="relative">
-              <Button
-                variant="text"
-                leftIcon="images/icons/three-dots.svg"
-                onClick={() => setIsOpen(!isOpen)}
-              />
-
+            <td>
               <Menu
-                open={isOpen}
+                trigger={
+                  <Button
+                    variant="text"
+                    leftIcon="images/icons/three-dots.svg"
+                  />
+                }
                 className="w-fit"
-                onClose={() => {
-                  setIsOpen(false);
-                }}
               >
                 <MenuItems>
                   <MenuItem

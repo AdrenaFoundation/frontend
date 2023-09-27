@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 export default function DisplayInfo({
@@ -20,7 +21,11 @@ export default function DisplayInfo({
           key={'info' + i}
         >
           <p className="text-base md:text-sm opacity-50">{title}</p>
-          <p className="text-base md:text-xl font-mono">{value}</p>
+          <div className="flex flex-row gap-2 w-full">
+            <Image src="/images/adx.png" width={24} height={24} alt="adx" />
+
+            <p className="text-base font-mono">{value}</p>
+          </div>
         </div>
       ))}
     </div>

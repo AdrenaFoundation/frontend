@@ -26,7 +26,6 @@ export default function TabSelect<T extends string | number>({
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
 
   useEffect(() => {
-    console.log('activeTab', activeTab);
     if (activeTab !== null && refs[activeTab].current) {
       setActiveElement({
         width: refs[activeTab].current?.offsetWidth ?? 0,

@@ -980,6 +980,19 @@ export class AdrenaClient {
       );
     }
 
+    // fix
+    const receivingAccount = findATAAddressSync(owner, mintB);
+
+    if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: mintB,
+          owner,
+        }),
+      );
+    }
+
     const transaction = await this.buildSwapTx({
       owner,
       amountIn,
@@ -1597,13 +1610,13 @@ export class AdrenaClient {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
-
     const stakingPda = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, stakingPda);
 
     if (!(await isATAInitialized(this.connection, userStaking))) {
       return null;
     }
+
     const account = await this.adrenaProgram.account.userStaking.fetch(
       userStaking,
     );
@@ -1614,9 +1627,11 @@ export class AdrenaClient {
   public async addLiquidStake({
     owner,
     amount,
+    stakedTokenMint,
   }: {
     owner: PublicKey;
     amount: number;
+    stakedTokenMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1630,14 +1645,16 @@ export class AdrenaClient {
       throw new Error('USDC not found');
     }
 
-    const stakedTokenMint = this.lmTokenMint;
     const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
     const rewardTokenAccount = findATAAddressSync(
       owner,
       stakingRewardTokenMint,
     );
 
-    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
+    const tokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    console.log('sss', tokenAccount.toBase58());
+
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
@@ -1664,7 +1681,6 @@ export class AdrenaClient {
       preInstructions.push(...instructions);
     } else {
       if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
-        console.log('init user reward account');
         preInstructions.push(
           this.createATAInstruction({
             ataAddress: rewardTokenAccount,
@@ -1674,12 +1690,11 @@ export class AdrenaClient {
         );
       }
 
-      if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
-        console.log('init user staking');
+      if (!(await isATAInitialized(this.connection, tokenAccount))) {
         preInstructions.push(
           this.createATAInstruction({
-            ataAddress: lmTokenAccount,
-            mint: this.lmTokenMint,
+            ataAddress: tokenAccount,
+            mint: stakedTokenMint,
             owner,
           }),
         );
@@ -1734,15 +1749,16 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
-  // add_liquid_stake
   public async addLockedStake({
     owner,
     amount,
     lockedDays,
+    stakedTokenMint,
   }: {
     owner: PublicKey;
     amount: number;
     lockedDays: 0 | 30 | 60 | 90 | 180 | 360 | 720;
+    stakedTokenMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1755,14 +1771,13 @@ export class AdrenaClient {
       throw new Error('USDC not found');
     }
 
-    const stakedTokenMint = this.lmTokenMint;
     const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
     const rewardTokenAccount = findATAAddressSync(
       owner,
       stakingRewardTokenMint,
     );
 
-    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const tokenAccount = findATAAddressSync(owner, stakedTokenMint);
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
@@ -1797,12 +1812,12 @@ export class AdrenaClient {
         );
       }
 
-      if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+      if (!(await isATAInitialized(this.connection, tokenAccount))) {
         console.log('init user staking');
         preInstructions.push(
           this.createATAInstruction({
-            ataAddress: lmTokenAccount,
-            mint: this.lmTokenMint,
+            ataAddress: tokenAccount,
+            mint: stakedTokenMint,
             owner,
           }),
         );
@@ -1855,10 +1870,16 @@ export class AdrenaClient {
     const transaction = await this.adrenaProgram.methods
       .addLockedStake({
         stakeResolutionThreadId,
-        amount: uiToNative(amount, this.adxToken.decimals),
+        amount: uiToNative(
+          amount,
+          stakedTokenMint === this.lmTokenMint
+            ? this.adxToken.decimals
+            : this.alpToken.decimals,
+        ),
         lockedDays,
       })
       .accounts(accounts)
+      .preInstructions(preInstructions)
       .transaction();
 
     return this.signAndExecuteTx(transaction);
@@ -1867,16 +1888,17 @@ export class AdrenaClient {
   public async removeLiquidStake({
     owner,
     amount,
+    stakedTokenMint,
   }: {
     owner: PublicKey;
     amount: number;
+    stakedTokenMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
-    const stakedTokenMint = this.lmTokenMint;
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
@@ -1901,7 +1923,7 @@ export class AdrenaClient {
       owner,
       stakingRewardTokenMint,
     );
-    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
     const stakesClaimCronThread = this.getThreadAddressPda(
       userStakingThreadAuthority,
@@ -1927,7 +1949,7 @@ export class AdrenaClient {
       transferAuthority: AdrenaClient.transferAuthorityAddress,
       cortex: this.cortex,
       perpetuals: AdrenaClient.perpetualsAddress,
-      lmTokenMint: stakedTokenMint,
+      lmTokenMint: this.lmTokenMint,
       governanceTokenMint: this.governanceTokenMint,
       governanceRealm: this.governanceRealm,
       governanceRealmConfig: this.governanceRealmConfig,
@@ -1943,7 +1965,12 @@ export class AdrenaClient {
 
     const transaction = await this.adrenaProgram.methods
       .removeLiquidStake({
-        amount: uiToNative(amount, this.adxToken.decimals),
+        amount: uiToNative(
+          amount,
+          stakedTokenMint === this.lmTokenMint
+            ? this.adxToken.decimals
+            : this.alpToken.decimals,
+        ),
       })
       .accounts(accounts)
       .preInstructions([modifyComputeUnits])
@@ -1955,16 +1982,17 @@ export class AdrenaClient {
   public async removeLockedStake({
     owner,
     lockedStakeIndex,
+    stakedTokenMint,
   }: {
     owner: PublicKey;
     lockedStakeIndex: BN;
+    stakedTokenMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
-    const stakedTokenMint = this.lmTokenMint;
 
     if (!stakingRewardTokenMint) {
       throw new Error('USDC not found');
@@ -1974,7 +2002,7 @@ export class AdrenaClient {
       owner,
       stakingRewardTokenMint,
     );
-    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
@@ -1988,6 +2016,7 @@ export class AdrenaClient {
     const userStakingAccount =
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
+    // should not happen
     if (!userStakingAccount) {
       throw new Error('user staking account not found');
     }
@@ -2012,7 +2041,7 @@ export class AdrenaClient {
       transferAuthority: AdrenaClient.transferAuthorityAddress,
       cortex: this.cortex,
       perpetuals: AdrenaClient.perpetualsAddress,
-      lmTokenMint: stakedTokenMint,
+      lmTokenMint: this.lmTokenMint,
       governanceTokenMint: this.governanceTokenMint,
       governanceRealm: this.governanceRealm,
       governanceRealmConfig: this.governanceRealmConfig,
@@ -2070,7 +2099,8 @@ export class AdrenaClient {
     const userStakingThreadAuthority =
       this.getUserStakingThreadAuthorityPda(userStaking);
 
-    const lmTokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const tokenAccount = findATAAddressSync(owner, stakedTokenMint);
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
     if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
       console.log('init user reward account');
@@ -2083,12 +2113,12 @@ export class AdrenaClient {
       );
     }
 
-    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+    if (!(await isATAInitialized(this.connection, tokenAccount))) {
       console.log('init user staking');
       preInstructions.push(
         this.createATAInstruction({
-          ataAddress: lmTokenAccount,
-          mint: this.lmTokenMint,
+          ataAddress: tokenAccount,
+          mint: stakedTokenMint,
           owner,
         }),
       );

@@ -14,7 +14,6 @@ import Footer from '../Footer/Footer';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu() {
-  const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState<boolean>(false);
   const { pathname } = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -91,54 +90,47 @@ export default function BurgerMenu() {
                 ))}
               </ul>
 
-              <div className="relative mt-7">
-                <Button
-                  className="w-full"
-                  title={window.adrena.cluster}
-                  variant="outline"
-                  rightIcon="/images/icons/chevron-down.svg"
-                  onClick={() => setIsThreeDotMenuOpen(!isThreeDotMenuOpen)}
-                />
-
-                <Menu
-                  open={isThreeDotMenuOpen}
-                  onClose={() => {
-                    setIsThreeDotMenuOpen(false);
-                  }}
-                >
-                  <MenuItems>
-                    <MenuItem
-                      selected={window.adrena.cluster === 'devnet'}
-                      onClick={() => {
-                        router.replace({
-                          query: {
-                            ...router.query,
-                            cluster: 'devnet',
-                          },
-                        });
-                        setIsOpen(false);
-                      }}
-                    >
-                      Devnet
-                    </MenuItem>
-                    <MenuSeperator />
-                    <MenuItem
-                      selected={window.adrena.cluster === 'mainnet'}
-                      onClick={() => {
-                        router.replace({
-                          query: {
-                            ...router.query,
-                            cluster: 'mainnet',
-                          },
-                        });
-                        setIsOpen(false);
-                      }}
-                    >
-                      Mainnet
-                    </MenuItem>
-                  </MenuItems>
-                </Menu>
-              </div>
+              <Menu
+                className="mt-7"
+                trigger={
+                  <Button
+                    className="w-full"
+                    title={window.adrena.cluster}
+                    variant="outline"
+                    rightIcon="/images/icons/chevron-down.svg"
+                  />
+                }
+              >
+                <MenuItems>
+                  <MenuItem
+                    selected={window.adrena.cluster === 'devnet'}
+                    onClick={() => {
+                      router.replace({
+                        query: {
+                          ...router.query,
+                          cluster: 'devnet',
+                        },
+                      });
+                    }}
+                  >
+                    Devnet
+                  </MenuItem>
+                  <MenuSeperator />
+                  <MenuItem
+                    selected={window.adrena.cluster === 'mainnet'}
+                    onClick={() => {
+                      router.replace({
+                        query: {
+                          ...router.query,
+                          cluster: 'mainnet',
+                        },
+                      });
+                    }}
+                  >
+                    Mainnet
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
             </div>
 
             <div>

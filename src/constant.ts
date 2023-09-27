@@ -2,7 +2,7 @@ import { Adapter } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
 
-import { WalletAdapterName } from './types';
+import { LockPeriod, WalletAdapterName } from './types';
 
 export const walletAdapters: Record<WalletAdapterName, Adapter> = {
   phantom: new PhantomWalletAdapter(),
@@ -35,7 +35,9 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
   ]),
 );
 
-export const STAKE_MULTIPLIERS = {
+export const STAKE_MULTIPLIERS: {
+  [K in LockPeriod]: { usdc: number; adx: number; votes: number };
+} = {
   0: {
     usdc: 1,
     adx: 0,

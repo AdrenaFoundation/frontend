@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '../common/Button/Button';
@@ -13,9 +12,6 @@ import WalletAdapter from '../WalletAdapter/WalletAdapter';
 export default function Header() {
   const { pathname } = useRouter();
   const router = useRouter();
-  const [isThreeDotMenuOpen, setIsThreeDotMenuOpen] = useState<boolean>(false);
-
-  const [isBuyOpen, setIsBuyOpen] = useState<boolean>(false);
 
   const PageLink = (url: string, title: string) => (
     <Link
@@ -48,38 +44,27 @@ export default function Header() {
         <>
           {PageLink('/dashboard', 'Dashboard')}
           {PageLink('/earn', 'Earn')}
-          <div className="relative">
-            <p
-              className={twMerge(
-                'mt-2 lg:mt-0 lg:ml-6 cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
-                pathname === 'swap_alp' && 'text-white',
-              )}
-              onClick={() => setIsBuyOpen(!isBuyOpen)}
-            >
-              Buy
-            </p>
-            <Menu
-              open={isBuyOpen}
-              onClose={() => setIsBuyOpen(false)}
-              className="w-fit"
-            >
-              <MenuItems>
-                <MenuItem
-                  href={'/swap_alp'}
-                  onClick={() => setIsBuyOpen(false)}
-                >
-                  ALP
-                </MenuItem>
-                <MenuItem
-                  href={'https://www.orca.so/'}
-                  target="_blank"
-                  onClick={() => setIsBuyOpen(false)}
-                >
-                  ADX on Orca
-                </MenuItem>
-              </MenuItems>
-            </Menu>
-          </div>
+
+          <Menu
+            trigger={
+              <p
+                className={twMerge(
+                  'mt-2 lg:mt-0 lg:ml-6 cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
+                  pathname === 'swap_alp' && 'text-white',
+                )}
+              >
+                Buy
+              </p>
+            }
+            className="w-fit"
+          >
+            <MenuItems>
+              <MenuItem href={'/swap_alp'}>ALP</MenuItem>
+              <MenuItem href={'https://www.orca.so/'} target="_blank">
+                ADX on Orca
+              </MenuItem>
+            </MenuItems>
+          </Menu>
           {PageLink('/onchain_info', 'Onchain Info')}
           {window.adrena.cluster === 'devnet'
             ? PageLink('/faucet_devnet', 'Faucet')
@@ -95,51 +80,45 @@ export default function Header() {
 
         <WalletAdapter />
 
-        <div className="relative mt-4 lg:mt-0 self-end lg:self-center">
-          <Button
-            title={window.adrena.cluster}
-            variant="outline"
-            rightIcon="/images/icons/chevron-down.svg"
-            onClick={() => setIsThreeDotMenuOpen(!isThreeDotMenuOpen)}
-          />
-
-          <Menu
-            open={isThreeDotMenuOpen}
-            onClose={() => {
-              setIsThreeDotMenuOpen(false);
-            }}
-          >
-            <MenuItems>
-              <MenuItem
-                selected={window.adrena.cluster === 'devnet'}
-                onClick={() => {
-                  router.replace({
-                    query: {
-                      ...router.query,
-                      cluster: 'devnet',
-                    },
-                  });
-                }}
-              >
-                Devnet
-              </MenuItem>
-              <MenuSeperator />
-              <MenuItem
-                selected={window.adrena.cluster === 'mainnet'}
-                onClick={() => {
-                  router.replace({
-                    query: {
-                      ...router.query,
-                      cluster: 'mainnet',
-                    },
-                  });
-                }}
-              >
-                Mainnet
-              </MenuItem>
-            </MenuItems>
-          </Menu>
-        </div>
+        <Menu
+          trigger={
+            <Button
+              title={window.adrena.cluster}
+              variant="outline"
+              rightIcon="/images/icons/chevron-down.svg"
+            />
+          }
+        >
+          <MenuItems>
+            <MenuItem
+              selected={window.adrena.cluster === 'devnet'}
+              onClick={() => {
+                router.replace({
+                  query: {
+                    ...router.query,
+                    cluster: 'devnet',
+                  },
+                });
+              }}
+            >
+              Devnet
+            </MenuItem>
+            <MenuSeperator />
+            <MenuItem
+              selected={window.adrena.cluster === 'mainnet'}
+              onClick={() => {
+                router.replace({
+                  query: {
+                    ...router.query,
+                    cluster: 'mainnet',
+                  },
+                });
+              }}
+            >
+              Mainnet
+            </MenuItem>
+          </MenuItems>
+        </Menu>
       </div>
     </div>
   );

@@ -1,37 +1,26 @@
-import BN from 'bn.js';
 import Image from 'next/image';
-import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
-import Menu from '@/components/common/Menu/Menu';
-import MenuItem from '@/components/common/Menu/MenuItem';
-import MenuItems from '@/components/common/Menu/MenuItems';
-import MenuSeperator from '@/components/common/Menu/MenuSeperator';
-import { UserStaking } from '@/types';
-import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
+import { STAKE_MULTIPLIERS } from '@/constant';
+import { LockPeriod, UserStaking } from '@/types';
+import { formatNumber, getDaysRemaining, nativeToUi } from '@/utils';
 
 export default function StakeBlocks({
   stakePositions,
-  handleRemoveLockedStake,
 }: {
-  stakePositions: UserStaking | null;
-  handleRemoveLockedStake: (lockedStakeIndex: BN) => void;
+  stakePositions: { ADX: UserStaking | null; ALP: UserStaking | null } | null;
 }) {
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const today = new Date();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {stakePositions?.lockedStakes?.map(
+      {stakePositions?.ADX?.lockedStakes.map(
         (
           {
             amount,
             stakeTime,
             claimTime,
             lockDuration,
-            lmRewardMultiplier,
-            voteMultiplier,
-            amountWithLmRewardMultiplier,
-            amountWithRewardMultiplier,
             resolved,
             stakeResolutionThreadId,
           },
@@ -94,46 +83,33 @@ export default function StakeBlocks({
               <li className="flex flex-row gap-3 justify-between">
                 <p className="text-sm opacity-50">LM Reward Multiplier</p>
                 <p className="font-mono text-sm">
-                  {formatNumber(lmRewardMultiplier, 2)}
+                  {lockDuration &&
+                    STAKE_MULTIPLIERS[
+                      (Number(lockDuration) / 3600 / 24) as LockPeriod
+                    ].adx}
+                  x
+                </p>
+              </li>
+
+              <li className="flex flex-row gap-3 justify-between">
+                <p className="text-sm opacity-50">Reward Multiplier</p>
+                <p className="font-mono text-sm">
+                  {lockDuration &&
+                    STAKE_MULTIPLIERS[
+                      (Number(lockDuration) / 3600 / 24) as LockPeriod
+                    ].usdc}
+                  x
                 </p>
               </li>
 
               <li className="flex flex-row gap-3 justify-between">
                 <p className="text-sm opacity-50">Vote Multiplier</p>
                 <p className="font-mono text-sm">
-                  {formatNumber(voteMultiplier, 2)}
-                </p>
-              </li>
-
-              <li className="flex flex-row gap-3 justify-between">
-                <p className="text-sm opacity-50">
-                  Amount With LM Reward Multiplier
-                </p>
-                <p className="font-mono text-sm">
-                  {formatNumber(
-                    nativeToUi(
-                      amountWithLmRewardMultiplier,
-                      window.adrena.client.adxToken.decimals,
-                    ),
-                    2,
-                  )}{' '}
-                  ADX
-                </p>
-              </li>
-
-              <li className="flex flex-row gap-3 justify-between">
-                <p className="text-sm opacity-50">
-                  Amount With Reward Multiplier
-                </p>
-                <p className="font-mono text-sm">
-                  {formatNumber(
-                    nativeToUi(
-                      amountWithRewardMultiplier,
-                      window.adrena.client.adxToken.decimals,
-                    ),
-                    2,
-                  )}{' '}
-                  ADX
+                  {lockDuration &&
+                    STAKE_MULTIPLIERS[
+                      (Number(lockDuration) / 3600 / 24) as LockPeriod
+                    ].votes}
+                  x
                 </p>
               </li>
 
@@ -142,11 +118,23 @@ export default function StakeBlocks({
                   className="w-full mt-3"
                   variant="secondary"
                   rightIcon={resolved ? undefined : '/images/Icons/lock.svg'}
-                  disabled={resolved}
+                  disabled={!resolved}
                   title={
                     resolved
                       ? 'Redeem'
-                      : `${Number(lockDuration) / 3600 / 24} days remaining`
+                      : `${getDaysRemaining(
+                          stakeTime,
+                          lockDuration,
+                        )} days remaining (${new Date(
+                          today.setDate(
+                            today.getDay() +
+                              getDaysRemaining(stakeTime, lockDuration),
+                          ),
+                        ).toLocaleString('en', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })})`
                   }
                 />
               </li>

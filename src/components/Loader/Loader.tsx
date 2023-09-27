@@ -12,6 +12,12 @@ const defaultOptions = {
   },
 };
 
-export default function Loader() {
-  return <Lottie options={defaultOptions} height={30} width={120} />;
+export default function Loader({
+  height = 30,
+  width = 120,
+}: {
+  height?: number;
+  width?: number;
+}) {
+  return <Lottie options={defaultOptions} height={height} width={width} />;
 }

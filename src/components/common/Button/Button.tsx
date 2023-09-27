@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
+import Loader from '@/components/Loader/Loader';
+
 function Button({
   variant = 'primary',
   size = 'md',
@@ -14,6 +16,7 @@ function Button({
   onClick,
   href,
   disabled,
+  isLoading,
   ...rest
 }: {
   title?: string;
@@ -26,6 +29,7 @@ function Button({
   onClick?: () => void;
   disabled?: boolean;
   href?: Url;
+  isLoading?: boolean;
 }) {
   const variants = {
     primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-md',
@@ -49,18 +53,22 @@ function Button({
           sizes[size],
           variants[variant],
           className && className,
-          disabled && 'opacity-25 cursor-not-allowed',
+          disabled && 'opacity-25 cursor-not-allowed pointer-events-none',
+          isLoading && 'pointer-events-none',
           'transition duration-300',
         )}
-        disabled={disabled}
+        disabled={disabled || isLoading}
         onClick={onClick}
         {...rest}
       >
-        {leftIcon && <Image src={leftIcon} alt={alt} width="12" height="12" />}
-        {title && title}
-        {rightIcon && (
+        {leftIcon && !isLoading && (
+          <Image src={leftIcon} alt={alt} width="12" height="12" />
+        )}
+        {title && !isLoading && title}
+        {rightIcon && !isLoading && (
           <Image src={rightIcon} alt={alt} width="12" height="12" />
         )}
+        {isLoading && <Loader height={20} />}
       </button>
     );
   };

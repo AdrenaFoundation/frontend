@@ -236,3 +236,8 @@ export type RemoveLiquidityAccounts =
 // Program
 //
 export type PerpetualsProgram = PerpetualsTypes['Program'];
+
+//
+// Constants
+//
+export type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;
