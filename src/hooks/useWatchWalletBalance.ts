@@ -18,13 +18,10 @@ const useWatchWalletBalance = (): {
   const wallet = useSelector((s) => s.walletState.wallet);
 
   const loadWalletBalances = useCallback(async () => {
-    if (!wallet || !dispatch) {
-      return;
-    }
-
     const connection = window.adrena.client.connection;
 
-    if (!connection) {
+    if (!wallet || !dispatch || !connection) {
+      dispatch(setWalletTokenBalancesAction(null));
       return;
     }
 

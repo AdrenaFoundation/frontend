@@ -60,9 +60,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     getUserStakingAccount();
   }, [walletTokenBalances]);
 
-  useEffect(() => {
-    console.log('walletTokenBalances', walletTokenBalances);
-  }, [walletTokenBalances]);
   const getUserStakingAccount = async () => {
     if (!owner) {
       // error msg
@@ -143,6 +140,8 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       return;
     }
 
+    if (!activeRedeemToken) return;
+
     const stakedTokenMint =
       activeRedeemToken === 'ADX'
         ? window.adrena.client.adxToken.mint
@@ -162,6 +161,8 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
       triggerWalletTokenBalancesReload();
       getUserStakingAccount();
+      setIsLoading(false);
+      setActiveRedeemToken(null);
     } catch (error) {
       return addFailedTxNotification({
         title: 'Error Removing Liquid Stake',

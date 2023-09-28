@@ -15,17 +15,14 @@ export default function StakeBlocks({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {stakePositions?.ADX?.lockedStakes.map(
-        (
-          {
-            amount,
-            stakeTime,
-            claimTime,
-            lockDuration,
-            resolved,
-            stakeResolutionThreadId,
-          },
-          i,
-        ) => (
+        ({
+          amount,
+          stakeTime,
+          claimTime,
+          lockDuration,
+          resolved,
+          stakeResolutionThreadId,
+        }) => (
           <div
             key={Number(stakeResolutionThreadId)}
             className="bg-[#242424] p-3 rounded-lg border border-gray-300"

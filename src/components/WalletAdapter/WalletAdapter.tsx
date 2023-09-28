@@ -7,7 +7,6 @@ import {
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
-import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import { useDispatch, useSelector } from '@/store/store';
 import { getAbbrevWalletAddress } from '@/utils';
 
@@ -17,7 +16,6 @@ import Modal from '../common/Modal/Modal';
 function WalletAdapter({ className }: { className?: string }) {
   const dispatch = useDispatch();
   const { wallet, modalIsOpen } = useSelector((s) => s.walletState);
-  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
   const connected = !!wallet;
 
@@ -36,7 +34,6 @@ function WalletAdapter({ className }: { className?: string }) {
     }
 
     console.log('Disconnect wallet');
-    triggerWalletTokenBalancesReload();
     dispatch(disconnectWalletAction(wallet.adapterName));
     dispatch(openCloseConnectionModalAction(false));
   };

@@ -1074,6 +1074,19 @@ export class AdrenaClient {
       );
     }
 
+    const receivingAccount = findATAAddressSync(owner, mint);
+
+    console.log(receivingAccount.toBase58(), mint.toBase58());
+    if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: mint,
+          owner,
+        }),
+      );
+    }
+
     try {
       const transaction = await this.buildOpenPositionTx({
         owner,
@@ -1292,6 +1305,19 @@ export class AdrenaClient {
         this.createATAInstruction({
           ataAddress: lmTokenAccount,
           mint: this.lmTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    const receivingAccount = findATAAddressSync(owner, mintB);
+
+    if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      console.log('init mintB');
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: mintB,
           owner,
         }),
       );
@@ -1899,6 +1925,7 @@ export class AdrenaClient {
     }
 
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const stakedTokenAccount = findATAAddressSync(owner, stakedTokenMint);
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
@@ -1961,6 +1988,7 @@ export class AdrenaClient {
       perpetualsProgram: this.adrenaProgram.programId,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
+      stakedTokenAccount,
     };
 
     const transaction = await this.adrenaProgram.methods

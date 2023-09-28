@@ -900,6 +900,99 @@ export type Perpetuals = {
       returns: 'u8';
     },
     {
+      name: 'testAdminRemoveCollateral';
+      accounts: [
+        {
+          name: 'admin';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'owner';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'multisig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'TestAdminRemoveCollateralParams';
+          };
+        },
+      ];
+    },
+    {
       name: 'swap';
       accounts: [
         {
@@ -1166,6 +1259,166 @@ export type Perpetuals = {
           name: 'params';
           type: {
             defined: 'AddLiquidityParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'addGenesisLiquidity';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lpUserStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingStakedTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['Account owned by governance storing user informations'];
+        },
+        {
+          name: 'lpStakeResolutionThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakesClaimCronThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpUserStakingThreadAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'clockworkProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'AddGenesisLiquidityParams';
           };
         },
       ];
@@ -2783,6 +3036,11 @@ export type Perpetuals = {
           isSigner: true;
         },
         {
+          name: 'stakedTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
           name: 'lmTokenAccount';
           isMut: true;
           isSigner: false;
@@ -4166,6 +4424,26 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'AddGenesisLiquidityParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'lpStakeResolutionThreadId';
+            type: 'u64';
+          },
+          {
+            name: 'amountIn';
+            type: 'u64';
+          },
+          {
+            name: 'minLpAmountOut';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
       name: 'AddLiquidStakeParams';
       type: {
         kind: 'struct';
@@ -4763,6 +5041,18 @@ export type Perpetuals = {
           },
           {
             name: 'minAmountOut';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'TestAdminRemoveCollateralParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'collateralUsd';
             type: 'u64';
           },
         ];
@@ -5893,6 +6183,11 @@ export type Perpetuals = {
       name: 'BucketMintLimit';
       msg: 'Reached bucket mint limit';
     },
+    {
+      code: 6036;
+      name: 'GenesisAlpLimitReached';
+      msg: 'Genesis ALP add liquidity limit reached';
+    },
   ];
 };
 
@@ -6798,6 +7093,99 @@ export const IDL: Perpetuals = {
       returns: 'u8',
     },
     {
+      name: 'testAdminRemoveCollateral',
+      accounts: [
+        {
+          name: 'admin',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'owner',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'multisig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'TestAdminRemoveCollateralParams',
+          },
+        },
+      ],
+    },
+    {
       name: 'swap',
       accounts: [
         {
@@ -7064,6 +7452,166 @@ export const IDL: Perpetuals = {
           name: 'params',
           type: {
             defined: 'AddLiquidityParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'addGenesisLiquidity',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lpUserStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingStakedTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['Account owned by governance storing user informations'],
+        },
+        {
+          name: 'lpStakeResolutionThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakesClaimCronThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpUserStakingThreadAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'clockworkProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'AddGenesisLiquidityParams',
           },
         },
       ],
@@ -8681,6 +9229,11 @@ export const IDL: Perpetuals = {
           isSigner: true,
         },
         {
+          name: 'stakedTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
           name: 'lmTokenAccount',
           isMut: true,
           isSigner: false,
@@ -10064,6 +10617,26 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'AddGenesisLiquidityParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'lpStakeResolutionThreadId',
+            type: 'u64',
+          },
+          {
+            name: 'amountIn',
+            type: 'u64',
+          },
+          {
+            name: 'minLpAmountOut',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
       name: 'AddLiquidStakeParams',
       type: {
         kind: 'struct',
@@ -10661,6 +11234,18 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'minAmountOut',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'TestAdminRemoveCollateralParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'collateralUsd',
             type: 'u64',
           },
         ],
@@ -11790,6 +12375,11 @@ export const IDL: Perpetuals = {
       code: 6035,
       name: 'BucketMintLimit',
       msg: 'Reached bucket mint limit',
+    },
+    {
+      code: 6036,
+      name: 'GenesisAlpLimitReached',
+      msg: 'Genesis ALP add liquidity limit reached',
     },
   ],
 };
