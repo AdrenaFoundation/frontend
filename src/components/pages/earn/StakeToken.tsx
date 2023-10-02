@@ -46,7 +46,7 @@ export default function StakeToken({
         <div>
           <h3> Stake {tokenSymbol} </h3>
           <p className="opacity-75 mt-1">
-            Adrena&apos;s native utility and govornance token
+            Adrena&apos;s native utility and governance token
           </p>
         </div>
 
