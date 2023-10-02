@@ -229,13 +229,13 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const onStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
-    if (value === '') {
+    if (value === '' || activeStakingToken === null) {
       setAmount(null);
       setErrorMessage('');
       return;
     }
-
-    const balance = activeStakingToken ? alpBalance ?? 0 : adxBalance ?? 0;
+    const balance =
+      activeStakingToken === 'ALP' ? alpBalance ?? 0 : adxBalance ?? 0;
 
     if (Number(value) > balance) {
       setErrorMessage('Insufficient balance');

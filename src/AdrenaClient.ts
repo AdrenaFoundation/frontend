@@ -265,6 +265,8 @@ export class AdrenaClient {
       },
     );
 
+    if (totalNbPosition == 0) return 0;
+
     return totalLeverage / totalNbPosition;
   }
 
@@ -951,7 +953,7 @@ export class AdrenaClient {
     const postInstructions: TransactionInstruction[] = [];
 
     const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 500_000,
+      units: 800_000,
     });
 
     preInstructions.push(modifyComputeUnitsIx);
@@ -1381,6 +1383,12 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
+
+    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 600_000,
+    });
+
+    preInstructions.push(modifyComputeUnitsIx);
 
     const custody = this.custodies.find((custody) =>
       custody.pubkey.equals(position.custody),
