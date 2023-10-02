@@ -4,23 +4,22 @@ import Link from 'next/link';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import { PageProps } from '@/types';
+import { getAbbrevWalletAddress } from '@/utils';
 
 export default function OnchainInfo({}: PageProps) {
   const tableClasses =
-    'flex flex-col border border-grey mt-4 ml-auto mr-auto grow w-[90%] max-w-[50em]';
-  const titleClasses = 'text-md font-bold border-b border-grey p-2';
-  const rowClasses =
-    'flex flex-row w-full justify-between flex-wrap max-w-full grow items-center pl-4 pt-2 pb-2 pr-4';
-  const subtitleClasses = 'w-[10em] shrink-0 flex text-sm';
-  const infoClasses =
-    'w-[calc(100% - 10em)] text-txtfade text-sm hover:text-white flex';
+    'flex flex-col bg-gray-200 border border-gray-300 rounded-lg m-auto w-full max-w-[600px] mb-5';
+  const titleClasses = 'text-md font-normal border-b border-gray-300 p-2';
+  const rowClasses = 'flex flex-row gap-1 w-full justify-between flex-wrap p-2';
+  const subtitleClasses = 'w-[10em] shrink-0 flex text-sm opacity-50';
+  const infoClasses = 'flex w-[calc(100% - 10em)] text-sm font-mono';
 
   const solanaExplorerLink = (pubkey: PublicKey): JSX.Element => (
     <Link
       href={`https://explorer.solana.com/address/${pubkey.toBase58()}?cluster=devnet`}
       target="_blank"
     >
-      {pubkey.toBase58()}
+      {getAbbrevWalletAddress(pubkey.toBase58())}
     </Link>
   );
 
@@ -102,9 +101,9 @@ export default function OnchainInfo({}: PageProps) {
         return (
           <div className={tableClasses} key={custody.mint.toBase58()}>
             <div className={titleClasses}>
-              {token?.name ? (
+              {token?.symbol ? (
                 <div className="flex flex-row">
-                  {token.name} Custody
+                  {token.symbol} Custody
                   <Image
                     src={token.image}
                     alt="logo"
@@ -127,7 +126,7 @@ export default function OnchainInfo({}: PageProps) {
 
             {token ? (
               <div className={rowClasses}>
-                <div className={subtitleClasses}>{token.name} Mint</div>
+                <div className={subtitleClasses}>{token.symbol} Mint</div>
                 <div className={infoClasses}>
                   {solanaExplorerLink(token.mint)}
                 </div>

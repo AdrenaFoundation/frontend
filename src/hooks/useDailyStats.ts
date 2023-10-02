@@ -10,7 +10,7 @@ export interface Stats {
 }
 
 type FetchedData = {
-  [tokenName: string]: {
+  [tokenSymbol: string]: {
     usd: number;
     usd_24h_vol: number;
     usd_24h_change: number;
@@ -42,7 +42,7 @@ const useDailyStats = () => {
           return {
             ...acc,
 
-            [token.name]: {
+            [token.symbol]: {
               token,
               currentPrice: usd,
               dailyChange: usd_24h_change,

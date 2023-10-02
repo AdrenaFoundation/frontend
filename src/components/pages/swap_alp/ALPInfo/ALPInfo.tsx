@@ -1,103 +1,45 @@
-import Image from 'next/image';
-import { twMerge } from 'tailwind-merge';
-
 import useALPCirculatingSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatPriceInfo } from '@/utils';
 
-export default function ALPInfo({ className }: { className?: string }) {
-  const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+export default function ALPInfo({
+  marketCap,
+}: {
+  className?: string;
+  marketCap: number | null;
+}) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const lpTotalSupplyAmount = useALPCirculatingSupply();
 
-  const rowClasses = 'flex w-full justify-between pl-8 pr-8 mt-2';
+  const alpTokenPrice =
+    tokenPrices[window.adrena.client.alpToken.symbol] ?? null;
 
-  const alpTokenPrice = tokenPrices[window.adrena.client.alpToken.name] ?? null;
-
-  const userLpTokenAmount =
-    walletTokenBalances?.[window.adrena.client.alpToken.name] ?? null;
-
-  const userLpTokenAmountUsd =
-    userLpTokenAmount != null && alpTokenPrice != null
-      ? userLpTokenAmount * alpTokenPrice
-      : null;
-
-  const lpTotalSupplyAmountUsd =
-    lpTotalSupplyAmount != null && alpTokenPrice != null
-      ? lpTotalSupplyAmount * alpTokenPrice
-      : null;
-
+  const staked = 100; // TODO: plug in
   return (
-    <div
-      className={twMerge(
-        className,
-        'border',
-        'border-grey',
-        'bg-secondary',
-        'flex',
-        'flex-col',
-      )}
-    >
-      <div className="text-lg bold p-4 border-b border-grey mb-6 flex items-center">
-        <Image
-          src={window.adrena.client.alpToken.image}
-          alt="ALP icon"
-          className="h-8 mr-2"
-          height="32"
-          width="32"
-        />
-        ALP
+    <div className="flex bg-gray-200 p-4 rounded-lg border border-gray-300 md:bg-transparent md:p-0 md:rounded-none md:border-none flex-col md:flex-row flex-wrap gap-0 md:gap-5 w-full mt-5">
+      <div className="flex flex-row justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1">
+        <p className="text-base md:text-sm opacity-50 mb-3">
+          Circulating Supply
+        </p>
+        <p className="text-base md:text-xl font-mono">
+          {lpTotalSupplyAmount} ALP
+        </p>
       </div>
-      <div className={rowClasses}>
-        <div>Price</div>
-        <div>{formatPriceInfo(alpTokenPrice)}</div>
+      <div className="flex flex-row justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1">
+        <p className="text-base md:text-sm opacity-50 mb-3">Price</p>
+        <p className="text-base md:text-xl font-mono">
+          {formatPriceInfo(alpTokenPrice)}
+        </p>
       </div>
-
-      <div className={rowClasses}>
-        <div>Wallet</div>
-        <div>
-          {userLpTokenAmount === null ? (
-            '-'
-          ) : (
-            <>
-              {formatNumber(
-                userLpTokenAmount,
-                window.adrena.client.alpToken.decimals,
-              )}{' '}
-              ALP{' '}
-              {userLpTokenAmountUsd
-                ? `(${formatPriceInfo(userLpTokenAmountUsd)})`
-                : ''}
-            </>
-          )}
-        </div>
+      <div className="flex flex-row justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1">
+        <p className="text-base md:text-sm opacity-50 mb-3">Market Cap</p>
+        <p className="text-base md:text-xl font-mono">
+          {formatPriceInfo(marketCap)}
+        </p>
       </div>
-
-      <div className={rowClasses}>
-        <div>Stacked</div>
-        <div>TODO</div>
-      </div>
-
-      <div className="full-w border-b border-grey mt-4 mb-4"></div>
-
-      <div className={rowClasses}>
-        <div>Total Supply</div>
-        <div>
-          {lpTotalSupplyAmount ? (
-            <>
-              {formatNumber(
-                lpTotalSupplyAmount,
-                window.adrena.client.alpToken.decimals,
-              )}{' '}
-              ALP{' '}
-              {lpTotalSupplyAmountUsd
-                ? `(${formatPriceInfo(lpTotalSupplyAmountUsd)})`
-                : ''}
-            </>
-          ) : (
-            '-'
-          )}
-        </div>
+      <div className="flex flex-row justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1">
+        <p className="text-base md:text-sm opacity-50 md:mb-3">Staked</p>
+        <p className="text-base md:text-xl font-mono">{staked} ALP</p>
       </div>
     </div>
   );

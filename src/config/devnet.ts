@@ -9,36 +9,53 @@ class DevnetConfiguration implements IConfiguration {
   public readonly tokensInfo: {
     [tokenPubkey: string]: {
       name: string;
+      symbol: string;
       image: string;
       coingeckoId: string;
       decimals: number;
     };
   } = {
     '4ZY3ZH8bStniqdCZdR14xsWW6vrMsCJrusobTdy4JipC': {
-      name: 'USDC',
+      name: 'USD Coin',
+      symbol: 'USDC',
       image: '/images/usdc.svg',
       coingeckoId: 'usd-coin',
       decimals: 6,
     },
     '3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr': {
-      name: 'ETH',
+      name: 'Ethereum',
+      symbol: 'ETH',
       image: '/images/eth.svg',
       coingeckoId: 'ethereum',
       decimals: 6,
     },
     HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM: {
-      name: 'BTC',
+      name: 'Bitcoin',
+      symbol: 'BTC',
       image: '/images/btc.svg',
       coingeckoId: 'bitcoin',
       decimals: 6,
     },
     [NATIVE_MINT.toBase58()]: {
-      name: 'SOL',
+      name: 'Solana',
+      symbol: 'SOL',
       image: '/images/sol.svg',
       coingeckoId: 'solana',
       decimals: 9,
     },
   };
+
+  public readonly governanceProgram: PublicKey = new PublicKey(
+    'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
+  );
+
+  public readonly clockworkProgram: PublicKey = new PublicKey(
+    'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
+  );
+
+  public readonly stakesClaimPayer: PublicKey = new PublicKey(
+    'C1ockworkPayer11111111111111111111111111111',
+  );
 
   // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
   public readonly mainRPC: string =
@@ -49,7 +66,7 @@ class DevnetConfiguration implements IConfiguration {
     'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
 
   public readonly mainPool: PublicKey = new PublicKey(
-    'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',
+    'B9HJCFyrzVStCNHnAkXRMG1wDk8XS9eyKuitmvxjn2Hf',
   );
 }
 

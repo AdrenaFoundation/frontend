@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -47,7 +48,7 @@ function recalculateInputs({
     return;
   }
 
-  const mainTokenPrice = tokenPrices[mainInput.mint.name];
+  const mainTokenPrice = tokenPrices[mainInput.mint.symbol];
 
   // No price available yet
   if (!mainTokenPrice) {
@@ -61,7 +62,7 @@ function recalculateInputs({
 
   mainInput.setPrice(mainPrice);
 
-  const secondaryTokenPrice = tokenPrices[secondaryInput.mint.name];
+  const secondaryTokenPrice = tokenPrices[secondaryInput.mint.symbol];
 
   if (secondaryTokenPrice === null) {
     secondaryInput.setPrice(null);
@@ -217,9 +218,9 @@ export default function TradingInputs({
     leverage,
     // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    tokenA && tokenPrices[tokenA.name],
+    tokenA && tokenPrices[tokenA.symbol],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    tokenB && tokenPrices[tokenB.name],
+    tokenB && tokenPrices[tokenB.symbol],
   ]);
 
   const handleInputAChange = (v: number | null) => {
@@ -248,7 +249,7 @@ export default function TradingInputs({
           <>
             {connected && tokenA
               ? `Balance: ${(
-                  walletTokenBalances?.[tokenA.name] ?? '0'
+                  walletTokenBalances?.[tokenA.symbol] ?? '0'
                 ).toLocaleString()}`
               : null}
           </>
@@ -262,42 +263,25 @@ export default function TradingInputs({
         onMaxButtonClick={() => {
           if (!walletTokenBalances || !tokenA) return;
 
-          const amount = walletTokenBalances[tokenA.name];
+          const amount = walletTokenBalances[tokenA.symbol];
 
           handleInputAChange(amount);
         }}
       />
 
       {/* Switch AB */}
-      <div
-        className={twMerge(
-          'w-full',
-          'h-4',
-          'overflow-visible',
-          'flex',
-          'justify-center',
-          'items-center',
-          'z-[2]',
-        )}
-      >
+      <div className="w-full h-4 overflow-visible flex justify-center items-center z-[2]">
         <div
-          className={twMerge(
-            'bg-highlight',
-            'flex',
-            'rounded-full',
-            'p-1',
-            'w-7',
-            'h-7',
-            'cursor-pointer',
-            'items-center',
-            'justify-center',
-          )}
+          className="bg-gray-300 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
           onClick={() => switchAB()}
         >
-          {
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src="/images/swap.svg" alt="swap icon" />
-          }
+          <Image
+            src="/images/icons/arrow-down-up.svg"
+            alt="swap icon"
+            height={14}
+            width={14}
+            className="opacity-50 hover:opacity-100 transition-opacity duration-300"
+          />
         </div>
       </div>
 
@@ -328,7 +312,7 @@ export default function TradingInputs({
               <>
                 {connected && tokenB
                   ? `Balance: ${(
-                      walletTokenBalances?.[tokenB.name] ?? '0'
+                      walletTokenBalances?.[tokenB.symbol] ?? '0'
                     ).toLocaleString()}`
                   : null}
               </>

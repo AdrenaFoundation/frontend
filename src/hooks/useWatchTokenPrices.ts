@@ -47,14 +47,14 @@ const useWatchTokenPrices = () => {
     prices.map(({ price }, index) => {
       dispatch(
         setTokenPriceAction(
-          window.adrena.client.tokens[index].name,
+          window.adrena.client.tokens[index].symbol,
           price ?? null,
         ),
       );
     });
     // Manually handle dependencies to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!pythClient, , dispatch]);
+  }, [!!pythClient, dispatch]);
 
   useEffect(() => {
     if (!pythClient || !window.adrena.client || !dispatch) {
@@ -84,7 +84,7 @@ const useWatchTokenPrices = () => {
 
     dispatch(
       setTokenPriceAction(
-        window.adrena.client.alpToken.name,
+        window.adrena.client.alpToken.symbol,
         price ? nativeToUi(price, USD_DECIMALS) : null,
       ),
     );

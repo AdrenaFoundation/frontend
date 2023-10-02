@@ -15,9 +15,11 @@ const useALPTotalSupply = () => {
     const supply = await connection.getTokenSupply(
       window.adrena.client.alpToken.mint,
     );
-
+    console.count('triggered');
     setTotalSupply(supply.value.uiAmount);
-  }, []);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.adrena.client.connection]);
 
   useEffect(() => {
     loadTotalSupply();

@@ -37,30 +37,10 @@ export default function TradingInput({
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       {/* Input A */}
-      <div
-        className={twMerge(
-          'h-24',
-          'w-32',
-          'p-4',
-          'bg-third',
-          'flex',
-          'items-center',
-          'w-full',
-          'justify-between',
-          'flex-col',
-        )}
-      >
-        <div
-          className={twMerge(
-            'shrink-0',
-            'flex',
-            'items-center',
-            'w-full',
-            'justify-between',
-          )}
-        >
-          <div className="text-txtfade text-sm">{textTopLeft}</div>
-          <div className="text-txtfade text-sm">{textTopRight}</div>
+      <div className="h-24 p-4 bg-dark border border-gray-300 rounded-lg flex items-center w-full justify-between flex-col">
+        <div className="shrink-0 flex items-center w-full justify-between">
+          <div className="text-txtfade text-xs font-mono">{textTopLeft}</div>
+          <div className="text-txtfade text-xs font-mono">{textTopRight}</div>
         </div>
 
         <div className="flex w-full items-center">
@@ -71,13 +51,7 @@ export default function TradingInput({
               disabled={disabled}
               value={value ?? undefined}
               placeholder="0.00"
-              className={twMerge(
-                'bg-third',
-                'border-0',
-                'text-lg',
-                'outline-none',
-                'w-full',
-              )}
+              className="bg-dark font-mono border-0 text-lg outline-none w-full"
               onChange={onChange}
             />
           )}
@@ -85,13 +59,7 @@ export default function TradingInput({
           {maxButton ? (
             <Button
               title="MAX"
-              className={twMerge(
-                'bg-highlight',
-                'border-grey',
-                'mr-2',
-                'text-sm',
-                'h-6',
-              )}
+              className="bg-gray-300 opacity-50 hover:opacity-100 border-grey mr-2 text-sm h-6"
               onClick={() => onMaxButtonClick?.()}
             />
           ) : null}
@@ -99,16 +67,18 @@ export default function TradingInput({
           {tokenList.length ? (
             <Select
               className="shrink-0 text-2xl"
-              selected={selectedToken?.name ?? ''}
-              options={tokenList.map((v) => v.name)}
+              selected={selectedToken?.symbol ?? ''}
+              options={tokenList.map((v) => v.symbol)}
               onSelect={(name) => {
                 // Force linting, you cannot not find the token in the list
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                onTokenSelect(tokenList.find((token) => token.name === name)!);
+                onTokenSelect(
+                  tokenList.find((token) => token.symbol === name)!,
+                );
               }}
             />
           ) : (
-            <div>{selectedToken?.name ?? '-'}</div>
+            <div>{selectedToken?.symbol ?? '-'}</div>
           )}
         </div>
       </div>

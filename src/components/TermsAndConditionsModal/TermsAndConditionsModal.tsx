@@ -59,15 +59,19 @@ function TermsAndConditionsModal({
         {/* TODO: redirect to landing website */}
 
         <Button
-          title="Decline"
+          title="[D]ecline"
+          size="lg"
+          variant="outline"
+          className="w-full"
           onClick={() => {
             declineTrigger();
           }}
         />
 
         <Button
-          title="Aggree"
-          className="bg-highlight"
+          title="[A]ggree"
+          size="lg"
+          className="w-full"
           onClick={() => {
             agreeTrigger();
           }}

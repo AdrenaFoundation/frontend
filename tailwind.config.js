@@ -11,32 +11,43 @@ module.exports = {
         third: '#343232',
         highlight: '#36538f', // RED: #C43152
 
-        // border
-        grey: '#2A2A2A',
-
-        /*
-        // GMX Style
-        main: '#101124',
-        secondary: '#16182D',
-        third: '#242842',
-        highlight: '#323FCE',
-
-        // border
-        grey: '#23263b',
-        */
-
         // text
         txtfade: '#8C8D97',
         txtregular: '#E5E6E8',
 
-        // To change leverage colors, search for:
-        // Leverage colors
+        light: 'var(--color-light)',
+        dark: 'var(--color-dark)',
+
+        gray: {
+          200: 'var(--color-gray-200)',
+          300: 'var(--color-gray-300)',
+          400: 'var(--color-gray-400)',
+          500: 'var(--color-gray-500)',
+        },
+        blue: {
+          200: 'var(--color-blue-200)',
+          300: 'var(--color-blue-300)',
+          400: 'var(--color-blue-400)',
+          500: 'var(--color-blue-500)',
+        },
+        red: {
+          200: 'var(--color-red-200)',
+          300: 'var(--color-red-300)',
+          400: 'var(--color-red-400)',
+          500: 'var(--color-red-500)',
+        },
       },
     },
+    font: {
+      mono: ['JetBrains Mono', 'sans-serif'],
+    },
+
     fontFamily: {
       regular: ['regular'],
       thin: ['thin'],
       bold: ['bold'],
+      mono: 'JetBrains Mono',
+
       specialmonster: ['specialmonster'],
     },
   },

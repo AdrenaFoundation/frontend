@@ -1,8 +1,8 @@
-import { TokenName } from '@/types';
+import { TokenSymbol } from '@/types';
 
 import { WalletBalancesAction } from '../actions/walletBalancesActions';
 
-export type WalletBalancesState = Record<TokenName, number | null> | null;
+export type WalletBalancesState = Record<TokenSymbol, number | null> | null;
 
 const initialState: WalletBalancesState = null;
 

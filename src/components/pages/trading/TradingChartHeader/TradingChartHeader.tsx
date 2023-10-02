@@ -20,67 +20,71 @@ export default function TradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
 
-  const infoStyle = 'flex w-1/5 flex-col ml-[5%] items-center justify-center';
+  const infoStyle =
+    'flex flex-row gap-2 items-center bg-secondary p-1 px-5 rounded-full';
 
   return (
     <div
       className={twMerge(
-        'flex',
-        'h-14',
-        'bg-secondary',
-        'border',
-        'border-grey',
-        'items-center',
+        'flex items-center gap-5 h-14 bg-gray-200 border border-gray-300 border-b-transparent rounded-t-lg',
         className,
       )}
     >
-      <Select
-        selected={`${selected.name} / USD`}
-        options={tokenList
-          .filter((token) => token.name !== selected.name)
-          .map((token) => `${token.name} / USD`)}
-        onSelect={(opt: string) => {
-          const selectedTokenName = opt.slice(0, opt.length - ' / USD'.length);
-          // Force linting, you cannot not find the token in the list
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const token = tokenList.find((t) => t.name === selectedTokenName)!;
-
-          // Should never happens
-          if (!token) return;
-
-          onChange(token);
-        }}
-      />
-
-      <div className={infoStyle}>
-        {tokenPrices && tokenPrices[selected.name]
-          ? // Force linting, we check it just bellow
+      <div className="flex items-center sm:border-r sm:border-r-gray-300 h-full p-3">
+        <Select
+          selected={`${selected.symbol} / USD`}
+          options={tokenList
+            .filter((token) => token.symbol !== selected.symbol)
+            .map((token) => `${token.symbol} / USD`)}
+          onSelect={(opt: string) => {
+            const selectedTokenSymbol = opt.slice(
+              0,
+              opt.length - ' / USD'.length,
+            );
+            // Force linting, you cannot not find the token in the list
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            formatPriceInfo(tokenPrices[selected.name]!)
-          : null}
+            const token = tokenList.find(
+              (t) => t.symbol === selectedTokenSymbol,
+            )!;
+
+            if (!token) return;
+
+            onChange(token);
+          }}
+        />
       </div>
 
-      <div className={infoStyle}>
-        <span className="text-sm text-txtfade">24h Change</span>
-        <span
-          className={twMerge(
-            'mt-0.5',
-            stats && stats[selected.name].dailyChange > 0
-              ? 'text-green-400'
-              : 'text-red-400',
-          )}
-        >
-          {stats
-            ? `${formatNumber(stats[selected.name].dailyChange, 2)}%`
-            : '-'}
-        </span>
-      </div>
+      <div className="hidden sm:flex flex-row gap-3 p-3 items-center">
+        <div className="font-mono mr-3">
+          {tokenPrices && tokenPrices[selected.symbol]
+            ? // Force linting, we check it just bellow
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              formatPriceInfo(tokenPrices[selected.symbol]!)
+            : null}
+        </div>
 
-      <div className={infoStyle}>
-        <span className="text-sm text-txtfade">24h Volume</span>
-        <span className="mt-0.5">
-          {formatPriceInfo(stats?.[selected.name].dailyVolume ?? null)}
-        </span>
+        <div className={infoStyle}>
+          <span
+            className={twMerge(
+              'font-mono text-sm',
+              stats && stats[selected.symbol].dailyChange > 0
+                ? 'text-green-500'
+                : 'text-red-500',
+            )}
+          >
+            {stats
+              ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
+              : '-'}
+          </span>
+          <span className="text-xs text-txtfade">24h Change</span>
+        </div>
+
+        <div className={infoStyle}>
+          <span className="font-mono text-sm">
+            {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
+          </span>
+          <span className="text-xs text-txtfade">24h Volume</span>
+        </div>
       </div>
     </div>
   );

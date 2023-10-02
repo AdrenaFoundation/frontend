@@ -12,6 +12,21 @@ export default function TradingChart({ token }: { token: Token }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
 
+  const chartOverrides = {
+    'paneProperties.background': '#151515',
+    'paneProperties.backgroundGradientStartColor': '#151515',
+    'paneProperties.backgroundGradientEndColor': '#151515',
+    'paneProperties.backgroundType': 'solid',
+    'paneProperties.vertGridProperties.color': 'rgba(35, 38, 59, 1)',
+    'paneProperties.vertGridProperties.style': 2,
+    'paneProperties.horzGridProperties.color': 'rgba(35, 38, 59, 1)',
+    'paneProperties.horzGridProperties.style': 2,
+    'mainSeriesProperties.priceLineColor': '#3a3e5e',
+    'scalesProperties.textColor': '#fff',
+    'scalesProperties.lineColor': '#16182e',
+    'linetooltrendline.linecolor': '#151515',
+  };
+
   useEffect(() => {
     function createWidget() {
       if (document.getElementById('chart-area') && 'TradingView' in window) {
@@ -22,15 +37,20 @@ export default function TradingChart({ token }: { token: Token }) {
           width: '100%',
           height: '100%',
           autosize: true,
-          symbol: `PYTH:${token.name}USD`,
+          symbol: `PYTH:${token.symbol}USD`,
           interval: 'D',
           timezone: 'UTC',
-          style: '1',
-          toolbar_bg: 'transparent',
           locale: 'en',
           save_image: true,
           allow_symbol_change: false,
           editablewatchlist: false,
+          backgroundColor: '#080808',
+          toolbar_bg: '#f4f7f9',
+          loading_screen: {
+            backgroundColor: '#151515',
+            foregroundColor: '#080808',
+          },
+          overrides: chartOverrides,
           hotlist: false,
           hidevolume: true,
           disabled_features: [
@@ -46,6 +66,7 @@ export default function TradingChart({ token }: { token: Token }) {
           ],
 
           // Styling
+          custom_css_url: '/test.css',
           theme: 'dark',
         });
 
@@ -83,7 +104,8 @@ export default function TradingChart({ token }: { token: Token }) {
   useEffect(() => {
     if (!widget) return;
 
-    widget.options.symbol = `PYTH:${token.name}USD`;
+    widget.options.symbol = `PYTH:${token.symbol}USD`;
+
     widget.reload();
   }, [token, widget]);
 

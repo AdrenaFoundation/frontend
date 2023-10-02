@@ -1,12 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
-import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { useSelector } from '@/store/store';
-import { Token } from '@/types';
+import { Token, TokenSymbol } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -17,27 +15,48 @@ import {
 import ALPSwapInputs from './ALPSwapInputs';
 
 export default function ALPSwap({
-  className,
   triggerWalletTokenBalancesReload,
+  collateralInput,
+  setCollateralInput,
+  alpInput,
+  setAlpInput,
+  collateralToken,
+  onCollateralTokenChange,
+  feesUsd,
+  setFeesUsd,
+  allowedCollateralTokens,
+  selectedAction,
+  setSelectedAction,
+  alpPrice,
+  setAlpPrice,
+  collateralPrice,
+  setCollateralPrice,
+  feesAndAmounts,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
+  collateralInput: number | null;
+  setCollateralInput: (v: number | null) => void;
+  alpInput: number | null;
+  setAlpInput: (v: number | null) => void;
+  alpPrice: number | null;
+  setAlpPrice: (v: number | null) => void;
+  collateralToken: Token | null;
+  onCollateralTokenChange: (t: Token) => void;
+  collateralPrice: number | null;
+  setCollateralPrice: (v: number | null) => void;
+  feesUsd: number | null;
+  setFeesUsd: (v: number | null) => void;
+  allowedCollateralTokens: Token[] | null;
+  feesAndAmounts: {
+    [tokenSymbol: TokenSymbol]: { fees: number | null; amount: number | null };
+  } | null;
+  selectedAction: 'buy' | 'sell';
+  setSelectedAction: (v: 'buy' | 'sell') => void;
 }) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
-  const [collateralToken, setCollateralToken] = useState<Token | null>(null);
-  const [alpInput, setAlpInput] = useState<number | null>(null);
-  const [collateralInput, setCollateralInput] = useState<number | null>(null);
-  const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
-  const [feesUsd, setFeesUsd] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!window.adrena.client.tokens.length) return;
-
-    setCollateralToken(window.adrena.client.tokens[0]);
-  }, []);
 
   const handleExecuteButton = async () => {
     if (
@@ -123,10 +142,10 @@ export default function ALPSwap({
     }
 
     const walletCollateralTokenBalance =
-      walletTokenBalances?.[collateralToken.name];
+      walletTokenBalances?.[collateralToken.symbol];
 
     const walletAlpTokenBalance =
-      walletTokenBalances?.[window.adrena.client.alpToken.name];
+      walletTokenBalances?.[window.adrena.client.alpToken.symbol];
 
     // Loading, should happens quickly
     if (typeof walletCollateralTokenBalance === 'undefined') {
@@ -140,7 +159,7 @@ export default function ALPSwap({
         collateralInput > walletCollateralTokenBalance) ||
         walletCollateralTokenBalance === null)
     ) {
-      return `Insufficient ${collateralToken.name} balance`;
+      return `Insufficient ${collateralToken.symbol} balance`;
     }
 
     // If user wallet balance doesn't have enough tokens, tell user
@@ -149,26 +168,18 @@ export default function ALPSwap({
       ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
         walletAlpTokenBalance === null)
     ) {
-      return `Insufficient ${window.adrena.client.alpToken.name} balance`;
+      return `Insufficient ${window.adrena.client.alpToken.symbol} balance`;
     }
 
     if (selectedAction === 'buy') {
-      return `Buy ${window.adrena.client.alpToken.name}`;
+      return `Buy ${window.adrena.client.alpToken.symbol}`;
     }
 
-    return `Sell ${window.adrena.client.alpToken.name}`;
+    return `Sell ${window.adrena.client.alpToken.symbol}`;
   })();
 
   return (
-    <div
-      className={twMerge(
-        className,
-        'border',
-        'border-grey',
-        'bg-secondary',
-        'p-4',
-      )}
-    >
+    <div className="bg-gray-200 border border-gray-300 lg:w-[450px] p-4 rounded-lg h-fit">
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'buy' }, { title: 'sell' }]}
@@ -184,24 +195,34 @@ export default function ALPSwap({
             actionType={selectedAction}
             alpToken={window.adrena.client.alpToken}
             collateralToken={collateralToken}
-            allowedCollateralTokens={window.adrena.client.tokens}
+            allowedCollateralTokens={allowedCollateralTokens}
+            alpInput={alpInput}
             onChangeAlpInput={setAlpInput}
+            collateralInput={collateralInput}
             onChangeCollateralInput={setCollateralInput}
             setActionType={setSelectedAction}
-            setCollateralToken={setCollateralToken}
+            onCollateralTokenChange={onCollateralTokenChange}
             setFeesUsd={setFeesUsd}
+            alpPrice={alpPrice}
+            collateralPrice={collateralPrice}
+            setAlpPrice={setAlpPrice}
+            setCollateralPrice={setCollateralPrice}
+            feesAndAmounts={feesAndAmounts}
           />
 
           <div className="flex w-full justify-between mt-4">
-            <span>Fees</span>
-            <span>{formatPriceInfo(feesUsd)}</span>
+            <span className="text-sm opacity-50">Fees</span>
+            <span className="text-sm font-mono">
+              {formatPriceInfo(feesUsd)}
+            </span>
           </div>
 
           {/* Button to execute action */}
           <Button
-            className="mt-4 bg-highlight text-sm"
             title={buttonTitle}
-            activateLoadingIcon={true}
+            size="lg"
+            disabled={buttonTitle.includes('Insufficient')}
+            className="justify-center w-full mt-5"
             onClick={handleExecuteButton}
           />
         </>

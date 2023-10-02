@@ -30,7 +30,7 @@ export default function ADXDetails({
   const composition = useALPIndexComposition(custodies);
   const adxTotalSupply = useADXTotalSupply();
   const adxPrice =
-    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.name]) ??
+    useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
 
   const marketCap =
@@ -46,11 +46,7 @@ export default function ADXDetails({
   return (
     <div
       className={twMerge(
-        'border',
-        'border-grey',
-        'bg-secondary',
-        'flex',
-        'flex-col',
+        'border border-gray-300 bg-gray-200 rounded-lg flex flex-col',
         className,
       )}
     >
@@ -92,25 +88,7 @@ export default function ADXDetails({
         </div>
 
         {/* chart */}
-        <div
-          className={twMerge(
-            'flex',
-            'flex-col',
-            'h-[10em]',
-            'w-[10em]',
-            'relative',
-            'grow',
-            'items-center',
-            'justify-center',
-            'mt-4',
-            'pl-4',
-            'sm:mt-0',
-            'ml-auto',
-            'mr-auto',
-            'sm:ml-0',
-            'sm:mr-0',
-          )}
-        >
+        <div className="flex flex-col h-[10em] w-[10em] relative grow items-center justify-center mt-4 pl-4 sm:mt-0 ml-auto mr-auto sm:ml-0 sm:mr-0">
           {composition ? (
             <>
               <div className="absolute">Distribution</div>

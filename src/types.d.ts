@@ -5,7 +5,7 @@ import { Perpetuals } from '@/target/perpetuals';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration from './config/IConfiguration';
-import { AnchorTypes } from './IdlTypeParser';
+import { AnchorTypes, ContextAccounts } from './IdlTypeParser';
 
 export type SupportedCluster = 'devnet' | 'mainnet';
 
@@ -45,7 +45,7 @@ export type CustodyExtended = {
   targetRatio: number;
   maxRatio: number;
   minRatio: number;
-
+  owned: number;
   // Expressed in tokens
   // Do liquidity * tokenPrice to get liquidityUsd
   liquidity: number;
@@ -98,9 +98,11 @@ export type PoolExtended = {
 
 // Alias to improve readability
 export type TokenName = string;
+export type TokenSymbol = string;
 
 export interface Token {
   mint: PublicKey;
+  symbol: TokenSymbol;
   name: TokenName;
   decimals: number;
   isStable: boolean;
@@ -162,9 +164,10 @@ export type Multisig = Accounts['multisig'];
 export type Perpetuals = Accounts['perpetuals'];
 export type Pool = Accounts['pool'];
 export type Position = Accounts['position'];
+export type UserStaking = Accounts['userStaking'];
 
 //
-// Types
+// Params Types
 //
 type Defined = PerpetualsTypes['Defined'];
 
@@ -199,6 +202,42 @@ export type GetEntryPriceAndFeeParams = Defined['GetEntryPriceAndFeeParams'];
 export type AmountAndFee = Defined['AmountAndFee'];
 
 //
+// Accounts types
+//
+
+type Instructions = PerpetualsTypes['Instructions'];
+
+type ExtractInstructionAccounts<T = keyof Instructions> = ContextAccounts<
+  Instructions[T]['accounts']
+>;
+
+// Use accounts types to force TS typing computation. TS will then throw an error if account is missing
+export type SwapAccounts = ExtractInstructionAccounts<'swap'>;
+export type ClosePositionAccounts = ExtractInstructionAccounts<'closePosition'>;
+export type AddCollateralAccounts = ExtractInstructionAccounts<'addCollateral'>;
+export type OpenPositionAccounts = ExtractInstructionAccounts<'openPosition'>;
+export type RemoveCollateralAccounts =
+  ExtractInstructionAccounts<'removeCollateral'>;
+export type AddLiquidStakeAccounts =
+  ExtractInstructionAccounts<'addLiquidStake'>;
+export type AddLockedStakeAccounts =
+  ExtractInstructionAccounts<'addLockedStake'>;
+export type RemoveLiquidStakeAccounts =
+  ExtractInstructionAccounts<'removeLiquidStake'>;
+export type RemoveLockedStakeAccounts =
+  ExtractInstructionAccounts<'removeLockedStake'>;
+export type InitUserStakingAccounts =
+  ExtractInstructionAccounts<'initUserStaking'>;
+export type AddLiquidityAccounts = ExtractInstructionAccounts<'addLiquidity'>;
+export type RemoveLiquidityAccounts =
+  ExtractInstructionAccounts<'removeLiquidity'>;
+
+//
 // Program
 //
 export type PerpetualsProgram = PerpetualsTypes['Program'];
+
+//
+// Constants
+//
+export type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;

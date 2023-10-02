@@ -25,7 +25,7 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
 
   const calculateALPIndexComposition = useCallback(async () => {
     const alpIndexComposition = window.adrena.client.tokens.map((token) => {
-      const price = tokenPrices[token.name];
+      const price = tokenPrices[token.symbol];
 
       const custody = custodies?.find(
         (custody) => token.custody && custody.pubkey.equals(token.custody),

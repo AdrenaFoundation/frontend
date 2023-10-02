@@ -27,7 +27,7 @@ import store from '../store/store';
 
 function Loader(): JSX.Element {
   return (
-    <div className="h-full w-full bg-main flex items-center justify-center">
+    <div className="h-full w-full flex items-center justify-center">
       {
         // eslint-disable-next-line @next/next/no-img-element
         <img

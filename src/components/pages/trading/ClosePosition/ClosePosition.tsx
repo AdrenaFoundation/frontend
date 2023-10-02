@@ -43,7 +43,7 @@ export default function ClosePosition({
     null,
   );
 
-  const markPrice: number | null = tokenPrices[position.token.name];
+  const markPrice: number | null = tokenPrices[position.token.symbol];
 
   const entryPrice: number | null = exitPriceAndFee
     ? nativeToUi(exitPriceAndFee.price, 6)
@@ -210,7 +210,9 @@ export default function ClosePosition({
           <>
             Close
             {input && markPrice
-              ? `: ${formatNumber(input / markPrice, 6)} ${position.token.name}`
+              ? `: ${formatNumber(input / markPrice, 6)} ${
+                  position.token.symbol
+                }`
               : null}
           </>
         }
@@ -221,7 +223,7 @@ export default function ClosePosition({
         maxButton={true}
         selectedToken={
           {
-            name: 'USD',
+            symbol: 'USD',
           } as Token
         }
         tokenList={[]}
@@ -347,7 +349,9 @@ export default function ClosePosition({
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade">Collateral ({position.token.name})</div>
+          <div className="text-txtfade">
+            Collateral ({position.token.symbol})
+          </div>
           <div className="flex">
             {!input && markPrice
               ? formatNumber(position.collateralUsd / markPrice, 6)
@@ -388,7 +392,6 @@ export default function ClosePosition({
       <Button
         className="mt-4 bg-highlight"
         title={executeBtnText}
-        activateLoadingIcon={true}
         onClick={() => handleExecute()}
         disabled={!!overMaxAuthorizedLeverage}
       />

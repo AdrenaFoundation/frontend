@@ -38,7 +38,7 @@ export default function FaucetDevnet({ wallet }: PageProps) {
     const toATA = findATAAddressSync(wallet.publicKey, token.mint);
 
     // Calculate how many tokens to send, we want to send for $10k of tokens
-    const tokenPrice = tokenPrices[token.name];
+    const tokenPrice = tokenPrices[token.symbol];
 
     if (!tokenPrice) {
       return addNotification({
@@ -136,12 +136,11 @@ export default function FaucetDevnet({ wallet }: PageProps) {
   return (
     <>
       {window.adrena.client.tokens.map((token) => (
-        <div key={token.name} className="mt-8 flex flex-col items-center">
+        <div key={token.symbol} className="mt-8 flex flex-col items-center">
           <Button
             disabled={pendingTx}
-            activateLoadingIcon={true}
             className="bg-secondary w-[30em]"
-            title={`Get ${token.name}`}
+            title={`Get ${token.symbol}`}
             onClick={() =>
               token.mint.equals(NATIVE_MINT)
                 ? airdropDevnetSol()

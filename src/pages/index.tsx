@@ -12,8 +12,6 @@ export default function Home() {
   }, [router]);
 
   return (
-    <main
-      className={twMerge('w-full', 'h-full', 'flex', 'bg-main', 'relative')}
-    ></main>
+    <main className={twMerge('w-full', 'h-full', 'flex', 'relative')}></main>
   );
 }

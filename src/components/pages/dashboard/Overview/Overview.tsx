@@ -1,7 +1,6 @@
 import { formatNumber, formatPriceInfo } from '@/utils';
 
 export default function Overview({
-  className,
   aumUsd,
   longPositions,
   shortPositions,
@@ -9,8 +8,9 @@ export default function Overview({
   nbOpenShortPositions,
   averageLongLeverage,
   averageShortLeverage,
+  totalCollectedFees,
+  totalVolume,
 }: {
-  className?: string;
   aumUsd: number | null;
   longPositions: number | null;
   shortPositions: number | null;
@@ -18,59 +18,82 @@ export default function Overview({
   nbOpenShortPositions: number | null;
   averageLongLeverage: number | null;
   averageShortLeverage: number | null;
+  totalCollectedFees: number | null;
+  totalVolume: number | null;
 }) {
-  const rowClasses = 'flex w-full justify-between mt-2';
-
   return (
-    <div
-      className={`border border-grey bg-secondary flex flex-col max-w-full ${
-        className ?? ''
-      }`}
-    >
-      <div className="p-4 border-b border-grey">Overview</div>
-      <div className="pb-4 pl-4 pr-4 pt-2 text-md flex flex-col w-full">
-        <div className={rowClasses}>
-          <div className="text-txtfade">AUM</div>
-          <div>{formatPriceInfo(aumUsd)}</div>
-        </div>
+    <div className="flex flex-col md:flex-row  gap-3 md:gap-5 border border-gray-300 bg-gray-200 w-full rounded-lg">
+      <div className="w-full p-3 px-5">
+        <h2 className="text-lg font-normal border-b border-b-gray-300 pb-3 mb-3">
+          Long Overview
+        </h2>
 
-        <div className={rowClasses}>
-          <div className="text-txtfade">Long Positions</div>
-          <div>{formatPriceInfo(longPositions)}</div>
-        </div>
-
-        <div className={rowClasses}>
-          <div className="text-txtfade">Short Positions</div>
-          <div>{formatPriceInfo(shortPositions)}</div>
-        </div>
-
-        <div className={rowClasses}>
-          <div className="text-txtfade">Active Long Positions</div>
-          <div>{nbOpenLongPositions !== null ? nbOpenLongPositions : '-'}</div>
-        </div>
-
-        <div className={rowClasses}>
-          <div className="text-txtfade">Active Short Positions</div>
-          <div>
-            {nbOpenShortPositions !== null ? nbOpenShortPositions : '-'}
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Open Interest</p>
+            <p className="font-mono">{formatPriceInfo(longPositions)}</p>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Active Position</p>
+            <p className="font-mono">
+              {nbOpenLongPositions !== null ? nbOpenLongPositions : '-'}
+            </p>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Average Leverage</p>
+            <p className="font-mono">
+              {averageLongLeverage
+                ? `${formatNumber(averageLongLeverage, 2)}x`
+                : '-'}
+            </p>
           </div>
         </div>
+      </div>
 
-        <div className={rowClasses}>
-          <div className="text-txtfade">Average Long Leverage</div>
-          <div>
-            {averageLongLeverage
-              ? `${formatNumber(averageLongLeverage, 2)}x`
-              : '-'}
+      <div className="w-full md:border md:border-l-gray-300 p-3 px-5">
+        <h2 className="text-lg font-normal border-b border-b-gray-300 pb-3 mb-3">
+          Short Overview
+        </h2>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Open Interest</p>
+            <p className="font-mono">{formatPriceInfo(shortPositions)}</p>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Active Position</p>
+            <p className="font-mono">
+              {nbOpenShortPositions !== null ? nbOpenShortPositions : '-'}
+            </p>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Average Leverage</p>
+            <p className="font-mono">
+              {averageShortLeverage
+                ? `${formatNumber(averageShortLeverage, 2)}x`
+                : '-'}
+            </p>
           </div>
         </div>
+      </div>
 
-        <div className={rowClasses}>
-          <div className="text-txtfade">Average Short Leverage</div>
-          <div>
-            {averageShortLeverage
-              ? `${formatNumber(averageShortLeverage, 2)}x`
-              : '-'}
+      <div className="w-full md:border md:border-l-gray-300 p-3 px-5">
+        <h2 className="text-lg font-normal border-b border-b-gray-300 pb-3 mb-3">
+          Total Stats
+        </h2>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">AUM</p>
+            <p className="font-mono">{formatPriceInfo(aumUsd)}</p>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Total Volume</p>
+            <p className="font-mono">{formatPriceInfo(totalVolume)}</p>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p className="opacity-50">Total fees</p>
+            <p className="font-mono">{formatPriceInfo(totalCollectedFees)}</p>
           </div>
         </div>
       </div>

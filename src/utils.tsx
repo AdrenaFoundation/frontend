@@ -86,7 +86,7 @@ export function uiToNative(nb: number, decimals: number): BN {
 }
 
 export function getTokenNameByMint(mint: PublicKey): string {
-  return window.adrena.config.tokensInfo[mint.toBase58()]?.name ?? 'Unknown';
+  return window.adrena.config.tokensInfo[mint.toBase58()]?.symbol ?? 'Unknown';
 }
 
 export function addNotification({
@@ -305,4 +305,21 @@ export function createCloseWSOLAccountInstruction({
   owner: PublicKey;
 }): TransactionInstruction {
   return createCloseAccountInstruction(wsolATA, owner, owner);
+}
+
+export function getAbbrevWalletAddress(address: string) {
+  return `${address.slice(0, 6)}...${address.slice(address.length - 6)}`;
+}
+
+export function getDaysRemaining(startDate: BN, totalDays: BN) {
+  const start = new Date(startDate.toNumber() * 1000).getTime();
+
+  const today = Date.now();
+
+  const daysElapsed = Math.floor((today - start) / 1000 / 3600 / 24);
+
+  const daysRemaining =
+    Math.floor(totalDays.toNumber() / 3600 / 24) - daysElapsed;
+
+  return daysRemaining;
 }

@@ -22,17 +22,17 @@ export default function PositionDetails({
     <div className={`flex flex-col p-1 text-sm ${className}`}>
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Entry Price</span>
-        <span>{formatPriceInfo(entryPrice)}</span>
+        <span className="font-mono">{formatPriceInfo(entryPrice)}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Exit Price</span>
-        <span>{formatPriceInfo(exitPrice)}</span>
+        <span className="font-mono">{formatPriceInfo(exitPrice)}</span>
       </div>
 
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Borrow Fee</span>
-        <span>
+        <span className="font-mono">
           {custody && tokenB
             ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}% / hr`
             : '-'}
@@ -41,12 +41,12 @@ export default function PositionDetails({
 
       <div className="w-full flex justify-between items-center mt-1">
         <span className="text-txtfade">Available Liquidity</span>
-        <span>
-          {custody && tokenB && tokenPrices && tokenPrices[tokenB.name]
+        <span className="font-mono">
+          {custody && tokenB && tokenPrices && tokenPrices[tokenB.symbol]
             ? formatPriceInfo(
                 custody.liquidity *
                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  tokenPrices[tokenB.name]!,
+                  tokenPrices[tokenB.symbol]!,
               )
             : '-'}
         </span>

@@ -6,11 +6,16 @@ export default interface IConfiguration {
   readonly tokensInfo: {
     [tokenPubkey: string]: {
       name: string;
+      symbol: string;
       image: string;
       coingeckoId: string;
       decimals: number;
     };
   };
+
+  readonly governanceProgram: PublicKey;
+  readonly clockworkProgram: PublicKey;
+  readonly stakesClaimPayer: PublicKey;
 
   readonly mainRPC: string;
   readonly pythRPC: string;
