@@ -709,6 +709,12 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
+    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 500_000,
+    });
+
+    preInstructions.push(modifyComputeUnitsIx);
+
     if (mint.equals(NATIVE_MINT)) {
       const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
 
