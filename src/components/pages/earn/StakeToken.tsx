@@ -64,6 +64,10 @@ export default function StakeToken({
             <input
               className="w-full bg-dark border border-gray-300 rounded-lg rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
+              onWheel={(e) => {
+                // Disable the scroll changing input value
+                (e.target as HTMLInputElement).blur();
+              }}
               value={amount ?? ''}
               onChange={onStakeAmountChange}
               placeholder="0.00"

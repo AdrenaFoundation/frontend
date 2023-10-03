@@ -17,6 +17,10 @@ export default function InputNumber({
     <input
       type="number"
       disabled={disabled}
+      onWheel={(e) => {
+        // Disable the scroll changing input value
+        (e.target as HTMLInputElement).blur();
+      }}
       value={value ?? ''}
       onChange={(v) => {
         if (!v.target.value.length) {
