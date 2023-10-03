@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import React, { useEffect } from 'react';
 
@@ -7,6 +8,7 @@ import {
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
+import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { getAbbrevWalletAddress } from '@/utils';
 
@@ -21,11 +23,35 @@ function WalletAdapter({ className }: { className?: string }) {
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    if (!connected) dispatch(autoConnectWalletAction('phantom'));
+    if (!connected) {
+      dispatch(autoConnectWalletAction('phantom'));
+      return;
+    }
 
     // Only once when page load
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Detect change of account
+  useEffect(() => {
+    if (!wallet) return;
+
+    const adapter = walletAdapters[wallet.adapterName];
+
+    adapter.on('connect', (walletPubkey: PublicKey) => {
+      dispatch({
+        type: 'connect',
+        payload: {
+          adapterName: wallet.adapterName,
+          walletAddress: walletPubkey.toBase58(),
+        },
+      });
+    });
+
+    return () => {
+      adapter.removeAllListeners('connect');
+    };
+  }, [dispatch, wallet]);
 
   const handleClick = () => {
     if (!connected) {
