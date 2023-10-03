@@ -25,6 +25,8 @@ export default function Header() {
     </Link>
   );
 
+  const clusterSwitchEnabled = false;
+
   return (
     <div className="flex flex-row items-center justify-between p-3 px-7 border border-b-gray-200">
       <div className="flex flex-row items-center gap-3">
@@ -65,10 +67,13 @@ export default function Header() {
               </MenuItem>
             </MenuItems>
           </Menu>
+
           {PageLink('/onchain_info', 'Onchain Info')}
+
           {window.adrena.cluster === 'devnet'
             ? PageLink('/faucet_devnet', 'Faucet')
             : null}
+
           {PageLink('https://www.gitbook.com/', 'Docs')}
         </>
       </div>
@@ -80,45 +85,49 @@ export default function Header() {
 
         <WalletAdapter />
 
-        <Menu
-          trigger={
-            <Button
-              title={window.adrena.cluster}
-              variant="outline"
-              rightIcon="/images/icons/chevron-down.svg"
-            />
-          }
-        >
-          <MenuItems>
-            <MenuItem
-              selected={window.adrena.cluster === 'devnet'}
-              onClick={() => {
-                router.replace({
-                  query: {
-                    ...router.query,
-                    cluster: 'devnet',
-                  },
-                });
-              }}
-            >
-              Devnet
-            </MenuItem>
-            <MenuSeperator />
-            <MenuItem
-              selected={window.adrena.cluster === 'mainnet'}
-              onClick={() => {
-                router.replace({
-                  query: {
-                    ...router.query,
-                    cluster: 'mainnet',
-                  },
-                });
-              }}
-            >
-              Mainnet
-            </MenuItem>
-          </MenuItems>
-        </Menu>
+        {clusterSwitchEnabled ? (
+          <Menu
+            trigger={
+              <Button
+                title={window.adrena.cluster}
+                variant="outline"
+                rightIcon="/images/icons/chevron-down.svg"
+              />
+            }
+          >
+            <MenuItems>
+              <MenuItem
+                selected={window.adrena.cluster === 'devnet'}
+                onClick={() => {
+                  router.replace({
+                    query: {
+                      ...router.query,
+                      cluster: 'devnet',
+                    },
+                  });
+                }}
+              >
+                Devnet
+              </MenuItem>
+
+              <MenuSeperator />
+
+              <MenuItem
+                selected={window.adrena.cluster === 'mainnet'}
+                onClick={() => {
+                  router.replace({
+                    query: {
+                      ...router.query,
+                      cluster: 'mainnet',
+                    },
+                  });
+                }}
+              >
+                Mainnet
+              </MenuItem>
+            </MenuItems>
+          </Menu>
+        ) : null}
       </div>
     </div>
   );
