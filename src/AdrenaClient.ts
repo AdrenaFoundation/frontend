@@ -47,6 +47,7 @@ import {
   SwapAccounts,
   Token,
   TokenSymbol,
+  UserStaking,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -1646,7 +1647,7 @@ export class AdrenaClient {
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
-  }) {
+  }): Promise<UserStaking | null> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
@@ -1657,11 +1658,10 @@ export class AdrenaClient {
       return null;
     }
 
-    const account = await this.adrenaProgram.account.userStaking.fetch(
+    return this.adrenaProgram.account.userStaking.fetchNullable(
       userStaking,
+      'processed',
     );
-
-    return account;
   }
 
   public async addLiquidStake({
