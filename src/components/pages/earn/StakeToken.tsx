@@ -17,7 +17,6 @@ export default function StakeToken({
   onStakeAmountChange,
   stakeAmount,
   errorMessage,
-  isLoading,
 }: {
   tokenSymbol: 'ADX' | 'ALP';
   balance: number | null;
@@ -28,7 +27,6 @@ export default function StakeToken({
   onStakeAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   stakeAmount: () => void;
   errorMessage: string;
-  isLoading: boolean;
 }) {
   const LOCK_PERIODS: { title: LockPeriod }[] = [
     { title: 0 },
@@ -139,8 +137,7 @@ export default function StakeToken({
           size="lg"
           title={errorMessage ? errorMessage : '[S]take'}
           disabled={!!errorMessage}
-          isLoading={isLoading}
-          onClick={() => stakeAmount()}
+          onClick={stakeAmount}
         />
       </div>
     </div>

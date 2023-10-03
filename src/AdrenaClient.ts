@@ -1679,6 +1679,12 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
+    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 500_000,
+    });
+
+    preInstructions.push(modifyComputeUnitsIx);
+
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
 
     if (!stakingRewardTokenMint) {

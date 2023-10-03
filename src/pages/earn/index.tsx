@@ -46,7 +46,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     ALP: UserStaking | null;
   } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const adxBalance =
     walletTokenBalances?.[window.adrena.client.adxToken.symbol] ?? null;
@@ -92,8 +91,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
     if (!activeStakingToken) return;
 
-    setIsLoading(true);
-
     const stakedTokenMint =
       activeStakingToken === 'ADX'
         ? window.adrena.client.adxToken.mint
@@ -123,10 +120,8 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       setLockPeriod(0);
       triggerWalletTokenBalancesReload();
       getUserStakingAccount();
-      setIsLoading(false);
       setActiveStakingToken(null);
     } catch (error) {
-      setIsLoading(false);
       return addFailedTxNotification({
         title: `Error Staking ${activeStakingToken}`,
         error,
@@ -161,7 +156,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
       triggerWalletTokenBalancesReload();
       getUserStakingAccount();
-      setIsLoading(false);
       setActiveRedeemToken(null);
     } catch (error) {
       return addFailedTxNotification({
@@ -362,7 +356,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
                 setAmount={setAmount}
                 onStakeAmountChange={onStakeAmountChange}
                 errorMessage={errorMessage}
-                isLoading={isLoading}
                 stakeAmount={stakeAmount}
                 balance={activeStakingToken === 'ADX' ? adxBalance : alpBalance}
                 lockPeriod={lockPeriod}
