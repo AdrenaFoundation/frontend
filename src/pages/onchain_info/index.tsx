@@ -85,10 +85,7 @@ export default function OnchainInfo({}: PageProps) {
         <div className={rowClasses}>
           <div className={subtitleClasses}>ADX Mint</div>
           <div className={infoClasses}>
-            {
-              // @TODO
-              '-'
-            }
+            {solanaExplorerLink(window.adrena.client.adxToken.mint)}
           </div>
         </div>
       </div>
