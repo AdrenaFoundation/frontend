@@ -15,6 +15,8 @@ export default function ALPIndexComposition({
   const alpIndexComposition = useALPIndexComposition(custodies);
   const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
+  if (isBigScreen === null) return null;
+
   return (
     <div>
       {isBigScreen ? (

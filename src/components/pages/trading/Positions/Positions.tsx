@@ -29,6 +29,8 @@ export default function Positions({
 
   const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
+  if (isBigScreen === null) return null;
+
   return (
     <>
       <AnimatePresence>

@@ -14,6 +14,10 @@ import Header from '../../Header/Header';
 const RootLayout = ({ children }: { children: ReactNode }) => {
   const isBigScreen = useBetterMediaQuery('(min-width: 1280px)');
 
+  if (isBigScreen === null) {
+    return null;
+  }
+
   return (
     <>
       <Head>

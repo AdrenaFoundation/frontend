@@ -21,7 +21,7 @@ function WalletAdapter({ className }: { className?: string }) {
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    dispatch(autoConnectWalletAction('phantom'));
+    if (!connected) dispatch(autoConnectWalletAction('phantom'));
 
     // Only once when page load
     // eslint-disable-next-line react-hooks/exhaustive-deps
