@@ -21,6 +21,8 @@ import {
   nativeToUi,
 } from '@/utils';
 
+import lockIcon from '../../../public/images/Icons/lock.svg';
+
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -303,12 +305,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
           </div>
           <div className="flex flex-col gap-3 bg-gray-200 border border-gray-300 rounded-lg p-4 mt-8">
             <div className="flex flex-row gap-2 items-center mb-3">
-              <Image
-                src="/images/Icons/lock.svg"
-                width={16}
-                height={16}
-                alt="lock icon"
-              />
+              <Image src={lockIcon} width={16} height={16} alt="lock icon" />
               <h4>My Locked Stake</h4>
             </div>
 

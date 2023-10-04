@@ -19,6 +19,8 @@ import {
 import { Perpetuals } from '@/target/perpetuals';
 import PerpetualsJson from '@/target/perpetuals.json';
 
+import adxIcon from '../public/images/adx.png';
+import alpIcon from '../public/images/alp.png';
 import config from './config/devnet';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
@@ -31,6 +33,7 @@ import {
   ClosePositionAccounts,
   Custody,
   CustodyExtended,
+  ImageRef,
   InitUserStakingAccounts,
   NewPositionPricesAndFee,
   OpenPositionAccounts,
@@ -99,7 +102,7 @@ export class AdrenaClient {
     symbol: 'ALP',
     decimals: 6,
     isStable: false,
-    image: '/images/alp.png',
+    image: alpIcon,
   };
 
   public adxToken: Token = {
@@ -108,7 +111,7 @@ export class AdrenaClient {
     symbol: 'ADX',
     decimals: 6,
     isStable: false,
-    image: '/images/adx.png',
+    image: adxIcon,
   };
 
   public getStakingPda = (stakedTokenMint: PublicKey) => {
@@ -291,7 +294,7 @@ export class AdrenaClient {
           | {
               name: string;
               symbol: string;
-              image: string;
+              image: ImageRef;
               coingeckoId: string;
               decimals: number;
             }

@@ -1,5 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 
+import { ImageRef } from '@/types';
+
 export default interface IConfiguration {
   readonly cluster: 'mainnet' | 'devnet';
 
@@ -7,7 +9,7 @@ export default interface IConfiguration {
     [tokenPubkey: string]: {
       name: string;
       symbol: string;
-      image: string;
+      image: ImageRef;
       coingeckoId: string;
       decimals: number;
     };

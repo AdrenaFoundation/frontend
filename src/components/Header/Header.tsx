@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 
+import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
@@ -91,7 +92,7 @@ export default function Header() {
               <Button
                 title={window.adrena.cluster}
                 variant="outline"
-                rightIcon="/images/icons/chevron-down.svg"
+                rightIcon={chevronDownIcon}
               />
             }
           >

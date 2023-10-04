@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import { ImageRef } from '@/types';
 
 function Button({
   variant = 'primary',
@@ -21,8 +22,8 @@ function Button({
   ...rest
 }: {
   title?: string;
-  rightIcon?: string;
-  leftIcon?: string;
+  rightIcon?: ImageRef;
+  leftIcon?: ImageRef;
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;

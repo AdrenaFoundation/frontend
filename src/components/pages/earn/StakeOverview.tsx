@@ -5,6 +5,8 @@ import Button from '@/components/common/Button/Button';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
+import walletIcon from '../../../../public/images/wallet-icon.svg';
+
 export default function StakeOverview({
   tokenDetails,
   setActiveToken,
@@ -30,8 +32,8 @@ export default function StakeOverview({
         <Image
           src={
             tokenDetails.token.symbol === 'ADX'
-              ? '/images/adx.png'
-              : '/images/alp.png'
+              ? window.adrena.client.adxToken.image
+              : window.adrena.client.alpToken.image
           }
           width={32}
           height={32}
@@ -40,12 +42,7 @@ export default function StakeOverview({
 
         <div>
           <div className="flex flex-row gap-1 items-center opacity-50">
-            <Image
-              src="/images/wallet-icon.svg"
-              width={16}
-              height={16}
-              alt="wallet"
-            />
+            <Image src={walletIcon} width={16} height={16} alt="wallet" />
             <p className="text-xs font-mono">
               {tokenDetails.balance
                 ? `${formatNumber(tokenDetails.balance, 3)} ${

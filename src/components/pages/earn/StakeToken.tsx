@@ -7,6 +7,8 @@ import { STAKE_MULTIPLIERS } from '@/constant';
 import { LockPeriod } from '@/types';
 import { formatNumber } from '@/utils';
 
+import lockIcon from '../../../../public/images/Icons/lock.svg';
+
 export default function StakeToken({
   tokenSymbol,
   balance,
@@ -88,12 +90,7 @@ export default function StakeToken({
 
         <div>
           <div className="flex flex-row gap-1  mb-2">
-            <Image
-              src="/images/Icons/lock.svg"
-              width={14}
-              height={14}
-              alt="lock icon"
-            />
+            <Image src={lockIcon} width={14} height={14} alt="lock icon" />
             <p className="text-xs opacity-50 font-medium ">
               Choose a lock period (days)
             </p>

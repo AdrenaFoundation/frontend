@@ -12,6 +12,9 @@ import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { getAbbrevWalletAddress } from '@/utils';
 
+import disconnectIcon from '../../../public/images/disconnect.png';
+import phantomLogo from '../../../public/images/phantom.png';
+import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
 
@@ -73,9 +76,7 @@ function WalletAdapter({ className }: { className?: string }) {
             ? getAbbrevWalletAddress(wallet.walletAddress)
             : 'Connect wallet'
         }
-        rightIcon={
-          connected ? '/images/disconnect.png' : '/images/wallet-icon.svg'
-        }
+        rightIcon={connected ? disconnectIcon : walletIcon}
         alt="wallet icon"
         variant="outline"
         onClick={handleClick}
@@ -95,7 +96,7 @@ function WalletAdapter({ className }: { className?: string }) {
             }}
           >
             <Image
-              src="/images/phantom.png"
+              src={phantomLogo}
               alt="phantom icon"
               height={30}
               width={30}

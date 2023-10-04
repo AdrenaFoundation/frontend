@@ -22,7 +22,12 @@ export default function DisplayInfo({
         >
           <p className="text-base md:text-sm opacity-50">{title}</p>
           <div className="flex flex-row gap-2 w-full">
-            <Image src="/images/adx.png" width={24} height={24} alt="adx" />
+            <Image
+              src={window.adrena.client.adxToken.image}
+              width={24}
+              height={24}
+              alt="adx"
+            />
 
             <p className="text-base font-mono">{value}</p>
           </div>

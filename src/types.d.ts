@@ -1,11 +1,15 @@
 import { Wallet } from '@project-serum/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
+import Image from 'next/image';
 
 import { Perpetuals } from '@/target/perpetuals';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration from './config/IConfiguration';
 import { AnchorTypes, ContextAccounts } from './IdlTypeParser';
+
+// Force users to provide images loaded with import so it's known from nextjs at ssr time
+export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
 
 export type SupportedCluster = 'devnet' | 'mainnet';
 
@@ -106,7 +110,7 @@ export interface Token {
   name: TokenName;
   decimals: number;
   isStable: boolean;
-  image: string;
+  image: ImageRef;
   custody?: PublicKey;
   coingeckoId?: string;
 }
