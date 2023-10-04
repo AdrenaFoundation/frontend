@@ -1,6 +1,12 @@
 import { NATIVE_MINT } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
 
+import { ImageRef } from '@/types';
+
+import btcLogo from '../../public/images/btc.svg';
+import ethLogo from '../../public/images/eth.svg';
+import solLogo from '../../public/images/sol.svg';
+import usdcLogo from '../../public/images/usdc.svg';
 import IConfiguration from './IConfiguration';
 
 class DevnetConfiguration implements IConfiguration {
@@ -10,7 +16,7 @@ class DevnetConfiguration implements IConfiguration {
     [tokenPubkey: string]: {
       name: string;
       symbol: string;
-      image: string;
+      image: ImageRef;
       coingeckoId: string;
       decimals: number;
     };
@@ -18,28 +24,28 @@ class DevnetConfiguration implements IConfiguration {
     '4ZY3ZH8bStniqdCZdR14xsWW6vrMsCJrusobTdy4JipC': {
       name: 'USD Coin',
       symbol: 'USDC',
-      image: '/images/usdc.svg',
+      image: usdcLogo,
       coingeckoId: 'usd-coin',
       decimals: 6,
     },
     '3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr': {
       name: 'Ethereum',
       symbol: 'ETH',
-      image: '/images/eth.svg',
+      image: ethLogo,
       coingeckoId: 'ethereum',
       decimals: 6,
     },
     HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM: {
       name: 'Bitcoin',
       symbol: 'BTC',
-      image: '/images/btc.svg',
+      image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 6,
     },
     [NATIVE_MINT.toBase58()]: {
       name: 'Solana',
       symbol: 'SOL',
-      image: '/images/sol.svg',
+      image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,
     },

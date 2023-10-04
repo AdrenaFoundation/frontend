@@ -19,6 +19,8 @@ import {
 import { Perpetuals } from '@/target/perpetuals';
 import PerpetualsJson from '@/target/perpetuals.json';
 
+import adxIcon from '../public/images/adx.png';
+import alpIcon from '../public/images/alp.png';
 import config from './config/devnet';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
@@ -31,6 +33,7 @@ import {
   ClosePositionAccounts,
   Custody,
   CustodyExtended,
+  ImageRef,
   InitUserStakingAccounts,
   NewPositionPricesAndFee,
   OpenPositionAccounts,
@@ -47,6 +50,7 @@ import {
   SwapAccounts,
   Token,
   TokenSymbol,
+  UserStaking,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -98,7 +102,7 @@ export class AdrenaClient {
     symbol: 'ALP',
     decimals: 6,
     isStable: false,
-    image: '/images/alp.png',
+    image: alpIcon,
   };
 
   public adxToken: Token = {
@@ -107,7 +111,7 @@ export class AdrenaClient {
     symbol: 'ADX',
     decimals: 6,
     isStable: false,
-    image: '/images/adx.png',
+    image: adxIcon,
   };
 
   public getStakingPda = (stakedTokenMint: PublicKey) => {
@@ -290,7 +294,7 @@ export class AdrenaClient {
           | {
               name: string;
               symbol: string;
-              image: string;
+              image: ImageRef;
               coingeckoId: string;
               decimals: number;
             }
@@ -1646,7 +1650,7 @@ export class AdrenaClient {
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
-  }) {
+  }): Promise<UserStaking | null> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
@@ -1657,11 +1661,10 @@ export class AdrenaClient {
       return null;
     }
 
-    const account = await this.adrenaProgram.account.userStaking.fetch(
+    return this.adrenaProgram.account.userStaking.fetchNullable(
       userStaking,
+      'processed',
     );
-
-    return account;
   }
 
   public async addLiquidStake({
@@ -1678,6 +1681,12 @@ export class AdrenaClient {
     }
 
     const preInstructions: TransactionInstruction[] = [];
+
+    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 500_000,
+    });
+
+    preInstructions.push(modifyComputeUnitsIx);
 
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
 

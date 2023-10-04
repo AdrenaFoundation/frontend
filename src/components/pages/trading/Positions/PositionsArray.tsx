@@ -16,6 +16,9 @@ import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
+import threeDotsIcon from '../../../../../public/images/Icons/three-dots.svg';
+import phantomLogo from '../../../../../public/images/phantom.png';
+
 export default function PositionsArray({
   positions,
   triggerClosePosition,
@@ -46,7 +49,7 @@ export default function PositionsArray({
         <Button
           title="Connect Wallet"
           variant="secondary"
-          rightIcon="/images/wallet-icon.svg"
+          rightIcon={phantomLogo}
           className="mb-2"
           onClick={handleClick}
         />
@@ -70,7 +73,7 @@ export default function PositionsArray({
               }}
             >
               <Image
-                src="/images/phantom.png"
+                src={phantomLogo}
                 alt="phantom icon"
                 height={30}
                 width={30}
@@ -201,12 +204,7 @@ export default function PositionsArray({
 
             <td>
               <Menu
-                trigger={
-                  <Button
-                    variant="text"
-                    leftIcon="images/icons/three-dots.svg"
-                  />
-                }
+                trigger={<Button variant="text" leftIcon={threeDotsIcon} />}
                 className="w-fit"
               >
                 <MenuItems>

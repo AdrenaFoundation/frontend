@@ -6,6 +6,8 @@ import { STAKE_MULTIPLIERS } from '@/constant';
 import { LockPeriod, UserStaking } from '@/types';
 import { formatNumber, getDaysRemaining, nativeToUi } from '@/utils';
 
+import lockIcon from '../../../../public/images/Icons/lock.svg';
+
 export default function StakeList({
   stakePositions,
 }: {
@@ -61,7 +63,7 @@ export default function StakeList({
               <td className="py-5 text-sm font-mono">
                 <div className="flex flex-row gap-2 items-center">
                   <Image
-                    src="/images/adx.png"
+                    src={window.adrena.client.adxToken.image}
                     width={32}
                     height={32}
                     alt="ADX"
@@ -132,7 +134,7 @@ export default function StakeList({
                 <Button
                   className="w-full max-w-[200px] mt-3 text-xs"
                   variant="secondary"
-                  rightIcon={resolved ? undefined : '/images/Icons/lock.svg'}
+                  rightIcon={resolved ? undefined : lockIcon}
                   disabled={!resolved}
                   title={
                     resolved

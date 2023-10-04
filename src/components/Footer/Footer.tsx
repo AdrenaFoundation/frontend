@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import githubLogo from '../../../public/images/github.svg';
+import twitterLogo from '../../../public/images/twitter.svg';
+
 export default function Footer() {
   return (
     <div className="flex-col w-full h-auto pt-4 pb-4 border-t border-grey justify-center items-center shrink-0">
@@ -11,7 +14,7 @@ export default function Footer() {
         >
           <Image
             className="hover:opacity-90 cursor-pointer"
-            src="/images/github.svg"
+            src={githubLogo}
             alt="github icon"
             width="25"
             height="25"
@@ -21,7 +24,7 @@ export default function Footer() {
         <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
           <Image
             className="hover:opacity-90 cursor-pointer ml-8"
-            src="/images/twitter.svg"
+            src={twitterLogo}
             alt="twitter icon"
             width="20"
             height="20"

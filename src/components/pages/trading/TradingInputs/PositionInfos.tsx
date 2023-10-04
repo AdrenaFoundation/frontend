@@ -7,6 +7,8 @@ import { PRICE_DECIMALS } from '@/constant';
 import { NewPositionPricesAndFee, PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
+import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
+
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
 let loadingCounter = 0;
@@ -92,7 +94,7 @@ export default function PositionInfos({
                   <div>{formatPriceInfo(openedPosition.price)}</div>
 
                   <Image
-                    src="images/arrow-right.svg"
+                    src={arrowRightIcon}
                     height={16}
                     width={16}
                     alt="Arrow"
@@ -129,7 +131,7 @@ export default function PositionInfos({
                   <div>{formatPriceInfo(openedPosition.liquidationPrice)}</div>
 
                   <Image
-                    src="images/arrow-right.svg"
+                    src={arrowRightIcon}
                     height={16}
                     width={16}
                     alt="Arrow"

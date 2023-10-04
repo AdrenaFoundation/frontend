@@ -7,6 +7,8 @@ import { STAKE_MULTIPLIERS } from '@/constant';
 import { LockPeriod } from '@/types';
 import { formatNumber } from '@/utils';
 
+import lockIcon from '../../../../public/images/Icons/lock.svg';
+
 export default function StakeToken({
   tokenSymbol,
   balance,
@@ -17,7 +19,6 @@ export default function StakeToken({
   onStakeAmountChange,
   stakeAmount,
   errorMessage,
-  isLoading,
 }: {
   tokenSymbol: 'ADX' | 'ALP';
   balance: number | null;
@@ -28,7 +29,6 @@ export default function StakeToken({
   onStakeAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   stakeAmount: () => void;
   errorMessage: string;
-  isLoading: boolean;
 }) {
   const LOCK_PERIODS: { title: LockPeriod }[] = [
     { title: 0 },
@@ -66,6 +66,10 @@ export default function StakeToken({
             <input
               className="w-full bg-dark border border-gray-300 rounded-lg rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
+              onWheel={(e) => {
+                // Disable the scroll changing input value
+                (e.target as HTMLInputElement).blur();
+              }}
               value={amount ?? ''}
               onChange={onStakeAmountChange}
               placeholder="0.00"
@@ -86,12 +90,7 @@ export default function StakeToken({
 
         <div>
           <div className="flex flex-row gap-1  mb-2">
-            <Image
-              src="/images/Icons/lock.svg"
-              width={14}
-              height={14}
-              alt="lock icon"
-            />
+            <Image src={lockIcon} width={14} height={14} alt="lock icon" />
             <p className="text-xs opacity-50 font-medium ">
               Choose a lock period (days)
             </p>
@@ -139,8 +138,7 @@ export default function StakeToken({
           size="lg"
           title={errorMessage ? errorMessage : '[S]take'}
           disabled={!!errorMessage}
-          isLoading={isLoading}
-          onClick={() => stakeAmount()}
+          onClick={stakeAmount}
         />
       </div>
     </div>

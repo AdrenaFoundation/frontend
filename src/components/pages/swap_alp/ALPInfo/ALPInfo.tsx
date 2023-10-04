@@ -1,6 +1,6 @@
 import useALPCirculatingSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
-import { formatPriceInfo } from '@/utils';
+import { formatNumber, formatPriceInfo } from '@/utils';
 
 export default function ALPInfo({
   marketCap,
@@ -22,7 +22,10 @@ export default function ALPInfo({
           Circulating Supply
         </p>
         <p className="text-base md:text-xl font-mono">
-          {lpTotalSupplyAmount} ALP
+          {lpTotalSupplyAmount !== null
+            ? formatNumber(lpTotalSupplyAmount, 0)
+            : '-'}{' '}
+          ALP
         </p>
       </div>
       <div className="flex flex-row justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1">
@@ -34,12 +37,14 @@ export default function ALPInfo({
       <div className="flex flex-row justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1">
         <p className="text-base md:text-sm opacity-50 mb-3">Market Cap</p>
         <p className="text-base md:text-xl font-mono">
-          {formatPriceInfo(marketCap)}
+          {formatPriceInfo(marketCap, undefined, 0)}
         </p>
       </div>
       <div className="flex flex-row justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1">
         <p className="text-base md:text-sm opacity-50 md:mb-3">Staked</p>
-        <p className="text-base md:text-xl font-mono">{staked} ALP</p>
+        <p className="text-base md:text-xl font-mono">
+          {staked !== null ? formatNumber(staked, 0) : '-'} ALP
+        </p>
       </div>
     </div>
   );

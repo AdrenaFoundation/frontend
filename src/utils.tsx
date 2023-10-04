@@ -49,6 +49,7 @@ export function formatNumber(
 export function formatPriceInfo(
   price: number | null | undefined,
   displayPlusSymbol = false,
+  decimals = 2,
 ) {
   if (price === null || typeof price === 'undefined') {
     return '-';
@@ -60,10 +61,10 @@ export function formatPriceInfo(
   }
 
   if (price < 0) {
-    return `-$${formatNumber(price * -1, 2)}`;
+    return `-$${formatNumber(price * -1, decimals)}`;
   }
 
-  return `$${formatNumber(price, 2, displayPlusSymbol)}`;
+  return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
 }
 
 export function formatPercentage(

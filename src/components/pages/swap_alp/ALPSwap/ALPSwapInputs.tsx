@@ -7,6 +7,7 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, nativeToUi, uiToNative } from '@/utils';
 
+import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 // use the counter to handle asynchronous multiple loading
@@ -343,9 +344,8 @@ export default function ALPSwapInputs({
           onClick={() => switchBuySell()}
         >
           {
-            // eslint-disable-next-line @next/next/no-img-element
             <Image
-              src="/images/icons/arrow-down-up.svg"
+              src={arrowDownUpIcon}
               alt="swap icon"
               height={14}
               width={14}

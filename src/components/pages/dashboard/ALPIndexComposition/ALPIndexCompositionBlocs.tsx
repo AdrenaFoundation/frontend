@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react';
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
@@ -27,11 +28,11 @@ export default function ALPIndexCompositionBlocs({
         >
           <div className="flex items-center border-b border-grey pb-2">
             {
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                className="w-6 h-6"
+              <Image
                 src={composition.token.image}
                 alt={`${composition.token.symbol} logo`}
+                width={24}
+                height={24}
               />
             }
             <span className="ml-4">{composition.token.symbol}</span>

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 
+import chevronDownIcon from '../../../../public/images/Icons/chevron-down.svg';
 import Menu from '../Menu/Menu';
 import MenuItem from '../Menu/MenuItem';
 import MenuItems from '../Menu/MenuItems';
@@ -25,7 +26,7 @@ export default function Select<T extends string>({
             {options.length > 1 ? (
               <Image
                 className="ml-2"
-                src="/images/icons/chevron-down.svg"
+                src={chevronDownIcon}
                 alt="chevron down"
                 width={12}
                 height={12}

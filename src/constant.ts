@@ -1,10 +1,12 @@
-import { Adapter } from '@solana/wallet-adapter-base';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
 
 import { LockPeriod, WalletAdapterName } from './types';
 
-export const walletAdapters: Record<WalletAdapterName, Adapter> = {
+export const walletAdapters: Record<
+  WalletAdapterName,
+  PhantomWalletAdapter /* | ... */
+> = {
   phantom: new PhantomWalletAdapter(),
 };
 

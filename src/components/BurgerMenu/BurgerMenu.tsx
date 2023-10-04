@@ -5,6 +5,10 @@ import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import chevronDownIcon from '../../../public/images/chevron-down.svg';
+import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
+import crossIcon from '../../../public/images/Icons/cross.svg';
+import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
@@ -16,6 +20,8 @@ import WalletAdapter from '../WalletAdapter/WalletAdapter';
 export default function BurgerMenu() {
   const { pathname } = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const clusterSwitchEnabled = false;
 
   const PAGES: { name: string; link: string }[] = [
     { name: 'Dashboard', link: '/dashboard' },
@@ -43,7 +49,7 @@ export default function BurgerMenu() {
         >
           <Image
             className="cursor-pointer opacity-75"
-            src={`/images/icons/${isOpen ? 'cross' : 'burger-menu'}.svg`}
+            src={isOpen ? crossIcon : burgerMenuIcon}
             alt="burger menu icon"
             width={16}
             height={16}
@@ -90,52 +96,54 @@ export default function BurgerMenu() {
                 ))}
               </ul>
 
-              <Menu
-                className="mt-7"
-                trigger={
-                  <Button
-                    className="w-full"
-                    title={window.adrena.cluster}
-                    variant="outline"
-                    rightIcon="/images/icons/chevron-down.svg"
-                  />
-                }
-              >
-                <MenuItems>
-                  <MenuItem
-                    selected={window.adrena.cluster === 'devnet'}
-                    onClick={() => {
-                      router.replace({
-                        query: {
-                          ...router.query,
-                          cluster: 'devnet',
-                        },
-                      });
-                    }}
-                  >
-                    Devnet
-                  </MenuItem>
-                  <MenuSeperator />
-                  <MenuItem
-                    selected={window.adrena.cluster === 'mainnet'}
-                    onClick={() => {
-                      router.replace({
-                        query: {
-                          ...router.query,
-                          cluster: 'mainnet',
-                        },
-                      });
-                    }}
-                  >
-                    Mainnet
-                  </MenuItem>
-                </MenuItems>
-              </Menu>
+              {clusterSwitchEnabled ? (
+                <Menu
+                  className="mt-7"
+                  trigger={
+                    <Button
+                      className="w-full"
+                      title={window.adrena.cluster}
+                      variant="outline"
+                      rightIcon={chevronDownIcon}
+                    />
+                  }
+                >
+                  <MenuItems>
+                    <MenuItem
+                      selected={window.adrena.cluster === 'devnet'}
+                      onClick={() => {
+                        router.replace({
+                          query: {
+                            ...router.query,
+                            cluster: 'devnet',
+                          },
+                        });
+                      }}
+                    >
+                      Devnet
+                    </MenuItem>
+                    <MenuSeperator />
+                    <MenuItem
+                      selected={window.adrena.cluster === 'mainnet'}
+                      onClick={() => {
+                        router.replace({
+                          query: {
+                            ...router.query,
+                            cluster: 'mainnet',
+                          },
+                        });
+                      }}
+                    >
+                      Mainnet
+                    </MenuItem>
+                  </MenuItems>
+                </Menu>
+              ) : null}
             </div>
 
             <div>
               <Image
-                src="/images/logo.svg"
+                src={logo}
                 className="m-auto"
                 alt="logo"
                 width={150}

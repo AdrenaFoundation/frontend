@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -11,8 +11,9 @@ import StakeOverview from '@/components/pages/earn/StakeOverview';
 import StakeRedeem from '@/components/pages/earn/StakeRedeem';
 import StakeToken from '@/components/pages/earn/StakeToken';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockPeriod, PageProps, UserStaking } from '@/types';
+import { LockPeriod, PageProps } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -20,20 +21,26 @@ import {
   nativeToUi,
 } from '@/utils';
 
+import lockIcon from '../../../public/images/Icons/lock.svg';
+
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const adxPrice =
+  const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
 
-  const alpPrice =
+  const alpPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
+
+  const { stakingAccounts, triggerWalletStakingAccountsReload } =
+    useWalletStakingAccounts();
 
   const [activeStakingToken, setActiveStakingToken] = useState<
     'ADX' | 'ALP' | null
   >(null);
+
   const [activeRedeemToken, setActiveRedeemToken] = useState<
     'ADX' | 'ALP' | null
   >(null);
@@ -41,43 +48,17 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const [lockPeriod, setLockPeriod] = useState<LockPeriod>(0);
 
   const [amount, setAmount] = useState<number | null>(null);
-  const [stakingAccounts, setStakingAccounts] = useState<{
-    ADX: UserStaking | null;
-    ALP: UserStaking | null;
-  } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const adxBalance =
+  const adxBalance: number | null =
     walletTokenBalances?.[window.adrena.client.adxToken.symbol] ?? null;
 
-  const alpBalance =
+  const alpBalance: number | null =
     walletTokenBalances?.[window.adrena.client.alpToken.symbol] ?? null;
 
-  const owner = wallet && new PublicKey(wallet.walletAddress);
-
-  useEffect(() => {
-    getUserStakingAccount();
-  }, [walletTokenBalances]);
-
-  const getUserStakingAccount = async () => {
-    if (!owner) {
-      // error msg
-      return;
-    }
-
-    const userStakingAccounts = {
-      ADX: await window.adrena.client.getUserStakingAccount({
-        owner,
-        stakedTokenMint: window.adrena.client.adxToken.mint,
-      }),
-      ALP: await window.adrena.client.getUserStakingAccount({
-        owner,
-        stakedTokenMint: window.adrena.client.alpToken.mint,
-      }),
-    };
-    setStakingAccounts(userStakingAccounts);
-  };
+  const owner: PublicKey | null = wallet
+    ? new PublicKey(wallet.walletAddress)
+    : null;
 
   const stakeAmount = async () => {
     if (!owner) {
@@ -91,8 +72,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     }
 
     if (!activeStakingToken) return;
-
-    setIsLoading(true);
 
     const stakedTokenMint =
       activeStakingToken === 'ADX'
@@ -122,11 +101,9 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       setAmount(null);
       setLockPeriod(0);
       triggerWalletTokenBalancesReload();
-      getUserStakingAccount();
-      setIsLoading(false);
+      triggerWalletStakingAccountsReload();
       setActiveStakingToken(null);
     } catch (error) {
-      setIsLoading(false);
       return addFailedTxNotification({
         title: `Error Staking ${activeStakingToken}`,
         error,
@@ -160,8 +137,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       });
 
       triggerWalletTokenBalancesReload();
-      getUserStakingAccount();
-      setIsLoading(false);
+      triggerWalletStakingAccountsReload();
       setActiveRedeemToken(null);
     } catch (error) {
       return addFailedTxNotification({
@@ -329,12 +305,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
           </div>
           <div className="flex flex-col gap-3 bg-gray-200 border border-gray-300 rounded-lg p-4 mt-8">
             <div className="flex flex-row gap-2 items-center mb-3">
-              <Image
-                src="/images/Icons/lock.svg"
-                width={16}
-                height={16}
-                alt="lock icon"
-              />
+              <Image src={lockIcon} width={16} height={16} alt="lock icon" />
               <h4>My Locked Stake</h4>
             </div>
 
@@ -362,7 +333,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
                 setAmount={setAmount}
                 onStakeAmountChange={onStakeAmountChange}
                 errorMessage={errorMessage}
-                isLoading={isLoading}
                 stakeAmount={stakeAmount}
                 balance={activeStakingToken === 'ADX' ? adxBalance : alpBalance}
                 lockPeriod={lockPeriod}

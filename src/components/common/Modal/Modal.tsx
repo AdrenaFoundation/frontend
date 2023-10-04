@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import closeBtnIcon from '../../../../public/images/Icons/close-btn.svg';
+
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
@@ -72,7 +74,7 @@ const Modal = ({
             <span className="text-sm opacity-50">{title}</span>
             <Image
               className="cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300"
-              src="/images/icons/close-btn.svg"
+              src={closeBtnIcon}
               alt="close icon"
               width={16}
               height={16}

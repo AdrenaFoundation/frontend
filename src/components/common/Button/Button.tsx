@@ -1,9 +1,11 @@
 import { Url } from 'next/dist/shared/lib/router/router';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import { ImageRef } from '@/types';
 
 function Button({
   variant = 'primary',
@@ -16,21 +18,23 @@ function Button({
   onClick,
   href,
   disabled,
-  isLoading,
+  // isLoading,
   ...rest
 }: {
   title?: string;
-  rightIcon?: string;
-  leftIcon?: string;
+  rightIcon?: ImageRef;
+  leftIcon?: ImageRef;
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
   size?: 'sm' | 'md' | 'lg';
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   disabled?: boolean;
   href?: Url;
-  isLoading?: boolean;
+  // isLoading?: boolean;
 }) {
+  const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
+
   const variants = {
     primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-md',
     secondary: 'bg-gray-300 opacity-50 hover:opacity-100 rounded-md',
@@ -53,22 +57,32 @@ function Button({
           sizes[size],
           variants[variant],
           className && className,
-          disabled && 'opacity-25 cursor-not-allowed pointer-events-none',
-          isLoading && 'pointer-events-none',
+          disabled || onClickInProgress
+            ? 'opacity-25 cursor-not-allowed pointer-events-none'
+            : null,
           'transition duration-300',
         )}
-        disabled={disabled || isLoading}
-        onClick={onClick}
+        disabled={disabled || onClickInProgress}
+        onClick={async () => {
+          if (!onClick) return;
+
+          setOnClickInProgress(true);
+          await onClick();
+          setOnClickInProgress(false);
+        }}
         {...rest}
       >
-        {leftIcon && !isLoading && (
+        {leftIcon && !onClickInProgress ? (
           <Image src={leftIcon} alt={alt} width="12" height="12" />
-        )}
-        {title && !isLoading && title}
-        {rightIcon && !isLoading && (
+        ) : null}
+
+        {title && !onClickInProgress ? title : null}
+
+        {rightIcon && !onClickInProgress ? (
           <Image src={rightIcon} alt={alt} width="12" height="12" />
-        )}
-        {isLoading && <Loader height={20} />}
+        ) : null}
+
+        {onClickInProgress ? <Loader height={20} /> : null}
       </button>
     );
   };

@@ -8,6 +8,7 @@ import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber } from '@/utils';
 
+import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
@@ -276,7 +277,7 @@ export default function TradingInputs({
           onClick={() => switchAB()}
         >
           <Image
-            src="/images/icons/arrow-down-up.svg"
+            src={arrowDownUpIcon}
             alt="swap icon"
             height={14}
             width={14}

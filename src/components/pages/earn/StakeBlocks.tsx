@@ -5,6 +5,8 @@ import { STAKE_MULTIPLIERS } from '@/constant';
 import { LockPeriod, UserStaking } from '@/types';
 import { formatNumber, getDaysRemaining, nativeToUi } from '@/utils';
 
+import lockIcon from '../../../../public/images/Icons/lock.svg';
+
 export default function StakeBlocks({
   stakePositions,
 }: {
@@ -29,7 +31,12 @@ export default function StakeBlocks({
           >
             <div className="pb-2 flex flex-row justify-between border-b border-b-gray-300">
               <div className="flex flex-row gap-2 items-center">
-                <Image src="/images/adx.png" width={32} height={32} alt="ADX" />
+                <Image
+                  src={window.adrena.client.adxToken.image}
+                  width={32}
+                  height={32}
+                  alt="ADX"
+                />
                 <p className="text-sm font-medium">ADX</p>
               </div>
             </div>
@@ -114,7 +121,7 @@ export default function StakeBlocks({
                 <Button
                   className="w-full mt-3"
                   variant="secondary"
-                  rightIcon={resolved ? undefined : '/images/Icons/lock.svg'}
+                  rightIcon={resolved ? undefined : lockIcon}
                   disabled={!resolved}
                   title={
                     resolved
