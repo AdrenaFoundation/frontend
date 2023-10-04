@@ -344,7 +344,6 @@ export default function ALPSwapInputs({
           onClick={() => switchBuySell()}
         >
           {
-            // eslint-disable-next-line @next/next/no-img-element
             <Image
               src={arrowDownUpIcon}
               alt="swap icon"
