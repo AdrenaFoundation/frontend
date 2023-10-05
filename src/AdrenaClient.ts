@@ -1099,24 +1099,19 @@ export class AdrenaClient {
       );
     }
 
-    try {
-      const transaction = await this.buildOpenPositionTx({
-        owner,
-        mint,
-        price,
-        collateral,
-        size,
-        side,
-      })
-        .preInstructions(preInstructions)
-        .postInstructions(postInstructions)
-        .transaction();
+    const transaction = await this.buildOpenPositionTx({
+      owner,
+      mint,
+      price,
+      collateral,
+      size,
+      side,
+    })
+      .preInstructions(preInstructions)
+      .postInstructions(postInstructions)
+      .transaction();
 
-      return this.signAndExecuteTx(transaction);
-    } catch (e) {
-      console.log('ERROR', e);
-      return '';
-    }
+    return this.signAndExecuteTx(transaction);
   }
 
   public async closePosition({

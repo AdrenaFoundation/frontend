@@ -166,19 +166,21 @@ export function addFailedTxNotification({
 }) {
   const message = (() => {
     if (error instanceof AdrenaTransactionError) {
-      if (error.txHash) {
-        return (
-          <Link
-            href={get_tx_explorer(error.txHash)}
-            target="_blank"
-            className="underline"
-          >
-            View transaction
-          </Link>
-        );
-      }
+      return (
+        <div className="flex flex-col">
+          <div>{String(error.errorString)}</div>
 
-      return String(error.errorString);
+          {error.txHash ? (
+            <Link
+              href={get_tx_explorer(error.txHash)}
+              target="_blank"
+              className="underline mt-2"
+            >
+              View transaction
+            </Link>
+          ) : null}
+        </div>
+      );
     }
 
     return typeof error === 'object'
@@ -217,23 +219,44 @@ export function parseTransactionError(
 ) {
   // Check for Adrena Program Errors
   //
-  const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
 
-  if (match) {
-    const errorCode = parseInt(match[1], 16);
+  //
+  // Errors looks differently depending if they fail on preflight or executing the tx
+  //
+  const matchPreflightError = String(err).match(
+    /custom program error: (0x[\da-fA-F]+)/,
+  );
 
-    const idlError = adrenaProgram.idl.errors.find(
-      ({ code }) => code === errorCode,
-    );
+  const matchTxError = (() => {
+    // wrap with try/catch in case JSON.stringify fails
+    try {
+      return JSON.stringify(err, null, 2).match(/"Custom": ([0-9]+)/);
+    } catch {
+      return null;
+    }
+  })();
 
-    // Transaction failed in preflight, there is no TxHash
-    return new AdrenaTransactionError(
-      null,
-      idlError?.msg ?? `Error code: ${errorCode}`,
-    );
+  let errorCode: number | null = null;
+
+  if (matchPreflightError) {
+    errorCode = parseInt(matchPreflightError[1], 16);
+  } else if (matchTxError) {
+    errorCode = parseInt(matchTxError[1], 10);
   }
 
-  return new AdrenaTransactionError(null, JSON.stringify(err, null, 2));
+  if (errorCode === null) {
+    return new AdrenaTransactionError(null, JSON.stringify(err, null, 2));
+  }
+
+  const idlError = adrenaProgram.idl.errors.find(
+    ({ code }) => code === errorCode,
+  );
+
+  // Transaction failed in preflight, there is no TxHash
+  return new AdrenaTransactionError(
+    null,
+    idlError?.msg ?? `Error code: ${errorCode}`,
+  );
 }
 
 export async function isATAInitialized(
