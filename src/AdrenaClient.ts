@@ -2695,7 +2695,7 @@ export class AdrenaClient {
         // Uncomment to force the transaction to be sent
         // And get a transaction to analyze
         {
-          skipPreflight: true,
+          skipPreflight: false,
         },
       );
     } catch (err) {

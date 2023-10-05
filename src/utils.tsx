@@ -155,6 +155,14 @@ export function addSuccessTxNotification({
   });
 }
 
+export function safeJSONStringify(obj: any, space = 2): string {
+  try {
+    return JSON.stringify(obj, null, space);
+  } catch (e) {
+    return String(obj);
+  }
+}
+
 export function addFailedTxNotification({
   error,
   ...params
@@ -183,9 +191,7 @@ export function addFailedTxNotification({
       );
     }
 
-    return typeof error === 'object'
-      ? JSON.stringify(error, null, 2)
-      : String(error);
+    return typeof error === 'object' ? safeJSONStringify(error) : String(error);
   })();
 
   addNotification({
@@ -227,14 +233,7 @@ export function parseTransactionError(
     /custom program error: (0x[\da-fA-F]+)/,
   );
 
-  const matchTxError = (() => {
-    // wrap with try/catch in case JSON.stringify fails
-    try {
-      return JSON.stringify(err, null, 2).match(/"Custom": ([0-9]+)/);
-    } catch {
-      return null;
-    }
-  })();
+  const matchTxError = safeJSONStringify(err).match(/"Custom": ([0-9]+)/);
 
   let errorCode: number | null = null;
 
