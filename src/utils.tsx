@@ -103,11 +103,13 @@ export function addNotification({
 }) {
   const content = message ? (
     <div className="flex flex-col">
-      <div className="border-b border-white/10 pb-2 bold">{title}</div>
-      <div className="mt-4 text-sm">{message}</div>
+      <div className="border-b border-white/10 pb-2 text-sm font-medium font-mono">
+        {title}
+      </div>
+      <div className="mt-4 text-xs font-mono">{message}</div>
     </div>
   ) : (
-    title
+    <p className="text-sm font-mono font-medium">{title}</p>
   );
 
   toast[type](content, {
@@ -122,9 +124,9 @@ export function addNotification({
     icon: false,
     style: {
       background: {
-        success: '#216a2a',
-        error: '#ad2f2f',
-        info: '#28638e',
+        success: 'var(--color-green-500)',
+        error: 'var(--color-red-500)',
+        info: 'var(--color-blue-500)',
       }[type],
     },
   });
