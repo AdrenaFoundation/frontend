@@ -12,8 +12,6 @@ export default function StakeList({
 }: {
   stakePositions: { ADX: UserStaking | null; ALP: UserStaking | null } | null;
 }) {
-  // type Positions = Pick<UserStaking, 'lockedStakes'> & { tokenSymbol: string };
-
   type Positions = UserStaking['lockedStakes'][0] & { tokenSymbol: string };
 
   const positions = Object.entries(stakePositions ?? {})
