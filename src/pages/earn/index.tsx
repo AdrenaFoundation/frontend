@@ -1,3 +1,4 @@
+import { BN } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -213,8 +214,17 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     const balance =
       activeStakingToken === 'ALP' ? alpBalance ?? 0 : adxBalance ?? 0;
 
+    const minAmount =
+      activeStakingToken === 'ALP'
+        ? nativeToUi(new BN(1), window.adrena.client.alpToken.decimals)
+        : nativeToUi(new BN(1), window.adrena.client.adxToken.decimals);
+
     if (Number(value) > balance) {
       setErrorMessage('Insufficient balance');
+    } else if (Number(value) < minAmount) {
+      setErrorMessage(
+        `Minimum stake amount is ${minAmount} ${activeStakingToken}`,
+      );
     } else {
       setErrorMessage('');
     }
@@ -222,54 +232,36 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     setAmount(Number(value));
   };
 
-  // const buildStakeOverview = (tokenSymbol: 'ADX' | 'ALP') => {
-  //   const token = tokenSymbol === 'ADX' ? window.adrena.client.adxToken : window.adrena.client.alpToken;
-  //   const tokenDecimals = tokenSymbol === 'ADX' ? window.adrena.client.adxToken.decimals : window.adrena.client.alpToken.decimals;
-  //   const tokenPrice = tokenSymbol === 'ADX' ? adxPrice : alpPrice;
-  //   const tokenBalance = tokenSymbol === 'ADX' ? adxBalance : alpBalance;
-  //   const totalLiquidStaked = stakingAccounts?.ADX ? nativeToUi(stakingAccounts.ADX.liquidStake.amount, tokenDecimals) : 0;
-
-  // nativeToUi(
-  //   new BN(totalLockedStake),
-  //   window.adrena.client.adxToken.decimals,
-  // ),
-
   const adxDetails = {
     token: { ...window.adrena.client.adxToken },
     balance: adxBalance,
-    totalLiquidStaked: getTotalLiquidStaked('ADX'),
-    totalLiquidStakedUSD: adxPrice
-      ? adxPrice * getTotalLiquidStaked('ADX')
-      : null,
-    totalLockedStake: getTotalLockedStake('ADX'),
+    totalLiquidStaked: wallet ? getTotalLiquidStaked('ADX') : null,
+    totalLiquidStakedUSD:
+      wallet && adxPrice ? adxPrice * getTotalLiquidStaked('ADX') : null,
+    totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
 
-    totalLockedStakeUSD: adxPrice
-      ? adxPrice * getTotalLockedStake('ADX')
-      : null,
-    totalStaked: getTotalStaked('ADX'),
-    totalReedemableStake: getTotalReedemableStake('ADX'),
-    totalReedemableStakeUSD: adxPrice
-      ? adxPrice * getTotalReedemableStake('ADX')
-      : null,
+    totalLockedStakeUSD:
+      wallet && adxPrice ? adxPrice * getTotalLockedStake('ADX') : null,
+    totalStaked: wallet ? getTotalStaked('ADX') : null,
+    totalReedemableStake: wallet ? getTotalReedemableStake('ADX') : null,
+    totalReedemableStakeUSD:
+      wallet && adxPrice ? adxPrice * getTotalReedemableStake('ADX') : null,
   };
 
   const alpDetails = {
     token: { ...window.adrena.client.alpToken },
     balance: alpBalance,
-    totalLiquidStaked: getTotalLiquidStaked('ALP'),
-    totalLiquidStakedUSD: alpPrice
-      ? alpPrice * getTotalLiquidStaked('ALP')
-      : null,
-    totalLockedStake: getTotalLockedStake('ALP'),
+    totalLiquidStaked: wallet ? getTotalLiquidStaked('ALP') : null,
+    totalLiquidStakedUSD:
+      wallet && alpPrice ? alpPrice * getTotalLiquidStaked('ALP') : null,
+    totalLockedStake: wallet ? getTotalLockedStake('ALP') : null,
 
-    totalLockedStakeUSD: alpPrice
-      ? alpPrice * getTotalLockedStake('ALP')
-      : null,
-    totalStaked: getTotalStaked('ALP'),
-    totalReedemableStake: getTotalReedemableStake('ALP'),
-    totalReedemableStakeUSD: alpPrice
-      ? alpPrice * getTotalReedemableStake('ALP')
-      : null,
+    totalLockedStakeUSD:
+      wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
+    totalStaked: wallet ? getTotalStaked('ALP') : null,
+    totalReedemableStake: wallet ? getTotalReedemableStake('ALP') : null,
+    totalReedemableStakeUSD:
+      wallet && alpPrice ? alpPrice * getTotalReedemableStake('ALP') : null,
   };
 
   const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
@@ -283,14 +275,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       </p>
       <div className="flex flex-col lg:flex-row gap-5">
         <div className="w-full">
-          {/* <DisplayInfo
-            data={[
-              { title: 'Total Supply', value: '129,391.23 ADX' },
-              { title: 'Circulating Supply', value: '293,930.93 ADX' },
-              { title: 'Market Cap', value: '$193,293.89' },
-              { title: 'Total Staked', value: '$193,293.89' },
-            ]}
-          /> */}
           <div className="flex flex-col lg:flex-row gap-5 mt-8">
             <StakeOverview
               tokenDetails={adxDetails}
@@ -309,11 +293,12 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               <h4>My Locked Stake</h4>
             </div>
 
-            {isBigScreen ? (
-              <StakeList stakePositions={stakingAccounts} />
-            ) : (
-              <StakeBlocks stakePositions={stakingAccounts} />
-            )}
+            {wallet &&
+              (isBigScreen ? (
+                <StakeList stakePositions={stakingAccounts} />
+              ) : (
+                <StakeBlocks stakePositions={stakingAccounts} />
+              ))}
           </div>
         </div>
 

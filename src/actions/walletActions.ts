@@ -59,7 +59,9 @@ export const autoConnectWalletAction =
 
     try {
       await adapter.autoConnect();
+      localStorage.setItem('isWalletConnected', 'true');
     } catch (err) {
+      localStorage.setItem('isWalletConnected', 'false');
       console.log(
         new Error(`unable to auto-connect to wallet ${adapterName}`),
         {
@@ -92,7 +94,9 @@ export const connectWalletAction =
 
     try {
       await adapter.connect();
+      localStorage.setItem('isWalletConnected', 'true');
     } catch (err) {
+      localStorage.setItem('isWalletConnected', 'false');
       console.log(new Error(`unable to connect to wallet ${adapterName}`), {
         err,
       });
@@ -119,7 +123,9 @@ export const disconnectWalletAction =
 
     try {
       await adapter.disconnect();
+      localStorage.setItem('isWalletConnected', 'false');
     } catch (err) {
+      localStorage.setItem('isWalletConnected', 'true');
       console.log(
         new Error(`unable to disconnect from wallet ${adapterName}`),
         {

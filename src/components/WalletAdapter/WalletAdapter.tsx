@@ -24,20 +24,24 @@ function WalletAdapter({ className }: { className?: string }) {
 
   const connected = !!wallet;
 
+  const isWalletConnected = JSON.parse(
+    localStorage.getItem('isWalletConnected') ?? 'false',
+  );
+
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    if (!connected) {
+    if (isWalletConnected) {
       dispatch(autoConnectWalletAction('phantom'));
       return;
     }
 
     // Only once when page load
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isWalletConnected]);
 
   // Detect change of account
   useEffect(() => {
-    if (!wallet) return;
+    if (!wallet || !Boolean(isWalletConnected)) return;
 
     const adapter = walletAdapters[wallet.adapterName];
 
@@ -54,7 +58,7 @@ function WalletAdapter({ className }: { className?: string }) {
     return () => {
       adapter.removeAllListeners('connect');
     };
-  }, [dispatch, wallet]);
+  }, [dispatch, wallet, isWalletConnected]);
 
   const handleClick = () => {
     if (!connected) {

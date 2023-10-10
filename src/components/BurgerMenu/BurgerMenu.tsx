@@ -29,7 +29,7 @@ export default function BurgerMenu() {
     { name: 'Buy', link: '/swap_alp' },
     { name: 'Onchain Info', link: '/onchain_info' },
     { name: 'Faucet', link: '/faucet_devnet' },
-    { name: 'Docs', link: 'https://www.gitbook.com/' },
+    // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ];
 
   useEffect(() => {

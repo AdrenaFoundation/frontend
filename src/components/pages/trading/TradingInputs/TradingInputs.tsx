@@ -12,12 +12,14 @@ import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.sv
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
+import SwapInfo from './SwapInfo';
 
 function recalculateInputs({
   mainInput,
   secondaryInput,
   tokenPrices,
   leverage,
+  manualUserInput,
 }: {
   mainInput: {
     value: number | null;
@@ -33,6 +35,7 @@ function recalculateInputs({
   };
   tokenPrices: TokenPricesState;
   leverage: number;
+  manualUserInput: null | 'A' | 'B';
 }) {
   const nb = Number(mainInput.value);
 
@@ -72,7 +75,8 @@ function recalculateInputs({
   }
 
   // TODO: take into account the fees to be paid by the user
-  const secondaryPrice = mainPrice * leverage;
+  const secondaryPrice =
+    manualUserInput === 'A' ? mainPrice * leverage : mainPrice / leverage;
 
   secondaryInput.setPrice(secondaryPrice);
   secondaryInput.setInput(
@@ -154,7 +158,9 @@ export default function TradingInputs({
   // Switch inputs values and tokens
   const switchAB = () => {
     if (!tokenA || !tokenB) return;
+    if (!allowedTokenB.find((token) => token.mint.equals(tokenA.mint))) return;
 
+    console.log({ allowedTokenA, allowedTokenB });
     setInputA(inputB);
     setInputB(inputA);
 
@@ -162,18 +168,10 @@ export default function TradingInputs({
     setManualUserInput(manualUserInput === 'A' ? 'B' : 'A');
 
     // if tokenB is not allowed, use default value
-    setTokenA(
-      allowedTokenA.find((token) => token.mint.equals(tokenB.mint))
-        ? tokenB
-        : allowedTokenA[0],
-    );
+    setTokenA(tokenB);
 
     // if tokenA is not allowed, use default value
-    setTokenB(
-      allowedTokenB.find((token) => token.mint.equals(tokenA.mint))
-        ? tokenA
-        : allowedTokenB[0],
-    );
+    setTokenB(tokenA);
   };
 
   // When price change, recalculate displayed price
@@ -199,6 +197,7 @@ export default function TradingInputs({
         secondaryInput: inputBInfos,
         tokenPrices,
         leverage,
+        manualUserInput,
       });
     }
 
@@ -209,14 +208,15 @@ export default function TradingInputs({
         secondaryInput: inputAInfos,
         tokenPrices,
         leverage,
+        manualUserInput,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputA,
     inputB,
-    manualUserInput,
     leverage,
+    manualUserInput,
     // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
     tokenA && tokenPrices[tokenA.symbol],
@@ -355,7 +355,9 @@ export default function TradingInputs({
             inputA={inputA}
           />
         </>
-      ) : null}
+      ) : (
+        <SwapInfo tokenA={tokenA} tokenB={tokenB} inputB={inputB} />
+      )}
     </div>
   );
 }

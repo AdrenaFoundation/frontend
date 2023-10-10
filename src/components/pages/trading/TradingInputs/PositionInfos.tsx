@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo, uiToNative } from '@/utils';
@@ -43,6 +44,8 @@ export default function PositionInfos({
     liquidationPrice: number;
   } | null>(null);
 
+  const debouncedInputs = useDebounce(inputB);
+
   useEffect(() => {
     if (!tokenA || !tokenB || !inputA || !inputB || inputB <= 0) {
       setInfos(null);
@@ -77,7 +80,7 @@ export default function PositionInfos({
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputB, side, tokenA, tokenB]);
+  }, [debouncedInputs, side, tokenA, tokenB]);
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 

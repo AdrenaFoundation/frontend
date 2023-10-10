@@ -7,7 +7,7 @@ import {
   Legend,
   Tooltip,
 } from 'chart.js';
-import Image from 'next/image';
+import { ReactNode } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 
 import { formatPercentage } from '@/utils';
@@ -20,7 +20,7 @@ export default function Details({
   chart,
 }: {
   title: string;
-  details: { title: string; value: string | null }[];
+  details: { title: string; value: ReactNode | null }[];
   chart: ChartData<'doughnut'>;
 }) {
   return (
@@ -28,17 +28,15 @@ export default function Details({
       <div className="flex flex-col">
         {/* infos */}
         <div className="border-b border-b-gray-300 flex items-center p-4">
-          <Image
-            src={
-              title === 'ALP'
-                ? window.adrena.client.alpToken.image
-                : window.adrena.client.adxToken.image
-            }
-            alt="ALP icon"
-            className="h-8 mr-2"
-            height="32"
-            width="32"
-          />
+          <div
+            className={`p-1 mr-2 bg-${
+              title === 'ADX' ? 'red' : 'blue'
+            }-500 rounded-full`}
+          >
+            <p className="flex items-center justify-center text-sm font-specialmonster h-7 w-7">
+              {title === 'ADX' ? 'ADX' : 'ALP'}
+            </p>
+          </div>
           <h2 className="text-lg font-medium">{title}</h2>
         </div>
 
@@ -52,7 +50,7 @@ export default function Details({
                 >
                   <div className="opacity-50 mb-1 text-sm">{detail.title}</div>
                   <p className="font-mono text-sm sm:text-lg">
-                    {detail.value !== null ? detail.value : '-'}
+                    {detail.value !== null ? detail.value : '–'}
                   </p>
                 </div>
               ))}

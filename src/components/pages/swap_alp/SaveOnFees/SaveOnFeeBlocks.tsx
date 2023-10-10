@@ -105,11 +105,13 @@ export default function SaveOnFeesBlocks({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-full bg-[#242424] rounded-b-lg p-3">
+          <div className="flex flex-col gap-2 w-full bg-[#242424] rounded-b-lg p-3 h-full">
             <p className="opacity-25 text-xs">Details</p>
             <div className="flex w-full justify-between">
               <p className="text-sm opacity-50">Price</p>
-              <p className="text-sm font-mono">{formatPriceInfo(row.price)}</p>
+              <p className="text-sm font-mono text-right">
+                {formatPriceInfo(row.price)}
+              </p>
             </div>
 
             <div className="flex w-full justify-between">
@@ -122,7 +124,7 @@ export default function SaveOnFeesBlocks({
                         <p className="text-sm text-txtfade">
                           Current Pool Amount:
                         </p>
-                        <p className="text-sm font-mono">
+                        <p className="text-sm font-mono text-right">
                           {` ${formatPriceInfo(row.currentPoolAmountUsd)}`}
                           <br />
                           {`(${formatNumber(row.currentPoolAmount, 2)} ${
@@ -134,7 +136,7 @@ export default function SaveOnFeesBlocks({
 
                     <li className="flex flex-row gap-2 justify-between">
                       <p className="text-sm text-txtfade">Max Pool Capacity:</p>
-                      <p className="text-sm font-mono">
+                      <p className="text-sm font-mono text-right">
                         {`${formatPriceInfo(row.maxPoolCapacity)}`}
                       </p>
                     </li>
@@ -143,7 +145,7 @@ export default function SaveOnFeesBlocks({
                 placement="bottom"
               >
                 <div className="flex">
-                  <p className="text-sm tooltip-target cursor-help font-mono">
+                  <p className="text-sm tooltip-target cursor-help font-mono text-right">
                     {formatPriceInfo(row.available)}
                   </p>
                 </div>
@@ -152,7 +154,7 @@ export default function SaveOnFeesBlocks({
 
             <div className="flex w-full justify-between">
               <p className="text-sm opacity-50">Wallet</p>
-              <p className="text-sm font-mono">
+              <p className="text-sm font-mono text-right">
                 {row.tokenBalance
                   ? `${formatNumber(row?.tokenBalance, 2)} ${
                       row?.token.symbol

@@ -29,17 +29,15 @@ export default function StakeOverview({
   return (
     <div className="bg-gray-200 border border-gray-300 lg:w-1/2 rounded-lg">
       <div className="flex flex-row gap-2 items-center p-4 border-b border-b-gray-300">
-        <Image
-          src={
-            tokenDetails.token.symbol === 'ADX'
-              ? window.adrena.client.adxToken.image
-              : window.adrena.client.alpToken.image
-          }
-          width={32}
-          height={32}
-          alt="ADX"
-        />
-
+        <div
+          className={`p-1 bg-${
+            tokenDetails.token.symbol === 'ADX' ? 'red' : 'blue'
+          }-500 rounded-full`}
+        >
+          <p className="flex items-center justify-center text-sm font-specialmonster h-7 w-7">
+            {tokenDetails.token.symbol === 'ADX' ? 'ADX' : 'ALP'}
+          </p>
+        </div>
         <div>
           <div className="flex flex-row gap-1 items-center opacity-50">
             <Image src={walletIcon} width={16} height={16} alt="wallet" />

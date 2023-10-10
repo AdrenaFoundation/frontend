@@ -28,6 +28,7 @@ export default function Trade({
   connected,
   wallet,
   triggerPositionsReload,
+  triggerWalletTokenBalancesReload,
 }: PageProps) {
   const dispatch = useDispatch();
 
@@ -206,6 +207,8 @@ export default function Trade({
           mintB: tokenB.mint,
         });
 
+        triggerWalletTokenBalancesReload();
+
         return addSuccessTxNotification({
           title: 'Successfull Swap',
           txHash,
@@ -270,6 +273,7 @@ export default function Trade({
           });
 
         triggerPositionsReload();
+        triggerWalletTokenBalancesReload();
 
         return addSuccessTxNotification({
           title: 'Successfully Opened Position',
@@ -302,6 +306,7 @@ export default function Trade({
         });
 
       triggerPositionsReload();
+      triggerWalletTokenBalancesReload();
 
       return addSuccessTxNotification({
         title: 'Successfully Opened Position',
@@ -418,10 +423,18 @@ export default function Trade({
               <TradingInputs
                 className="mt-4"
                 actionType={selectedAction}
-                allowedTokenA={window.adrena.client.tokens}
+                allowedTokenA={
+                  selectedAction === 'swap'
+                    ? window.adrena.client.tokens.filter(
+                        (t) => t.symbol !== tokenB.symbol,
+                      )
+                    : window.adrena.client.tokens
+                }
                 allowedTokenB={
                   selectedAction === 'swap'
-                    ? window.adrena.client.tokens
+                    ? window.adrena.client.tokens.filter(
+                        (t) => t.symbol !== tokenA.symbol,
+                      )
                     : window.adrena.client.tokens.filter((t) => !t.isStable)
                 }
                 tokenA={tokenA}
