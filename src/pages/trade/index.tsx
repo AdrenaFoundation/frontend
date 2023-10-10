@@ -344,10 +344,14 @@ export default function Trade({
 
     if (openedPosition) {
       if (selectedAction === 'short') {
-        return 'Reduce Position';
+        // return 'Reduce Position';
+        // TODO
+        return 'Reduce Position is not handled yet';
       }
       if (selectedAction === 'long') {
-        return 'Increase Position';
+        //return 'Increase Position';
+        // TODO
+        return 'Increase Position is not handled yet';
       }
     }
 
@@ -437,7 +441,10 @@ export default function Trade({
             size="lg"
             title={buttonTitle}
             className="w-full justify-center mt-5"
-            disabled={buttonTitle.includes('Insufficient')}
+            disabled={
+              buttonTitle.includes('Insufficient') ||
+              buttonTitle.includes('not handled yet')
+            }
             onClick={handleExecuteButton}
           />
         </div>
