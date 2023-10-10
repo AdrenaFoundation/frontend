@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { PRICE_DECIMALS } from '@/constant';
+import { useDebounce } from '@/hooks/useDebounce';
 import { NewPositionPricesAndFee, PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
@@ -30,6 +31,8 @@ export default function PositionInfos({
 }) {
   const [entryPriceAndFee, setEntryPriceAndFee] =
     useState<NewPositionPricesAndFee | null>(null);
+
+  const debouncedInputs = useDebounce(inputB);
 
   useEffect(() => {
     if (!tokenB || !inputB || inputB <= 0) {
@@ -58,7 +61,8 @@ export default function PositionInfos({
       .catch(() => {
         // Ignore error
       });
-  }, [inputB, leverage, side, tokenB]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedInputs, leverage, side, tokenB]);
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 

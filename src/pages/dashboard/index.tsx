@@ -103,6 +103,8 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     ],
   };
 
+  const comingSoon = <p className="opacity-25 text-xs italic">coming soon</p>;
+
   const ALPDetailsArray = [
     { title: 'Price', value: formatPriceInfo(alpPrice) },
     {
@@ -117,16 +119,25 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
   ];
 
   const ADXDetailsArray = [
-    { title: 'Price', value: formatPriceInfo(adxPrice) ?? '-' },
+    {
+      title: 'Price',
+      value: adxPrice ? formatPriceInfo(adxPrice) : comingSoon,
+    },
     {
       title: 'Total Supply',
       value:
         adxTotalSupply !== null
           ? formatNumber(adxTotalSupply, window.adrena.client.alpToken.decimals)
-          : '-',
+          : null,
     },
-    { title: 'Circulating Supply', value: formatPriceInfo(adxPrice) ?? '-' }, // @TODO get circulating supply
-    { title: 'Market Cap', value: formatPriceInfo(ADXmarketCap) ?? '-' },
+    {
+      title: 'Circulating Supply',
+      value: adxPrice ? formatPriceInfo(adxPrice) : comingSoon,
+    },
+    {
+      title: 'Market Cap',
+      value: ADXmarketCap ? formatPriceInfo(ADXmarketCap) : comingSoon,
+    },
   ];
 
   return (

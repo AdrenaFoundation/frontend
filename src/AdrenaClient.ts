@@ -48,6 +48,7 @@ import {
   RemoveLiquidStakeAccounts,
   RemoveLockedStakeAccounts,
   SwapAccounts,
+  SwapAmountAndFees,
   Token,
   TokenSymbol,
   UserStaking,
@@ -2616,6 +2617,47 @@ export class AdrenaClient {
           lpTokenMint: this.lpTokenMint,
         },
         remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+      },
+    );
+  }
+
+  public async getSwapAmountAndFees({
+    tokenA,
+    tokenB,
+    amountIn,
+  }: {
+    tokenA: Token;
+    tokenB: Token;
+    amountIn: number;
+  }): Promise<SwapAmountAndFees | null> {
+    if (!tokenA.custody) {
+      throw new Error(
+        'Cannot get entry price and fee for a token without custody',
+      );
+    }
+
+    if (!this.readonlyAdrenaProgram.views) {
+      throw new Error('adrena program not ready');
+    }
+
+    const custodyA = this.getCustodyByMint(tokenA.mint);
+    const custodyB = this.getCustodyByMint(tokenB.mint);
+
+    return this.readonlyAdrenaProgram.views.getSwapAmountAndFees(
+      {
+        amountIn: uiToNative(amountIn, tokenB.decimals),
+      },
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: this.mainPool.pubkey,
+          receivingCustody: custodyB.pubkey,
+          receivingCustodyOracleAccount:
+            custodyB.nativeObject.oracle.oracleAccount,
+          dispensingCustody: custodyA.pubkey,
+          dispensingCustodyOracleAccount:
+            custodyA.nativeObject.oracle.oracleAccount,
+        },
       },
     );
   }

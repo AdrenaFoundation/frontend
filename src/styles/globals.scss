@@ -22,6 +22,11 @@
   --color-red-400: #932727;
   --color-red-500: #c13232;
 
+  --color-green-200: #172f19;
+  --color-green-300: #26552b;
+  --color-green-400: #367c3c;
+  --color-green-500: #45a34e;
+
   --color-orange-200: #3f2612;
   --color-orange-300: #76441c;
   --color-orange-400: #ad6326;
@@ -56,6 +61,11 @@
   //   font-family: bold;
   //   src: url('/fonts/Louis George Cafe Bold.ttf');
   // }
+
+  span,
+  p {
+    @apply text-sm;
+  }
 
   h1 {
     @apply text-4xl;

@@ -17,20 +17,20 @@ export default function SwapDetails({
   const priceB = tokenPrices[tokenB.symbol];
 
   return (
-    <div className="flex flex-col pl-4 pr-4 pb-4 mt-4 text-sm">
+    <div className="flex flex-col  text-sm">
       <div className={rowStyle}>
         <span className="text-txtfade">{tokenA.symbol} Price</span>
-        <span>{formatPriceInfo(priceA)}</span>
+        <span className="font-mono">{formatPriceInfo(priceA)}</span>
       </div>
 
       <div className={rowStyle}>
         <span className="text-txtfade">{tokenB.symbol} Price</span>
-        <span>{formatPriceInfo(priceB)}</span>
+        <span className="font-mono">{formatPriceInfo(priceB)}</span>
       </div>
 
       <div className={rowStyle}>
         <span className="text-txtfade">Available Liquidity</span>
-        <span>
+        <span className="font-mono">
           {tokenPrices && priceB
             ? formatPriceInfo(
                 window.adrena.client.getCustodyByMint(tokenB.mint).liquidity *

@@ -75,7 +75,7 @@ export default function Header() {
             ? PageLink('/faucet_devnet', 'Faucet')
             : null}
 
-          {PageLink('https://www.gitbook.com/', 'Docs')}
+          {/* {PageLink('https://www.gitbook.com/', 'Docs')} */}
         </>
       </div>
 
