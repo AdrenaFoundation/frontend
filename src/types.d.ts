@@ -63,6 +63,7 @@ export type CustodyExtended = {
 export type PositionExtended = {
   // Formatted data
   custody: PublicKey;
+  collateralCustody: PublicKey;
   owner: PublicKey;
   pubkey: PublicKey;
   leverage: number;

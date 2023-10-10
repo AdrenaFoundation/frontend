@@ -221,73 +221,89 @@ export default function Trade({
       }
     }
 
-    const entryPriceAndFee = await window.adrena.client.getEntryPriceAndFee({
-      token: tokenB,
-      collateral: uiToNative(inputBValue, tokenB.decimals).div(
-        new BN(leverage),
-      ),
-      size: uiToNative(inputBValue, tokenB.decimals),
-      side: selectedAction,
-    });
+    //
+    // TODO: need to get the proper fees and call the appropriate ix to increase the position or open it, with swap or not
+    //
 
-    if (!entryPriceAndFee) {
+    // Position is already opened, add collateral + resize
+    if (openedPosition) {
+      throw new Error('Not handled yet');
+    }
+
+    let price: BN;
+    let size: BN;
+    let collateralAmount: BN;
+
+    try {
+      const ret =
+        await window.adrena.client.prepareOpenPositionWithConditionalSwap({
+          tokenA,
+          tokenB,
+          amountA: uiToNative(inputAValue, tokenA.decimals),
+          amountB: uiToNative(inputBValue, tokenB.decimals),
+          leverage,
+          side: selectedAction,
+        });
+
+      price = ret.price;
+      size = ret.size;
+      collateralAmount = ret.collateralAmount;
+    } catch (e) {
       return addNotification({
         type: 'info',
-        title: 'Cannot calculate entry price',
+        title: String(e),
       });
     }
 
-    // Position is already opened, add collateral to it
-    if (openedPosition) {
+    //
+    // Handle long
+    //
+
+    if (selectedAction === 'long') {
       try {
-        const txHash = tokenA.mint.equals(tokenB.mint)
-          ? await window.adrena.client.addCollateralToPosition({
-              position: openedPosition,
-              addedCollateral: uiToNative(inputBValue, tokenB.decimals).div(
-                new BN(leverage),
-              ),
-            })
-          : await window.adrena.client.swapAndAddCollateralToPosition({
-              position: openedPosition,
-              mintIn: tokenA.mint,
-              amountIn: uiToNative(inputAValue, tokenA.decimals),
-              // TODO
-              // How to handle slippage?
-              // the inputBValue should take fees into account, for now it doesn't.
-              minAmountOut: new BN(0),
-              addedCollateral: uiToNative(inputBValue, tokenB.decimals).div(
-                new BN(leverage),
-              ),
-            });
+        const txHash =
+          await window.adrena.client.openLongPositionWithConditionalSwap({
+            owner: new PublicKey(wallet.publicKey),
+            mintA: tokenA.mint,
+            mintB: tokenB.mint,
+            amountA: uiToNative(inputAValue, tokenA.decimals),
+            price,
+            collateralAmount,
+            size,
+          });
 
         triggerPositionsReload();
         triggerWalletTokenBalancesReload();
 
         return addSuccessTxNotification({
-          title: 'Successfully Increase Position',
+          title: 'Successfully Opened Position',
           txHash,
         });
       } catch (error) {
         return addFailedTxNotification({
-          title: 'Error Increasing Position',
+          title: 'Error Opening Position',
           error,
         });
       }
+
+      return;
     }
 
+    //
+    // Handle short
+    //
+
     try {
-      const txHash = await window.adrena.client.openPositionWithSwap({
-        owner: new PublicKey(wallet.publicKey),
-        mintA: tokenA.mint,
-        mintB: tokenB.mint,
-        amountA: uiToNative(inputAValue, tokenA.decimals),
-        price: entryPriceAndFee.entryPrice,
-        collateral: uiToNative(inputBValue, tokenB.decimals).div(
-          new BN(leverage),
-        ),
-        size: uiToNative(inputBValue, tokenB.decimals),
-        side: selectedAction,
-      });
+      const txHash =
+        await window.adrena.client.openShortPositionWithConditionalSwap({
+          owner: new PublicKey(wallet.publicKey),
+          mintA: tokenA.mint,
+          mintB: tokenB.mint,
+          amountA: uiToNative(inputAValue, tokenA.decimals),
+          price,
+          collateralAmount,
+          size,
+        });
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
@@ -333,10 +349,14 @@ export default function Trade({
 
     if (openedPosition) {
       if (selectedAction === 'short') {
-        return 'Reduce Position';
+        // return 'Reduce Position';
+        // TODO
+        return 'Reduce Position is not handled yet';
       }
       if (selectedAction === 'long') {
-        return 'Increase Position';
+        //return 'Increase Position';
+        // TODO
+        return 'Increase Position is not handled yet';
       }
     }
 
@@ -434,7 +454,10 @@ export default function Trade({
             size="lg"
             title={buttonTitle}
             className="w-full justify-center mt-5"
-            disabled={buttonTitle.includes('Insufficient')}
+            disabled={
+              buttonTitle.includes('Insufficient') ||
+              buttonTitle.includes('not handled yet')
+            }
             onClick={handleExecuteButton}
           />
         </div>

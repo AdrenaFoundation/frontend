@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useDebounce } from '@/hooks/useDebounce';
 import { SwapAmountAndFees, Token } from '@/types';
-import { formatPriceInfo, nativeToUi } from '@/utils';
+import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 export default function SwapInfo({
   tokenA,
@@ -31,9 +31,9 @@ export default function SwapInfo({
 
     try {
       const res = await window.adrena.client.getSwapAmountAndFees({
-        tokenA,
-        tokenB,
-        amountIn: inputB,
+        tokenIn: tokenA,
+        tokenOut: tokenB,
+        amountIn: uiToNative(inputB, tokenB.decimals),
       });
 
       setSwapFeesAndAmount(res);

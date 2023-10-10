@@ -351,6 +351,8 @@ export default function TradingInputs({
             inputB={inputB}
             leverage={leverage}
             openedPosition={openedPosition}
+            tokenA={tokenA}
+            inputA={inputA}
           />
         </>
       ) : (

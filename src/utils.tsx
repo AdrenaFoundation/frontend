@@ -56,7 +56,7 @@ export function formatPriceInfo(
   }
 
   // If the price is very low, display it as it is, to not display $0
-  if (price < 0.00999999999999 && price > 0) {
+  if (price < 10 ** -decimals && price > 0) {
     return `$${price}`;
   }
 
@@ -157,6 +157,14 @@ export function addSuccessTxNotification({
   });
 }
 
+export function safeJSONStringify(obj: any, space = 2): string {
+  try {
+    return JSON.stringify(obj, null, space);
+  } catch (e) {
+    return String(obj);
+  }
+}
+
 export function addFailedTxNotification({
   error,
   ...params
@@ -168,24 +176,31 @@ export function addFailedTxNotification({
 }) {
   const message = (() => {
     if (error instanceof AdrenaTransactionError) {
-      if (error.txHash) {
-        return (
-          <Link
-            href={get_tx_explorer(error.txHash)}
-            target="_blank"
-            className="underline"
-          >
-            View transaction
-          </Link>
-        );
-      }
+      return (
+        <div className="flex flex-col">
+          <div>{String(error.errorString)}</div>
 
-      return String(error.errorString);
+          {error.txHash ? (
+            <Link
+              href={get_tx_explorer(error.txHash)}
+              target="_blank"
+              className="underline mt-2"
+            >
+              View transaction
+            </Link>
+          ) : null}
+        </div>
+      );
     }
 
-    return typeof error === 'object'
-      ? JSON.stringify(error, null, 2)
-      : String(error);
+    console.log('error with cause:', (error as Error)?.cause);
+
+    const errStr =
+      typeof error === 'object' ? safeJSONStringify(error) : String(error);
+
+    if (errStr === '{}' || !errStr.trim().length) {
+      return 'Unknown error';
+    }
   })();
 
   addNotification({
@@ -217,25 +232,71 @@ export function parseTransactionError(
   adrenaProgram: Program<Perpetuals>,
   err: unknown,
 ) {
+  //
   // Check for Adrena Program Errors
   //
-  const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
 
-  if (match) {
-    const errorCode = parseInt(match[1], 16);
+  //
+  // Errors looks differently depending if they fail on preflight or executing the tx
+  // Also depends what type of error, quite a lot of cases
+  //
 
-    const idlError = adrenaProgram.idl.errors.find(
-      ({ code }) => code === errorCode,
-    );
+  const errStr: string | null = (() => {
+    const errCodeHex = (() => {
+      const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
 
-    // Transaction failed in preflight, there is no TxHash
-    return new AdrenaTransactionError(
-      null,
-      idlError?.msg ?? `Error code: ${errorCode}`,
-    );
-  }
+      return match?.length ? parseInt(match[1], 16) : null;
+    })();
 
-  return new AdrenaTransactionError(null, JSON.stringify(err, null, 2));
+    const errCodeDecimals = (() => {
+      const match = safeJSONStringify(err).match(/"Custom": ([0-9]+)/);
+
+      return match?.length ? parseInt(match[1], 10) : null;
+    })();
+
+    const errName = (() => {
+      const match = safeJSONStringify(err).match(/Error Code: ([a-zA-Z]+)/);
+      const match2 = safeJSONStringify(err).match(/"([a-zA-Z]+)"\n[ ]+]/);
+
+      if (match?.length) return match[1];
+
+      return match2?.length ? match2[1] : null;
+    })();
+
+    const errMessage = (() => {
+      const match = safeJSONStringify(err).match(
+        /Error Message: ([a-zA-Z '\.]+)"/,
+      );
+
+      return match?.length ? match[1] : null;
+    })();
+
+    console.debug('Error parsing: error:', safeJSONStringify(err));
+    console.debug('Error parsing: errCodeHex: ', errCodeHex);
+    console.debug('Error parsing: errCodeDecimals', errCodeDecimals);
+    console.debug('Error parsing: errName', errName);
+    console.debug('Error parsing: errMessage', errMessage);
+
+    const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
+      if (errName !== null && errName === name) return true;
+      if (errCodeHex !== null && errCodeHex === code) return true;
+      if (errCodeDecimals !== null && errCodeDecimals === code) return true;
+
+      return false;
+    });
+
+    if (idlError?.msg) return idlError?.msg;
+
+    if (errName && errMessage) return `${errName}: ${errMessage}`;
+    if (errName) return `Error name: ${errName}`;
+    if (errCodeHex) return `Error code: ${errCodeHex}`;
+    if (errCodeDecimals) return `Error code: ${errCodeDecimals}`;
+
+    return 'Unknown error';
+  })();
+
+  // Transaction failed in preflight, there is no TxHash
+  return new AdrenaTransactionError(null, errStr);
 }
 
 export async function isATAInitialized(
@@ -325,4 +386,19 @@ export function getDaysRemaining(startDate: BN, totalDays: BN) {
     Math.floor(totalDays.toNumber() / 3600 / 24) - daysElapsed;
 
   return daysRemaining;
+}
+
+// i.e percentage = -2 (for -2%)
+// i.e percentage = 5 (for 5%)
+export function applySlippage(nb: BN, percentage: number): BN {
+  const negative = percentage < 0 ? true : false;
+
+  // Do x10_000 so percentage can be up to 4 decimals
+  const percentageBN = new BN(
+    (negative ? percentage * -1 : percentage) * 10_000,
+  );
+
+  const delta = nb.mul(percentageBN).divRound(new BN(10_000 * 100));
+
+  return negative ? nb.sub(delta) : nb.add(delta);
 }
