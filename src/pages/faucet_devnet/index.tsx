@@ -37,21 +37,27 @@ export default function FaucetDevnet({ wallet }: PageProps) {
     );
     const toATA = findATAAddressSync(wallet.publicKey, token.mint);
 
-    // Calculate how many tokens to send, we want to send for $10k of tokens
-    const tokenPrice = tokenPrices[token.symbol];
+    let tokenAmount;
 
-    if (!tokenPrice) {
-      return addNotification({
-        title: 'Price not found',
-        type: 'error',
-        message: 'Cannot find token price, please retry',
-        duration: 'long',
-      });
+    if (token.symbol === 'ADX') {
+      tokenAmount = 1;
+    } else {
+      // Calculate how many tokens to send, we want to send for $10k of tokens
+      const tokenPrice = tokenPrices[token.symbol];
+
+      if (!tokenPrice) {
+        return addNotification({
+          title: 'Price not found',
+          type: 'error',
+          message: 'Cannot find token price, please retry',
+          duration: 'long',
+        });
+      }
+
+      tokenAmount = 10_000 / tokenPrice;
     }
 
     setPendingTx(true);
-
-    const tokenAmount = 10_000 / tokenPrice;
 
     try {
       await createAssociatedTokenAccountIdempotent(
@@ -133,9 +139,14 @@ export default function FaucetDevnet({ wallet }: PageProps) {
     }
   };
 
+  const allTokens = [
+    ...window.adrena.client.tokens,
+    window.adrena.client.adxToken,
+  ];
+
   return (
     <>
-      {window.adrena.client.tokens.map((token) => (
+      {allTokens.map((token) => (
         <div key={token.symbol} className="mt-8 flex flex-col items-center">
           <Button
             disabled={pendingTx}
@@ -149,7 +160,11 @@ export default function FaucetDevnet({ wallet }: PageProps) {
           />
 
           <div className="text-xs mt-4 text-txtfade">
-            {token.mint.equals(NATIVE_MINT) ? 'Aidroped 1 ' : '$10k worth of '}
+            {(() => {
+              if (token.mint.equals(NATIVE_MINT) || token.symbol === 'ADX')
+                return 'Aidropped 1 ';
+              return '$10k worth of ';
+            })()}
             token at a time
           </div>
 
