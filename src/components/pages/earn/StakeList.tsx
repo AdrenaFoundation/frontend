@@ -15,20 +15,19 @@ export default function StakeList({
   type Positions = UserStaking['lockedStakes'][0] & { tokenSymbol: string };
 
   const positions = Object.entries(stakePositions ?? {})
-    .map((stake) => {
-      const [tokenSymbol, details] = stake;
-      if (details) {
-        return details.lockedStakes.map((position) => ({
-          ...position,
-          tokenSymbol,
-        }));
-      }
-      return;
+    .map(([tokenSymbol, details]) => {
+      if (details === null) return [];
+
+      return details.lockedStakes.map((position) => ({
+        ...position,
+        tokenSymbol,
+      }));
     })
     .flat()
     .sort((a, b) => Number(a?.stakeTime) - Number(b?.stakeTime)) as Positions[];
 
   const today = new Date();
+
   return (
     <table className="w-full">
       <thead>
