@@ -191,7 +191,14 @@ export function addFailedTxNotification({
       );
     }
 
-    return typeof error === 'object' ? safeJSONStringify(error) : String(error);
+    console.log('error with cause:', (error as Error)?.cause);
+
+    const errStr =
+      typeof error === 'object' ? safeJSONStringify(error) : String(error);
+
+    if (errStr === '{}' || !errStr.trim().length) {
+      return 'Unknown error';
+    }
   })();
 
   addNotification({
@@ -223,39 +230,71 @@ export function parseTransactionError(
   adrenaProgram: Program<Perpetuals>,
   err: unknown,
 ) {
+  //
   // Check for Adrena Program Errors
   //
 
   //
   // Errors looks differently depending if they fail on preflight or executing the tx
+  // Also depends what type of error, quite a lot of cases
   //
-  const matchPreflightError = String(err).match(
-    /custom program error: (0x[\da-fA-F]+)/,
-  );
 
-  const matchTxError = safeJSONStringify(err).match(/"Custom": ([0-9]+)/);
+  const errStr: string | null = (() => {
+    const errCodeHex = (() => {
+      const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
 
-  let errorCode: number | null = null;
+      return match?.length ? parseInt(match[1], 16) : null;
+    })();
 
-  if (matchPreflightError) {
-    errorCode = parseInt(matchPreflightError[1], 16);
-  } else if (matchTxError) {
-    errorCode = parseInt(matchTxError[1], 10);
-  }
+    const errCodeDecimals = (() => {
+      const match = safeJSONStringify(err).match(/"Custom": ([0-9]+)/);
 
-  if (errorCode === null) {
-    return new AdrenaTransactionError(null, JSON.stringify(err, null, 2));
-  }
+      return match?.length ? parseInt(match[1], 10) : null;
+    })();
 
-  const idlError = adrenaProgram.idl.errors.find(
-    ({ code }) => code === errorCode,
-  );
+    const errName = (() => {
+      const match = safeJSONStringify(err).match(/Error Code: ([a-zA-Z]+)/);
+      const match2 = safeJSONStringify(err).match(/"([a-zA-Z]+)"\n[ ]+]/);
+
+      if (match?.length) return match[1];
+
+      return match2?.length ? match2[1] : null;
+    })();
+
+    const errMessage = (() => {
+      const match = safeJSONStringify(err).match(
+        /Error Message: ([a-zA-Z '\.]+)"/,
+      );
+
+      return match?.length ? match[1] : null;
+    })();
+
+    console.debug('Error parsing: error:', safeJSONStringify(err));
+    console.debug('Error parsing: errCodeHex: ', errCodeHex);
+    console.debug('Error parsing: errCodeDecimals', errCodeDecimals);
+    console.debug('Error parsing: errName', errName);
+    console.debug('Error parsing: errMessage', errMessage);
+
+    const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
+      if (errName !== null && errName === name) return true;
+      if (errCodeHex !== null && errCodeHex === code) return true;
+      if (errCodeDecimals !== null && errCodeDecimals === code) return true;
+
+      return false;
+    });
+
+    if (idlError?.msg) return idlError?.msg;
+
+    if (errName && errMessage) return `${errName}: ${errMessage}`;
+    if (errName) return `Error name: ${errName}`;
+    if (errCodeHex) return `Error code: ${errCodeHex}`;
+    if (errCodeDecimals) return `Error code: ${errCodeDecimals}`;
+
+    return 'Unknown error';
+  })();
 
   // Transaction failed in preflight, there is no TxHash
-  return new AdrenaTransactionError(
-    null,
-    idlError?.msg ?? `Error code: ${errorCode}`,
-  );
+  return new AdrenaTransactionError(null, errStr);
 }
 
 export async function isATAInitialized(
@@ -345,4 +384,19 @@ export function getDaysRemaining(startDate: BN, totalDays: BN) {
     Math.floor(totalDays.toNumber() / 3600 / 24) - daysElapsed;
 
   return daysRemaining;
+}
+
+// i.e percentage = -2 (for -2%)
+// i.e percentage = 5 (for 5%)
+export function applySlippage(nb: BN, percentage: number): BN {
+  const negative = percentage < 0 ? true : false;
+
+  // Do x10_000 so percentage can be up to 4 decimals
+  const percentageBN = new BN(
+    (negative ? percentage * -1 : percentage) * 10_000,
+  );
+
+  const delta = nb.mul(percentageBN).divRound(new BN(10_000 * 100));
+
+  return negative ? nb.sub(delta) : nb.add(delta);
 }

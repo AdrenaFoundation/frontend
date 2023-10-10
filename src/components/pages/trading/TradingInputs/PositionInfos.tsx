@@ -41,7 +41,10 @@ export default function PositionInfos({
     window.adrena.client
       .getEntryPriceAndFee({
         token: tokenB,
-        collateral: uiToNative(inputB, tokenB.decimals).div(new BN(leverage)),
+        collateralToken: tokenB,
+        collateralAmount: uiToNative(inputB, tokenB.decimals).div(
+          new BN(leverage),
+        ),
         size: uiToNative(inputB, tokenB.decimals),
         side,
       })
