@@ -56,7 +56,7 @@ export function formatPriceInfo(
   }
 
   // If the price is very low, display it as it is, to not display $0
-  if (price < 0.00999999999999 && price > 0) {
+  if (price < 10 ** -decimals && price > 0) {
     return `$${price}`;
   }
 

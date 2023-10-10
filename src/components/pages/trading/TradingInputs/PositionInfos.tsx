@@ -1,11 +1,12 @@
 import { BN } from '@project-serum/anchor';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { PRICE_DECIMALS } from '@/constant';
-import { NewPositionPricesAndFee, PositionExtended, Token } from '@/types';
-import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
+import { useSelector } from '@/store/store';
+import { PositionExtended, Token } from '@/types';
+import { formatNumber, formatPriceInfo, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 
@@ -16,39 +17,53 @@ let loadingCounter = 0;
 export default function PositionInfos({
   className,
   side,
+  tokenA,
   tokenB,
+  inputA,
   inputB,
   leverage,
   openedPosition,
 }: {
   side: 'short' | 'long';
   className?: string;
+  tokenA: Token;
   tokenB: Token;
+  inputA: number | null;
   inputB: number | null;
   leverage: number;
   openedPosition: PositionExtended | null;
 }) {
-  const [entryPriceAndFee, setEntryPriceAndFee] =
-    useState<NewPositionPricesAndFee | null>(null);
+  const tokenPrices = useSelector((s) => s.tokenPrices);
+
+  const [infos, setInfos] = useState<{
+    swapFeeUsd: number | null;
+    openPositionFeeUsd: number;
+    totalFeeUsd: number;
+    entryPrice: number;
+    liquidationPrice: number;
+  } | null>(null);
 
   useEffect(() => {
-    if (!tokenB || !inputB || inputB <= 0) {
+    if (!tokenA || !tokenB || !inputA || !inputB || inputB <= 0) {
+      setInfos(null);
       return;
     }
 
     const localLoadingCounter = ++loadingCounter;
 
-    window.adrena.client
-      .getEntryPriceAndFee({
-        token: tokenB,
-        collateralToken: tokenB,
-        collateralAmount: uiToNative(inputB, tokenB.decimals).div(
-          new BN(leverage),
-        ),
-        size: uiToNative(inputB, tokenB.decimals),
-        side,
-      })
-      .then((entryPriceAndFee: NewPositionPricesAndFee | null) => {
+    (async () => {
+      try {
+        const infos =
+          await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
+            tokenA,
+            tokenB,
+            amountA: uiToNative(inputA, tokenA.decimals),
+            amountB: uiToNative(inputB, tokenB.decimals).div(new BN(leverage)),
+            leverage,
+            side,
+            tokenPrices,
+          });
+
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means
         // an other request has been casted due to input change
@@ -56,12 +71,13 @@ export default function PositionInfos({
           return;
         }
 
-        setEntryPriceAndFee(entryPriceAndFee);
-      })
-      .catch(() => {
-        // Ignore error
-      });
-  }, [inputB, leverage, side, tokenB]);
+        setInfos(infos);
+      } catch (err) {
+        console.log('Ignored error:', err);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputB, side, tokenA, tokenB]);
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 
@@ -83,12 +99,7 @@ export default function PositionInfos({
         <span className="text-txtfade">Entry Price</span>
         <span className="flex font-mono">
           {(() => {
-            if (!entryPriceAndFee || !inputB) return '-';
-
-            const newEntryPrice = nativeToUi(
-              entryPriceAndFee.entryPrice,
-              PRICE_DECIMALS,
-            );
+            if (!infos) return '-';
 
             if (openedPosition) {
               return (
@@ -104,12 +115,12 @@ export default function PositionInfos({
                   />
 
                   {/* New position entry price */}
-                  <div>{formatPriceInfo(newEntryPrice)}</div>
+                  <div>{formatPriceInfo(infos.entryPrice)}</div>
                 </>
               );
             }
 
-            return formatPriceInfo(newEntryPrice);
+            return formatPriceInfo(infos.entryPrice);
           })()}
         </span>
       </div>
@@ -118,12 +129,7 @@ export default function PositionInfos({
         <span className="text-txtfade">Liq. Price</span>
         <span className="flex font-mono">
           {(() => {
-            if (!entryPriceAndFee || !inputB) return '-';
-
-            const newLiquidationPrice = nativeToUi(
-              entryPriceAndFee.liquidationPrice,
-              PRICE_DECIMALS,
-            );
+            if (!infos) return '-';
 
             if (openedPosition) {
               if (!openedPosition.liquidationPrice) return '-';
@@ -141,12 +147,12 @@ export default function PositionInfos({
                   />
 
                   {/* New position entry price */}
-                  <div>{formatPriceInfo(newLiquidationPrice)}</div>
+                  <div>{formatPriceInfo(infos.liquidationPrice)}</div>
                 </>
               );
             }
 
-            return formatPriceInfo(newLiquidationPrice);
+            return formatPriceInfo(infos.liquidationPrice);
           })()}
         </span>
       </div>
@@ -154,9 +160,45 @@ export default function PositionInfos({
       <div className={infoRowStyle}>
         <span className="text-txtfade">Fees</span>
         <span className="font-mono">
-          {entryPriceAndFee
-            ? formatPriceInfo(nativeToUi(entryPriceAndFee.fee, 6))
-            : '-'}
+          {infos && infos?.swapFeeUsd ? (
+            <Tippy
+              content={
+                <ul className="flex flex-col gap-2">
+                  <li className="flex flex-row gap-2 justify-between">
+                    <p className="text-sm text-txtfade">Swap fees:</p>
+                    <p className="text-sm font-mono">
+                      {`${formatPriceInfo(infos.swapFeeUsd)}`}
+                    </p>
+                  </li>
+
+                  <li className="flex flex-row gap-2 justify-between">
+                    <p className="text-sm text-txtfade">Open position fees:</p>
+                    <p className="text-sm font-mono">
+                      {`${formatPriceInfo(infos.openPositionFeeUsd)}`}
+                    </p>
+                  </li>
+
+                  <div className="w-full h-[1px] bg-gray-300" />
+
+                  <li className="flex flex-row gap-2 justify-between">
+                    <p className="text-sm text-txtfade">Total fees:</p>
+                    <p className="text-sm font-mono">
+                      {`${formatPriceInfo(infos.totalFeeUsd)}`}
+                    </p>
+                  </li>
+                </ul>
+              }
+              placement="bottom"
+            >
+              <div className="tooltip-target">
+                {formatPriceInfo(infos.totalFeeUsd)}
+              </div>
+            </Tippy>
+          ) : infos ? (
+            formatPriceInfo(infos.totalFeeUsd)
+          ) : (
+            '-'
+          )}
         </span>
       </div>
     </div>

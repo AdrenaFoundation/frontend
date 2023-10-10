@@ -232,14 +232,15 @@ export default function Trade({
     let collateralAmount: BN;
 
     try {
-      const ret = await window.adrena.client.prepareOpenPositionWithSwap({
-        tokenA,
-        tokenB,
-        amountA: uiToNative(inputAValue, tokenA.decimals),
-        amountB: uiToNative(inputBValue, tokenB.decimals),
-        leverage,
-        side: selectedAction,
-      });
+      const ret =
+        await window.adrena.client.prepareOpenPositionWithConditionalSwap({
+          tokenA,
+          tokenB,
+          amountA: uiToNative(inputAValue, tokenA.decimals),
+          amountB: uiToNative(inputBValue, tokenB.decimals),
+          leverage,
+          side: selectedAction,
+        });
 
       price = ret.price;
       size = ret.size;
@@ -257,15 +258,16 @@ export default function Trade({
 
     if (selectedAction === 'long') {
       try {
-        const txHash = await window.adrena.client.openLongPositionWithSwap({
-          owner: new PublicKey(wallet.publicKey),
-          mintA: tokenA.mint,
-          mintB: tokenB.mint,
-          amountA: uiToNative(inputAValue, tokenA.decimals),
-          price,
-          collateralAmount,
-          size,
-        });
+        const txHash =
+          await window.adrena.client.openLongPositionWithConditionalSwap({
+            owner: new PublicKey(wallet.publicKey),
+            mintA: tokenA.mint,
+            mintB: tokenB.mint,
+            amountA: uiToNative(inputAValue, tokenA.decimals),
+            price,
+            collateralAmount,
+            size,
+          });
 
         triggerPositionsReload();
 
@@ -288,15 +290,16 @@ export default function Trade({
     //
 
     try {
-      const txHash = await window.adrena.client.openShortPositionWithSwap({
-        owner: new PublicKey(wallet.publicKey),
-        mintA: tokenA.mint,
-        mintB: tokenB.mint,
-        amountA: uiToNative(inputAValue, tokenA.decimals),
-        price,
-        collateralAmount,
-        size,
-      });
+      const txHash =
+        await window.adrena.client.openShortPositionWithConditionalSwap({
+          owner: new PublicKey(wallet.publicKey),
+          mintA: tokenA.mint,
+          mintB: tokenB.mint,
+          amountA: uiToNative(inputAValue, tokenA.decimals),
+          price,
+          collateralAmount,
+          size,
+        });
 
       triggerPositionsReload();
 

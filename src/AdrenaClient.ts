@@ -24,6 +24,7 @@ import alpIcon from '../public/images/alp.png';
 import config from './config/devnet';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
+import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AddCollateralAccounts,
   AddLiquidityAccounts,
@@ -1269,7 +1270,7 @@ export class AdrenaClient {
   // > size is 5000000
   //
   // Swap 1 ETH for X USDC, then open short position for 5 BTC (will result in X multiplier)
-  public async openShortPositionWithSwap({
+  public async openShortPositionWithConditionalSwap({
     owner,
     mintA,
     mintB,
@@ -1400,8 +1401,145 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
+  // Estimate the fee + other infos that will be paid by user if opening a new position with conditional swap
+  public async getOpenPositionWithConditionalSwapInfos({
+    tokenA,
+    tokenB,
+    amountA,
+    amountB,
+    leverage,
+    side,
+    tokenPrices,
+  }: {
+    tokenA: Token;
+    tokenB: Token;
+    amountA: BN;
+    amountB: BN;
+    leverage: number;
+    side: 'long' | 'short';
+    tokenPrices: TokenPricesState;
+  }): Promise<{
+    swapFeeUsd: number | null;
+    openPositionFeeUsd: number;
+    totalFeeUsd: number;
+    entryPrice: number;
+    liquidationPrice: number;
+  }> {
+    const usdcToken = this.getUsdcToken();
+    let swapFeeUsd: null | number = null;
+
+    const tokenAPrice = tokenPrices[tokenA.symbol];
+    const tokenBPrice = tokenPrices[tokenB.symbol];
+    const usdcTokenPrice = tokenPrices[usdcToken.symbol];
+
+    if (!tokenAPrice)
+      throw new Error(`needs find ${tokenA.symbol} price to calculate fees`);
+    if (!tokenBPrice)
+      throw new Error(`needs find ${tokenB.symbol} price to calculate fees`);
+    if (!usdcTokenPrice)
+      throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
+
+    if (side === 'long') {
+      let collateralAmount: BN = amountB.div(new BN(leverage));
+
+      // if the tokens are not the same then we need to swap tokenA for tokenB
+      if (!tokenA.mint.equals(tokenB.mint)) {
+        const swapAmountAndFees = await this.getSwapAmountAndFees({
+          tokenIn: tokenA,
+          tokenOut: tokenB,
+          amountIn: amountA,
+        });
+
+        if (!swapAmountAndFees)
+          throw new Error('Cannot calculate swap amount and fees');
+
+        // Remove a bit to have the swap+open position to pass even if there is a slight change in values
+        collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
+
+        swapFeeUsd =
+          nativeToUi(swapAmountAndFees.feeIn, tokenA.decimals) * tokenAPrice +
+          nativeToUi(swapAmountAndFees.feeOut, tokenB.decimals) * tokenBPrice;
+      }
+
+      const entryPriceAndFee = await this.getEntryPriceAndFee({
+        token: tokenB,
+        collateralToken: tokenB,
+        collateralAmount,
+        size: amountB,
+        side: 'long',
+      });
+
+      if (!entryPriceAndFee)
+        throw new Error('Cannot calculate open position price and fees');
+
+      const openPositionFeeUsd =
+        nativeToUi(entryPriceAndFee.fee, tokenB.decimals) * tokenBPrice;
+
+      // calculate and return fee amount in usd
+      return {
+        swapFeeUsd,
+        openPositionFeeUsd,
+        totalFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
+        entryPrice: nativeToUi(entryPriceAndFee.entryPrice, PRICE_DECIMALS),
+        liquidationPrice: nativeToUi(
+          entryPriceAndFee.liquidationPrice,
+          PRICE_DECIMALS,
+        ),
+      };
+    }
+
+    let collateralAmount: BN = amountA;
+    let collateralToken: Token = tokenA;
+
+    // If the collateral token is not a stable, need to swap for it
+    if (!this.isTokenStable(tokenA.mint)) {
+      const swapAmountAndFees = await this.getSwapAmountAndFees({
+        tokenIn: tokenA,
+        tokenOut: usdcToken,
+        amountIn: amountA,
+      });
+
+      if (!swapAmountAndFees)
+        throw new Error('Cannot calculate swap amount and fees');
+
+      // Remove a bit to have the swap+open position to pass even if there is a slight change in values
+      collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
+      collateralToken = usdcToken;
+
+      swapFeeUsd =
+        nativeToUi(swapAmountAndFees.feeIn, tokenA.decimals) * tokenAPrice +
+        nativeToUi(swapAmountAndFees.feeOut, usdcToken.decimals) * tokenBPrice;
+    }
+
+    const entryPriceAndFee = await this.getEntryPriceAndFee({
+      token: tokenB,
+      collateralToken,
+      collateralAmount,
+      size: amountB,
+      side: 'short',
+    });
+
+    if (!entryPriceAndFee)
+      throw new Error('Cannot calculate open position price and fees');
+
+    const openPositionFeeUsd =
+      nativeToUi(entryPriceAndFee.fee, usdcToken.decimals) * usdcTokenPrice;
+
+    // calculate and return fee amount in usd
+    return {
+      swapFeeUsd,
+      openPositionFeeUsd,
+      totalFeeUsd: swapFeeUsd ?? 0 + openPositionFeeUsd,
+      entryPrice: nativeToUi(entryPriceAndFee.entryPrice, PRICE_DECIMALS),
+      liquidationPrice: nativeToUi(
+        entryPriceAndFee.liquidationPrice,
+        PRICE_DECIMALS,
+      ),
+    };
+  }
+
   // Get every infos required to call the open position with swap
-  public async prepareOpenPositionWithSwap({
+  public async prepareOpenPositionWithConditionalSwap({
     tokenA,
     tokenB,
     amountA,
@@ -1510,7 +1648,7 @@ export class AdrenaClient {
   // > size is 5000000
   //
   // Swap 1 ETH for X BTC, then open long position for 5 BTC providing 2 BTC as collateral (will result in X multiplier)
-  public async openLongPositionWithSwap({
+  public async openLongPositionWithConditionalSwap({
     owner,
     mintA,
     mintB,
