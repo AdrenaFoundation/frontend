@@ -27,7 +27,7 @@ export default function BurgerMenu() {
     { name: 'Dashboard', link: '/dashboard' },
     { name: 'Earn', link: '/earn' },
     { name: 'Buy', link: '/swap_alp' },
-    { name: 'Onchain Info', link: '/onchain_info' },
+    { name: 'On-chain Info', link: '/onchain_info' },
     { name: 'Faucet', link: '/faucet_devnet' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ];

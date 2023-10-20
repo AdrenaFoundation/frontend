@@ -95,11 +95,13 @@ export function addNotification({
   message,
   type = 'info',
   duration = 'regular',
+  position = 'top-right',
 }: {
   title: string;
   type?: 'success' | 'error' | 'info';
   message?: ReactNode;
   duration?: 'fast' | 'regular' | 'long';
+  position?: 'top-right' | 'top-center' | 'top-left' | 'bottom-right';
 }) {
   const content = message ? (
     <div className="flex flex-col">
@@ -113,7 +115,7 @@ export function addNotification({
   );
 
   toast[type](content, {
-    position: 'bottom-right',
+    position,
     autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration],
     hideProgressBar: true,
     closeOnClick: true,

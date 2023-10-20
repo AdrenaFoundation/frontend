@@ -29,8 +29,8 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
 
       {isBigScreen ? <Header /> : <BurgerMenu />}
 
-      <div className="w-full grow flex p-4 justify-center">
-        <div className="w-full pt-[75px] xl:pt-[25px] flex max-w-[1400px] flex-col grow">
+      <div className="w-full  flex p-4 justify-center">
+        <div className="w-full pt-[75px] xl:pt-[25px] flex max-w-[1400px] flex-col">
           {children}
         </div>
       </div>

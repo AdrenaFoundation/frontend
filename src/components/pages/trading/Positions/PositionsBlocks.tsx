@@ -57,8 +57,8 @@ export default function PositionsBlocks({
                   className={twMerge(
                     'ml-1 capitalize',
                     position.side === 'long'
-                      ? 'text-green-400'
-                      : 'text-red-400',
+                      ? 'text-green-500'
+                      : 'text-red-500',
                   )}
                 >
                   {position.side}

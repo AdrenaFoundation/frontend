@@ -39,14 +39,14 @@ module.exports = {
       },
     },
     font: {
-      mono: ['JetBrains Mono', 'sans-serif'],
+      mono: ['Roboto Mono', 'sans-serif'],
     },
 
     fontFamily: {
       regular: ['regular'],
       thin: ['thin'],
       bold: ['bold'],
-      mono: 'JetBrains Mono',
+      mono: 'Roboto Mono',
 
       specialmonster: ['specialmonster'],
     },

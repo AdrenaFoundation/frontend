@@ -14,7 +14,7 @@ import StakeToken from '@/components/pages/earn/StakeToken';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockPeriod, PageProps } from '@/types';
+import { LockPeriod, PageProps, StakePositionsExtended } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -148,6 +148,47 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     }
   };
 
+  const handleRemoveLockedStake = async (
+    tokenSymbol: 'ADX' | 'ALP',
+    resolved: boolean,
+    threadId: BN,
+    lockedStakeIndex: number,
+  ) => {
+    if (!owner) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+
+    const stakedTokenMint =
+      tokenSymbol === 'ADX'
+        ? window.adrena.client.adxToken.mint
+        : window.adrena.client.alpToken.mint;
+
+    try {
+      const txHash = await window.adrena.client.removeLockedStake({
+        owner,
+        resolved,
+        threadId,
+        stakedTokenMint,
+        lockedStakeIndex: new BN(lockedStakeIndex),
+      });
+
+      addSuccessTxNotification({
+        title: 'Successfully Removed Locked Stake',
+        txHash,
+      });
+
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
+      setActiveRedeemToken(null);
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Removing Liquid Stake',
+        error,
+      });
+    }
+  };
+
   const getTotalLiquidStaked = (token: 'ADX' | 'ALP') =>
     stakingAccounts?.[token]?.liquidStake
       ? nativeToUi(
@@ -266,6 +307,21 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
   const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
+  const stakePositions = Object.entries(stakingAccounts ?? {})
+    .map(([tokenSymbol, details], index) => {
+      if (details === null) return [];
+
+      return details.lockedStakes.map((position) => ({
+        ...position,
+        lockedStakeIndex: index,
+        tokenSymbol,
+      }));
+    })
+    .flat()
+    .sort(
+      (a, b) => Number(a?.stakeTime) - Number(b?.stakeTime),
+    ) as StakePositionsExtended[];
+
   return (
     <>
       <h2>Earn</h2>
@@ -295,9 +351,15 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
             {wallet &&
               (isBigScreen ? (
-                <StakeList stakePositions={stakingAccounts} />
+                <StakeList
+                  positions={stakePositions}
+                  handleRemoveLockedStake={handleRemoveLockedStake}
+                />
               ) : (
-                <StakeBlocks stakePositions={stakingAccounts} />
+                <StakeBlocks
+                  positions={stakePositions}
+                  handleRemoveLockedStake={handleRemoveLockedStake}
+                />
               ))}
           </div>
         </div>

@@ -1,28 +1,37 @@
-import Image from 'next/image';
+import { BN } from '@project-serum/anchor';
 
 import Button from '@/components/common/Button/Button';
 import { STAKE_MULTIPLIERS } from '@/constant';
-import { LockPeriod, UserStaking } from '@/types';
+import { LockPeriod, StakePositionsExtended } from '@/types';
 import { formatNumber, getDaysRemaining, nativeToUi } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
 
 export default function StakeBlocks({
-  stakePositions,
+  positions,
+  handleRemoveLockedStake,
 }: {
-  stakePositions: { ADX: UserStaking | null; ALP: UserStaking | null } | null;
+  positions: StakePositionsExtended[];
+  handleRemoveLockedStake: (
+    tokenSymbol: 'ADX' | 'ALP',
+    resolved: boolean,
+    threadId: BN,
+    lockedStakeIndex: number,
+  ) => void;
 }) {
   const today = new Date();
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {stakePositions?.ADX?.lockedStakes.map(
+      {positions?.map(
         ({
+          lockedStakeIndex,
+          tokenSymbol,
+          resolved,
           amount,
           stakeTime,
           claimTime,
           lockDuration,
-          resolved,
           stakeResolutionThreadId,
         }) => (
           <div
@@ -31,13 +40,25 @@ export default function StakeBlocks({
           >
             <div className="pb-2 flex flex-row justify-between border-b border-b-gray-300">
               <div className="flex flex-row gap-2 items-center">
-                <Image
-                  src={window.adrena.client.adxToken.image}
-                  width={32}
-                  height={32}
-                  alt="ADX"
-                />
-                <p className="text-sm font-medium">ADX</p>
+                <div
+                  className={`p-1 bg-${
+                    tokenSymbol === 'ADX' ? 'red' : 'blue'
+                  }-500 rounded-full`}
+                >
+                  <p className="flex items-center justify-center text-sm font-specialmonster h-7 w-7">
+                    {tokenSymbol === 'ADX' ? 'ADX' : 'ALP'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium opacity-50">
+                    {tokenSymbol}
+                  </p>
+                  <p>
+                    {tokenSymbol === 'ADX'
+                      ? window.adrena.client.adxToken.name
+                      : window.adrena.client.alpToken.name}
+                  </p>
+                </div>
               </div>
             </div>
             <ul className="flex flex-col gap-2 pt-3">
@@ -121,10 +142,14 @@ export default function StakeBlocks({
                 <Button
                   className="w-full mt-3"
                   variant="secondary"
-                  rightIcon={resolved ? undefined : lockIcon}
-                  disabled={!resolved}
+                  rightIcon={
+                    getDaysRemaining(stakeTime, lockDuration) <= 0
+                      ? undefined
+                      : lockIcon
+                  }
+                  disabled={!(getDaysRemaining(stakeTime, lockDuration) <= 0)}
                   title={
-                    resolved
+                    getDaysRemaining(stakeTime, lockDuration) <= 0
                       ? 'Redeem'
                       : `${getDaysRemaining(
                           stakeTime,
@@ -140,6 +165,16 @@ export default function StakeBlocks({
                           year: 'numeric',
                         })})`
                   }
+                  onClick={() => {
+                    if (getDaysRemaining(stakeTime, lockDuration) <= 0) {
+                      handleRemoveLockedStake(
+                        tokenSymbol,
+                        resolved,
+                        stakeResolutionThreadId,
+                        lockedStakeIndex,
+                      );
+                    }
+                  }}
                 />
               </li>
             </ul>

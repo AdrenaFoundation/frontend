@@ -373,9 +373,15 @@ export default function ClosePosition({
         <div className={rowStyle}>
           <div className="text-txtfade">PnL</div>
           <div>
-            {position.pnl && markPrice
-              ? formatPriceInfo(position.pnl, true)
-              : null}
+            {position.pnl && markPrice ? (
+              <span
+                className={`text-${position.pnl > 0 ? 'green' : 'red'}-400`}
+              >
+                {formatPriceInfo(position.pnl, true)}
+              </span>
+            ) : (
+              '-'
+            )}
           </div>
         </div>
 

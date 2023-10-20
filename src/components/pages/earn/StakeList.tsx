@@ -1,31 +1,25 @@
+import { BN } from '@project-serum/anchor';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import { STAKE_MULTIPLIERS } from '@/constant';
-import { LockPeriod, UserStaking } from '@/types';
+import { LockPeriod, StakePositionsExtended } from '@/types';
 import { formatNumber, getDaysRemaining, nativeToUi } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
 
 export default function StakeList({
-  stakePositions,
+  positions,
+  handleRemoveLockedStake,
 }: {
-  stakePositions: { ADX: UserStaking | null; ALP: UserStaking | null } | null;
+  positions: StakePositionsExtended[];
+  handleRemoveLockedStake: (
+    tokenSymbol: 'ADX' | 'ALP',
+    resolved: boolean,
+    threadId: BN,
+    lockedStakeIndex: number,
+  ) => void;
 }) {
-  type Positions = UserStaking['lockedStakes'][0] & { tokenSymbol: string };
-
-  const positions = Object.entries(stakePositions ?? {})
-    .map(([tokenSymbol, details]) => {
-      if (details === null) return [];
-
-      return details.lockedStakes.map((position) => ({
-        ...position,
-        tokenSymbol,
-      }));
-    })
-    .flat()
-    .sort((a, b) => Number(a?.stakeTime) - Number(b?.stakeTime)) as Positions[];
-
   const today = new Date();
 
   return (
@@ -55,11 +49,12 @@ export default function StakeList({
           positions.map(
             (
               {
+                lockedStakeIndex,
+                resolved,
                 amount,
                 stakeTime,
                 claimTime,
                 lockDuration,
-                resolved,
                 stakeResolutionThreadId,
                 tokenSymbol,
               },
@@ -154,10 +149,14 @@ export default function StakeList({
                   <Button
                     className="w-full max-w-[200px] mt-3 text-xs"
                     variant="secondary"
-                    rightIcon={resolved ? undefined : lockIcon}
-                    disabled={!resolved}
+                    rightIcon={
+                      getDaysRemaining(stakeTime, lockDuration) <= 0
+                        ? undefined
+                        : lockIcon
+                    }
+                    disabled={!(getDaysRemaining(stakeTime, lockDuration) <= 0)}
                     title={
-                      resolved
+                      getDaysRemaining(stakeTime, lockDuration) <= 0
                         ? 'Redeem'
                         : `${getDaysRemaining(
                             stakeTime,
@@ -173,6 +172,17 @@ export default function StakeList({
                             year: 'numeric',
                           })})`
                     }
+                    onClick={() => {
+                      if (getDaysRemaining(stakeTime, lockDuration) <= 0) {
+                        console.log('redeem', stakeResolutionThreadId);
+                        handleRemoveLockedStake(
+                          tokenSymbol,
+                          resolved,
+                          stakeResolutionThreadId,
+                          lockedStakeIndex,
+                        );
+                      }
+                    }}
                   />
                 </td>
               </tr>
