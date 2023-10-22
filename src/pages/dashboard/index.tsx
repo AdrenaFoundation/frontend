@@ -1,4 +1,5 @@
 import { ChartData } from 'chart.js';
+import { useEffect, useState } from 'react';
 
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Details from '@/components/pages/dashboard/Details/Details';
@@ -8,7 +9,12 @@ import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
-import { formatNumber, formatPercentage, formatPriceInfo } from '@/utils';
+import {
+  formatNumber,
+  formatPercentage,
+  formatPriceInfo,
+  nativeToUi,
+} from '@/utils';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
   const alpTotalSupply = useALPTotalSupply();
@@ -20,6 +26,9 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
   const adxPrice =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
+
+  const [staked, setStaked] = useState<number | null>(null);
+  const [vested, setVested] = useState<number | null>(null);
 
   const composition = useALPIndexComposition(custodies);
 
@@ -40,17 +49,45 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
       ? alpPrice * alpTotalSupply
       : null;
 
-  // @TODO plug to staking system
-  const staked = 20;
-  const vested = 30;
-  const liquid = 50;
+  useEffect(() => {
+    if (!window.adrena.client.connection) return;
+    lockedStake();
+    getVestedAmount();
+  }, [window.adrena.client.connection]);
+
+  const lockedStake = async () => {
+    const lockedStake = await window.adrena.client.getStakingStats();
+    if (!lockedStake.lm) return;
+
+    setStaked(
+      nativeToUi(
+        lockedStake.lm.nbLockedTokens,
+        window.adrena.client.adxToken.decimals,
+      ),
+    );
+  };
+
+  const getVestedAmount = async () => {
+    const acc = await window.adrena.client.getAllVestingAccounts();
+
+    if (!acc) return;
+
+    const total = acc.reduce((acc, { amount }) => {
+      return acc + nativeToUi(amount, window.adrena.client.adxToken.decimals);
+    }, 0);
+
+    setVested(total);
+  };
+
+  // TODO: plug real data
+  const liquid = 0;
 
   const ADXChartData: ChartData<'doughnut'> = {
-    labels: ['Staked', 'Vested', 'Liquid'],
+    labels: ['Locked stake', 'Vested', 'Liquid'],
     datasets: [
       {
         label: 'ALP Pool',
-        data: [staked, vested, liquid],
+        data: [staked ?? 0, vested ?? 0, liquid],
         borderRadius: 10,
         offset: 20,
         backgroundColor: [
@@ -109,10 +146,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     { title: 'Price', value: formatPriceInfo(alpPrice) },
     {
       title: 'Circulating Supply',
-      value:
-        alpTotalSupply !== null
-          ? formatNumber(alpTotalSupply, window.adrena.client.alpToken.decimals)
-          : '-',
+      value: alpTotalSupply !== null ? formatNumber(alpTotalSupply, 2) : '-',
     },
     { title: 'Market Cap', value: formatPriceInfo(ALPmarketCap) },
     { title: 'Stablecoin %', value: formatPercentage(stablecoinPercentage) },
@@ -125,10 +159,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     },
     {
       title: 'Total Supply',
-      value:
-        adxTotalSupply !== null
-          ? formatNumber(adxTotalSupply, window.adrena.client.alpToken.decimals)
-          : null,
+      value: adxTotalSupply !== null ? formatNumber(adxTotalSupply, 2) : null,
     },
     {
       title: 'Circulating Supply',

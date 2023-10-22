@@ -7,9 +7,14 @@ import { formatPercentage, formatPriceInfo } from '@/utils';
 
 export default function ALPIndexCompositionArray({
   alpIndexComposition,
+  calculateOffset,
   className,
 }: {
   alpIndexComposition: ALPIndexComposition | null;
+  calculateOffset: (
+    targetRatio: number | null,
+    currentRatio: number | null,
+  ) => string;
   className?: string;
 }) {
   return (
@@ -28,7 +33,7 @@ export default function ALPIndexCompositionArray({
           (columnName) => (
             <div
               key={columnName}
-              className="flex w-40 shrink-0 grow uppercase last:justify-end text-txtfade text-sm"
+              className="flex w-40 shrink-0 grow uppercase first:justify-start justify-end text-txtfade text-sm"
             >
               {columnName}
             </div>
@@ -54,7 +59,7 @@ export default function ALPIndexCompositionArray({
                     />
                   }
                   <div>
-                    <p className="ml-4 font-mono capitalize">
+                    <p className="ml-4 font-mono capitalize font-medium">
                       {composition.token.symbol}
                     </p>
                     <p className="ml-4 font-mono text-sm opacity-50">
@@ -63,11 +68,11 @@ export default function ALPIndexCompositionArray({
                   </div>
                 </div>
 
-                <div className="flex items-center w-40 shrink-0 grow font-mono">
+                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono">
                   {formatPriceInfo(composition.price)}
                 </div>
 
-                <div className="flex items-center w-40 shrink-0 grow font-mono">
+                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono">
                   {formatPriceInfo(composition.custodyUsdValue)}
                 </div>
 
@@ -102,9 +107,14 @@ export default function ALPIndexCompositionArray({
                   }
                   placement="bottom"
                 >
-                  <div className="flex items-center w-40 shrink-0 grow">
+                  <div className="flex items-center justify-end w-40 shrink-0 grow">
                     <div className="flex tooltip-target">
-                      <span className="font-mono">
+                      <span
+                        className={`font-mono ${calculateOffset(
+                          composition.targetRatio,
+                          composition.currentRatio,
+                        )}`}
+                      >
                         {formatPercentage(composition.currentRatio)}
                       </span>
                       <span className="ml-1 mr-1">/</span>

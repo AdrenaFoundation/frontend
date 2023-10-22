@@ -332,7 +332,7 @@ export default function EditPositionCollateral({
                 <div
                   className={twMerge(
                     (overMaxAuthorizedLeverage || overMinAuthorizedLeverage) &&
-                      'text-red-400',
+                      'text-red-500',
                   )}
                 >
                   {updatedLeverage > 0 ? (

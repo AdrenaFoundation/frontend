@@ -170,6 +170,12 @@ export type Perpetuals = Accounts['perpetuals'];
 export type Pool = Accounts['pool'];
 export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
+export type Vest = Accounts['vest'];
+
+type StakePositionsExtended = UserStaking['lockedStakes'][0] & {
+  tokenSymbol: 'ADX' | 'ALP';
+  lockedStakeIndex: number;
+};
 
 //
 // Params Types
@@ -231,6 +237,8 @@ export type RemoveLiquidStakeAccounts =
   ExtractInstructionAccounts<'removeLiquidStake'>;
 export type RemoveLockedStakeAccounts =
   ExtractInstructionAccounts<'removeLockedStake'>;
+export type FinalizeLockedStakeAccounts =
+  ExtractInstructionAccounts<'finalizeLockedStake'>;
 export type InitUserStakingAccounts =
   ExtractInstructionAccounts<'initUserStaking'>;
 export type AddLiquidityAccounts = ExtractInstructionAccounts<'addLiquidity'>;

@@ -37,7 +37,12 @@ export default function TradingInput({
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       {/* Input A */}
-      <div className="h-24 p-4 bg-dark border border-gray-300 rounded-lg flex items-center w-full justify-between flex-col">
+      <div
+        className={twMerge(
+          'h-24 p-4  border border-gray-300 rounded-lg flex items-center w-full justify-between flex-col',
+          disabled ? 'bg-gray-200' : 'bg-dark',
+        )}
+      >
         <div className="shrink-0 flex items-center w-full justify-between">
           <div className="text-txtfade text-xs font-mono">{textTopLeft}</div>
           <div className="text-txtfade text-xs font-mono">{textTopRight}</div>
@@ -51,7 +56,10 @@ export default function TradingInput({
               disabled={disabled}
               value={value ?? undefined}
               placeholder="0.00"
-              className="bg-dark font-mono border-0 text-lg outline-none w-full"
+              className={twMerge(
+                'font-mono font-medium border-0 text-lg outline-none w-full',
+                disabled ? 'bg-gray-200' : 'bg-dark',
+              )}
               onChange={onChange}
             />
           )}

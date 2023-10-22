@@ -34,6 +34,7 @@ import {
   ClosePositionAccounts,
   Custody,
   CustodyExtended,
+  FinalizeLockedStakeAccounts,
   ImageRef,
   InitUserStakingAccounts,
   NewPositionPricesAndFee,
@@ -53,6 +54,7 @@ import {
   Token,
   TokenSymbol,
   UserStaking,
+  Vest,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -2056,6 +2058,34 @@ export class AdrenaClient {
     );
   }
 
+  public async getAllVestingAccounts(): Promise<Vest[]> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const cortex = await this.adrenaProgram.account.cortex.fetch(this.cortex);
+    const allVestingAccounts = cortex.vests;
+    const allAccounts = (await this.adrenaProgram.account.vest.fetchMultiple(
+      allVestingAccounts,
+    )) as Vest[];
+
+    return allAccounts;
+  }
+
+  public async getStakingStats() {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const lmStaking = this.getStakingPda(this.lmTokenMint);
+    const lpStaking = this.getStakingPda(this.lpTokenMint);
+
+    const lm = await this.adrenaProgram.account.staking.fetch(lmStaking);
+    const lp = await this.adrenaProgram.account.staking.fetch(lpStaking);
+
+    return { lm, lp };
+  }
+
   public async getUserStakingAccount({
     owner,
     stakedTokenMint,
@@ -2442,13 +2472,13 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
-  public async removeLockedStake({
+  public async resolveLockedStake({
     owner,
-    lockedStakeIndex,
+    threadId,
     stakedTokenMint,
   }: {
     owner: PublicKey;
-    lockedStakeIndex: BN;
+    threadId: BN;
     stakedTokenMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
@@ -2459,6 +2489,87 @@ export class AdrenaClient {
 
     if (!stakingRewardTokenMint) {
       throw new Error('USDC not found');
+    }
+
+    const staking = this.getStakingPda(stakedTokenMint);
+    const userStaking = this.getUserStakingPda(owner, staking);
+    const userStakingThreadAuthority =
+      this.getUserStakingThreadAuthorityPda(userStaking);
+
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
+
+    // should not happen
+    if (!userStakingAccount) {
+      throw new Error('user staking account not found');
+    }
+
+    const stakeResolutionThread = this.getThreadAddressPda(
+      userStakingThreadAuthority,
+      userStakingAccount.stakesClaimCronThreadId,
+    );
+
+    const accounts: FinalizeLockedStakeAccounts = {
+      caller: stakeResolutionThread,
+      owner,
+      userStaking,
+      staking,
+      transferAuthority: AdrenaClient.transferAuthorityAddress,
+      cortex: this.cortex,
+      perpetuals: AdrenaClient.perpetualsAddress,
+      lmTokenMint: this.lmTokenMint,
+      governanceTokenMint: this.governanceTokenMint,
+      governanceRealm: this.governanceRealm,
+      governanceRealmConfig: this.governanceRealmConfig,
+      governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+      governanceGoverningTokenOwnerRecord:
+        this.getGovernanceGoverningTokenOwnerRecordPda(owner),
+      governanceProgram: config.governanceProgram,
+      perpetualsProgram: this.adrenaProgram.programId,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    };
+
+    return await this.adrenaProgram.methods
+      .finalizeLockedStake({
+        threadId,
+      })
+      .accounts(accounts)
+      .instruction();
+  }
+
+  public async removeLockedStake({
+    owner,
+    resolved,
+    threadId,
+    lockedStakeIndex,
+    stakedTokenMint,
+  }: {
+    owner: PublicKey;
+    resolved: boolean;
+    threadId: BN;
+    lockedStakeIndex: BN;
+    stakedTokenMint: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+    const preInstructions: TransactionInstruction[] = [];
+
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+
+    if (!resolved) {
+      const instruction = await this.resolveLockedStake({
+        owner,
+        threadId,
+        stakedTokenMint,
+      });
+
+      preInstructions.push(instruction);
     }
 
     const rewardTokenAccount = findATAAddressSync(
@@ -2523,6 +2634,7 @@ export class AdrenaClient {
         lockedStakeIndex,
       })
       .accounts(accounts)
+      .preInstructions(preInstructions)
       .transaction();
 
     return this.signAndExecuteTx(transaction);

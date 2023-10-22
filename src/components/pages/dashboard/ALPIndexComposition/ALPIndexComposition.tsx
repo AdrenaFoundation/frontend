@@ -17,16 +17,55 @@ export default function ALPIndexComposition({
 
   if (isBigScreen === null) return null;
 
+  const calculateOffset = (
+    targetRatio: number | null,
+    currentRatio: number | null,
+  ) => {
+    if (currentRatio === null || targetRatio === null) {
+      return '';
+    }
+
+    const boundaries = {
+      1: targetRatio * 0.01,
+      5: targetRatio * 0.05,
+      10: targetRatio * 0.1,
+      30: targetRatio * 0.3,
+    };
+
+    const diff = Math.abs(currentRatio - targetRatio); // 4
+
+    if (boundaries[1] >= diff) {
+      return 'text-green-500';
+    }
+
+    if (boundaries[1] <= diff && diff <= boundaries[5]) {
+      return 'text-green-500';
+    }
+
+    if (boundaries[5] <= diff && diff <= boundaries[10]) {
+      return '';
+    }
+
+    if (boundaries[10] <= diff && diff <= boundaries[30]) {
+      return 'text-orange-500';
+    }
+
+    // more than 30% off target ratio
+    return 'text-red-500';
+  };
+
   return (
     <div>
       {isBigScreen ? (
         <ALPIndexCompositionArray
           alpIndexComposition={alpIndexComposition}
+          calculateOffset={calculateOffset}
           className={className}
         />
       ) : (
         <ALPIndexCompositionBlocs
           alpIndexComposition={alpIndexComposition}
+          calculateOffset={calculateOffset}
           className={className}
         />
       )}

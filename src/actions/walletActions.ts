@@ -52,7 +52,11 @@ export const autoConnectWalletAction =
         },
       });
 
-      addNotification({ title: 'Wallet connected', duration: 'fast' });
+      addNotification({
+        title: 'Wallet connected',
+        duration: 'fast',
+        position: 'bottom-right',
+      });
     };
 
     adapter.once('connect', connectFn);
@@ -87,7 +91,11 @@ export const connectWalletAction =
         },
       });
 
-      addNotification({ title: 'Wallet connected', duration: 'fast' });
+      addNotification({
+        title: 'Wallet connected',
+        duration: 'fast',
+        position: 'bottom-right',
+      });
     };
 
     adapter.once('connect', connectFn);
@@ -118,6 +126,7 @@ export const disconnectWalletAction =
       addNotification({
         title: 'Wallet disconnected',
         duration: 'fast',
+        position: 'bottom-right',
       });
     });
 

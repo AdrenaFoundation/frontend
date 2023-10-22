@@ -7,9 +7,14 @@ import { formatPercentage, formatPriceInfo } from '@/utils';
 
 export default function ALPIndexCompositionBlocs({
   alpIndexComposition,
+  calculateOffset,
   className,
 }: {
   alpIndexComposition: ALPIndexComposition | null;
+  calculateOffset: (
+    targetRatio: number | null,
+    currentRatio: number | null,
+  ) => string;
   className?: string;
 }) {
   if (!alpIndexComposition) return null;
@@ -61,7 +66,12 @@ export default function ALPIndexCompositionBlocs({
                   <div className="text-sm w-60 flex flex-col justify-around">
                     <div className="flex w-full justify-between">
                       <div className="opacity-50">Current Weight:</div>
-                      <div className="font-mono">
+                      <div
+                        className={`font-mono ${calculateOffset(
+                          composition.targetRatio,
+                          composition.currentRatio,
+                        )}`}
+                      >
                         {formatPercentage(composition.currentRatio)}
                       </div>
                     </div>
@@ -89,13 +99,18 @@ export default function ALPIndexCompositionBlocs({
               >
                 <div className="flex">
                   <div className="flex tooltip-target">
-                    <span className="font-mono">
+                    <div
+                      className={`font-mono ${calculateOffset(
+                        composition.targetRatio,
+                        composition.currentRatio,
+                      )}`}
+                    >
                       {formatPercentage(composition.currentRatio)}
-                    </span>
-                    <span className="ml-1 mr-1">/</span>
-                    <span className="font-mono">
+                    </div>
+                    <div className="ml-1 mr-1">/</div>
+                    <div className="font-mono">
                       {formatPercentage(composition.targetRatio)}
-                    </span>
+                    </div>
                   </div>
                 </div>
               </Tippy>
