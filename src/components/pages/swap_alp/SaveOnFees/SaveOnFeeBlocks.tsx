@@ -2,6 +2,7 @@ import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
+import Loader from '@/components/Loader/Loader';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
@@ -42,6 +43,7 @@ export default function SaveOnFeesBlocks({
           key={row.token.symbol}
           className={twMerge(
             'flex flex-col w-full border rounded-lg transition-border duration-300 cursor-pointer hover:border-gray-400',
+            isFeesLoading && 'opacity-25 cursor-wait',
             collateralToken?.symbol === row.token.symbol
               ? 'border-gray-400'
               : 'border-gray-300',
@@ -79,7 +81,8 @@ export default function SaveOnFeesBlocks({
             <div>
               <p className="text-xs opacity-50 text-right">Fees</p>
               <div className="flex flex-row items-center gap-2 justify-end text-right">
-                {currentFee &&
+                {!isFeesLoading &&
+                  currentFee &&
                   row.fee &&
                   collateralToken?.symbol !== row.token.symbol && (
                     <p
@@ -98,7 +101,11 @@ export default function SaveOnFeesBlocks({
                   )}
 
                 <p className="text-lg font-mono text-right">
-                  {!isFeesLoading ? `${formatPriceInfo(row.fee)}` : '...'}
+                  {!isFeesLoading ? (
+                    `${formatPriceInfo(row.fee)}`
+                  ) : (
+                    <Loader width={50} height={28} />
+                  )}
                 </p>
               </div>
             </div>

@@ -2063,8 +2063,8 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const cortex = await this.adrenaProgram.account.cortex.all();
-    const allVestingAccounts = cortex[0].account.vests;
+    const cortex = await this.adrenaProgram.account.cortex.fetch(this.cortex);
+    const allVestingAccounts = cortex.vests;
     const allAccounts = (await this.adrenaProgram.account.vest.fetchMultiple(
       allVestingAccounts,
     )) as Vest[];
@@ -2077,12 +2077,11 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const accounts = await this.adrenaProgram.account.staking.all();
+    const lmStaking = this.getStakingPda(this.lmTokenMint);
+    const lpStaking = this.getStakingPda(this.lpTokenMint);
 
-    // for some reason typscript is not working here, its not recognizing the stakingType property properly
-    const lp = accounts.find((account: any) => account.account.stakingType.lp);
-
-    const lm = accounts.find((account: any) => account.account.stakingType.lm);
+    const lm = await this.adrenaProgram.account.staking.fetch(lmStaking);
+    const lp = await this.adrenaProgram.account.staking.fetch(lpStaking);
 
     return { lm, lp };
   }

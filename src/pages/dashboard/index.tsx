@@ -16,11 +16,7 @@ import {
   nativeToUi,
 } from '@/utils';
 
-export default function Dashboard({
-  mainPool,
-  custodies,
-  connected,
-}: PageProps) {
+export default function Dashboard({ mainPool, custodies }: PageProps) {
   const alpTotalSupply = useALPTotalSupply();
   const adxTotalSupply = useADXTotalSupply();
 
@@ -31,8 +27,8 @@ export default function Dashboard({
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
 
-  const [staked, setStaked] = useState(0);
-  const [vested, setVested] = useState(0);
+  const [staked, setStaked] = useState<number | null>(null);
+  const [vested, setVested] = useState<number | null>(null);
 
   const composition = useALPIndexComposition(custodies);
 
@@ -54,10 +50,10 @@ export default function Dashboard({
       : null;
 
   useEffect(() => {
-    if (!connected || !window.adrena.client.connection) return;
+    if (!window.adrena.client.connection) return;
     lockedStake();
     getVestedAmount();
-  }, [connected, window.adrena.client.connection]);
+  }, [window.adrena.client.connection]);
 
   const lockedStake = async () => {
     const lockedStake = await window.adrena.client.getStakingStats();
@@ -65,7 +61,7 @@ export default function Dashboard({
 
     setStaked(
       nativeToUi(
-        lockedStake.lm.account.nbLockedTokens,
+        lockedStake.lm.nbLockedTokens,
         window.adrena.client.adxToken.decimals,
       ),
     );
@@ -91,7 +87,7 @@ export default function Dashboard({
     datasets: [
       {
         label: 'ALP Pool',
-        data: [staked, vested, liquid],
+        data: [staked ?? 0, vested ?? 0, liquid],
         borderRadius: 10,
         offset: 20,
         backgroundColor: [

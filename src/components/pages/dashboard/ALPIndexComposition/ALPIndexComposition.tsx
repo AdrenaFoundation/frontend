@@ -21,11 +21,11 @@ export default function ALPIndexComposition({
     targetRatio: number | null,
     currentRatio: number | null,
   ) => {
-    if (!currentRatio || !targetRatio) {
+    if (currentRatio === null || targetRatio === null) {
       return '';
     }
 
-    const boundries = {
+    const boundaries = {
       1: targetRatio * 0.01,
       5: targetRatio * 0.05,
       10: targetRatio * 0.1,
@@ -34,23 +34,23 @@ export default function ALPIndexComposition({
 
     const diff = Math.abs(currentRatio - targetRatio); // 4
 
-    if (boundries[1] >= diff) {
+    if (boundaries[1] >= diff) {
       return 'text-green-500';
     }
 
-    if (boundries[1] <= diff && diff <= boundries[5]) {
+    if (boundaries[1] <= diff && diff <= boundaries[5]) {
       return 'text-green-500';
     }
 
-    if (boundries[5] <= diff && diff <= boundries[10]) {
+    if (boundaries[5] <= diff && diff <= boundaries[10]) {
       return '';
     }
 
-    if (boundries[10] <= diff && diff <= boundries[30]) {
+    if (boundaries[10] <= diff && diff <= boundaries[30]) {
       return 'text-orange-500';
     }
 
-    // more than 30% off from target ratio
+    // more than 30% off target ratio
     return 'text-red-500';
   };
 

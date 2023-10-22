@@ -173,16 +173,16 @@ export default function SwapALP({
     setFeesAndAmounts(formattedData);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAction, debouncedInputs, collateralToken]);
+  }, [selectedAction, debouncedInputs]);
 
   useEffect(() => {
     getFeesAndAmounts();
   }, [getFeesAndAmounts, debouncedInputs]);
 
   useEffect(() => {
-    setIsFeesLoading(true);
+    // setIsFeesLoading(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAction === 'buy' ? collateralInput : alpInput, collateralToken]);
+  }, [selectedAction === 'buy' ? collateralInput : alpInput]);
 
   useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
@@ -195,7 +195,7 @@ export default function SwapALP({
   }, [collateralToken]);
 
   const onCollateralTokenChange = (t: Token) => {
-    if (selectedAction === 'buy') {
+    if (selectedAction === 'sell') {
       setAlpInput(null);
       setAlpPrice(null);
       setFeesUsd(null);
@@ -235,6 +235,7 @@ export default function SwapALP({
           feesAndAmounts={feesAndAmounts}
           feesUsd={feesUsd}
           setFeesUsd={setFeesUsd}
+          setIsFeesLoading={setIsFeesLoading}
           onCollateralTokenChange={onCollateralTokenChange}
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}

@@ -32,6 +32,7 @@ export default function ALPSwapInputs({
   onCollateralTokenChange,
   setFeesUsd,
   feesAndAmounts,
+  setIsFeesLoading,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
@@ -52,6 +53,7 @@ export default function ALPSwapInputs({
   feesAndAmounts: {
     [tokenSymbol: string]: { fees: number | null; amount: number | null };
   } | null;
+  setIsFeesLoading: (v: boolean) => void;
 }) {
   const wallet = useSelector((s) => s.walletState);
   const connected = !!wallet;
@@ -112,7 +114,6 @@ export default function ALPSwapInputs({
         // deprecate current loading
         setLoading(false);
         loadingCounter += 1;
-
         onChangeCollateralInput(null);
         setCollateralPrice(null);
         setAlpPrice(null);
@@ -239,11 +240,13 @@ export default function ALPSwapInputs({
           setAlpPrice(null);
           setLoading(false);
         });
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collateralInput, collateralToken]);
   }
 
   const handleAlpInputChange = (v: number | null) => {
+    setIsFeesLoading(true);
     const nb = Number(v);
     if (v === null || isNaN(nb)) {
       onChangeAlpInput(null);
@@ -254,6 +257,7 @@ export default function ALPSwapInputs({
   };
 
   const handleCollateralInputChange = (v: number | null) => {
+    setIsFeesLoading(true);
     const nb = Number(v);
     if (v === null || isNaN(nb)) {
       onChangeCollateralInput(null);
