@@ -66,12 +66,12 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'perpetualsProgramData';
           isMut: false;
           isSigner: false;
         },
         {
-          name: 'perpetualsProgramData';
+          name: 'perpetualsProgram';
           isMut: false;
           isSigner: false;
         },
@@ -828,49 +828,6 @@ export type Perpetuals = {
       returns: 'u8';
     },
     {
-      name: 'testInit';
-      accounts: [
-        {
-          name: 'upgradeAuthority';
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'transferAuthority';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'perpetuals';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'systemProgram';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-        },
-      ];
-      args: [
-        {
-          name: 'params';
-          type: {
-            defined: 'TestInitParams';
-          };
-        },
-      ];
-    },
-    {
       name: 'setTestTime';
       accounts: [
         {
@@ -1027,7 +984,7 @@ export type Perpetuals = {
         },
         {
           name: 'perpetuals';
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
@@ -1180,7 +1137,7 @@ export type Perpetuals = {
         },
         {
           name: 'perpetuals';
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
@@ -1303,7 +1260,7 @@ export type Perpetuals = {
         },
         {
           name: 'perpetuals';
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
@@ -1468,7 +1425,7 @@ export type Perpetuals = {
         },
         {
           name: 'perpetuals';
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
@@ -1556,6 +1513,12 @@ export type Perpetuals = {
       accounts: [
         {
           name: 'owner';
+          isMut: false;
+          isSigner: true;
+          docs: ['Check: any user account'];
+        },
+        {
+          name: 'payer';
           isMut: true;
           isSigner: true;
         },
@@ -1591,7 +1554,7 @@ export type Perpetuals = {
         },
         {
           name: 'perpetuals';
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
@@ -1690,6 +1653,179 @@ export type Perpetuals = {
           name: 'params';
           type: {
             defined: 'OpenPositionParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'openPositionWithSwap';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'fundingAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'receivingCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'receivingCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'receivingCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'principalCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'principalCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'principalCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'OpenPositionWithSwapParams';
           };
         },
       ];
@@ -1900,7 +2036,7 @@ export type Perpetuals = {
         },
         {
           name: 'perpetuals';
-          isMut: false;
+          isMut: true;
           isSigner: false;
         },
         {
@@ -3667,6 +3803,44 @@ export type Perpetuals = {
       ];
       returns: 'u8';
     },
+    {
+      name: 'setCustomOraclePricePermissionless';
+      accounts: [
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'custody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'oracleAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'ixSysvar';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'SetCustomOraclePricePermissionlessParams';
+          };
+        },
+      ];
+    },
   ];
   accounts: [
     {
@@ -4009,7 +4183,7 @@ export type Perpetuals = {
           {
             name: 'signed';
             type: {
-              array: ['bool', 6];
+              array: ['u8', 6];
             };
           },
           {
@@ -4784,6 +4958,32 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'OpenPositionWithSwapParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'price';
+            type: 'u64';
+          },
+          {
+            name: 'collateral';
+            type: 'u64';
+          },
+          {
+            name: 'size';
+            type: 'u64';
+          },
+          {
+            name: 'side';
+            type: {
+              defined: 'Side';
+            };
+          },
+        ];
+      };
+    },
+    {
       name: 'OpenPositionParams';
       type: {
         kind: 'struct';
@@ -4951,6 +5151,38 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'SetCustomOraclePricePermissionlessParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'custodyAccount';
+            type: 'publicKey';
+          },
+          {
+            name: 'price';
+            type: 'u64';
+          },
+          {
+            name: 'expo';
+            type: 'i32';
+          },
+          {
+            name: 'conf';
+            type: 'u64';
+          },
+          {
+            name: 'ema';
+            type: 'u64';
+          },
+          {
+            name: 'publishTime';
+            type: 'i64';
+          },
+        ];
+      };
+    },
+    {
       name: 'SetCustomOraclePriceParams';
       type: {
         kind: 'struct';
@@ -5059,50 +5291,6 @@ export type Perpetuals = {
       };
     },
     {
-      name: 'TestInitParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'minSignatures';
-            type: 'u8';
-          },
-          {
-            name: 'allowSwap';
-            type: 'bool';
-          },
-          {
-            name: 'allowAddLiquidity';
-            type: 'bool';
-          },
-          {
-            name: 'allowRemoveLiquidity';
-            type: 'bool';
-          },
-          {
-            name: 'allowOpenPosition';
-            type: 'bool';
-          },
-          {
-            name: 'allowClosePosition';
-            type: 'bool';
-          },
-          {
-            name: 'allowPnlWithdrawal';
-            type: 'bool';
-          },
-          {
-            name: 'allowCollateralWithdrawal';
-            type: 'bool';
-          },
-          {
-            name: 'allowSizeChange';
-            type: 'bool';
-          },
-        ];
-      };
-    },
-    {
       name: 'UpgradeCustodyParams';
       type: {
         kind: 'struct';
@@ -5190,6 +5378,14 @@ export type Perpetuals = {
           },
           {
             name: 'protocolShare';
+            type: 'u64';
+          },
+          {
+            name: 'feeMax';
+            type: 'u64';
+          },
+          {
+            name: 'feeOptimal';
             type: 'u64';
           },
         ];
@@ -5555,6 +5751,10 @@ export type Perpetuals = {
             };
           },
           {
+            name: 'oracleAuthority';
+            type: 'publicKey';
+          },
+          {
             name: 'maxPriceError';
             type: 'u64';
           },
@@ -5859,6 +6059,9 @@ export type Perpetuals = {
           },
           {
             name: 'Linear';
+          },
+          {
+            name: 'Optimal';
           },
         ];
       };
@@ -6188,6 +6391,26 @@ export type Perpetuals = {
       name: 'GenesisAlpLimitReached';
       msg: 'Genesis ALP add liquidity limit reached';
     },
+    {
+      code: 6037;
+      name: 'PermissionlessOracleMissingSignature';
+      msg: 'Permissionless oracle update must be preceded by Ed25519 signature verification instruction';
+    },
+    {
+      code: 6038;
+      name: 'PermissionlessOracleMalformedEd25519Data';
+      msg: 'Ed25519 signature verification data does not match expected format';
+    },
+    {
+      code: 6039;
+      name: 'PermissionlessOracleSignerMismatch';
+      msg: 'Ed25519 signature was not signed by the oracle authority';
+    },
+    {
+      code: 6040;
+      name: 'PermissionlessOracleMessageMismatch';
+      msg: 'Signed message does not match instruction params';
+    },
   ];
 };
 
@@ -6259,12 +6482,12 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'perpetualsProgramData',
           isMut: false,
           isSigner: false,
         },
         {
-          name: 'perpetualsProgramData',
+          name: 'perpetualsProgram',
           isMut: false,
           isSigner: false,
         },
@@ -7021,49 +7244,6 @@ export const IDL: Perpetuals = {
       returns: 'u8',
     },
     {
-      name: 'testInit',
-      accounts: [
-        {
-          name: 'upgradeAuthority',
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'transferAuthority',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'perpetuals',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'systemProgram',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: 'params',
-          type: {
-            defined: 'TestInitParams',
-          },
-        },
-      ],
-    },
-    {
       name: 'setTestTime',
       accounts: [
         {
@@ -7220,7 +7400,7 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'perpetuals',
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
@@ -7373,7 +7553,7 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'perpetuals',
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
@@ -7496,7 +7676,7 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'perpetuals',
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
@@ -7661,7 +7841,7 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'perpetuals',
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
@@ -7749,6 +7929,12 @@ export const IDL: Perpetuals = {
       accounts: [
         {
           name: 'owner',
+          isMut: false,
+          isSigner: true,
+          docs: ['Check: any user account'],
+        },
+        {
+          name: 'payer',
           isMut: true,
           isSigner: true,
         },
@@ -7784,7 +7970,7 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'perpetuals',
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
@@ -7883,6 +8069,179 @@ export const IDL: Perpetuals = {
           name: 'params',
           type: {
             defined: 'OpenPositionParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'openPositionWithSwap',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'fundingAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'receivingCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'receivingCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'receivingCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'principalCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'principalCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'principalCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'OpenPositionWithSwapParams',
           },
         },
       ],
@@ -8093,7 +8452,7 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'perpetuals',
-          isMut: false,
+          isMut: true,
           isSigner: false,
         },
         {
@@ -9860,6 +10219,44 @@ export const IDL: Perpetuals = {
       ],
       returns: 'u8',
     },
+    {
+      name: 'setCustomOraclePricePermissionless',
+      accounts: [
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'custody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'oracleAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'ixSysvar',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'SetCustomOraclePricePermissionlessParams',
+          },
+        },
+      ],
+    },
   ],
   accounts: [
     {
@@ -10202,7 +10599,7 @@ export const IDL: Perpetuals = {
           {
             name: 'signed',
             type: {
-              array: ['bool', 6],
+              array: ['u8', 6],
             },
           },
           {
@@ -10977,6 +11374,32 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'OpenPositionWithSwapParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'price',
+            type: 'u64',
+          },
+          {
+            name: 'collateral',
+            type: 'u64',
+          },
+          {
+            name: 'size',
+            type: 'u64',
+          },
+          {
+            name: 'side',
+            type: {
+              defined: 'Side',
+            },
+          },
+        ],
+      },
+    },
+    {
       name: 'OpenPositionParams',
       type: {
         kind: 'struct',
@@ -11144,6 +11567,38 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'SetCustomOraclePricePermissionlessParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'custodyAccount',
+            type: 'publicKey',
+          },
+          {
+            name: 'price',
+            type: 'u64',
+          },
+          {
+            name: 'expo',
+            type: 'i32',
+          },
+          {
+            name: 'conf',
+            type: 'u64',
+          },
+          {
+            name: 'ema',
+            type: 'u64',
+          },
+          {
+            name: 'publishTime',
+            type: 'i64',
+          },
+        ],
+      },
+    },
+    {
       name: 'SetCustomOraclePriceParams',
       type: {
         kind: 'struct',
@@ -11252,50 +11707,6 @@ export const IDL: Perpetuals = {
       },
     },
     {
-      name: 'TestInitParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'minSignatures',
-            type: 'u8',
-          },
-          {
-            name: 'allowSwap',
-            type: 'bool',
-          },
-          {
-            name: 'allowAddLiquidity',
-            type: 'bool',
-          },
-          {
-            name: 'allowRemoveLiquidity',
-            type: 'bool',
-          },
-          {
-            name: 'allowOpenPosition',
-            type: 'bool',
-          },
-          {
-            name: 'allowClosePosition',
-            type: 'bool',
-          },
-          {
-            name: 'allowPnlWithdrawal',
-            type: 'bool',
-          },
-          {
-            name: 'allowCollateralWithdrawal',
-            type: 'bool',
-          },
-          {
-            name: 'allowSizeChange',
-            type: 'bool',
-          },
-        ],
-      },
-    },
-    {
       name: 'UpgradeCustodyParams',
       type: {
         kind: 'struct',
@@ -11383,6 +11794,14 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'protocolShare',
+            type: 'u64',
+          },
+          {
+            name: 'feeMax',
+            type: 'u64',
+          },
+          {
+            name: 'feeOptimal',
             type: 'u64',
           },
         ],
@@ -11748,6 +12167,10 @@ export const IDL: Perpetuals = {
             },
           },
           {
+            name: 'oracleAuthority',
+            type: 'publicKey',
+          },
+          {
             name: 'maxPriceError',
             type: 'u64',
           },
@@ -12052,6 +12475,9 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'Linear',
+          },
+          {
+            name: 'Optimal',
           },
         ],
       },
@@ -12380,6 +12806,26 @@ export const IDL: Perpetuals = {
       code: 6036,
       name: 'GenesisAlpLimitReached',
       msg: 'Genesis ALP add liquidity limit reached',
+    },
+    {
+      code: 6037,
+      name: 'PermissionlessOracleMissingSignature',
+      msg: 'Permissionless oracle update must be preceded by Ed25519 signature verification instruction',
+    },
+    {
+      code: 6038,
+      name: 'PermissionlessOracleMalformedEd25519Data',
+      msg: 'Ed25519 signature verification data does not match expected format',
+    },
+    {
+      code: 6039,
+      name: 'PermissionlessOracleSignerMismatch',
+      msg: 'Ed25519 signature was not signed by the oracle authority',
+    },
+    {
+      code: 6040,
+      name: 'PermissionlessOracleMessageMismatch',
+      msg: 'Signed message does not match instruction params',
     },
   ],
 };

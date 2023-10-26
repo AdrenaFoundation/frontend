@@ -225,6 +225,7 @@ export default function TradingInputs({
   ]);
 
   const handleInputAChange = (v: number | null) => {
+    console.log('handleInputAChange', v);
     setManualUserInput('A');
     setInputA(v);
   };
@@ -265,6 +266,8 @@ export default function TradingInputs({
           if (!walletTokenBalances || !tokenA) return;
 
           const amount = walletTokenBalances[tokenA.symbol];
+
+          console.log('max button triggered', amount);
 
           handleInputAChange(amount);
         }}

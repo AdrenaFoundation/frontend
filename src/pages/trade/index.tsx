@@ -1,4 +1,4 @@
-import { BN } from '@project-serum/anchor';
+import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';

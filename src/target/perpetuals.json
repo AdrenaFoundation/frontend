@@ -66,12 +66,12 @@
           "isSigner": false
         },
         {
-          "name": "perpetualsProgram",
+          "name": "perpetualsProgramData",
           "isMut": false,
           "isSigner": false
         },
         {
-          "name": "perpetualsProgramData",
+          "name": "perpetualsProgram",
           "isMut": false,
           "isSigner": false
         },
@@ -828,49 +828,6 @@
       "returns": "u8"
     },
     {
-      "name": "testInit",
-      "accounts": [
-        {
-          "name": "upgradeAuthority",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "multisig",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "perpetuals",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "TestInitParams"
-          }
-        }
-      ]
-    },
-    {
       "name": "setTestTime",
       "accounts": [
         {
@@ -1027,7 +984,7 @@
         },
         {
           "name": "perpetuals",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1180,7 +1137,7 @@
         },
         {
           "name": "perpetuals",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1303,7 +1260,7 @@
         },
         {
           "name": "perpetuals",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1468,7 +1425,7 @@
         },
         {
           "name": "perpetuals",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1556,6 +1513,12 @@
       "accounts": [
         {
           "name": "owner",
+          "isMut": false,
+          "isSigner": true,
+          "docs": ["Check: any user account"]
+        },
+        {
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -1591,7 +1554,7 @@
         },
         {
           "name": "perpetuals",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1690,6 +1653,179 @@
           "name": "params",
           "type": {
             "defined": "OpenPositionParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "openPositionWithSwap",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "fundingAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateralAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "perpetuals",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmStaking",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lpStaking",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lpStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "perpetualsProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "OpenPositionWithSwapParams"
           }
         }
       ]
@@ -1900,7 +2036,7 @@
         },
         {
           "name": "perpetuals",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -3666,6 +3802,44 @@
         }
       ],
       "returns": "u8"
+    },
+    {
+      "name": "setCustomOraclePricePermissionless",
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "oracleAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "ixSysvar",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "SetCustomOraclePricePermissionlessParams"
+          }
+        }
+      ]
     }
   ],
   "accounts": [
@@ -4009,7 +4183,7 @@
           {
             "name": "signed",
             "type": {
-              "array": ["bool", 6]
+              "array": ["u8", 6]
             }
           },
           {
@@ -4784,6 +4958,32 @@
       }
     },
     {
+      "name": "OpenPositionWithSwapParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "size",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": "Side"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "OpenPositionParams",
       "type": {
         "kind": "struct",
@@ -4951,6 +5151,38 @@
       }
     },
     {
+      "name": "SetCustomOraclePricePermissionlessParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "custodyAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "expo",
+            "type": "i32"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
+          },
+          {
+            "name": "ema",
+            "type": "u64"
+          },
+          {
+            "name": "publishTime",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "SetCustomOraclePriceParams",
       "type": {
         "kind": "struct",
@@ -5059,50 +5291,6 @@
       }
     },
     {
-      "name": "TestInitParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "minSignatures",
-            "type": "u8"
-          },
-          {
-            "name": "allowSwap",
-            "type": "bool"
-          },
-          {
-            "name": "allowAddLiquidity",
-            "type": "bool"
-          },
-          {
-            "name": "allowRemoveLiquidity",
-            "type": "bool"
-          },
-          {
-            "name": "allowOpenPosition",
-            "type": "bool"
-          },
-          {
-            "name": "allowClosePosition",
-            "type": "bool"
-          },
-          {
-            "name": "allowPnlWithdrawal",
-            "type": "bool"
-          },
-          {
-            "name": "allowCollateralWithdrawal",
-            "type": "bool"
-          },
-          {
-            "name": "allowSizeChange",
-            "type": "bool"
-          }
-        ]
-      }
-    },
-    {
       "name": "UpgradeCustodyParams",
       "type": {
         "kind": "struct",
@@ -5190,6 +5378,14 @@
           },
           {
             "name": "protocolShare",
+            "type": "u64"
+          },
+          {
+            "name": "feeMax",
+            "type": "u64"
+          },
+          {
+            "name": "feeOptimal",
             "type": "u64"
           }
         ]
@@ -5555,6 +5751,10 @@
             }
           },
           {
+            "name": "oracleAuthority",
+            "type": "publicKey"
+          },
+          {
             "name": "maxPriceError",
             "type": "u64"
           },
@@ -5859,6 +6059,9 @@
           },
           {
             "name": "Linear"
+          },
+          {
+            "name": "Optimal"
           }
         ]
       }
@@ -6187,6 +6390,26 @@
       "code": 6036,
       "name": "GenesisAlpLimitReached",
       "msg": "Genesis ALP add liquidity limit reached"
+    },
+    {
+      "code": 6037,
+      "name": "PermissionlessOracleMissingSignature",
+      "msg": "Permissionless oracle update must be preceded by Ed25519 signature verification instruction"
+    },
+    {
+      "code": 6038,
+      "name": "PermissionlessOracleMalformedEd25519Data",
+      "msg": "Ed25519 signature verification data does not match expected format"
+    },
+    {
+      "code": 6039,
+      "name": "PermissionlessOracleSignerMismatch",
+      "msg": "Ed25519 signature was not signed by the oracle authority"
+    },
+    {
+      "code": 6040,
+      "name": "PermissionlessOracleMessageMismatch",
+      "msg": "Signed message does not match instruction params"
     }
   ],
   "metadata": {

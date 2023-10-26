@@ -1,4 +1,4 @@
-import { BN } from '@project-serum/anchor';
+import { BN } from '@coral-xyz/anchor';
 
 import Button from '@/components/common/Button/Button';
 import { STAKE_MULTIPLIERS } from '@/constant';

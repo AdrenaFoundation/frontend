@@ -1,4 +1,4 @@
-import { BN } from '@project-serum/anchor';
+import { BN } from '@coral-xyz/anchor';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 

@@ -1,4 +1,4 @@
-import { BN } from '@project-serum/anchor';
+import { BN } from '@coral-xyz/anchor';
 import { NATIVE_MINT } from '@solana/spl-token';
 import { PublicKey, RpcResponseAndContext, TokenAmount } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
