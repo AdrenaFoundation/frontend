@@ -1,4 +1,4 @@
-import { BN } from '@project-serum/anchor';
+import { BN } from '@coral-xyz/anchor';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';

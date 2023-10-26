@@ -1,5 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
-import { AnchorProvider, Program } from '@project-serum/anchor';
+import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import {
   createAssociatedTokenAccountInstruction,
   NATIVE_MINT,
@@ -826,6 +826,7 @@ export class AdrenaClient {
 
     const accounts: OpenPositionAccounts = {
       owner,
+      payer: owner,
       fundingAccount,
       lmTokenAccount,
       transferAuthority: AdrenaClient.transferAuthorityAddress,
@@ -859,7 +860,9 @@ export class AdrenaClient {
         price: priceWithSlippage,
         collateral: collateralAmount,
         size,
-        side: { [side]: {} },
+        // use any to force typing to be accepted - anchor typing is broken
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        side: { [side]: {} } as any,
       })
       .accounts(accounts);
   }
@@ -2811,7 +2814,9 @@ export class AdrenaClient {
       {
         collateral: collateralAmount,
         size,
-        side: { [side]: {} },
+        // use any to force typing to be accepted - anchor typing is broken
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        side: { [side]: {} } as any,
       },
       {
         accounts: {

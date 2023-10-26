@@ -1,4 +1,9 @@
-import { Wallet } from '@project-serum/anchor';
+import { IdlAccounts, Program, Wallet } from '@coral-xyz/anchor';
+import {
+  AllInstructionsMap,
+  IdlTypes,
+  InstructionContextFnArgs,
+} from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
@@ -6,7 +11,8 @@ import { Perpetuals } from '@/target/perpetuals';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration from './config/IConfiguration';
-import { AnchorTypes, ContextAccounts } from './IdlTypeParser';
+
+// import { RpcNamespace, InstructionNamespace, TransactionNamespace, AccountNamespace, SimulateNamespace, MethodsNamespace, ViewNamespace, IdlEvents } from "./namespace/index.js";
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -116,53 +122,10 @@ export interface Token {
   coingeckoId?: string;
 }
 
-export type PerpetualsTypes = AnchorTypes<
-  Perpetuals,
-  {
-    pool: Pool;
-    custody: Custody;
-    multisig: Multisig;
-    perpetuals: Perpetuals;
-    position: Position;
-    // Add needed accounts here ...
-  },
-  {
-    AddCollateralParams: AddCollateralParams;
-    AddCustodyParams: AddCustodyParams;
-    AddLiquidityParams: AddLiquidityParams;
-    AddPoolParams: AddPoolParams;
-    ClosePositionParams: ClosePositionParams;
-    RemoveCollateralParams: RemoveCollateralParams;
-    RemoveLiquidityParams: RemoveLiquidityParams;
-    Fees: Fees;
-    FeesStats: FeesStats;
-    VolumeStats: VolumeStats;
-    TradeStats: TradeStats;
-    Assets: Assets;
-    OracleParams: OracleParams;
-    PricingParams: PricingParams;
-    BorrowRateParams: BorrowRateParams;
-    BorrowRateState: BorrowRateState;
-    PositionStats: PositionStats;
-    OraclePrice: OraclePrice;
-    PriceAndFee: PriceAndFee;
-    NewPositionPricesAndFee: NewPositionPricesAndFee;
-    SwapAmountAndFees: SwapAmountAndFees;
-    ProfitAndLoss: ProfitAndLoss;
-    Permissions: Permissions;
-    PoolToken: PoolToken;
-    FeesMode: FeesMode;
-    OracleType: OracleType;
-    Side: Side;
-    GetEntryPriceAndFeeParams: GetEntryPriceAndFeeParams;
-    // Add needed types here ...
-  }
->;
-
 //
 // Accounts
 //
-type Accounts = PerpetualsTypes['Accounts'];
+type Accounts = IdlAccounts<Perpetuals>;
 
 export type Custody = Accounts['custody'];
 export type Multisig = Accounts['multisig'];
@@ -180,75 +143,69 @@ type StakePositionsExtended = UserStaking['lockedStakes'][0] & {
 //
 // Params Types
 //
-type Defined = PerpetualsTypes['Defined'];
 
-export type AddCollateralParams = Defined['AddCollateralParams'];
-export type AddCustodyParams = Defined['AddCustodyParams'];
-export type AddLiquidityParams = Defined['AddLiquidityParams'];
-export type AddPoolParams = Defined['AddPoolParams'];
-export type ClosePositionParams = Defined['ClosePositionParams'];
-export type RemoveCollateralParams = Defined['RemoveCollateralParams'];
-export type RemoveLiquidityParams = Defined['RemoveLiquidityParams'];
-export type Fees = Defined['Fees'];
-export type FeesStats = Defined['FeesStats'];
-export type VolumeStats = Defined['VolumeStats'];
-export type TradeStats = Defined['TradeStats'];
-export type Assets = Defined['Assets'];
-export type OracleParams = Defined['OracleParams'];
-export type PricingParams = Defined['PricingParams'];
-export type BorrowRateParams = Defined['BorrowRateParams'];
-export type BorrowRateState = Defined['BorrowRateState'];
-export type PositionStats = Defined['PositionStats'];
-export type OraclePrice = Defined['OraclePrice'];
-export type PriceAndFee = Defined['PriceAndFee'];
-export type NewPositionPricesAndFee = Defined['NewPositionPricesAndFee'];
-export type SwapAmountAndFees = Defined['SwapAmountAndFees'];
-export type ProfitAndLoss = Defined['ProfitAndLoss'];
-export type Permissions = Defined['Permissions'];
-export type PoolToken = Defined['PoolToken'];
-export type FeesMode = Defined['FeesMode'];
-export type OracleType = Defined['OracleType'];
-export type Side = Defined['Side'];
-export type GetEntryPriceAndFeeParams = Defined['GetEntryPriceAndFeeParams'];
-export type AmountAndFee = Defined['AmountAndFee'];
+type Params = IdlTypes<Perpetuals>;
+
+export type AddCollateralParams = Params['AddCollateralParams'];
+export type AddCustodyParams = Params['AddCustodyParams'];
+export type AddLiquidityParams = Params['AddLiquidityParams'];
+export type AddPoolParams = Params['AddPoolParams'];
+export type ClosePositionParams = Params['ClosePositionParams'];
+export type RemoveCollateralParams = Params['RemoveCollateralParams'];
+export type RemoveLiquidityParams = Params['RemoveLiquidityParams'];
+export type Fees = Params['Fees'];
+export type FeesStats = Params['FeesStats'];
+export type VolumeStats = Params['VolumeStats'];
+export type TradeStats = Params['TradeStats'];
+export type Assets = Params['Assets'];
+export type OracleParams = Params['OracleParams'];
+export type PricingParams = Params['PricingParams'];
+export type BorrowRateParams = Params['BorrowRateParams'];
+export type BorrowRateState = Params['BorrowRateState'];
+export type PositionStats = Params['PositionStats'];
+export type OraclePrice = Params['OraclePrice'];
+export type PriceAndFee = Params['PriceAndFee'];
+export type NewPositionPricesAndFee = Params['NewPositionPricesAndFee'];
+export type SwapAmountAndFees = Params['SwapAmountAndFees'];
+export type ProfitAndLoss = Params['ProfitAndLoss'];
+export type Permissions = Params['Permissions'];
+export type PoolToken = Params['PoolToken'];
+export type FeesMode = Params['FeesMode'];
+export type OracleType = Params['OracleType'];
+export type Side = Params['Side'];
+export type GetEntryPriceAndFeeParams = Params['GetEntryPriceAndFeeParams'];
+export type AmountAndFee = Params['AmountAndFee'];
 
 //
 // Accounts types
 //
 
-type Instructions = PerpetualsTypes['Instructions'];
+type Instructions = AllInstructionsMap<Perpetuals>;
 
-type ExtractInstructionAccounts<T = keyof Instructions> = ContextAccounts<
-  Instructions[T]['accounts']
->;
+type ExtractAccounts<T> = {
+  [key in Instructions[T]['accounts'][number]['name']]: PublicKey;
+};
 
 // Use accounts types to force TS typing computation. TS will then throw an error if account is missing
-export type SwapAccounts = ExtractInstructionAccounts<'swap'>;
-export type ClosePositionAccounts = ExtractInstructionAccounts<'closePosition'>;
-export type AddCollateralAccounts = ExtractInstructionAccounts<'addCollateral'>;
-export type OpenPositionAccounts = ExtractInstructionAccounts<'openPosition'>;
-export type RemoveCollateralAccounts =
-  ExtractInstructionAccounts<'removeCollateral'>;
-export type AddLiquidStakeAccounts =
-  ExtractInstructionAccounts<'addLiquidStake'>;
-export type AddLockedStakeAccounts =
-  ExtractInstructionAccounts<'addLockedStake'>;
-export type RemoveLiquidStakeAccounts =
-  ExtractInstructionAccounts<'removeLiquidStake'>;
-export type RemoveLockedStakeAccounts =
-  ExtractInstructionAccounts<'removeLockedStake'>;
+export type SwapAccounts = ExtractAccounts<'swap'>;
+export type ClosePositionAccounts = ExtractAccounts<'closePosition'>;
+export type AddCollateralAccounts = ExtractAccounts<'addCollateral'>;
+export type OpenPositionAccounts = ExtractAccounts<'openPosition'>;
+export type RemoveCollateralAccounts = ExtractAccounts<'removeCollateral'>;
+export type AddLiquidStakeAccounts = ExtractAccounts<'addLiquidStake'>;
+export type AddLockedStakeAccounts = ExtractAccounts<'addLockedStake'>;
+export type RemoveLiquidStakeAccounts = ExtractAccounts<'removeLiquidStake'>;
+export type RemoveLockedStakeAccounts = ExtractAccounts<'removeLockedStake'>;
 export type FinalizeLockedStakeAccounts =
-  ExtractInstructionAccounts<'finalizeLockedStake'>;
-export type InitUserStakingAccounts =
-  ExtractInstructionAccounts<'initUserStaking'>;
-export type AddLiquidityAccounts = ExtractInstructionAccounts<'addLiquidity'>;
-export type RemoveLiquidityAccounts =
-  ExtractInstructionAccounts<'removeLiquidity'>;
+  ExtractAccounts<'finalizeLockedStake'>;
+export type InitUserStakingAccounts = ExtractAccounts<'initUserStaking'>;
+export type AddLiquidityAccounts = ExtractAccounts<'addLiquidity'>;
+export type RemoveLiquidityAccounts = ExtractAccounts<'removeLiquidity'>;
 
 //
 // Program
 //
-export type PerpetualsProgram = PerpetualsTypes['Program'];
+export type PerpetualsProgram = Program<Perpetuals>;
 
 //
 // Constants
