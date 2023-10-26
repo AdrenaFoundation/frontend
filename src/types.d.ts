@@ -122,49 +122,6 @@ export interface Token {
   coingeckoId?: string;
 }
 
-// export type PerpetualsTypes = PerpetualsTypes<
-//   Perpetuals,
-//   {
-//     pool: Pool;
-//     custody: Custody;
-//     multisig: Multisig;
-//     perpetuals: Perpetuals;
-//     position: Position;
-//     // Add needed accounts here ...
-//   },
-//   {
-//     AddCollateralParams: AddCollateralParams;
-//     AddCustodyParams: AddCustodyParams;
-//     AddLiquidityParams: AddLiquidityParams;
-//     AddPoolParams: AddPoolParams;
-//     ClosePositionParams: ClosePositionParams;
-//     RemoveCollateralParams: RemoveCollateralParams;
-//     RemoveLiquidityParams: RemoveLiquidityParams;
-//     Fees: Fees;
-//     FeesStats: FeesStats;
-//     VolumeStats: VolumeStats;
-//     TradeStats: TradeStats;
-//     Assets: Assets;
-//     OracleParams: OracleParams;
-//     PricingParams: PricingParams;
-//     BorrowRateParams: BorrowRateParams;
-//     BorrowRateState: BorrowRateState;
-//     PositionStats: PositionStats;
-//     OraclePrice: OraclePrice;
-//     PriceAndFee: PriceAndFee;
-//     NewPositionPricesAndFee: NewPositionPricesAndFee;
-//     SwapAmountAndFees: SwapAmountAndFees;
-//     ProfitAndLoss: ProfitAndLoss;
-//     Permissions: Permissions;
-//     PoolToken: PoolToken;
-//     FeesMode: FeesMode;
-//     OracleType: OracleType;
-//     Side: Side;
-//     GetEntryPriceAndFeeParams: GetEntryPriceAndFeeParams;
-//     // Add needed types here ...
-//   }
-// >;
-
 //
 // Accounts
 //
