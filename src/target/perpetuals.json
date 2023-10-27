@@ -191,9 +191,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "governanceProgram",
@@ -294,9 +292,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "governanceProgram",
@@ -1332,9 +1328,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "lpStakeResolutionThread",
@@ -1521,9 +1515,7 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "Check: any user account"
-          ]
+          "docs": ["Check: any user account"]
         },
         {
           "name": "payer",
@@ -3040,9 +3032,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "stakesClaimCronThread",
@@ -3182,9 +3172,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "stakeResolutionThread",
@@ -3339,9 +3327,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "stakesClaimCronThread",
@@ -3486,9 +3472,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "stakesClaimCronThread",
@@ -3699,9 +3683,7 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "Account owned by governance storing user informations"
-          ]
+          "docs": ["Account owned by governance storing user informations"]
         },
         {
           "name": "governanceProgram",
@@ -4260,19 +4242,13 @@
           {
             "name": "signers",
             "type": {
-              "array": [
-                "publicKey",
-                6
-              ]
+              "array": ["publicKey", 6]
             }
           },
           {
             "name": "signed",
             "type": {
-              "array": [
-                "u8",
-                6
-              ]
+              "array": ["u8", 6]
             }
           },
           {
@@ -6552,6 +6528,6 @@
     }
   ],
   "metadata": {
-    "address": "5vAooJKJxWXVPNb13dBq1jPsuE3RTbMCfYuounMJcAvb"
+    "address": "58ojsgyE8iwRA1EGjDpNS4DkAfxo1bkP95EYrjtLgSZK"
   }
 }

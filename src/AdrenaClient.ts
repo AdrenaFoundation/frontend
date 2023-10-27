@@ -3199,6 +3199,12 @@ export class AdrenaClient {
   }
 
   public async getLpTokenPrice(): Promise<BN | null> {
+    console.log('ACCOUNTS GET LP TOKEN PRICE', {
+      perpetuals: AdrenaClient.perpetualsAddress.toBase58(),
+      pool: this.mainPool.pubkey.toBase58(),
+      lpTokenMint: this.lpTokenMint.toBase58(),
+    });
+
     if (!this.readonlyAdrenaProgram.views) {
       return null;
     }
