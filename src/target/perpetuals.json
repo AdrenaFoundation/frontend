@@ -191,7 +191,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "governanceProgram",
@@ -292,7 +294,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "governanceProgram",
@@ -1328,7 +1332,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "lpStakeResolutionThread",
@@ -1515,7 +1521,9 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": ["Check: any user account"]
+          "docs": [
+            "Check: any user account"
+          ]
         },
         {
           "name": "payer",
@@ -2363,6 +2371,67 @@
       }
     },
     {
+      "name": "getOpenPositionWithSwapAmountAndFees",
+      "accounts": [
+        {
+          "name": "perpetuals",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustody",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustody",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "perpetualsProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "GetOpenPositionWithSwapAmountAndFeesParams"
+          }
+        }
+      ],
+      "returns": {
+        "defined": "OpenPositionWithSwapAmountAndFees"
+      }
+    },
+    {
       "name": "getExitPriceAndFee",
       "accounts": [
         {
@@ -2971,7 +3040,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "stakesClaimCronThread",
@@ -3111,7 +3182,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "stakeResolutionThread",
@@ -3266,7 +3339,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "stakesClaimCronThread",
@@ -3411,7 +3486,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "stakesClaimCronThread",
@@ -3622,7 +3699,9 @@
           "name": "governanceGoverningTokenOwnerRecord",
           "isMut": true,
           "isSigner": false,
-          "docs": ["Account owned by governance storing user informations"]
+          "docs": [
+            "Account owned by governance storing user informations"
+          ]
         },
         {
           "name": "governanceProgram",
@@ -3877,6 +3956,10 @@
             "type": {
               "vec": "publicKey"
             }
+          },
+          {
+            "name": "vestedTokenAmount",
+            "type": "u128"
           },
           {
             "name": "coreContributorBucketAllocation",
@@ -4177,13 +4260,19 @@
           {
             "name": "signers",
             "type": {
-              "array": ["publicKey", 6]
+              "array": [
+                "publicKey",
+                6
+              ]
             }
           },
           {
             "name": "signed",
             "type": {
-              "array": ["u8", 6]
+              "array": [
+                "u8",
+                6
+              ]
             }
           },
           {
@@ -4797,6 +4886,28 @@
       "type": {
         "kind": "struct",
         "fields": []
+      }
+    },
+    {
+      "name": "GetOpenPositionWithSwapAmountAndFeesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralAmount",
+            "type": "u64"
+          },
+          {
+            "name": "size",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": "Side"
+            }
+          }
+        ]
       }
     },
     {
@@ -5818,6 +5929,34 @@
       }
     },
     {
+      "name": "OpenPositionWithSwapAmountAndFees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "entryPrice",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationPrice",
+            "type": "u64"
+          },
+          {
+            "name": "swapFeeIn",
+            "type": "u64"
+          },
+          {
+            "name": "swapFeeOut",
+            "type": "u64"
+          },
+          {
+            "name": "openPositionFee",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "SwapAmountAndFees",
       "type": {
         "kind": "struct",
@@ -6413,6 +6552,6 @@
     }
   ],
   "metadata": {
-    "address": "CfbwNZaAL4izRqLsnxixx76uQy9GE6PBy917i57jVbia"
+    "address": "5vAooJKJxWXVPNb13dBq1jPsuE3RTbMCfYuounMJcAvb"
   }
 }
