@@ -3879,6 +3879,10 @@ export type Perpetuals = {
             };
           },
           {
+            name: 'vestedTokenAmount';
+            type: 'u128';
+          },
+          {
             name: 'coreContributorBucketAllocation';
             type: 'u64';
           },
@@ -10293,6 +10297,10 @@ export const IDL: Perpetuals = {
             type: {
               vec: 'publicKey',
             },
+          },
+          {
+            name: 'vestedTokenAmount',
+            type: 'u128',
           },
           {
             name: 'coreContributorBucketAllocation',

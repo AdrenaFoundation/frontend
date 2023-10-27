@@ -3879,6 +3879,10 @@
             }
           },
           {
+            "name": "vestedTokenAmount",
+            "type": "u128"
+          },
+          {
             "name": "coreContributorBucketAllocation",
             "type": "u64"
           },
@@ -6413,6 +6417,6 @@
     }
   ],
   "metadata": {
-    "address": "CfbwNZaAL4izRqLsnxixx76uQy9GE6PBy917i57jVbia"
+    "address": "58ojsgyE8iwRA1EGjDpNS4DkAfxo1bkP95EYrjtLgSZK"
   }
 }
