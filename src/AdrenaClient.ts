@@ -39,6 +39,8 @@ import {
   InitUserStakingAccounts,
   NewPositionPricesAndFee,
   OpenPositionAccounts,
+  OpenPositionWithSwapAccounts,
+  OpenPositionWithSwapAmountAndFees,
   Pool,
   PoolExtended,
   Position,
@@ -867,6 +869,151 @@ export class AdrenaClient {
       .accounts(accounts);
   }
 
+  protected buildOpenPositionWithSwapTx({
+    owner,
+    mint,
+    price,
+    collateralMint,
+    collateralAmount,
+    size,
+    side,
+  }: {
+    owner: PublicKey;
+    mint: PublicKey;
+    price: BN;
+    collateralMint: PublicKey;
+    collateralAmount: BN;
+    size: BN;
+    side: 'long' | 'short';
+  }) {
+    if (!this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    // Tokens received by the program
+    const receivingCustody = this.findCustodyAddress(collateralMint);
+    const receivingCustodyOracleAccount =
+      this.getCustodyByMint(collateralMint).nativeObject.oracle.oracleAccount;
+    const receivingCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(collateralMint);
+
+    // Custody used to provide collateral when opening the position
+    // When long, should be the same as principal token
+    // When short, should be a stable token
+    const instructionCollateralMint = (() => {
+      if (side === 'long') {
+        return mint;
+      }
+
+      // short
+      return this.getUsdcToken().mint;
+    })();
+
+    const collateralCustody = this.findCustodyAddress(
+      instructionCollateralMint,
+    );
+    const collateralCustodyOracleAccount = this.getCustodyByMint(
+      instructionCollateralMint,
+    ).nativeObject.oracle.oracleAccount;
+    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
+      instructionCollateralMint,
+    );
+
+    const collateralAccount = findATAAddressSync(
+      owner,
+      instructionCollateralMint,
+    );
+
+    // Principal custody is the custody of the targeted token
+    // i.e open a 1 ETH long position, principal custody is ETH
+    const principalCustody = this.findCustodyAddress(mint);
+    const principalCustodyOracleAccount =
+      this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
+    const principalCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(mint);
+
+    //
+
+    const fundingAccount = findATAAddressSync(owner, collateralMint);
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
+
+    const position = this.findPositionAddress(owner, principalCustody, side);
+
+    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
+    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
+      stakingRewardTokenMint,
+    );
+    const stakingRewardTokenCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
+
+    const lmStaking = this.getStakingPda(this.lmTokenMint);
+    const lpStaking = this.getStakingPda(this.lpTokenMint);
+    const lmStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lmStaking);
+    const lpStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lpStaking);
+
+    // TODO
+    // Think and use proper slippage, for now use 0.3%
+    const priceWithSlippage =
+      side === 'long' ? applySlippage(price, 0.3) : applySlippage(price, -0.3);
+
+    console.log('Open position with swap', {
+      price: priceWithSlippage.toString(),
+      collateralAmount: collateralAmount.toString(),
+      collateralMint: collateralMint.toString(),
+      mint: mint.toString(),
+      size: size.toString(),
+    });
+
+    const accounts: OpenPositionWithSwapAccounts = {
+      owner,
+      payer: owner,
+      fundingAccount,
+      collateralAccount,
+      lmTokenAccount,
+      receivingCustody,
+      receivingCustodyOracleAccount,
+      receivingCustodyTokenAccount,
+      collateralCustody,
+      collateralCustodyOracleAccount,
+      collateralCustodyTokenAccount,
+      principalCustody,
+      principalCustodyOracleAccount,
+      principalCustodyTokenAccount,
+      transferAuthority: AdrenaClient.transferAuthorityAddress,
+      cortex: this.cortex,
+      perpetuals: AdrenaClient.perpetualsAddress,
+      lmStaking,
+      lpStaking,
+      pool: this.mainPool.pubkey,
+      position,
+      stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
+      stakingRewardTokenCustodyOracleAccount:
+        stakingRewardTokenCustodyAccount.nativeObject.oracle.oracleAccount,
+      stakingRewardTokenCustodyTokenAccount,
+      lmStakingRewardTokenVault,
+      lpStakingRewardTokenVault,
+      lmTokenMint: this.lmTokenMint,
+      lpTokenMint: this.lpTokenMint,
+      stakingRewardTokenMint,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      perpetualsProgram: this.adrenaProgram.programId,
+    };
+
+    return this.adrenaProgram.methods
+      .openPositionWithSwap({
+        price: priceWithSlippage,
+        collateral: collateralAmount,
+        size,
+        // use any to force typing to be accepted - anchor typing is broken
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        side: { [side]: {} } as any,
+      })
+      .accounts(accounts);
+  }
+
   // swap tokenA for tokenB
   public buildSwapTx({
     owner,
@@ -1544,6 +1691,7 @@ export class AdrenaClient {
   }
 
   // Get every infos required to call the open position with swap
+  // @deprecated
   public async prepareOpenPositionWithConditionalSwap({
     tokenA,
     tokenB,
@@ -1646,31 +1794,27 @@ export class AdrenaClient {
   //
   // Example:
   // --------------
-  // > mintA is ETH
-  // > mintB is BTC
-  // > amountA is 1000000
-  // > collateralAmount is 2000000
+  // > collateralMint is ETH
+  // > mint is BTC
+  // > collateralAmount is 1000000
   // > size is 5000000
   //
   // Swap 1 ETH for X BTC, then open long position for 5 BTC providing 2 BTC as collateral (will result in X multiplier)
   public async openLongPositionWithConditionalSwap({
     owner,
-    mintA,
-    mintB,
+    collateralMint,
+    mint,
     price,
-    // used to know how much tokenA to swap for tokenB to open the position
-    amountA,
-    // amount of tokenB used as collateral provided for the position
+    // amount of collateralMint token provided as collateral
     collateralAmount,
     // the amount of tokenB to open a position for
     // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
     size,
   }: {
     owner: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
+    collateralMint: PublicKey;
+    mint: PublicKey;
     price: BN;
-    amountA: BN;
     collateralAmount: BN;
     size: BN;
   }) {
@@ -1678,12 +1822,12 @@ export class AdrenaClient {
       throw new Error('no connection');
     }
 
-    if (mintA.equals(mintB)) {
+    if (mint.equals(collateralMint)) {
       return this.openPosition({
         owner,
-        mint: mintB,
+        mint,
         price,
-        collateralMint: mintB,
+        collateralMint,
         collateralAmount,
         size,
         side: 'long',
@@ -1694,22 +1838,21 @@ export class AdrenaClient {
     const postInstructions: TransactionInstruction[] = [];
 
     const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 1_200_000,
+      units: 2_000_000,
     });
 
     preInstructions.push(modifyComputeUnitsIx);
 
-    if (mintA.equals(NATIVE_MINT) || mintB.equals(NATIVE_MINT)) {
+    if (collateralMint.equals(NATIVE_MINT) || mint.equals(NATIVE_MINT)) {
       const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
 
       // Make sure there are enough WSOL available in WSOL ATA
       preInstructions.push(
         ...(await createPrepareWSOLAccountInstructions({
-          // mintA means swap WSOL
-          // mintB means position is in WSOL
-          // TODO: provide right enough
-          amount: mintA.equals(NATIVE_MINT)
-            ? new BN(amountA.toNumber() * 1.1)
+          // collateralMint means swap WSOL
+          // mint means position is in WSOL
+          amount: collateralMint.equals(NATIVE_MINT)
+            ? collateralAmount
             : new BN(0),
           connection: this.connection,
           owner,
@@ -1738,45 +1881,32 @@ export class AdrenaClient {
       );
     }
 
-    const receivingAccount = findATAAddressSync(owner, mintB);
+    const mintATA = findATAAddressSync(owner, mint);
 
-    if (!(await isATAInitialized(this.connection, receivingAccount))) {
+    if (!(await isATAInitialized(this.connection, mintATA))) {
       preInstructions.push(
         this.createATAInstruction({
-          ataAddress: receivingAccount,
-          mint: mintB,
+          ataAddress: mintATA,
+          mint,
           owner,
         }),
       );
     }
 
-    const [swapTx, openPositionTx] = await Promise.all([
-      this.buildSwapTx({
-        owner,
-        amountIn: amountA,
-        // TODO: collateral should take into account swap fees
-        // For now disable slippage
-        minAmountOut: new BN(0),
-        mintA,
-        mintB,
-      }).instruction(),
-
-      this.buildOpenPositionTx({
-        owner,
-        mint: mintB,
-        price,
-        collateralMint: mintB,
-        collateralAmount,
-        size,
-        side: 'long',
-      }).instruction(),
-    ]);
+    const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
+      owner,
+      mint,
+      price,
+      collateralMint,
+      collateralAmount,
+      size,
+      side: 'long',
+    }).instruction();
 
     const transaction = new Transaction();
     transaction.add(
       ...preInstructions,
-      swapTx,
-      openPositionTx,
+      openPositionWithSwapIx,
       ...postInstructions,
     );
 
@@ -2779,6 +2909,67 @@ export class AdrenaClient {
           dispensingCustody: tokenOut.custody,
           dispensingCustodyOracleAccount:
             custodyOut.nativeObject.oracle.oracleAccount,
+        },
+      },
+    );
+  }
+
+  public async getOpenPositionWithSwapAmountAndFees({
+    mint,
+    collateralMint,
+    collateralAmount,
+    size,
+    side,
+  }: {
+    mint: PublicKey;
+    collateralMint: PublicKey;
+    collateralAmount: BN;
+    size: BN;
+    side: 'long' | 'short';
+  }): Promise<OpenPositionWithSwapAmountAndFees | null> {
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    const principalCustody = this.getCustodyByMint(mint);
+    const principalCustodyOracleAccount =
+      principalCustody.nativeObject.oracle.oracleAccount;
+
+    const receivingCustody = this.getCustodyByMint(collateralMint);
+    const receivingCustodyOracleAccount =
+      receivingCustody.nativeObject.oracle.oracleAccount;
+
+    const instructionCollateralMint = (() => {
+      if (side === 'long') {
+        return principalCustody.mint;
+      }
+
+      return this.getUsdcToken().mint;
+    })();
+
+    const collateralCustody = this.getCustodyByMint(instructionCollateralMint);
+    const collateralCustodyOracleAccount =
+      collateralCustody.nativeObject.oracle.oracleAccount;
+
+    return this.readonlyAdrenaProgram.views.getOpenPositionWithSwapAmountAndFees(
+      {
+        collateralAmount: collateralAmount,
+        size,
+        // use any to force typing to be accepted - anchor typing is broken
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        side: { [side]: {} } as any,
+      },
+      {
+        accounts: {
+          perpetuals: AdrenaClient.perpetualsAddress,
+          pool: this.mainPool.pubkey,
+          receivingCustody: receivingCustody.pubkey,
+          receivingCustodyOracleAccount,
+          collateralCustody: collateralCustody.pubkey,
+          collateralCustodyOracleAccount,
+          principalCustody: principalCustody.pubkey,
+          principalCustodyOracleAccount,
+          perpetualsProgram: this.readonlyAdrenaProgram.programId,
         },
       },
     );

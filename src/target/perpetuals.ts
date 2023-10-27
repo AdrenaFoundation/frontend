@@ -2363,6 +2363,67 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'getOpenPositionWithSwapAmountAndFees';
+      accounts: [
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'receivingCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'receivingCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'principalCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'principalCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'perpetualsProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'GetOpenPositionWithSwapAmountAndFeesParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'OpenPositionWithSwapAmountAndFees';
+      };
+    },
+    {
       name: 'getExitPriceAndFee';
       accounts: [
         {
@@ -4804,6 +4865,28 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'GetOpenPositionWithSwapAmountAndFeesParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'collateralAmount';
+            type: 'u64';
+          },
+          {
+            name: 'size';
+            type: 'u64';
+          },
+          {
+            name: 'side';
+            type: {
+              defined: 'Side';
+            };
+          },
+        ];
+      };
+    },
+    {
       name: 'GetOraclePriceParams';
       type: {
         kind: 'struct';
@@ -5816,6 +5899,34 @@ export type Perpetuals = {
           },
           {
             name: 'fee';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'OpenPositionWithSwapAmountAndFees';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'entryPrice';
+            type: 'u64';
+          },
+          {
+            name: 'liquidationPrice';
+            type: 'u64';
+          },
+          {
+            name: 'swapFeeIn';
+            type: 'u64';
+          },
+          {
+            name: 'swapFeeOut';
+            type: 'u64';
+          },
+          {
+            name: 'openPositionFee';
             type: 'u64';
           },
         ];
@@ -8783,6 +8894,67 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'getOpenPositionWithSwapAmountAndFees',
+      accounts: [
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'receivingCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'receivingCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'principalCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'principalCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'perpetualsProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'GetOpenPositionWithSwapAmountAndFeesParams',
+          },
+        },
+      ],
+      returns: {
+        defined: 'OpenPositionWithSwapAmountAndFees',
+      },
+    },
+    {
       name: 'getExitPriceAndFee',
       accounts: [
         {
@@ -11224,6 +11396,28 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'GetOpenPositionWithSwapAmountAndFeesParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'collateralAmount',
+            type: 'u64',
+          },
+          {
+            name: 'size',
+            type: 'u64',
+          },
+          {
+            name: 'side',
+            type: {
+              defined: 'Side',
+            },
+          },
+        ],
+      },
+    },
+    {
       name: 'GetOraclePriceParams',
       type: {
         kind: 'struct',
@@ -12236,6 +12430,34 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'fee',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'OpenPositionWithSwapAmountAndFees',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'entryPrice',
+            type: 'u64',
+          },
+          {
+            name: 'liquidationPrice',
+            type: 'u64',
+          },
+          {
+            name: 'swapFeeIn',
+            type: 'u64',
+          },
+          {
+            name: 'swapFeeOut',
+            type: 'u64',
+          },
+          {
+            name: 'openPositionFee',
             type: 'u64',
           },
         ],

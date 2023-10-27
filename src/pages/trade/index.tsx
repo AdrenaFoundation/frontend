@@ -230,28 +230,23 @@ export default function Trade({
       throw new Error('Not handled yet');
     }
 
-    let price: BN;
-    let size: BN;
-    let collateralAmount: BN;
+    const collateralAmount = uiToNative(inputAValue, tokenA.decimals);
+    const size = uiToNative(inputBValue, tokenB.decimals);
 
-    try {
-      const ret =
-        await window.adrena.client.prepareOpenPositionWithConditionalSwap({
-          tokenA,
-          tokenB,
-          amountA: uiToNative(inputAValue, tokenA.decimals),
-          amountB: uiToNative(inputBValue, tokenB.decimals),
-          leverage,
-          side: selectedAction,
-        });
+    const openPositionWithSwapAmountAndFees =
+      await window.adrena.client.getOpenPositionWithSwapAmountAndFees({
+        collateralMint: tokenA.mint,
+        mint: tokenB.mint,
+        collateralAmount,
+        size,
+        side: selectedAction,
+      });
 
-      price = ret.price;
-      size = ret.size;
-      collateralAmount = ret.collateralAmount;
-    } catch (e) {
+    if (!openPositionWithSwapAmountAndFees) {
       return addNotification({
-        type: 'info',
-        title: String(e),
+        title: 'Error Opening Position',
+        type: 'error',
+        message: 'Error calculating fees',
       });
     }
 
@@ -264,10 +259,9 @@ export default function Trade({
         const txHash =
           await window.adrena.client.openLongPositionWithConditionalSwap({
             owner: new PublicKey(wallet.publicKey),
-            mintA: tokenA.mint,
-            mintB: tokenB.mint,
-            amountA: uiToNative(inputAValue, tokenA.decimals),
-            price,
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
             size,
           });
@@ -293,31 +287,32 @@ export default function Trade({
     // Handle short
     //
 
-    try {
-      const txHash =
-        await window.adrena.client.openShortPositionWithConditionalSwap({
-          owner: new PublicKey(wallet.publicKey),
-          mintA: tokenA.mint,
-          mintB: tokenB.mint,
-          amountA: uiToNative(inputAValue, tokenA.decimals),
-          price,
-          collateralAmount,
-          size,
-        });
+    // try {
+    //   // TODO: migrate to new single ix
+    //   const txHash =
+    //     await window.adrena.client.openShortPositionWithConditionalSwap({
+    //       owner: new PublicKey(wallet.publicKey),
+    //       mintA: tokenA.mint,
+    //       mintB: tokenB.mint,
+    //       amountA: uiToNative(inputAValue, tokenA.decimals),
+    //       price,
+    //       collateralAmount,
+    //       size,
+    //     });
 
-      triggerPositionsReload();
-      triggerWalletTokenBalancesReload();
+    //   triggerPositionsReload();
+    //   triggerWalletTokenBalancesReload();
 
-      return addSuccessTxNotification({
-        title: 'Successfully Opened Position',
-        txHash,
-      });
-    } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Opening Position',
-        error,
-      });
-    }
+    //   return addSuccessTxNotification({
+    //     title: 'Successfully Opened Position',
+    //     txHash,
+    //   });
+    // } catch (error) {
+    //   return addFailedTxNotification({
+    //     title: 'Error Opening Position',
+    //     error,
+    //   });
+    // }
   };
 
   const buttonTitle = (() => {
