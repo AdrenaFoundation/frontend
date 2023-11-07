@@ -1,6 +1,8 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
+import useDatafeed from '@/hooks/useDatafeed';
 import { Token } from '@/types';
+// import datafeed from './TradingView/datafeed';
 
 let tvScriptLoadingPromise: Promise<unknown>;
 
@@ -12,20 +14,8 @@ export default function TradingChart({ token }: { token: Token }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
 
-  const chartOverrides = {
-    'paneProperties.background': '#151515',
-    'paneProperties.backgroundGradientStartColor': '#151515',
-    'paneProperties.backgroundGradientEndColor': '#151515',
-    'paneProperties.backgroundType': 'solid',
-    'paneProperties.vertGridProperties.color': 'rgba(35, 38, 59, 1)',
-    'paneProperties.vertGridProperties.style': 2,
-    'paneProperties.horzGridProperties.color': 'rgba(35, 38, 59, 1)',
-    'paneProperties.horzGridProperties.style': 2,
-    'mainSeriesProperties.priceLineColor': '#3a3e5e',
-    'scalesProperties.textColor': '#fff',
-    'scalesProperties.lineColor': '#16182e',
-    'linetooltrendline.linecolor': '#151515',
-  };
+  const disabledFeatures = ['header_widget', 'use_localstorage_for_settings'];
+  const datafeed = useDatafeed();
 
   useEffect(() => {
     function createWidget() {
@@ -34,39 +24,36 @@ export default function TradingChart({ token }: { token: Token }) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const widget = new (window.TradingView as any).widget({
           container_id: 'chart-area',
+          library_path: '/charting_library/',
           width: '100%',
           height: '100%',
           autosize: true,
-          symbol: `PYTH:${token.symbol}USD`,
-          interval: 'D',
+          symbol: `Bitfinex:${token.symbol}/USD`,
+          interval: '1D',
           timezone: 'UTC',
           locale: 'en',
           save_image: true,
           allow_symbol_change: false,
           editablewatchlist: false,
-          backgroundColor: '#080808',
-          toolbar_bg: '#f4f7f9',
+          backgroundColor: '#151515',
+          toolbar_bg: '#080808',
+          datafeed: datafeed,
           loading_screen: {
-            backgroundColor: '#151515',
-            foregroundColor: '#080808',
+            backgroundColor: '#080808',
+            foregroundColor: '#151515',
           },
-          overrides: chartOverrides,
-          hotlist: false,
-          hidevolume: true,
-          disabled_features: [
-            'symbol_search_hot_key',
-            'header_compare',
-            'compare_symbol',
-            'border_around_the_chart',
-            'add_to_watchlist',
-          ],
+          header_widget_dom_node: false,
+          disabled_features: disabledFeatures,
           enabled_features: [
             'header_fullscreen_button',
             'hide_left_toolbar_by_default',
           ],
 
-          // Styling
-          custom_css_url: '/test.css',
+          custom_css_url: '/tradingview.css',
+          overrides: {
+            'paneProperties.background': '#080808',
+            'paneProperties.backgroundType': 'solid',
+          },
           theme: 'dark',
         });
 
@@ -83,7 +70,7 @@ export default function TradingChart({ token }: { token: Token }) {
       tvScriptLoadingPromise = new Promise((resolve) => {
         const script = document.createElement('script');
         script.id = 'tradingview-widget-loading-script';
-        script.src = 'https://s3.tradingview.com/tv.js';
+        script.src = '/charting_library/charting_library.js';
         script.type = 'text/javascript';
         script.onload = resolve;
 
@@ -99,19 +86,19 @@ export default function TradingChart({ token }: { token: Token }) {
 
     // Only trigger it onces when the chart load
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [token]);
 
-  useEffect(() => {
-    if (!widget) return;
+  // useEffect(() => {
+  //   if (!widget) return;
 
-    widget.options.symbol = `PYTH:${token.symbol}USD`;
+  //   widget.options.symbol = `Bitfinex:${token.symbol}USD`;
 
-    widget.reload();
-  }, [token, widget]);
+  //   widget.reload();
+  // }, [token, widget]);
 
   return (
-    <div className="flex flex-col w-full">
-      <div id="chart-area" />
+    <div className="flex flex-col w-full mb-5 border border-gray-300 rounded-lg rounded-t-none overflow-hidden">
+      <div id="chart-area" className="h-full rounded-b-lg" />
       <div className="tradingview-widget-copyright"></div>
     </div>
   );

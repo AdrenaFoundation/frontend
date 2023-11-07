@@ -1,4 +1,5 @@
 import { Head, Html, Main, NextScript } from 'next/document';
+import Script from 'next/script';
 
 export default function Document() {
   return (
@@ -17,6 +18,12 @@ export default function Document() {
       </Head>
       <body>
         <Main />
+
+        <Script
+          src="charting_library/charting_library.standalone.js"
+          strategy="lazyOnload"
+        ></Script>
+
         <NextScript />
       </body>
     </Html>

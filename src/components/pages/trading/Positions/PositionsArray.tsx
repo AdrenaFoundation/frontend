@@ -118,7 +118,10 @@ export default function PositionsArray({
             'Market Price',
             'Liq. Price',
           ].map((header) => (
-            <th className="text-xs text-left opacity-50" key={header}>
+            <th
+              className="text-xs text-left opacity-50 font-medium"
+              key={header}
+            >
               {header}
             </th>
           ))}
@@ -138,6 +141,7 @@ export default function PositionsArray({
               className={twMerge(
                 'flex-col justify-center items-start',
                 columnStyle,
+                i === 0 && 'pt-3',
               )}
             >
               <div className="flex flex-row gap-2">
