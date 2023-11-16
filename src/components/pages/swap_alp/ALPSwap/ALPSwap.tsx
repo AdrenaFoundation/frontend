@@ -209,7 +209,6 @@ export default function ALPSwap({
             collateralPrice={collateralPrice}
             setAlpPrice={setAlpPrice}
             setCollateralPrice={setCollateralPrice}
-            feesAndAmounts={feesAndAmounts}
             setIsFeesLoading={setIsFeesLoading}
           />
 

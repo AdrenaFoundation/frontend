@@ -2,7 +2,6 @@ import { IdlAccounts, Program, Wallet } from '@coral-xyz/anchor';
 import {
   AllInstructionsMap,
   IdlTypes,
-  InstructionContextFnArgs,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
