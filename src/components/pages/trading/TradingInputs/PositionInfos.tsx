@@ -61,8 +61,7 @@ export default function PositionInfos({
             tokenA,
             tokenB,
             amountA: uiToNative(inputA, tokenA.decimals),
-            amountB: uiToNative(inputB, tokenB.decimals).div(new BN(leverage)),
-            leverage,
+            amountB: uiToNative(inputB, tokenB.decimals),
             side,
             tokenPrices,
           });

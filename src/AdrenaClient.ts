@@ -1547,7 +1547,6 @@ export class AdrenaClient {
     tokenB,
     amountA,
     amountB,
-    leverage,
     side,
     tokenPrices,
   }: {
@@ -1555,7 +1554,6 @@ export class AdrenaClient {
     tokenB: Token;
     amountA: BN;
     amountB: BN;
-    leverage: number;
     side: 'long' | 'short';
     tokenPrices: TokenPricesState;
   }): Promise<{
@@ -1566,7 +1564,6 @@ export class AdrenaClient {
     liquidationPrice: number;
   }> {
     const usdcToken = this.getUsdcToken();
-    let swapFeeUsd: null | number = null;
 
     const tokenAPrice = tokenPrices[tokenA.symbol];
     const tokenBPrice = tokenPrices[tokenB.symbol];
@@ -1579,102 +1576,51 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
-    if (side === 'long') {
-      let collateralAmount: BN = amountB.div(new BN(leverage));
+    const collateralAmount: BN = amountA;
 
-      // if the tokens are not the same then we need to swap tokenA for tokenB
-      if (!tokenA.mint.equals(tokenB.mint)) {
-        const swapAmountAndFees = await this.getSwapAmountAndFees({
-          tokenIn: tokenA,
-          tokenOut: tokenB,
-          amountIn: amountA,
-        });
-
-        if (!swapAmountAndFees)
-          throw new Error('Cannot calculate swap amount and fees');
-
-        // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-        collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-
-        swapFeeUsd =
-          nativeToUi(swapAmountAndFees.feeIn, tokenA.decimals) * tokenAPrice +
-          nativeToUi(swapAmountAndFees.feeOut, tokenB.decimals) * tokenBPrice;
-      }
-
-      const entryPriceAndFee = await this.getEntryPriceAndFee({
-        token: tokenB,
-        collateralToken: tokenB,
-        collateralAmount,
-        size: amountB,
-        side: 'long',
-      });
-
-      if (!entryPriceAndFee)
-        throw new Error('Cannot calculate open position price and fees');
-
-      const openPositionFeeUsd =
-        nativeToUi(entryPriceAndFee.fee, tokenB.decimals) * tokenBPrice;
-
-      // calculate and return fee amount in usd
-      return {
-        swapFeeUsd,
-        openPositionFeeUsd,
-        totalFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
-        entryPrice: nativeToUi(entryPriceAndFee.entryPrice, PRICE_DECIMALS),
-        liquidationPrice: nativeToUi(
-          entryPriceAndFee.liquidationPrice,
-          PRICE_DECIMALS,
-        ),
-      };
-    }
-
-    let collateralAmount: BN = amountA;
-    let collateralToken: Token = tokenA;
-
-    // If the collateral token is not a stable, need to swap for it
-    if (!this.isTokenStable(tokenA.mint)) {
-      const swapAmountAndFees = await this.getSwapAmountAndFees({
-        tokenIn: tokenA,
-        tokenOut: usdcToken,
-        amountIn: amountA,
-      });
-
-      if (!swapAmountAndFees)
-        throw new Error('Cannot calculate swap amount and fees');
-
-      // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-      collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-      collateralToken = usdcToken;
-
-      swapFeeUsd =
-        nativeToUi(swapAmountAndFees.feeIn, tokenA.decimals) * tokenAPrice +
-        nativeToUi(swapAmountAndFees.feeOut, usdcToken.decimals) * tokenBPrice;
-    }
-
-    const entryPriceAndFee = await this.getEntryPriceAndFee({
-      token: tokenB,
-      collateralToken,
+    const info = await this.getOpenPositionWithSwapAmountAndFees({
+      mint: tokenB.mint,
+      collateralMint: tokenA.mint,
       collateralAmount,
       size: amountB,
-      side: 'short',
+      side,
     });
 
-    if (!entryPriceAndFee)
-      throw new Error('Cannot calculate open position price and fees');
+    if (info === null) throw new Error('cannot calculate fees');
+
+    const {
+      entryPrice,
+      liquidationPrice,
+      swapFeeIn,
+      swapFeeOut,
+      openPositionFee,
+    } = info;
+
+    const { swapedTokenDecimals, swapedTokenPrice } =
+      side === 'long'
+        ? {
+            swapedTokenDecimals: tokenB.decimals,
+            swapedTokenPrice: tokenBPrice,
+          }
+        : {
+            swapedTokenDecimals: usdcToken.decimals,
+            swapedTokenPrice: usdcTokenPrice,
+          };
+
+    const swapFeeUsd =
+      nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
+      nativeToUi(swapFeeOut, swapedTokenDecimals) * swapedTokenPrice;
 
     const openPositionFeeUsd =
-      nativeToUi(entryPriceAndFee.fee, usdcToken.decimals) * usdcTokenPrice;
+      nativeToUi(openPositionFee, tokenB.decimals) * tokenBPrice;
 
     // calculate and return fee amount in usd
     return {
       swapFeeUsd,
       openPositionFeeUsd,
-      totalFeeUsd: swapFeeUsd ?? 0 + openPositionFeeUsd,
-      entryPrice: nativeToUi(entryPriceAndFee.entryPrice, PRICE_DECIMALS),
-      liquidationPrice: nativeToUi(
-        entryPriceAndFee.liquidationPrice,
-        PRICE_DECIMALS,
-      ),
+      totalFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
+      entryPrice: nativeToUi(entryPrice, PRICE_DECIMALS),
+      liquidationPrice: nativeToUi(liquidationPrice, PRICE_DECIMALS),
     };
   }
 
