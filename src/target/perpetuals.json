@@ -2420,7 +2420,7 @@
         }
       ],
       "returns": {
-        "defined": "state::perpetuals::OpenPositionWithSwapAmountAndFees"
+        "defined": "OpenPositionWithSwapAmountAndFees"
       }
     },
     {

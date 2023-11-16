@@ -287,32 +287,30 @@ export default function Trade({
     // Handle short
     //
 
-    // try {
-    //   // TODO: migrate to new single ix
-    //   const txHash =
-    //     await window.adrena.client.openShortPositionWithConditionalSwap({
-    //       owner: new PublicKey(wallet.publicKey),
-    //       mintA: tokenA.mint,
-    //       mintB: tokenB.mint,
-    //       amountA: uiToNative(inputAValue, tokenA.decimals),
-    //       price,
-    //       collateralAmount,
-    //       size,
-    //     });
+    try {
+      const txHash =
+        await window.adrena.client.openShortPositionWithConditionalSwap({
+          owner: new PublicKey(wallet.publicKey),
+          collateralMint: tokenA.mint,
+          mint: tokenB.mint,
+          price: openPositionWithSwapAmountAndFees.entryPrice,
+          collateralAmount,
+          size,
+        });
 
-    //   triggerPositionsReload();
-    //   triggerWalletTokenBalancesReload();
+      triggerPositionsReload();
+      triggerWalletTokenBalancesReload();
 
-    //   return addSuccessTxNotification({
-    //     title: 'Successfully Opened Position',
-    //     txHash,
-    //   });
-    // } catch (error) {
-    //   return addFailedTxNotification({
-    //     title: 'Error Opening Position',
-    //     error,
-    //   });
-    // }
+      return addSuccessTxNotification({
+        title: 'Successfully Opened Position',
+        txHash,
+      });
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Opening Position',
+        error,
+      });
+    }
   };
 
   const buttonTitle = (() => {

@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountInstruction,
   NATIVE_MINT,
@@ -14,6 +15,8 @@ import {
   SystemProgram,
   Transaction,
   TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
 } from '@solana/web3.js';
 
 import { Perpetuals } from '@/target/perpetuals';
@@ -1298,11 +1301,25 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
+
+    const collateralCustody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.collateralCustody),
     );
 
-    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+    if (!collateralCustody) {
+      throw new Error('Cannot find collateral custody related to position');
+    }
+
+    const collateralCustodyOracleAccount =
+      collateralCustody.nativeObject.oracle.oracleAccount;
+    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
+      collateralCustody.mint,
+    );
+
+    const receivingAccount = findATAAddressSync(
+      position.owner,
+      collateralCustody.mint,
+    );
 
     console.log('Close position:', {
       position: position.pubkey.toBase58(),
@@ -1363,7 +1380,7 @@ export class AdrenaClient {
       position: position.pubkey,
       custody: position.custody,
       custodyOracleAccount,
-      collateralCustody: custody.pubkey,
+      collateralCustody: collateralCustody.pubkey,
       tokenProgram: TOKEN_PROGRAM_ID,
       lmTokenAccount,
       lmStaking,
@@ -1379,8 +1396,8 @@ export class AdrenaClient {
       lmTokenMint: this.lmTokenMint,
       stakingRewardTokenMint,
       perpetualsProgram: this.adrenaProgram.programId,
-      collateralCustodyOracleAccount: custodyOracleAccount,
-      collateralCustodyTokenAccount: custodyTokenAccount,
+      collateralCustodyOracleAccount,
+      collateralCustodyTokenAccount,
     };
 
     return this.signAndExecuteTx(
@@ -1411,35 +1428,21 @@ export class AdrenaClient {
   }
 
   // When shorting, stable token must be used.
-  //   -> Needs to swap tokenA for stable token before shorting.
-  //
-  // Example:
-  // --------------
-  // > mintA is ETH
-  // > mintB is BTC
-  // > amountA is 1000000
-  // > collateralAmount is 2000000
-  // > size is 5000000
-  //
-  // Swap 1 ETH for X USDC, then open short position for 5 BTC (will result in X multiplier)
   public async openShortPositionWithConditionalSwap({
     owner,
-    mintA,
-    mintB,
+    collateralMint,
+    mint,
     price,
-    // used to know how much tokenA to swap for tokenB to open the position
-    amountA,
-    // amount of tokenB used as collateral provided for the position
+    // amount of collateralMint token provided as collateral
     collateralAmount,
     // the amount of tokenB to open a position for
     // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
     size,
   }: {
     owner: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
+    collateralMint: PublicKey;
+    mint: PublicKey;
     price: BN;
-    amountA: BN;
     collateralAmount: BN;
     size: BN;
   }) {
@@ -1447,12 +1450,12 @@ export class AdrenaClient {
       throw new Error('no connection');
     }
 
-    if (this.isTokenStable(mintA)) {
+    if (this.isTokenStable(collateralMint)) {
       return this.openPosition({
         owner,
-        mint: mintB,
+        mint,
         price,
-        collateralMint: mintA,
+        collateralMint,
         collateralAmount,
         size,
         side: 'short',
@@ -1470,14 +1473,15 @@ export class AdrenaClient {
 
     preInstructions.push(modifyComputeUnitsIx);
 
-    if (mintA.equals(NATIVE_MINT)) {
+    if (collateralMint.equals(NATIVE_MINT) || mint.equals(NATIVE_MINT)) {
       const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
 
       // Make sure there are enough WSOL available in WSOL ATA
       preInstructions.push(
         ...(await createPrepareWSOLAccountInstructions({
-          // TODO: how much should we provide here?
-          amount: applySlippage(amountA, 0.3),
+          amount: collateralMint.equals(NATIVE_MINT)
+            ? collateralAmount
+            : new BN(0),
           connection: this.connection,
           owner,
           wsolATA,
@@ -1492,12 +1496,12 @@ export class AdrenaClient {
         }),
       );
     } else {
-      const receivingAccount = findATAAddressSync(owner, usdcToken.mint);
+      const usdcAta = findATAAddressSync(owner, usdcToken.mint);
 
-      if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      if (!(await isATAInitialized(this.connection, usdcAta))) {
         preInstructions.push(
           this.createATAInstruction({
-            ataAddress: receivingAccount,
+            ataAddress: usdcAta,
             mint: usdcToken.mint,
             owner,
           }),
@@ -1517,36 +1521,20 @@ export class AdrenaClient {
       );
     }
 
-    const [swapTx, openPositionTx] = await Promise.all([
-      //
-      // Swap mintA for USDC to be used a collateral for the short position
-      //
-      this.buildSwapTx({
-        owner,
-        amountIn: amountA,
-        // TODO: collateral should take into account swap fees
-        // For now disable slippage
-        minAmountOut: new BN(0),
-        mintA,
-        mintB: usdcToken.mint,
-      }).instruction(),
-
-      this.buildOpenPositionTx({
-        owner,
-        mint: mintB,
-        price,
-        collateralMint: usdcToken.mint,
-        collateralAmount,
-        size,
-        side: 'short',
-      }).instruction(),
-    ]);
+    const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
+      owner,
+      mint,
+      price,
+      collateralMint,
+      collateralAmount,
+      size,
+      side: 'short',
+    }).instruction();
 
     const transaction = new Transaction();
     transaction.add(
       ...preInstructions,
-      swapTx,
-      openPositionTx,
+      openPositionWithSwapIx,
       ...postInstructions,
     );
 
@@ -1687,105 +1675,6 @@ export class AdrenaClient {
         entryPriceAndFee.liquidationPrice,
         PRICE_DECIMALS,
       ),
-    };
-  }
-
-  // Get every infos required to call the open position with swap
-  // @deprecated
-  public async prepareOpenPositionWithConditionalSwap({
-    tokenA,
-    tokenB,
-    amountA,
-    amountB,
-    leverage,
-    side,
-  }: {
-    tokenA: Token;
-    tokenB: Token;
-    amountA: BN;
-    amountB: BN;
-    leverage: number;
-    side: 'long' | 'short';
-  }): Promise<{
-    price: BN;
-    size: BN;
-    collateralToken: Token;
-    collateralAmount: BN;
-  }> {
-    if (side === 'long') {
-      let collateralAmount: BN = amountB.div(new BN(leverage));
-
-      // if the tokens are not the same then we need to swap tokenA for tokenB
-      if (!tokenA.mint.equals(tokenB.mint)) {
-        const swapAmountAndFees = await this.getSwapAmountAndFees({
-          tokenIn: tokenA,
-          tokenOut: tokenB,
-          amountIn: amountA,
-        });
-
-        if (!swapAmountAndFees)
-          throw new Error('Cannot calculate swap amount and fees');
-
-        // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-        collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-      }
-
-      const entryPriceAndFee = await this.getEntryPriceAndFee({
-        token: tokenB,
-        collateralToken: tokenB,
-        collateralAmount,
-        size: amountB,
-        side: 'long',
-      });
-
-      if (!entryPriceAndFee)
-        throw new Error('Cannot calculate open position price and fees');
-
-      return {
-        price: entryPriceAndFee.entryPrice,
-        size: amountB,
-        collateralAmount,
-        collateralToken: tokenB,
-      };
-    }
-
-    let collateralAmount: BN = amountA;
-    let collateralToken: Token = tokenA;
-
-    // If the collateral token is not a stable, need to swap for it
-    if (!this.isTokenStable(tokenA.mint)) {
-      const usdcToken = this.getUsdcToken();
-
-      const swapAmountAndFees = await this.getSwapAmountAndFees({
-        tokenIn: tokenA,
-        tokenOut: usdcToken,
-        amountIn: amountA,
-      });
-
-      if (!swapAmountAndFees)
-        throw new Error('Cannot calculate swap amount and fees');
-
-      // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-      collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-      collateralToken = usdcToken;
-    }
-
-    const entryPriceAndFee = await this.getEntryPriceAndFee({
-      token: tokenB,
-      collateralToken,
-      collateralAmount,
-      size: amountB,
-      side: 'short',
-    });
-
-    if (!entryPriceAndFee)
-      throw new Error('Cannot calculate open position price and fees');
-
-    return {
-      price: entryPriceAndFee.entryPrice,
-      size: amountB,
-      collateralAmount,
-      collateralToken,
     };
   }
 
@@ -2951,27 +2840,32 @@ export class AdrenaClient {
     const collateralCustodyOracleAccount =
       collateralCustody.nativeObject.oracle.oracleAccount;
 
-    return this.readonlyAdrenaProgram.views.getOpenPositionWithSwapAmountAndFees(
-      {
+    // Anchor is bugging when calling a view, that is making CPI calls inside
+    // Need to do it manually, so we can get the correct amounts
+    const instruction = await this.readonlyAdrenaProgram.methods
+      .getOpenPositionWithSwapAmountAndFees({
         collateralAmount: collateralAmount,
         size,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
-      },
-      {
-        accounts: {
-          perpetuals: AdrenaClient.perpetualsAddress,
-          pool: this.mainPool.pubkey,
-          receivingCustody: receivingCustody.pubkey,
-          receivingCustodyOracleAccount,
-          collateralCustody: collateralCustody.pubkey,
-          collateralCustodyOracleAccount,
-          principalCustody: principalCustody.pubkey,
-          principalCustodyOracleAccount,
-          perpetualsProgram: this.readonlyAdrenaProgram.programId,
-        },
-      },
+      })
+      .accounts({
+        perpetuals: AdrenaClient.perpetualsAddress,
+        pool: this.mainPool.pubkey,
+        receivingCustody: receivingCustody.pubkey,
+        receivingCustodyOracleAccount,
+        collateralCustody: collateralCustody.pubkey,
+        collateralCustodyOracleAccount,
+        principalCustody: principalCustody.pubkey,
+        principalCustodyOracleAccount,
+        perpetualsProgram: this.readonlyAdrenaProgram.programId,
+      })
+      .instruction();
+
+    return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
+      [instruction],
+      'OpenPositionWithSwapAmountAndFees',
     );
   }
 
@@ -3451,6 +3345,51 @@ export class AdrenaClient {
       throw new Error(`Cannot find custody for mint ${mint.toBase58()}`);
 
     return custody;
+  }
+
+  // Used to bypass "views" to workaround anchor bug with .views having CPI calls
+  protected async simulateInstructions<T>(
+    instructions: TransactionInstruction[],
+    typeName: string,
+  ): Promise<T> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const messageV0 = new TransactionMessage({
+      payerKey: wallet.publicKey,
+      recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+      instructions,
+    }).compileToV0Message();
+
+    const versionnedTransaction = new VersionedTransaction(messageV0);
+
+    const result = await this.connection.simulateTransaction(
+      versionnedTransaction,
+      {
+        sigVerify: false,
+      },
+    );
+
+    if (result.value.err) {
+      const adrenaError = parseTransactionError(
+        this.adrenaProgram,
+        result.value.err,
+      );
+      throw adrenaError;
+    }
+
+    const returnDataEncoded = result.value.returnData?.data[0] ?? null;
+
+    if (returnDataEncoded == null) {
+      throw new Error('View expected return data');
+    }
+
+    const returnData = base64.decode(returnDataEncoded);
+
+    return this.readonlyAdrenaProgram.coder.types.decode(typeName, returnData);
   }
 
   protected async signAndExecuteTx(transaction: Transaction): Promise<string> {
