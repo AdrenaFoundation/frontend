@@ -250,53 +250,24 @@ export default function Trade({
       });
     }
 
-    //
-    // Handle long
-    //
-
-    if (selectedAction === 'long') {
-      try {
-        const txHash =
-          await window.adrena.client.openLongPositionWithConditionalSwap({
+    try {
+      const txHash = await (selectedAction === 'long'
+        ? window.adrena.client.openLongPositionWithConditionalSwap({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
             mint: tokenB.mint,
             price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
             size,
-          });
-
-        triggerPositionsReload();
-        triggerWalletTokenBalancesReload();
-
-        return addSuccessTxNotification({
-          title: 'Successfully Opened Position',
-          txHash,
-        });
-      } catch (error) {
-        return addFailedTxNotification({
-          title: 'Error Opening Position',
-          error,
-        });
-      }
-
-      return;
-    }
-
-    //
-    // Handle short
-    //
-
-    try {
-      const txHash =
-        await window.adrena.client.openShortPositionWithConditionalSwap({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: openPositionWithSwapAmountAndFees.entryPrice,
-          collateralAmount,
-          size,
-        });
+          })
+        : window.adrena.client.openShortPositionWithConditionalSwap({
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: openPositionWithSwapAmountAndFees.entryPrice,
+            collateralAmount,
+            size,
+          }));
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
