@@ -285,8 +285,6 @@ export default function Trade({
           error,
         });
       }
-
-      return;
     }
 
     //
@@ -369,7 +367,7 @@ export default function Trade({
 
   return (
     <div className="w-full flex flex-col items-center xl:flex-row xl:justify-center xl:items-start">
-      <div className="flex flex-col w-full h-full xl:w-[60%] xl:max-w-[60em]">
+      <div className="flex flex-col w-full h-full xl:w-[80%] xl:max-w-[90em]">
         {/* Trading chart header */}
         {tokenB ? (
           <TradingChartHeader
@@ -389,13 +387,15 @@ export default function Trade({
           {/* Display trading chart for appropriate token */}
           {tokenA && tokenB ? (
             <>
-              {selectedAction === 'short' || selectedAction === 'long' ? (
-                <TradingChart token={tokenB} />
-              ) : null}
-
-              {selectedAction === 'swap' ? (
-                <TradingChart token={tokenA.isStable ? tokenB : tokenA} />
-              ) : null}
+              <TradingChart
+                token={
+                  selectedAction === 'short' || selectedAction === 'long'
+                    ? tokenB
+                    : tokenA.isStable
+                    ? tokenB
+                    : tokenA
+                }
+              />
             </>
           ) : null}
         </div>

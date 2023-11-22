@@ -1,6 +1,7 @@
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
 
+import { ResolutionString } from '../public/charting_library/charting_library';
 import { LockPeriod, WalletAdapterName } from './types';
 
 export const walletAdapters: Record<
@@ -76,3 +77,15 @@ export const STAKE_MULTIPLIERS: {
     votes: 1.95,
   },
 };
+
+export const SUPPORTED_RESOLUTIONS = [
+  '1',
+  '3',
+  '5',
+  '15',
+  '30',
+  '60',
+  '120',
+  '240',
+  '1D',
+] as ResolutionString[];
