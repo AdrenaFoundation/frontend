@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
+import Lottie from 'lottie-react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -20,6 +21,9 @@ import {
   addSuccessTxNotification,
   uiToNative,
 } from '@/utils';
+
+import monsterRightData from '../../../public/animations/monster-right-lrg-head.json';
+import topLeftData from '../../../public/animations/monster-top-left.json';
 
 type Action = 'long' | 'short' | 'swap';
 
@@ -365,143 +369,194 @@ export default function Trade({
     return 'Open Position';
   })();
 
+  const renderSettings = {
+    preserveAspectRatio: 'xMidYMid slice',
+    className: 'lottie-svg-class',
+  };
+
   return (
-    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start">
-      <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
-        {/* Trading chart header */}
-        {tokenB ? (
-          <TradingChartHeader
-            tokenList={
-              selectedAction === 'short' || selectedAction === 'long'
-                ? window.adrena.client.tokens.filter((t) => !t.isStable)
-                : window.adrena.client.tokens
-            }
-            selected={tokenB}
-            onChange={(t: Token) => {
-              setTokenB(t);
-            }}
-          />
-        ) : null}
+    <>
+      <div>
+        <Lottie
+          rendererSettings={renderSettings}
+          animationData={topLeftData}
+          loop={true}
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '50%',
+            width: '50%',
+            height: '50%',
+            filter: 'drop-shadow(0px 0px 40px #000)',
+          }}
+        />
 
-        <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
-          {/* Display trading chart for appropriate token */}
-          {tokenA && tokenB ? (
-            <>
-              <TradingChart
-                token={
-                  selectedAction === 'short' || selectedAction === 'long'
-                    ? tokenB
-                    : tokenA.isStable
-                    ? tokenB
-                    : tokenA
-                }
-              />
-            </>
-          ) : null}
-        </div>
+        <Lottie
+          rendererSettings={renderSettings}
+          animationData={monsterRightData}
+          loop={true}
+          style={{
+            position: 'absolute',
+            top: '0',
+            right: '0',
+            width: '100%',
+            height: '100%',
+            filter: 'drop-shadow(0px 0px 40px #000)',
+          }}
+        />
 
-        <div className="bg-gray-200 border border-gray-300 rounded-lg p-5 h-full">
-          <Positions
-            positions={positions}
-            triggerPositionsReload={triggerPositionsReload}
-          />
-        </div>
+        <Lottie
+          rendererSettings={renderSettings}
+          animationData={monsterRightData}
+          loop={true}
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            transform: 'rotate(180deg)',
+            width: '100%',
+            height: '100%',
+            filter: 'drop-shadow(0px 0px 40px #000)',
+          }}
+        />
       </div>
+      <div className="w-full flex flex-col items-center xl:flex-row xl:justify-center xl:items-start z-10">
+        <div className="flex flex-col w-full h-full xl:w-[80%] xl:max-w-[90em]">
+          {/* Trading chart header */}
+          {tokenB ? (
+            <TradingChartHeader
+              tokenList={
+                selectedAction === 'short' || selectedAction === 'long'
+                  ? window.adrena.client.tokens.filter((t) => !t.isStable)
+                  : window.adrena.client.tokens
+              }
+              selected={tokenB}
+              onChange={(t: Token) => {
+                setTokenB(t);
+              }}
+            />
+          ) : null}
 
-      <div className="w-full lg:w-[30em] flex flex-col sm:flex-row lg:flex-col gap-3 mt-4 lg:ml-4 lg:mt-0">
-        <div className="w-full bg-gray-200 border border-gray-300 rounded-lg p-4">
-          <TabSelect
-            selected={selectedAction}
-            tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
-            onClick={(title) => {
-              setSelectedAction(title);
-            }}
-          />
-
-          {window.adrena.client.tokens.length && tokenA && tokenB && (
-            <>
-              <TradingInputs
-                className="mt-4"
-                actionType={selectedAction}
-                allowedTokenA={
-                  selectedAction === 'swap'
-                    ? window.adrena.client.tokens.filter(
-                        (t) => t.symbol !== tokenB.symbol,
-                      )
-                    : window.adrena.client.tokens
-                }
-                allowedTokenB={
-                  selectedAction === 'swap'
-                    ? window.adrena.client.tokens.filter(
-                        (t) => t.symbol !== tokenA.symbol,
-                      )
-                    : window.adrena.client.tokens.filter((t) => !t.isStable)
-                }
-                tokenA={tokenA}
-                tokenB={tokenB}
-                openedPosition={openedPosition}
-                onChangeInputA={setInputAValue}
-                onChangeInputB={setInputBValue}
-                setTokenA={setTokenA}
-                setTokenB={setTokenB}
-                onChangeLeverage={setLeverage}
-              />
-            </>
-          )}
-
-          {/* Button to execute action */}
-          <Button
-            size="lg"
-            title={buttonTitle}
-            className="w-full justify-center mt-5"
-            disabled={
-              buttonTitle.includes('Insufficient') ||
-              buttonTitle.includes('not handled yet')
-            }
-            onClick={handleExecuteButton}
-          />
-        </div>
-
-        {/* Position details */}
-        <div className="w-full bg-gray-200 border border-gray-300 rounded-lg p-4">
-          <div className=" pb-0">
-            <span className="capitalize text-xs opacity-25">
-              {selectedAction}
-              {selectedAction === 'short' || selectedAction === 'long' ? (
-                <span> {tokenB?.symbol ?? '-'}</span>
-              ) : null}
-            </span>
-          </div>
-
-          {tokenA && tokenB ? (
-            <>
-              {selectedAction === 'short' || selectedAction === 'long' ? (
-                <PositionDetails
-                  tokenB={tokenB}
-                  entryPrice={
-                    tokenB &&
-                    inputBValue &&
-                    tokenPrices &&
-                    tokenPrices[tokenB.symbol]
-                      ? tokenPrices[tokenB.symbol]
-                      : null
-                  }
-                  exitPrice={
-                    tokenB &&
-                    inputBValue &&
-                    tokenPrices &&
-                    tokenPrices[tokenB.symbol]
-                      ? tokenPrices[tokenB.symbol]
-                      : null
+          <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
+            {/* Display trading chart for appropriate token */}
+            {tokenA && tokenB ? (
+              <>
+                <TradingChart
+                  token={
+                    selectedAction === 'short' || selectedAction === 'long'
+                      ? tokenB
+                      : tokenA.isStable
+                      ? tokenB
+                      : tokenA
                   }
                 />
-              ) : (
-                <SwapDetails tokenA={tokenA} tokenB={tokenB} />
-              )}
-            </>
-          ) : null}
+              </>
+            ) : null}
+          </div>
+
+          <div className="bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-5 h-full">
+            <Positions
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col mt-4 xl:ml-4 xl:mt-0">
+          <div className="w-full md:w-[26em] bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
+            <TabSelect
+              selected={selectedAction}
+              tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
+              onClick={(title) => {
+                setSelectedAction(title);
+              }}
+            />
+
+            {window.adrena.client.tokens.length && tokenA && tokenB && (
+              <>
+                <TradingInputs
+                  className="mt-4"
+                  actionType={selectedAction}
+                  allowedTokenA={
+                    selectedAction === 'swap'
+                      ? window.adrena.client.tokens.filter(
+                          (t) => t.symbol !== tokenB.symbol,
+                        )
+                      : window.adrena.client.tokens
+                  }
+                  allowedTokenB={
+                    selectedAction === 'swap'
+                      ? window.adrena.client.tokens.filter(
+                          (t) => t.symbol !== tokenA.symbol,
+                        )
+                      : window.adrena.client.tokens.filter((t) => !t.isStable)
+                  }
+                  tokenA={tokenA}
+                  tokenB={tokenB}
+                  openedPosition={openedPosition}
+                  onChangeInputA={setInputAValue}
+                  onChangeInputB={setInputBValue}
+                  setTokenA={setTokenA}
+                  setTokenB={setTokenB}
+                  onChangeLeverage={setLeverage}
+                />
+              </>
+            )}
+
+            {/* Button to execute action */}
+            <Button
+              size="lg"
+              title={buttonTitle}
+              className="w-full justify-center mt-5"
+              disabled={
+                buttonTitle.includes('Insufficient') ||
+                buttonTitle.includes('not handled yet')
+              }
+              onClick={handleExecuteButton}
+            />
+          </div>
+
+          {/* Position details */}
+          <div className="md:w-[26em] mt-4 bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
+            <div className=" pb-0">
+              <span className="capitalize text-xs opacity-25">
+                {selectedAction}
+                {selectedAction === 'short' || selectedAction === 'long' ? (
+                  <span> {tokenB?.symbol ?? '-'}</span>
+                ) : null}
+              </span>
+            </div>
+
+            {tokenA && tokenB ? (
+              <>
+                {selectedAction === 'short' || selectedAction === 'long' ? (
+                  <PositionDetails
+                    tokenB={tokenB}
+                    entryPrice={
+                      tokenB &&
+                      inputBValue &&
+                      tokenPrices &&
+                      tokenPrices[tokenB.symbol]
+                        ? tokenPrices[tokenB.symbol]
+                        : null
+                    }
+                    exitPrice={
+                      tokenB &&
+                      inputBValue &&
+                      tokenPrices &&
+                      tokenPrices[tokenB.symbol]
+                        ? tokenPrices[tokenB.symbol]
+                        : null
+                    }
+                  />
+                ) : (
+                  <SwapDetails tokenA={tokenA} tokenB={tokenB} />
+                )}
+              </>
+            ) : null}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

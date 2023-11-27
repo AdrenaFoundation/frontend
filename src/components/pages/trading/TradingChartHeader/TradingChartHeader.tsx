@@ -26,7 +26,7 @@ export default function TradingInputs({
   return (
     <div
       className={twMerge(
-        'flex items-center gap-2 h-14 bg-gray-200 border border-gray-300 border-b-transparent rounded-t-lg',
+        'flex items-center gap-3 h-14 bg-black/50 backdrop-blur-md border border-gray-300 border-b-transparent rounded-t-lg',
         className,
       )}
     >
