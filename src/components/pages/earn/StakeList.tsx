@@ -22,6 +22,10 @@ export default function StakeList({
 }) {
   const today = new Date();
 
+  if (positions.length === 0) {
+    return <p className="text-center opacity-25">No locked stake</p>;
+  }
+
   return (
     <table className="w-full">
       <thead>

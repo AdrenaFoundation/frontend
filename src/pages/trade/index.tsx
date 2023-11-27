@@ -366,8 +366,8 @@ export default function Trade({
   })();
 
   return (
-    <div className="w-full flex flex-col items-center xl:flex-row xl:justify-center xl:items-start">
-      <div className="flex flex-col w-full h-full xl:w-[80%] xl:max-w-[90em]">
+    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start">
+      <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
         {/* Trading chart header */}
         {tokenB ? (
           <TradingChartHeader
@@ -408,8 +408,8 @@ export default function Trade({
         </div>
       </div>
 
-      <div className="flex flex-col mt-4 xl:ml-4 xl:mt-0">
-        <div className="w-full md:w-[26em] bg-gray-200 border border-gray-300 rounded-lg p-4">
+      <div className="w-full lg:w-[30em] flex flex-col sm:flex-row lg:flex-col gap-3 mt-4 lg:ml-4 lg:mt-0">
+        <div className="w-full bg-gray-200 border border-gray-300 rounded-lg p-4">
           <TabSelect
             selected={selectedAction}
             tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
@@ -463,7 +463,7 @@ export default function Trade({
         </div>
 
         {/* Position details */}
-        <div className="md:w-[26em] mt-4 bg-gray-200 border border-gray-300 rounded-lg p-4">
+        <div className="w-full bg-gray-200 border border-gray-300 rounded-lg p-4">
           <div className=" pb-0">
             <span className="capitalize text-xs opacity-25">
               {selectedAction}

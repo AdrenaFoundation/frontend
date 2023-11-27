@@ -1,9 +1,17 @@
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
+import {
+  connectWalletAction,
+  openCloseConnectionModalAction,
+} from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
-import { useSelector } from '@/store/store';
+import Modal from '@/components/common/Modal/Modal';
+import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
+
+import phantomLogo from '../../../../../public/images/phantom.png';
 
 export default function PositionsBlocks({
   className,
@@ -18,17 +26,63 @@ export default function PositionsBlocks({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const connected = !!useSelector((s) => s.walletState.wallet);
+  const dispatch = useDispatch();
+  const { modalIsOpen } = useSelector((s) => s.walletState);
 
   const columnStyle = 'flex w-full justify-between';
 
+  const handleClick = () => {
+    if (!connected) {
+      dispatch(openCloseConnectionModalAction(true));
+      return;
+    }
+  };
+
+  if (positions === null && !connected) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center">
+        <Button
+          title="Connect Wallet"
+          variant="secondary"
+          rightIcon={phantomLogo}
+          className="mb-2"
+          onClick={handleClick}
+        />
+
+        <p className="text-xs opacity-50 font-normal">
+          Waiting for wallet connection
+        </p>
+
+        {/* @TODO: better modal handling, reuse */}
+        {modalIsOpen ? (
+          <Modal
+            title="Select wallet"
+            close={() => dispatch(openCloseConnectionModalAction(false))}
+            className="flex flex-col items-center w-64 px-3 pb-3"
+          >
+            <div
+              className="flex flex-row gap-3 items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-300 duration-300 w-full"
+              onClick={() => {
+                dispatch(connectWalletAction('phantom'));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+            >
+              <Image
+                src={phantomLogo}
+                alt="phantom icon"
+                height={30}
+                width={30}
+              />
+              Phantom
+            </div>
+          </Modal>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className={twMerge('w-full', 'flex', 'flex-wrap', className)}>
-      {positions === null && !connected ? (
-        <div className="mt-5 mb-5 ml-auto mr-auto">
-          Waiting for wallet connection ...
-        </div>
-      ) : null}
-
       {positions === null && connected ? (
         <div className="mt-5 mb-5 ml-auto mr-auto">Loading ...</div>
       ) : null}

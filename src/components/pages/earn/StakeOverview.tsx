@@ -63,8 +63,8 @@ export default function StakeOverview({
           </p>
         </div>
 
-        <div className="grid grid-cols-3 justify-between bg-[#0d0d0d] border border-gray-300 rounded-lg mt-5 p-4">
-          <div className="border-r border-r-gray-300">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-0 justify-between bg-[#0d0d0d] border border-gray-300 rounded-lg mt-5 p-4">
+          <div className="sm:border-r sm:border-r-gray-300">
             <p className="text-sm opacity-50">My liquid Stake</p>
             <p className="text-lg font-medium font-mono">
               {tokenDetails.totalLiquidStaked} {tokenDetails.token.symbol}
@@ -74,7 +74,7 @@ export default function StakeOverview({
             </p>
           </div>
 
-          <div className="text-center ">
+          <div className="sm:text-center">
             <p className="text-sm opacity-50">My Locked Stake</p>
             <p className="text-lg font-medium font-mono">
               {formatNumber(tokenDetails.totalLockedStake ?? 0, 2)}{' '}
@@ -85,7 +85,7 @@ export default function StakeOverview({
             </p>
           </div>
 
-          <div className="text-right border-l border-l-gray-300">
+          <div className="sm:text-right sm:border-l sm:border-l-gray-300">
             <p className="text-sm opacity-50">
               Total Redeemable {tokenDetails.token.symbol}
             </p>

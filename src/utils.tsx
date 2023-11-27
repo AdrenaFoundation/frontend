@@ -50,13 +50,14 @@ export function formatPriceInfo(
   price: number | null | undefined,
   displayPlusSymbol = false,
   decimals = 2,
+  displayAsIs = true,
 ) {
   if (price === null || typeof price === 'undefined') {
     return '-';
   }
 
   // If the price is very low, display it as it is, to not display $0
-  if (price < 10 ** -decimals && price > 0) {
+  if (price < 10 ** -decimals && price > 0 && displayAsIs) {
     return `$${price}`;
   }
 

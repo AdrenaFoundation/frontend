@@ -57,7 +57,7 @@ export default function Details({
           </div>
 
           {/* chart */}
-          <div className="relative flex flex-col p-4 items-center justify-center m-auto w-full lg:max-w-[300px]">
+          <div className="relative flex flex-col p-4 items-center justify-center m-auto w-full lg:max-w-[300px] max-h-[300px]">
             {chart ? (
               <>
                 <div className="absolute mt-7">

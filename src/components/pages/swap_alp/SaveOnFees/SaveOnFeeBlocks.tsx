@@ -96,7 +96,12 @@ export default function SaveOnFeesBlocks({
                       {currentFee > row.fee ? 'Save up ' : 'Spend extra '}
 
                       {currentFee - row.fee !== 0 &&
-                        formatPriceInfo(currentFee - row.fee)}
+                        formatPriceInfo(
+                          currentFee - row.fee,
+                          undefined,
+                          2,
+                          true,
+                        )}
                     </p>
                   )}
 
@@ -168,18 +173,6 @@ export default function SaveOnFeesBlocks({
                   : '–'}
               </p>
             </div>
-
-            {/* <div className="flex w-full justify-between">
-              <Button
-                className="mt-2 bg-[#313131] w-full text-xs py-2"
-                title={`Buy with ${row.token.name}`}
-                size="md"
-                onClick={() => {
-                  onCollateralTokenChange(row.token);
-                  setCollateralInput(row.equivalentAmount);
-                }}
-              />
-            </div> */}
           </div>
         </div>
       ))}
