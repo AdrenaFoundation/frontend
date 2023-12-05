@@ -22,7 +22,7 @@ export default function Overview({
   totalVolume: number | null;
 }) {
   return (
-    <div className="flex flex-col md:flex-row  gap-3 md:gap-5 border border-gray-300 bg-gray-200 w-full rounded-lg">
+    <div className="flex flex-col md:flex-row  gap-3 md:gap-5 border border-gray-300 bg-black/75 backdrop-blur-md w-full rounded-lg">
       <div className="w-full p-3 px-5">
         <h2 className="text-lg font-normal border-b border-b-gray-300 pb-3 mb-3">
           Long Overview

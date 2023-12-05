@@ -116,7 +116,7 @@ export default function SaveOnFeesBlocks({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-full bg-[#242424] rounded-b-lg p-3 h-full">
+          <div className="flex flex-col gap-2 w-full bg-[rgb(36,36,36)]/30 rounded-b-lg p-3 h-full">
             <p className="opacity-25 text-xs">Details</p>
             <div className="flex w-full justify-between">
               <p className="text-sm opacity-50">Price</p>

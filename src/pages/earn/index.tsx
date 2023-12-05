@@ -1,6 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
+import Lottie from 'lottie-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -22,6 +23,7 @@ import {
   nativeToUi,
 } from '@/utils';
 
+import fullMonster from '../../../public/animations/monster-right-lrg-head.json';
 import lockIcon from '../../../public/images/Icons/lock.svg';
 
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
@@ -324,12 +326,20 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
   return (
     <>
+      <Lottie
+        rendererSettings={{
+          preserveAspectRatio: 'xMinYMin slice',
+          className: 'absolute top-0 left-0 w-full h-full rotate-180',
+        }}
+        animationData={fullMonster}
+        loop={true}
+      />
       <h2>Earn</h2>
       <p>
         Governed by the Adrena community, conferring control and economic reward
         to the collective.
       </p>
-      <div className="flex flex-col lg:flex-row gap-5">
+      <div className="flex flex-col lg:flex-row gap-5 z-20">
         <div className="w-full">
           <div className="flex flex-col lg:flex-row gap-5 mt-8">
             <StakeOverview
@@ -343,7 +353,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               setActiveRedeemToken={setActiveRedeemToken}
             />
           </div>
-          <div className="flex flex-col gap-3 bg-gray-200 border border-gray-300 rounded-lg p-4 mt-8">
+          <div className="flex flex-col gap-3 bg-black/70 backdrop-blur-md border border-gray-300 rounded-lg p-4 mt-8">
             <div className="flex flex-row gap-2 items-center mb-3">
               <Image src={lockIcon} width={16} height={16} alt="lock icon" />
               <h4>My Locked Stake</h4>
@@ -402,6 +412,15 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
           )}
         </AnimatePresence>
       </div>
+
+      <Lottie
+        rendererSettings={{
+          preserveAspectRatio: 'xMaxYMin meet',
+          className: 'absolute right-0 bottom-0 w-full h-full',
+        }}
+        animationData={fullMonster}
+        loop={true}
+      />
     </>
   );
 }

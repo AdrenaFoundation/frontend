@@ -27,7 +27,7 @@ export default function StakeOverview({
   setActiveRedeemToken: (tokenSymbol: 'ADX' | 'ALP') => void;
 }) {
   return (
-    <div className="bg-gray-200 border border-gray-300 lg:w-1/2 rounded-lg">
+    <div className="bg-black/70 backdrop-blur-md border border-gray-300 lg:w-1/2 rounded-lg">
       <div className="flex flex-row gap-2 items-center p-4 border-b border-b-gray-300">
         <div
           className={`p-1 bg-${

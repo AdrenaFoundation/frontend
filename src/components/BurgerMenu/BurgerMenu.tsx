@@ -42,7 +42,7 @@ export default function BurgerMenu() {
 
   return (
     <div>
-      <div className="absolute px-4 mt-5 z-30 flex flex-row justify-between items-center w-full">
+      <div className="absolute px-4 mt-5 z-50 flex flex-row justify-between items-center w-full">
         <div
           className="flex items-center justify-center p-1 border w-9 h-8 border-gray-200 rounded-md hover:bg-gray-200 transition duration-300 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
@@ -70,7 +70,7 @@ export default function BurgerMenu() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="absolute flex flex-col justify-between w-full h-full bg-dark z-20 border-b border-gray-200 p-5 pt-[75px]"
+            className="absolute flex flex-col justify-between w-full h-full bg-dark z-40 border-b border-gray-200 p-5 pt-[75px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

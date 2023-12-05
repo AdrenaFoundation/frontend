@@ -1,3 +1,4 @@
+import Lottie from 'lottie-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
@@ -8,6 +9,9 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
+
+import topLeftData from '../../../public/animations/green-down.json';
+import monsterData from '../../../public/animations/monster-top-left.json';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
@@ -215,15 +219,15 @@ export default function SwapALP({
 
   return (
     <>
-      <h1 className="text-2xl font-normal">Buy / Sell ALP</h1>
+      <h1 className="text-2xl font-normal z-20">Buy / Sell ALP</h1>
 
-      <div className="mt-2 opacity-75">
+      <div className="mt-2 opacity-75 z-20">
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
 
       <ALPInfo marketCap={marketCap} />
 
-      <div className="flex flex-col lg:flex-row gap-5 mt-5">
+      <div className="flex flex-col lg:flex-row gap-5 mt-5 z-20">
         <ALPSwap
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}
@@ -256,6 +260,36 @@ export default function SwapALP({
           isFeesLoading={isFeesLoading}
         />
       </div>
+
+      <Lottie
+        rendererSettings={{
+          preserveAspectRatio: 'xMinYMin meet',
+        }}
+        animationData={monsterData}
+        loop={true}
+        style={{
+          position: 'absolute',
+          top: '-50px',
+          left: '0',
+          width: '100%',
+          height: '100%',
+        }}
+      />
+
+      <Lottie
+        rendererSettings={{
+          preserveAspectRatio: 'xMidYMid slice',
+        }}
+        animationData={topLeftData}
+        loop={true}
+        style={{
+          position: 'absolute',
+          bottom: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+        }}
+      />
     </>
   );
 }

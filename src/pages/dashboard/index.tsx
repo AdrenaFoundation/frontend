@@ -1,4 +1,5 @@
 import { ChartData } from 'chart.js';
+import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
 
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
@@ -15,6 +16,9 @@ import {
   formatPriceInfo,
   nativeToUi,
 } from '@/utils';
+
+import topLeftData from '../../../public/animations/monster-top-left.json';
+import fullMonster from '../../../public/animations/optimzedData2.json';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
   const alpTotalSupply = useALPTotalSupply();
@@ -173,9 +177,24 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
 
   return (
     <>
-      <h2 className="text-2xl mb-3 font-medium">Dashboard</h2>
+      <Lottie
+        rendererSettings={{
+          preserveAspectRatio: 'xMinYMin meet',
+        }}
+        animationData={topLeftData}
+        loop={true}
+        style={{
+          position: 'absolute',
+          top: '-50px',
+          left: '0',
+          width: '100%',
+          height: '100%',
+        }}
+      />
 
-      <div className="flex justify-between flex-col sm:flex-row">
+      <h2 className="text-2xl mb-3 font-medium z-20">Dashboard</h2>
+
+      <div className="flex justify-between flex-col sm:flex-row z-20">
         <Overview
           aumUsd={mainPool?.aumUsd ?? null}
           longPositions={mainPool?.longPositions ?? null}
@@ -189,14 +208,29 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
         />
       </div>
 
-      <h2 className="text-2xl mt-7 font-medium">Tokens</h2>
+      <h2 className="text-2xl mt-7 font-medium z-20">Tokens</h2>
 
-      <div className="flex w-full flex-col gap-7 lg:flex-row mt-4">
+      <div className="flex w-full flex-col gap-7 lg:flex-row mt-4 z-20">
         <Details title="ALP" details={ALPDetailsArray} chart={ALPChartData} />
         <Details title="ADX" details={ADXDetailsArray} chart={ADXChartData} />
       </div>
 
-      <ALPIndexComposition custodies={custodies} className="mt-7" />
+      <ALPIndexComposition custodies={custodies} className="mt-7 z-20" />
+
+      <Lottie
+        rendererSettings={{
+          preserveAspectRatio: 'xMaxYMid meet',
+        }}
+        animationData={fullMonster}
+        loop={true}
+        style={{
+          position: 'absolute',
+          top: '-100px',
+          right: '0',
+          width: '100%',
+          height: '100%',
+        }}
+      />
     </>
   );
 }
