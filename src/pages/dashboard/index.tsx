@@ -1,6 +1,8 @@
+import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { ChartData } from 'chart.js';
 import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Details from '@/components/pages/dashboard/Details/Details';
@@ -17,10 +19,9 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import topLeftData from '../../../public/animations/monster-top-left.json';
-import fullMonster from '../../../public/animations/optimzedData2.json';
-
 export default function Dashboard({ mainPool, custodies }: PageProps) {
+  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
+
   const alpTotalSupply = useALPTotalSupply();
   const adxTotalSupply = useADXTotalSupply();
 
@@ -177,18 +178,18 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
 
   return (
     <>
-      <Lottie
-        rendererSettings={{
-          preserveAspectRatio: 'xMinYMin meet',
-        }}
-        animationData={topLeftData}
-        loop={true}
-        style={{
-          position: 'absolute',
-          top: '-50px',
-          left: '0',
-          width: '100%',
-          height: '100%',
+      <DotLottiePlayer
+        src="https://lottie.host/37e1ec5d-b487-44e1-b4e9-ac7f51500eee/ydhCjShFMH.lottie"
+        autoplay
+        loop
+        className={twMerge(
+          isAnimationLoaded ? 'opacity-100' : 'opacity-0',
+          'fixed lg:absolute top-[0px] md:top-[-50px] left-0 transition-opacity duration-300 w-full',
+        )}
+        onEvent={(event: PlayerEvents) => {
+          if (event === PlayerEvents.Ready) {
+            setIsAnimationLoaded(true);
+          }
         }}
       />
 
@@ -216,21 +217,6 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
       </div>
 
       <ALPIndexComposition custodies={custodies} className="mt-7 z-20" />
-
-      <Lottie
-        rendererSettings={{
-          preserveAspectRatio: 'xMaxYMid meet',
-        }}
-        animationData={fullMonster}
-        loop={true}
-        style={{
-          position: 'absolute',
-          top: '-100px',
-          right: '0',
-          width: '100%',
-          height: '100%',
-        }}
-      />
     </>
   );
 }

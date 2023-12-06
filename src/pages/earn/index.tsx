@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
@@ -23,7 +24,6 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import fullMonster from '../../../public/animations/monster-right-lrg-head.json';
 import lockIcon from '../../../public/images/Icons/lock.svg';
 
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
@@ -326,16 +326,23 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
   return (
     <>
-      <Lottie
-        rendererSettings={{
-          preserveAspectRatio: 'xMinYMin slice',
-          className: 'absolute top-0 left-0 w-full h-full rotate-180',
-        }}
-        animationData={fullMonster}
-        loop={true}
-      />
-      <h2>Earn</h2>
-      <p>
+      <div className="absolute w-full h-full left-0 top-0 overflow-hidden">
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="absolute top-0 left-0 rotate-180 w-[1000px] lg:w-full"
+        />
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="absolute top-0 left-0"
+        />
+      </div>
+
+      <h2 className="z-20">Earn</h2>
+      <p className="z-20">
         Governed by the Adrena community, conferring control and economic reward
         to the collective.
       </p>
@@ -412,15 +419,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
           )}
         </AnimatePresence>
       </div>
-
-      <Lottie
-        rendererSettings={{
-          preserveAspectRatio: 'xMaxYMin meet',
-          className: 'absolute right-0 bottom-0 w-full h-full',
-        }}
-        animationData={fullMonster}
-        loop={true}
-      />
     </>
   );
 }

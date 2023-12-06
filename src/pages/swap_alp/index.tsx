@@ -1,3 +1,4 @@
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import Lottie from 'lottie-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -9,9 +10,6 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
-
-import topLeftData from '../../../public/animations/green-down.json';
-import monsterData from '../../../public/animations/monster-top-left.json';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
@@ -219,6 +217,22 @@ export default function SwapALP({
 
   return (
     <>
+      <div className="absolute w-full h-full left-0 top-0 bottom-0">
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="absolute top-0 right-0 rotate-180 transform lg:scale-150"
+        />
+
+        <DotLottiePlayer
+          src="https://lottie.host/e1d14be4-e17f-4368-8132-1bdc638ec2f6/2uksm6DJOw.lottie"
+          autoplay
+          loop
+          className="absolute bottom-0"
+        />
+      </div>
+
       <h1 className="text-2xl font-normal z-20">Buy / Sell ALP</h1>
 
       <div className="mt-2 opacity-75 z-20">
@@ -260,36 +274,6 @@ export default function SwapALP({
           isFeesLoading={isFeesLoading}
         />
       </div>
-
-      <Lottie
-        rendererSettings={{
-          preserveAspectRatio: 'xMinYMin meet',
-        }}
-        animationData={monsterData}
-        loop={true}
-        style={{
-          position: 'absolute',
-          top: '-50px',
-          left: '0',
-          width: '100%',
-          height: '100%',
-        }}
-      />
-
-      <Lottie
-        rendererSettings={{
-          preserveAspectRatio: 'xMidYMid slice',
-        }}
-        animationData={topLeftData}
-        loop={true}
-        style={{
-          position: 'absolute',
-          bottom: '0',
-          left: '0',
-          width: '100%',
-          height: '100%',
-        }}
-      />
     </>
   );
 }

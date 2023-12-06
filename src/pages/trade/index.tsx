@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
 import Lottie from 'lottie-react';
 import { useRouter } from 'next/router';
@@ -21,9 +22,6 @@ import {
   addSuccessTxNotification,
   uiToNative,
 } from '@/utils';
-
-import monsterRightData from '../../../public/animations/monster-right-lrg-head.json';
-import topLeftData from '../../../public/animations/monster-top-left.json';
 
 type Action = 'long' | 'short' | 'swap';
 
@@ -369,53 +367,29 @@ export default function Trade({
     return 'Open Position';
   })();
 
-  const renderSettings = {
-    preserveAspectRatio: 'xMidYMid slice',
-    className: 'lottie-svg-class',
-  };
-
   return (
     <>
-      <div>
-        <Lottie
-          rendererSettings={renderSettings}
-          animationData={topLeftData}
-          loop={true}
-          style={{
-            position: 'absolute',
-            top: '0',
-            left: '50%',
-            width: '50%',
-            height: '50%',
-          }}
-        />
+      <div className="absolute w-full h-[calc(100%+50px)] left-0 top-[-50px] overflow-hidden">
+        <DotLottiePlayer
+          src="https://lottie.host/86bfc6ae-7fe8-47ac-90c4-8b1463c76f1d/dUBWvrAw1g.lottie"
+          autoplay
+          loop
+          className="fixed lg:absolute top-0 sm:left-1/2 w-[1000px] sm:w-full"
+        ></DotLottiePlayer>
 
-        <Lottie
-          rendererSettings={renderSettings}
-          animationData={monsterRightData}
-          loop={true}
-          style={{
-            position: 'absolute',
-            top: '0',
-            right: '0',
-            width: '100%',
-            height: '100%',
-          }}
-        />
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="fixed lg:absolute top-0 right-0 w-[1000px] lg:w-full"
+        ></DotLottiePlayer>
 
-        <Lottie
-          rendererSettings={renderSettings}
-          animationData={monsterRightData}
-          loop={true}
-          style={{
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            transform: 'rotate(180deg)',
-            width: '100%',
-            height: '100%',
-          }}
-        />
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="fixed lg:absolute top-0 left-0 rotate-180 "
+        ></DotLottiePlayer>
       </div>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-startz-10">
         <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
