@@ -1,3 +1,5 @@
+import { DotLottiePlayer } from '@dotlottie/react-player';
+import Lottie from 'lottie-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
@@ -215,15 +217,31 @@ export default function SwapALP({
 
   return (
     <>
-      <h1 className="text-2xl font-normal">Buy / Sell ALP</h1>
+      <div className="absolute w-full h-full left-0 top-0 bottom-0">
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="absolute top-0 right-0 rotate-180 transform lg:scale-150"
+        />
 
-      <div className="mt-2 opacity-75">
+        <DotLottiePlayer
+          src="https://lottie.host/e1d14be4-e17f-4368-8132-1bdc638ec2f6/2uksm6DJOw.lottie"
+          autoplay
+          loop
+          className="absolute bottom-0"
+        />
+      </div>
+
+      <h1 className="text-2xl font-normal z-20">Buy / Sell ALP</h1>
+
+      <div className="mt-2 opacity-75 z-20">
         Purchase ALP tokens to earn fees from swaps and leverages trading.
       </div>
 
       <ALPInfo marketCap={marketCap} />
 
-      <div className="flex flex-col lg:flex-row gap-5 mt-5">
+      <div className="flex flex-col lg:flex-row gap-5 mt-5 z-20">
         <ALPSwap
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}

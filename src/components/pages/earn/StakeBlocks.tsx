@@ -21,6 +21,10 @@ export default function StakeBlocks({
 }) {
   const today = new Date();
 
+  if (positions.length === 0) {
+    return <p className="text-center opacity-25">No locked stake</p>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {positions?.map(

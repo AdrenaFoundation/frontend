@@ -21,12 +21,12 @@ export default function TradingInputs({
   const stats = useDailyStats();
 
   const infoStyle =
-    'flex flex-row gap-2 items-center bg-secondary p-1 px-5 rounded-full';
+    'flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full';
 
   return (
     <div
       className={twMerge(
-        'flex items-center gap-5 h-14 bg-gray-200 border border-gray-300 border-b-transparent rounded-t-lg',
+        'flex items-center gap-3 h-14 bg-black/50 backdrop-blur-md border border-gray-300 border-b-transparent rounded-t-lg',
         className,
       )}
     >
@@ -66,7 +66,7 @@ export default function TradingInputs({
         <div className={infoStyle}>
           <span
             className={twMerge(
-              'font-mono text-sm',
+              'font-mono text-xs',
               stats && stats[selected.symbol].dailyChange > 0
                 ? 'text-green-500'
                 : 'text-red-500',
@@ -80,7 +80,7 @@ export default function TradingInputs({
         </div>
 
         <div className={infoStyle}>
-          <span className="font-mono text-sm">
+          <span className="font-mono text-xs">
             {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
           </span>
           <span className="text-xs text-txtfade">24h Volume</span>

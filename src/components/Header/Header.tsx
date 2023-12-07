@@ -29,12 +29,12 @@ export default function Header() {
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="flex flex-row items-center justify-between p-3 px-7 border border-b-gray-200">
+    <div className="flex flex-row items-center justify-between p-2 px-7 border border-b-gray-200 z-50 bg-black/50 backdrop-blur-md">
       <div className="flex flex-row items-center gap-3">
         <Link className="font-bold  uppercase mb-2 lg:mb-0 relative" href="/">
           {
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="images/logo.svg" className="h-12 shrink-0" alt="logo" />
+            <img src="images/logo.svg" className="h-9 shrink-0" alt="logo" />
           }
 
           {window.adrena.cluster === 'devnet' ? (

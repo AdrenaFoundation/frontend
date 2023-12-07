@@ -24,7 +24,7 @@ export default function Details({
   chart: ChartData<'doughnut'>;
 }) {
   return (
-    <div className="border sm:w-full border-gray-300 bg-gray-200 rounded-lg flex flex-col">
+    <div className="border sm:w-full border-gray-300 bg-black/75 backdrop-blur-md rounded-lg flex flex-col">
       <div className="flex flex-col">
         {/* infos */}
         <div className="border-b border-b-gray-300 flex items-center p-4">
@@ -57,7 +57,7 @@ export default function Details({
           </div>
 
           {/* chart */}
-          <div className="relative flex flex-col p-4 items-center justify-center m-auto w-full lg:max-w-[300px]">
+          <div className="relative flex flex-col p-4 items-center justify-center m-auto w-full lg:max-w-[300px] max-h-[300px]">
             {chart ? (
               <>
                 <div className="absolute mt-7">

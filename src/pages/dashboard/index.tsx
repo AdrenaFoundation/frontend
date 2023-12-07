@@ -1,5 +1,8 @@
+import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { ChartData } from 'chart.js';
+import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Details from '@/components/pages/dashboard/Details/Details';
@@ -17,6 +20,8 @@ import {
 } from '@/utils';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
+  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
+
   const alpTotalSupply = useALPTotalSupply();
   const adxTotalSupply = useADXTotalSupply();
 
@@ -173,9 +178,24 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
 
   return (
     <>
-      <h2 className="text-2xl mb-3 font-medium">Dashboard</h2>
+      <DotLottiePlayer
+        src="https://lottie.host/37e1ec5d-b487-44e1-b4e9-ac7f51500eee/ydhCjShFMH.lottie"
+        autoplay
+        loop
+        className={twMerge(
+          isAnimationLoaded ? 'opacity-100' : 'opacity-0',
+          'fixed lg:absolute top-[0px] md:top-[-50px] left-0 transition-opacity duration-300 w-full',
+        )}
+        onEvent={(event: PlayerEvents) => {
+          if (event === PlayerEvents.Ready) {
+            setIsAnimationLoaded(true);
+          }
+        }}
+      />
 
-      <div className="flex justify-between flex-col sm:flex-row">
+      <h2 className="text-2xl mb-3 font-medium z-20">Dashboard</h2>
+
+      <div className="flex justify-between flex-col sm:flex-row z-20">
         <Overview
           aumUsd={mainPool?.aumUsd ?? null}
           longPositions={mainPool?.longPositions ?? null}
@@ -189,14 +209,14 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
         />
       </div>
 
-      <h2 className="text-2xl mt-7 font-medium">Tokens</h2>
+      <h2 className="text-2xl mt-7 font-medium z-20">Tokens</h2>
 
-      <div className="flex w-full flex-col gap-7 lg:flex-row mt-4">
+      <div className="flex w-full flex-col gap-7 lg:flex-row mt-4 z-20">
         <Details title="ALP" details={ALPDetailsArray} chart={ALPChartData} />
         <Details title="ADX" details={ADXDetailsArray} chart={ADXChartData} />
       </div>
 
-      <ALPIndexComposition custodies={custodies} className="mt-7" />
+      <ALPIndexComposition custodies={custodies} className="mt-7 z-20" />
     </>
   );
 }

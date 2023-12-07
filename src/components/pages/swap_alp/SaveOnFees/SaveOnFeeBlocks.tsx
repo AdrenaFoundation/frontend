@@ -96,7 +96,12 @@ export default function SaveOnFeesBlocks({
                       {currentFee > row.fee ? 'Save up ' : 'Spend extra '}
 
                       {currentFee - row.fee !== 0 &&
-                        formatPriceInfo(currentFee - row.fee)}
+                        formatPriceInfo(
+                          currentFee - row.fee,
+                          undefined,
+                          2,
+                          true,
+                        )}
                     </p>
                   )}
 
@@ -111,7 +116,7 @@ export default function SaveOnFeesBlocks({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-full bg-[#242424] rounded-b-lg p-3 h-full">
+          <div className="flex flex-col gap-2 w-full bg-[rgb(36,36,36)]/30 rounded-b-lg p-3 h-full">
             <p className="opacity-25 text-xs">Details</p>
             <div className="flex w-full justify-between">
               <p className="text-sm opacity-50">Price</p>
@@ -168,18 +173,6 @@ export default function SaveOnFeesBlocks({
                   : '–'}
               </p>
             </div>
-
-            {/* <div className="flex w-full justify-between">
-              <Button
-                className="mt-2 bg-[#313131] w-full text-xs py-2"
-                title={`Buy with ${row.token.name}`}
-                size="md"
-                onClick={() => {
-                  onCollateralTokenChange(row.token);
-                  setCollateralInput(row.equivalentAmount);
-                }}
-              />
-            </div> */}
           </div>
         </div>
       ))}

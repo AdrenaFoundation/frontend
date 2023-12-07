@@ -1,6 +1,8 @@
 import { BN } from '@coral-xyz/anchor';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
+import Lottie from 'lottie-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -324,12 +326,27 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
   return (
     <>
-      <h2>Earn</h2>
-      <p>
+      <div className="absolute w-full h-full left-0 top-0 overflow-hidden">
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="absolute top-0 left-0 rotate-180 w-[1000px] lg:w-full"
+        />
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="absolute top-0 left-0"
+        />
+      </div>
+
+      <h2 className="z-20">Earn</h2>
+      <p className="z-20">
         Governed by the Adrena community, conferring control and economic reward
         to the collective.
       </p>
-      <div className="flex flex-col lg:flex-row gap-5">
+      <div className="flex flex-col lg:flex-row gap-5 z-20">
         <div className="w-full">
           <div className="flex flex-col lg:flex-row gap-5 mt-8">
             <StakeOverview
@@ -343,7 +360,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               setActiveRedeemToken={setActiveRedeemToken}
             />
           </div>
-          <div className="flex flex-col gap-3 bg-gray-200 border border-gray-300 rounded-lg p-4 mt-8">
+          <div className="flex flex-col gap-3 bg-black/70 backdrop-blur-md border border-gray-300 rounded-lg p-4 mt-8">
             <div className="flex flex-row gap-2 items-center mb-3">
               <Image src={lockIcon} width={16} height={16} alt="lock icon" />
               <h4>My Locked Stake</h4>

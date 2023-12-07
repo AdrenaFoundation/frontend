@@ -120,6 +120,7 @@ body,
   min-width: 375px;
   background-color: var(--color-dark);
   font-family: 'Inter', sans-serif;
+  overscroll-behavior-y: none;
 }
 
 // Hide arrows on input number

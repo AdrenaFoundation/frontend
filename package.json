@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
+    "@dotlottie/player-component": "^2.7.2",
+    "@dotlottie/react-player": "^1.6.5",
     "@pythnetwork/client": "^2.15.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@solana/spl-token": "^0.3.7",
@@ -31,6 +33,7 @@
     "eslint-config-prettier": "^8.8.0",
     "framer-motion": "^10.16.1",
     "husky": "^8.0.3",
+    "lottie-react": "^2.4.0",
     "next": "13.2.4",
     "postcss": "^8.4.21",
     "prettier": "^2.8.7",

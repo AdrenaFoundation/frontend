@@ -20,7 +20,7 @@ export default function ALPIndexCompositionArray({
   return (
     <div
       className={twMerge(
-        'border-gray-300 bg-gray-200 rounded-lg border pb-2',
+        'border-gray-300 bg-black/75 backdrop-blur-md rounded-lg border pb-2',
         className,
       )}
     >

@@ -17,12 +17,21 @@ export default function Select<T extends string>({
   options: T[];
   onSelect: (opt: T) => void;
 }) {
+  const img = window.adrena.client.tokens.find(
+    (token) => token.symbol === selected,
+  )?.image;
+
   return (
     <div className={className}>
       <Menu
         trigger={
-          <div className="flex justify-center items-center cursor-pointer h-4 whitespace-nowrap hover:opacity-90">
-            <span className="text-lg font-medium">{selected}</span>
+          <div className="flex justify-center items-center cursor-pointer h-4 whitespace-nowrap hover:opacity-90 shadow-xl">
+            <div className="flex flex-row gap-1 items-center">
+              {img ? (
+                <Image src={img} alt="logo" width="16" height="16" />
+              ) : null}
+              <span className="text-lg font-medium">{selected}</span>
+            </div>
             {options.length > 1 ? (
               <Image
                 className="ml-2"
@@ -36,19 +45,22 @@ export default function Select<T extends string>({
         }
         className="right-1 mt-2 w-fit"
       >
-        <MenuItems>
+        <MenuItems className="w-[120px] justify-center">
           {options
             .filter((option) => option !== selected)
             .map((option, i) => (
               <>
                 {!!i && <MenuSeperator key={'sep' + option} />}
                 <MenuItem
-                  className="text-center text-lg"
+                  className="flex flex-row gap-1 items-center text-center text-lg"
                   onClick={() => {
                     onSelect(option);
                   }}
                   key={option}
                 >
+                  {img ? (
+                    <Image src={img} alt="logo" width="16" height="16" />
+                  ) : null}
                   {option}
                 </MenuItem>
               </>

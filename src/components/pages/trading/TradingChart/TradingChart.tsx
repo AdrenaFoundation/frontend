@@ -97,7 +97,7 @@ export default function TradingChart({ token }: { token: Token }) {
   // }, [token, widget]);
 
   return (
-    <div className="flex flex-col w-full mb-5 border border-gray-300 rounded-lg rounded-t-none overflow-hidden">
+    <div className="flex flex-col w-full mb-5 border border-gray-300 rounded-lg rounded-t-none overflow-hidden bg-black/50 backdrop-blur-md">
       <div id="chart-area" className="h-full rounded-b-lg" />
       <div className="tradingview-widget-copyright"></div>
     </div>

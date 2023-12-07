@@ -1,5 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
+import Lottie from 'lottie-react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -366,142 +368,166 @@ export default function Trade({
   })();
 
   return (
-    <div className="w-full flex flex-col items-center xl:flex-row xl:justify-center xl:items-start">
-      <div className="flex flex-col w-full h-full xl:w-[80%] xl:max-w-[90em]">
-        {/* Trading chart header */}
-        {tokenB ? (
-          <TradingChartHeader
-            tokenList={
-              selectedAction === 'short' || selectedAction === 'long'
-                ? window.adrena.client.tokens.filter((t) => !t.isStable)
-                : window.adrena.client.tokens
-            }
-            selected={tokenB}
-            onChange={(t: Token) => {
-              setTokenB(t);
-            }}
-          />
-        ) : null}
+    <>
+      <div className="absolute w-full h-[calc(100%+50px)] left-0 top-[-50px] overflow-hidden">
+        <DotLottiePlayer
+          src="https://lottie.host/86bfc6ae-7fe8-47ac-90c4-8b1463c76f1d/dUBWvrAw1g.lottie"
+          autoplay
+          loop
+          className="fixed lg:absolute top-0 sm:left-1/2 w-[1000px] sm:w-full"
+        ></DotLottiePlayer>
 
-        <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
-          {/* Display trading chart for appropriate token */}
-          {tokenA && tokenB ? (
-            <>
-              <TradingChart
-                token={
-                  selectedAction === 'short' || selectedAction === 'long'
-                    ? tokenB
-                    : tokenA.isStable
-                    ? tokenB
-                    : tokenA
-                }
-              />
-            </>
-          ) : null}
-        </div>
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="fixed lg:absolute top-0 right-0 w-[1000px] lg:w-full"
+        ></DotLottiePlayer>
 
-        <div className="bg-gray-200 border border-gray-300 rounded-lg p-5 h-full">
-          <Positions
-            positions={positions}
-            triggerPositionsReload={triggerPositionsReload}
-          />
-        </div>
+        <DotLottiePlayer
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay
+          loop
+          className="fixed lg:absolute top-0 left-0 rotate-180 "
+        ></DotLottiePlayer>
       </div>
+      <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-startz-10">
+        <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
+          {/* Trading chart header */}
+          {tokenB ? (
+            <TradingChartHeader
+              tokenList={
+                selectedAction === 'short' || selectedAction === 'long'
+                  ? window.adrena.client.tokens.filter((t) => !t.isStable)
+                  : window.adrena.client.tokens
+              }
+              selected={tokenB}
+              onChange={(t: Token) => {
+                setTokenB(t);
+              }}
+            />
+          ) : null}
 
-      <div className="flex flex-col mt-4 xl:ml-4 xl:mt-0">
-        <div className="w-full md:w-[26em] bg-gray-200 border border-gray-300 rounded-lg p-4">
-          <TabSelect
-            selected={selectedAction}
-            tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
-            onClick={(title) => {
-              setSelectedAction(title);
-            }}
-          />
-
-          {window.adrena.client.tokens.length && tokenA && tokenB && (
-            <>
-              <TradingInputs
-                className="mt-4"
-                actionType={selectedAction}
-                allowedTokenA={
-                  selectedAction === 'swap'
-                    ? window.adrena.client.tokens.filter(
-                        (t) => t.symbol !== tokenB.symbol,
-                      )
-                    : window.adrena.client.tokens
-                }
-                allowedTokenB={
-                  selectedAction === 'swap'
-                    ? window.adrena.client.tokens.filter(
-                        (t) => t.symbol !== tokenA.symbol,
-                      )
-                    : window.adrena.client.tokens.filter((t) => !t.isStable)
-                }
-                tokenA={tokenA}
-                tokenB={tokenB}
-                openedPosition={openedPosition}
-                onChangeInputA={setInputAValue}
-                onChangeInputB={setInputBValue}
-                setTokenA={setTokenA}
-                setTokenB={setTokenB}
-                onChangeLeverage={setLeverage}
-              />
-            </>
-          )}
-
-          {/* Button to execute action */}
-          <Button
-            size="lg"
-            title={buttonTitle}
-            className="w-full justify-center mt-5"
-            disabled={
-              buttonTitle.includes('Insufficient') ||
-              buttonTitle.includes('not handled yet')
-            }
-            onClick={handleExecuteButton}
-          />
-        </div>
-
-        {/* Position details */}
-        <div className="md:w-[26em] mt-4 bg-gray-200 border border-gray-300 rounded-lg p-4">
-          <div className=" pb-0">
-            <span className="capitalize text-xs opacity-25">
-              {selectedAction}
-              {selectedAction === 'short' || selectedAction === 'long' ? (
-                <span> {tokenB?.symbol ?? '-'}</span>
-              ) : null}
-            </span>
-          </div>
-
-          {tokenA && tokenB ? (
-            <>
-              {selectedAction === 'short' || selectedAction === 'long' ? (
-                <PositionDetails
-                  tokenB={tokenB}
-                  entryPrice={
-                    tokenB &&
-                    inputBValue &&
-                    tokenPrices &&
-                    tokenPrices[tokenB.symbol]
-                      ? tokenPrices[tokenB.symbol]
-                      : null
-                  }
-                  exitPrice={
-                    tokenB &&
-                    inputBValue &&
-                    tokenPrices &&
-                    tokenPrices[tokenB.symbol]
-                      ? tokenPrices[tokenB.symbol]
-                      : null
+          <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
+            {/* Display trading chart for appropriate token */}
+            {tokenA && tokenB ? (
+              <>
+                <TradingChart
+                  token={
+                    selectedAction === 'short' || selectedAction === 'long'
+                      ? tokenB
+                      : tokenA.isStable
+                      ? tokenB
+                      : tokenA
                   }
                 />
-              ) : (
-                <SwapDetails tokenA={tokenA} tokenB={tokenB} />
-              )}
-            </>
-          ) : null}
+              </>
+            ) : null}
+          </div>
+
+          <div className="bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-5 h-full">
+            <Positions
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+            />
+          </div>
+        </div>
+
+        <div className="w-full lg:w-[30em] flex flex-col sm:flex-row lg:flex-col gap-3 mt-4 lg:ml-4 lg:mt-0">
+          <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
+            <TabSelect
+              selected={selectedAction}
+              tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
+              onClick={(title) => {
+                setSelectedAction(title);
+              }}
+            />
+
+            {window.adrena.client.tokens.length && tokenA && tokenB && (
+              <>
+                <TradingInputs
+                  className="mt-4"
+                  actionType={selectedAction}
+                  allowedTokenA={
+                    selectedAction === 'swap'
+                      ? window.adrena.client.tokens.filter(
+                          (t) => t.symbol !== tokenB.symbol,
+                        )
+                      : window.adrena.client.tokens
+                  }
+                  allowedTokenB={
+                    selectedAction === 'swap'
+                      ? window.adrena.client.tokens.filter(
+                          (t) => t.symbol !== tokenA.symbol,
+                        )
+                      : window.adrena.client.tokens.filter((t) => !t.isStable)
+                  }
+                  tokenA={tokenA}
+                  tokenB={tokenB}
+                  openedPosition={openedPosition}
+                  onChangeInputA={setInputAValue}
+                  onChangeInputB={setInputBValue}
+                  setTokenA={setTokenA}
+                  setTokenB={setTokenB}
+                  onChangeLeverage={setLeverage}
+                />
+              </>
+            )}
+
+            {/* Button to execute action */}
+            <Button
+              size="lg"
+              title={buttonTitle}
+              className="w-full justify-center mt-5"
+              disabled={
+                buttonTitle.includes('Insufficient') ||
+                buttonTitle.includes('not handled yet')
+              }
+              onClick={handleExecuteButton}
+            />
+          </div>
+
+          {/* Position details */}
+          <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
+            <div className=" pb-0">
+              <span className="capitalize text-xs opacity-25">
+                {selectedAction}
+                {selectedAction === 'short' || selectedAction === 'long' ? (
+                  <span> {tokenB?.symbol ?? '-'}</span>
+                ) : null}
+              </span>
+            </div>
+
+            {tokenA && tokenB ? (
+              <>
+                {selectedAction === 'short' || selectedAction === 'long' ? (
+                  <PositionDetails
+                    tokenB={tokenB}
+                    entryPrice={
+                      tokenB &&
+                      inputBValue &&
+                      tokenPrices &&
+                      tokenPrices[tokenB.symbol]
+                        ? tokenPrices[tokenB.symbol]
+                        : null
+                    }
+                    exitPrice={
+                      tokenB &&
+                      inputBValue &&
+                      tokenPrices &&
+                      tokenPrices[tokenB.symbol]
+                        ? tokenPrices[tokenB.symbol]
+                        : null
+                    }
+                  />
+                ) : (
+                  <SwapDetails tokenA={tokenA} tokenB={tokenB} />
+                )}
+              </>
+            ) : null}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
