@@ -391,6 +391,49 @@ export default function Trade({
           className="fixed lg:absolute top-0 left-0 rotate-180 "
         ></DotLottiePlayer>
       </div>
+  
+    <div className="w-full flex flex-col items-center xl:flex-row xl:justify-center xl:items-start">
+      <div className="flex flex-col w-full h-full xl:w-[80%] xl:max-w-[90em]">
+        {/* Trading chart header */}
+        {tokenB ? (
+          <TradingChartHeader
+            tokenList={
+              selectedAction === 'short' || selectedAction === 'long'
+                ? window.adrena.client.tokens.filter((t) => !t.isStable)
+                : window.adrena.client.tokens
+            }
+            selected={tokenB}
+            onChange={(t: Token) => {
+              setTokenB(t);
+            }}
+          />
+        ) : null}
+
+        <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
+          {/* Display trading chart for appropriate token */}
+          {tokenA && tokenB ? (
+            <>
+              <TradingChart
+                token={
+                  selectedAction === 'short' || selectedAction === 'long'
+                    ? tokenB
+                    : tokenA.isStable
+                    ? tokenB
+                    : tokenA
+                }
+              />
+            </>
+          ) : null}
+        </div>
+
+        <div className="bg-gray-200 border border-gray-300 rounded-lg p-5 h-full">
+          <Positions
+            positions={positions}
+            triggerPositionsReload={triggerPositionsReload}
+          />
+        </div>
+        
+      </div>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-startz-10">
         <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
           {/* Trading chart header */}
