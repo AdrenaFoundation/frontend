@@ -5,7 +5,7 @@ import { Connection, Transaction } from '@solana/web3.js';
 import { AdrenaClient } from '@/AdrenaClient';
 import IConfiguration from '@/config/IConfiguration';
 import { DEFAULT_PERPS_USER } from '@/constant';
-import { IDL as PERPETUALS_IDL } from '@/target/perpetuals';
+import { IDL as ADRENA_IDL } from '@/target/adrena';
 
 function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
@@ -40,7 +40,7 @@ function createReadOnlyAdrenaProgram(connection: Connection) {
     }).bind(readOnlyProvider);
   }
 
-  return new Program(PERPETUALS_IDL, AdrenaClient.programId, readOnlyProvider);
+  return new Program(ADRENA_IDL, AdrenaClient.programId, readOnlyProvider);
 }
 
 // Initialize all objects that are required to launch the app

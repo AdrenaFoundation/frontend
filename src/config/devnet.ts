@@ -72,7 +72,7 @@ class DevnetConfiguration implements IConfiguration {
     'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
 
   public readonly mainPool: PublicKey = new PublicKey(
-    'J2rFuu4dG5BWpx5x3TwhXAUVENXdfjN4wz2LhrqQkxFe',
+    'ARQ3BgX5XvACEHTHJSPxcAeJ7KoKXgaZF94GR8rcKjiG',
   );
 }
 

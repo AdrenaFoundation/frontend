@@ -2,12 +2,11 @@ import { IdlAccounts, Program, Wallet } from '@coral-xyz/anchor';
 import {
   AllInstructionsMap,
   IdlTypes,
-  InstructionContextFnArgs,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
-import { Perpetuals } from '@/target/perpetuals';
+import { Adrena } from '@/target/adrena';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration from './config/IConfiguration';
@@ -125,7 +124,7 @@ export interface Token {
 //
 // Accounts
 //
-type Accounts = IdlAccounts<Perpetuals>;
+type Accounts = IdlAccounts<Adrena>;
 
 export type Custody = Accounts['custody'];
 export type Multisig = Accounts['multisig'];
@@ -144,7 +143,7 @@ type StakePositionsExtended = UserStaking['lockedStakes'][0] & {
 // Params Types
 //
 
-type Params = IdlTypes<Perpetuals>;
+type Params = IdlTypes<Adrena>;
 
 export type AddCollateralParams = Params['AddCollateralParams'];
 export type AddCustodyParams = Params['AddCustodyParams'];
@@ -180,7 +179,7 @@ export type AmountAndFee = Params['AmountAndFee'];
 // Accounts types
 //
 
-type Instructions = AllInstructionsMap<Perpetuals>;
+type Instructions = AllInstructionsMap<Adrena>;
 
 type ExtractAccounts<T> = {
   [key in Instructions[T]['accounts'][number]['name']]: PublicKey;
@@ -205,7 +204,7 @@ export type RemoveLiquidityAccounts = ExtractAccounts<'removeLiquidity'>;
 //
 // Program
 //
-export type PerpetualsProgram = Program<Perpetuals>;
+export type AdrenaProgram = Program<Adrena>;
 
 //
 // Constants
