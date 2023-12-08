@@ -18,7 +18,7 @@ import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp from '@/initializeApp';
-import { IDL as PERPETUALS_IDL } from '@/target/perpetuals';
+import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
 
 import devnetConfiguration from '../config/devnet';
@@ -141,7 +141,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
 
     window.adrena.client.setAdrenaProgram(
       new Program(
-        PERPETUALS_IDL,
+        ADRENA_IDL,
         AdrenaClient.programId,
         new AnchorProvider(window.adrena.mainConnection, wallet, {
           commitment: 'processed',

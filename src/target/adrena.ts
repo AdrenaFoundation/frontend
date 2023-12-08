@@ -1,19 +1,19 @@
-export type Perpetuals = {
+export type Adrena = {
   version: '0.1.0';
-  name: 'perpetuals';
+  name: 'adrena';
   instructions: [
     {
       name: 'init';
       accounts: [
         {
-          name: 'upgradeAuthority';
-          isMut: true;
+          name: 'admin';
+          isMut: false;
           isSigner: true;
         },
         {
-          name: 'multisig';
+          name: 'payer';
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: 'transferAuthority';
@@ -66,12 +66,12 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgramData';
+          name: 'adrenaProgramData';
           isMut: false;
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -118,7 +118,7 @@ export type Perpetuals = {
       accounts: [
         {
           name: 'admin';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
@@ -130,11 +130,6 @@ export type Perpetuals = {
           name: 'payer';
           isMut: true;
           isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
         },
         {
           name: 'transferAuthority';
@@ -300,7 +295,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -328,13 +323,13 @@ export type Perpetuals = {
       accounts: [
         {
           name: 'admin';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
-          name: 'multisig';
+          name: 'payer';
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: 'transferAuthority';
@@ -387,13 +382,13 @@ export type Perpetuals = {
       accounts: [
         {
           name: 'admin';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
-          name: 'multisig';
+          name: 'payer';
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: 'transferAuthority';
@@ -431,13 +426,13 @@ export type Perpetuals = {
       accounts: [
         {
           name: 'admin';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
-          name: 'multisig';
+          name: 'payer';
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: 'transferAuthority';
@@ -500,13 +495,13 @@ export type Perpetuals = {
       accounts: [
         {
           name: 'admin';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
-          name: 'multisig';
+          name: 'payer';
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: 'transferAuthority';
@@ -555,30 +550,6 @@ export type Perpetuals = {
       returns: 'u8';
     },
     {
-      name: 'setAdminSigners';
-      accounts: [
-        {
-          name: 'admin';
-          isMut: false;
-          isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
-        },
-      ];
-      args: [
-        {
-          name: 'params';
-          type: {
-            defined: 'SetAdminSignersParams';
-          };
-        },
-      ];
-      returns: 'u8';
-    },
-    {
       name: 'setCustodyConfig';
       accounts: [
         {
@@ -587,12 +558,12 @@ export type Perpetuals = {
           isSigner: true;
         },
         {
-          name: 'multisig';
+          name: 'pool';
           isMut: true;
           isSigner: false;
         },
         {
-          name: 'pool';
+          name: 'perpetuals';
           isMut: true;
           isSigner: false;
         },
@@ -621,11 +592,6 @@ export type Perpetuals = {
           isSigner: true;
         },
         {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'perpetuals';
           isMut: true;
           isSigner: false;
@@ -648,11 +614,6 @@ export type Perpetuals = {
           name: 'admin';
           isMut: false;
           isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
         },
         {
           name: 'transferAuthority';
@@ -709,11 +670,6 @@ export type Perpetuals = {
           isSigner: true;
         },
         {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
@@ -740,56 +696,17 @@ export type Perpetuals = {
       returns: 'u8';
     },
     {
-      name: 'upgradeCustody';
-      accounts: [
-        {
-          name: 'admin';
-          isMut: true;
-          isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'pool';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'custody';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'systemProgram';
-          isMut: false;
-          isSigner: false;
-        },
-      ];
-      args: [
-        {
-          name: 'params';
-          type: {
-            defined: 'UpgradeCustodyParams';
-          };
-        },
-      ];
-      returns: 'u8';
-    },
-    {
       name: 'setCustomOraclePrice';
       accounts: [
         {
           name: 'admin';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
-          name: 'multisig';
+          name: 'payer';
           isMut: true;
-          isSigner: false;
+          isSigner: true;
         },
         {
           name: 'perpetuals';
@@ -828,49 +745,15 @@ export type Perpetuals = {
       returns: 'u8';
     },
     {
-      name: 'setTestTime';
-      accounts: [
-        {
-          name: 'admin';
-          isMut: false;
-          isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'perpetuals';
-          isMut: true;
-          isSigner: false;
-        },
-      ];
-      args: [
-        {
-          name: 'params';
-          type: {
-            defined: 'SetTestTimeParams';
-          };
-        },
-      ];
-      returns: 'u8';
-    },
-    {
       name: 'testAdminRemoveCollateral';
       accounts: [
         {
           name: 'admin';
-          isMut: true;
+          isMut: false;
           isSigner: true;
         },
         {
           name: 'owner';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'multisig';
           isMut: false;
           isSigner: false;
         },
@@ -930,7 +813,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -964,11 +847,6 @@ export type Perpetuals = {
         },
         {
           name: 'receivingAccount';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'lmTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -1058,11 +936,6 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
@@ -1078,7 +951,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1107,11 +980,6 @@ export type Perpetuals = {
         },
         {
           name: 'lpTokenAccount';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'lmTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -1206,7 +1074,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1366,7 +1234,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1395,11 +1263,6 @@ export type Perpetuals = {
         },
         {
           name: 'lpTokenAccount';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'lmTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -1479,11 +1342,6 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'stakingRewardTokenMint';
           isMut: false;
           isSigner: false;
@@ -1494,7 +1352,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1524,11 +1382,6 @@ export type Perpetuals = {
         },
         {
           name: 'fundingAccount';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'lmTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -1618,11 +1471,6 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
@@ -1643,7 +1491,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1677,11 +1525,6 @@ export type Perpetuals = {
         },
         {
           name: 'collateralAccount';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'lmTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -1791,11 +1634,6 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
@@ -1816,7 +1654,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1899,7 +1737,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -1977,7 +1815,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -2006,11 +1844,6 @@ export type Perpetuals = {
         },
         {
           name: 'receivingAccount';
-          isMut: true;
-          isSigner: false;
-        },
-        {
-          name: 'lmTokenAccount';
           isMut: true;
           isSigner: false;
         },
@@ -2100,11 +1933,6 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
@@ -2120,7 +1948,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -2360,6 +2188,67 @@ export type Perpetuals = {
       ];
       returns: {
         defined: 'NewPositionPricesAndFee';
+      };
+    },
+    {
+      name: 'getOpenPositionWithSwapAmountAndFees';
+      accounts: [
+        {
+          name: 'perpetuals';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'receivingCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'receivingCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'principalCustody';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'principalCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'adrenaProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'GetOpenPositionWithSwapAmountAndFeesParams';
+          };
+        },
+      ];
+      returns: {
+        defined: 'OpenPositionWithSwapAmountAndFees';
       };
     },
     {
@@ -2745,7 +2634,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -2786,11 +2675,6 @@ export type Perpetuals = {
           name: 'payer';
           isMut: true;
           isSigner: true;
-        },
-        {
-          name: 'multisig';
-          isMut: true;
-          isSigner: false;
         },
         {
           name: 'transferAuthority';
@@ -2994,7 +2878,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3139,7 +3023,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3289,7 +3173,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3434,7 +3318,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3532,7 +3416,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3630,7 +3514,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3708,7 +3592,7 @@ export type Perpetuals = {
           isSigner: false;
         },
         {
-          name: 'perpetualsProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3804,30 +3688,125 @@ export type Perpetuals = {
       returns: 'u8';
     },
     {
-      name: 'setCustomOraclePricePermissionless';
+      name: 'increasePosition';
       accounts: [
         {
-          name: 'perpetuals';
-          isMut: false;
-          isSigner: false;
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
         },
         {
-          name: 'pool';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'custody';
-          isMut: false;
-          isSigner: false;
-        },
-        {
-          name: 'oracleAccount';
+          name: 'fundingAccount';
           isMut: true;
           isSigner: false;
         },
         {
-          name: 'ixSysvar';
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'perpetuals';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'custodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustody';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyOracleAccount';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stakingRewardTokenMint';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
         },
@@ -3836,7 +3815,7 @@ export type Perpetuals = {
         {
           name: 'params';
           type: {
-            defined: 'SetCustomOraclePricePermissionlessParams';
+            defined: 'IncreasePositionParams';
           };
         },
       ];
@@ -3879,7 +3858,15 @@ export type Perpetuals = {
             };
           },
           {
+            name: 'vestedTokenAmount';
+            type: 'u128';
+          },
+          {
             name: 'coreContributorBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'coreContributorBucketVestedAmount';
             type: 'u64';
           },
           {
@@ -3891,6 +3878,10 @@ export type Perpetuals = {
             type: 'u64';
           },
           {
+            name: 'daoTreasuryBucketVestedAmount';
+            type: 'u64';
+          },
+          {
             name: 'daoTreasuryBucketMintedAmount';
             type: 'u64';
           },
@@ -3899,11 +3890,19 @@ export type Perpetuals = {
             type: 'u64';
           },
           {
+            name: 'polBucketVestedAmount';
+            type: 'u64';
+          },
+          {
             name: 'polBucketMintedAmount';
             type: 'u64';
           },
           {
             name: 'ecosystemBucketAllocation';
+            type: 'u64';
+          },
+          {
+            name: 'ecosystemBucketVestedAmount';
             type: 'u64';
           },
           {
@@ -3939,10 +3938,6 @@ export type Perpetuals = {
             type: 'bool';
           },
           {
-            name: 'isVirtual';
-            type: 'bool';
-          },
-          {
             name: 'oracle';
             type: {
               defined: 'OracleParams';
@@ -3985,12 +3980,6 @@ export type Perpetuals = {
             };
           },
           {
-            name: 'distributedRewards';
-            type: {
-              defined: 'RewardsStats';
-            };
-          },
-          {
             name: 'volumeStats';
             type: {
               defined: 'VolumeStats';
@@ -4026,168 +4015,6 @@ export type Perpetuals = {
           },
           {
             name: 'tokenAccountBump';
-            type: 'u8';
-          },
-        ];
-      };
-    },
-    {
-      name: 'deprecatedCustody';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'pool';
-            type: 'publicKey';
-          },
-          {
-            name: 'mint';
-            type: 'publicKey';
-          },
-          {
-            name: 'tokenAccount';
-            type: 'publicKey';
-          },
-          {
-            name: 'decimals';
-            type: 'u8';
-          },
-          {
-            name: 'isStable';
-            type: 'bool';
-          },
-          {
-            name: 'oracle';
-            type: {
-              defined: 'OracleParams';
-            };
-          },
-          {
-            name: 'pricing';
-            type: {
-              defined: 'PricingParams';
-            };
-          },
-          {
-            name: 'permissions';
-            type: {
-              defined: 'Permissions';
-            };
-          },
-          {
-            name: 'fees';
-            type: {
-              defined: 'Fees';
-            };
-          },
-          {
-            name: 'borrowRate';
-            type: {
-              defined: 'BorrowRateParams';
-            };
-          },
-          {
-            name: 'assets';
-            type: {
-              defined: 'Assets';
-            };
-          },
-          {
-            name: 'collectedFees';
-            type: {
-              defined: 'FeesStats';
-            };
-          },
-          {
-            name: 'distributedRewards';
-            type: {
-              defined: 'RewardsStats';
-            };
-          },
-          {
-            name: 'volumeStats';
-            type: {
-              defined: 'VolumeStats';
-            };
-          },
-          {
-            name: 'tradeStats';
-            type: {
-              defined: 'TradeStats';
-            };
-          },
-          {
-            name: 'longPositions';
-            type: {
-              defined: 'PositionStats';
-            };
-          },
-          {
-            name: 'shortPositions';
-            type: {
-              defined: 'PositionStats';
-            };
-          },
-          {
-            name: 'borrowRateState';
-            type: {
-              defined: 'BorrowRateState';
-            };
-          },
-          {
-            name: 'bump';
-            type: 'u8';
-          },
-          {
-            name: 'tokenAccountBump';
-            type: 'u8';
-          },
-        ];
-      };
-    },
-    {
-      name: 'multisig';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'numSigners';
-            type: 'u8';
-          },
-          {
-            name: 'numSigned';
-            type: 'u8';
-          },
-          {
-            name: 'minSignatures';
-            type: 'u8';
-          },
-          {
-            name: 'instructionAccountsLen';
-            type: 'u8';
-          },
-          {
-            name: 'instructionDataLen';
-            type: 'u16';
-          },
-          {
-            name: 'instructionHash';
-            type: 'u64';
-          },
-          {
-            name: 'signers';
-            type: {
-              array: ['publicKey', 6];
-            };
-          },
-          {
-            name: 'signed';
-            type: {
-              array: ['u8', 6];
-            };
-          },
-          {
-            name: 'bump';
             type: 'u8';
           },
         ];
@@ -4226,6 +4053,10 @@ export type Perpetuals = {
       type: {
         kind: 'struct';
         fields: [
+          {
+            name: 'admin';
+            type: 'publicKey';
+          },
           {
             name: 'permissions';
             type: {
@@ -4291,6 +4122,10 @@ export type Perpetuals = {
           {
             name: 'inceptionTime';
             type: 'i64';
+          },
+          {
+            name: 'nbStableCustody';
+            type: 'u8';
           },
         ];
       };
@@ -4499,8 +4334,18 @@ export type Perpetuals = {
         kind: 'struct';
         fields: [
           {
+            name: 'bump';
+            type: 'u8';
+          },
+          {
             name: 'amount';
             type: 'u64';
+          },
+          {
+            name: 'originBucket';
+            type: {
+              defined: 'BucketName';
+            };
           },
           {
             name: 'unlockStartTimestamp';
@@ -4521,10 +4366,6 @@ export type Perpetuals = {
           {
             name: 'owner';
             type: 'publicKey';
-          },
-          {
-            name: 'bump';
-            type: 'u8';
           },
         ];
       };
@@ -4550,10 +4391,6 @@ export type Perpetuals = {
         fields: [
           {
             name: 'isStable';
-            type: 'bool';
-          },
-          {
-            name: 'isVirtual';
             type: 'bool';
           },
           {
@@ -4687,6 +4524,12 @@ export type Perpetuals = {
             type: 'u64';
           },
           {
+            name: 'originBucket';
+            type: {
+              defined: 'BucketName';
+            };
+          },
+          {
             name: 'unlockStartTimestamp';
             type: 'i64';
           },
@@ -4800,6 +4643,28 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'GetOpenPositionWithSwapAmountAndFeesParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'collateralAmount';
+            type: 'u64';
+          },
+          {
+            name: 'size';
+            type: 'u64';
+          },
+          {
+            name: 'side';
+            type: {
+              defined: 'Side';
+            };
+          },
+        ];
+      };
+    },
+    {
       name: 'GetOraclePriceParams';
       type: {
         kind: 'struct';
@@ -4843,6 +4708,32 @@ export type Perpetuals = {
       };
     },
     {
+      name: 'IncreasePositionParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'price';
+            type: 'u64';
+          },
+          {
+            name: 'collateral';
+            type: 'u64';
+          },
+          {
+            name: 'size';
+            type: 'u64';
+          },
+          {
+            name: 'side';
+            type: {
+              defined: 'Side';
+            };
+          },
+        ];
+      };
+    },
+    {
       name: 'InitStakingParams';
       type: {
         kind: 'struct';
@@ -4873,10 +4764,6 @@ export type Perpetuals = {
       type: {
         kind: 'struct';
         fields: [
-          {
-            name: 'minSignatures';
-            type: 'u8';
-          },
           {
             name: 'allowSwap';
             type: 'bool';
@@ -5085,28 +4972,12 @@ export type Perpetuals = {
       };
     },
     {
-      name: 'SetAdminSignersParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'minSignatures';
-            type: 'u8';
-          },
-        ];
-      };
-    },
-    {
       name: 'SetCustodyConfigParams';
       type: {
         kind: 'struct';
         fields: [
           {
             name: 'isStable';
-            type: 'bool';
-          },
-          {
-            name: 'isVirtual';
             type: 'bool';
           },
           {
@@ -5146,38 +5017,6 @@ export type Perpetuals = {
                 defined: 'TokenRatios';
               };
             };
-          },
-        ];
-      };
-    },
-    {
-      name: 'SetCustomOraclePricePermissionlessParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'custodyAccount';
-            type: 'publicKey';
-          },
-          {
-            name: 'price';
-            type: 'u64';
-          },
-          {
-            name: 'expo';
-            type: 'i32';
-          },
-          {
-            name: 'conf';
-            type: 'u64';
-          },
-          {
-            name: 'ema';
-            type: 'u64';
-          },
-          {
-            name: 'publishTime';
-            type: 'i64';
           },
         ];
       };
@@ -5251,18 +5090,6 @@ export type Perpetuals = {
       };
     },
     {
-      name: 'SetTestTimeParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'time';
-            type: 'i64';
-          },
-        ];
-      };
-    },
-    {
       name: 'SwapParams';
       type: {
         kind: 'struct';
@@ -5288,13 +5115,6 @@ export type Perpetuals = {
             type: 'u64';
           },
         ];
-      };
-    },
-    {
-      name: 'UpgradeCustodyParams';
-      type: {
-        kind: 'struct';
-        fields: [];
       };
     },
     {
@@ -5334,59 +5154,59 @@ export type Perpetuals = {
           },
           {
             name: 'ratioMult';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'utilizationMult';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'swapIn';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'swapOut';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'stableSwapIn';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'stableSwapOut';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'addLiquidity';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'removeLiquidity';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'openPosition';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'closePosition';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'liquidation';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'protocolShare';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'feeMax';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'feeOptimal';
-            type: 'u64';
+            type: 'u16';
           },
         ];
       };
@@ -5418,38 +5238,6 @@ export type Perpetuals = {
           },
           {
             name: 'liquidationUsd';
-            type: 'u64';
-          },
-        ];
-      };
-    },
-    {
-      name: 'RewardsStats';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'swapLm';
-            type: 'u64';
-          },
-          {
-            name: 'addLiquidityLm';
-            type: 'u64';
-          },
-          {
-            name: 'removeLiquidityLm';
-            type: 'u64';
-          },
-          {
-            name: 'openPositionLm';
-            type: 'u64';
-          },
-          {
-            name: 'closePositionLm';
-            type: 'u64';
-          },
-          {
-            name: 'liquidationLm';
             type: 'u64';
           },
         ];
@@ -5550,35 +5338,35 @@ export type Perpetuals = {
           },
           {
             name: 'tradeSpreadLong';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'tradeSpreadShort';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'swapSpread';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'minInitialLeverage';
-            type: 'u64';
+            type: 'u32';
           },
           {
             name: 'maxInitialLeverage';
-            type: 'u64';
+            type: 'u32';
           },
           {
             name: 'maxLeverage';
-            type: 'u64';
+            type: 'u32';
           },
           {
             name: 'maxPayoffMult';
-            type: 'u64';
+            type: 'u32';
           },
           {
             name: 'maxUtilization';
-            type: 'u64';
+            type: 'u16';
           },
           {
             name: 'maxPositionLockedUsd';
@@ -5676,44 +5464,31 @@ export type Perpetuals = {
             name: 'cumulativeInterestSnapshot';
             type: 'u128';
           },
+          {
+            name: 'stableLockedAmount';
+            type: {
+              array: [
+                {
+                  defined: 'StableLockedAmountStat';
+                },
+                3,
+              ];
+            };
+          },
         ];
       };
     },
     {
-      name: 'DeprecatedPricingParams';
+      name: 'StableLockedAmountStat';
       type: {
         kind: 'struct';
         fields: [
           {
-            name: 'useEma';
-            type: 'bool';
+            name: 'custody';
+            type: 'publicKey';
           },
           {
-            name: 'useUnrealizedPnlInAum';
-            type: 'bool';
-          },
-          {
-            name: 'tradeSpreadLong';
-            type: 'u64';
-          },
-          {
-            name: 'tradeSpreadShort';
-            type: 'u64';
-          },
-          {
-            name: 'swapSpread';
-            type: 'u64';
-          },
-          {
-            name: 'minInitialLeverage';
-            type: 'u64';
-          },
-          {
-            name: 'maxLeverage';
-            type: 'u64';
-          },
-          {
-            name: 'maxPayoffMult';
+            name: 'lockedAmount';
             type: 'u64';
           },
         ];
@@ -5749,10 +5524,6 @@ export type Perpetuals = {
             type: {
               defined: 'OracleType';
             };
-          },
-          {
-            name: 'oracleAuthority';
-            type: 'publicKey';
           },
           {
             name: 'maxPriceError';
@@ -5812,6 +5583,34 @@ export type Perpetuals = {
           },
           {
             name: 'fee';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'OpenPositionWithSwapAmountAndFees';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'entryPrice';
+            type: 'u64';
+          },
+          {
+            name: 'liquidationPrice';
+            type: 'u64';
+          },
+          {
+            name: 'swapFeeIn';
+            type: 'u64';
+          },
+          {
+            name: 'swapFeeOut';
+            type: 'u64';
+          },
+          {
+            name: 'openPositionFee';
             type: 'u64';
           },
         ];
@@ -6067,59 +5866,6 @@ export type Perpetuals = {
       };
     },
     {
-      name: 'AdminInstruction';
-      type: {
-        kind: 'enum';
-        variants: [
-          {
-            name: 'AddPool';
-          },
-          {
-            name: 'RemovePool';
-          },
-          {
-            name: 'AddCustody';
-          },
-          {
-            name: 'RemoveCustody';
-          },
-          {
-            name: 'SetAdminSigners';
-          },
-          {
-            name: 'SetCustodyConfig';
-          },
-          {
-            name: 'SetPermissions';
-          },
-          {
-            name: 'SetBorrowRate';
-          },
-          {
-            name: 'WithdrawFees';
-          },
-          {
-            name: 'WithdrawSolFees';
-          },
-          {
-            name: 'SetCustomOraclePrice';
-          },
-          {
-            name: 'SetTestTime';
-          },
-          {
-            name: 'UpgradeCustody';
-          },
-          {
-            name: 'MintLmTokensFromBucket';
-          },
-          {
-            name: 'InitStaking';
-          },
-        ];
-      };
-    },
-    {
       name: 'OracleType';
       type: {
         kind: 'enum';
@@ -6208,228 +5954,228 @@ export type Perpetuals = {
   errors: [
     {
       code: 6000;
-      name: 'MultisigAccountNotAuthorized';
-      msg: 'Account is not authorized to sign this instruction';
-    },
-    {
-      code: 6001;
-      name: 'MultisigAlreadySigned';
-      msg: 'Account has already signed this instruction';
-    },
-    {
-      code: 6002;
-      name: 'MultisigAlreadyExecuted';
-      msg: 'This instruction has already been executed';
-    },
-    {
-      code: 6003;
       name: 'MathOverflow';
       msg: 'Overflow in arithmetic operation';
     },
     {
-      code: 6004;
+      code: 6001;
       name: 'UnsupportedOracle';
       msg: 'Unsupported price oracle';
     },
     {
-      code: 6005;
+      code: 6002;
       name: 'InvalidOracleAccount';
       msg: 'Invalid oracle account';
     },
     {
-      code: 6006;
+      code: 6003;
       name: 'InvalidOracleState';
       msg: 'Invalid oracle state';
     },
     {
-      code: 6007;
+      code: 6004;
       name: 'StaleOraclePrice';
       msg: 'Stale oracle price';
     },
     {
-      code: 6008;
+      code: 6005;
       name: 'InvalidOraclePrice';
       msg: 'Invalid oracle price';
     },
     {
-      code: 6009;
+      code: 6006;
       name: 'InvalidEnvironment';
       msg: 'Instruction is not allowed in production';
     },
     {
-      code: 6010;
+      code: 6007;
       name: 'InvalidPoolState';
       msg: 'Invalid pool state';
     },
     {
-      code: 6011;
+      code: 6008;
       name: 'InvalidVestState';
       msg: 'Invalid vest state';
     },
     {
-      code: 6012;
+      code: 6009;
       name: 'InvalidStakeState';
       msg: 'Invalid stake state';
     },
     {
-      code: 6013;
+      code: 6010;
       name: 'InvalidCustodyState';
       msg: 'Invalid custody state';
     },
     {
-      code: 6014;
+      code: 6011;
       name: 'InvalidCollateralCustody';
       msg: 'Invalid collateral custody';
     },
     {
-      code: 6015;
+      code: 6012;
       name: 'InvalidPositionState';
       msg: 'Invalid position state';
     },
     {
-      code: 6016;
+      code: 6013;
       name: 'InvalidStakingRoundState';
       msg: 'Invalid staking round state';
     },
     {
-      code: 6017;
+      code: 6014;
       name: 'InvalidPerpetualsConfig';
       msg: 'Invalid perpetuals config';
     },
     {
-      code: 6018;
+      code: 6015;
       name: 'InvalidPoolConfig';
       msg: 'Invalid pool config';
     },
     {
-      code: 6019;
+      code: 6016;
       name: 'InvalidCustodyConfig';
       msg: 'Invalid custody config';
     },
     {
-      code: 6020;
+      code: 6017;
       name: 'InsufficientAmountReturned';
       msg: 'Insufficient token amount returned';
     },
     {
-      code: 6021;
+      code: 6018;
       name: 'MaxPriceSlippage';
       msg: 'Price slippage limit exceeded';
     },
     {
-      code: 6022;
+      code: 6019;
       name: 'MaxLeverage';
       msg: 'Position leverage limit exceeded';
     },
     {
-      code: 6023;
+      code: 6020;
       name: 'CustodyAmountLimit';
       msg: 'Custody amount limit exceeded';
     },
     {
-      code: 6024;
+      code: 6021;
       name: 'PositionAmountLimit';
       msg: 'Position amount limit exceeded';
     },
     {
-      code: 6025;
+      code: 6022;
       name: 'TokenRatioOutOfRange';
       msg: 'Token ratio out of range';
     },
     {
-      code: 6026;
+      code: 6023;
       name: 'UnsupportedToken';
       msg: 'Token is not supported';
     },
     {
-      code: 6027;
+      code: 6024;
       name: 'InstructionNotAllowed';
       msg: 'Instruction is not allowed at this time';
     },
     {
-      code: 6028;
+      code: 6025;
       name: 'MaxUtilization';
       msg: 'Token utilization limit exceeded';
     },
     {
-      code: 6029;
+      code: 6026;
       name: 'InvalidGovernanceProgram';
       msg: "Governance program do not match Cortex's";
     },
     {
-      code: 6030;
+      code: 6027;
       name: 'InvalidGovernanceRealm';
       msg: "Governance realm do not match Cortex's";
     },
     {
-      code: 6031;
+      code: 6028;
       name: 'InvalidVestingUnlockTime';
       msg: 'Vesting unlock time is too close or passed';
     },
     {
-      code: 6032;
+      code: 6029;
       name: 'InvalidStakingLockingTime';
       msg: 'Invalid staking locking time';
     },
     {
-      code: 6033;
+      code: 6030;
       name: 'CannotFoundStake';
       msg: 'Cannot found stake';
     },
     {
-      code: 6034;
+      code: 6031;
       name: 'UnresolvedStake';
       msg: 'Stake is not resolved';
     },
     {
-      code: 6035;
+      code: 6032;
       name: 'BucketMintLimit';
       msg: 'Reached bucket mint limit';
     },
     {
-      code: 6036;
+      code: 6033;
       name: 'GenesisAlpLimitReached';
       msg: 'Genesis ALP add liquidity limit reached';
     },
     {
-      code: 6037;
+      code: 6034;
       name: 'PermissionlessOracleMissingSignature';
       msg: 'Permissionless oracle update must be preceded by Ed25519 signature verification instruction';
     },
     {
-      code: 6038;
+      code: 6035;
       name: 'PermissionlessOracleMalformedEd25519Data';
       msg: 'Ed25519 signature verification data does not match expected format';
     },
     {
-      code: 6039;
+      code: 6036;
       name: 'PermissionlessOracleSignerMismatch';
       msg: 'Ed25519 signature was not signed by the oracle authority';
     },
     {
-      code: 6040;
+      code: 6037;
       name: 'PermissionlessOracleMessageMismatch';
       msg: 'Signed message does not match instruction params';
+    },
+    {
+      code: 6038;
+      name: 'CustodyStableLockedAmountNotFound';
+      msg: 'Cannot find custody stable locked amount';
+    },
+    {
+      code: 6039;
+      name: 'CustodyNotFound';
+      msg: 'Cannot find custody';
+    },
+    {
+      code: 6040;
+      name: 'InsufficientBucketReserve';
+      msg: 'The bucket does not contain enough token for reserving this allocation';
     },
   ];
 };
 
-export const IDL: Perpetuals = {
+export const IDL: Adrena = {
   version: '0.1.0',
-  name: 'perpetuals',
+  name: 'adrena',
   instructions: [
     {
       name: 'init',
       accounts: [
         {
-          name: 'upgradeAuthority',
-          isMut: true,
+          name: 'admin',
+          isMut: false,
           isSigner: true,
         },
         {
-          name: 'multisig',
+          name: 'payer',
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: 'transferAuthority',
@@ -6482,12 +6228,12 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgramData',
+          name: 'adrenaProgramData',
           isMut: false,
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -6534,7 +6280,7 @@ export const IDL: Perpetuals = {
       accounts: [
         {
           name: 'admin',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
@@ -6546,11 +6292,6 @@ export const IDL: Perpetuals = {
           name: 'payer',
           isMut: true,
           isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
         },
         {
           name: 'transferAuthority',
@@ -6716,7 +6457,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -6744,13 +6485,13 @@ export const IDL: Perpetuals = {
       accounts: [
         {
           name: 'admin',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
-          name: 'multisig',
+          name: 'payer',
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: 'transferAuthority',
@@ -6803,13 +6544,13 @@ export const IDL: Perpetuals = {
       accounts: [
         {
           name: 'admin',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
-          name: 'multisig',
+          name: 'payer',
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: 'transferAuthority',
@@ -6847,13 +6588,13 @@ export const IDL: Perpetuals = {
       accounts: [
         {
           name: 'admin',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
-          name: 'multisig',
+          name: 'payer',
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: 'transferAuthority',
@@ -6916,13 +6657,13 @@ export const IDL: Perpetuals = {
       accounts: [
         {
           name: 'admin',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
-          name: 'multisig',
+          name: 'payer',
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: 'transferAuthority',
@@ -6971,30 +6712,6 @@ export const IDL: Perpetuals = {
       returns: 'u8',
     },
     {
-      name: 'setAdminSigners',
-      accounts: [
-        {
-          name: 'admin',
-          isMut: false,
-          isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: 'params',
-          type: {
-            defined: 'SetAdminSignersParams',
-          },
-        },
-      ],
-      returns: 'u8',
-    },
-    {
       name: 'setCustodyConfig',
       accounts: [
         {
@@ -7003,12 +6720,12 @@ export const IDL: Perpetuals = {
           isSigner: true,
         },
         {
-          name: 'multisig',
+          name: 'pool',
           isMut: true,
           isSigner: false,
         },
         {
-          name: 'pool',
+          name: 'perpetuals',
           isMut: true,
           isSigner: false,
         },
@@ -7037,11 +6754,6 @@ export const IDL: Perpetuals = {
           isSigner: true,
         },
         {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'perpetuals',
           isMut: true,
           isSigner: false,
@@ -7064,11 +6776,6 @@ export const IDL: Perpetuals = {
           name: 'admin',
           isMut: false,
           isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
         },
         {
           name: 'transferAuthority',
@@ -7125,11 +6832,6 @@ export const IDL: Perpetuals = {
           isSigner: true,
         },
         {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
@@ -7156,56 +6858,17 @@ export const IDL: Perpetuals = {
       returns: 'u8',
     },
     {
-      name: 'upgradeCustody',
-      accounts: [
-        {
-          name: 'admin',
-          isMut: true,
-          isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'pool',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'custody',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'systemProgram',
-          isMut: false,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: 'params',
-          type: {
-            defined: 'UpgradeCustodyParams',
-          },
-        },
-      ],
-      returns: 'u8',
-    },
-    {
       name: 'setCustomOraclePrice',
       accounts: [
         {
           name: 'admin',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
-          name: 'multisig',
+          name: 'payer',
           isMut: true,
-          isSigner: false,
+          isSigner: true,
         },
         {
           name: 'perpetuals',
@@ -7244,49 +6907,15 @@ export const IDL: Perpetuals = {
       returns: 'u8',
     },
     {
-      name: 'setTestTime',
-      accounts: [
-        {
-          name: 'admin',
-          isMut: false,
-          isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'perpetuals',
-          isMut: true,
-          isSigner: false,
-        },
-      ],
-      args: [
-        {
-          name: 'params',
-          type: {
-            defined: 'SetTestTimeParams',
-          },
-        },
-      ],
-      returns: 'u8',
-    },
-    {
       name: 'testAdminRemoveCollateral',
       accounts: [
         {
           name: 'admin',
-          isMut: true,
+          isMut: false,
           isSigner: true,
         },
         {
           name: 'owner',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'multisig',
           isMut: false,
           isSigner: false,
         },
@@ -7346,7 +6975,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -7380,11 +7009,6 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'receivingAccount',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'lmTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -7474,11 +7098,6 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
@@ -7494,7 +7113,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -7523,11 +7142,6 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'lpTokenAccount',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'lmTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -7622,7 +7236,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -7782,7 +7396,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -7811,11 +7425,6 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'lpTokenAccount',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'lmTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -7895,11 +7504,6 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'stakingRewardTokenMint',
           isMut: false,
           isSigner: false,
@@ -7910,7 +7514,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -7940,11 +7544,6 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'fundingAccount',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'lmTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -8034,11 +7633,6 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
@@ -8059,7 +7653,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -8093,11 +7687,6 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'collateralAccount',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'lmTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -8207,11 +7796,6 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
@@ -8232,7 +7816,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -8315,7 +7899,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -8393,7 +7977,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -8422,11 +8006,6 @@ export const IDL: Perpetuals = {
         },
         {
           name: 'receivingAccount',
-          isMut: true,
-          isSigner: false,
-        },
-        {
-          name: 'lmTokenAccount',
           isMut: true,
           isSigner: false,
         },
@@ -8516,11 +8095,6 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
@@ -8536,7 +8110,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -8776,6 +8350,67 @@ export const IDL: Perpetuals = {
       ],
       returns: {
         defined: 'NewPositionPricesAndFee',
+      },
+    },
+    {
+      name: 'getOpenPositionWithSwapAmountAndFees',
+      accounts: [
+        {
+          name: 'perpetuals',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'receivingCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'receivingCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'principalCustody',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'principalCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'adrenaProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'GetOpenPositionWithSwapAmountAndFeesParams',
+          },
+        },
+      ],
+      returns: {
+        defined: 'OpenPositionWithSwapAmountAndFees',
       },
     },
     {
@@ -9161,7 +8796,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -9202,11 +8837,6 @@ export const IDL: Perpetuals = {
           name: 'payer',
           isMut: true,
           isSigner: true,
-        },
-        {
-          name: 'multisig',
-          isMut: true,
-          isSigner: false,
         },
         {
           name: 'transferAuthority',
@@ -9410,7 +9040,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -9555,7 +9185,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -9705,7 +9335,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -9850,7 +9480,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -9948,7 +9578,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -10046,7 +9676,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -10124,7 +9754,7 @@ export const IDL: Perpetuals = {
           isSigner: false,
         },
         {
-          name: 'perpetualsProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -10220,30 +9850,125 @@ export const IDL: Perpetuals = {
       returns: 'u8',
     },
     {
-      name: 'setCustomOraclePricePermissionless',
+      name: 'increasePosition',
       accounts: [
         {
-          name: 'perpetuals',
-          isMut: false,
-          isSigner: false,
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
         },
         {
-          name: 'pool',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'custody',
-          isMut: false,
-          isSigner: false,
-        },
-        {
-          name: 'oracleAccount',
+          name: 'fundingAccount',
           isMut: true,
           isSigner: false,
         },
         {
-          name: 'ixSysvar',
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'perpetuals',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'custodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustody',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyOracleAccount',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stakingRewardTokenMint',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
         },
@@ -10252,7 +9977,7 @@ export const IDL: Perpetuals = {
         {
           name: 'params',
           type: {
-            defined: 'SetCustomOraclePricePermissionlessParams',
+            defined: 'IncreasePositionParams',
           },
         },
       ],
@@ -10295,7 +10020,15 @@ export const IDL: Perpetuals = {
             },
           },
           {
+            name: 'vestedTokenAmount',
+            type: 'u128',
+          },
+          {
             name: 'coreContributorBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'coreContributorBucketVestedAmount',
             type: 'u64',
           },
           {
@@ -10307,6 +10040,10 @@ export const IDL: Perpetuals = {
             type: 'u64',
           },
           {
+            name: 'daoTreasuryBucketVestedAmount',
+            type: 'u64',
+          },
+          {
             name: 'daoTreasuryBucketMintedAmount',
             type: 'u64',
           },
@@ -10315,11 +10052,19 @@ export const IDL: Perpetuals = {
             type: 'u64',
           },
           {
+            name: 'polBucketVestedAmount',
+            type: 'u64',
+          },
+          {
             name: 'polBucketMintedAmount',
             type: 'u64',
           },
           {
             name: 'ecosystemBucketAllocation',
+            type: 'u64',
+          },
+          {
+            name: 'ecosystemBucketVestedAmount',
             type: 'u64',
           },
           {
@@ -10355,10 +10100,6 @@ export const IDL: Perpetuals = {
             type: 'bool',
           },
           {
-            name: 'isVirtual',
-            type: 'bool',
-          },
-          {
             name: 'oracle',
             type: {
               defined: 'OracleParams',
@@ -10401,12 +10142,6 @@ export const IDL: Perpetuals = {
             },
           },
           {
-            name: 'distributedRewards',
-            type: {
-              defined: 'RewardsStats',
-            },
-          },
-          {
             name: 'volumeStats',
             type: {
               defined: 'VolumeStats',
@@ -10442,168 +10177,6 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'tokenAccountBump',
-            type: 'u8',
-          },
-        ],
-      },
-    },
-    {
-      name: 'deprecatedCustody',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'pool',
-            type: 'publicKey',
-          },
-          {
-            name: 'mint',
-            type: 'publicKey',
-          },
-          {
-            name: 'tokenAccount',
-            type: 'publicKey',
-          },
-          {
-            name: 'decimals',
-            type: 'u8',
-          },
-          {
-            name: 'isStable',
-            type: 'bool',
-          },
-          {
-            name: 'oracle',
-            type: {
-              defined: 'OracleParams',
-            },
-          },
-          {
-            name: 'pricing',
-            type: {
-              defined: 'PricingParams',
-            },
-          },
-          {
-            name: 'permissions',
-            type: {
-              defined: 'Permissions',
-            },
-          },
-          {
-            name: 'fees',
-            type: {
-              defined: 'Fees',
-            },
-          },
-          {
-            name: 'borrowRate',
-            type: {
-              defined: 'BorrowRateParams',
-            },
-          },
-          {
-            name: 'assets',
-            type: {
-              defined: 'Assets',
-            },
-          },
-          {
-            name: 'collectedFees',
-            type: {
-              defined: 'FeesStats',
-            },
-          },
-          {
-            name: 'distributedRewards',
-            type: {
-              defined: 'RewardsStats',
-            },
-          },
-          {
-            name: 'volumeStats',
-            type: {
-              defined: 'VolumeStats',
-            },
-          },
-          {
-            name: 'tradeStats',
-            type: {
-              defined: 'TradeStats',
-            },
-          },
-          {
-            name: 'longPositions',
-            type: {
-              defined: 'PositionStats',
-            },
-          },
-          {
-            name: 'shortPositions',
-            type: {
-              defined: 'PositionStats',
-            },
-          },
-          {
-            name: 'borrowRateState',
-            type: {
-              defined: 'BorrowRateState',
-            },
-          },
-          {
-            name: 'bump',
-            type: 'u8',
-          },
-          {
-            name: 'tokenAccountBump',
-            type: 'u8',
-          },
-        ],
-      },
-    },
-    {
-      name: 'multisig',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'numSigners',
-            type: 'u8',
-          },
-          {
-            name: 'numSigned',
-            type: 'u8',
-          },
-          {
-            name: 'minSignatures',
-            type: 'u8',
-          },
-          {
-            name: 'instructionAccountsLen',
-            type: 'u8',
-          },
-          {
-            name: 'instructionDataLen',
-            type: 'u16',
-          },
-          {
-            name: 'instructionHash',
-            type: 'u64',
-          },
-          {
-            name: 'signers',
-            type: {
-              array: ['publicKey', 6],
-            },
-          },
-          {
-            name: 'signed',
-            type: {
-              array: ['u8', 6],
-            },
-          },
-          {
-            name: 'bump',
             type: 'u8',
           },
         ],
@@ -10642,6 +10215,10 @@ export const IDL: Perpetuals = {
       type: {
         kind: 'struct',
         fields: [
+          {
+            name: 'admin',
+            type: 'publicKey',
+          },
           {
             name: 'permissions',
             type: {
@@ -10707,6 +10284,10 @@ export const IDL: Perpetuals = {
           {
             name: 'inceptionTime',
             type: 'i64',
+          },
+          {
+            name: 'nbStableCustody',
+            type: 'u8',
           },
         ],
       },
@@ -10915,8 +10496,18 @@ export const IDL: Perpetuals = {
         kind: 'struct',
         fields: [
           {
+            name: 'bump',
+            type: 'u8',
+          },
+          {
             name: 'amount',
             type: 'u64',
+          },
+          {
+            name: 'originBucket',
+            type: {
+              defined: 'BucketName',
+            },
           },
           {
             name: 'unlockStartTimestamp',
@@ -10937,10 +10528,6 @@ export const IDL: Perpetuals = {
           {
             name: 'owner',
             type: 'publicKey',
-          },
-          {
-            name: 'bump',
-            type: 'u8',
           },
         ],
       },
@@ -10966,10 +10553,6 @@ export const IDL: Perpetuals = {
         fields: [
           {
             name: 'isStable',
-            type: 'bool',
-          },
-          {
-            name: 'isVirtual',
             type: 'bool',
           },
           {
@@ -11103,6 +10686,12 @@ export const IDL: Perpetuals = {
             type: 'u64',
           },
           {
+            name: 'originBucket',
+            type: {
+              defined: 'BucketName',
+            },
+          },
+          {
             name: 'unlockStartTimestamp',
             type: 'i64',
           },
@@ -11216,6 +10805,28 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'GetOpenPositionWithSwapAmountAndFeesParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'collateralAmount',
+            type: 'u64',
+          },
+          {
+            name: 'size',
+            type: 'u64',
+          },
+          {
+            name: 'side',
+            type: {
+              defined: 'Side',
+            },
+          },
+        ],
+      },
+    },
+    {
       name: 'GetOraclePriceParams',
       type: {
         kind: 'struct',
@@ -11259,6 +10870,32 @@ export const IDL: Perpetuals = {
       },
     },
     {
+      name: 'IncreasePositionParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'price',
+            type: 'u64',
+          },
+          {
+            name: 'collateral',
+            type: 'u64',
+          },
+          {
+            name: 'size',
+            type: 'u64',
+          },
+          {
+            name: 'side',
+            type: {
+              defined: 'Side',
+            },
+          },
+        ],
+      },
+    },
+    {
       name: 'InitStakingParams',
       type: {
         kind: 'struct',
@@ -11289,10 +10926,6 @@ export const IDL: Perpetuals = {
       type: {
         kind: 'struct',
         fields: [
-          {
-            name: 'minSignatures',
-            type: 'u8',
-          },
           {
             name: 'allowSwap',
             type: 'bool',
@@ -11501,28 +11134,12 @@ export const IDL: Perpetuals = {
       },
     },
     {
-      name: 'SetAdminSignersParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'minSignatures',
-            type: 'u8',
-          },
-        ],
-      },
-    },
-    {
       name: 'SetCustodyConfigParams',
       type: {
         kind: 'struct',
         fields: [
           {
             name: 'isStable',
-            type: 'bool',
-          },
-          {
-            name: 'isVirtual',
             type: 'bool',
           },
           {
@@ -11562,38 +11179,6 @@ export const IDL: Perpetuals = {
                 defined: 'TokenRatios',
               },
             },
-          },
-        ],
-      },
-    },
-    {
-      name: 'SetCustomOraclePricePermissionlessParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'custodyAccount',
-            type: 'publicKey',
-          },
-          {
-            name: 'price',
-            type: 'u64',
-          },
-          {
-            name: 'expo',
-            type: 'i32',
-          },
-          {
-            name: 'conf',
-            type: 'u64',
-          },
-          {
-            name: 'ema',
-            type: 'u64',
-          },
-          {
-            name: 'publishTime',
-            type: 'i64',
           },
         ],
       },
@@ -11667,18 +11252,6 @@ export const IDL: Perpetuals = {
       },
     },
     {
-      name: 'SetTestTimeParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'time',
-            type: 'i64',
-          },
-        ],
-      },
-    },
-    {
       name: 'SwapParams',
       type: {
         kind: 'struct',
@@ -11704,13 +11277,6 @@ export const IDL: Perpetuals = {
             type: 'u64',
           },
         ],
-      },
-    },
-    {
-      name: 'UpgradeCustodyParams',
-      type: {
-        kind: 'struct',
-        fields: [],
       },
     },
     {
@@ -11750,59 +11316,59 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'ratioMult',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'utilizationMult',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'swapIn',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'swapOut',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'stableSwapIn',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'stableSwapOut',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'addLiquidity',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'removeLiquidity',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'openPosition',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'closePosition',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'liquidation',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'protocolShare',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'feeMax',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'feeOptimal',
-            type: 'u64',
+            type: 'u16',
           },
         ],
       },
@@ -11834,38 +11400,6 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'liquidationUsd',
-            type: 'u64',
-          },
-        ],
-      },
-    },
-    {
-      name: 'RewardsStats',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'swapLm',
-            type: 'u64',
-          },
-          {
-            name: 'addLiquidityLm',
-            type: 'u64',
-          },
-          {
-            name: 'removeLiquidityLm',
-            type: 'u64',
-          },
-          {
-            name: 'openPositionLm',
-            type: 'u64',
-          },
-          {
-            name: 'closePositionLm',
-            type: 'u64',
-          },
-          {
-            name: 'liquidationLm',
             type: 'u64',
           },
         ],
@@ -11966,35 +11500,35 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'tradeSpreadLong',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'tradeSpreadShort',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'swapSpread',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'minInitialLeverage',
-            type: 'u64',
+            type: 'u32',
           },
           {
             name: 'maxInitialLeverage',
-            type: 'u64',
+            type: 'u32',
           },
           {
             name: 'maxLeverage',
-            type: 'u64',
+            type: 'u32',
           },
           {
             name: 'maxPayoffMult',
-            type: 'u64',
+            type: 'u32',
           },
           {
             name: 'maxUtilization',
-            type: 'u64',
+            type: 'u16',
           },
           {
             name: 'maxPositionLockedUsd',
@@ -12092,44 +11626,31 @@ export const IDL: Perpetuals = {
             name: 'cumulativeInterestSnapshot',
             type: 'u128',
           },
+          {
+            name: 'stableLockedAmount',
+            type: {
+              array: [
+                {
+                  defined: 'StableLockedAmountStat',
+                },
+                3,
+              ],
+            },
+          },
         ],
       },
     },
     {
-      name: 'DeprecatedPricingParams',
+      name: 'StableLockedAmountStat',
       type: {
         kind: 'struct',
         fields: [
           {
-            name: 'useEma',
-            type: 'bool',
+            name: 'custody',
+            type: 'publicKey',
           },
           {
-            name: 'useUnrealizedPnlInAum',
-            type: 'bool',
-          },
-          {
-            name: 'tradeSpreadLong',
-            type: 'u64',
-          },
-          {
-            name: 'tradeSpreadShort',
-            type: 'u64',
-          },
-          {
-            name: 'swapSpread',
-            type: 'u64',
-          },
-          {
-            name: 'minInitialLeverage',
-            type: 'u64',
-          },
-          {
-            name: 'maxLeverage',
-            type: 'u64',
-          },
-          {
-            name: 'maxPayoffMult',
+            name: 'lockedAmount',
             type: 'u64',
           },
         ],
@@ -12165,10 +11686,6 @@ export const IDL: Perpetuals = {
             type: {
               defined: 'OracleType',
             },
-          },
-          {
-            name: 'oracleAuthority',
-            type: 'publicKey',
           },
           {
             name: 'maxPriceError',
@@ -12228,6 +11745,34 @@ export const IDL: Perpetuals = {
           },
           {
             name: 'fee',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'OpenPositionWithSwapAmountAndFees',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'entryPrice',
+            type: 'u64',
+          },
+          {
+            name: 'liquidationPrice',
+            type: 'u64',
+          },
+          {
+            name: 'swapFeeIn',
+            type: 'u64',
+          },
+          {
+            name: 'swapFeeOut',
+            type: 'u64',
+          },
+          {
+            name: 'openPositionFee',
             type: 'u64',
           },
         ],
@@ -12483,59 +12028,6 @@ export const IDL: Perpetuals = {
       },
     },
     {
-      name: 'AdminInstruction',
-      type: {
-        kind: 'enum',
-        variants: [
-          {
-            name: 'AddPool',
-          },
-          {
-            name: 'RemovePool',
-          },
-          {
-            name: 'AddCustody',
-          },
-          {
-            name: 'RemoveCustody',
-          },
-          {
-            name: 'SetAdminSigners',
-          },
-          {
-            name: 'SetCustodyConfig',
-          },
-          {
-            name: 'SetPermissions',
-          },
-          {
-            name: 'SetBorrowRate',
-          },
-          {
-            name: 'WithdrawFees',
-          },
-          {
-            name: 'WithdrawSolFees',
-          },
-          {
-            name: 'SetCustomOraclePrice',
-          },
-          {
-            name: 'SetTestTime',
-          },
-          {
-            name: 'UpgradeCustody',
-          },
-          {
-            name: 'MintLmTokensFromBucket',
-          },
-          {
-            name: 'InitStaking',
-          },
-        ],
-      },
-    },
-    {
       name: 'OracleType',
       type: {
         kind: 'enum',
@@ -12624,208 +12116,208 @@ export const IDL: Perpetuals = {
   errors: [
     {
       code: 6000,
-      name: 'MultisigAccountNotAuthorized',
-      msg: 'Account is not authorized to sign this instruction',
-    },
-    {
-      code: 6001,
-      name: 'MultisigAlreadySigned',
-      msg: 'Account has already signed this instruction',
-    },
-    {
-      code: 6002,
-      name: 'MultisigAlreadyExecuted',
-      msg: 'This instruction has already been executed',
-    },
-    {
-      code: 6003,
       name: 'MathOverflow',
       msg: 'Overflow in arithmetic operation',
     },
     {
-      code: 6004,
+      code: 6001,
       name: 'UnsupportedOracle',
       msg: 'Unsupported price oracle',
     },
     {
-      code: 6005,
+      code: 6002,
       name: 'InvalidOracleAccount',
       msg: 'Invalid oracle account',
     },
     {
-      code: 6006,
+      code: 6003,
       name: 'InvalidOracleState',
       msg: 'Invalid oracle state',
     },
     {
-      code: 6007,
+      code: 6004,
       name: 'StaleOraclePrice',
       msg: 'Stale oracle price',
     },
     {
-      code: 6008,
+      code: 6005,
       name: 'InvalidOraclePrice',
       msg: 'Invalid oracle price',
     },
     {
-      code: 6009,
+      code: 6006,
       name: 'InvalidEnvironment',
       msg: 'Instruction is not allowed in production',
     },
     {
-      code: 6010,
+      code: 6007,
       name: 'InvalidPoolState',
       msg: 'Invalid pool state',
     },
     {
-      code: 6011,
+      code: 6008,
       name: 'InvalidVestState',
       msg: 'Invalid vest state',
     },
     {
-      code: 6012,
+      code: 6009,
       name: 'InvalidStakeState',
       msg: 'Invalid stake state',
     },
     {
-      code: 6013,
+      code: 6010,
       name: 'InvalidCustodyState',
       msg: 'Invalid custody state',
     },
     {
-      code: 6014,
+      code: 6011,
       name: 'InvalidCollateralCustody',
       msg: 'Invalid collateral custody',
     },
     {
-      code: 6015,
+      code: 6012,
       name: 'InvalidPositionState',
       msg: 'Invalid position state',
     },
     {
-      code: 6016,
+      code: 6013,
       name: 'InvalidStakingRoundState',
       msg: 'Invalid staking round state',
     },
     {
-      code: 6017,
+      code: 6014,
       name: 'InvalidPerpetualsConfig',
       msg: 'Invalid perpetuals config',
     },
     {
-      code: 6018,
+      code: 6015,
       name: 'InvalidPoolConfig',
       msg: 'Invalid pool config',
     },
     {
-      code: 6019,
+      code: 6016,
       name: 'InvalidCustodyConfig',
       msg: 'Invalid custody config',
     },
     {
-      code: 6020,
+      code: 6017,
       name: 'InsufficientAmountReturned',
       msg: 'Insufficient token amount returned',
     },
     {
-      code: 6021,
+      code: 6018,
       name: 'MaxPriceSlippage',
       msg: 'Price slippage limit exceeded',
     },
     {
-      code: 6022,
+      code: 6019,
       name: 'MaxLeverage',
       msg: 'Position leverage limit exceeded',
     },
     {
-      code: 6023,
+      code: 6020,
       name: 'CustodyAmountLimit',
       msg: 'Custody amount limit exceeded',
     },
     {
-      code: 6024,
+      code: 6021,
       name: 'PositionAmountLimit',
       msg: 'Position amount limit exceeded',
     },
     {
-      code: 6025,
+      code: 6022,
       name: 'TokenRatioOutOfRange',
       msg: 'Token ratio out of range',
     },
     {
-      code: 6026,
+      code: 6023,
       name: 'UnsupportedToken',
       msg: 'Token is not supported',
     },
     {
-      code: 6027,
+      code: 6024,
       name: 'InstructionNotAllowed',
       msg: 'Instruction is not allowed at this time',
     },
     {
-      code: 6028,
+      code: 6025,
       name: 'MaxUtilization',
       msg: 'Token utilization limit exceeded',
     },
     {
-      code: 6029,
+      code: 6026,
       name: 'InvalidGovernanceProgram',
       msg: "Governance program do not match Cortex's",
     },
     {
-      code: 6030,
+      code: 6027,
       name: 'InvalidGovernanceRealm',
       msg: "Governance realm do not match Cortex's",
     },
     {
-      code: 6031,
+      code: 6028,
       name: 'InvalidVestingUnlockTime',
       msg: 'Vesting unlock time is too close or passed',
     },
     {
-      code: 6032,
+      code: 6029,
       name: 'InvalidStakingLockingTime',
       msg: 'Invalid staking locking time',
     },
     {
-      code: 6033,
+      code: 6030,
       name: 'CannotFoundStake',
       msg: 'Cannot found stake',
     },
     {
-      code: 6034,
+      code: 6031,
       name: 'UnresolvedStake',
       msg: 'Stake is not resolved',
     },
     {
-      code: 6035,
+      code: 6032,
       name: 'BucketMintLimit',
       msg: 'Reached bucket mint limit',
     },
     {
-      code: 6036,
+      code: 6033,
       name: 'GenesisAlpLimitReached',
       msg: 'Genesis ALP add liquidity limit reached',
     },
     {
-      code: 6037,
+      code: 6034,
       name: 'PermissionlessOracleMissingSignature',
       msg: 'Permissionless oracle update must be preceded by Ed25519 signature verification instruction',
     },
     {
-      code: 6038,
+      code: 6035,
       name: 'PermissionlessOracleMalformedEd25519Data',
       msg: 'Ed25519 signature verification data does not match expected format',
     },
     {
-      code: 6039,
+      code: 6036,
       name: 'PermissionlessOracleSignerMismatch',
       msg: 'Ed25519 signature was not signed by the oracle authority',
     },
     {
-      code: 6040,
+      code: 6037,
       name: 'PermissionlessOracleMessageMismatch',
       msg: 'Signed message does not match instruction params',
+    },
+    {
+      code: 6038,
+      name: 'CustodyStableLockedAmountNotFound',
+      msg: 'Cannot find custody stable locked amount',
+    },
+    {
+      code: 6039,
+      name: 'CustodyNotFound',
+      msg: 'Cannot find custody',
+    },
+    {
+      code: 6040,
+      name: 'InsufficientBucketReserve',
+      msg: 'The bucket does not contain enough token for reserving this allocation',
     },
   ],
 };
