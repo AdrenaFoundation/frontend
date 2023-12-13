@@ -87,7 +87,7 @@ export default function SaveOnFeesBlocks({
                   collateralToken?.symbol !== row.token.symbol && (
                     <p
                       className={twMerge(
-                        'text-xs font-medium text-right order-1 sm:order-2',
+                        'text-xs font-medium text-right order-1 sm:order-none',
                         currentFee > row.fee
                           ? 'text-green-500'
                           : 'text-red-500',
