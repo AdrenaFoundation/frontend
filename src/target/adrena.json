@@ -3692,6 +3692,11 @@
       "accounts": [
         {
           "name": "owner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
