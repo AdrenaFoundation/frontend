@@ -6,7 +6,7 @@ import twitterLogo from '../../../public/images/twitter.svg';
 
 export default function Footer() {
   return (
-    <div className="flex-col w-full h-auto pt-4 pb-4 border-t border-grey justify-center items-center shrink-0">
+    <footer className="mt-auto flex-col w-full pt-4 pb-4 border-t border-grey justify-center items-center bg-black/50 backdrop-blur-md z-20">
       <div className="flex w-full justify-center items-center">
         <Link
           href="https://github.com/orgs/AdrenaDEX/repositories"
@@ -38,6 +38,6 @@ export default function Footer() {
           Terms and conditions
         </Link> */}
       </div>
-    </div>
+    </footer>
   );
 }

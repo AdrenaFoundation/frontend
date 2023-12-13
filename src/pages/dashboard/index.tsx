@@ -176,15 +176,19 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     },
   ];
 
+  // full animation
+  // https://lottie.host/37e1ec5d-b487-44e1-b4e9-ac7f51500eee/ydhCjShFMH.lottie
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
   return (
     <>
       <DotLottiePlayer
-        src="https://lottie.host/37e1ec5d-b487-44e1-b4e9-ac7f51500eee/ydhCjShFMH.lottie"
-        autoplay
-        loop
+        src="https://lottie.host/f7973135-c929-4978-b0cb-df671f50d021/eGqcR9lFei.lottie"
+        autoplay={!isSafari}
+        loop={!isSafari}
         className={twMerge(
           isAnimationLoaded ? 'opacity-100' : 'opacity-0',
-          'fixed lg:absolute top-[0px] md:top-[-50px] left-0 transition-opacity duration-300 w-full',
+          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 transition-opacity duration-300 w-[80%]',
         )}
         onEvent={(event: PlayerEvents) => {
           if (event === PlayerEvents.Ready) {

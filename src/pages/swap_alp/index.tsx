@@ -1,6 +1,7 @@
-import { DotLottiePlayer } from '@dotlottie/react-player';
+import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import Lottie from 'lottie-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
@@ -28,6 +29,8 @@ export default function SwapALP({
   custodies,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
+  const [isAnimationLoaded2, setIsAnimationLoaded2] = useState(false);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
   const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
@@ -215,21 +218,39 @@ export default function SwapALP({
     return <Loader />;
   }
 
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
   return (
     <>
-      <div className="absolute w-full h-full left-0 top-0 bottom-0">
+      <div className="absolute w-full h-full left-0 top-0 bottom-0 overflow-hidden">
         <DotLottiePlayer
-          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          autoplay
-          loop
-          className="absolute top-0 right-0 rotate-180 transform lg:scale-150"
+          src="https://lottie.host/86bfc6ae-7fe8-47ac-90c4-8b1463c76f1d/dUBWvrAw1g.lottie"
+          autoplay={!isSafari}
+          loop={!isSafari}
+          className={twMerge(
+            isAnimationLoaded ? 'opacity-100' : 'opacity-0',
+            'absolute top-0 md:top-[-50px] left-0 w-[1500px] transition-opacity duration-300',
+          )}
+          onEvent={(event: PlayerEvents) => {
+            if (event === PlayerEvents.Ready) {
+              setIsAnimationLoaded(true);
+            }
+          }}
         />
 
         <DotLottiePlayer
-          src="https://lottie.host/e1d14be4-e17f-4368-8132-1bdc638ec2f6/2uksm6DJOw.lottie"
-          autoplay
-          loop
-          className="absolute bottom-0"
+          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
+          autoplay={!isSafari}
+          loop={!isSafari}
+          className={twMerge(
+            isAnimationLoaded2 ? 'opacity-100' : 'opacity-0',
+            'absolute right-0 w-[1500px] transition-opacity duration-300',
+          )}
+          onEvent={(event: PlayerEvents) => {
+            if (event === PlayerEvents.Ready) {
+              setIsAnimationLoaded2(true);
+            }
+          }}
         />
       </div>
 

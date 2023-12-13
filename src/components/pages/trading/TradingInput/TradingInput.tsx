@@ -76,7 +76,10 @@ export default function TradingInput({
             <Select
               className="shrink-0 text-2xl"
               selected={selectedToken?.symbol ?? ''}
-              options={tokenList.map((v) => v.symbol)}
+              options={tokenList.map((token) => ({
+                title: token.symbol,
+                img: token.image,
+              }))}
               onSelect={(name) => {
                 // Force linting, you cannot not find the token in the list
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

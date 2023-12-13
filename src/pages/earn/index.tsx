@@ -1,11 +1,12 @@
 import { BN } from '@coral-xyz/anchor';
-import { DotLottiePlayer } from '@dotlottie/react-player';
+import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
 import StakeBlocks from '@/components/pages/earn/StakeBlocks';
@@ -29,6 +30,8 @@ import lockIcon from '../../../public/images/Icons/lock.svg';
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
+  const [isAnimationLoaded2, setIsAnimationLoaded2] = useState(false);
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
@@ -331,13 +334,30 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
           src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
           autoplay
           loop
-          className="absolute top-0 left-0 rotate-180 w-[1000px] lg:w-full"
+          className={twMerge(
+            isAnimationLoaded ? 'opacity-100' : 'opacity-0',
+            'absolute top-0 left-0 rotate-180 bottom-0 w-[1000px] lg:w-full transition-opacity duration-300',
+          )}
+          onEvent={(event: PlayerEvents) => {
+            if (event === PlayerEvents.Ready) {
+              setIsAnimationLoaded(true);
+            }
+          }}
         />
+
         <DotLottiePlayer
           src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
           autoplay
           loop
-          className="absolute top-0 left-0"
+          className={twMerge(
+            isAnimationLoaded2 ? 'opacity-100' : 'opacity-0',
+            'absolute top-0 right-0 w-[1000px] transition-opacity duration-300',
+          )}
+          onEvent={(event: PlayerEvents) => {
+            if (event === PlayerEvents.Ready) {
+              setIsAnimationLoaded2(true);
+            }
+          }}
         />
       </div>
 
