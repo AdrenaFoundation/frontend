@@ -1,7 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
-import Lottie from 'lottie-react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
