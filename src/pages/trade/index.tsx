@@ -409,8 +409,6 @@ export default function Trade({
 
         <DotLottiePlayer
           src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          autoplay={!isSafari}
-          loop={!isSafari}
           className={twMerge(
             isAnimationLoaded3 ? 'opacity-100' : 'opacity-0',
             'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] transition-opacity duration-300',

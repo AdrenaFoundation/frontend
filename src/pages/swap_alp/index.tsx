@@ -240,8 +240,8 @@ export default function SwapALP({
 
         <DotLottiePlayer
           src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          autoplay={!isSafari}
-          loop={!isSafari}
+          autoplay
+          loop
           className={twMerge(
             isAnimationLoaded2 ? 'opacity-100' : 'opacity-0',
             'absolute right-0 w-[1500px] transition-opacity duration-300',

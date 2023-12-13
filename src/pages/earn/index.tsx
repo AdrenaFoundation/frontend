@@ -386,8 +386,8 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               <h4>My Locked Stake</h4>
             </div>
 
-            {wallet &&
-              (isBigScreen ? (
+            {wallet ? (
+              isBigScreen ? (
                 <StakeList
                   positions={stakePositions}
                   handleRemoveLockedStake={handleRemoveLockedStake}
@@ -397,7 +397,12 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
                   positions={stakePositions}
                   handleRemoveLockedStake={handleRemoveLockedStake}
                 />
-              ))}
+              )
+            ) : (
+              <p className="text-sm opacity-50">
+                Connect your wallet to see your locked stake
+              </p>
+            )}
           </div>
         </div>
 
