@@ -1,6 +1,8 @@
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   BackpackWalletAdapter,
   PhantomWalletAdapter,
+  WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
 
@@ -9,10 +11,25 @@ import { LockPeriod, WalletAdapterName } from './types';
 
 export const walletAdapters: Record<
   WalletAdapterName,
-  PhantomWalletAdapter | BackpackWalletAdapter /* | ... */
+  | PhantomWalletAdapter
+  | BackpackWalletAdapter
+  | WalletConnectWalletAdapter /* | ... */
 > = {
   phantom: new PhantomWalletAdapter(),
   backpack: new BackpackWalletAdapter(),
+  walletConnect: new WalletConnectWalletAdapter({
+    network: WalletAdapterNetwork.Devnet,
+    options: {
+      relayUrl: 'wss://relay.walletconnect.com',
+      projectId: '398435404513d41887c13aee450d5773',
+      metadata: {
+        name: 'Adrena',
+        description: 'Perpetuals DEX for the Solana community',
+        url: 'https://github.com/AdrenaDEX/adrena',
+        icons: ['https://avatars.githubusercontent.com/u/122066701?s=400&v=4'],
+      },
+    },
+  }),
 };
 
 export const RATE_DECIMALS = 9;
