@@ -312,14 +312,11 @@ export default function Trade({
 
     if (openedPosition) {
       if (selectedAction === 'short') {
-        // return 'Reduce Position';
-        // TODO
-        return 'Reduce Position is not handled yet';
+        return 'Increase Short';
       }
+
       if (selectedAction === 'long') {
-        //return 'Increase Position';
-        // TODO
-        return 'Increase Position is not handled yet';
+        return 'Increase Position';
       }
     }
 

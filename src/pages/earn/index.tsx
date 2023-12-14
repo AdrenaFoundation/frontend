@@ -2,7 +2,6 @@ import { BN } from '@coral-xyz/anchor';
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
-import Lottie from 'lottie-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
