@@ -208,7 +208,13 @@ export default function PositionsArray({
 
             <td>
               <Menu
-                trigger={<Button variant="text" leftIcon={threeDotsIcon} />}
+                trigger={
+                  <Button
+                    variant="text"
+                    className="px-1"
+                    leftIcon={threeDotsIcon}
+                  />
+                }
                 className="w-fit"
               >
                 <MenuItems>

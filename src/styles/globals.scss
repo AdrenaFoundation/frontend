@@ -195,3 +195,16 @@ input[type='radio']:checked {
   border: 1px solid var(--color-light);
   box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
+
+.fade-in {
+  animation: fadeIn 0.3s var(--bezier-smooth);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

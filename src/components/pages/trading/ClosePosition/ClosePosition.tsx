@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Checkbox from '@/components/common/Checkbox/Checkbox';
+import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, PriceAndFee, Token } from '@/types';
@@ -238,24 +239,24 @@ export default function ClosePosition({
 
       <div className="flex flex-col text-sm">
         <div className="flex w-full justify-evenly mt-4">
-          {[25, 50, 75, 100].map((percentage) => (
-            <div
-              key={percentage}
-              className="cursor-pointer text-txtfade hover:text-txtregular"
-              onClick={() => {
-                setInput(
+          <TabSelect
+            tabs={[
+              { title: '25%' },
+              { title: '50%' },
+              { title: '75%' },
+              { title: '100%' },
+            ]}
+            onClick={(title) => {
+              setInput(
+                Number(
                   Number(
-                    formatNumber(
-                      (position.collateralUsd * percentage) / 100,
-                      USD_DECIMALS,
-                    ),
-                  ),
-                );
-              }}
-            >
-              {percentage}%
-            </div>
-          ))}
+                    (position.collateralUsd * Number(title.split('%')[0])) /
+                      100,
+                  ).toFixed(USD_DECIMALS),
+                ),
+              );
+            }}
+          />
         </div>
 
         <div className="mt-2 h-[1px] w-full bg-grey" />
@@ -396,7 +397,8 @@ export default function ClosePosition({
       </div>
 
       <Button
-        className="mt-4 bg-highlight"
+        className="mt-4"
+        size="lg"
         title={executeBtnText}
         onClick={() => handleExecute()}
         disabled={!!overMaxAuthorizedLeverage}

@@ -1,5 +1,5 @@
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
-import Lottie from 'lottie-react';
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,6 +11,9 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
+
+import tradeMonsterImage from '../../../public/images/trade-monster.png';
+import tradeMonsterTopImage from '../../../public/images/trade-monster-top.png';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
@@ -251,6 +254,24 @@ export default function SwapALP({
               setIsAnimationLoaded2(true);
             }
           }}
+        />
+
+        <Image
+          src={tradeMonsterTopImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded ? 'opacity-0' : 'opacity-100',
+            'absolute top-0 md:top-[-50px] left-0 w-[1500px] transition-opacity duration-300',
+          )}
+        />
+
+        <Image
+          src={tradeMonsterImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded2 ? 'opacity-0' : 'opacity-100',
+            'absolute right-0 w-[1500px] transition-opacity duration-300',
+          )}
         />
       </div>
 

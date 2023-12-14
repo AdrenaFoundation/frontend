@@ -2,7 +2,6 @@ import { BN } from '@coral-xyz/anchor';
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
-import Lottie from 'lottie-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -26,6 +25,7 @@ import {
 } from '@/utils';
 
 import lockIcon from '../../../public/images/Icons/lock.svg';
+import tradeMonsterImage from '../../../public/images/trade-monster.png';
 
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -358,6 +358,24 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               setIsAnimationLoaded2(true);
             }
           }}
+        />
+
+        <Image
+          src={tradeMonsterImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded ? 'opacity-0' : 'opacity-100',
+            'absolute top-[-350px] left-0 rotate-180 bottom-0 w-[1000px] lg:w-full transition-opacity duration-300',
+          )}
+        />
+
+        <Image
+          src={tradeMonsterImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded2 ? 'opacity-0' : 'opacity-100',
+            'absolute top-0 right-0 w-[1000px] transition-opacity duration-300',
+          )}
         />
       </div>
 

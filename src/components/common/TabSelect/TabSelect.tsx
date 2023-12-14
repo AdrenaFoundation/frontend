@@ -21,7 +21,9 @@ export default function TabSelect<T extends string | number>({
     x: 0,
   });
 
-  const [activeTab, setActiveTab] = useState(selected !== null ? 0 : null);
+  const [activeTab, setActiveTab] = useState<null | number>(
+    selected !== undefined ? 0 : null,
+  );
 
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
 

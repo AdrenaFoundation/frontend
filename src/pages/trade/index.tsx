@@ -1,7 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { PublicKey } from '@solana/web3.js';
-import Lottie from 'lottie-react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -23,6 +23,9 @@ import {
   addSuccessTxNotification,
   uiToNative,
 } from '@/utils';
+
+import tradeMonsterImage from '../../../public/images/trade-monster.png';
+import tradeMonsterTopImage from '../../../public/images/trade-monster-top.png';
 
 type Action = 'long' | 'short' | 'swap';
 
@@ -419,6 +422,33 @@ export default function Trade({
             }
           }}
         />
+
+        <Image
+          src={tradeMonsterTopImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded ? 'opacity-0' : 'opacity-100',
+            'fixed lg:absolute top-0 sm:left-1/2 w-[1000px] transition-opacity duration-300',
+          )}
+        />
+
+        <Image
+          src={tradeMonsterImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded2 ? 'opacity-0' : 'opacity-100',
+            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
+          )}
+        />
+
+        <Image
+          src={tradeMonsterImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded3 ? 'opacity-0' : 'opacity-100',
+            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
+          )}
+        />
       </div>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10">
         <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
@@ -454,7 +484,7 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-5 h-full z-30">
+          <div className="bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-3 h-full z-30">
             <Positions
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}

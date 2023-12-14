@@ -49,53 +49,47 @@ function Button({
     lg: 'px-6 py-2 text-sm',
   };
 
-  const StyledButton = () => {
-    return (
-      <button
-        className={twMerge(
-          'flex flex-row items-center justify-center gap-3 font-mono',
-          sizes[size],
-          variants[variant],
-          className && className,
-          disabled || onClickInProgress
-            ? 'opacity-25 cursor-not-allowed pointer-events-none'
-            : null,
-          'transition duration-300',
-        )}
-        disabled={disabled || onClickInProgress}
-        onClick={async () => {
-          if (!onClick) return;
+  const styledButton = (
+    <button
+      className={twMerge(
+        'flex flex-row items-center justify-center gap-3 font-mono',
+        sizes[size],
+        variants[variant],
+        className && className,
+        disabled || onClickInProgress
+          ? 'opacity-25 cursor-not-allowed pointer-events-none'
+          : null,
+        'transition duration-300',
+      )}
+      disabled={disabled || onClickInProgress}
+      onClick={async () => {
+        if (!onClick) return;
 
-          setOnClickInProgress(true);
-          await onClick();
-          setOnClickInProgress(false);
-        }}
-        {...rest}
-      >
-        {leftIcon && !onClickInProgress ? (
-          <Image src={leftIcon} alt={alt} width="12" height="12" />
-        ) : null}
+        setOnClickInProgress(true);
+        await onClick();
+        setOnClickInProgress(false);
+      }}
+      {...rest}
+    >
+      {leftIcon && !onClickInProgress ? (
+        <Image src={leftIcon} alt={alt} width="12" height="12" />
+      ) : null}
 
-        {title && !onClickInProgress ? title : null}
+      {title && !onClickInProgress ? title : null}
 
-        {rightIcon && !onClickInProgress ? (
-          <Image src={rightIcon} alt={alt} width="12" height="12" />
-        ) : null}
+      {rightIcon && !onClickInProgress ? (
+        <Image src={rightIcon} alt={alt} width="12" height="12" />
+      ) : null}
 
-        {onClickInProgress ? <Loader height={20} /> : null}
-      </button>
-    );
-  };
+      {onClickInProgress ? <Loader height={20} /> : null}
+    </button>
+  );
 
   if (href) {
-    return (
-      <Link href={href}>
-        <StyledButton />
-      </Link>
-    );
+    return <Link href={href}>{styledButton}</Link>;
   }
 
-  return <StyledButton />;
+  return styledButton;
 }
 
 export default Button;

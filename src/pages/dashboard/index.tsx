@@ -1,6 +1,6 @@
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { ChartData } from 'chart.js';
-import Lottie from 'lottie-react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -18,6 +18,8 @@ import {
   formatPriceInfo,
   nativeToUi,
 } from '@/utils';
+
+import monsterImage from '../../../public/images/dashboard-monster.png';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
   const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
@@ -182,13 +184,24 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
 
   return (
     <>
+      <div className="fade-in">
+        <Image
+          src={monsterImage}
+          alt="monster"
+          className={twMerge(
+            isAnimationLoaded ? 'opacity-0' : 'opacity-100',
+            'fixed lg:absolute top-[50px] md:top-[-50px] right-0 w-[80%] transition-opacity duration-300',
+          )}
+        />
+      </div>
+
       <DotLottiePlayer
         src="https://lottie.host/f7973135-c929-4978-b0cb-df671f50d021/eGqcR9lFei.lottie"
         autoplay={!isSafari}
         loop={!isSafari}
         className={twMerge(
           isAnimationLoaded ? 'opacity-100' : 'opacity-0',
-          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 transition-opacity duration-300 w-[80%]',
+          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 transition-opacity duration-300 w-[80%] z-10',
         )}
         onEvent={(event: PlayerEvents) => {
           if (event === PlayerEvents.Ready) {
