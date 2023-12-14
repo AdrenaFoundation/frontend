@@ -222,14 +222,7 @@ export default function Trade({
       }
     }
 
-    //
-    // TODO: need to get the proper fees and call the appropriate ix to increase the position or open it, with swap or not
-    //
-
-    // Position is already opened, add collateral + resize
-    if (openedPosition) {
-      throw new Error('Not handled yet');
-    }
+    // Existing position or not, it's the same
 
     let price: BN;
     let size: BN;
