@@ -30,12 +30,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
 
       {isBigScreen ? <Header /> : <BurgerMenu />}
 
-      <div className="w-full  flex p-4 justify-center">
+      <div className="w-full flex p-4 justify-center">
         <div
-          className={twMerge(
-            isBigScreen ? 'pt-[25px]' : 'pt-[75px]',
-            'w-full flex max-w-[1400px] flex-col',
-          )}
+          className={twMerge('w-full flex max-w-[1400px] flex-col py-[75px]')}
         >
           {children}
         </div>
