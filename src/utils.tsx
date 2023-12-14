@@ -160,7 +160,7 @@ export function addSuccessTxNotification({
   });
 }
 
-export function safeJSONStringify(obj: any, space = 2): string {
+export function safeJSONStringify(obj: unknown, space = 2): string {
   try {
     return JSON.stringify(obj, null, space);
   } catch (e) {

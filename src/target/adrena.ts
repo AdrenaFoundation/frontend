@@ -3692,6 +3692,11 @@ export type Adrena = {
       accounts: [
         {
           name: 'owner';
+          isMut: false;
+          isSigner: true;
+        },
+        {
+          name: 'payer';
           isMut: true;
           isSigner: true;
         },
@@ -9854,6 +9859,11 @@ export const IDL: Adrena = {
       accounts: [
         {
           name: 'owner',
+          isMut: false,
+          isSigner: true,
+        },
+        {
+          name: 'payer',
           isMut: true,
           isSigner: true,
         },

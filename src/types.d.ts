@@ -165,6 +165,8 @@ export type PositionStats = Params['PositionStats'];
 export type OraclePrice = Params['OraclePrice'];
 export type PriceAndFee = Params['PriceAndFee'];
 export type NewPositionPricesAndFee = Params['NewPositionPricesAndFee'];
+export type OpenPositionWithSwapAmountAndFees =
+  Params['OpenPositionWithSwapAmountAndFees'];
 export type SwapAmountAndFees = Params['SwapAmountAndFees'];
 export type ProfitAndLoss = Params['ProfitAndLoss'];
 export type Permissions = Params['Permissions'];
@@ -190,6 +192,8 @@ export type SwapAccounts = ExtractAccounts<'swap'>;
 export type ClosePositionAccounts = ExtractAccounts<'closePosition'>;
 export type AddCollateralAccounts = ExtractAccounts<'addCollateral'>;
 export type OpenPositionAccounts = ExtractAccounts<'openPosition'>;
+export type OpenPositionWithSwapAccounts =
+  ExtractAccounts<'openPositionWithSwap'>;
 export type RemoveCollateralAccounts = ExtractAccounts<'removeCollateral'>;
 export type AddLiquidStakeAccounts = ExtractAccounts<'addLiquidStake'>;
 export type AddLockedStakeAccounts = ExtractAccounts<'addLockedStake'>;

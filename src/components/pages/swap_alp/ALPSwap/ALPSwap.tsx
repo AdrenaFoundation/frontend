@@ -4,7 +4,7 @@ import BN from 'bn.js';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { useSelector } from '@/store/store';
-import { Token, TokenSymbol } from '@/types';
+import { Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -31,7 +31,6 @@ export default function ALPSwap({
   setAlpPrice,
   collateralPrice,
   setCollateralPrice,
-  feesAndAmounts,
   setIsFeesLoading,
 }: {
   className?: string;
@@ -49,9 +48,6 @@ export default function ALPSwap({
   feesUsd: number | null;
   setFeesUsd: (v: number | null) => void;
   allowedCollateralTokens: Token[] | null;
-  feesAndAmounts: {
-    [tokenSymbol: TokenSymbol]: { fees: number | null; amount: number | null };
-  } | null;
   selectedAction: 'buy' | 'sell';
   setIsFeesLoading: (v: boolean) => void;
   setSelectedAction: (v: 'buy' | 'sell') => void;
@@ -209,7 +205,6 @@ export default function ALPSwap({
             collateralPrice={collateralPrice}
             setAlpPrice={setAlpPrice}
             setCollateralPrice={setCollateralPrice}
-            feesAndAmounts={feesAndAmounts}
             setIsFeesLoading={setIsFeesLoading}
           />
 

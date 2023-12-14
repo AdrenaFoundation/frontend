@@ -49,9 +49,9 @@ export default function Details({
                   key={detail.title}
                 >
                   <div className="opacity-50 mb-1 text-sm">{detail.title}</div>
-                  <p className="font-mono text-sm sm:text-lg">
+                  <div className="font-mono text-sm sm:text-lg">
                     {detail.value !== null ? detail.value : '–'}
-                  </p>
+                  </div>
                 </div>
               ))}
           </div>

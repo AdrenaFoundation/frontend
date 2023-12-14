@@ -1,4 +1,3 @@
-import { BN } from '@coral-xyz/anchor';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -61,8 +60,7 @@ export default function PositionInfos({
             tokenA,
             tokenB,
             amountA: uiToNative(inputA, tokenA.decimals),
-            amountB: uiToNative(inputB, tokenB.decimals).div(new BN(leverage)),
-            leverage,
+            amountB: uiToNative(inputB, tokenB.decimals),
             side,
             tokenPrices,
           });

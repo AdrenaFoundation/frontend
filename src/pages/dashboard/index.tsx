@@ -201,7 +201,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
         loop={!isSafari}
         className={twMerge(
           isAnimationLoaded ? 'opacity-100' : 'opacity-0',
-          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 transition-opacity duration-300 w-[80%] z-10',
+          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 transition-opacity duration-300 w-[80%]',
         )}
         onEvent={(event: PlayerEvents) => {
           if (event === PlayerEvents.Ready) {

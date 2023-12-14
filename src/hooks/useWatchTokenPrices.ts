@@ -80,14 +80,18 @@ const useWatchTokenPrices = () => {
   }, [loadPythPrices]);
 
   const loadALPTokenPrice = useCallback(async () => {
-    const price = await window.adrena.client.getLpTokenPrice();
+    try {
+      const price = await window.adrena.client.getLpTokenPrice();
 
-    dispatch(
-      setTokenPriceAction(
-        window.adrena.client.alpToken.symbol,
-        price ? nativeToUi(price, USD_DECIMALS) : null,
-      ),
-    );
+      dispatch(
+        setTokenPriceAction(
+          window.adrena.client.alpToken.symbol,
+          price ? nativeToUi(price, USD_DECIMALS) : null,
+        ),
+      );
+    } catch (e) {
+      console.log('error happened loading lp token price', e);
+    }
   }, [dispatch]);
 
   useEffect(() => {
