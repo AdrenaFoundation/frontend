@@ -1,4 +1,7 @@
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
+import {
+  BackpackWalletAdapter,
+  PhantomWalletAdapter,
+} from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
@@ -6,9 +9,10 @@ import { LockPeriod, WalletAdapterName } from './types';
 
 export const walletAdapters: Record<
   WalletAdapterName,
-  PhantomWalletAdapter /* | ... */
+  PhantomWalletAdapter | BackpackWalletAdapter /* | ... */
 > = {
   phantom: new PhantomWalletAdapter(),
+  backpack: new BackpackWalletAdapter(),
 };
 
 export const RATE_DECIMALS = 9;

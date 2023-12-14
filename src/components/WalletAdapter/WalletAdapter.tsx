@@ -1,6 +1,9 @@
+import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { PublicKey } from '@solana/web3.js';
-import Image from 'next/image';
+import Tippy from '@tippyjs/react';
+import Image, { StaticImageData } from 'next/image';
 import React, { useEffect } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import {
   autoConnectWalletAction,
@@ -12,6 +15,7 @@ import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { getAbbrevWalletAddress } from '@/utils';
 
+import backpackLogo from '../../../public/images/backpack.png';
 import disconnectIcon from '../../../public/images/disconnect.png';
 import phantomLogo from '../../../public/images/phantom.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
@@ -24,24 +28,25 @@ function WalletAdapter({ className }: { className?: string }) {
 
   const connected = !!wallet;
 
-  const isWalletConnected = JSON.parse(
-    localStorage.getItem('isWalletConnected') ?? 'false',
-  );
+  // Load local storage state to auto-connect if needed
+  const autoConnectAuthorized: boolean =
+    JSON.parse(localStorage.getItem('autoConnectAuthorized') ?? 'false') ??
+    true;
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    if (isWalletConnected) {
+    if (autoConnectAuthorized) {
       dispatch(autoConnectWalletAction('phantom'));
       return;
     }
 
     // Only once when page load
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWalletConnected]);
+  }, []);
 
   // Detect change of account
   useEffect(() => {
-    if (!wallet || !Boolean(isWalletConnected)) return;
+    if (!wallet) return;
 
     const adapter = walletAdapters[wallet.adapterName];
 
@@ -58,7 +63,7 @@ function WalletAdapter({ className }: { className?: string }) {
     return () => {
       adapter.removeAllListeners('connect');
     };
-  }, [dispatch, wallet, isWalletConnected]);
+  }, [dispatch, wallet]);
 
   const handleClick = () => {
     if (!connected) {
@@ -90,27 +95,94 @@ function WalletAdapter({ className }: { className?: string }) {
         <Modal
           title="Select wallet"
           close={() => dispatch(openCloseConnectionModalAction(false))}
-          className="flex flex-col items-center w-64 px-3 pb-3"
+          className="flex space-x-3 pb-8 pr-8 pl-8 pt-2 flex-wrap"
         >
-          <div
-            className="flex flex-row gap-3 items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-300 duration-300 w-full"
+          <WalletBloc
+            name="Phantom"
+            logo={phantomLogo}
+            height={50}
+            width={50}
             onClick={() => {
               dispatch(connectWalletAction('phantom'));
               dispatch(openCloseConnectionModalAction(false));
             }}
-          >
-            <Image
-              src={phantomLogo}
-              alt="phantom icon"
-              height={30}
-              width={30}
-            />
-            Phantom
-          </div>
+            readyState={walletAdapters['phantom'].readyState}
+          />
+
+          <WalletBloc
+            name="Backpack"
+            logo={backpackLogo}
+            height={60}
+            width={45}
+            onClick={() => {
+              dispatch(connectWalletAction('backpack'));
+              dispatch(openCloseConnectionModalAction(false));
+            }}
+            readyState={walletAdapters['backpack'].readyState}
+          />
         </Modal>
       ) : null}
     </div>
   );
 }
+
+const WalletBloc = ({
+  name,
+  logo,
+  onClick,
+  height,
+  width,
+  readyState,
+}: {
+  name: string;
+  logo: StaticImageData;
+  onClick: () => void;
+  height: number;
+  width: number;
+  readyState: WalletReadyState;
+}) => {
+  const disabled = readyState !== WalletReadyState.Installed;
+
+  const walletBloc = (
+    <div
+      className={twMerge(
+        'flex flex-col items-center justify-center p-3 border border-gray-300 rounded-lg h-40 w-40 relative',
+        disabled
+          ? 'cursor-not-allowed opacity-40'
+          : 'cursor-pointer hover:bg-gray-300 duration-300',
+      )}
+      onClick={() => {
+        if (disabled) return;
+
+        onClick();
+      }}
+    >
+      <Image src={logo} alt={`${name} icon`} height={height} width={width} />
+
+      <p className="mt-6">{name}</p>
+    </div>
+  );
+
+  if (disabled) {
+    return (
+      <Tippy
+        content={
+          <div className="text-sm w-auto flex flex-col justify-between">
+            {{
+              [WalletReadyState.NotDetected]: 'Wallet is not installed',
+              [WalletReadyState.Loadable]: 'Wallet is not loaded yet',
+              [WalletReadyState.Unsupported]: 'Wallet is not supported',
+            }[readyState.toString()] ?? 'Cannot connect wallet'}
+          </div>
+        }
+        placement="bottom"
+      >
+        {walletBloc}
+      </Tippy>
+    );
+  }
+
+  return walletBloc;
+};
 
 export default WalletAdapter;

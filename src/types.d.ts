@@ -32,7 +32,7 @@ declare global {
   }
 }
 
-export type WalletAdapterName = 'phantom';
+export type WalletAdapterName = 'phantom' | 'backpack';
 
 export type PageProps = {
   mainPool: PoolExtended | null;
