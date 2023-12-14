@@ -1669,6 +1669,179 @@
       ]
     },
     {
+      "name": "openPositionWithSwap",
+      "accounts": [
+        {
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "fundingAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateralAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "receivingCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "collateralCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "principalCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "perpetuals",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmStaking",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lpStaking",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenCustody",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenCustodyOracleAccount",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenCustodyTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lpStakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "stakingRewardTokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "perpetualsProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "OpenPositionWithSwapParams"
+          }
+        }
+      ]
+    },
+    {
       "name": "addCollateral",
       "accounts": [
         {
@@ -5027,6 +5200,38 @@
       }
     },
     {
+      "name": "SetCustomOraclePricePermissionlessParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "custodyAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "expo",
+            "type": "i32"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
+          },
+          {
+            "name": "ema",
+            "type": "u64"
+          },
+          {
+            "name": "publishTime",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "SetCustomOraclePriceParams",
       "type": {
         "kind": "struct",
@@ -5529,6 +5734,10 @@
             "type": {
               "defined": "OracleType"
             }
+          },
+          {
+            "name": "oracleAuthority",
+            "type": "publicKey"
           },
           {
             "name": "maxPriceError",
