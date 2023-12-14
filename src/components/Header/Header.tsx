@@ -17,7 +17,7 @@ export default function Header() {
   const PageLink = (url: string, title: string) => (
     <Link
       className={twMerge(
-        'mt-2 lg:mt-0 lg:ml-6 cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
+        'cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
         pathname === url && 'text-white',
       )}
       href={url}
@@ -29,9 +29,9 @@ export default function Header() {
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="flex flex-row items-center justify-between p-2 px-7 border border-b-gray-200 z-50 bg-black/50 backdrop-blur-md">
-      <div className="flex flex-row items-center gap-3">
-        <Link className="font-bold  uppercase mb-2 lg:mb-0 relative" href="/">
+    <div className="fixed top-0 w-full flex flex-row items-center justify-between p-2 px-7 border border-b-gray-200 z-50 bg-black/50 backdrop-blur-md">
+      <div className="flex flex-row items-center gap-6">
+        <Link className="font-bold uppercase relative" href="/">
           {
             // eslint-disable-next-line @next/next/no-img-element
             <img src="images/logo.svg" className="h-9 shrink-0" alt="logo" />
@@ -52,7 +52,7 @@ export default function Header() {
             trigger={
               <p
                 className={twMerge(
-                  'mt-2 lg:mt-0 lg:ml-6 cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
+                  'cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
                   pathname === 'swap_alp' && 'text-white',
                 )}
               >

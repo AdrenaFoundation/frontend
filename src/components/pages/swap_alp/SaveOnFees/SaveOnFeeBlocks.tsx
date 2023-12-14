@@ -80,14 +80,14 @@ export default function SaveOnFeesBlocks({
 
             <div>
               <p className="text-xs opacity-50 text-right">Fees</p>
-              <div className="flex flex-row items-center gap-2 justify-end text-right">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-end text-right">
                 {!isFeesLoading &&
                   currentFee &&
                   row.fee &&
                   collateralToken?.symbol !== row.token.symbol && (
                     <p
                       className={twMerge(
-                        'text-xs font-medium text-right',
+                        'text-xs font-medium text-right order-1 sm:order-none',
                         currentFee > row.fee
                           ? 'text-green-500'
                           : 'text-red-500',

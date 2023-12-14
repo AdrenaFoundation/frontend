@@ -1,5 +1,7 @@
 import Image from 'next/image';
 
+import { ImageRef } from '@/types';
+
 import chevronDownIcon from '../../../../public/images/Icons/chevron-down.svg';
 import Menu from '../Menu/Menu';
 import MenuItem from '../Menu/MenuItem';
@@ -14,12 +16,10 @@ export default function Select<T extends string>({
 }: {
   className?: string;
   selected: T;
-  options: T[];
+  options: { title: T; img?: ImageRef }[];
   onSelect: (opt: T) => void;
 }) {
-  const img = window.adrena.client.tokens.find(
-    (token) => token.symbol === selected,
-  )?.image;
+  const selectedImg = options.find((option) => option.title === selected)?.img;
 
   return (
     <div className={className}>
@@ -27,8 +27,8 @@ export default function Select<T extends string>({
         trigger={
           <div className="flex justify-center items-center cursor-pointer h-4 whitespace-nowrap hover:opacity-90 shadow-xl">
             <div className="flex flex-row gap-1 items-center">
-              {img ? (
-                <Image src={img} alt="logo" width="16" height="16" />
+              {selectedImg ? (
+                <Image src={selectedImg} alt="logo" width="16" height="16" />
               ) : null}
               <span className="text-lg font-medium">{selected}</span>
             </div>
@@ -47,21 +47,21 @@ export default function Select<T extends string>({
       >
         <MenuItems className="w-[120px] justify-center">
           {options
-            .filter((option) => option !== selected)
+            .filter((option) => option.title !== selected)
             .map((option, i) => (
               <>
-                {!!i && <MenuSeperator key={'sep' + option} />}
+                {!!i && <MenuSeperator key={'sep' + option.title} />}
                 <MenuItem
                   className="flex flex-row gap-1 items-center text-center text-lg"
                   onClick={() => {
-                    onSelect(option);
+                    onSelect(option.title);
                   }}
-                  key={option}
+                  key={option.title}
                 >
-                  {img ? (
-                    <Image src={img} alt="logo" width="16" height="16" />
+                  {option?.img ? (
+                    <Image src={option.img} alt="logo" width="16" height="16" />
                   ) : null}
-                  {option}
+                  {option.title}
                 </MenuItem>
               </>
             ))}

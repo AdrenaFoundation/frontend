@@ -26,6 +26,8 @@ export default function OnchainInfo({}: PageProps) {
     </Link>
   );
 
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
   return (
     <>
       <Lottie
@@ -34,7 +36,8 @@ export default function OnchainInfo({}: PageProps) {
           className: 'fixed top-0 left-0 w-full h-full',
         }}
         animationData={fullMonster}
-        loop={true}
+        autoplay={!isSafari}
+        loop={!isSafari}
       />
 
       <div className={tableClasses}>
