@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { ReactNode } from 'react';
 import { toast } from 'react-toastify';
 
-import { Perpetuals } from '@/target/perpetuals';
+import { Adrena } from '@/target/adrena';
 
 export function findATAAddressSync(
   wallet: PublicKey,
@@ -232,7 +232,7 @@ export class AdrenaTransactionError {
 }
 
 export function parseTransactionError(
-  adrenaProgram: Program<Perpetuals>,
+  adrenaProgram: Program<Adrena>,
   err: unknown,
 ) {
   //

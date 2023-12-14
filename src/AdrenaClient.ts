@@ -16,8 +16,8 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 
-import { Perpetuals } from '@/target/perpetuals';
-import PerpetualsJson from '@/target/perpetuals.json';
+import { Adrena } from '@/target/adrena';
+import AdrenaJson from '@/target/adrena.json';
 
 import adxIcon from '../public/images/adx.png';
 import alpIcon from '../public/images/alp.png';
@@ -69,7 +69,7 @@ import {
 } from './utils';
 
 export class AdrenaClient {
-  public static programId = new PublicKey(PerpetualsJson.metadata.address);
+  public static programId = new PublicKey(AdrenaJson.metadata.address);
 
   public static perpetualsAddress = PublicKey.findProgramAddressSync(
     [Buffer.from('perpetuals')],
@@ -181,7 +181,7 @@ export class AdrenaClient {
   )[0];
 
   public governanceRealm = PublicKey.findProgramAddressSync(
-    [Buffer.from('governance'), Buffer.from('AdrenaTest')],
+    [Buffer.from('governance'), Buffer.from('AdrenaRealm')],
     config.governanceProgram,
   )[0];
 
@@ -216,17 +216,17 @@ export class AdrenaClient {
     AdrenaClient.programId,
   )[0];
 
-  protected adrenaProgram: Program<Perpetuals> | null = null;
+  protected adrenaProgram: Program<Adrena> | null = null;
 
   constructor(
     // Adrena Program with readonly provider
-    protected readonlyAdrenaProgram: Program<Perpetuals>,
+    protected readonlyAdrenaProgram: Program<Adrena>,
     public mainPool: PoolExtended,
     public custodies: CustodyExtended[],
     public tokens: Token[],
   ) {}
 
-  public setAdrenaProgram(program: Program<Perpetuals> | null) {
+  public setAdrenaProgram(program: Program<Adrena> | null) {
     this.adrenaProgram = program;
   }
 
@@ -280,7 +280,7 @@ export class AdrenaClient {
   }
 
   public static async initialize(
-    readonlyAdrenaProgram: Program<Perpetuals>,
+    readonlyAdrenaProgram: Program<Adrena>,
     config: IConfiguration,
   ): Promise<AdrenaClient> {
     const mainPool = await AdrenaClient.loadMainPool(
@@ -404,14 +404,14 @@ export class AdrenaClient {
    */
 
   public static async loadMainPool(
-    adrenaProgram: Program<Perpetuals>,
+    adrenaProgram: Program<Adrena>,
     mainPoolAddress: PublicKey,
   ): Promise<Pool> {
     return adrenaProgram.account.pool.fetch(mainPoolAddress);
   }
 
   public static async loadCustodies(
-    adrenaProgram: Program<Perpetuals>,
+    adrenaProgram: Program<Adrena>,
     mainPool: Pool,
   ): Promise<CustodyExtended[]> {
     const result = await adrenaProgram.account.custody.fetchMultiple(
@@ -434,7 +434,7 @@ export class AdrenaClient {
         minRatio: ratios.min.toNumber(),
         maxRatio: ratios.max.toNumber(),
         targetRatio: ratios.target.toNumber(),
-        maxLeverage: custody.pricing.maxLeverage.toNumber() / BPS,
+        maxLeverage: custody.pricing.maxLeverage / BPS,
         owned: nativeToUi(custody.assets.owned, custody.decimals),
         liquidity: nativeToUi(
           custody.assets.owned.sub(custody.assets.locked),
@@ -500,18 +500,6 @@ export class AdrenaClient {
       );
     }
 
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
-
-    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: lmTokenAccount,
-          mint: this.lmTokenMint,
-          owner,
-        }),
-      );
-    }
-
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
@@ -538,7 +526,6 @@ export class AdrenaClient {
       custodyTokenAccount,
       lpTokenMint: this.lpTokenMint,
       tokenProgram: TOKEN_PROGRAM_ID,
-      lmTokenAccount,
       lmStaking,
       lpStaking,
       cortex: this.cortex,
@@ -550,7 +537,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lmTokenMint: this.lmTokenMint,
       stakingRewardTokenMint,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
     };
 
     return this.adrenaProgram.methods
@@ -648,8 +635,6 @@ export class AdrenaClient {
     const receivingAccount = findATAAddressSync(owner, mint);
     const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
 
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
-
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
@@ -676,7 +661,6 @@ export class AdrenaClient {
       custodyTokenAccount,
       lpTokenMint: this.lpTokenMint,
       tokenProgram: TOKEN_PROGRAM_ID,
-      lmTokenAccount,
       lmStaking,
       lpStaking,
       cortex: this.cortex,
@@ -686,9 +670,8 @@ export class AdrenaClient {
       stakingRewardTokenCustodyTokenAccount,
       lmStakingRewardTokenVault,
       lpStakingRewardTokenVault,
-      lmTokenMint: this.lmTokenMint,
       stakingRewardTokenMint,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
     };
 
     return this.adrenaProgram.methods
@@ -793,7 +776,6 @@ export class AdrenaClient {
       this.findCustodyTokenAccountAddress(collateralMint);
 
     const fundingAccount = findATAAddressSync(owner, collateralMint);
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
     const position = this.findPositionAddress(owner, custody, side);
 
@@ -828,7 +810,6 @@ export class AdrenaClient {
       owner,
       payer: owner,
       fundingAccount,
-      lmTokenAccount,
       transferAuthority: AdrenaClient.transferAuthorityAddress,
       lmStaking,
       lpStaking,
@@ -847,12 +828,11 @@ export class AdrenaClient {
       collateralCustodyTokenAccount,
       lmStakingRewardTokenVault,
       lpStakingRewardTokenVault,
-      lmTokenMint: this.lmTokenMint,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
     };
 
     return this.adrenaProgram.methods
@@ -900,8 +880,6 @@ export class AdrenaClient {
     const dispensingCustodyOracleAccount =
       this.getCustodyByMint(mintB).nativeObject.oracle.oracleAccount;
 
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
-
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
@@ -930,7 +908,6 @@ export class AdrenaClient {
       dispensingCustodyOracleAccount,
       dispensingCustodyTokenAccount,
       tokenProgram: TOKEN_PROGRAM_ID,
-      lmTokenAccount,
       lmStaking,
       lpStaking,
       cortex: this.cortex,
@@ -941,9 +918,8 @@ export class AdrenaClient {
       lmStakingRewardTokenVault,
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
-      lmTokenMint: this.lmTokenMint,
       stakingRewardTokenMint,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
     };
 
     return this.adrenaProgram.methods
@@ -1191,8 +1167,6 @@ export class AdrenaClient {
       );
     }
 
-    const lmTokenAccount = findATAAddressSync(position.owner, this.lmTokenMint);
-
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
@@ -1218,7 +1192,6 @@ export class AdrenaClient {
       custodyOracleAccount,
       collateralCustody: custody.pubkey,
       tokenProgram: TOKEN_PROGRAM_ID,
-      lmTokenAccount,
       lmStaking,
       lpStaking,
       cortex: this.cortex,
@@ -1229,9 +1202,8 @@ export class AdrenaClient {
       lmStakingRewardTokenVault,
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
-      lmTokenMint: this.lmTokenMint,
       stakingRewardTokenMint,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       collateralCustodyOracleAccount: custodyOracleAccount,
       collateralCustodyTokenAccount: custodyTokenAccount,
     };
@@ -1971,7 +1943,7 @@ export class AdrenaClient {
       collateralCustody: position.custody,
       tokenProgram: TOKEN_PROGRAM_ID,
       cortex: this.cortex,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       collateralCustodyOracleAccount: custodyOracleAccount,
       collateralCustodyTokenAccount: custodyTokenAccount,
     };
@@ -2044,7 +2016,7 @@ export class AdrenaClient {
       collateralCustody: position.custody,
       tokenProgram: TOKEN_PROGRAM_ID,
       cortex: this.cortex,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       collateralCustodyOracleAccount: custodyOracleAccount,
       collateralCustodyTokenAccount: custodyTokenAccount,
     };
@@ -2227,7 +2199,7 @@ export class AdrenaClient {
         this.getGovernanceGoverningTokenOwnerRecordPda(owner),
       clockworkProgram: config.clockworkProgram,
       governanceProgram: config.governanceProgram,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
     };
@@ -2356,7 +2328,7 @@ export class AdrenaClient {
       userStakingThreadAuthority,
       clockworkProgram: config.clockworkProgram,
       governanceProgram: config.governanceProgram,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
     };
@@ -2453,7 +2425,7 @@ export class AdrenaClient {
         this.getGovernanceGoverningTokenOwnerRecordPda(owner),
       clockworkProgram: config.clockworkProgram,
       governanceProgram: config.governanceProgram,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       stakedTokenAccount,
@@ -2528,7 +2500,7 @@ export class AdrenaClient {
       governanceGoverningTokenOwnerRecord:
         this.getGovernanceGoverningTokenOwnerRecordPda(owner),
       governanceProgram: config.governanceProgram,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
     };
@@ -2627,7 +2599,7 @@ export class AdrenaClient {
         this.getGovernanceGoverningTokenOwnerRecordPda(owner),
       clockworkProgram: config.clockworkProgram,
       governanceProgram: config.governanceProgram,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
     };
@@ -2723,7 +2695,7 @@ export class AdrenaClient {
       cortex: this.cortex,
       perpetuals: AdrenaClient.perpetualsAddress,
       stakingRewardTokenMint,
-      perpetualsProgram: this.adrenaProgram.programId,
+      adrenaProgram: this.adrenaProgram.programId,
       clockworkProgram: config.clockworkProgram,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
