@@ -245,8 +245,7 @@ export default function ClosePosition({
               onClick={() => {
                 setInput(
                   Number(
-                    formatNumber(
-                      (position.collateralUsd * percentage) / 100,
+                    ((position.collateralUsd * percentage) / 100).toFixed(
                       USD_DECIMALS,
                     ),
                   ),

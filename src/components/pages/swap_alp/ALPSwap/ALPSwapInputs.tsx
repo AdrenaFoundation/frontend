@@ -31,7 +31,6 @@ export default function ALPSwapInputs({
   setActionType,
   onCollateralTokenChange,
   setFeesUsd,
-  feesAndAmounts,
   setIsFeesLoading,
 }: {
   actionType: 'buy' | 'sell';
@@ -50,9 +49,6 @@ export default function ALPSwapInputs({
   setActionType: (a: 'buy' | 'sell') => void;
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
-  feesAndAmounts: {
-    [tokenSymbol: string]: { fees: number | null; amount: number | null };
-  } | null;
   setIsFeesLoading: (v: boolean) => void;
 }) {
   const wallet = useSelector((s) => s.walletState);

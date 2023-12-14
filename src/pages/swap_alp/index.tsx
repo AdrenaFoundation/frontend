@@ -271,7 +271,6 @@ export default function SwapALP({
           setAlpInput={setAlpInput}
           collateralToken={collateralToken}
           allowedCollateralTokens={allowedCollateralTokens}
-          feesAndAmounts={feesAndAmounts}
           feesUsd={feesUsd}
           setFeesUsd={setFeesUsd}
           setIsFeesLoading={setIsFeesLoading}

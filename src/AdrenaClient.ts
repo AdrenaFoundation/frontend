@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountInstruction,
   NATIVE_MINT,
@@ -14,6 +15,8 @@ import {
   SystemProgram,
   Transaction,
   TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
 } from '@solana/web3.js';
 
 import { Adrena } from '@/target/adrena';
@@ -39,6 +42,8 @@ import {
   InitUserStakingAccounts,
   NewPositionPricesAndFee,
   OpenPositionAccounts,
+  OpenPositionWithSwapAccounts,
+  OpenPositionWithSwapAmountAndFees,
   Pool,
   PoolExtended,
   Position,
@@ -847,6 +852,148 @@ export class AdrenaClient {
       .accounts(accounts);
   }
 
+  protected buildOpenPositionWithSwapTx({
+    owner,
+    mint,
+    price,
+    collateralMint,
+    collateralAmount,
+    size,
+    side,
+  }: {
+    owner: PublicKey;
+    mint: PublicKey;
+    price: BN;
+    collateralMint: PublicKey;
+    collateralAmount: BN;
+    size: BN;
+    side: 'long' | 'short';
+  }) {
+    if (!this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    // Tokens received by the program
+    const receivingCustody = this.findCustodyAddress(collateralMint);
+    const receivingCustodyOracleAccount =
+      this.getCustodyByMint(collateralMint).nativeObject.oracle.oracleAccount;
+    const receivingCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(collateralMint);
+
+    // Custody used to provide collateral when opening the position
+    // When long, should be the same as principal token
+    // When short, should be a stable token
+    const instructionCollateralMint = (() => {
+      if (side === 'long') {
+        return mint;
+      }
+
+      // short
+      return this.getUsdcToken().mint;
+    })();
+
+    const collateralCustody = this.findCustodyAddress(
+      instructionCollateralMint,
+    );
+    const collateralCustodyOracleAccount = this.getCustodyByMint(
+      instructionCollateralMint,
+    ).nativeObject.oracle.oracleAccount;
+    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
+      instructionCollateralMint,
+    );
+
+    const collateralAccount = findATAAddressSync(
+      owner,
+      instructionCollateralMint,
+    );
+
+    // Principal custody is the custody of the targeted token
+    // i.e open a 1 ETH long position, principal custody is ETH
+    const principalCustody = this.findCustodyAddress(mint);
+    const principalCustodyOracleAccount =
+      this.getCustodyByMint(mint).nativeObject.oracle.oracleAccount;
+    const principalCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(mint);
+
+    //
+
+    const fundingAccount = findATAAddressSync(owner, collateralMint);
+
+    const position = this.findPositionAddress(owner, principalCustody, side);
+
+    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
+    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
+      stakingRewardTokenMint,
+    );
+    const stakingRewardTokenCustodyTokenAccount =
+      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
+
+    const lmStaking = this.getStakingPda(this.lmTokenMint);
+    const lpStaking = this.getStakingPda(this.lpTokenMint);
+    const lmStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lmStaking);
+    const lpStakingRewardTokenVault =
+      this.getStakingRewardTokenVaultPda(lpStaking);
+
+    // TODO
+    // Think and use proper slippage, for now use 0.3%
+    const priceWithSlippage =
+      side === 'long' ? applySlippage(price, 0.3) : applySlippage(price, -0.3);
+
+    console.log('Open position with swap', {
+      price: priceWithSlippage.toString(),
+      collateralAmount: collateralAmount.toString(),
+      collateralMint: collateralMint.toString(),
+      mint: mint.toString(),
+      size: size.toString(),
+    });
+
+    const accounts: OpenPositionWithSwapAccounts = {
+      owner,
+      payer: owner,
+      fundingAccount,
+      collateralAccount,
+      receivingCustody,
+      receivingCustodyOracleAccount,
+      receivingCustodyTokenAccount,
+      collateralCustody,
+      collateralCustodyOracleAccount,
+      collateralCustodyTokenAccount,
+      principalCustody,
+      principalCustodyOracleAccount,
+      principalCustodyTokenAccount,
+      transferAuthority: AdrenaClient.transferAuthorityAddress,
+      cortex: this.cortex,
+      perpetuals: AdrenaClient.perpetualsAddress,
+      lmStaking,
+      lpStaking,
+      pool: this.mainPool.pubkey,
+      position,
+      stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
+      stakingRewardTokenCustodyOracleAccount:
+        stakingRewardTokenCustodyAccount.nativeObject.oracle.oracleAccount,
+      stakingRewardTokenCustodyTokenAccount,
+      lmStakingRewardTokenVault,
+      lpStakingRewardTokenVault,
+      lpTokenMint: this.lpTokenMint,
+      stakingRewardTokenMint,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      adrenaProgram: this.adrenaProgram.programId,
+    };
+
+    return this.adrenaProgram.methods
+      .openPositionWithSwap({
+        price: priceWithSlippage,
+        collateral: collateralAmount,
+        size,
+        // use any to force typing to be accepted - anchor typing is broken
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        side: { [side]: {} } as any,
+      })
+      .accounts(accounts);
+  }
+
   // swap tokenA for tokenB
   public buildSwapTx({
     owner,
@@ -1127,11 +1274,25 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
+
+    const collateralCustody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.collateralCustody),
     );
 
-    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+    if (!collateralCustody) {
+      throw new Error('Cannot find collateral custody related to position');
+    }
+
+    const collateralCustodyOracleAccount =
+      collateralCustody.nativeObject.oracle.oracleAccount;
+    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
+      collateralCustody.mint,
+    );
+
+    const receivingAccount = findATAAddressSync(
+      position.owner,
+      collateralCustody.mint,
+    );
 
     console.log('Close position:', {
       position: position.pubkey.toBase58(),
@@ -1190,7 +1351,7 @@ export class AdrenaClient {
       position: position.pubkey,
       custody: position.custody,
       custodyOracleAccount,
-      collateralCustody: custody.pubkey,
+      collateralCustody: collateralCustody.pubkey,
       tokenProgram: TOKEN_PROGRAM_ID,
       lmStaking,
       lpStaking,
@@ -1204,8 +1365,8 @@ export class AdrenaClient {
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
       adrenaProgram: this.adrenaProgram.programId,
-      collateralCustodyOracleAccount: custodyOracleAccount,
-      collateralCustodyTokenAccount: custodyTokenAccount,
+      collateralCustodyOracleAccount,
+      collateralCustodyTokenAccount,
     };
 
     return this.signAndExecuteTx(
@@ -1236,35 +1397,21 @@ export class AdrenaClient {
   }
 
   // When shorting, stable token must be used.
-  //   -> Needs to swap tokenA for stable token before shorting.
-  //
-  // Example:
-  // --------------
-  // > mintA is ETH
-  // > mintB is BTC
-  // > amountA is 1000000
-  // > collateralAmount is 2000000
-  // > size is 5000000
-  //
-  // Swap 1 ETH for X USDC, then open short position for 5 BTC (will result in X multiplier)
   public async openShortPositionWithConditionalSwap({
     owner,
-    mintA,
-    mintB,
+    collateralMint,
+    mint,
     price,
-    // used to know how much tokenA to swap for tokenB to open the position
-    amountA,
-    // amount of tokenB used as collateral provided for the position
+    // amount of collateralMint token provided as collateral
     collateralAmount,
     // the amount of tokenB to open a position for
     // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
     size,
   }: {
     owner: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
+    collateralMint: PublicKey;
+    mint: PublicKey;
     price: BN;
-    amountA: BN;
     collateralAmount: BN;
     size: BN;
   }) {
@@ -1272,17 +1419,17 @@ export class AdrenaClient {
       throw new Error('no connection');
     }
 
-    if (this.isTokenStable(mintA)) {
-      return this.openPosition({
-        owner,
-        mint: mintB,
-        price,
-        collateralMint: mintA,
-        collateralAmount,
-        size,
-        side: 'short',
-      });
-    }
+    // if (this.isTokenStable(collateralMint)) {
+    //   return this.openPosition({
+    //     owner,
+    //     mint,
+    //     price,
+    //     collateralMint,
+    //     collateralAmount,
+    //     size,
+    //     side: 'short',
+    //   });
+    // }
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
@@ -1295,14 +1442,15 @@ export class AdrenaClient {
 
     preInstructions.push(modifyComputeUnitsIx);
 
-    if (mintA.equals(NATIVE_MINT)) {
+    if (collateralMint.equals(NATIVE_MINT) || mint.equals(NATIVE_MINT)) {
       const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
 
       // Make sure there are enough WSOL available in WSOL ATA
       preInstructions.push(
         ...(await createPrepareWSOLAccountInstructions({
-          // TODO: how much should we provide here?
-          amount: applySlippage(amountA, 0.3),
+          amount: collateralMint.equals(NATIVE_MINT)
+            ? collateralAmount
+            : new BN(0),
           connection: this.connection,
           owner,
           wsolATA,
@@ -1317,12 +1465,12 @@ export class AdrenaClient {
         }),
       );
     } else {
-      const receivingAccount = findATAAddressSync(owner, usdcToken.mint);
+      const usdcAta = findATAAddressSync(owner, usdcToken.mint);
 
-      if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      if (!(await isATAInitialized(this.connection, usdcAta))) {
         preInstructions.push(
           this.createATAInstruction({
-            ataAddress: receivingAccount,
+            ataAddress: usdcAta,
             mint: usdcToken.mint,
             owner,
           }),
@@ -1330,48 +1478,20 @@ export class AdrenaClient {
       }
     }
 
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
-
-    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: lmTokenAccount,
-          mint: this.lmTokenMint,
-          owner,
-        }),
-      );
-    }
-
-    const [swapTx, openPositionTx] = await Promise.all([
-      //
-      // Swap mintA for USDC to be used a collateral for the short position
-      //
-      this.buildSwapTx({
-        owner,
-        amountIn: amountA,
-        // TODO: collateral should take into account swap fees
-        // For now disable slippage
-        minAmountOut: new BN(0),
-        mintA,
-        mintB: usdcToken.mint,
-      }).instruction(),
-
-      this.buildOpenPositionTx({
-        owner,
-        mint: mintB,
-        price,
-        collateralMint: usdcToken.mint,
-        collateralAmount,
-        size,
-        side: 'short',
-      }).instruction(),
-    ]);
+    const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
+      owner,
+      mint,
+      price,
+      collateralMint,
+      collateralAmount,
+      size,
+      side: 'short',
+    }).instruction();
 
     const transaction = new Transaction();
     transaction.add(
       ...preInstructions,
-      swapTx,
-      openPositionTx,
+      openPositionWithSwapIx,
       ...postInstructions,
     );
 
@@ -1384,7 +1504,6 @@ export class AdrenaClient {
     tokenB,
     amountA,
     amountB,
-    leverage,
     side,
     tokenPrices,
   }: {
@@ -1392,7 +1511,6 @@ export class AdrenaClient {
     tokenB: Token;
     amountA: BN;
     amountB: BN;
-    leverage: number;
     side: 'long' | 'short';
     tokenPrices: TokenPricesState;
   }): Promise<{
@@ -1403,7 +1521,6 @@ export class AdrenaClient {
     liquidationPrice: number;
   }> {
     const usdcToken = this.getUsdcToken();
-    let swapFeeUsd: null | number = null;
 
     const tokenAPrice = tokenPrices[tokenA.symbol];
     const tokenBPrice = tokenPrices[tokenB.symbol];
@@ -1416,200 +1533,51 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
-    if (side === 'long') {
-      let collateralAmount: BN = amountB.div(new BN(leverage));
+    const collateralAmount: BN = amountA;
 
-      // if the tokens are not the same then we need to swap tokenA for tokenB
-      if (!tokenA.mint.equals(tokenB.mint)) {
-        const swapAmountAndFees = await this.getSwapAmountAndFees({
-          tokenIn: tokenA,
-          tokenOut: tokenB,
-          amountIn: amountA,
-        });
-
-        if (!swapAmountAndFees)
-          throw new Error('Cannot calculate swap amount and fees');
-
-        // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-        collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-
-        swapFeeUsd =
-          nativeToUi(swapAmountAndFees.feeIn, tokenA.decimals) * tokenAPrice +
-          nativeToUi(swapAmountAndFees.feeOut, tokenB.decimals) * tokenBPrice;
-      }
-
-      const entryPriceAndFee = await this.getEntryPriceAndFee({
-        token: tokenB,
-        collateralToken: tokenB,
-        collateralAmount,
-        size: amountB,
-        side: 'long',
-      });
-
-      if (!entryPriceAndFee)
-        throw new Error('Cannot calculate open position price and fees');
-
-      const openPositionFeeUsd =
-        nativeToUi(entryPriceAndFee.fee, tokenB.decimals) * tokenBPrice;
-
-      // calculate and return fee amount in usd
-      return {
-        swapFeeUsd,
-        openPositionFeeUsd,
-        totalFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
-        entryPrice: nativeToUi(entryPriceAndFee.entryPrice, PRICE_DECIMALS),
-        liquidationPrice: nativeToUi(
-          entryPriceAndFee.liquidationPrice,
-          PRICE_DECIMALS,
-        ),
-      };
-    }
-
-    let collateralAmount: BN = amountA;
-    let collateralToken: Token = tokenA;
-
-    // If the collateral token is not a stable, need to swap for it
-    if (!this.isTokenStable(tokenA.mint)) {
-      const swapAmountAndFees = await this.getSwapAmountAndFees({
-        tokenIn: tokenA,
-        tokenOut: usdcToken,
-        amountIn: amountA,
-      });
-
-      if (!swapAmountAndFees)
-        throw new Error('Cannot calculate swap amount and fees');
-
-      // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-      collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-      collateralToken = usdcToken;
-
-      swapFeeUsd =
-        nativeToUi(swapAmountAndFees.feeIn, tokenA.decimals) * tokenAPrice +
-        nativeToUi(swapAmountAndFees.feeOut, usdcToken.decimals) * tokenBPrice;
-    }
-
-    const entryPriceAndFee = await this.getEntryPriceAndFee({
-      token: tokenB,
-      collateralToken,
+    const info = await this.getOpenPositionWithSwapAmountAndFees({
+      mint: tokenB.mint,
+      collateralMint: tokenA.mint,
       collateralAmount,
       size: amountB,
-      side: 'short',
+      side,
     });
 
-    if (!entryPriceAndFee)
-      throw new Error('Cannot calculate open position price and fees');
+    if (info === null) throw new Error('cannot calculate fees');
+
+    const {
+      entryPrice,
+      liquidationPrice,
+      swapFeeIn,
+      swapFeeOut,
+      openPositionFee,
+    } = info;
+
+    const { swapedTokenDecimals, swapedTokenPrice } =
+      side === 'long'
+        ? {
+            swapedTokenDecimals: tokenB.decimals,
+            swapedTokenPrice: tokenBPrice,
+          }
+        : {
+            swapedTokenDecimals: usdcToken.decimals,
+            swapedTokenPrice: usdcTokenPrice,
+          };
+
+    const swapFeeUsd =
+      nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
+      nativeToUi(swapFeeOut, swapedTokenDecimals) * swapedTokenPrice;
 
     const openPositionFeeUsd =
-      nativeToUi(entryPriceAndFee.fee, usdcToken.decimals) * usdcTokenPrice;
+      nativeToUi(openPositionFee, tokenB.decimals) * tokenBPrice;
 
     // calculate and return fee amount in usd
     return {
       swapFeeUsd,
       openPositionFeeUsd,
-      totalFeeUsd: swapFeeUsd ?? 0 + openPositionFeeUsd,
-      entryPrice: nativeToUi(entryPriceAndFee.entryPrice, PRICE_DECIMALS),
-      liquidationPrice: nativeToUi(
-        entryPriceAndFee.liquidationPrice,
-        PRICE_DECIMALS,
-      ),
-    };
-  }
-
-  // Get every infos required to call the open position with swap
-  public async prepareOpenPositionWithConditionalSwap({
-    tokenA,
-    tokenB,
-    amountA,
-    amountB,
-    leverage,
-    side,
-  }: {
-    tokenA: Token;
-    tokenB: Token;
-    amountA: BN;
-    amountB: BN;
-    leverage: number;
-    side: 'long' | 'short';
-  }): Promise<{
-    price: BN;
-    size: BN;
-    collateralToken: Token;
-    collateralAmount: BN;
-  }> {
-    if (side === 'long') {
-      let collateralAmount: BN = amountB.div(new BN(leverage));
-
-      // if the tokens are not the same then we need to swap tokenA for tokenB
-      if (!tokenA.mint.equals(tokenB.mint)) {
-        const swapAmountAndFees = await this.getSwapAmountAndFees({
-          tokenIn: tokenA,
-          tokenOut: tokenB,
-          amountIn: amountA,
-        });
-
-        if (!swapAmountAndFees)
-          throw new Error('Cannot calculate swap amount and fees');
-
-        // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-        collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-      }
-
-      const entryPriceAndFee = await this.getEntryPriceAndFee({
-        token: tokenB,
-        collateralToken: tokenB,
-        collateralAmount,
-        size: amountB,
-        side: 'long',
-      });
-
-      if (!entryPriceAndFee)
-        throw new Error('Cannot calculate open position price and fees');
-
-      return {
-        price: entryPriceAndFee.entryPrice,
-        size: amountB,
-        collateralAmount,
-        collateralToken: tokenB,
-      };
-    }
-
-    let collateralAmount: BN = amountA;
-    let collateralToken: Token = tokenA;
-
-    // If the collateral token is not a stable, need to swap for it
-    if (!this.isTokenStable(tokenA.mint)) {
-      const usdcToken = this.getUsdcToken();
-
-      const swapAmountAndFees = await this.getSwapAmountAndFees({
-        tokenIn: tokenA,
-        tokenOut: usdcToken,
-        amountIn: amountA,
-      });
-
-      if (!swapAmountAndFees)
-        throw new Error('Cannot calculate swap amount and fees');
-
-      // Remove a bit to have the swap+open position to pass even if there is a slight change in values
-      collateralAmount = applySlippage(swapAmountAndFees.amountOut, -0.2);
-      collateralToken = usdcToken;
-    }
-
-    const entryPriceAndFee = await this.getEntryPriceAndFee({
-      token: tokenB,
-      collateralToken,
-      collateralAmount,
-      size: amountB,
-      side: 'short',
-    });
-
-    if (!entryPriceAndFee)
-      throw new Error('Cannot calculate open position price and fees');
-
-    return {
-      price: entryPriceAndFee.entryPrice,
-      size: amountB,
-      collateralAmount,
-      collateralToken,
+      totalFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
+      entryPrice: nativeToUi(entryPrice, PRICE_DECIMALS),
+      liquidationPrice: nativeToUi(liquidationPrice, PRICE_DECIMALS),
     };
   }
 
@@ -1618,31 +1586,27 @@ export class AdrenaClient {
   //
   // Example:
   // --------------
-  // > mintA is ETH
-  // > mintB is BTC
-  // > amountA is 1000000
-  // > collateralAmount is 2000000
+  // > collateralMint is ETH
+  // > mint is BTC
+  // > collateralAmount is 1000000
   // > size is 5000000
   //
   // Swap 1 ETH for X BTC, then open long position for 5 BTC providing 2 BTC as collateral (will result in X multiplier)
   public async openLongPositionWithConditionalSwap({
     owner,
-    mintA,
-    mintB,
+    collateralMint,
+    mint,
     price,
-    // used to know how much tokenA to swap for tokenB to open the position
-    amountA,
-    // amount of tokenB used as collateral provided for the position
+    // amount of collateralMint token provided as collateral
     collateralAmount,
     // the amount of tokenB to open a position for
     // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
     size,
   }: {
     owner: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
+    collateralMint: PublicKey;
+    mint: PublicKey;
     price: BN;
-    amountA: BN;
     collateralAmount: BN;
     size: BN;
   }) {
@@ -1650,38 +1614,37 @@ export class AdrenaClient {
       throw new Error('no connection');
     }
 
-    if (mintA.equals(mintB)) {
-      return this.openPosition({
-        owner,
-        mint: mintB,
-        price,
-        collateralMint: mintB,
-        collateralAmount,
-        size,
-        side: 'long',
-      });
-    }
+    // if (mint.equals(collateralMint)) {
+    //   return this.openPosition({
+    //     owner,
+    //     mint,
+    //     price,
+    //     collateralMint,
+    //     collateralAmount,
+    //     size,
+    //     side: 'long',
+    //   });
+    // }
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
     const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 1_200_000,
+      units: 2_000_000,
     });
 
     preInstructions.push(modifyComputeUnitsIx);
 
-    if (mintA.equals(NATIVE_MINT) || mintB.equals(NATIVE_MINT)) {
+    if (collateralMint.equals(NATIVE_MINT) || mint.equals(NATIVE_MINT)) {
       const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
 
       // Make sure there are enough WSOL available in WSOL ATA
       preInstructions.push(
         ...(await createPrepareWSOLAccountInstructions({
-          // mintA means swap WSOL
-          // mintB means position is in WSOL
-          // TODO: provide right enough
-          amount: mintA.equals(NATIVE_MINT)
-            ? new BN(amountA.toNumber() * 1.1)
+          // collateralMint means swap WSOL
+          // mint means position is in WSOL
+          amount: collateralMint.equals(NATIVE_MINT)
+            ? collateralAmount
             : new BN(0),
           connection: this.connection,
           owner,
@@ -1698,57 +1661,32 @@ export class AdrenaClient {
       );
     }
 
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
+    const mintATA = findATAAddressSync(owner, mint);
 
-    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+    if (!(await isATAInitialized(this.connection, mintATA))) {
       preInstructions.push(
         this.createATAInstruction({
-          ataAddress: lmTokenAccount,
-          mint: this.lmTokenMint,
+          ataAddress: mintATA,
+          mint,
           owner,
         }),
       );
     }
 
-    const receivingAccount = findATAAddressSync(owner, mintB);
-
-    if (!(await isATAInitialized(this.connection, receivingAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: receivingAccount,
-          mint: mintB,
-          owner,
-        }),
-      );
-    }
-
-    const [swapTx, openPositionTx] = await Promise.all([
-      this.buildSwapTx({
-        owner,
-        amountIn: amountA,
-        // TODO: collateral should take into account swap fees
-        // For now disable slippage
-        minAmountOut: new BN(0),
-        mintA,
-        mintB,
-      }).instruction(),
-
-      this.buildOpenPositionTx({
-        owner,
-        mint: mintB,
-        price,
-        collateralMint: mintB,
-        collateralAmount,
-        size,
-        side: 'long',
-      }).instruction(),
-    ]);
+    const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
+      owner,
+      mint,
+      price,
+      collateralMint,
+      collateralAmount,
+      size,
+      side: 'long',
+    }).instruction();
 
     const transaction = new Transaction();
     transaction.add(
       ...preInstructions,
-      swapTx,
-      openPositionTx,
+      openPositionWithSwapIx,
       ...postInstructions,
     );
 
@@ -2756,6 +2694,72 @@ export class AdrenaClient {
     );
   }
 
+  public async getOpenPositionWithSwapAmountAndFees({
+    mint,
+    collateralMint,
+    collateralAmount,
+    size,
+    side,
+  }: {
+    mint: PublicKey;
+    collateralMint: PublicKey;
+    collateralAmount: BN;
+    size: BN;
+    side: 'long' | 'short';
+  }): Promise<OpenPositionWithSwapAmountAndFees | null> {
+    if (!this.readonlyAdrenaProgram.views) {
+      return null;
+    }
+
+    const principalCustody = this.getCustodyByMint(mint);
+    const principalCustodyOracleAccount =
+      principalCustody.nativeObject.oracle.oracleAccount;
+
+    const receivingCustody = this.getCustodyByMint(collateralMint);
+    const receivingCustodyOracleAccount =
+      receivingCustody.nativeObject.oracle.oracleAccount;
+
+    const instructionCollateralMint = (() => {
+      if (side === 'long') {
+        return principalCustody.mint;
+      }
+
+      return this.getUsdcToken().mint;
+    })();
+
+    const collateralCustody = this.getCustodyByMint(instructionCollateralMint);
+    const collateralCustodyOracleAccount =
+      collateralCustody.nativeObject.oracle.oracleAccount;
+
+    // Anchor is bugging when calling a view, that is making CPI calls inside
+    // Need to do it manually, so we can get the correct amounts
+    const instruction = await this.readonlyAdrenaProgram.methods
+      .getOpenPositionWithSwapAmountAndFees({
+        collateralAmount: collateralAmount,
+        size,
+        // use any to force typing to be accepted - anchor typing is broken
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        side: { [side]: {} } as any,
+      })
+      .accounts({
+        perpetuals: AdrenaClient.perpetualsAddress,
+        pool: this.mainPool.pubkey,
+        receivingCustody: receivingCustody.pubkey,
+        receivingCustodyOracleAccount,
+        collateralCustody: collateralCustody.pubkey,
+        collateralCustodyOracleAccount,
+        principalCustody: principalCustody.pubkey,
+        principalCustodyOracleAccount,
+        adrenaProgram: this.readonlyAdrenaProgram.programId,
+      })
+      .instruction();
+
+    return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
+      [instruction],
+      'OpenPositionWithSwapAmountAndFees',
+    );
+  }
+
   public async getEntryPriceAndFee({
     token,
     collateralToken,
@@ -3238,6 +3242,51 @@ export class AdrenaClient {
       throw new Error(`Cannot find custody for mint ${mint.toBase58()}`);
 
     return custody;
+  }
+
+  // Used to bypass "views" to workaround anchor bug with .views having CPI calls
+  protected async simulateInstructions<T>(
+    instructions: TransactionInstruction[],
+    typeName: string,
+  ): Promise<T> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const messageV0 = new TransactionMessage({
+      payerKey: wallet.publicKey,
+      recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+      instructions,
+    }).compileToV0Message();
+
+    const versionnedTransaction = new VersionedTransaction(messageV0);
+
+    const result = await this.connection.simulateTransaction(
+      versionnedTransaction,
+      {
+        sigVerify: false,
+      },
+    );
+
+    if (result.value.err) {
+      const adrenaError = parseTransactionError(
+        this.adrenaProgram,
+        result.value.err,
+      );
+      throw adrenaError;
+    }
+
+    const returnDataEncoded = result.value.returnData?.data[0] ?? null;
+
+    if (returnDataEncoded == null) {
+      throw new Error('View expected return data');
+    }
+
+    const returnData = base64.decode(returnDataEncoded);
+
+    return this.readonlyAdrenaProgram.coder.types.decode(typeName, returnData);
   }
 
   protected async signAndExecuteTx(transaction: Transaction): Promise<string> {
