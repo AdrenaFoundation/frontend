@@ -20,7 +20,6 @@ export type DisconnectWalletAction = {
 
 export type OpenCloseConnectionModalAction = {
   type: 'openCloseConnectionModal';
-
   // true = open
   payload: boolean;
 };
@@ -44,8 +43,6 @@ export const autoConnectWalletAction =
   async (dispatch: Dispatch<ConnectWalletAction>) => {
     const adapter = walletAdapters[adapterName];
 
-    console.log('>>> AUTO CONNECT DISPATCH', adapterName);
-
     const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
         type: 'connect',
@@ -54,8 +51,6 @@ export const autoConnectWalletAction =
           walletAddress: walletPubkey.toBase58(),
         },
       });
-
-      console.log('>>> AUTO CONNECT', adapterName);
 
       addNotification({
         title: 'Wallet auto-connected',
@@ -73,6 +68,7 @@ export const autoConnectWalletAction =
       adapter.removeListener('connect', connectFn);
     } catch (err) {
       localStorage.setItem('autoConnectAuthorized', 'false');
+
       console.log(
         new Error(`unable to auto-connect to wallet ${adapterName}`),
         {
@@ -97,8 +93,6 @@ export const connectWalletAction =
           walletAddress: walletPubkey.toBase58(),
         },
       });
-
-      console.log('>>> CONNECTED ', adapterName);
 
       addNotification({
         title: 'Wallet connected',
