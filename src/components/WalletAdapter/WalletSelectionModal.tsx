@@ -2,7 +2,7 @@ import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import Tippy from '@tippyjs/react';
 import Image, { StaticImageData } from 'next/image';
-import React, { useState } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
