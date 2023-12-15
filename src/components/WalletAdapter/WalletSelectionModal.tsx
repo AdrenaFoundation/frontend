@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from '@/store/store';
 
 import backpackLogo from '../../../public/images/backpack.png';
 import phantomLogo from '../../../public/images/phantom.png';
-import walletConnectLogo from '../../../public/images/waller-connect.png';
+import walletConnectLogo from '../../../public/images/wallet-connect.png';
 import Modal from '../common/Modal/Modal';
 
 function WalletSelectionModal() {
