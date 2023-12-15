@@ -48,8 +48,8 @@ function WalletSelectionModal() {
         <WalletBloc
           name="Backpack"
           logo={backpackLogo}
-          height={60}
-          width={45}
+          height={58}
+          width={40}
           onClick={() => {
             dispatch(connectWalletAction('backpack'));
             dispatch(openCloseConnectionModalAction(false));
