@@ -1,7 +1,8 @@
+import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import Tippy from '@tippyjs/react';
 import Image, { StaticImageData } from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -24,45 +25,50 @@ function WalletSelectionModal() {
 
   return (
     <Modal
-      title="Select wallet"
+      title=""
       close={() => dispatch(openCloseConnectionModalAction(false))}
-      className="flex space-x-3 pb-8 pr-8 pl-8 pt-2 flex-wrap"
+      className="flex flex-col pb-8 pr-16 pl-16 sm:pr-8 sm:pl-8 relative overflow-visible"
     >
-      <WalletBloc
-        name="Phantom"
-        logo={phantomLogo}
-        height={50}
-        width={50}
-        onClick={() => {
-          dispatch(connectWalletAction('phantom'));
-          dispatch(openCloseConnectionModalAction(false));
-        }}
-        readyState={walletAdapters['phantom'].readyState}
-      />
+      <div className="text-3xl opacity-80 ml-auto mr-auto mb-8 font-specialmonster">
+        Pick a wallet
+      </div>
+      <div className="flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0 flex-wrap">
+        <WalletBloc
+          name="Phantom"
+          logo={phantomLogo}
+          height={50}
+          width={50}
+          onClick={() => {
+            dispatch(connectWalletAction('phantom'));
+            dispatch(openCloseConnectionModalAction(false));
+          }}
+          readyState={walletAdapters['phantom'].readyState}
+        />
 
-      <WalletBloc
-        name="Backpack"
-        logo={backpackLogo}
-        height={60}
-        width={45}
-        onClick={() => {
-          dispatch(connectWalletAction('backpack'));
-          dispatch(openCloseConnectionModalAction(false));
-        }}
-        readyState={walletAdapters['backpack'].readyState}
-      />
+        <WalletBloc
+          name="Backpack"
+          logo={backpackLogo}
+          height={60}
+          width={45}
+          onClick={() => {
+            dispatch(connectWalletAction('backpack'));
+            dispatch(openCloseConnectionModalAction(false));
+          }}
+          readyState={walletAdapters['backpack'].readyState}
+        />
 
-      <WalletBloc
-        name="WalletConnect"
-        logo={walletConnectLogo}
-        height={50}
-        width={50}
-        onClick={() => {
-          dispatch(connectWalletAction('walletConnect'));
-          dispatch(openCloseConnectionModalAction(false));
-        }}
-        readyState={walletAdapters['walletConnect'].readyState}
-      />
+        <WalletBloc
+          name="WalletConnect"
+          logo={walletConnectLogo}
+          height={50}
+          width={50}
+          onClick={() => {
+            dispatch(connectWalletAction('walletConnect'));
+            dispatch(openCloseConnectionModalAction(false));
+          }}
+          readyState={walletAdapters['walletConnect'].readyState}
+        />
+      </div>
     </Modal>
   );
 }
@@ -74,6 +80,7 @@ const WalletBloc = ({
   height,
   width,
   readyState,
+  className,
 }: {
   name: string;
   logo: StaticImageData;
@@ -81,6 +88,7 @@ const WalletBloc = ({
   height: number;
   width: number;
   readyState: WalletReadyState;
+  className?: string;
 }) => {
   const disabled =
     readyState !== WalletReadyState.Installed || name === 'WalletConnect';
@@ -91,7 +99,8 @@ const WalletBloc = ({
         'flex flex-col items-center justify-center p-3 border border-gray-300 rounded-lg h-40 w-40 relative',
         disabled
           ? 'cursor-not-allowed opacity-40'
-          : 'cursor-pointer hover:bg-gray-300 duration-300',
+          : 'cursor-pointer hover:bg-zinc-800 duration-300',
+        className,
       )}
       onClick={() => {
         if (disabled) return;
@@ -102,6 +111,8 @@ const WalletBloc = ({
       <Image src={logo} alt={`${name} icon`} height={height} width={width} />
 
       <p className="mt-6">{name}</p>
+
+      <div className="h-1 w-32 bg-gray-300 absolute bottom-2"></div>
     </div>
   );
 
