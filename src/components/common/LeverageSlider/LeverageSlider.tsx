@@ -17,8 +17,10 @@ const colorB = 'var(--color-gray-300)';
 
 export default function LeverageSlider({
   className,
+  value,
   onChange,
 }: {
+  value?: number;
   className?: string;
   onChange: (v: number) => void;
 }) {
@@ -27,6 +29,7 @@ export default function LeverageSlider({
       <Slider
         min={1}
         max={50}
+        value={value}
         defaultValue={1}
         step={0.1}
         marks={[2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50].reduce(
