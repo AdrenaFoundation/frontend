@@ -347,7 +347,7 @@ export default function TradingInputs({
               <div>
                 <span className="text-txtfade">x</span>
                 <InputNumber
-                  className="w-12 text-txtfade"
+                  className="w-6 text-txtfade"
                   value={isLeverageInputEmpty ? undefined : leverage}
                   max={50}
                   onChange={function (value: number | null): void {
