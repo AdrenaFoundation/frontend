@@ -1,6 +1,5 @@
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { ChartData } from 'chart.js';
-import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 

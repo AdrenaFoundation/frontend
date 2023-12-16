@@ -1,4 +1,5 @@
 import { Dispatch } from '@reduxjs/toolkit';
+import { WalletConnectionError } from '@solana/wallet-adapter-base';
 import { PublicKey } from '@solana/web3.js';
 
 import { walletAdapters } from '@/constant';
@@ -19,7 +20,6 @@ export type DisconnectWalletAction = {
 
 export type OpenCloseConnectionModalAction = {
   type: 'openCloseConnectionModal';
-
   // true = open
   payload: boolean;
 };
@@ -53,7 +53,7 @@ export const autoConnectWalletAction =
       });
 
       addNotification({
-        title: 'Wallet connected',
+        title: 'Wallet auto-connected',
         duration: 'fast',
         position: 'bottom-right',
       });
@@ -63,9 +63,12 @@ export const autoConnectWalletAction =
 
     try {
       await adapter.autoConnect();
-      localStorage.setItem('isWalletConnected', 'true');
+      localStorage.setItem('autoConnectAuthorized', 'true');
+
+      adapter.removeListener('connect', connectFn);
     } catch (err) {
-      localStorage.setItem('isWalletConnected', 'false');
+      localStorage.setItem('autoConnectAuthorized', 'false');
+
       console.log(
         new Error(`unable to auto-connect to wallet ${adapterName}`),
         {
@@ -102,11 +105,21 @@ export const connectWalletAction =
 
     try {
       await adapter.connect();
-      localStorage.setItem('isWalletConnected', 'true');
-    } catch (err) {
-      localStorage.setItem('isWalletConnected', 'false');
+      localStorage.setItem('autoConnectAuthorized', 'true');
+    } catch (err: unknown) {
+      localStorage.setItem('autoConnectAuthorized', 'false');
+
       console.log(new Error(`unable to connect to wallet ${adapterName}`), {
         err,
+      });
+
+      addNotification({
+        type: 'error',
+        title: `${adapterName} connection error`,
+        message:
+          err instanceof WalletConnectionError ? err.message : 'Unknown error',
+        duration: 'long',
+        position: 'bottom-right',
       });
 
       adapter.removeListener('connect', connectFn);
@@ -132,9 +145,9 @@ export const disconnectWalletAction =
 
     try {
       await adapter.disconnect();
-      localStorage.setItem('isWalletConnected', 'false');
+      localStorage.setItem('autoConnectAuthorized', 'false');
     } catch (err) {
-      localStorage.setItem('isWalletConnected', 'true');
+      localStorage.setItem('autoConnectAuthorized', 'true');
       console.log(
         new Error(`unable to disconnect from wallet ${adapterName}`),
         {

@@ -195,3 +195,30 @@ input[type='radio']:checked {
   border: 1px solid var(--color-light);
   box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
+
+// Wallet connect customization
+
+.walletconnect-modal__base {
+  background-color: var(--color-gray-200) !important;
+}
+
+#walletconnect-wrapper {
+  p {
+    color: #d4d4d4;
+  }
+
+  .walletconnect-modal__mobile__toggle {
+    a {
+      color: black;
+    }
+  }
+
+  .walletconnect-search__input {
+    color: black;
+  }
+}
+
+.walletconnect-qrcode__notification {
+  background-color: var(--color-gray-200) !important;
+  color: #d4d4d4 !important;
+}
