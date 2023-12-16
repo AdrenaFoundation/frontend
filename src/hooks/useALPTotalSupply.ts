@@ -8,7 +8,7 @@ const useALPTotalSupply = () => {
   const [totalSupply, setTotalSupply] = useState<number | null>(null);
 
   const loadTotalSupply = useCallback(async () => {
-    const connection = window.adrena.client.connection;
+    const connection = window.adrena.client.readonlyConnection;
 
     if (!connection) return;
 
@@ -19,7 +19,7 @@ const useALPTotalSupply = () => {
     setTotalSupply(supply.value.uiAmount);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.adrena.client.connection]);
+  }, [window.adrena.client.readonlyConnection]);
 
   useEffect(() => {
     loadTotalSupply();

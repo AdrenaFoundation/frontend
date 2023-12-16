@@ -3413,6 +3413,15 @@ export class AdrenaClient {
     );
   }
 
+  public get readonlyConnection(): Connection | null {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    if (this.adrenaProgram?.provider.connection)
+      return this.adrenaProgram.provider.connection;
+
+    return this.readonlyAdrenaProgram.provider.connection;
+  }
+
   public get connection(): Connection | null {
     if (!this.adrenaProgram) return null;
 

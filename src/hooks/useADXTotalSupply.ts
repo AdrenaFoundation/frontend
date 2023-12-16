@@ -8,7 +8,7 @@ const useADXTotalSupply = () => {
   const [totalSupply, setTotalSupply] = useState<number | null>(null);
 
   const loadTotalSupply = useCallback(async () => {
-    const connection = window.adrena.client.connection;
+    const connection = window.adrena.client.readonlyConnection;
 
     if (!connection) return;
 
@@ -23,7 +23,7 @@ const useADXTotalSupply = () => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.adrena.client.connection]);
+  }, [window.adrena.client.readonlyConnection]);
 
   useEffect(() => {
     loadTotalSupply();
