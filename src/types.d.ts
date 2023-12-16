@@ -9,9 +9,7 @@ import Image from 'next/image';
 import { Adrena } from '@/target/adrena';
 
 import { AdrenaClient } from './AdrenaClient';
-import IConfiguration from './config/IConfiguration';
-
-// import { RpcNamespace, InstructionNamespace, TransactionNamespace, AccountNamespace, SimulateNamespace, MethodsNamespace, ViewNamespace, IdlEvents } from "./namespace/index.js";
+import IConfiguration, { TokenInfo } from './config/IConfiguration';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -46,6 +44,7 @@ export type PageProps = {
 
 export type CustodyExtended = {
   // Formatted data
+  tokenInfo: TokenInfo;
   pubkey: PublicKey;
   mint: PublicKey;
   isStable: boolean;

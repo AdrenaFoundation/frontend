@@ -2,17 +2,19 @@ import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
+export type TokenInfo = {
+  name: string;
+  symbol: string;
+  image: ImageRef;
+  coingeckoId: string;
+  decimals: number;
+};
+
 export default interface IConfiguration {
   readonly cluster: 'mainnet' | 'devnet';
 
   readonly tokensInfo: {
-    [tokenPubkey: string]: {
-      name: string;
-      symbol: string;
-      image: ImageRef;
-      coingeckoId: string;
-      decimals: number;
-    };
+    [tokenPubkey: string]: TokenInfo;
   };
 
   readonly governanceProgram: PublicKey;

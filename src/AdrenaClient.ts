@@ -432,6 +432,7 @@ export class AdrenaClient {
       const ratios = mainPool.ratios[i];
 
       return {
+        tokenInfo: config.tokensInfo[custody.mint.toBase58()],
         isStable: custody.isStable,
         mint: custody.mint,
         decimals: custody.decimals,
