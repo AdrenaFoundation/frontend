@@ -5,6 +5,7 @@ export default function BlocInfo({
   title,
   columnsTitles,
   data,
+  rowTitleWidth,
 }: {
   className?: string;
   title: ReactNode;
@@ -19,6 +20,7 @@ export default function BlocInfo({
         value: ReactNode;
       }
   )[];
+  rowTitleWidth?: string;
 }) {
   return (
     <div
@@ -32,9 +34,18 @@ export default function BlocInfo({
 
       <div className="flex flex-col">
         <div className="flex">
-          <div className="w-1/3"></div>
+          <div
+            className="flex shrink-0 ml-2"
+            style={{
+              width: rowTitleWidth ?? '150px',
+            }}
+          ></div>
+
           {(columnsTitles ?? []).map((title, i) => (
-            <div key={i} className="flex grow pl-2 pr-2 text-lg">
+            <div
+              key={i}
+              className="pl-2 text-lg font-specialmonster overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
+            >
               {title}
             </div>
           ))}
@@ -43,9 +54,16 @@ export default function BlocInfo({
         {data.map(({ rowTitle, ...v }, i) => (
           <div
             key={i}
-            className="flex w-full border-b border-gray-800 text-xs pl-2 pr-2"
+            className="flex w-full border-b last:border-b-0 border-gray-800 text-xs pl-2 pr-2"
           >
-            <div className="w-1/3 p-2">{rowTitle}</div>
+            <div
+              className="flex shrink-0 p-2"
+              style={{
+                width: rowTitleWidth ?? '150px',
+              }}
+            >
+              {rowTitle}
+            </div>
 
             {(() => {
               const values = Object.hasOwn(v, 'value')
@@ -55,11 +73,7 @@ export default function BlocInfo({
               return values.map((value, j) => (
                 <div
                   key={j}
-                  className="p-2 text-txtfade flex grow"
-                  style={{
-                    // Make all columns the same size
-                    width: `${2 / 3 / values.length}%`,
-                  }}
+                  className="p-2 text-txtfade flex grow flex-shrink-0 basis-0"
                 >
                   {value}
                 </div>

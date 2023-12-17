@@ -6,11 +6,13 @@ import { twMerge } from 'tailwind-merge';
 import BlocInfo from '@/components/common/BlocInfo/BlocInfo';
 import ComingSoonInfo from '@/components/common/BlocInfo/formatting/ComingSoonInfo';
 import NumberInfo from '@/components/common/BlocInfo/formatting/NumberInfo';
+import { USD_DECIMALS } from '@/constant';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
+import useCortex from '@/hooks/useCortex';
 import { useSelector } from '@/store/store';
-import { PageProps } from '@/types';
+import { CustodyExtended, PageProps } from '@/types';
 import {
   formatNumber,
   formatPercentage,
@@ -20,13 +22,42 @@ import {
 
 const CANNOT_CALCULATE = -1;
 
+// Utility function
+function abbreviateWords(input: string) {
+  // Words to abreviate
+  const mapping = {
+    Usd: '',
+    Liquidity: 'Liq.',
+    Position: 'Pos.',
+  } as const;
+
+  return input
+    .replace(/([A-Z])/g, ' $1') // Insert space before capital letters to separate words
+    .trim() // Remove any leading/trailing whitespace
+    .split(' ') // Split the string into an array of words
+    .map((word: string) => (mapping as any)[word] ?? word) // Map each word to its abbreviation if it exists
+    .join(' ') // Join the words back into a string
+    .trim(); // Ensure no leading/trailing whitespace
+}
+
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
 export default function Backoffice({ mainPool, custodies }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
+  const cortex = useCortex();
+  const adxTotalSupply = useADXTotalSupply();
+  const alpTotalSupply = useALPTotalSupply();
 
-  if (!mainPool || !custodies || !tokenPrices) return <></>;
+  if (
+    !mainPool ||
+    !custodies ||
+    !tokenPrices ||
+    !cortex ||
+    !adxTotalSupply ||
+    !alpTotalSupply
+  )
+    return <></>;
 
   // Value of all assets owned by the pool
   // Which doesn't take into account opened positions and stuff
@@ -58,10 +89,96 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
         }}
       />
 
-      <div className="flex flex-wrap z-10">
+      <div className="flex flex-wrap z-10 min-w-[780px] overflow-auto">
+        <BlocInfo
+          title="Global Overview"
+          className="min-w-[20em] m-2 grow"
+          rowTitleWidth="50%"
+          data={[
+            {
+              rowTitle: 'Total Value',
+              value: <NumberInfo value={mainPool.aumUsd} />,
+            },
+
+            ...(totalPoolAssetHardValue !== CANNOT_CALCULATE
+              ? [
+                  {
+                    rowTitle: 'Raw Total Assets Value',
+                    value: <NumberInfo value={totalPoolAssetHardValue} />,
+                  },
+                ]
+              : []),
+
+            {
+              rowTitle: 'Total Volume',
+              value: <NumberInfo value={mainPool.totalVolume} />,
+            },
+
+            {
+              rowTitle: 'Total Fee Collected',
+              value: <NumberInfo value={mainPool.totalFeeCollected} />,
+            },
+
+            {
+              rowTitle: 'ADX total supply',
+              value: (
+                <NumberInfo
+                  value={adxTotalSupply}
+                  precision={window.adrena.client.adxToken.decimals}
+                  denomination="ADX"
+                />
+              ),
+            },
+
+            {
+              rowTitle: 'ALP total supply',
+              value: (
+                <NumberInfo
+                  value={alpTotalSupply}
+                  precision={window.adrena.client.alpToken.decimals}
+                  denomination="ALP"
+                />
+              ),
+            },
+
+            {
+              rowTitle: (
+                <div>
+                  Total Vested{' '}
+                  <span className="italic text-xs text-txtfade">
+                    (unrealized)
+                  </span>
+                </div>
+              ),
+              value: (
+                <NumberInfo
+                  value={nativeToUi(
+                    cortex.vestedTokenAmount,
+                    window.adrena.client.adxToken.decimals,
+                  )}
+                  precision={window.adrena.client.adxToken.decimals}
+                  denomination="ADX"
+                />
+              ),
+            },
+
+            {
+              rowTitle: 'Number of Vest',
+              value: (
+                <NumberInfo
+                  value={cortex.vests.length}
+                  precision={0}
+                  denomination=""
+                />
+              ),
+            },
+          ]}
+        />
+
         <BlocInfo
           title="Assets Under Management"
-          className="w-[28em] m-2"
+          className="min-w-[20em] m-2 grow"
+          rowTitleWidth="50%"
           data={[
             {
               rowTitle: 'Total Value',
@@ -102,15 +219,9 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
 
         <BlocInfo
           title="Positions"
-          className="w-[28em] m-2"
-          columnsTitles={[
-            <div className="font-specialmonster" key="long">
-              Long
-            </div>,
-            <div className="font-specialmonster" key="short">
-              Short
-            </div>,
-          ]}
+          className="min-w-[28em] m-2 grow"
+          rowTitleWidth="35%"
+          columnsTitles={['Long', 'Short']}
           data={[
             {
               rowTitle: 'Nb Open Positions',
@@ -134,7 +245,7 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
             ...custodies
               .filter((custody) => !custody.isStable)
               .map((custody) => ({
-                rowTitle: `${custody.tokenInfo.name} Open Interest`,
+                rowTitle: `${custody.tokenInfo.symbol} Open Interest`,
                 values: [
                   <div key="long" className="flex flex-col">
                     <NumberInfo
@@ -180,16 +291,101 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
           ]}
         />
 
-        <BlocInfo
-          title="Fees"
-          className="w-[28em] m-2"
-          data={[
-            {
-              rowTitle: 'Total Collected',
-              value: <NumberInfo value={mainPool.totalFeeCollected} />,
-            },
-          ]}
-        />
+        {(() => {
+          const attributes = Object.keys(
+            custodies[0].nativeObject.collectedFees,
+          );
+
+          return (
+            <BlocInfo
+              title="Fee Custody Breakdown"
+              rowTitleWidth="90px"
+              className="min-w-[45em] m-2 grow"
+              columnsTitles={attributes.map(abbreviateWords)}
+              data={[
+                ...custodies.map((custody) => ({
+                  rowTitle: custody.tokenInfo.name,
+                  values: attributes.map((attribute) => (
+                    <NumberInfo
+                      key={attribute}
+                      value={nativeToUi(
+                        (custody.nativeObject.collectedFees as any)[attribute],
+                        USD_DECIMALS,
+                      )}
+                    />
+                  )),
+                })),
+
+                {
+                  rowTitle: <div className="font-semibold">Total</div>,
+                  values: attributes.map((param, i) => (
+                    <NumberInfo
+                      key={i}
+                      value={custodies.reduce(
+                        (total, custody) =>
+                          total +
+                          nativeToUi(
+                            // Force typing as we know the keys are matching the collectedFees field
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (custody.nativeObject.collectedFees as any)[param],
+                            USD_DECIMALS,
+                          ),
+                        0,
+                      )}
+                    />
+                  )),
+                },
+              ]}
+            />
+          );
+        })()}
+
+        {(() => {
+          const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
+
+          return (
+            <BlocInfo
+              title="Volume Custody Breakdown"
+              rowTitleWidth="90px"
+              className="min-w-[45em] m-2 grow"
+              columnsTitles={attributes.map(abbreviateWords)}
+              data={[
+                ...custodies.map((custody) => ({
+                  rowTitle: custody.tokenInfo.name,
+                  values: attributes.map((attribute) => (
+                    <NumberInfo
+                      key={attribute}
+                      value={nativeToUi(
+                        (custody.nativeObject.volumeStats as any)[attribute],
+                        USD_DECIMALS,
+                      )}
+                    />
+                  )),
+                })),
+
+                {
+                  rowTitle: <div className="font-semibold">Total</div>,
+                  values: attributes.map((param, i) => (
+                    <NumberInfo
+                      key={i}
+                      value={custodies.reduce(
+                        (total, custody) =>
+                          total +
+                          nativeToUi(
+                            // Force typing as we know the keys are matching the collectedFees field
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (custody.nativeObject.volumeStats as any)[param],
+                            USD_DECIMALS,
+                          ),
+                        0,
+                      )}
+                    />
+                  )),
+                },
+              ]}
+            />
+          );
+        })()}
       </div>
     </>
   );

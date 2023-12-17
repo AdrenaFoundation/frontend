@@ -125,6 +125,7 @@ export interface Token {
 //
 type Accounts = IdlAccounts<Adrena>;
 
+export type Cortex = Accounts['cortex'];
 export type Custody = Accounts['custody'];
 export type Multisig = Accounts['multisig'];
 export type Perpetuals = Accounts['perpetuals'];

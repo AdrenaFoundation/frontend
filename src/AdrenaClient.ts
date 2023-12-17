@@ -35,6 +35,7 @@ import {
   AddLockedStakeAccounts,
   AmountAndFee,
   ClosePositionAccounts,
+  Cortex,
   Custody,
   CustodyExtended,
   FinalizeLockedStakeAccounts,
@@ -282,6 +283,14 @@ export class AdrenaClient {
     if (totalNbPosition == 0) return 0;
 
     return totalLeverage / totalNbPosition;
+  }
+
+  public async loadCortex(): Promise<Cortex | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.cortex.fetch(this.cortex);
   }
 
   public static async initialize(
