@@ -6,12 +6,16 @@ export default function InputNumber({
   onChange,
   placeholder,
   className,
+  max,
+  inputFontSize,
 }: {
   value?: number;
   disabled?: boolean;
   onChange: (value: number | null) => void;
   placeholder?: string;
   className?: string;
+  max?: number;
+  inputFontSize?: string;
 }) {
   return (
     <input
@@ -30,7 +34,7 @@ export default function InputNumber({
         const nb = Math.abs(Number(v.target.value));
 
         // Set max input value to 500m
-        onChange(Math.min(nb, 500_000_000));
+        onChange(Math.min(nb, max ?? 500_000_000));
       }}
       placeholder={placeholder}
       className={twMerge(
@@ -38,7 +42,7 @@ export default function InputNumber({
         className,
       )}
       style={{
-        fontSize: '1.4em',
+        fontSize: inputFontSize ?? '1.4em',
       }}
     />
   );
