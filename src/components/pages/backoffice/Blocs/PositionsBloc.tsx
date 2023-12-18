@@ -5,6 +5,7 @@ import { CustodyExtended, PoolExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import Bloc from '../Bloc/Bloc';
+import LongShortBarChart from '../LongShortBarChart/LongShortBarChart';
 import ComingSoonInfo from '../Table/formatting/ComingSoonInfo';
 import NumberInfo from '../Table/formatting/NumberInfo';
 import Table from '../Table/Table';
@@ -21,7 +22,10 @@ export default function PositionsBloc({
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   return (
-    <Bloc title="Positions" className={twMerge('min-w-[28em]', className)}>
+    <Bloc
+      title="Positions"
+      className={twMerge('min-w-[20em] relative', className)}
+    >
       <Table
         rowTitleWidth="35%"
         columnsTitles={['Long', 'Short']}
@@ -37,7 +41,49 @@ export default function PositionsBloc({
             rowTitle: 'Open Interest',
             values: [
               <NumberInfo key="long" value={mainPool.oiLongUsd} />,
-              <NumberInfo key="short" value={mainPool.oiLongUsd} />,
+              <NumberInfo key="short" value={mainPool.oiShortUsd} />,
+            ],
+          },
+        ]}
+      />
+
+      <Table
+        className="relative bottom-10"
+        rowTitleWidth="35%"
+        columnsTitles={['']}
+        data={[
+          {
+            rowTitle: '',
+            value: (
+              <div className="w-full h-[50px] flex items-center">
+                <LongShortBarChart
+                  className=""
+                  oiLongUsd={mainPool.oiLongUsd}
+                  oiShortUsd={mainPool.oiShortUsd}
+                />
+              </div>
+            ),
+          },
+        ]}
+      />
+
+      <Table
+        rowTitleWidth="35%"
+        className="relative bottom-20"
+        columnsTitles={['', '']}
+        data={[
+          {
+            rowTitle: 'Nb Open Positions',
+            values: [
+              mainPool.nbOpenLongPositions,
+              mainPool.nbOpenShortPositions,
+            ],
+          },
+          {
+            rowTitle: 'Open Interest',
+            values: [
+              <NumberInfo key="long" value={mainPool.oiLongUsd} />,
+              <NumberInfo key="short" value={mainPool.oiShortUsd} />,
             ],
           },
           {
