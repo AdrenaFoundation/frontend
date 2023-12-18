@@ -5,7 +5,7 @@ import { nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
 import Bloc from '../Bloc/Bloc';
-import BucketBarChart from '../BucketBarChart/BucketBarChart';
+import BucketChart from '../BucketChart/BucketChart';
 
 export default function BucketsBloc({
   className,
@@ -17,15 +17,17 @@ export default function BucketsBloc({
   return (
     <Bloc
       title="Buckets"
-      className={twMerge('min-w-[25em] max-w-[50em]', className)}
+      className={twMerge('min-w-[22em] max-w-[22em]', className)}
     >
       <div className="flex flex-wrap grow items-center justify-evenly">
         {['coreContributor', 'daoTreasury', 'pol', 'ecosystem'].map(
           (bucketName) => (
-            <div className="flex flex-col p-6" key={bucketName}>
-              <div>{abbreviateWords(bucketName)} Bucket</div>
+            <div className="flex flex-col pl-4 pr-4" key={bucketName}>
+              <div className="text-sm">
+                {abbreviateWords(bucketName)} Bucket
+              </div>
 
-              <BucketBarChart
+              <BucketChart
                 allocated={nativeToUi(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (cortex as any)[`${bucketName}BucketAllocation`],

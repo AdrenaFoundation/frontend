@@ -56,7 +56,10 @@ export default function PositionsBloc({
                       custody.nativeObject.tradeStats.oiLongUsd,
                       custody.decimals,
                     )}
+                    denomination={custody.tokenInfo.symbol}
+                    precision={custody.decimals}
                   />
+
                   {tokenPrices[custody.tokenInfo.symbol] ? (
                     <NumberInfo
                       value={
@@ -76,7 +79,10 @@ export default function PositionsBloc({
                       custody.nativeObject.tradeStats.oiShortUsd,
                       custody.decimals,
                     )}
+                    denomination={custody.tokenInfo.symbol}
+                    precision={custody.decimals}
                   />
+
                   {tokenPrices[custody.tokenInfo.symbol] ? (
                     <NumberInfo
                       value={

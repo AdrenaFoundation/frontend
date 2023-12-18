@@ -8,6 +8,7 @@ import BucketsBloc from '@/components/pages/backoffice/Blocs/BucketsBloc';
 import FeeCustodyBreakdownBloc from '@/components/pages/backoffice/Blocs/FeeCustodyBreakdownBloc';
 import GlobalOverviewBloc from '@/components/pages/backoffice/Blocs/GlobalOverviewBloc';
 import PositionsBloc from '@/components/pages/backoffice/Blocs/PositionsBloc';
+import StakingBloc from '@/components/pages/backoffice/Blocs/StakingBloc';
 import VestingBloc from '@/components/pages/backoffice/Blocs/VestingBloc';
 import VolumeCustodyBreakdownBloc from '@/components/pages/backoffice/Blocs/VolumeCustodyBreakdownBloc';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
@@ -25,8 +26,8 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
   const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
   const cortex = useCortex();
   const perpetuals = usePerpetuals();
-  const lpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
-  const lmStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
+  const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
+  const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
 
@@ -38,8 +39,8 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
     !adxTotalSupply ||
     !alpTotalSupply ||
     !perpetuals ||
-    !lpStakingAccount ||
-    !lmStakingAccount
+    !alpStakingAccount ||
+    !adxStakingAccount
   )
     return <></>;
 
@@ -82,6 +83,20 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
           custodies={custodies}
           adxTotalSupply={adxTotalSupply}
           alpTotalSupply={alpTotalSupply}
+        />
+
+        <StakingBloc
+          className="m-2 grow"
+          stakedTokenName={'ADX'}
+          stakedTokenDecimals={window.adrena.client.adxToken.decimals}
+          staking={adxStakingAccount}
+        />
+
+        <StakingBloc
+          className="m-2 grow"
+          stakedTokenName={'ALP'}
+          stakedTokenDecimals={window.adrena.client.alpToken.decimals}
+          staking={alpStakingAccount}
         />
 
         <AssetsUnderManagementBloc

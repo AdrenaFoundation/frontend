@@ -26,7 +26,7 @@ export default function NumberInfo({
       {/* Separate whole part and fractional part to display them with different colors*/}
       <div>{wholePart}</div>
 
-      {fractionalPart ? (
+      {Number(fractionalPart) ? (
         <div className="text-txtfade text-xs">.{fractionalPart}</div>
       ) : null}
 
