@@ -11,7 +11,8 @@ const useStakingAccount = (stakedTokenMint: PublicKey): Staking | null => {
 
   const fetchStakingAccount = useCallback(async () => {
     setStakingAccount(await window.adrena.client.loadStakingAccount(pda));
-  }, [pda]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pda.toBase58()]);
 
   useEffect(() => {
     fetchStakingAccount();

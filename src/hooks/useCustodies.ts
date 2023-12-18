@@ -12,7 +12,8 @@ const useCustodies = (
     if (!mainPool) return;
 
     setCustodies(window.adrena.client.custodies);
-  }, [mainPool]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!mainPool]);
 
   useEffect(() => {
     fetchCustodies();
