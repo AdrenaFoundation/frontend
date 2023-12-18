@@ -132,6 +132,7 @@ export type Perpetuals = Accounts['perpetuals'];
 export type Pool = Accounts['pool'];
 export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
+export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
 
 type StakePositionsExtended = UserStaking['lockedStakes'][0] & {

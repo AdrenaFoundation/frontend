@@ -45,6 +45,7 @@ import {
   OpenPositionAccounts,
   OpenPositionWithSwapAccounts,
   OpenPositionWithSwapAmountAndFees,
+  Perpetuals,
   Pool,
   PoolExtended,
   Position,
@@ -55,6 +56,7 @@ import {
   RemoveLiquidityAccounts,
   RemoveLiquidStakeAccounts,
   RemoveLockedStakeAccounts,
+  Staking,
   SwapAccounts,
   SwapAmountAndFees,
   Token,
@@ -291,6 +293,22 @@ export class AdrenaClient {
     return (
       this.readonlyAdrenaProgram || this.adrenaProgram
     ).account.cortex.fetch(this.cortex);
+  }
+
+  public async loadPerpetuals(): Promise<Perpetuals | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.perpetuals.fetch(AdrenaClient.perpetualsAddress);
+  }
+
+  public async loadStakingAccount(address: PublicKey): Promise<Staking | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.staking.fetch(address);
   }
 
   public static async initialize(
