@@ -24,7 +24,7 @@ export default function PositionsBloc({
   return (
     <Bloc title="Positions" className={twMerge('min-w-[20em]', className)}>
       <Table
-        className="pb-0"
+        className="pb-0 pt-0"
         rowTitleWidth="35%"
         columnsTitles={['Long', 'Short']}
         data={[
