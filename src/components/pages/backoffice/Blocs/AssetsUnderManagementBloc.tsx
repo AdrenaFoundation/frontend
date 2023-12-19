@@ -3,9 +3,9 @@ import { twMerge } from 'tailwind-merge';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, PoolExtended } from '@/types';
 
-import Bloc from '../Bloc/Bloc';
-import NumberInfo from '../Table/formatting/NumberInfo';
-import Table from '../Table/Table';
+import Bloc from '../Bloc';
+import NumberInfo from '../NumberInfo';
+import Table from '../Table';
 
 const CANNOT_CALCULATE = -1;
 

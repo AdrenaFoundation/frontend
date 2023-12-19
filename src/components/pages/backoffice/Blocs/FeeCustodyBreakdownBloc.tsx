@@ -5,9 +5,9 @@ import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
-import Bloc from '../Bloc/Bloc';
-import NumberInfo from '../Table/formatting/NumberInfo';
-import Table from '../Table/Table';
+import Bloc from '../Bloc';
+import NumberInfo from '../NumberInfo';
+import Table from '../Table';
 
 export default function FeeCustodyBreakdownBloc({
   className,

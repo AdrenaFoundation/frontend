@@ -4,10 +4,10 @@ import { useSelector } from '@/store/store';
 import { Cortex, CustodyExtended, PoolExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import Bloc from '../Bloc/Bloc';
-import NumberInfo from '../Table/formatting/NumberInfo';
-import Table from '../Table/Table';
-import TitleAnnotation from '../TitleAnnotation/TitleAnnotation';
+import Bloc from '../Bloc';
+import NumberInfo from '../NumberInfo';
+import Table from '../Table';
+import TitleAnnotation from '../TitleAnnotation';
 
 const CANNOT_CALCULATE = -1;
 

@@ -3,11 +3,11 @@ import { twMerge } from 'tailwind-merge';
 import { Staking } from '@/types';
 import { getTokenNameByMint, nativeToUi } from '@/utils';
 
-import Bloc from '../Bloc/Bloc';
-import DateInfo from '../Table/formatting/DateInfo';
-import NumberInfo from '../Table/formatting/NumberInfo';
-import Table from '../Table/Table';
-import TitleAnnotation from '../TitleAnnotation/TitleAnnotation';
+import Bloc from '../Bloc';
+import DateInfo from '../DateInfo';
+import NumberInfo from '../NumberInfo';
+import Table from '../Table';
+import TitleAnnotation from '../TitleAnnotation';
 
 export default function StakingBloc({
   stakedTokenName,

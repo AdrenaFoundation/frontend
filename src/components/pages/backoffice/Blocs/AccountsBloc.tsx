@@ -3,10 +3,10 @@ import { twMerge } from 'tailwind-merge';
 import { AdrenaClient } from '@/AdrenaClient';
 import { Cortex, CustodyExtended, Perpetuals, PoolExtended } from '@/types';
 
-import Bloc from '../Bloc/Bloc';
-import OnchainAccountInfo from '../Table/formatting/OnchainAccountInfo';
-import Table from '../Table/Table';
-import TitleAnnotation from '../TitleAnnotation/TitleAnnotation';
+import Bloc from '../Bloc';
+import OnchainAccountInfo from '../OnchainAccountInfo';
+import Table from '../Table';
+import TitleAnnotation from '../TitleAnnotation';
 
 export default function AccountsBloc({
   className,

@@ -7,11 +7,13 @@ import AssetsUnderManagementBloc from '@/components/pages/backoffice/Blocs/Asset
 import BucketsBloc from '@/components/pages/backoffice/Blocs/BucketsBloc';
 import FeeCustodyBreakdownBloc from '@/components/pages/backoffice/Blocs/FeeCustodyBreakdownBloc';
 import GlobalOverviewBloc from '@/components/pages/backoffice/Blocs/GlobalOverviewBloc';
+import PoolBloc from '@/components/pages/backoffice/Blocs/PoolBloc';
 import PositionsBloc from '@/components/pages/backoffice/Blocs/PositionsBloc';
 import StakingBloc from '@/components/pages/backoffice/Blocs/StakingBloc';
 import VestingBloc from '@/components/pages/backoffice/Blocs/VestingBloc';
 import VolumeCustodyBreakdownBloc from '@/components/pages/backoffice/Blocs/VolumeCustodyBreakdownBloc';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
 import usePerpetuals from '@/hooks/usePerpetuals';
@@ -32,6 +34,7 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
   const vests = useVests();
+  const composition = useALPIndexComposition(custodies);
 
   if (
     !mainPool ||
@@ -42,7 +45,9 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
     !alpTotalSupply ||
     !perpetuals ||
     !alpStakingAccount ||
-    !adxStakingAccount
+    !adxStakingAccount ||
+    !composition ||
+    composition.some((c) => c === null)
   )
     return <></>;
 
@@ -108,6 +113,13 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
         />
 
         <VestingBloc className="m-2 grow" cortex={cortex} vests={vests} />
+
+        <PoolBloc
+          className="m-2 grow"
+          mainPool={mainPool}
+          custodies={custodies}
+          alpComposition={composition}
+        />
 
         <BucketsBloc className="m-2 grow" cortex={cortex} />
 

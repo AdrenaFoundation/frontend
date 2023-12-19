@@ -4,11 +4,11 @@ import { useSelector } from '@/store/store';
 import { CustodyExtended, PoolExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import Bloc from '../Bloc/Bloc';
-import LongShortBarChart from '../LongShortBarChart/LongShortBarChart';
-import ComingSoonInfo from '../Table/formatting/ComingSoonInfo';
-import NumberInfo from '../Table/formatting/NumberInfo';
-import Table from '../Table/Table';
+import Bloc from '../Bloc';
+import ComingSoonInfo from '../ComingSoonInfo';
+import LongShortBarChart from '../LongShortBarChart';
+import NumberInfo from '../NumberInfo';
+import Table from '../Table';
 
 export default function PositionsBloc({
   className,
@@ -22,11 +22,9 @@ export default function PositionsBloc({
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   return (
-    <Bloc
-      title="Positions"
-      className={twMerge('min-w-[20em] relative', className)}
-    >
+    <Bloc title="Positions" className={twMerge('min-w-[20em]', className)}>
       <Table
+        className="pb-0"
         rowTitleWidth="35%"
         columnsTitles={['Long', 'Short']}
         data={[
@@ -47,29 +45,17 @@ export default function PositionsBloc({
         ]}
       />
 
-      <Table
-        className="relative bottom-10"
-        rowTitleWidth="35%"
-        columnsTitles={['']}
-        data={[
-          {
-            rowTitle: '',
-            value: (
-              <div className="w-full h-[50px] flex items-center">
-                <LongShortBarChart
-                  className=""
-                  oiLongUsd={mainPool.oiLongUsd}
-                  oiShortUsd={mainPool.oiShortUsd}
-                />
-              </div>
-            ),
-          },
-        ]}
-      />
+      <div className="w-full h-[35px] pl-2 pr-2 flex">
+        <LongShortBarChart
+          className=""
+          oiLongUsd={mainPool.oiLongUsd}
+          oiShortUsd={mainPool.oiShortUsd}
+        />
+      </div>
 
       <Table
         rowTitleWidth="35%"
-        className="relative bottom-20"
+        className="pt-0"
         columnsTitles={['', '']}
         data={[
           {

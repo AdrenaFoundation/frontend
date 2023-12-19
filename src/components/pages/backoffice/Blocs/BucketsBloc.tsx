@@ -4,8 +4,8 @@ import { Cortex } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
-import Bloc from '../Bloc/Bloc';
-import BucketChart from '../BucketChart/BucketChart';
+import Bloc from '../Bloc';
+import BucketChart from '../BucketChart';
 
 export default function BucketsBloc({
   className,

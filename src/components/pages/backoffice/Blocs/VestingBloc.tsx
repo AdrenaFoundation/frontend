@@ -4,12 +4,12 @@ import { Cortex, VestExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
-import Bloc from '../Bloc/Bloc';
-import DateInfo from '../Table/formatting/DateInfo';
-import NumberInfo from '../Table/formatting/NumberInfo';
-import OnchainAccountInfo from '../Table/formatting/OnchainAccountInfo';
-import Table from '../Table/Table';
-import TitleAnnotation from '../TitleAnnotation/TitleAnnotation';
+import Bloc from '../Bloc';
+import DateInfo from '../DateInfo';
+import NumberInfo from '../NumberInfo';
+import OnchainAccountInfo from '../OnchainAccountInfo';
+import Table from '../Table';
+import TitleAnnotation from '../TitleAnnotation';
 
 export default function VestingBloc({
   className,

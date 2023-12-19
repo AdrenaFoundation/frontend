@@ -20,7 +20,7 @@ export default function NumberInfo({
     <div className={`flex items-center ${className}`}>
       {/* Add denomination as prefix if usd only */}
       {denomination === 'usd' ? (
-        <span className="mr-[1px] text-xs">$</span>
+        <span className="mr-[1px] text-[1em] opacity-50">$</span>
       ) : null}
 
       {/* Separate whole part and fractional part to display them with different colors*/}
@@ -32,7 +32,9 @@ export default function NumberInfo({
 
       {/* Add denomination as sufffix when not usd */}
       {denomination !== 'usd' ? (
-        <div className="ml-1 text-xs">{denomination}</div>
+        <span className="ml-1 text-[0.8em] font-semibold opacity-90">
+          {denomination}
+        </span>
       ) : null}
     </div>
   );

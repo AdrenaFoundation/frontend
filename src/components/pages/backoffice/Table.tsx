@@ -22,7 +22,7 @@ export default function Table({
   rowTitleWidth?: string;
 }) {
   return (
-    <div className={twMerge('flex flex-col pb-4', className)}>
+    <div className={twMerge('flex flex-col p-4', className)}>
       <div className="flex">
         <div
           className="flex shrink-0 ml-2"
@@ -34,7 +34,7 @@ export default function Table({
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className="pl-2 text-lg font-specialmonster overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
+            className="text-lg font-specialmonster overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
           >
             {title}
           </div>
@@ -44,7 +44,7 @@ export default function Table({
       {data.map(({ rowTitle, ...v }, i) => (
         <div
           key={i}
-          className="flex w-full border-b last:border-b-0 border-gray-800 text-xs pl-2 pr-2"
+          className="flex w-full border-b last:border-b-0 border-gray-800 text-xs"
         >
           <div
             className="flex shrink-0 items-center"
@@ -63,7 +63,7 @@ export default function Table({
             return values.map((value, j) => (
               <div
                 key={j}
-                className="p-2 text-txtfade flex grow flex-shrink-0 basis-0"
+                className="p-[0.3em] text-txtfade flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well
                   maxWidth: `calc(100% - ${rowTitleWidth ?? '150px'})`,
