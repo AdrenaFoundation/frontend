@@ -105,6 +105,10 @@ export type PoolExtended = {
   nativeObject: Pool;
 };
 
+export type VestExtended = Vest & {
+  pubkey: PublicKey;
+};
+
 // Alias to improve readability
 export type TokenName = string;
 export type TokenSymbol = string;

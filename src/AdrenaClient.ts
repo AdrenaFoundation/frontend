@@ -1,4 +1,4 @@
-import { BN } from '@coral-xyz/anchor';
+import { BN, ProgramAccount } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -63,6 +63,7 @@ import {
   TokenSymbol,
   UserStaking,
   Vest,
+  VestExtended,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -309,6 +310,19 @@ export class AdrenaClient {
     return (
       this.readonlyAdrenaProgram || this.adrenaProgram
     ).account.staking.fetch(address);
+  }
+
+  public async loadAllVestAccounts(): Promise<VestExtended[] | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      await (
+        this.readonlyAdrenaProgram || this.adrenaProgram
+      ).account.vest.all()
+    ).map(({ account, publicKey }) => ({
+      ...account,
+      pubkey: publicKey,
+    }));
   }
 
   public static async initialize(

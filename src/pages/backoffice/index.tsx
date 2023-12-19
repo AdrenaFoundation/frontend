@@ -16,6 +16,7 @@ import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
 import usePerpetuals from '@/hooks/usePerpetuals';
 import useStakingAccount from '@/hooks/useStakingAccount';
+import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
@@ -30,6 +31,7 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
   const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
+  const vests = useVests();
 
   if (
     !mainPool ||
@@ -105,7 +107,7 @@ export default function Backoffice({ mainPool, custodies }: PageProps) {
           custodies={custodies}
         />
 
-        <VestingBloc className="m-2 grow" cortex={cortex} />
+        <VestingBloc className="m-2 grow" cortex={cortex} vests={vests} />
 
         <BucketsBloc className="m-2 grow" cortex={cortex} />
 

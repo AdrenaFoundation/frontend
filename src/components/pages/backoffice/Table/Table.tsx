@@ -47,7 +47,7 @@ export default function Table({
           className="flex w-full border-b last:border-b-0 border-gray-800 text-xs pl-2 pr-2"
         >
           <div
-            className="flex shrink-0 p-2"
+            className="flex shrink-0 items-center"
             style={{
               width: rowTitleWidth ?? '150px',
             }}

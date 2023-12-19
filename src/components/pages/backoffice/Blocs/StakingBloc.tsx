@@ -57,7 +57,7 @@ export default function StakingBloc({
         ]}
       />
 
-      <div className="text-sm ml-4 font-specialmonster">Resolved Rounds</div>
+      <div className="text-lg ml-4 font-specialmonster">Resolved Rounds</div>
 
       <Table
         rowTitleWidth="15em"
