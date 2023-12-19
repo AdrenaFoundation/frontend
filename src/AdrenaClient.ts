@@ -1,4 +1,4 @@
-import { BN } from '@coral-xyz/anchor';
+import { BN, ProgramAccount } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -35,6 +35,7 @@ import {
   AddLockedStakeAccounts,
   AmountAndFee,
   ClosePositionAccounts,
+  Cortex,
   Custody,
   CustodyExtended,
   FinalizeLockedStakeAccounts,
@@ -44,6 +45,7 @@ import {
   OpenPositionAccounts,
   OpenPositionWithSwapAccounts,
   OpenPositionWithSwapAmountAndFees,
+  Perpetuals,
   Pool,
   PoolExtended,
   Position,
@@ -54,12 +56,14 @@ import {
   RemoveLiquidityAccounts,
   RemoveLiquidStakeAccounts,
   RemoveLockedStakeAccounts,
+  Staking,
   SwapAccounts,
   SwapAmountAndFees,
   Token,
   TokenSymbol,
   UserStaking,
   Vest,
+  VestExtended,
 } from './types';
 import {
   AdrenaTransactionError,
@@ -284,6 +288,43 @@ export class AdrenaClient {
     return totalLeverage / totalNbPosition;
   }
 
+  public async loadCortex(): Promise<Cortex | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.cortex.fetch(this.cortex);
+  }
+
+  public async loadPerpetuals(): Promise<Perpetuals | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.perpetuals.fetch(AdrenaClient.perpetualsAddress);
+  }
+
+  public async loadStakingAccount(address: PublicKey): Promise<Staking | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.staking.fetch(address);
+  }
+
+  public async loadAllVestAccounts(): Promise<VestExtended[] | null> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    return (
+      await (
+        this.readonlyAdrenaProgram || this.adrenaProgram
+      ).account.vest.all()
+    ).map(({ account, publicKey }) => ({
+      ...account,
+      pubkey: publicKey,
+    }));
+  }
+
   public static async initialize(
     readonlyAdrenaProgram: Program<Adrena>,
     config: IConfiguration,
@@ -432,6 +473,7 @@ export class AdrenaClient {
       const ratios = mainPool.ratios[i];
 
       return {
+        tokenInfo: config.tokensInfo[custody.mint.toBase58()],
         isStable: custody.isStable,
         mint: custody.mint,
         decimals: custody.decimals,

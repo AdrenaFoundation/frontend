@@ -9,9 +9,7 @@ import Image from 'next/image';
 import { Adrena } from '@/target/adrena';
 
 import { AdrenaClient } from './AdrenaClient';
-import IConfiguration from './config/IConfiguration';
-
-// import { RpcNamespace, InstructionNamespace, TransactionNamespace, AccountNamespace, SimulateNamespace, MethodsNamespace, ViewNamespace, IdlEvents } from "./namespace/index.js";
+import IConfiguration, { TokenInfo } from './config/IConfiguration';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -46,6 +44,7 @@ export type PageProps = {
 
 export type CustodyExtended = {
   // Formatted data
+  tokenInfo: TokenInfo;
   pubkey: PublicKey;
   mint: PublicKey;
   isStable: boolean;
@@ -106,6 +105,10 @@ export type PoolExtended = {
   nativeObject: Pool;
 };
 
+export type VestExtended = Vest & {
+  pubkey: PublicKey;
+};
+
 // Alias to improve readability
 export type TokenName = string;
 export type TokenSymbol = string;
@@ -126,12 +129,14 @@ export interface Token {
 //
 type Accounts = IdlAccounts<Adrena>;
 
+export type Cortex = Accounts['cortex'];
 export type Custody = Accounts['custody'];
 export type Multisig = Accounts['multisig'];
 export type Perpetuals = Accounts['perpetuals'];
 export type Pool = Accounts['pool'];
 export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
+export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
 
 type StakePositionsExtended = UserStaking['lockedStakes'][0] & {
