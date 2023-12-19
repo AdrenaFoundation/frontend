@@ -2,7 +2,6 @@ import { twMerge } from 'tailwind-merge';
 
 import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
 import { CustodyExtended, PoolExtended } from '@/types';
-import { formatNumber } from '@/utils';
 
 import Bloc from '../Bloc';
 import PoolRatioChart from '../PoolRatioChart';
@@ -10,8 +9,6 @@ import Score from '../Score';
 
 export default function PoolBloc({
   className,
-  mainPool,
-  custodies,
   alpComposition,
 }: {
   className?: string;

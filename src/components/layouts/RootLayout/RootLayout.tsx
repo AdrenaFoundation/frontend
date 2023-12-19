@@ -13,7 +13,7 @@ import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
-  const isBigScreen = useBetterMediaQuery('(min-width: 900px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
 
   if (isBigScreen === null) {
     return null;
