@@ -229,6 +229,8 @@ type OptionalAccounts<T> = Partial<Pick<T, 'userProfile'>> &
   Omit<T, 'userProfile'>;
 
 // Use accounts types to force TS typing computation. TS will then throw an error if account is missing
+export type initUserProfile = ExtractAccounts<'initUserProfile'>;
+export type DeleteUserProfile = ExtractAccounts<'deleteUserProfile'>;
 export type AddCollateralAccounts = ExtractAccounts<'addCollateral'>;
 export type OpenPositionAccounts = OptionalAccounts<
   ExtractAccounts<'openPosition'>

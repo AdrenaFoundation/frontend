@@ -118,7 +118,9 @@ export default function PositionsStatsBloc({
                 shortProfitsUsd={userProfile.shortStats.profitsUsd}
                 shortLossesUsd={userProfile.shortStats.lossesUsd}
               />
-            ) : null}
+            ) : (
+              <NumberInfo className="text-4xl font-specialmonster" value={0} />
+            )}
           </div>
         </div>
       </div>

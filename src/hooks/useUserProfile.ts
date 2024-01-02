@@ -29,7 +29,7 @@ const useUserProfile = (): {
   useEffect(() => {
     fetchUserProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchUserProfile, trickReload, window.adrena.client.readonlyConnection]);
+  }, [fetchUserProfile, trickReload, window.adrena.client.connection]);
 
   return {
     userProfile,

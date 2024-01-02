@@ -1,9 +1,13 @@
 import Image from 'next/image';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
+import YesOrNoModal from '@/components/common/YesOrNoModal/YesOrNoModal';
 import DateInfo from '@/components/pages/backoffice/DateInfo';
 import OnchainAccountInfo from '@/components/pages/backoffice/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
+import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
 
 import monsterImage from '../../../../public/images/monster-1.png';
 import EmphasizedTitle from './EmphasizedTitle';
@@ -11,10 +15,33 @@ import EmphasizedTitle from './EmphasizedTitle';
 export default function OwnerBloc({
   userProfile,
   className,
+  triggerUserProfileReload,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
+  triggerUserProfileReload: () => void;
 }) {
+  const [isDeleteProfileModalOpen, setIsDeleteProfileModalOpen] =
+    useState<boolean>(false);
+
+  const deleteProfile = async () => {
+    try {
+      const txHash = await window.adrena.client.deleteUserProfile();
+
+      triggerUserProfileReload();
+
+      return addSuccessTxNotification({
+        title: 'Successfully Deleted Profile',
+        txHash,
+      });
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Deleting Profile',
+        error,
+      });
+    }
+  };
+
   return (
     <div
       className={twMerge(
@@ -73,8 +100,51 @@ export default function OwnerBloc({
               />
             </div>
           </div>
+
+          <Button
+            className="opacity-30 hover:opacity-100 mt-8"
+            title="Delete Profile"
+            alt="delete icon"
+            variant="danger"
+            onClick={() => {
+              setIsDeleteProfileModalOpen(true);
+            }}
+          />
         </div>
       </div>
+
+      <YesOrNoModal
+        isOpen={isDeleteProfileModalOpen}
+        title="Profile Deletion"
+        onYesClick={() => deleteProfile()}
+        onNoClick={() => {
+          setIsDeleteProfileModalOpen(false);
+        }}
+        yesVariant="danger"
+        noVariant="outline"
+        body={
+          <div className="flex flex-col w-[25em]">
+            <span className="font-specialmonster text-4xl self-center">
+              Warning
+            </span>
+
+            <span className="mt-8 text-center">
+              All informations stored in your user profile will be lost, this
+              action is irreversible.
+            </span>
+
+            <span className="mt-4 text-center">
+              Trades and stakes will not be affected. Having a profile is not
+              mandatory to use Adrena.
+            </span>
+          </div>
+        }
+        onClose={() => {
+          setIsDeleteProfileModalOpen(false);
+        }}
+        yesTitle="Delete My Profile"
+        noTitle="Cancel"
+      />
     </div>
   );
 }
