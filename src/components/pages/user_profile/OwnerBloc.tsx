@@ -45,7 +45,7 @@ export default function OwnerBloc({
   return (
     <div
       className={twMerge(
-        'flex pr-4 items-center justify-center w-full relative',
+        'flex items-center justify-center w-full relative',
         className,
       )}
     >
@@ -78,25 +78,27 @@ export default function OwnerBloc({
           </div>
 
           <div className="flex flex-col m-auto w-full items-center mt-8">
-            <div className="flex items-center">
-              <div className="text-txtfade text-xs opacity-70">
-                owner {'->'}
+            <div className="flex items-center w-full justify-between">
+              <div className=" text-txtfade text-xs opacity-70">
+                owner&apos;s wallet
               </div>
 
               <OnchainAccountInfo
-                className="text-[0.7em] ml-2"
+                className="text-[0.7em] ml-1"
                 address={userProfile.owner}
+                shorten={true}
               />
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center w-full justify-between">
               <div className="text-txtfade text-xs opacity-70">
-                profile {'->'}
+                onchain profile account
               </div>
 
               <OnchainAccountInfo
-                className="text-[0.7em] ml-2"
+                className="text-[0.7em] ml-1"
                 address={userProfile.pubkey}
+                shorten={true}
               />
             </div>
           </div>

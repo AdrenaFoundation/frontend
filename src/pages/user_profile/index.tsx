@@ -144,7 +144,7 @@ export default function UserProfile({
 
   return (
     <div className="flex flex-wrap">
-      <div className="flex m-2 w-[26em] min-w-[26em] grow border border-gray-400 shadow-lg shadow-[#ffffff50] p-8 justify-center">
+      <div className="flex m-2 w-[26em] min-w-[26em] grow border border-gray-400 shadow-lg shadow-[#ffffff50] pt-8 pb-8 pl-2 pr-2 justify-center">
         <OwnerBloc
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
