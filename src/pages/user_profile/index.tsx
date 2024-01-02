@@ -1,5 +1,5 @@
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -22,6 +22,13 @@ export default function UserProfile({
   const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
   const [isAnimationLoaded2, setIsAnimationLoaded2] = useState(false);
   const [nickname, setNickname] = useState<string | null>(null);
+
+  // When the profile page loads, update the profile so it's up to date with latests
+  // user actions
+  useEffect(() => {
+    triggerUserProfileReload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (userProfile === null) {
     return <Loader className="mt-[20%]" />;

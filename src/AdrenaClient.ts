@@ -323,6 +323,12 @@ export class AdrenaClient {
       return false;
     }
 
+    console.log(
+      'p',
+      p.shortStats.openingAverageLeverage.toNumber(),
+      p.longStats.openingAverageLeverage.toNumber(),
+    );
+
     return {
       pubkey: userProfilePda,
       nickname: p.nickname,
