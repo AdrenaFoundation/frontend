@@ -1,6 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
+import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
+
+import { getAccountExplorer } from '@/utils';
 
 export default function OnchainAccountInfo({
   className,
@@ -12,7 +15,9 @@ export default function OnchainAccountInfo({
   shorten?: boolean;
 }) {
   return (
-    <div
+    <Link
+      href={getAccountExplorer(address)}
+      target="_blank"
       className={twMerge(
         'flex items-center hover:opacity-100 opacity-50 cursor-pointer',
         className,
@@ -31,6 +36,6 @@ export default function OnchainAccountInfo({
         width="12"
         height="12"
       />
-    </div>
+    </Link>
   );
 }

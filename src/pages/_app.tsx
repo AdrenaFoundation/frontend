@@ -14,6 +14,7 @@ import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
+import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
@@ -112,12 +113,13 @@ export default function App(props: AppProps) {
 function AppComponent({ Component, pageProps }: AppProps) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
-
-  const { positions, triggerPositionsReload } = usePositions();
-
   const wallet = useWallet();
 
+  const { positions, triggerPositionsReload } = usePositions();
+  const { userProfile, triggerUserProfileReload } = useUserProfile();
+
   useWatchTokenPrices();
+
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance']);
@@ -132,7 +134,9 @@ function AppComponent({ Component, pageProps }: AppProps) {
     }
   }, [cookies]);
 
-  // when use load the program so we can execute txs with its wallet
+  // When the wallet connect/disconnect load/unload informations
+  // 1) load the program so we can execute txs with its wallet
+  // 2) load the user profile so we can display nickname
   useEffect(() => {
     if (!wallet) {
       window.adrena.client.setAdrenaProgram(null);
@@ -154,7 +158,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
   const connected = !!wallet;
 
   return (
-    <RootLayout>
+    <RootLayout userProfile={userProfile}>
       {
         <TermsAndConditionsModal
           isOpen={isTermsAndConditionModalOpen}
@@ -179,6 +183,8 @@ function AppComponent({ Component, pageProps }: AppProps) {
 
       <Component
         {...pageProps}
+        userProfile={userProfile}
+        triggerUserProfileReload={triggerUserProfileReload}
         mainPool={mainPool}
         custodies={custodies}
         wallet={wallet}

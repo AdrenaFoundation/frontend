@@ -1,4 +1,4 @@
-import { BN, ProgramAccount } from '@coral-xyz/anchor';
+import { BN } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -61,6 +61,8 @@ import {
   SwapAmountAndFees,
   Token,
   TokenSymbol,
+  UserProfile,
+  UserProfileExtended,
   UserStaking,
   Vest,
   VestExtended,
@@ -194,6 +196,13 @@ export class AdrenaClient {
     config.governanceProgram,
   )[0];
 
+  public getUserProfilePda = (wallet: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('user_profile'), wallet.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
   public governanceGoverningTokenHolding = PublicKey.findProgramAddressSync(
     [
       Buffer.from('governance'),
@@ -294,6 +303,91 @@ export class AdrenaClient {
     return (
       this.readonlyAdrenaProgram || this.adrenaProgram
     ).account.cortex.fetch(this.cortex);
+  }
+
+  public async loadUserProfile(): Promise<UserProfileExtended | null | false> {
+    if (!this.readonlyAdrenaProgram && !this.adrenaProgram) return null;
+
+    const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
+      .wallet;
+
+    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+
+    // TODO: Transform all values into ui values
+    // Mock
+    const p: UserProfile = {
+      bump: 0,
+      nickname: 'Orex The Great',
+      createdAt: new BN(Date.now() / 1000),
+      owner: wallet.publicKey,
+      swapCount: new BN(56),
+      swapVolumeUsd: new BN(120565),
+      swapFeePaidUsd: new BN(5670),
+      shortStats: {
+        openedPositionCount: new BN(8),
+        liquidatedPositionCount: new BN(2),
+        openingAverageLeverage: new BN(5),
+        openingSizeUsd: new BN(567030000000),
+        profitsUsd: new BN(18050000000),
+        lossesUsd: new BN(24005000000),
+        feePaidUsd: new BN(9320000000),
+      },
+      longStats: {
+        openedPositionCount: new BN(3),
+        liquidatedPositionCount: new BN(0),
+        openingAverageLeverage: new BN(50000),
+        openingSizeUsd: new BN(12130000000),
+        profitsUsd: new BN(0),
+        lossesUsd: new BN(2340000000),
+        feePaidUsd: new BN(450000000),
+      },
+    };
+
+    // const userProfile = await (
+    //   this.readonlyAdrenaProgram || this.adrenaProgram
+    // ).account.userProfile.fetchNullable(userProfilePda);
+
+    // if (userProfile === null || userProfile.createdAt.isZero()) {
+    //   return false;
+    // }
+
+    return {
+      pubkey: userProfilePda,
+      nickname: p.nickname,
+      createdAt: p.createdAt.toNumber(),
+      owner: p.owner,
+      swapCount: p.swapCount.toNumber(),
+      swapVolumeUsd: nativeToUi(p.swapVolumeUsd, USD_DECIMALS),
+      swapFeePaidUsd: nativeToUi(p.swapFeePaidUsd, USD_DECIMALS),
+      shortStats: {
+        openedPositionCount: p.shortStats.openedPositionCount.toNumber(),
+        liquidatedPositionCount:
+          p.shortStats.liquidatedPositionCount.toNumber(),
+        // From BPS to regular number
+        openingAverageLeverage:
+          p.shortStats.openingAverageLeverage.toNumber() / 10_000,
+        openingSizeUsd: nativeToUi(p.shortStats.openingSizeUsd, USD_DECIMALS),
+        profitsUsd: nativeToUi(p.shortStats.profitsUsd, USD_DECIMALS),
+        lossesUsd: nativeToUi(p.shortStats.lossesUsd, USD_DECIMALS),
+        feePaidUsd: nativeToUi(p.shortStats.feePaidUsd, USD_DECIMALS),
+      },
+      longStats: {
+        openedPositionCount: p.longStats.openedPositionCount.toNumber(),
+        liquidatedPositionCount: p.longStats.liquidatedPositionCount.toNumber(),
+        openingAverageLeverage:
+          p.longStats.openingAverageLeverage.toNumber() / 10_000,
+        openingSizeUsd: nativeToUi(p.longStats.openingSizeUsd, USD_DECIMALS),
+        profitsUsd: nativeToUi(p.longStats.profitsUsd, USD_DECIMALS),
+        lossesUsd: nativeToUi(p.longStats.lossesUsd, USD_DECIMALS),
+        feePaidUsd: nativeToUi(p.longStats.feePaidUsd, USD_DECIMALS),
+      },
+      nativeObject: p,
+    };
+
+    // return {
+    //   ...userProfile,
+    //   pubkey: userProfilePda,
+    // };
   }
 
   public async loadPerpetuals(): Promise<Perpetuals | null> {
@@ -799,6 +893,7 @@ export class AdrenaClient {
     collateralAmount,
     size,
     side,
+    userProfile,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -807,6 +902,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     size: BN;
     side: 'long' | 'short';
+    userProfile?: PublicKey;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -877,6 +973,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
+      userProfile,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       adrenaProgram: this.adrenaProgram.programId,
@@ -902,6 +999,7 @@ export class AdrenaClient {
     collateralAmount,
     size,
     side,
+    userProfile,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -910,6 +1008,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     size: BN;
     side: 'long' | 'short';
+    userProfile?: PublicKey;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1019,6 +1118,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
+      userProfile,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       adrenaProgram: this.adrenaProgram.programId,
@@ -1043,12 +1143,14 @@ export class AdrenaClient {
     minAmountOut,
     mintA,
     mintB,
+    userProfile,
   }: {
     owner: PublicKey;
     amountIn: BN;
     minAmountOut: BN;
     mintA: PublicKey;
     mintB: PublicKey;
+    userProfile?: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1108,6 +1210,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
+      userProfile,
       adrenaProgram: this.adrenaProgram.programId,
     };
 
@@ -1183,12 +1286,15 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const transaction = await this.buildSwapTx({
       owner,
       amountIn,
       minAmountOut,
       mintA,
       mintB,
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
@@ -1280,6 +1386,8 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const transaction = await this.buildOpenPositionTx({
       owner,
       mint,
@@ -1288,6 +1396,7 @@ export class AdrenaClient {
       collateralAmount,
       size,
       side,
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
@@ -1384,6 +1493,8 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
+    const userProfile = await this.loadUserProfile();
+
     const accounts: ClosePositionAccounts = {
       owner: position.owner,
       receivingAccount,
@@ -1409,6 +1520,7 @@ export class AdrenaClient {
       adrenaProgram: this.adrenaProgram.programId,
       collateralCustodyOracleAccount,
       collateralCustodyTokenAccount,
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     };
 
     return this.signAndExecuteTx(
@@ -1520,6 +1632,8 @@ export class AdrenaClient {
       }
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
       owner,
       mint,
@@ -1528,6 +1642,7 @@ export class AdrenaClient {
       collateralAmount,
       size,
       side: 'short',
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
 
     const transaction = new Transaction();
@@ -1715,6 +1830,8 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
       owner,
       mint,
@@ -1723,6 +1840,7 @@ export class AdrenaClient {
       collateralAmount,
       size,
       side: 'long',
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
 
     const transaction = new Transaction();
@@ -1807,6 +1925,8 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const [swapTx, addCollateralTx] = await Promise.all([
       this.buildSwapTx({
         owner: position.owner,
@@ -1814,6 +1934,7 @@ export class AdrenaClient {
         minAmountOut,
         mintA: mintIn,
         mintB: position.token.mint,
+        userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction(),
 
       this.buildAddCollateralTx({

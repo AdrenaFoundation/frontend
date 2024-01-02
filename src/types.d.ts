@@ -34,6 +34,8 @@ export type WalletAdapterName = 'phantom' | 'backpack' | 'walletConnect';
 
 export type PageProps = {
   mainPool: PoolExtended | null;
+  userProfile: UserProfileExtended | null | false;
+  triggerUserProfileReload: () => void;
   custodies: CustodyExtended[] | null;
   wallet: Wallet | null;
   triggerWalletTokenBalancesReload: () => void;
@@ -124,6 +126,35 @@ export interface Token {
   coingeckoId?: string;
 }
 
+export type UserProfileExtended = {
+  pubkey: PublicKey;
+  nickname: string;
+  createdAt: number;
+  owner: PublicKey;
+  swapCount: number;
+  swapVolumeUsd: number;
+  swapFeePaidUsd: number;
+  shortStats: {
+    openedPositionCount: number;
+    liquidatedPositionCount: number;
+    openingAverageLeverage: number;
+    openingSizeUsd: number;
+    profitsUsd: number;
+    lossesUsd: number;
+    feePaidUsd: number;
+  };
+  longStats: {
+    openedPositionCount: number;
+    liquidatedPositionCount: number;
+    openingAverageLeverage: number;
+    openingSizeUsd: number;
+    profitsUsd: number;
+    lossesUsd: number;
+    feePaidUsd: number;
+  };
+  nativeObject: UserProfile;
+};
+
 //
 // Accounts
 //
@@ -138,6 +169,7 @@ export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
 export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
+export type UserProfile = Accounts['userProfile'];
 
 type StakePositionsExtended = UserStaking['lockedStakes'][0] & {
   tokenSymbol: 'ADX' | 'ALP';
@@ -192,13 +224,23 @@ type ExtractAccounts<T> = {
   [key in Instructions[T]['accounts'][number]['name']]: PublicKey;
 };
 
+// Force some accounts to be optional
+type OptionalAccounts<T> = Partial<Pick<T, 'userProfile'>> &
+  Omit<T, 'userProfile'>;
+
 // Use accounts types to force TS typing computation. TS will then throw an error if account is missing
-export type SwapAccounts = ExtractAccounts<'swap'>;
-export type ClosePositionAccounts = ExtractAccounts<'closePosition'>;
 export type AddCollateralAccounts = ExtractAccounts<'addCollateral'>;
-export type OpenPositionAccounts = ExtractAccounts<'openPosition'>;
-export type OpenPositionWithSwapAccounts =
-  ExtractAccounts<'openPositionWithSwap'>;
+export type OpenPositionAccounts = OptionalAccounts<
+  ExtractAccounts<'openPosition'>
+>;
+
+export type OpenPositionWithSwapAccounts = OptionalAccounts<
+  ExtractAccounts<'openPositionWithSwap'>
+>;
+export type SwapAccounts = OptionalAccounts<ExtractAccounts<'swap'>>;
+export type ClosePositionAccounts = OptionalAccounts<
+  ExtractAccounts<'closePosition'>
+>;
 export type RemoveCollateralAccounts = ExtractAccounts<'removeCollateral'>;
 export type AddLiquidStakeAccounts = ExtractAccounts<'addLiquidStake'>;
 export type AddLockedStakeAccounts = ExtractAccounts<'addLockedStake'>;

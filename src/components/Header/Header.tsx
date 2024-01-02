@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
 
+import { UserProfileExtended } from '@/types';
+
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -10,7 +12,11 @@ import MenuItems from '../common/Menu/MenuItems';
 import MenuSeperator from '../common/Menu/MenuSeperator';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
-export default function Header() {
+export default function Header({
+  userProfile,
+}: {
+  userProfile: UserProfileExtended | null | false;
+}) {
   const { pathname } = useRouter();
   const router = useRouter();
 
@@ -86,7 +92,7 @@ export default function Header() {
           <Button title="Trade now" />
         </Link>
 
-        <WalletAdapter />
+        <WalletAdapter userProfile={userProfile} />
 
         {clusterSwitchEnabled ? (
           <Menu

@@ -5,6 +5,8 @@ import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { UserProfileExtended } from '@/types';
+
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
@@ -17,7 +19,11 @@ import MenuSeperator from '../common/Menu/MenuSeperator';
 import Footer from '../Footer/Footer';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
-export default function BurgerMenu() {
+export default function BurgerMenu({
+  userProfile,
+}: {
+  userProfile: UserProfileExtended | null | false;
+}) {
   const { pathname } = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -64,7 +70,7 @@ export default function BurgerMenu() {
             onClick={() => setIsOpen(false)}
           />
 
-          <WalletAdapter className="w-full" />
+          <WalletAdapter className="w-full" userProfile={userProfile} />
         </div>
       </div>
 
