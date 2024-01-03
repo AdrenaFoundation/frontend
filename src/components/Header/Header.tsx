@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { twMerge } from 'tailwind-merge';
@@ -5,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
+import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
@@ -39,12 +41,17 @@ export default function Header({
       <div className="flex flex-row items-center gap-6">
         <Link className="font-bold uppercase relative" href="/">
           {
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src="images/logo.svg" className="h-9 shrink-0" alt="logo" />
+            <Image
+              src={logo}
+              className="shrink-0"
+              alt="logo"
+              width={100}
+              height={25}
+            />
           }
 
           {window.adrena.cluster === 'devnet' ? (
-            <span className="absolute font-specialmonster text-blue-500 bottom-[-0.6em] right-[-0.5em]">
+            <span className="absolute font-specialmonster text-blue-500 bottom-[-0.7em] right-[-0.5em]">
               Devnet
             </span>
           ) : null}

@@ -2,6 +2,7 @@ import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import type { AppProps } from 'next/app';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
@@ -22,6 +23,7 @@ import initializeApp from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
 
+import logo from '../../public/images/logo.svg';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
@@ -29,14 +31,13 @@ import store from '../store/store';
 function Loader(): JSX.Element {
   return (
     <div className="h-full w-full flex items-center justify-center">
-      {
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src="images/logo.svg"
-          alt="logo"
-          className="h-[7em] max-w-[40%] animate-pulse"
-        />
-      }
+      <Image
+        src={logo}
+        className="max-w-[40%] animate-pulse"
+        alt="logo"
+        width={350}
+        height={50}
+      />
     </div>
   );
 }
