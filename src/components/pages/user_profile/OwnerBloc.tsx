@@ -107,10 +107,10 @@ export default function OwnerBloc({
 
           {canDeleteProfile ? (
             <Button
-              className="opacity-30 hover:opacity-100 mt-8"
+              className="opacity-30 hover:opacity-100 mt-8 text-red-500 border-red-500"
               title="Delete Profile"
               alt="delete icon"
-              variant="danger"
+              variant="outline"
               onClick={() => {
                 setIsDeleteProfileModalOpen(true);
               }}
