@@ -1,4 +1,4 @@
-import { BN, ProgramAccount } from '@coral-xyz/anchor';
+import { BN } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -38,8 +38,10 @@ import {
   Cortex,
   Custody,
   CustodyExtended,
+  DeleteUserProfile,
   FinalizeLockedStakeAccounts,
   ImageRef,
+  initUserProfile,
   InitUserStakingAccounts,
   NewPositionPricesAndFee,
   OpenPositionAccounts,
@@ -61,6 +63,7 @@ import {
   SwapAmountAndFees,
   Token,
   TokenSymbol,
+  UserProfileExtended,
   UserStaking,
   Vest,
   VestExtended,
@@ -194,6 +197,13 @@ export class AdrenaClient {
     config.governanceProgram,
   )[0];
 
+  public getUserProfilePda = (wallet: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('user_profile'), wallet.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
   public governanceGoverningTokenHolding = PublicKey.findProgramAddressSync(
     [
       Buffer.from('governance'),
@@ -294,6 +304,72 @@ export class AdrenaClient {
     return (
       this.readonlyAdrenaProgram || this.adrenaProgram
     ).account.cortex.fetch(this.cortex);
+  }
+
+  // Provide alternative user if you wanna get the profile of a specific user
+  // null = not ready
+  // false = profile not initialized
+  public async loadUserProfile(
+    user?: PublicKey,
+  ): Promise<UserProfileExtended | null | false> {
+    if (!this.readonlyAdrenaProgram) return null;
+
+    if (!user) {
+      if (!this.adrenaProgram) return null;
+
+      user = (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
+    }
+
+    const userProfilePda = this.getUserProfilePda(user);
+
+    console.log('User profile Pda', userProfilePda.toBase58());
+
+    const p = await (
+      this.readonlyAdrenaProgram || this.adrenaProgram
+    ).account.userProfile.fetchNullable(userProfilePda, 'processed');
+
+    if (p === null || p.createdAt.isZero()) {
+      return false;
+    }
+
+    console.log(
+      'p',
+      p.shortStats.openingAverageLeverage.toNumber(),
+      p.longStats.openingAverageLeverage.toNumber(),
+    );
+
+    return {
+      pubkey: userProfilePda,
+      nickname: p.nickname,
+      createdAt: p.createdAt.toNumber(),
+      owner: p.owner,
+      swapCount: p.swapCount.toNumber(),
+      swapVolumeUsd: nativeToUi(p.swapVolumeUsd, USD_DECIMALS),
+      swapFeePaidUsd: nativeToUi(p.swapFeePaidUsd, USD_DECIMALS),
+      shortStats: {
+        openedPositionCount: p.shortStats.openedPositionCount.toNumber(),
+        liquidatedPositionCount:
+          p.shortStats.liquidatedPositionCount.toNumber(),
+        // From BPS to regular number
+        openingAverageLeverage:
+          p.shortStats.openingAverageLeverage.toNumber() / 10_000,
+        openingSizeUsd: nativeToUi(p.shortStats.openingSizeUsd, USD_DECIMALS),
+        profitsUsd: nativeToUi(p.shortStats.profitsUsd, USD_DECIMALS),
+        lossesUsd: nativeToUi(p.shortStats.lossesUsd, USD_DECIMALS),
+        feePaidUsd: nativeToUi(p.shortStats.feePaidUsd, USD_DECIMALS),
+      },
+      longStats: {
+        openedPositionCount: p.longStats.openedPositionCount.toNumber(),
+        liquidatedPositionCount: p.longStats.liquidatedPositionCount.toNumber(),
+        openingAverageLeverage:
+          p.longStats.openingAverageLeverage.toNumber() / 10_000,
+        openingSizeUsd: nativeToUi(p.longStats.openingSizeUsd, USD_DECIMALS),
+        profitsUsd: nativeToUi(p.longStats.profitsUsd, USD_DECIMALS),
+        lossesUsd: nativeToUi(p.longStats.lossesUsd, USD_DECIMALS),
+        feePaidUsd: nativeToUi(p.longStats.feePaidUsd, USD_DECIMALS),
+      },
+      nativeObject: p,
+    };
   }
 
   public async loadPerpetuals(): Promise<Perpetuals | null> {
@@ -799,6 +875,7 @@ export class AdrenaClient {
     collateralAmount,
     size,
     side,
+    userProfile,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -807,6 +884,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     size: BN;
     side: 'long' | 'short';
+    userProfile?: PublicKey;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -877,6 +955,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
+      userProfile,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       adrenaProgram: this.adrenaProgram.programId,
@@ -902,6 +981,7 @@ export class AdrenaClient {
     collateralAmount,
     size,
     side,
+    userProfile,
   }: {
     owner: PublicKey;
     mint: PublicKey;
@@ -910,6 +990,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     size: BN;
     side: 'long' | 'short';
+    userProfile?: PublicKey;
   }) {
     if (!this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1019,6 +1100,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
+      userProfile,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       adrenaProgram: this.adrenaProgram.programId,
@@ -1043,12 +1125,14 @@ export class AdrenaClient {
     minAmountOut,
     mintA,
     mintB,
+    userProfile,
   }: {
     owner: PublicKey;
     amountIn: BN;
     minAmountOut: BN;
     mintA: PublicKey;
     mintB: PublicKey;
+    userProfile?: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1108,6 +1192,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
+      userProfile,
       adrenaProgram: this.adrenaProgram.programId,
     };
 
@@ -1183,12 +1268,15 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const transaction = await this.buildSwapTx({
       owner,
       amountIn,
       minAmountOut,
       mintA,
       mintB,
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
@@ -1280,6 +1368,8 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const transaction = await this.buildOpenPositionTx({
       owner,
       mint,
@@ -1288,6 +1378,7 @@ export class AdrenaClient {
       collateralAmount,
       size,
       side,
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
@@ -1384,6 +1475,8 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
+    const userProfile = await this.loadUserProfile();
+
     const accounts: ClosePositionAccounts = {
       owner: position.owner,
       receivingAccount,
@@ -1409,6 +1502,7 @@ export class AdrenaClient {
       adrenaProgram: this.adrenaProgram.programId,
       collateralCustodyOracleAccount,
       collateralCustodyTokenAccount,
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     };
 
     return this.signAndExecuteTx(
@@ -1520,6 +1614,8 @@ export class AdrenaClient {
       }
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
       owner,
       mint,
@@ -1528,6 +1624,7 @@ export class AdrenaClient {
       collateralAmount,
       size,
       side: 'short',
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
 
     const transaction = new Transaction();
@@ -1715,6 +1812,8 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const openPositionWithSwapIx = await this.buildOpenPositionWithSwapTx({
       owner,
       mint,
@@ -1723,6 +1822,7 @@ export class AdrenaClient {
       collateralAmount,
       size,
       side: 'long',
+      userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
 
     const transaction = new Transaction();
@@ -1807,6 +1907,8 @@ export class AdrenaClient {
       );
     }
 
+    const userProfile = await this.loadUserProfile();
+
     const [swapTx, addCollateralTx] = await Promise.all([
       this.buildSwapTx({
         owner: position.owner,
@@ -1814,6 +1916,7 @@ export class AdrenaClient {
         minAmountOut,
         mintA: mintIn,
         mintB: position.token.mint,
+        userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction(),
 
       this.buildAddCollateralTx({
@@ -1880,6 +1983,61 @@ export class AdrenaClient {
     })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
+  }
+
+  public async initUserProfile({ nickname }: { nickname: string }) {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+
+    const accounts: initUserProfile = {
+      payer: wallet.publicKey,
+      cortex: this.cortex,
+      perpetuals: AdrenaClient.perpetualsAddress,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      userProfile: userProfilePda,
+      user: wallet.publicKey,
+    };
+
+    const transaction = await this.adrenaProgram.methods
+      .initUserProfile({
+        nickname,
+      })
+      .accounts(accounts)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
+  }
+
+  public async deleteUserProfile() {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+
+    const accounts: DeleteUserProfile = {
+      payer: wallet.publicKey,
+      cortex: this.cortex,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      userProfile: userProfilePda,
+      user: wallet.publicKey,
+    };
+
+    const transaction = await this.adrenaProgram.methods
+      .deleteUserProfile()
+      .accounts(accounts)
       .transaction();
 
     return this.signAndExecuteTx(transaction);

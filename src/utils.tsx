@@ -379,6 +379,12 @@ export function createCloseWSOLAccountInstruction({
   return createCloseAccountInstruction(wsolATA, owner, owner);
 }
 
+export function getAbbrevNickname(nickname: string) {
+  if (nickname.length < 20) return nickname;
+
+  return `${nickname.slice(0, 17)}...`;
+}
+
 export function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(address.length - 6)}`;
 }

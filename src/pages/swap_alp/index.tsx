@@ -1,5 +1,4 @@
 import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
-import Lottie from 'lottie-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
