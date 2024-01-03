@@ -16,10 +16,12 @@ export default function OwnerBloc({
   userProfile,
   className,
   triggerUserProfileReload,
+  canDeleteProfile = true,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
   triggerUserProfileReload: () => void;
+  canDeleteProfile?: boolean;
 }) {
   const [isDeleteProfileModalOpen, setIsDeleteProfileModalOpen] =
     useState<boolean>(false);
@@ -103,15 +105,17 @@ export default function OwnerBloc({
             </div>
           </div>
 
-          <Button
-            className="opacity-30 hover:opacity-100 mt-8"
-            title="Delete Profile"
-            alt="delete icon"
-            variant="danger"
-            onClick={() => {
-              setIsDeleteProfileModalOpen(true);
-            }}
-          />
+          {canDeleteProfile ? (
+            <Button
+              className="opacity-30 hover:opacity-100 mt-8"
+              title="Delete Profile"
+              alt="delete icon"
+              variant="danger"
+              onClick={() => {
+                setIsDeleteProfileModalOpen(true);
+              }}
+            />
+          ) : null}
         </div>
       </div>
 

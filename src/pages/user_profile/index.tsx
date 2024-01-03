@@ -18,7 +18,10 @@ import {
 export default function UserProfile({
   userProfile,
   triggerUserProfileReload,
-}: PageProps) {
+  readonly = false,
+}: PageProps & {
+  readonly?: boolean;
+}) {
   const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
   const [isAnimationLoaded2, setIsAnimationLoaded2] = useState(false);
   const [nickname, setNickname] = useState<string | null>(null);
@@ -148,6 +151,7 @@ export default function UserProfile({
         <OwnerBloc
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
+          canDeleteProfile={!readonly}
           className="min-w-[24em] w-[24em] max-w-[24em] items-start"
         />
       </div>

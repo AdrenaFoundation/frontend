@@ -306,12 +306,21 @@ export class AdrenaClient {
     ).account.cortex.fetch(this.cortex);
   }
 
-  public async loadUserProfile(): Promise<UserProfileExtended | null | false> {
-    if (!this.readonlyAdrenaProgram || !this.adrenaProgram) return null;
+  // Provide alternative user if you wanna get the profile of a specific user
+  // null = not ready
+  // false = profile not initialized
+  public async loadUserProfile(
+    user?: PublicKey,
+  ): Promise<UserProfileExtended | null | false> {
+    if (!this.readonlyAdrenaProgram) return null;
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    if (!user) {
+      if (!this.adrenaProgram) return null;
 
-    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+      user = (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
+    }
+
+    const userProfilePda = this.getUserProfilePda(user);
 
     console.log('User profile Pda', userProfilePda.toBase58());
 
