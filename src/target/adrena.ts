@@ -3254,6 +3254,37 @@ export type Adrena = {
       ];
     },
     {
+      name: 'editUserProfile';
+      accounts: [
+        {
+          name: 'user';
+          isMut: false;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'userProfile';
+          isMut: true;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'EditUserProfileParams';
+          };
+        },
+      ];
+    },
+    {
       name: 'deleteUserProfile';
       accounts: [
         {
@@ -5442,6 +5473,20 @@ export type Adrena = {
           {
             name: 'price';
             type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'EditUserProfileParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'nickname';
+            type: {
+              option: 'string';
+            };
           },
         ];
       };
@@ -10368,6 +10413,37 @@ export const IDL: Adrena = {
       ],
     },
     {
+      name: 'editUserProfile',
+      accounts: [
+        {
+          name: 'user',
+          isMut: false,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'userProfile',
+          isMut: true,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'EditUserProfileParams',
+          },
+        },
+      ],
+    },
+    {
       name: 'deleteUserProfile',
       accounts: [
         {
@@ -12556,6 +12632,20 @@ export const IDL: Adrena = {
           {
             name: 'price',
             type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'EditUserProfileParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'nickname',
+            type: {
+              option: 'string',
+            },
           },
         ],
       },

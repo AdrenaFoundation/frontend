@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import {
   autoConnectWalletAction,
@@ -71,7 +72,11 @@ function WalletAdapter({
     <div className="relative">
       {connected ? (
         <Button
-          className={className}
+          className={twMerge(
+            // use monster font when displaying the nickname only
+            userProfile ? 'font-specialmonster text-md' : '',
+            className,
+          )}
           title={
             userProfile
               ? getAbbrevNickname(userProfile.nickname)

@@ -152,6 +152,7 @@ export default function UserProfile({
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
           canDeleteProfile={!readonly}
+          canUpdateNickname={!readonly}
           className="min-w-[24em] w-[24em] max-w-[24em] items-start"
         />
       </div>

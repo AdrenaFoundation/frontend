@@ -39,9 +39,10 @@ import {
   Custody,
   CustodyExtended,
   DeleteUserProfile,
+  EditUserProfile,
   FinalizeLockedStakeAccounts,
   ImageRef,
-  initUserProfile,
+  InitUserProfile,
   InitUserStakingAccounts,
   NewPositionPricesAndFee,
   OpenPositionAccounts,
@@ -1997,7 +1998,7 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
-    const accounts: initUserProfile = {
+    const accounts: InitUserProfile = {
       payer: wallet.publicKey,
       cortex: this.cortex,
       perpetuals: AdrenaClient.perpetualsAddress,
@@ -2010,6 +2011,31 @@ export class AdrenaClient {
     const transaction = await this.adrenaProgram.methods
       .initUserProfile({
         nickname,
+      })
+      .accounts(accounts)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
+  }
+
+  public async editUserProfile({ nickname }: { nickname?: string }) {
+    if (!this.connection || !this.adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
+
+    const accounts: EditUserProfile = {
+      systemProgram: SystemProgram.programId,
+      userProfile: userProfilePda,
+      user: wallet.publicKey,
+    };
+
+    const transaction = await this.adrenaProgram.methods
+      .editUserProfile({
+        nickname: nickname ?? null,
       })
       .accounts(accounts)
       .transaction();

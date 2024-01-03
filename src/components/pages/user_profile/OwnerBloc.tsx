@@ -3,12 +3,18 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import InputString from '@/components/common/inputString/InputString';
 import YesOrNoModal from '@/components/common/YesOrNoModal/YesOrNoModal';
 import DateInfo from '@/components/pages/backoffice/DateInfo';
 import OnchainAccountInfo from '@/components/pages/backoffice/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
-import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
+import {
+  addFailedTxNotification,
+  addNotification,
+  addSuccessTxNotification,
+} from '@/utils';
 
+import editIcon from '../.../../../../../public/images/edit-icon.png';
 import monsterImage from '../../../../public/images/monster-1.png';
 import EmphasizedTitle from './EmphasizedTitle';
 
@@ -17,14 +23,18 @@ export default function OwnerBloc({
   className,
   triggerUserProfileReload,
   canDeleteProfile = true,
+  canUpdateNickname = true,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
   triggerUserProfileReload: () => void;
   canDeleteProfile?: boolean;
+  canUpdateNickname?: boolean;
 }) {
   const [isDeleteProfileModalOpen, setIsDeleteProfileModalOpen] =
     useState<boolean>(false);
+  const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
+  const [updatedNickname, setUpdatedNickname] = useState<string | null>(null);
 
   const deleteProfile = async () => {
     try {
@@ -39,6 +49,41 @@ export default function OwnerBloc({
     } catch (error) {
       return addFailedTxNotification({
         title: 'Error Deleting Profile',
+        error,
+      });
+    }
+  };
+
+  const editNickname = async () => {
+    const trimmedNickname = (updatedNickname ?? '').trim();
+
+    if (trimmedNickname.length < 3 || trimmedNickname.length > 24) {
+      return addNotification({
+        title: 'Cannot update profile',
+        type: 'info',
+        message: 'Nickname must be between 3 to 24 characters long',
+      });
+    }
+
+    try {
+      const txHash = await window.adrena.client.editUserProfile({
+        nickname: trimmedNickname,
+      });
+
+      triggerUserProfileReload();
+
+      // pre-shot the onchain change as we know it's coming
+      userProfile.nickname = trimmedNickname;
+
+      setNicknameUpdating(false);
+
+      return addSuccessTxNotification({
+        title: 'Successfully Edited Profile',
+        txHash,
+      });
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Editing Profile',
         error,
       });
     }
@@ -64,8 +109,65 @@ export default function OwnerBloc({
           <div className="flex flex-col m-auto w-full items-center">
             <EmphasizedTitle title="Nickname" />
 
-            <div className="font-specialmonster text-4xl ml-2 relative">
-              {userProfile.nickname}
+            <div className="flex h-[7em] w-[20em] justify-center">
+              {nicknameUpdating ? (
+                <div className="flex flex-col items-center w-full justify-center">
+                  <InputString
+                    className="text-center w-full font-specialmonster mt-4"
+                    value={updatedNickname ?? ''}
+                    onChange={setUpdatedNickname}
+                    placeholder="The Great Trader"
+                    inputFontSize="2.2em"
+                    maxLength={24}
+                  />
+
+                  <div className="flex w-full items-center justify-evenly mt-4">
+                    <Button
+                      disabled={
+                        updatedNickname
+                          ? !(
+                              updatedNickname.length >= 3 &&
+                              updatedNickname.length <= 24
+                            )
+                          : true
+                      }
+                      className="text-sm pl-8 pr-8 w-24"
+                      title="Update"
+                      onClick={() => editNickname()}
+                    />
+
+                    <Button
+                      className="text-sm pl-8 pr-8 w-24"
+                      title="Cancel"
+                      variant="outline"
+                      onClick={() => {
+                        setNicknameUpdating(false);
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex mt-4">
+                  <div className="font-specialmonster text-4xl ml-2 relative">
+                    {userProfile.nickname}
+                  </div>
+
+                  {canUpdateNickname ? (
+                    <Image
+                      className="flex ml-4 mt-2 shrink-0 max-w-[20px] max-h-[20px] opacity-20 hover:opacity-100 cursor-pointer"
+                      src={editIcon}
+                      alt="edit icon"
+                      width={20}
+                      height={20}
+                      onClick={() => {
+                        // init with actual nickname
+                        setUpdatedNickname(userProfile.nickname);
+                        setNicknameUpdating(true);
+                      }}
+                    />
+                  ) : null}
+                </div>
+              )}
             </div>
           </div>
 
@@ -107,7 +209,7 @@ export default function OwnerBloc({
 
           {canDeleteProfile ? (
             <Button
-              className="opacity-30 hover:opacity-100 mt-8 text-red-500 border-red-500"
+              className="opacity-50 hover:opacity-100 mt-8 text-red-500 border-red-500"
               title="Delete Profile"
               alt="delete icon"
               variant="outline"
