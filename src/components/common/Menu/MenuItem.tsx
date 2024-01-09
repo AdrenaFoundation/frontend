@@ -20,8 +20,8 @@ export default function MenuItem({
   const item = (
     <li
       className={twMerge(
-        'text-sm font-normal hover:bg-gray-200 duration-300 cursor-pointer opacity-50 hover:opacity-100 w-full whitespace-nowrap',
-        selected && 'bg-gray-200 opacity-100',
+        'text-sm font-normal hover:bg-gray-300 duration-300 cursor-pointer opacity-75 hover:opacity-100 w-full whitespace-nowrap',
+        selected && 'bg-gray-300 opacity-100',
         href ? 'p-0' : 'p-1 px-3',
         className,
       )}

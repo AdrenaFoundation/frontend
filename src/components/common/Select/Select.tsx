@@ -56,7 +56,7 @@ export default function Select<T extends string>({
                   onClick={() => {
                     onSelect(option.title);
                   }}
-                  key={option.title}
+                  key={option.title + i}
                 >
                   {option?.img ? (
                     <Image src={option.img} alt="logo" width="16" height="16" />

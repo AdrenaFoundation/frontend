@@ -1,11 +1,10 @@
 import { BN } from '@coral-xyz/anchor';
-import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
 import StakeBlocks from '@/components/pages/earn/StakeBlocks';
@@ -13,6 +12,7 @@ import StakeList from '@/components/pages/earn/StakeList';
 import StakeOverview from '@/components/pages/earn/StakeOverview';
 import StakeRedeem from '@/components/pages/earn/StakeRedeem';
 import StakeToken from '@/components/pages/earn/StakeToken';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
@@ -25,13 +25,10 @@ import {
 } from '@/utils';
 
 import lockIcon from '../../../public/images/Icons/lock.svg';
-import tradeMonsterImage from '../../../public/images/trade-monster.png';
 
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
-  const [isAnimationLoaded2, setIsAnimationLoaded2] = useState(false);
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
@@ -330,52 +327,20 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   return (
     <>
       <div className="absolute w-full h-full left-0 top-0 overflow-hidden">
-        <DotLottiePlayer
-          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          autoplay
-          loop
-          className={twMerge(
-            isAnimationLoaded ? 'opacity-100' : 'opacity-0',
-            'absolute top-0 left-0 rotate-180 bottom-0 w-[1000px] lg:w-full transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded(true);
-            }
-          }}
+        <RiveAnimation
+          src="./rive/fred-bg.riv"
+          layout={new Layout({ fit: Fit.Fill, alignment: Alignment.TopLeft })}
+          className={
+            'absolute top-0 left-0 rotate-180 bottom-0 w-[1000px] lg:w-full h-full'
+          }
         />
 
-        <DotLottiePlayer
-          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          autoplay
-          loop
-          className={twMerge(
-            isAnimationLoaded2 ? 'opacity-100' : 'opacity-0',
-            'absolute top-0 right-0 w-[1000px] transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded2(true);
-            }
-          }}
-        />
-
-        <Image
-          src={tradeMonsterImage}
-          alt="monster"
-          className={twMerge(
-            isAnimationLoaded ? 'opacity-0' : 'opacity-100',
-            'absolute top-[-350px] left-0 rotate-180 bottom-0 w-[1000px] lg:w-full transition-opacity duration-300',
-          )}
-        />
-
-        <Image
-          src={tradeMonsterImage}
-          alt="monster"
-          className={twMerge(
-            isAnimationLoaded2 ? 'opacity-0' : 'opacity-100',
-            'absolute top-0 right-0 w-[1000px] transition-opacity duration-300',
-          )}
+        <RiveAnimation
+          src="./rive/fred-bg.riv"
+          layout={
+            new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })
+          }
+          className={'absolute top-0 right-0 w-[1000px] h-full'}
         />
       </div>
 

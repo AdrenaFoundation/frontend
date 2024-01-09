@@ -93,11 +93,11 @@ export default function SaveOnFeesBlocks({
                           : 'text-red-500',
                       )}
                     >
-                      {currentFee > row.fee ? 'Save up ' : 'Spend extra '}
+                      {currentFee > row.fee ? 'Save up to ' : 'Spend extra '}
 
                       {currentFee - row.fee !== 0 &&
                         formatPriceInfo(
-                          currentFee - row.fee,
+                          Math.abs(currentFee - row.fee),
                           undefined,
                           2,
                           true,

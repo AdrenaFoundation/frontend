@@ -1,10 +1,8 @@
 import { BN } from '@coral-xyz/anchor';
-import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
@@ -15,6 +13,7 @@ import SwapDetails from '@/components/pages/trading/SwapDetails/SwapDetails';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingInputs from '@/components/pages/trading/TradingInputs/TradingInputs';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
 import {
@@ -23,9 +22,6 @@ import {
   addSuccessTxNotification,
   uiToNative,
 } from '@/utils';
-
-import tradeMonsterImage from '../../../public/images/trade-monster.png';
-import tradeMonsterTopImage from '../../../public/images/trade-monster-top.png';
 
 type Action = 'long' | 'short' | 'swap';
 
@@ -42,10 +38,6 @@ export default function Trade({
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const router = useRouter();
-
-  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
-  const [isAnimationLoaded2, setIsAnimationLoaded2] = useState(false);
-  const [isAnimationLoaded3, setIsAnimationLoaded3] = useState(false);
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
@@ -331,81 +323,43 @@ export default function Trade({
     return 'Open Position';
   })();
 
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
   return (
     <>
-      <div className="absolute w-full h-[calc(100%+50px)] left-0 top-[-50px] overflow-hidden">
-        <DotLottiePlayer
-          src="https://lottie.host/86bfc6ae-7fe8-47ac-90c4-8b1463c76f1d/dUBWvrAw1g.lottie"
-          autoplay={!isSafari}
-          loop={!isSafari}
-          className={twMerge(
-            isAnimationLoaded ? 'opacity-100' : 'opacity-0',
-            'fixed lg:absolute top-0 sm:left-1/2 w-[1000px] transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded(true);
-            }
-          }}
+      <>
+        <RiveAnimation
+          src="./rive/blob-bg.riv"
+          layout={
+            new Layout({ fit: Fit.Contain, alignment: Alignment.TopCenter })
+          }
+          className={'fixed lg:absolute top-0 w-[500px] left-1/2 h-full'}
         />
 
-        <DotLottiePlayer
-          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          autoplay={!isSafari}
-          loop={!isSafari}
-          className={twMerge(
-            isAnimationLoaded2 ? 'opacity-100' : 'opacity-0',
-            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded2(true);
-            }
-          }}
+        <RiveAnimation
+          src="./rive/fred-bg.riv"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopRight,
+            })
+          }
+          className={
+            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-[100vw] h-full'
+          }
         />
 
-        <DotLottiePlayer
-          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          className={twMerge(
-            isAnimationLoaded3 ? 'opacity-100' : 'opacity-0',
-            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded3(true);
-            }
-          }}
+        <RiveAnimation
+          src="./rive/fred-bg.riv"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.BottomLeft,
+            })
+          }
+          className={
+            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] h-full'
+          }
         />
-
-        <Image
-          src={tradeMonsterTopImage}
-          alt="monster"
-          className={twMerge(
-            isAnimationLoaded ? 'opacity-0' : 'opacity-100',
-            'fixed lg:absolute top-0 sm:left-1/2 w-[1000px] transition-opacity duration-300',
-          )}
-        />
-
-        <Image
-          src={tradeMonsterImage}
-          alt="monster"
-          className={twMerge(
-            isAnimationLoaded2 ? 'opacity-0' : 'opacity-100',
-            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
-          )}
-        />
-
-        <Image
-          src={tradeMonsterImage}
-          alt="monster"
-          className={twMerge(
-            isAnimationLoaded3 ? 'opacity-0' : 'opacity-100',
-            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
-          )}
-        />
-      </div>
+      </>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10">
         <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
           {/* Trading chart header */}

@@ -1,13 +1,12 @@
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
-import Lottie from 'lottie-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { AdrenaClient } from '@/AdrenaClient';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
-
-import fullMonster from '../../../public/animations/data.json';
 
 export default function OnchainInfo({}: PageProps) {
   const tableClasses =
@@ -26,18 +25,12 @@ export default function OnchainInfo({}: PageProps) {
     </Link>
   );
 
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
   return (
     <>
-      <Lottie
-        rendererSettings={{
-          preserveAspectRatio: 'xMidYMid slice',
-          className: 'fixed top-0 left-0 w-full h-full',
-        }}
-        animationData={fullMonster}
-        autoplay={!isSafari}
-        loop={!isSafari}
+      <RiveAnimation
+        src="./rive/top-monster.riv"
+        layout={new Layout({ fit: Fit.Cover, alignment: Alignment.Center })}
+        className={'fixed top-0 left-0 w-full h-full'}
       />
 
       <div className={tableClasses}>

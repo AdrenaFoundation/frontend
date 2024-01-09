@@ -101,7 +101,7 @@ export default function StakeOverview({
         <div className="flex flex-row gap-3 mt-5">
           <Button
             className="w-full"
-            variant="secondary"
+            variant="primary"
             size="lg"
             title={`Stake ${tokenDetails.token.symbol}`}
             onClick={() =>
