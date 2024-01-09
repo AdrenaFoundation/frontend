@@ -53,8 +53,10 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
 
   useEffect(() => {
     if (!window.adrena.client.connection) return;
+
     lockedStake();
     getVestedAmount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.adrena.client.connection]);
 
   const lockedStake = async () => {

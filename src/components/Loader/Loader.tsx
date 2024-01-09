@@ -15,9 +15,15 @@ const defaultOptions = {
 export default function Loader({
   height = 30,
   width = 120,
+  className,
 }: {
   height?: number;
   width?: number;
+  className?: string;
 }) {
-  return <Lottie options={defaultOptions} height={height} width={width} />;
+  return (
+    <div className={className ?? ''}>
+      <Lottie options={defaultOptions} height={height} width={width} />
+    </div>
+  );
 }

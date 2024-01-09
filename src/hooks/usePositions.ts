@@ -28,7 +28,8 @@ const usePositions = (): {
 
   useEffect(() => {
     loadPositions();
-  }, [loadPositions, trickReload]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadPositions, trickReload, window.adrena.client.readonlyConnection]);
 
   return {
     positions,

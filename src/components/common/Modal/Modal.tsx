@@ -36,7 +36,7 @@ const Modal = ({
   close,
   className,
 }: {
-  title: string;
+  title: ReactNode;
   children: ReactNode;
   close: () => void;
   className?: string;
@@ -71,7 +71,7 @@ const Modal = ({
           role="dialog"
         >
           <div className="h-14 w-full flex flex-row items-center justify-between border-b border-grey pl-4 pr-4">
-            <span className="text-sm opacity-50">{title}</span>
+            <div className="text-sm opacity-50 w-full">{title}</div>
             <Image
               className="cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300"
               src={closeBtnIcon}

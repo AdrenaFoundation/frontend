@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import InputNumber from '@/components/common/InputNumber/InputNumber';
 import { USD_DECIMALS } from '@/constant';
 import { TokenPricesState } from '@/reducers/tokenPricesReducer';
 import { useSelector } from '@/store/store';
@@ -122,6 +123,11 @@ export default function TradingInputs({
   const [manualUserInput, setManualUserInput] = useState<null | 'A' | 'B'>(
     null,
   );
+
+  // Use this state to allow user to remove everything in the input
+  // overwise the user is stuck with one number, which is bad ux
+  const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
+    useState<boolean>(false);
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -335,11 +341,32 @@ export default function TradingInputs({
         <>
           {/* Leverage (only in short/long) */}
           <>
-            <div className="w-full mt-6 mb-2 text-txtfade text-sm">
-              Leverage Slider
+            <div className="w-full mt-6 mb-2 text-txtfade text-sm flex justify-between items-center">
+              <span>Leverage Slider</span>
+
+              <div>
+                <span className="text-txtfade">x</span>
+                <InputNumber
+                  className="w-6 text-txtfade"
+                  value={isLeverageInputEmpty ? undefined : leverage}
+                  max={50}
+                  onChange={function (value: number | null): void {
+                    // throw new Error('Function not implemented.');
+                    if (value === null) {
+                      setIsLeverageInputEmpty(true);
+                      return;
+                    }
+
+                    setLeverage(value);
+                    setIsLeverageInputEmpty(false);
+                  }}
+                  inputFontSize="1.1em"
+                />
+              </div>
             </div>
             <div className="w-full flex flex-col justify-center items-center">
               <LeverageSlider
+                value={leverage}
                 className="w-[90%] m-auto"
                 onChange={(v: number) => setLeverage(v)}
               />

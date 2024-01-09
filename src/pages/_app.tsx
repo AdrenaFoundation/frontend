@@ -2,6 +2,7 @@ import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import type { AppProps } from 'next/app';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
@@ -14,6 +15,7 @@ import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
+import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
@@ -21,6 +23,7 @@ import initializeApp from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
 
+import logo from '../../public/images/logo.svg';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
@@ -28,14 +31,13 @@ import store from '../store/store';
 function Loader(): JSX.Element {
   return (
     <div className="h-full w-full flex items-center justify-center">
-      {
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src="images/logo.svg"
-          alt="logo"
-          className="h-[7em] max-w-[40%] animate-pulse"
-        />
-      }
+      <Image
+        src={logo}
+        className="max-w-[40%] animate-pulse"
+        alt="logo"
+        width={350}
+        height={50}
+      />
     </div>
   );
 }
@@ -50,11 +52,9 @@ export default function App(props: AppProps) {
 
   // Load cluster from router
   useEffect(() => {
-    if (!router || !router.query) return;
+    if (!router || !router.query || !router.isReady) return;
 
-    const cluster = router.query['cluster'];
-
-    console.log('Load', cluster, 'from URL');
+    const cluster = router.query.cluster;
 
     // Reload with default cluster if no cluster or un-recognized cluster
     if (
@@ -62,13 +62,8 @@ export default function App(props: AppProps) {
       typeof cluster !== 'string' ||
       !['devnet', 'mainnet'].includes(cluster)
     ) {
-      router.replace(
-        {
-          query: { ...router.query, cluster: 'devnet' },
-        },
-        undefined,
-        { shallow: false },
-      );
+      router.query.cluster = 'devnet';
+      router.push(router);
       return;
     }
 
@@ -112,12 +107,13 @@ export default function App(props: AppProps) {
 function AppComponent({ Component, pageProps }: AppProps) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
-
-  const { positions, triggerPositionsReload } = usePositions();
-
   const wallet = useWallet();
 
+  const { positions, triggerPositionsReload } = usePositions();
+  const { userProfile, triggerUserProfileReload } = useUserProfile();
+
   useWatchTokenPrices();
+
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance']);
@@ -132,7 +128,9 @@ function AppComponent({ Component, pageProps }: AppProps) {
     }
   }, [cookies]);
 
-  // when use load the program so we can execute txs with its wallet
+  // When the wallet connect/disconnect load/unload informations
+  // 1) load the program so we can execute txs with its wallet
+  // 2) load the user profile so we can display nickname
   useEffect(() => {
     if (!wallet) {
       window.adrena.client.setAdrenaProgram(null);
@@ -154,7 +152,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
   const connected = !!wallet;
 
   return (
-    <RootLayout>
+    <RootLayout userProfile={userProfile}>
       {
         <TermsAndConditionsModal
           isOpen={isTermsAndConditionModalOpen}
@@ -179,6 +177,8 @@ function AppComponent({ Component, pageProps }: AppProps) {
 
       <Component
         {...pageProps}
+        userProfile={userProfile}
+        triggerUserProfileReload={triggerUserProfileReload}
         mainPool={mainPool}
         custodies={custodies}
         wallet={wallet}

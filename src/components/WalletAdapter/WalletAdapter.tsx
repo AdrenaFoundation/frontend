@@ -1,47 +1,55 @@
 import { PublicKey } from '@solana/web3.js';
-import Image from 'next/image';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import {
   autoConnectWalletAction,
-  connectWalletAction,
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
-import { getAbbrevWalletAddress } from '@/utils';
+import { UserProfileExtended } from '@/types';
+import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
 import disconnectIcon from '../../../public/images/disconnect.png';
-import phantomLogo from '../../../public/images/phantom.png';
+import threeDotsIcon from '../../../public/images/three-dots.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
-import Modal from '../common/Modal/Modal';
+import WalletSelectionModal from './WalletSelectionModal';
 
-function WalletAdapter({ className }: { className?: string }) {
+function WalletAdapter({
+  className,
+  userProfile,
+}: {
+  className?: string;
+  userProfile: UserProfileExtended | null | false;
+}) {
   const dispatch = useDispatch();
-  const { wallet, modalIsOpen } = useSelector((s) => s.walletState);
+  const { wallet } = useSelector((s) => s.walletState);
+  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
   const connected = !!wallet;
 
-  const isWalletConnected = JSON.parse(
-    localStorage.getItem('isWalletConnected') ?? 'false',
-  );
+  // Load local storage state to auto-connect if needed
+  const autoConnectAuthorized: boolean =
+    JSON.parse(localStorage.getItem('autoConnectAuthorized') ?? 'false') ??
+    true;
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
-    if (isWalletConnected) {
+    if (autoConnectAuthorized) {
       dispatch(autoConnectWalletAction('phantom'));
       return;
     }
 
     // Only once when page load
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWalletConnected]);
+  }, []);
 
   // Detect change of account
   useEffect(() => {
-    if (!wallet || !Boolean(isWalletConnected)) return;
+    if (!wallet) return;
 
     const adapter = walletAdapters[wallet.adapterName];
 
@@ -58,57 +66,78 @@ function WalletAdapter({ className }: { className?: string }) {
     return () => {
       adapter.removeAllListeners('connect');
     };
-  }, [dispatch, wallet, isWalletConnected]);
-
-  const handleClick = () => {
-    if (!connected) {
-      dispatch(openCloseConnectionModalAction(true));
-      return;
-    }
-
-    console.log('Disconnect wallet');
-    dispatch(disconnectWalletAction(wallet.adapterName));
-    dispatch(openCloseConnectionModalAction(false));
-  };
+  }, [dispatch, wallet]);
 
   return (
-    <div>
-      <Button
-        className={className}
-        title={
-          connected
-            ? getAbbrevWalletAddress(wallet.walletAddress)
-            : 'Connect wallet'
-        }
-        rightIcon={connected ? disconnectIcon : walletIcon}
-        alt="wallet icon"
-        variant="outline"
-        onClick={handleClick}
-      />
+    <div className="relative">
+      {connected ? (
+        <Button
+          className={twMerge(
+            // use monster font when displaying the nickname only
+            userProfile ? 'font-specialmonster text-md' : '',
+            className,
+          )}
+          title={
+            userProfile
+              ? getAbbrevNickname(userProfile.nickname)
+              : getAbbrevWalletAddress(wallet.walletAddress)
+          }
+          rightIcon={threeDotsIcon}
+          alt="wallet icon"
+          variant="outline"
+          onClick={() => {
+            setMenuIsOpen(!menuIsOpen);
+          }}
+        />
+      ) : (
+        <Button
+          className={className}
+          title="Connect wallet"
+          rightIcon={walletIcon}
+          alt="wallet icon"
+          variant="outline"
+          onClick={() => {
+            if (!connected) {
+              dispatch(openCloseConnectionModalAction(true));
+            }
+          }}
+        />
+      )}
 
-      {modalIsOpen ? (
-        <Modal
-          title="Select wallet"
-          close={() => dispatch(openCloseConnectionModalAction(false))}
-          className="flex flex-col items-center w-64 px-3 pb-3"
-        >
-          <div
-            className="flex flex-row gap-3 items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-300 duration-300 w-full"
+      {menuIsOpen ? (
+        <div className="absolute right-0 bg-main min-w-[10em] p-2">
+          <Button
+            className="text-sm"
+            title="Profile"
+            alt="profile icon"
+            variant="text"
+            href={'/user_profile'}
             onClick={() => {
-              dispatch(connectWalletAction('phantom'));
+              setMenuIsOpen(false);
+            }}
+          />
+
+          <Button
+            className="text-sm"
+            title="Disconnect"
+            rightIcon={disconnectIcon}
+            alt="disconnect icon"
+            variant="text"
+            onClick={() => {
+              setMenuIsOpen(!menuIsOpen);
+
+              if (!connected) return;
+
+              console.log('Disconnect wallet');
+
+              dispatch(disconnectWalletAction(wallet.adapterName));
               dispatch(openCloseConnectionModalAction(false));
             }}
-          >
-            <Image
-              src={phantomLogo}
-              alt="phantom icon"
-              height={30}
-              width={30}
-            />
-            Phantom
-          </div>
-        </Modal>
+          />
+        </div>
       ) : null}
+
+      <WalletSelectionModal />
     </div>
   );
 }

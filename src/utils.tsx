@@ -145,7 +145,7 @@ export function addSuccessTxNotification({
   txHash: string | null;
 }) {
   const message = txHash ? (
-    <Link href={get_tx_explorer(txHash)} target="_blank" className="underline">
+    <Link href={getTxExplorer(txHash)} target="_blank" className="underline">
       View transaction
     </Link>
   ) : (
@@ -185,7 +185,7 @@ export function addFailedTxNotification({
 
           {error.txHash ? (
             <Link
-              href={get_tx_explorer(error.txHash)}
+              href={getTxExplorer(error.txHash)}
               target="_blank"
               className="underline mt-2"
             >
@@ -215,8 +215,13 @@ export function addFailedTxNotification({
 }
 
 // TODO: handle devnet/mainnet
-export function get_tx_explorer(txHash: string): string {
+export function getTxExplorer(txHash: string): string {
   return `https://explorer.solana.com/tx/${txHash}?cluster=devnet`;
+}
+
+// TODO: handle devnet/mainnet
+export function getAccountExplorer(address: PublicKey): string {
+  return `https://explorer.solana.com/address/${address}?cluster=devnet`;
 }
 
 // Thrown as error when a transaction fails
@@ -372,6 +377,12 @@ export function createCloseWSOLAccountInstruction({
   owner: PublicKey;
 }): TransactionInstruction {
   return createCloseAccountInstruction(wsolATA, owner, owner);
+}
+
+export function getAbbrevNickname(nickname: string) {
+  if (nickname.length < 20) return nickname;
+
+  return `${nickname.slice(0, 17)}...`;
 }
 
 export function getAbbrevWalletAddress(address: string) {

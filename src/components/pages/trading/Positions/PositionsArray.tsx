@@ -1,17 +1,14 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import {
-  connectWalletAction,
-  openCloseConnectionModalAction,
-} from '@/actions/walletActions';
+import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Menu from '@/components/common/Menu/Menu';
 import MenuItem from '@/components/common/Menu/MenuItem';
 import MenuItems from '@/components/common/Menu/MenuItems';
 import MenuSeperator from '@/components/common/Menu/MenuSeperator';
-import Modal from '@/components/common/Modal/Modal';
 import Loader from '@/components/Loader/Loader';
+import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -29,7 +26,6 @@ export default function PositionsArray({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
   const dispatch = useDispatch();
-  const { modalIsOpen } = useSelector((s) => s.walletState);
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const connected = !!useSelector((s) => s.walletState.wallet);
@@ -58,30 +54,7 @@ export default function PositionsArray({
           Waiting for wallet connection
         </p>
 
-        {/* @TODO: better modal handling, reuse */}
-        {modalIsOpen ? (
-          <Modal
-            title="Select wallet"
-            close={() => dispatch(openCloseConnectionModalAction(false))}
-            className="flex flex-col items-center w-64 px-3 pb-3"
-          >
-            <div
-              className="flex flex-row gap-3 items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-300 duration-300 w-full"
-              onClick={() => {
-                dispatch(connectWalletAction('phantom'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-            >
-              <Image
-                src={phantomLogo}
-                alt="phantom icon"
-                height={30}
-                width={30}
-              />
-              Phantom
-            </div>
-          </Modal>
-        ) : null}
+        <WalletSelectionModal />
       </div>
     );
   }

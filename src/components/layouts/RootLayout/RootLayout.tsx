@@ -8,12 +8,19 @@ import { twMerge } from 'tailwind-merge';
 
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { UserProfileExtended } from '@/types';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
-  const isBigScreen = useBetterMediaQuery('(min-width: 900px)');
+const RootLayout = ({
+  children,
+  userProfile,
+}: {
+  children: ReactNode;
+  userProfile: UserProfileExtended | null | false;
+}) => {
+  const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
 
   if (isBigScreen === null) {
     return null;
@@ -28,7 +35,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {isBigScreen ? <Header /> : <BurgerMenu />}
+      {isBigScreen ? (
+        <Header userProfile={userProfile} />
+      ) : (
+        <BurgerMenu userProfile={userProfile} />
+      )}
 
       <div className="w-full flex p-4 justify-center">
         <div
