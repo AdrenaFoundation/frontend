@@ -5,6 +5,7 @@ export default function TabSelect<T extends string | number>({
   selected,
   onClick,
   tabs,
+  wrapperClassName,
   className,
 }: {
   selected?: T;
@@ -14,6 +15,7 @@ export default function TabSelect<T extends string | number>({
   }[];
   onClick: (title: T, index: number) => void;
   className?: string;
+  wrapperClassName?: string;
 }) {
   const [activeElement, setActiveElement] = useState({
     width: 0,
@@ -39,7 +41,12 @@ export default function TabSelect<T extends string | number>({
   }, [activeTab]);
 
   return (
-    <div className="relative flex flex-row gap-3 justify-between w-full bg-dark border border-gray-200 rounded-xl p-1">
+    <div
+      className={twMerge(
+        'relative flex flex-row gap-3 justify-between w-full bg-dark border border-gray-200 rounded-xl p-1 mb-3',
+        wrapperClassName,
+      )}
+    >
       <div
         className="absolute h-full bg-gray-300 rounded-lg cursor-pointer"
         style={{

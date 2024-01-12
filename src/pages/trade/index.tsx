@@ -1,15 +1,18 @@
 import { BN } from '@coral-xyz/anchor';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
+import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import Modal from '@/components/common/Modal/Modal';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import PositionDetails from '@/components/pages/trading/PositionDetails/PositionDetails';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import SwapDetails from '@/components/pages/trading/SwapDetails/SwapDetails';
+import { TradeComp } from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import TradingInputs from '@/components/pages/trading/TradingInputs/TradingInputs';
@@ -23,7 +26,7 @@ import {
   uiToNative,
 } from '@/utils';
 
-type Action = 'long' | 'short' | 'swap';
+export type Action = 'long' | 'short' | 'swap';
 
 export default function Trade({
   positions,
@@ -34,6 +37,9 @@ export default function Trade({
 }: PageProps) {
   const dispatch = useDispatch();
 
+  const [activePositionModal, setActivePositionModal] = useState<Action | null>(
+    null,
+  );
   const [selectedAction, setSelectedAction] = useState<Action>('long');
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -172,6 +178,13 @@ export default function Trade({
     setOpenedPosition(relatedPosition ?? null);
   }, [positions, selectedAction, tokenB]);
 
+  useEffect(() => {
+    if (activePositionModal) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [activePositionModal]);
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
       dispatch(openCloseConnectionModalAction(true));
@@ -266,12 +279,13 @@ export default function Trade({
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
-
+      setActivePositionModal(null);
       return addSuccessTxNotification({
         title: 'Successfully Opened Position',
         txHash,
       });
     } catch (error) {
+      setActivePositionModal(null);
       return addFailedTxNotification({
         title: 'Error Opening Position',
         error,
@@ -401,101 +415,96 @@ export default function Trade({
             />
           </div>
         </div>
+        <>
+          <TradeComp
+            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
+            tokenA={tokenA}
+            tokenB={tokenB}
+            setTokenA={setTokenA}
+            setTokenB={setTokenB}
+            inputAValue={inputAValue}
+            inputBValue={inputBValue}
+            setInputAValue={setInputAValue}
+            setInputBValue={setInputBValue}
+            tokenPrices={tokenPrices}
+            openedPosition={openedPosition}
+            setLeverage={setLeverage}
+            buttonTitle={buttonTitle}
+            handleExecuteButton={handleExecuteButton}
+            className="hidden sm:flex"
+          />
 
-        <div className="w-full lg:w-[30em] flex flex-col sm:flex-row lg:flex-col gap-3 mt-4 lg:ml-4 lg:mt-0">
-          <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
-            <TabSelect
-              selected={selectedAction}
-              tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
-              onClick={(title) => {
-                setSelectedAction(title);
-              }}
-            />
-
-            {window.adrena.client.tokens.length && tokenA && tokenB && (
-              <>
-                <TradingInputs
-                  className="mt-4"
-                  actionType={selectedAction}
-                  allowedTokenA={
-                    selectedAction === 'swap'
-                      ? window.adrena.client.tokens.filter(
-                          (t) => t.symbol !== tokenB.symbol,
-                        )
-                      : window.adrena.client.tokens
-                  }
-                  allowedTokenB={
-                    selectedAction === 'swap'
-                      ? window.adrena.client.tokens.filter(
-                          (t) => t.symbol !== tokenA.symbol,
-                        )
-                      : window.adrena.client.tokens.filter((t) => !t.isStable)
-                  }
-                  tokenA={tokenA}
-                  tokenB={tokenB}
-                  openedPosition={openedPosition}
-                  onChangeInputA={setInputAValue}
-                  onChangeInputB={setInputBValue}
-                  setTokenA={setTokenA}
-                  setTokenB={setTokenB}
-                  onChangeLeverage={setLeverage}
+          <div className="fixed bottom-0 w-full bg-black/50 backdrop-blur-sm p-5 z-30">
+            <ul className="flex flex-row gap-3 justify-between">
+              <li>
+                <Button
+                  title="Long"
+                  variant="outline"
+                  size="lg"
+                  className="border-green-500 text-green-500 bg-green-700/10"
+                  onClick={() => {
+                    setActivePositionModal('long');
+                    setSelectedAction('long');
+                  }}
                 />
-              </>
-            )}
+              </li>
+              <li>
+                <Button
+                  title="Short"
+                  variant="outline"
+                  size="lg"
+                  className="border-red-500 text-red-500 bg-red-700/10"
+                  onClick={() => {
+                    setActivePositionModal('short');
+                    setSelectedAction('short');
+                  }}
+                />
+              </li>
+              <li>
+                <Button
+                  title="Swap"
+                  variant="outline"
+                  size="lg"
+                  className="border-purple-500 text-purple-500 bg-purple-700/10"
+                  onClick={() => {
+                    setActivePositionModal('swap');
+                    setSelectedAction('swap');
+                  }}
+                />
+              </li>
+            </ul>
 
-            {/* Button to execute action */}
-            <Button
-              size="lg"
-              title={buttonTitle}
-              className="w-full justify-center mt-5"
-              disabled={
-                buttonTitle.includes('Insufficient') ||
-                buttonTitle.includes('not handled yet')
-              }
-              onClick={handleExecuteButton}
-            />
-          </div>
-
-          {/* Position details */}
-          <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
-            <div className=" pb-0">
-              <span className="capitalize text-xs opacity-25">
-                {selectedAction}
-                {selectedAction === 'short' || selectedAction === 'long' ? (
-                  <span> {tokenB?.symbol ?? '-'}</span>
-                ) : null}
-              </span>
-            </div>
-
-            {tokenA && tokenB ? (
-              <>
-                {selectedAction === 'short' || selectedAction === 'long' ? (
-                  <PositionDetails
+            <AnimatePresence>
+              {activePositionModal && (
+                <Modal
+                  title={`${activePositionModal.toLocaleUpperCase()} Position`}
+                  close={() => setActivePositionModal(null)}
+                  className="flex flex-col p-2 overflow-auto trade__comp__modal"
+                >
+                  <TradeComp
+                    selectedAction={selectedAction}
+                    setSelectedAction={setSelectedAction}
+                    tokenA={tokenA}
                     tokenB={tokenB}
-                    entryPrice={
-                      tokenB &&
-                      inputBValue &&
-                      tokenPrices &&
-                      tokenPrices[tokenB.symbol]
-                        ? tokenPrices[tokenB.symbol]
-                        : null
-                    }
-                    exitPrice={
-                      tokenB &&
-                      inputBValue &&
-                      tokenPrices &&
-                      tokenPrices[tokenB.symbol]
-                        ? tokenPrices[tokenB.symbol]
-                        : null
-                    }
+                    setTokenA={setTokenA}
+                    setTokenB={setTokenB}
+                    inputAValue={inputAValue}
+                    inputBValue={inputBValue}
+                    setInputAValue={setInputAValue}
+                    setInputBValue={setInputBValue}
+                    tokenPrices={tokenPrices}
+                    openedPosition={openedPosition}
+                    setLeverage={setLeverage}
+                    buttonTitle={buttonTitle}
+                    handleExecuteButton={handleExecuteButton}
+                    className="p-0 m-0"
                   />
-                ) : (
-                  <SwapDetails tokenA={tokenA} tokenB={tokenB} />
-                )}
-              </>
-            ) : null}
+                </Modal>
+              )}
+            </AnimatePresence>
           </div>
-        </div>
+        </>
       </div>
     </>
   );

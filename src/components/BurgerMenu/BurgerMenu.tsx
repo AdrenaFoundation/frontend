@@ -8,15 +8,16 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
+import githubLogo from '../../../public/images/github.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
 import logo from '../../../public/images/logo.svg';
+import twitterLogo from '../../../public/images/twitter.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeperator from '../common/Menu/MenuSeperator';
-import Footer from '../Footer/Footer';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
@@ -156,7 +157,38 @@ export default function BurgerMenu({
                 width={150}
                 height={150}
               />
-              <Footer />
+
+              <div className="flex w-full justify-center gap-5 items-center">
+                <Link
+                  href="https://github.com/orgs/AdrenaDEX/repositories"
+                  target="_blank"
+                >
+                  <Image
+                    className="hover:opacity-90 cursor-pointer"
+                    src={githubLogo}
+                    alt="github icon"
+                    width="20"
+                    height="20"
+                  />
+                </Link>
+
+                <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
+                  <Image
+                    className="hover:opacity-90 cursor-pointer"
+                    src={twitterLogo}
+                    alt="twitter icon"
+                    width="20"
+                    height="20"
+                  />
+                </Link>
+
+                {/* <Link
+          href="/terms_and_conditions"
+          className="absolute right-6 text-txtfade hover:text-white font-mono"
+        >
+          Terms and conditions
+        </Link> */}
+              </div>
             </div>
           </motion.div>
         )}

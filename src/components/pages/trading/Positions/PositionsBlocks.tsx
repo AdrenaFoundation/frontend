@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -68,8 +69,21 @@ export default function PositionsBlocks({
           key={position.pubkey.toBase58()}
           className="flex flex-col bg-secondary border border-gray-300 rounded-lg w-full"
         >
-          <div className="border-b border-grey-300 p-4">
-            {position.token.symbol}
+          <div className="flex flex-row gap-3 items-center border-b border-gray-300 p-4">
+            <Image
+              src={position.token.image}
+              width={30}
+              height={30}
+              alt={`${position.token.symbol} logo`}
+            />
+            <div>
+              <p className="text-xs opacity-50 font-mono">
+                {position.token.symbol}
+              </p>
+              <h3 className="text-sm capitalize font-mono">
+                {position.token.symbol}
+              </h3>
+            </div>
           </div>
 
           <ul className="flex flex-col gap-2 p-4">
