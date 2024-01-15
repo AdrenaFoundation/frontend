@@ -235,11 +235,11 @@ export default function SwapALP({
         />
       </div>
 
-      <h1 className="text-2xl font-normal z-20">Buy / Sell ALP</h1>
+      <h2 className="z-20">Buy / Sell ALP</h2>
 
-      <div className="mt-2 opacity-75 z-20">
+      <p className="z-20">
         Purchase ALP tokens to earn fees from swaps and leverages trading.
-      </div>
+      </p>
 
       <ALPInfo marketCap={marketCap} />
 

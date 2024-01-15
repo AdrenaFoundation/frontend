@@ -345,9 +345,9 @@ export default function TradingInputs({
               <span>Leverage Slider</span>
 
               <div>
-                <span className="text-txtfade">x</span>
+                <span className="text-txtfade">x </span>
                 <InputNumber
-                  className="w-6 text-txtfade"
+                  className="w-10 text-txtfade text-center rounded-md"
                   value={isLeverageInputEmpty ? undefined : leverage}
                   max={50}
                   onChange={function (value: number | null): void {

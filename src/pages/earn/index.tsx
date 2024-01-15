@@ -363,7 +363,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               setActiveRedeemToken={setActiveRedeemToken}
             />
           </div>
-          <div className="flex flex-col gap-3 bg-black/70 backdrop-blur-md border border-gray-300 rounded-lg p-4 mt-8">
+          <div className="flex flex-col gap-3 bg-black/70 backdrop-blur-md border border-gray-300 rounded-lg p-4 pb-8 mt-8">
             <div className="flex flex-row gap-2 items-center mb-3">
               <Image src={lockIcon} width={16} height={16} alt="lock icon" />
               <h4>My Locked Stake</h4>

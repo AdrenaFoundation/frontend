@@ -8,14 +8,10 @@ import { useEffect, useState } from 'react';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
-import TabSelect from '@/components/common/TabSelect/TabSelect';
-import PositionDetails from '@/components/pages/trading/PositionDetails/PositionDetails';
 import Positions from '@/components/pages/trading/Positions/Positions';
-import SwapDetails from '@/components/pages/trading/SwapDetails/SwapDetails';
 import { TradeComp } from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
-import TradingInputs from '@/components/pages/trading/TradingInputs/TradingInputs';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
@@ -435,7 +431,7 @@ export default function Trade({
             className="hidden sm:flex"
           />
 
-          <div className="fixed bottom-0 w-full bg-black/50 backdrop-blur-sm p-5 z-30">
+          <div className="fixed sm:hidden bottom-0 w-full bg-black/50 backdrop-blur-sm p-5 z-30">
             <ul className="flex flex-row gap-3 justify-between">
               <li>
                 <Button
@@ -478,7 +474,10 @@ export default function Trade({
             <AnimatePresence>
               {activePositionModal && (
                 <Modal
-                  title={`${activePositionModal.toLocaleUpperCase()} Position`}
+                  title={`${
+                    activePositionModal.charAt(0).toUpperCase() +
+                    activePositionModal.slice(1)
+                  } Position`}
                   close={() => setActivePositionModal(null)}
                   className="flex flex-col p-2 overflow-auto trade__comp__modal"
                 >
