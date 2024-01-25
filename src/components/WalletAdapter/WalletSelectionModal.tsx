@@ -1,4 +1,3 @@
-import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import Tippy from '@tippyjs/react';
 import Image, { StaticImageData } from 'next/image';

@@ -175,9 +175,6 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     },
   ];
 
-  // full animation
-  // https://lottie.host/37e1ec5d-b487-44e1-b4e9-ac7f51500eee/ydhCjShFMH.lottie
-
   return (
     <>
       <RiveAnimation

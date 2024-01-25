@@ -20,7 +20,10 @@ import {
   uiToNative,
 } from '@/utils';
 
-export default function FaucetDevnet({ wallet }: PageProps) {
+export default function FaucetDevnet({
+  wallet,
+  triggerWalletTokenBalancesReload,
+}: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [pendingTx, setPendingTx] = useState<boolean>(false);
@@ -79,6 +82,7 @@ export default function FaucetDevnet({ wallet }: PageProps) {
       );
 
       setPendingTx(false);
+      triggerWalletTokenBalancesReload();
 
       return addSuccessTxNotification({
         title: 'Successfull Transaction',

@@ -3,11 +3,16 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import Menu from '@/components/common/Menu/Menu';
+import MenuItem from '@/components/common/Menu/MenuItem';
+import MenuItems from '@/components/common/Menu/MenuItems';
+import MenuSeperator from '@/components/common/Menu/MenuSeperator';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
+import threeDotsIcon from '../../../../../public/images/Icons/three-dots.svg';
 import phantomLogo from '../../../../../public/images/phantom.png';
 
 export default function PositionsBlocks({
@@ -55,7 +60,7 @@ export default function PositionsBlocks({
   }
 
   return (
-    <div className={twMerge('w-full', 'flex', 'flex-wrap', className)}>
+    <div className={twMerge('w-full', 'flex', 'flex-wrap gap-5', className)}>
       {positions === null && connected ? (
         <div className="mt-5 mb-5 ml-auto mr-auto">Loading ...</div>
       ) : null}
@@ -66,33 +71,58 @@ export default function PositionsBlocks({
 
       {positions?.map((position) => (
         <div
+          className="flex gap-1 flex-col w-full"
           key={position.pubkey.toBase58()}
-          className="flex flex-col bg-secondary border border-gray-300 rounded-lg w-full"
         >
-          <div className="flex flex-row gap-3 items-center border-b border-gray-300 p-4">
-            <Image
-              src={position.token.image}
-              width={30}
-              height={30}
-              alt={`${position.token.symbol} logo`}
-            />
-            <div>
-              <p className="text-xs opacity-50 font-mono">
-                {position.token.symbol}
-              </p>
-              <h3 className="text-sm capitalize font-mono">
-                {position.token.symbol}
-              </h3>
-            </div>
+          <div className="ml-auto">
+            <Menu
+              trigger={
+                <Button
+                  variant="text"
+                  className="px-1"
+                  leftIcon={threeDotsIcon}
+                />
+              }
+              className="w-fit left-[-100px] mt-0"
+            >
+              <MenuItems>
+                <MenuItem
+                  onClick={() => {
+                    triggerEditPositionCollateral(position);
+                  }}
+                >
+                  Edit Collateral
+                </MenuItem>
+                <MenuSeperator />
+                <MenuItem
+                  onClick={() => {
+                    triggerClosePosition(position);
+                  }}
+                >
+                  Close
+                </MenuItem>
+              </MenuItems>
+            </Menu>
           </div>
-
-          <ul className="flex flex-col gap-2 p-4">
-            <li className={columnStyle}>
-              <p className="opacity-50">Leverage</p>
-              <div className="flex-row gap-3">
-                <p className="font-mono text-right">
-                  {formatNumber(position.leverage, 2)}x
-                </p>
+          <div className="flex flex-col bg-secondary border border-gray-300 rounded-lg w-full">
+            <div className="flex flex-row  justify-between items-center p-4 border-b border-gray-300">
+              <div className="flex flex-row gap-3 items-center">
+                <Image
+                  src={position.token.image}
+                  width={30}
+                  height={30}
+                  alt={`${position.token.symbol} logo`}
+                />
+                <div>
+                  <p className="text-xs opacity-50 font-mono">
+                    {position.token.symbol}
+                  </p>
+                  <h3 className="text-sm capitalize font-mono">
+                    {position.token.name}
+                  </h3>
+                </div>
+              </div>
+              <div>
                 <p
                   className={twMerge(
                     'ml-1 capitalize',
@@ -104,77 +134,68 @@ export default function PositionsBlocks({
                   {position.side}
                 </p>
               </div>
-            </li>
+            </div>
 
-            <li className={columnStyle}>
-              <p className="opacity-50">Size</p>
-              <p className="font-mono text-right">
-                {formatPriceInfo(position.sizeUsd)}
-              </p>
-            </li>
-            <li className={columnStyle}>
-              <p className="opacity-50">Collateral</p>
-              <p className="font-mono text-right">
-                {formatPriceInfo(position.collateralUsd)}
-              </p>
-            </li>
-            <li className={columnStyle}>
-              <p className="opacity-50">PnL</p>
-              <p className="font-mono text-right">
-                {position.pnl ? (
-                  <span
-                    className={`text-${position.pnl > 0 ? 'green' : 'red'}-400`}
-                  >
-                    {formatPriceInfo(position.pnl)}
-                  </span>
-                ) : (
-                  '-'
-                )}
-              </p>
-            </li>
+            <ul className="flex flex-col gap-2 p-4">
+              <li className={columnStyle}>
+                <p className="opacity-50">Leverage</p>
+                <div className="flex-row gap-3">
+                  <p className="font-mono text-right">
+                    {formatNumber(position.leverage, 2)}x
+                  </p>
+                </div>
+              </li>
 
-            <li className={columnStyle}>
-              <p className="opacity-50">Entry Price</p>
-              <p className="font-mono text-right">
-                {formatPriceInfo(position.price)}
-              </p>
-            </li>
+              <li className={columnStyle}>
+                <p className="opacity-50">Size</p>
+                <p className="font-mono text-right">
+                  {formatPriceInfo(position.sizeUsd)}
+                </p>
+              </li>
+              <li className={columnStyle}>
+                <p className="opacity-50">Collateral</p>
+                <p className="font-mono text-right">
+                  {formatPriceInfo(position.collateralUsd)}
+                </p>
+              </li>
+              <li className={columnStyle}>
+                <p className="opacity-50">PnL</p>
+                <p className="font-mono text-right">
+                  {position.pnl ? (
+                    <span
+                      className={`text-${
+                        position.pnl > 0 ? 'green' : 'red'
+                      }-400`}
+                    >
+                      {formatPriceInfo(position.pnl)}
+                    </span>
+                  ) : (
+                    '-'
+                  )}
+                </p>
+              </li>
 
-            <li className={columnStyle}>
-              <p className="opacity-50">Mark Price</p>
-              <p className="font-mono text-right">
-                {formatPriceInfo(tokenPrices[position.token.symbol])}
-              </p>
-            </li>
+              <li className={columnStyle}>
+                <p className="opacity-50">Entry Price</p>
+                <p className="font-mono text-right">
+                  {formatPriceInfo(position.price)}
+                </p>
+              </li>
 
-            <li className={columnStyle}>
-              <p className="opacity-50">Liquidation Price</p>
-              <p className="font-mono text-right">
-                {formatPriceInfo(position.liquidationPrice ?? null)}
-              </p>
-            </li>
-          </ul>
+              <li className={columnStyle}>
+                <p className="opacity-50">Mark Price</p>
+                <p className="font-mono text-right">
+                  {formatPriceInfo(tokenPrices[position.token.symbol])}
+                </p>
+              </li>
 
-          <div className="flex gap-3 p-4">
-            <Button
-              className="w-full"
-              size="sm"
-              variant="secondary"
-              title="Close Collateral"
-              onClick={() => {
-                triggerClosePosition(position);
-              }}
-            />
-
-            <Button
-              className="w-full"
-              size="sm"
-              variant="secondary"
-              title="Edit Collateral"
-              onClick={() => {
-                triggerEditPositionCollateral(position);
-              }}
-            />
+              <li className={columnStyle}>
+                <p className="opacity-50">Liquidation Price</p>
+                <p className="font-mono text-right">
+                  {formatPriceInfo(position.liquidationPrice ?? null)}
+                </p>
+              </li>
+            </ul>
           </div>
         </div>
       ))}
