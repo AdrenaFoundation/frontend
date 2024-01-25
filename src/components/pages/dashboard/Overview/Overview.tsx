@@ -50,7 +50,7 @@ export default function Overview({
         </div>
       </div>
 
-      <div className="w-full md:border md:border-l-gray-300 p-3 px-5">
+      <div className="w-full md:border-l md:border-l-gray-300 p-3 px-5">
         <h2 className="text-lg font-normal border-b border-b-gray-300 pb-3 mb-3">
           Short Overview
         </h2>
@@ -77,7 +77,7 @@ export default function Overview({
         </div>
       </div>
 
-      <div className="w-full md:border md:border-l-gray-300 p-3 px-5">
+      <div className="w-full md:border-l md:border-l-gray-300 p-3 px-5">
         <h2 className="text-lg font-normal border-b border-b-gray-300 pb-3 mb-3">
           Total Stats
         </h2>
