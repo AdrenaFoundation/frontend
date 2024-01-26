@@ -58,7 +58,7 @@ export default function TradingInput({
               placeholder="0.00"
               className={twMerge(
                 'font-mono font-medium border-0 text-lg outline-none w-full',
-                disabled ? 'bg-gray-200' : 'bg-dark',
+                disabled ? 'bg-gray-200' : 'bg-[#030609]',
               )}
               onChange={onChange}
             />
