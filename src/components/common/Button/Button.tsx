@@ -1,7 +1,7 @@
 import { Url } from 'next/dist/shared/lib/router/router';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
@@ -21,7 +21,7 @@ function Button({
   // isLoading,
   ...rest
 }: {
-  title?: string;
+  title?: ReactNode;
   rightIcon?: ImageRef;
   leftIcon?: ImageRef;
   alt?: string;

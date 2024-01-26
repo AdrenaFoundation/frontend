@@ -6,13 +6,18 @@ import Modal from '../common/Modal/Modal';
 function TermsAndConditionsModal({
   className,
   isOpen,
+  // User don't agree or decline, just read it
+  readonly = false,
   agreeTrigger,
   declineTrigger,
+  closeTrigger,
 }: {
   className?: string;
   isOpen: boolean;
-  agreeTrigger: () => void;
-  declineTrigger: () => void;
+  readonly: boolean;
+  agreeTrigger?: () => void;
+  declineTrigger?: () => void;
+  closeTrigger?: () => void;
 }) {
   if (!isOpen) {
     return null;
@@ -22,7 +27,7 @@ function TermsAndConditionsModal({
     <Modal
       title="Terms and conditions"
       close={() => {
-        // nothing
+        closeTrigger?.();
       }}
       className={twMerge(
         className,
@@ -30,7 +35,7 @@ function TermsAndConditionsModal({
         'flex-col',
         'items-center',
         'p-4',
-        'max-w-[30em]',
+        'max-w-[50em]',
         'max-h-[40em]',
       )}
     >
@@ -56,26 +61,40 @@ function TermsAndConditionsModal({
       </div>
 
       <div className="flex w-full justify-around pt-6 mt-6 border-t border-grey">
-        {/* TODO: redirect to landing website */}
+        {readonly ? (
+          <>
+            <Button
+              title="Close"
+              size="lg"
+              variant="primary"
+              className="w-full"
+              onClick={() => {
+                closeTrigger?.();
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <Button
+              title="[D]ecline"
+              size="lg"
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                declineTrigger?.();
+              }}
+            />
 
-        <Button
-          title="[D]ecline"
-          size="lg"
-          variant="outline"
-          className="w-full"
-          onClick={() => {
-            declineTrigger();
-          }}
-        />
-
-        <Button
-          title="[A]ggree"
-          size="lg"
-          className="w-full"
-          onClick={() => {
-            agreeTrigger();
-          }}
-        />
+            <Button
+              title="[A]ggree"
+              size="lg"
+              className="w-full"
+              onClick={() => {
+                agreeTrigger?.();
+              }}
+            />
+          </>
+        )}
       </div>
     </Modal>
   );
