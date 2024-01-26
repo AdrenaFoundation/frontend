@@ -107,7 +107,7 @@ export default function PositionsArray({
           <tr
             key={position.pubkey.toBase58()}
             className={twMerge(
-              i !== positions.length - 1 && 'border-b border-b-gray-300',
+              i !== positions.length - 1 && 'border-b border-b-gray-200',
             )}
           >
             <td

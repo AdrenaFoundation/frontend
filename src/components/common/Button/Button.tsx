@@ -36,11 +36,11 @@ function Button({
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
 
   const variants = {
-    primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-md',
-    secondary: 'bg-gray-300 opacity-50 hover:opacity-100 rounded-md',
-    danger: 'bg-red-500 hover:bg-red-700 font-medium rounded-md',
-    text: 'opacity-50 hover:opacity-100 rounded-md',
-    outline: ' border border-gray-200 hover:bg-gray-200 rounded-md',
+    primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-full',
+    secondary: 'bg-gray-400 opacity-50 hover:opacity-100 rounded-full',
+    danger: 'bg-red-500 hover:bg-red-700 font-medium rounded-full',
+    text: 'opacity-50 hover:opacity-100 rounded-full',
+    outline: ' border border-gray-200 hover:bg-gray-200 rounded-full',
   };
 
   const sizes = {

@@ -10,8 +10,8 @@ import { getAbbrevWalletAddress } from '@/utils';
 
 export default function OnchainInfo({}: PageProps) {
   const tableClasses =
-    'flex flex-col bg-black/70 backdrop-blur-md border border-gray-300 rounded-lg m-auto w-full max-w-[600px] mb-5 z-20';
-  const titleClasses = 'text-md font-normal border-b border-gray-300 p-2';
+    'flex flex-col bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl m-auto w-full max-w-[600px] mb-5 z-20 p-2';
+  const titleClasses = 'text-md font-normal border-b border-gray-200 p-2';
   const rowClasses = 'flex flex-row gap-1 w-full justify-between flex-wrap p-2';
   const subtitleClasses = 'w-[10em] shrink-0 flex text-sm opacity-50';
   const infoClasses = 'flex w-[calc(100% - 10em)] text-sm font-mono';

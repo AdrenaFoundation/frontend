@@ -26,11 +26,11 @@ export default function TradingInputs({
   return (
     <div
       className={twMerge(
-        'flex items-center justify-between sm:justify-start gap-3 h-14 bg-black/50 backdrop-blur-md border border-gray-300 border-b-transparent rounded-t-lg z-30',
+        'flex items-center justify-between sm:justify-start gap-3 h-14 bg-gray-300/85 backdrop-blur-md border border-gray-200 border-b-transparent rounded-t-2xl z-30',
         className,
       )}
     >
-      <div className="flex items-center sm:border-r sm:border-r-gray-300 h-full p-3">
+      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full p-3">
         <Select
           selected={`${selected.symbol} / USD`}
           options={tokenList

@@ -32,14 +32,11 @@ export default function Select<T extends string>({
               ) : null}
               <span className="text-lg font-medium">{selected}</span>
             </div>
+
             {options.length > 1 ? (
-              <Image
-                className="ml-2"
-                src={chevronDownIcon}
-                alt="chevron down"
-                width={12}
-                height={12}
-              />
+              <div className="flex bg-gray-200 rounded-full p-1 h-5 w-5 items-center justify-center ml-2">
+                <Image src={chevronDownIcon} alt="chevron down" />
+              </div>
             ) : null}
           </div>
         }

@@ -52,7 +52,7 @@ export const TradeComp = ({
         className,
       )}
     >
-      <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
+      <div className="w-full bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
         <TabSelect
           selected={selectedAction}
           tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
@@ -106,7 +106,7 @@ export const TradeComp = ({
       </div>
 
       {/* Position details */}
-      <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4 mt-4 sm:mt-0">
+      <div className="w-full bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 mt-4 sm:mt-0">
         <div className="pb-0">
           <span className="capitalize text-xs opacity-25">
             {selectedAction}

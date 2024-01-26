@@ -36,11 +36,11 @@ export default function TradingChart({ token }: { token: Token }) {
           allow_symbol_change: false,
           editablewatchlist: false,
           backgroundColor: '#151515',
-          toolbar_bg: '#080808',
+          toolbar_bg: '#101419',
           datafeed: datafeed,
           loading_screen: {
-            backgroundColor: '#080808',
-            foregroundColor: '#151515',
+            backgroundColor: '#101419',
+            foregroundColor: '#101419',
           },
           header_widget_dom_node: false,
           disabled_features: disabledFeatures,
@@ -51,7 +51,7 @@ export default function TradingChart({ token }: { token: Token }) {
 
           custom_css_url: '/tradingview.css',
           overrides: {
-            'paneProperties.background': '#080808',
+            'paneProperties.background': '#101419',
             'paneProperties.backgroundType': 'solid',
           },
           theme: 'dark',
@@ -97,7 +97,7 @@ export default function TradingChart({ token }: { token: Token }) {
   // }, [token, widget]);
 
   return (
-    <div className="flex flex-col w-full mb-5 border border-gray-300 rounded-lg rounded-t-none overflow-hidden bg-black/50 backdrop-blur-md">
+    <div className="flex flex-col w-full mb-5 border border-gray-200 rounded-2xl rounded-t-none overflow-hidden bg-gray-200/85 backdrop-blur-md">
       <div id="chart-area" className="h-full rounded-b-lg" />
       <div className="tradingview-widget-copyright"></div>
     </div>

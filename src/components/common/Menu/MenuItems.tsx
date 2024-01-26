@@ -10,7 +10,10 @@ export default function MenuItems({
 }) {
   return (
     <ul
-      className={twMerge('w-full border border-gray-300 rounded-md', className)}
+      className={twMerge(
+        'w-full border border-dark rounded-xl overflow-hidden',
+        className,
+      )}
     >
       {children}
     </ul>

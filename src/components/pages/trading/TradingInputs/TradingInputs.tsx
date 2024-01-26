@@ -282,7 +282,7 @@ export default function TradingInputs({
       {/* Switch AB */}
       <div className="w-full h-4 overflow-visible flex justify-center items-center z-[2]">
         <div
-          className="bg-gray-300 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
+          className="bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
           onClick={() => switchAB()}
         >
           <Image
@@ -347,7 +347,7 @@ export default function TradingInputs({
               <div>
                 <span className="text-txtfade">x </span>
                 <InputNumber
-                  className="w-10 text-txtfade text-center rounded-md"
+                  className="w-10  text-center rounded-md bg-dark"
                   value={isLeverageInputEmpty ? undefined : leverage}
                   max={50}
                   onChange={function (value: number | null): void {
@@ -367,7 +367,7 @@ export default function TradingInputs({
             <div className="w-full flex flex-col justify-center items-center">
               <LeverageSlider
                 value={leverage}
-                className="w-[90%] m-auto"
+                className="w-full m-auto pr-3"
                 onChange={(v: number) => setLeverage(v)}
               />
             </div>

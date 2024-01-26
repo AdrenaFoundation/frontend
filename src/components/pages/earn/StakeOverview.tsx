@@ -27,8 +27,8 @@ export default function StakeOverview({
   setActiveRedeemToken: (tokenSymbol: 'ADX' | 'ALP') => void;
 }) {
   return (
-    <div className="bg-black/70 backdrop-blur-md border border-gray-300 lg:w-1/2 rounded-lg">
-      <div className="flex flex-row gap-2 items-center p-4 border-b border-b-gray-300">
+    <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 lg:w-1/2 rounded-2xl">
+      <div className="flex flex-row gap-2 items-center p-4 border-b border-b-gray-200">
         <div
           className={`p-1 bg-${
             tokenDetails.token.symbol === 'ADX' ? 'red' : 'blue'
@@ -63,8 +63,8 @@ export default function StakeOverview({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-0 justify-between bg-[#0d0d0d] border border-gray-300 rounded-lg mt-5 p-4">
-          <div className="sm:border-r sm:border-r-gray-300">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-0 justify-between bg-dark border border-gray-200 rounded-2xl mt-5 p-4">
+          <div className="sm:border-r sm:border-r-gray-200">
             <p className="text-sm opacity-50">My liquid Stake</p>
             <p className="text-lg font-medium font-mono">
               {tokenDetails.totalLiquidStaked} {tokenDetails.token.symbol}
@@ -85,7 +85,7 @@ export default function StakeOverview({
             </p>
           </div>
 
-          <div className="sm:text-right sm:border-l sm:border-l-gray-300">
+          <div className="sm:text-right sm:border-l sm:border-l-gray-200">
             <p className="text-sm opacity-50">
               Total Redeemable {tokenDetails.token.symbol}
             </p>
@@ -111,7 +111,7 @@ export default function StakeOverview({
 
           <Button
             className="w-full"
-            variant="secondary"
+            variant="outline"
             size="lg"
             title={`Redeem ${tokenDetails.token.symbol}`}
             onClick={() =>

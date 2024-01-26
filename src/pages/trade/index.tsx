@@ -404,7 +404,7 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-3 h-full z-30">
+          <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 h-full z-30">
             <Positions
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
@@ -431,7 +431,7 @@ export default function Trade({
             className="hidden sm:flex"
           />
 
-          <div className="fixed sm:hidden bottom-0 w-full bg-black/50 backdrop-blur-sm p-5 z-30">
+          <div className="fixed sm:hidden bottom-0 w-full bg-gray-300 backdrop-blur-sm p-5 z-30">
             <ul className="flex flex-row gap-3 justify-between">
               <li>
                 <Button

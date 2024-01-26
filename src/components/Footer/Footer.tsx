@@ -9,7 +9,7 @@ export default function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={twMerge(
-        'mt-auto flex-col w-full pt-4 pb-4 border-t border-grey justify-center items-center bg-black/50 backdrop-blur-md',
+        'mt-auto flex-col w-full pt-4 pb-4 border-t border-grey justify-center items-center bg-gray-300/85 backdrop-blur-md',
         className,
       )}
     >

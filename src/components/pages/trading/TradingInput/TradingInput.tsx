@@ -39,8 +39,8 @@ export default function TradingInput({
       {/* Input A */}
       <div
         className={twMerge(
-          'h-24 p-4  border border-gray-300 rounded-lg flex items-center w-full justify-between flex-col',
-          disabled ? 'bg-gray-200' : 'bg-dark',
+          'h-24 p-4  border border-gray-200 rounded-2xl flex items-center w-full justify-between flex-col',
+          disabled ? 'bg-gray-200' : 'bg-[#030609]',
         )}
       >
         <div className="shrink-0 flex items-center w-full justify-between">
@@ -67,7 +67,8 @@ export default function TradingInput({
           {maxButton ? (
             <Button
               title="MAX"
-              className="bg-gray-300 opacity-50 hover:opacity-100 border-grey mr-2 text-sm h-6"
+              variant="secondary"
+              className="mr-2 text-sm h-6"
               onClick={() => onMaxButtonClick?.()}
             />
           ) : null}

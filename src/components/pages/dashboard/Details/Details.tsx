@@ -24,10 +24,10 @@ export default function Details({
   chart: ChartData<'doughnut'>;
 }) {
   return (
-    <div className="border sm:w-full border-gray-300 bg-black/75 backdrop-blur-md rounded-lg flex flex-col">
+    <div className="border sm:w-full border-gray-200 bg-gray-300/85 backdrop-blur-md rounded-2xl flex flex-col">
       <div className="flex flex-col">
         {/* infos */}
-        <div className="border-b border-b-gray-300 flex items-center p-4">
+        <div className="border-b border-b-gray-200 flex items-center p-4">
           <div
             className={`p-1 mr-2 bg-${
               title === 'ADX' ? 'red' : 'blue'
@@ -41,7 +41,7 @@ export default function Details({
         </div>
 
         <div className="flex flex-col sm:flex-row items-center">
-          <div className="flex flex-col gap-5 sm:border-r sm:border-r-gray-300 w-full h-full p-4 ">
+          <div className="flex flex-col gap-5 sm:border-r sm:border-r-gray-200 w-full h-full p-4 ">
             {details &&
               details.map((detail) => (
                 <div

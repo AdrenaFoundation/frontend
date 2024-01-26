@@ -12,7 +12,7 @@ import { twMerge } from 'tailwind-merge';
 
 // ADRENA Style
 const colorA = 'var(--color-blue-500)';
-const colorB = 'var(--color-gray-300)';
+const colorB = 'var(--color-gray-200)';
 // const colorC = 'var(--color-blue-300)';
 
 export default function LeverageSlider({

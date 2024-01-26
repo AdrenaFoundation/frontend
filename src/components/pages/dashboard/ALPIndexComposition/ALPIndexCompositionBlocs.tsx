@@ -29,9 +29,9 @@ export default function ALPIndexCompositionBlocs({
       {alpIndexComposition.map((composition) => (
         <div
           key={composition.token.symbol}
-          className="flex flex-col w-full border-gray-300 bg-black/50 backdrop-blur-md rounded-lg border justify-evenly p-4"
+          className="flex flex-col w-full border-gray-200 bg-gray-300/85 backdrop-blur-md rounded-lg border justify-evenly p-4"
         >
-          <div className="flex items-center border-b border-grey pb-2">
+          <div className="flex items-center border-b border-grey-200 pb-2">
             {
               <Image
                 src={composition.token.image}

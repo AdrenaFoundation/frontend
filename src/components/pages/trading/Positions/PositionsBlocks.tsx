@@ -104,8 +104,8 @@ export default function PositionsBlocks({
               </MenuItems>
             </Menu>
           </div>
-          <div className="flex flex-col bg-secondary border border-gray-300 rounded-lg w-full">
-            <div className="flex flex-row  justify-between items-center p-4 border-b border-gray-300">
+          <div className="flex flex-col bg-secondary border border-gray-200 rounded-lg w-full">
+            <div className="flex flex-row  justify-between items-center p-4 border-b border-gray-200">
               <div className="flex flex-row gap-3 items-center">
                 <Image
                   src={position.token.image}

@@ -43,7 +43,7 @@ export default function StakeToken({
   return (
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">
-        <div>
+        <div className="mt-5">
           <h3> Stake {tokenSymbol} </h3>
           <p className="opacity-75 mt-1">
             Adrena&apos;s native utility and governance token
@@ -60,11 +60,11 @@ export default function StakeToken({
           </div>
 
           <div className="relative flex flex-row w-full">
-            <div className="flex items-center bg-[#242424] border border-gray-300 rounded-l-lg px-3  border-r-none">
+            <div className="flex items-center bg-gray-200 border border-gray-400 rounded-l-xl px-3  border-r-none">
               <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
             </div>
             <input
-              className="w-full bg-dark border border-gray-300 rounded-lg rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-dark border border-gray-400 rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value
@@ -77,7 +77,7 @@ export default function StakeToken({
             <Button
               className="absolute right-2 bottom-[20%]"
               title="MAX"
-              variant="text"
+              variant="secondary"
               onClick={() => {
                 if (!balance) {
                   return;
