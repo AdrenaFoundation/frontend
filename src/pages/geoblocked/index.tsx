@@ -20,13 +20,13 @@ export default function GeoBlocked({ country }: GeoBlockingData) {
       <div className="w-full h-full flex flex-col items-center z-20">
         <Image
           src={logo}
-          className="mt-4 mb-4 border-2 border-white self-start ml-4 p-2"
+          className="mt-4 mb-4 border-2 border-white sm:self-start sm:ml-4 p-2"
           alt="logo"
           width={120}
           height={25}
         />
 
-        <div className="font-specialmonster text-6xl mt-8 flex text-wrap max-w-3xl text-center">
+        <div className="font-specialmonster text-4xl sm:text-6xl mt-8 flex text-wrap max-w-3xl text-center pl-4 pr-4">
           Oh no! Looks like you are in a no-monster zone {':('}
         </div>
 
@@ -35,10 +35,10 @@ export default function GeoBlocked({ country }: GeoBlockingData) {
           width={300}
           height={300}
           alt="monster no go zone image"
-          className="mt-12 bg-black rounded-full"
+          className="mt-4 sm:mt-12 bg-black rounded-full max-w-[45%]"
         />
 
-        <div className="flex flex-col mt-12 gap-8">
+        <div className="flex flex-col mt-4 sm:mt-12 gap-8">
           <Button
             title="See Terms and conditions"
             variant="secondary"
@@ -56,7 +56,7 @@ export default function GeoBlocked({ country }: GeoBlockingData) {
           />
         </div>
 
-        <div className="absolute bottom-4 md:right-4 text-xs italic m-w-[80%] text-center">
+        <div className="absolute bottom-4 sm:right-4 text-xs italic m-w-[80%] text-center">
           * You are connecting from a country that is not allowed to use Adrena
           (Country tag: {`"`}
           {country}
