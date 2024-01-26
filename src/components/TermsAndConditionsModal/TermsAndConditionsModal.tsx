@@ -49,8 +49,9 @@ function TermsAndConditionsModal({
           that formal terms will follow.
         </span>
         <span className="mt-4">
-          Adrena is currently on early access on Devnet and appreciate your
-          leniency.
+          Adrena is in early access on Devnet, and we are thrilled to have you
+          on board! Your feedback is invaluable to us, so please share your
+          thoughts.
         </span>
         <span className="mt-4">
           Thank you for your patience and support. Lets participate on the
