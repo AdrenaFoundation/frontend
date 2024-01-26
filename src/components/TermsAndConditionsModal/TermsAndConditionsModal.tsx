@@ -35,29 +35,27 @@ function TermsAndConditionsModal({
         'flex-col',
         'items-center',
         'p-4',
-        'max-w-[50em]',
+        'max-w-[40em]',
         'max-h-[40em]',
       )}
     >
-      <div className="h-full max-h-full overflow-auto">
-        Definitio: In his Terminis et Conditionibus, <b>Website</b> refert ad
-        nomen tuum situs web. <b>User</b> refert ad individuum quod utitur hoc
-        Website, sive consummator, sive negotiator. Usus Situs: Situs est liber
-        ad usum omnium Usuariorum. Usuarii utuntur hoc Website ad suum
-        periculum. Intellectus Dominium: Omnes notae commercii, logo, copyright,
-        servicemarks, et aliud intellectus dominium quod apparet in Website sunt
-        proprietates situs. Limitatio Responsabilitatis: Website non est
-        responsabilis pro quolibet damno, directo vel indirecto, quod sequitur
-        ex usu Website. Link ad Alios Situs: Hoc Website potest includere links
-        ad alios websites qui non sunt in nostro dominio. Non sumus
-        responsabiles pro contento aut politico privato illorum websites.
-        Mutationes: Website potest mutare illos Terminus et Conditiones sine
-        notitia. Usuarius debet legere illos Terminus et Conditiones regulariter
-        ad manet in scientia de mutationes. Lege Regente: Termini et Conditiones
-        reguntur et interpretantur secundum lege nomen tuum civitatis/patriae.
-        Contactus: Si habes ullos quaestiones vel suggestiones circa nostros
-        Terminus et Conditiones, te rogamus nos contacta via nomen tuum
-        email@dominum.com
+      <div className="h-full max-h-full overflow-auto flex flex-col">
+        <span>
+          Welcome to Adrena! Our full Terms and Conditions are being carefully
+          drafted.
+        </span>
+        <span className="mt-4">
+          By using our service, you agree to engage in good faith, understanding
+          that formal terms will follow.
+        </span>
+        <span className="mt-4">
+          Adrena is currently on early access on Devnet and appreciate your
+          leniency.
+        </span>
+        <span className="mt-4">
+          Thank you for your patience and support. Lets participate on the
+          future of DeFi together!
+        </span>
       </div>
 
       <div className="flex w-full justify-around pt-6 mt-6 border-t border-grey">
