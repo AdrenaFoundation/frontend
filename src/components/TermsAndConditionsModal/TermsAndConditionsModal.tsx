@@ -40,20 +40,34 @@ function TermsAndConditionsModal({
       )}
     >
       <div className="h-full max-h-full overflow-auto flex flex-col">
-        <span>
+        <span className="text-sm">
           Welcome to Adrena! Our full Terms and Conditions are being carefully
           drafted.
         </span>
-        <span className="mt-4">
+        <span className="mt-4 text-sm">
           By using our service, you agree to engage in good faith, understanding
           that formal terms will follow.
         </span>
-        <span className="mt-4">
+        <span className="mt-2 text-sm">
+          In the meantime, please note: Due to regulatory concerns, Adrena is
+          not available in certain regions, including:
+        </span>
+        <ul className="mt-2 text-sm">
+          <li>- The United States</li>
+          <li>- China</li>
+          <li>- India</li>
+          <li>- Russia</li>
+          <li>- Turkey</li>
+          <li>- Bangladesh</li>
+          <li>- Vietnam</li>
+        </ul>
+        <span className="mt-2 text-sm">We appreciate your understanding.</span>
+        <span className="mt-4 text-sm">
           Adrena is in early access on Devnet, and we are thrilled to have you
           on board! Your feedback is invaluable to us, so please share your
           thoughts.
         </span>
-        <span className="mt-4">
+        <span className="mt-4 text-sm">
           Thank you for your patience and support. Lets participate on the
           future of DeFi together!
         </span>
