@@ -122,8 +122,7 @@ body,
   min-height: 100vh;
   background-color: var(--color-dark);
   font-family: 'Inter', sans-serif;
-  // overscroll-behavior-y: none;
-  // overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 // Hide arrows on input number
@@ -235,10 +234,4 @@ input[type='radio']:checked {
 .walletconnect-qrcode__notification {
   background-color: var(--color-gray-200) !important;
   color: #d4d4d4 !important;
-}
-
-.trade__comp__modal {
-  @media (max-height: 800px) {
-    height: 90vh;
-  }
 }
