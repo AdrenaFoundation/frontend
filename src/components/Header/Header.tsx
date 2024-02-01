@@ -103,7 +103,7 @@ export default function Header({
             </MenuItems>
           </Menu>
 
-          {PageLink('/referral', 'Referral')}
+          {/* {PageLink('/referral', 'Referral')} */}
 
           {PageLink('/onchain_info', 'Onchain Info')}
 
