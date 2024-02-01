@@ -479,7 +479,7 @@ export default function Trade({
                     activePositionModal.slice(1)
                   } Position`}
                   close={() => setActivePositionModal(null)}
-                  className="flex flex-col p-2 overflow-auto trade__comp__modal"
+                  className="flex flex-col p-2 overflow-auto h-[75vh]"
                 >
                   <TradeComp
                     selectedAction={selectedAction}

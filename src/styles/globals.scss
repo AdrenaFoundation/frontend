@@ -122,8 +122,6 @@ body,
   min-height: 100vh;
   background-color: var(--color-dark);
   font-family: 'Inter', sans-serif;
-  overscroll-behavior-y: none;
-  overflow-x: hidden;
 }
 
 // Hide arrows on input number
@@ -237,8 +235,6 @@ input[type='radio']:checked {
   color: #d4d4d4 !important;
 }
 
-.trade__comp__modal {
-  @media (max-height: 800px) {
-    height: 90vh;
-  }
+.rc-slider-handle:active {
+  box-shadow: 0 0 5px 10px rgba(42, 48, 238, 0.2) !important;
 }
