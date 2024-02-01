@@ -21,16 +21,16 @@ export default function TradingInputs({
   const stats = useDailyStats();
 
   const infoStyle =
-    'flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full';
+    'hidden sm:flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full';
 
   return (
     <div
       className={twMerge(
-        'flex items-center gap-3 h-14 bg-black/50 backdrop-blur-md border border-gray-300 border-b-transparent rounded-t-lg z-30',
+        'flex items-center justify-between sm:justify-start gap-3 h-14 bg-gray-300/85 backdrop-blur-md border border-gray-200 border-b-transparent rounded-t-2xl z-30',
         className,
       )}
     >
-      <div className="flex items-center sm:border-r sm:border-r-gray-300 h-full p-3">
+      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full p-3">
         <Select
           selected={`${selected.symbol} / USD`}
           options={tokenList
@@ -56,8 +56,8 @@ export default function TradingInputs({
         />
       </div>
 
-      <div className="hidden sm:flex flex-row gap-3 p-3 items-center">
-        <div className="font-mono mr-3">
+      <div className="flex flex-row gap-3 p-3 items-center">
+        <div className="font-mono mr-3 text-xl">
           {tokenPrices && tokenPrices[selected.symbol]
             ? // Force linting, we check it just bellow
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

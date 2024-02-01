@@ -35,7 +35,7 @@ export default function Menu({
             exit={{ opacity: 0, scale: 0.9, y: -10 }}
             transition={{ duration: 0.1 }}
             className={twMerge(
-              'absolute flex flex-col border border-gray-200 bg-dark rounded-lg shadow-lg mt-2 overflow-hidden z-10 w-full',
+              'absolute flex flex-col border border-gray-200 bg-dark rounded-xl shadow-lg mt-2 overflow-hidden z-10 w-full',
               className,
             )}
           >

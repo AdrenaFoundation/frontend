@@ -11,7 +11,5 @@ export default function Home() {
     router.push('/dashboard');
   }, [router]);
 
-  return (
-    <main className={twMerge('w-full', 'h-full', 'flex', 'relative')}></main>
-  );
+  return <main className={twMerge('w-full', 'h-full', 'flex', '')}></main>;
 }

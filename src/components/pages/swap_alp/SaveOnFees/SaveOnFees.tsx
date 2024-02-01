@@ -116,7 +116,7 @@ export default function SaveOnFees({
   ]);
 
   return (
-    <div className="relative bg-black/70 backdrop-blur-md border border-gray-300 p-4 rounded-lg grow">
+    <div className="relative bg-gray-300/85 backdrop-blur-md border border-gray-200 p-4 rounded-2xl grow">
       <h2 className="text-lg font-normal">Save on fees</h2>
       <p className="text-sm opacity-75 max-w-[700px]">
         {selectedAction === 'buy'

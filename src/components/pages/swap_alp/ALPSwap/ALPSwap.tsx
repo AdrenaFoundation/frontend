@@ -177,7 +177,7 @@ export default function ALPSwap({
   })();
 
   return (
-    <div className="bg-black/75 backdrop-blur-md border border-gray-300 lg:w-[450px] p-4 rounded-lg h-fit">
+    <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 lg:w-[450px] p-4 rounded-2xl h-fit">
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'buy' }, { title: 'sell' }]}

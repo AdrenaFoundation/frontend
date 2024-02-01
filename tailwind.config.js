@@ -7,13 +7,13 @@ module.exports = {
         // background colors
         // ADRENA Style
         main: '#171717',
-        secondary: '#1E1D1D',
+        secondary: '#0c0f13',
         third: '#343232',
         highlight: '#36538f', // RED: #C43152
 
         // text
-        txtfade: '#8C8D97',
-        txtregular: '#E5E6E8',
+        txtfade: '#858789',
+        txtregular: '#ffffff',
 
         light: 'var(--color-light)',
         dark: 'var(--color-dark)',
@@ -21,6 +21,7 @@ module.exports = {
         gray: {
           200: 'var(--color-gray-200)',
           300: 'var(--color-gray-300)',
+          '300/85': 'var(--color-gray-300-85)',
           400: 'var(--color-gray-400)',
           500: 'var(--color-gray-500)',
         },

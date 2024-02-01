@@ -20,11 +20,11 @@ export default function ALPIndexCompositionArray({
   return (
     <div
       className={twMerge(
-        'border-gray-300 bg-black/75 backdrop-blur-md rounded-lg border pb-2',
+        'border-gray-200 bg-gray-300/85 backdrop-blur-md rounded-2xl border pb-2',
         className,
       )}
     >
-      <div className="flex h-12 w-full items-center pl-4 font-medium border-b border-b-gray-300">
+      <div className="flex h-12 w-full items-center pl-4 font-medium border-b border-b-gray-200">
         ALP Index Composition
       </div>
 

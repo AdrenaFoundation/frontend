@@ -5,12 +5,13 @@
 
 :root {
   --color-light: #f5f5f5;
-  --color-dark: #080808;
+  --color-dark: #080a0d;
 
-  --color-gray-200: #151515;
-  --color-gray-300: #2e2e2e;
-  --color-gray-400: #6f6f6f;
-  --color-gray-500: #9a9a9a;
+  --color-gray-200: #192128;
+  --color-gray-300: #101419;
+  --color-gray-300-85: #101419d9;
+  --color-gray-400: #222a31;
+  --color-gray-500: #3d4b5b;
 
   --color-blue-200: #101241;
   --color-blue-300: #191c7b;
@@ -122,6 +123,7 @@ body,
   background-color: var(--color-dark);
   font-family: 'Inter', sans-serif;
   overscroll-behavior-y: none;
+  overflow-x: hidden;
 }
 
 // Hide arrows on input number
@@ -196,6 +198,18 @@ input[type='radio']:checked {
   box-shadow: 0 0 0 3px var(--color-dark) inset;
 }
 
+.fade-in {
+  animation: fadeIn 0.3s var(--bezier-smooth);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 // Wallet connect customization
 
 .walletconnect-modal__base {
@@ -221,4 +235,10 @@ input[type='radio']:checked {
 .walletconnect-qrcode__notification {
   background-color: var(--color-gray-200) !important;
   color: #d4d4d4 !important;
+}
+
+.trade__comp__modal {
+  @media (max-height: 800px) {
+    height: 90vh;
+  }
 }

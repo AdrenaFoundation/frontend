@@ -8,15 +8,16 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
+import githubLogo from '../../../public/images/github.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
 import logo from '../../../public/images/logo.svg';
+import twitterLogo from '../../../public/images/twitter.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeperator from '../common/Menu/MenuSeperator';
-import Footer from '../Footer/Footer';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
@@ -48,7 +49,7 @@ export default function BurgerMenu({
 
   return (
     <div className="z-30">
-      <div className="fixed p-4 z-50 flex flex-row justify-between items-center w-full bg-black/50 backdrop-blur-md border-b border-gray-200">
+      <div className="fixed p-4 z-50 flex flex-row justify-between items-center w-full bg-gray-300/85 backdrop-blur-md border-b border-gray-200">
         <div
           className="flex items-center justify-center p-1 border w-9 h-8 border-gray-200 rounded-md hover:bg-gray-200 transition duration-300 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
@@ -77,7 +78,7 @@ export default function BurgerMenu({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed flex flex-col justify-between w-full h-full bg-black/50 backdrop-blur-md z-40 border-b border-gray-200 p-5 pt-[75px]"
+            className="fixed flex flex-col justify-between w-full h-full bg-gray-300/85 backdrop-blur-md z-40 border-b border-gray-200 p-5 pt-[75px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -156,7 +157,38 @@ export default function BurgerMenu({
                 width={150}
                 height={150}
               />
-              <Footer />
+
+              <div className="flex w-full justify-center gap-5 items-center">
+                <Link
+                  href="https://github.com/orgs/AdrenaDEX/repositories"
+                  target="_blank"
+                >
+                  <Image
+                    className="hover:opacity-90 cursor-pointer"
+                    src={githubLogo}
+                    alt="github icon"
+                    width="20"
+                    height="20"
+                  />
+                </Link>
+
+                <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
+                  <Image
+                    className="hover:opacity-90 cursor-pointer"
+                    src={twitterLogo}
+                    alt="twitter icon"
+                    width="20"
+                    height="20"
+                  />
+                </Link>
+
+                {/* <Link
+          href="/terms_and_conditions"
+          className="absolute right-6 text-txtfade hover:text-white font-mono"
+        >
+          Terms and conditions
+        </Link> */}
+              </div>
             </div>
           </motion.div>
         )}

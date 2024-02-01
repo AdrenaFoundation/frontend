@@ -1,12 +1,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { twMerge } from 'tailwind-merge';
 
 import githubLogo from '../../../public/images/github.svg';
 import twitterLogo from '../../../public/images/twitter.svg';
 
-export default function Footer() {
+export default function Footer({ className }: { className?: string }) {
   return (
-    <footer className="mt-auto flex-col w-full pt-4 pb-4 border-t border-grey justify-center items-center bg-black/50 backdrop-blur-md z-20">
+    <footer
+      className={twMerge(
+        'mt-auto flex-col w-full pt-4 pb-4 border-t border-grey justify-center items-center bg-gray-300/85 backdrop-blur-md',
+        className,
+      )}
+    >
       <div className="flex w-full justify-center items-center">
         <Link
           href="https://github.com/orgs/AdrenaDEX/repositories"

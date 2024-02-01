@@ -69,7 +69,7 @@ function TermsAndConditionsModal({
         />
 
         <Button
-          title="[A]ggree"
+          title="[A]gree"
           size="lg"
           className="w-full"
           onClick={() => {

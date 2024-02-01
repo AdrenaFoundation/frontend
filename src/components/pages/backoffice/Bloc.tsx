@@ -13,7 +13,7 @@ export default function Bloc({
   return (
     <div
       className={twMerge(
-        'flex flex-col border border-gray-400 bg-black',
+        'flex flex-col border border-gray-400 bg-gray-300/85 backdrop-blur-md rounded-2xl p-2',
         className,
       )}
     >

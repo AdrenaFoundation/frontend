@@ -56,7 +56,7 @@ const Modal = ({
   return (
     <PortalContainer>
       <motion.div
-        className="fixed w-full h-full flex justify-center items-center z-[100]"
+        className="fixed w-full h-full flex justify-center items-center z-[100] overflow-y-auto"
         initial={{ opacity: 0, transform: 'translateY(-20px)' }}
         animate={{ opacity: 1, transform: 'translateY(0px)' }}
         exit={{ opacity: 0, transform: 'translateY(-20px)' }}
@@ -67,7 +67,7 @@ const Modal = ({
         />
 
         <div
-          className="min-w-20 min-h-10 z-[102] rounded-lg border border-gray-300 bg-gray-200 mx-4"
+          className="min-w-20 min-h-10 z-[102] rounded-2xl border border-gray-200 bg-gray-300 mx-4"
           role="dialog"
         >
           <div className="h-14 w-full flex flex-row items-center justify-between border-b border-grey pl-4 pr-4">

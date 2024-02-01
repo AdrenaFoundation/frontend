@@ -5,6 +5,7 @@ export default function TabSelect<T extends string | number>({
   selected,
   onClick,
   tabs,
+  wrapperClassName,
   className,
 }: {
   selected?: T;
@@ -14,6 +15,7 @@ export default function TabSelect<T extends string | number>({
   }[];
   onClick: (title: T, index: number) => void;
   className?: string;
+  wrapperClassName?: string;
 }) {
   const [activeElement, setActiveElement] = useState({
     width: 0,
@@ -21,7 +23,9 @@ export default function TabSelect<T extends string | number>({
     x: 0,
   });
 
-  const [activeTab, setActiveTab] = useState(selected !== null ? 0 : null);
+  const [activeTab, setActiveTab] = useState<null | number>(
+    selected !== undefined ? 0 : null,
+  );
 
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
 
@@ -37,9 +41,14 @@ export default function TabSelect<T extends string | number>({
   }, [activeTab]);
 
   return (
-    <div className="relative flex flex-row gap-3 justify-between w-full bg-dark border border-gray-200 rounded-xl p-1">
+    <div
+      className={twMerge(
+        'relative flex flex-row gap-3 justify-between w-full bg-dark border border-gray-200 rounded-full p-1 mb-3',
+        wrapperClassName,
+      )}
+    >
       <div
-        className="absolute h-full bg-gray-300 rounded-lg cursor-pointer"
+        className="absolute h-full bg-gray-200 rounded-full cursor-pointer"
         style={{
           width: activeElement.width,
           height: activeElement.height,
@@ -50,7 +59,7 @@ export default function TabSelect<T extends string | number>({
       {tabs.map(({ title }, index) => (
         <div
           className={twMerge(
-            'text-sm font-normal text-center p-1 w-full rounded-lg cursor-pointer capitalize z-10',
+            'text-sm font-normal text-center p-1 w-full rounded-full cursor-pointer capitalize z-10',
             className && className,
             activeTab !== null && index === activeTab
               ? 'opacity-100'

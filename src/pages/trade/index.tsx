@@ -1,19 +1,18 @@
 import { BN } from '@coral-xyz/anchor';
-import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
+import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
-import TabSelect from '@/components/common/TabSelect/TabSelect';
-import PositionDetails from '@/components/pages/trading/PositionDetails/PositionDetails';
+import Modal from '@/components/common/Modal/Modal';
 import Positions from '@/components/pages/trading/Positions/Positions';
-import SwapDetails from '@/components/pages/trading/SwapDetails/SwapDetails';
+import { TradeComp } from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
-import TradingInputs from '@/components/pages/trading/TradingInputs/TradingInputs';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDispatch, useSelector } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
 import {
@@ -23,7 +22,7 @@ import {
   uiToNative,
 } from '@/utils';
 
-type Action = 'long' | 'short' | 'swap';
+export type Action = 'long' | 'short' | 'swap';
 
 export default function Trade({
   positions,
@@ -34,14 +33,13 @@ export default function Trade({
 }: PageProps) {
   const dispatch = useDispatch();
 
+  const [activePositionModal, setActivePositionModal] = useState<Action | null>(
+    null,
+  );
   const [selectedAction, setSelectedAction] = useState<Action>('long');
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const router = useRouter();
-
-  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
-  const [isAnimationLoaded2, setIsAnimationLoaded2] = useState(false);
-  const [isAnimationLoaded3, setIsAnimationLoaded3] = useState(false);
 
   const [inputAValue, setInputAValue] = useState<number | null>(null);
   const [inputBValue, setInputBValue] = useState<number | null>(null);
@@ -176,6 +174,13 @@ export default function Trade({
     setOpenedPosition(relatedPosition ?? null);
   }, [positions, selectedAction, tokenB]);
 
+  useEffect(() => {
+    if (activePositionModal) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [activePositionModal]);
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
       dispatch(openCloseConnectionModalAction(true));
@@ -270,12 +275,13 @@ export default function Trade({
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
-
+      setActivePositionModal(null);
       return addSuccessTxNotification({
         title: 'Successfully Opened Position',
         txHash,
       });
     } catch (error) {
+      setActivePositionModal(null);
       return addFailedTxNotification({
         title: 'Error Opening Position',
         error,
@@ -327,56 +333,45 @@ export default function Trade({
     return 'Open Position';
   })();
 
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
   return (
     <>
-      <div className="absolute w-full h-[calc(100%+50px)] left-0 top-[-50px] overflow-hidden">
-        <DotLottiePlayer
-          src="https://lottie.host/86bfc6ae-7fe8-47ac-90c4-8b1463c76f1d/dUBWvrAw1g.lottie"
-          autoplay={!isSafari}
-          loop={!isSafari}
-          className={twMerge(
-            isAnimationLoaded ? 'opacity-100' : 'opacity-0',
-            'fixed lg:absolute top-0 sm:left-1/2 w-[1000px] transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded(true);
-            }
-          }}
+      <>
+        <RiveAnimation
+          src="./rive/blob-bg.riv"
+          layout={
+            new Layout({ fit: Fit.Contain, alignment: Alignment.TopCenter })
+          }
+          className={'fixed lg:absolute top-0 w-[500px] left-1/2 h-full'}
         />
 
-        <DotLottiePlayer
-          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          autoplay={!isSafari}
-          loop={!isSafari}
-          className={twMerge(
-            isAnimationLoaded2 ? 'opacity-100' : 'opacity-0',
-            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded2(true);
-            }
-          }}
+        <RiveAnimation
+          src="./rive/fred-bg.riv"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopRight,
+            })
+          }
+          className={
+            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-[100vw] h-full'
+          }
         />
 
-        <DotLottiePlayer
-          src="https://lottie.host/ff6a0308-76f8-46fc-b6e3-74b1d4251fcd/jr8ibLSo4g.lottie"
-          className={twMerge(
-            isAnimationLoaded3 ? 'opacity-100' : 'opacity-0',
-            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] transition-opacity duration-300',
-          )}
-          onEvent={(event: PlayerEvents) => {
-            if (event === PlayerEvents.Ready) {
-              setIsAnimationLoaded3(true);
-            }
-          }}
+        <RiveAnimation
+          src="./rive/fred-bg.riv"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.BottomLeft,
+            })
+          }
+          className={
+            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] h-full'
+          }
         />
-      </div>
+      </>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10">
-        <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
+        <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em] lg:min-h-[766px]">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -409,108 +404,106 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-5 h-full z-30">
+          <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 h-full z-30">
             <Positions
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
             />
           </div>
         </div>
+        <>
+          <TradeComp
+            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
+            tokenA={tokenA}
+            tokenB={tokenB}
+            setTokenA={setTokenA}
+            setTokenB={setTokenB}
+            inputAValue={inputAValue}
+            inputBValue={inputBValue}
+            setInputAValue={setInputAValue}
+            setInputBValue={setInputBValue}
+            tokenPrices={tokenPrices}
+            openedPosition={openedPosition}
+            setLeverage={setLeverage}
+            buttonTitle={buttonTitle}
+            handleExecuteButton={handleExecuteButton}
+            className="hidden sm:flex"
+          />
 
-        <div className="w-full lg:w-[30em] flex flex-col sm:flex-row lg:flex-col gap-3 mt-4 lg:ml-4 lg:mt-0">
-          <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
-            <TabSelect
-              selected={selectedAction}
-              tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
-              onClick={(title) => {
-                setSelectedAction(title);
-              }}
-            />
-
-            {window.adrena.client.tokens.length && tokenA && tokenB && (
-              <>
-                <TradingInputs
-                  className="mt-4"
-                  actionType={selectedAction}
-                  allowedTokenA={
-                    selectedAction === 'swap'
-                      ? window.adrena.client.tokens.filter(
-                          (t) => t.symbol !== tokenB.symbol,
-                        )
-                      : window.adrena.client.tokens
-                  }
-                  allowedTokenB={
-                    selectedAction === 'swap'
-                      ? window.adrena.client.tokens.filter(
-                          (t) => t.symbol !== tokenA.symbol,
-                        )
-                      : window.adrena.client.tokens.filter((t) => !t.isStable)
-                  }
-                  tokenA={tokenA}
-                  tokenB={tokenB}
-                  openedPosition={openedPosition}
-                  onChangeInputA={setInputAValue}
-                  onChangeInputB={setInputBValue}
-                  setTokenA={setTokenA}
-                  setTokenB={setTokenB}
-                  onChangeLeverage={setLeverage}
+          <div className="fixed sm:hidden bottom-0 w-full bg-gray-300 backdrop-blur-sm p-5 z-30">
+            <ul className="flex flex-row gap-3 justify-between">
+              <li>
+                <Button
+                  title="Long"
+                  variant="outline"
+                  size="lg"
+                  className="border-green-500 text-green-500 bg-green-700/10"
+                  onClick={() => {
+                    setActivePositionModal('long');
+                    setSelectedAction('long');
+                  }}
                 />
-              </>
-            )}
+              </li>
+              <li>
+                <Button
+                  title="Short"
+                  variant="outline"
+                  size="lg"
+                  className="border-red-500 text-red-500 bg-red-700/10"
+                  onClick={() => {
+                    setActivePositionModal('short');
+                    setSelectedAction('short');
+                  }}
+                />
+              </li>
+              <li>
+                <Button
+                  title="Swap"
+                  variant="outline"
+                  size="lg"
+                  className="border-purple-500 text-purple-500 bg-purple-700/10"
+                  onClick={() => {
+                    setActivePositionModal('swap');
+                    setSelectedAction('swap');
+                  }}
+                />
+              </li>
+            </ul>
 
-            {/* Button to execute action */}
-            <Button
-              size="lg"
-              title={buttonTitle}
-              className="w-full justify-center mt-5"
-              disabled={
-                buttonTitle.includes('Insufficient') ||
-                buttonTitle.includes('not handled yet')
-              }
-              onClick={handleExecuteButton}
-            />
-          </div>
-
-          {/* Position details */}
-          <div className="w-full bg-black/50 backdrop-blur-md border border-gray-300 rounded-lg p-4">
-            <div className=" pb-0">
-              <span className="capitalize text-xs opacity-25">
-                {selectedAction}
-                {selectedAction === 'short' || selectedAction === 'long' ? (
-                  <span> {tokenB?.symbol ?? '-'}</span>
-                ) : null}
-              </span>
-            </div>
-
-            {tokenA && tokenB ? (
-              <>
-                {selectedAction === 'short' || selectedAction === 'long' ? (
-                  <PositionDetails
+            <AnimatePresence>
+              {activePositionModal && (
+                <Modal
+                  title={`${
+                    activePositionModal.charAt(0).toUpperCase() +
+                    activePositionModal.slice(1)
+                  } Position`}
+                  close={() => setActivePositionModal(null)}
+                  className="flex flex-col p-2 overflow-auto trade__comp__modal"
+                >
+                  <TradeComp
+                    selectedAction={selectedAction}
+                    setSelectedAction={setSelectedAction}
+                    tokenA={tokenA}
                     tokenB={tokenB}
-                    entryPrice={
-                      tokenB &&
-                      inputBValue &&
-                      tokenPrices &&
-                      tokenPrices[tokenB.symbol]
-                        ? tokenPrices[tokenB.symbol]
-                        : null
-                    }
-                    exitPrice={
-                      tokenB &&
-                      inputBValue &&
-                      tokenPrices &&
-                      tokenPrices[tokenB.symbol]
-                        ? tokenPrices[tokenB.symbol]
-                        : null
-                    }
+                    setTokenA={setTokenA}
+                    setTokenB={setTokenB}
+                    inputAValue={inputAValue}
+                    inputBValue={inputBValue}
+                    setInputAValue={setInputAValue}
+                    setInputBValue={setInputBValue}
+                    tokenPrices={tokenPrices}
+                    openedPosition={openedPosition}
+                    setLeverage={setLeverage}
+                    buttonTitle={buttonTitle}
+                    handleExecuteButton={handleExecuteButton}
+                    className="p-0 m-0"
                   />
-                ) : (
-                  <SwapDetails tokenA={tokenA} tokenB={tokenB} />
-                )}
-              </>
-            ) : null}
+                </Modal>
+              )}
+            </AnimatePresence>
           </div>
-        </div>
+        </>
       </div>
     </>
   );
