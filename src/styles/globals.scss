@@ -112,6 +112,11 @@
 }
 
 html,
+body {
+  overflow-x: hidden;
+}
+
+html,
 body,
 #__next {
   display: flex;
@@ -122,7 +127,6 @@ body,
   min-height: 100vh;
   background-color: var(--color-dark);
   font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
 }
 
 // Hide arrows on input number
