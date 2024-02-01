@@ -40,7 +40,7 @@ export default function TradingInput({
       <div
         className={twMerge(
           'h-24 p-4  border border-gray-200 rounded-2xl flex items-center w-full justify-between flex-col',
-          disabled ? 'bg-gray-200' : 'bg-[#030609]',
+          disabled ? 'bg-transparent' : 'bg-[#030609]',
         )}
       >
         <div className="shrink-0 flex items-center w-full justify-between">
@@ -58,7 +58,7 @@ export default function TradingInput({
               placeholder="0.00"
               className={twMerge(
                 'font-mono font-medium border-0 text-lg outline-none w-full',
-                disabled ? 'bg-gray-200' : 'bg-[#030609]',
+                disabled ? 'bg-transparent' : 'bg-[#030609]',
               )}
               onChange={onChange}
             />

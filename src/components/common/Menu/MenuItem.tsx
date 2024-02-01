@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 export default function MenuItem({
   className,
+  linkClassName,
   children,
   onClick,
   selected,
@@ -11,6 +12,7 @@ export default function MenuItem({
   target,
 }: {
   className?: string;
+  linkClassName?: string;
   children: ReactNode;
   onClick?: () => void;
   selected?: boolean;
@@ -29,7 +31,11 @@ export default function MenuItem({
     >
       {!href && children}
       {href && (
-        <Link className="block p-1 px-3" href={href} target={target}>
+        <Link
+          className={twMerge('block p-1 px-3', linkClassName)}
+          href={href}
+          target={target}
+        >
           {children}
         </Link>
       )}

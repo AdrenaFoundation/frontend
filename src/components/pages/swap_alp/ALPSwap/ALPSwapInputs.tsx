@@ -340,7 +340,7 @@ export default function ALPSwapInputs({
       {/* Switch Buy/Sell */}
       <div className="w-full h-4 overflow-visible flex justify-center items-center z-[2]">
         <div
-          className="bg-gray-300 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
+          className="bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
           onClick={() => switchBuySell()}
         >
           {

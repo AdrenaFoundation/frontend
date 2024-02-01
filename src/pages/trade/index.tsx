@@ -371,7 +371,7 @@ export default function Trade({
         />
       </>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10">
-        <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em]">
+        <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em] lg:min-h-[766px]">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader

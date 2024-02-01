@@ -73,7 +73,7 @@ export default function SaveOnFeesBlocks({
                   {row.token.symbol}
                 </p>
                 <h3 className="text-sm capitalize font-mono">
-                  {row.token.symbol}
+                  {row.token.name}
                 </h3>
               </div>
             </div>
@@ -93,8 +93,6 @@ export default function SaveOnFeesBlocks({
                           : 'text-red-500',
                       )}
                     >
-                      {currentFee > row.fee ? 'Save up to ' : 'Spend extra '}
-
                       {currentFee - row.fee !== 0 &&
                         formatPriceInfo(
                           Math.abs(currentFee - row.fee),
@@ -102,6 +100,8 @@ export default function SaveOnFeesBlocks({
                           2,
                           true,
                         )}
+
+                      {currentFee > row.fee ? ' more' : ' less'}
                     </p>
                   )}
 

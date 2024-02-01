@@ -75,12 +75,35 @@ export default function Header({
             className="w-fit"
           >
             <MenuItems>
-              <MenuItem href={'/swap_alp'}>ALP</MenuItem>
-              <MenuItem href={'https://www.orca.so/'} target="_blank">
-                ADX on Orca
+              <MenuItem href={'/swap_alp'} linkClassName="p-2">
+                <div className="flex flex-row gap-2 items-center">
+                  <div className="p-1 bg-blue-500 rounded-full">
+                    <p className="flex items-center justify-center text-xs font-specialmonster h-4 w-4">
+                      ALP
+                    </p>
+                  </div>
+                  ALP
+                </div>
+              </MenuItem>
+              <MenuSeperator />
+              <MenuItem
+                href={'https://www.orca.so/'}
+                target="_blank"
+                linkClassName="p-2"
+              >
+                <div className="flex flex-row gap-2 items-center">
+                  <div className="p-1 bg-red-500 rounded-full">
+                    <p className="flex items-center justify-center text-xs font-specialmonster h-4 w-4">
+                      ADX
+                    </p>
+                  </div>
+                  ADX on Orca
+                </div>
               </MenuItem>
             </MenuItems>
           </Menu>
+
+          {PageLink('/referral', 'Referral')}
 
           {PageLink('/onchain_info', 'Onchain Info')}
 
