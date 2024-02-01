@@ -159,7 +159,7 @@ export default function PositionsBlocks({
                 </p>
               </li>
               <li className={columnStyle}>
-                <p className="opacity-50">PnL</p>
+                <p className="opacity-50">Net value</p>
                 <p className="font-mono text-right">
                   {position.pnl ? (
                     <span
