@@ -220,29 +220,42 @@ export type AmountAndFee = Params['AmountAndFee'];
 
 type Instructions = AllInstructionsMap<Adrena>;
 
+type Nullable<T, U extends keyof T> = {
+  [P in U]: T[P] | null;
+};
+
 type ExtractAccounts<T> = {
   [key in Instructions[T]['accounts'][number]['name']]: PublicKey;
 };
 
-// Force some accounts to be optional
-type OptionalAccounts<T> = Partial<Pick<T, 'userProfile'>> &
-  Omit<T, 'userProfile'>;
+// Force some accounts to be optional (null)
+type OptionalAccounts<T, U> = Nullable<Pick<T, U>> & Omit<T, U>;
 
 // Use accounts types to force TS typing computation. TS will then throw an error if account is missing
-export type InitUserProfile = ExtractAccounts<'initUserProfile'>;
+export type InitUserProfile = OptionalAccounts<
+  ExtractAccounts<'initUserProfile'>,
+  'sponsor'
+>;
+
 export type EditUserProfile = ExtractAccounts<'editUserProfile'>;
 export type DeleteUserProfile = ExtractAccounts<'deleteUserProfile'>;
 export type AddCollateralAccounts = ExtractAccounts<'addCollateral'>;
 export type OpenPositionAccounts = OptionalAccounts<
-  ExtractAccounts<'openPosition'>
+  ExtractAccounts<'openPosition'>,
+  'userProfile'
 >;
 
 export type OpenPositionWithSwapAccounts = OptionalAccounts<
-  ExtractAccounts<'openPositionWithSwap'>
+  ExtractAccounts<'openPositionWithSwap'>,
+  'userProfile'
 >;
-export type SwapAccounts = OptionalAccounts<ExtractAccounts<'swap'>>;
+export type SwapAccounts = OptionalAccounts<
+  ExtractAccounts<'swap'>,
+  'userProfile'
+>;
 export type ClosePositionAccounts = OptionalAccounts<
-  ExtractAccounts<'closePosition'>
+  ExtractAccounts<'closePosition'>,
+  'userProfile'
 >;
 export type RemoveCollateralAccounts = ExtractAccounts<'removeCollateral'>;
 export type AddLiquidStakeAccounts = ExtractAccounts<'addLiquidStake'>;

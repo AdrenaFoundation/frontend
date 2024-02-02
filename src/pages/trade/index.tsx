@@ -281,6 +281,7 @@ export default function Trade({
         txHash,
       });
     } catch (error) {
+      console.log('Error', error);
       setActivePositionModal(null);
       return addFailedTxNotification({
         title: 'Error Opening Position',
