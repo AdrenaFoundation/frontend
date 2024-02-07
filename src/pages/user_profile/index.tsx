@@ -86,10 +86,12 @@ export default function UserProfile({
           />
         </div>
 
-        <div className="flex flex-col items-center justify-center mt-[6%] z-20 bg-[#000000B0] p-4 w-[25em] self-center">
-          <div className="font-specialmonster text-5xl">Create my profile</div>
+        <div className="flex flex-col items-center justify-center mt-[6%] z-20 border border-gray-200 bg-gray-300/85 backdrop-blur-md p-7 m-4 w-[25em] self-center rounded-2xl">
+          <div className="font-specialmonster text-3xl text-center">
+            Create my profile
+          </div>
 
-          <span className="mt-6 max-w-[28em] flex text-center text-txtfade italic text-lg">
+          <span className="mt-6 max-w-[28em] flex text-center opacity-75 italic text-lg">
             Profile&apos;s optional – no need for trading, swapping, or staking.
             Handy for tracking your stats: average leverage, PnL, fees, and
             more.
@@ -98,7 +100,7 @@ export default function UserProfile({
           <div className="w-2/3 h-[1px] bg-gray-300 mt-8"></div>
 
           <div className="flex flex-col items-center justify-center">
-            <div className="font-specialmonster text-3xl mt-12 text-txtfade">
+            <div className="font-specialmonster text-xl mt-10 ">
               My Nickname
             </div>
 
@@ -106,7 +108,7 @@ export default function UserProfile({
               value={nickname ?? ''}
               onChange={setNickname}
               placeholder="The Great Trader"
-              className="mt-4 text-center w-[20em]"
+              className="mt-4 text-center w-[20em] p-4 bg-black border border-gray-200 rounded-xl"
               inputFontSize="1.1em"
               maxLength={24}
             />
@@ -116,7 +118,8 @@ export default function UserProfile({
             disabled={
               nickname ? !(nickname.length >= 3 && nickname.length <= 24) : true
             }
-            className="mt-8 text-sm pl-8 pr-8"
+            className="mt-4 text-sm w-full"
+            size="lg"
             title="Create"
             onClick={() => initUserProfile()}
           />

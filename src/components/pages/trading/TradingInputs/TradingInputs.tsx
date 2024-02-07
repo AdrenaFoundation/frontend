@@ -241,6 +241,14 @@ export default function TradingInputs({
     setInputB(v);
   };
 
+  const rotateIcon = () => {
+    const icon = document.getElementById('switch-icon');
+
+    if (icon) {
+      icon.classList.toggle('rotate-180');
+    }
+  };
+
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       {/* Input A */}
@@ -277,20 +285,27 @@ export default function TradingInputs({
 
           handleInputAChange(amount);
         }}
+        inputClassName="rounded-b-none"
       />
 
       {/* Switch AB */}
-      <div className="w-full h-4 overflow-visible flex justify-center items-center z-[2]">
+      <div className="relative w-full overflow-visible flex justify-center items-center z-[2]">
         <div
-          className="bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
-          onClick={() => switchAB()}
+          className={twMerge(
+            'group absolute bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center',
+          )}
+          onClick={() => {
+            switchAB();
+            rotateIcon();
+          }}
         >
           <Image
             src={arrowDownUpIcon}
-            alt="swap icon"
-            height={14}
-            width={14}
-            className="opacity-50 hover:opacity-100 transition-opacity duration-300"
+            alt="switch icon"
+            height={16}
+            width={16}
+            id="switch-icon"
+            className="opacity-50 group-hover:opacity-100 transition-all duration-300"
           />
         </div>
       </div>
@@ -335,6 +350,7 @@ export default function TradingInputs({
         tokenList={allowedTokenB}
         onTokenSelect={setTokenB}
         onChange={handleInputBChange}
+        inputClassName="rounded-t-none border-t-0"
       />
 
       {actionType === 'short' || actionType === 'long' ? (

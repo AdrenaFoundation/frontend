@@ -294,6 +294,9 @@ export default function ALPSwapInputs({
         // only one token
       }}
       onChange={handleAlpInputChange}
+      inputClassName={
+        actionType === 'buy' ? 'rounded-t-none' : 'rounded-b-none border-b-0'
+      }
     />
   );
 
@@ -330,28 +333,41 @@ export default function ALPSwapInputs({
       }}
       onTokenSelect={onCollateralTokenChange}
       onChange={handleCollateralInputChange}
+      inputClassName={
+        actionType === 'buy' ? 'rounded-b-none border-b-0' : 'rounded-t-none'
+      }
     />
   );
+
+  const rotateIcon = () => {
+    const icon = document.getElementById('switch-icon');
+
+    if (icon) {
+      icon.classList.toggle('rotate-180');
+    }
+  };
 
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
       {/* Switch Buy/Sell */}
-      <div className="w-full h-4 overflow-visible flex justify-center items-center z-[2]">
+      <div className="relative w-full overflow-visible flex justify-center items-center z-[2]">
         <div
-          className="bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
-          onClick={() => switchBuySell()}
+          className="group absolute bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
+          onClick={() => {
+            switchBuySell();
+            rotateIcon();
+          }}
         >
-          {
-            <Image
-              src={arrowDownUpIcon}
-              alt="swap icon"
-              height={14}
-              width={14}
-              className="opacity-50 hover:opacity-100 transition-opacity duration-300"
-            />
-          }
+          <Image
+            src={arrowDownUpIcon}
+            alt="switch icon"
+            height={16}
+            width={16}
+            id="switch-icon"
+            className="opacity-50 group-hover:opacity-100 transition-all duration-300 "
+          />
         </div>
       </div>
 

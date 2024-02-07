@@ -21,7 +21,7 @@ export default function TradingInputs({
   const stats = useDailyStats();
 
   const infoStyle =
-    'hidden sm:flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full';
+    'hidden sm:flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full flex-wrap';
 
   return (
     <div

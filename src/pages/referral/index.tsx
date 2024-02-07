@@ -17,6 +17,8 @@ export default function Referral() {
   const [totalReferred, setTotalReferred] = useState(0);
   const [referralCode, setReferralCode] = useState('');
 
+  const link = 'https://alpha.adrena.xyz/?ref=';
+
   return (
     <>
       <RiveAnimation
@@ -24,7 +26,9 @@ export default function Referral() {
         layout={
           new Layout({ fit: Fit.Contain, alignment: Alignment.BottomRight })
         }
-        className={'fixed lg:absolute  right-0 w-full h-full'}
+        className={
+          'fixed lg:absolute right-0 bottom-0 w-full h-full overflow-hidden'
+        }
       />
 
       <div className="flex flex-col gap-8 z-20">
@@ -41,9 +45,7 @@ export default function Referral() {
 
               <div className="flex flex-row gap-3 w-full">
                 <div className="flex flex-row justify-between items-center bg-gray-200 border border-gray-400 rounded-xl px-3 p-2 w-full">
-                  <p className="opacity-50">
-                    https://alpha.adrena.xyz/?ref={referralCode}
-                  </p>
+                  <p className="opacity-50">{link + referralCode}</p>
                   <Button
                     leftIcon={copyIcon}
                     variant="secondary"
@@ -58,7 +60,9 @@ export default function Referral() {
             <div className="w-full">
               <p className="opacity-50 mt-6 mb-3">Your Referral Code</p>
               <div className="flex flex-row justify-between items-center bg-gray-200 border border-gray-400 rounded-xl px-3 p-2 w-full">
-                <p className="opacity-50">{referralCode}</p>
+                <p className="opacity-50">
+                  {referralCode === '' ? '-' : referralCode}
+                </p>
                 <Button
                   leftIcon={copyIcon}
                   variant="secondary"
@@ -102,6 +106,7 @@ export default function Referral() {
             </div>
             <Button
               title="Claim all tokens"
+              disabled={totalClaimable === 0}
               className="bg-white hover:bg-transparent text-dark hover:text-white border border-gray-200 rounded-xl px-12 py-3"
               size="lg"
             />

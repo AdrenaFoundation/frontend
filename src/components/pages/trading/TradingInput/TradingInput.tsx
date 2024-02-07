@@ -9,6 +9,7 @@ import Select from '../../../common/Select/Select';
 
 export default function TradingInput({
   className,
+  inputClassName,
   disabled,
   loading,
   textTopLeft,
@@ -22,6 +23,7 @@ export default function TradingInput({
   onMaxButtonClick,
 }: {
   className?: string;
+  inputClassName?: string;
   disabled?: boolean;
   loading?: boolean;
   textTopLeft?: ReactNode;
@@ -41,6 +43,7 @@ export default function TradingInput({
         className={twMerge(
           'h-24 p-4  border border-gray-200 rounded-2xl flex items-center w-full justify-between flex-col',
           disabled ? 'bg-transparent' : 'bg-[#030609]',
+          inputClassName,
         )}
       >
         <div className="shrink-0 flex items-center w-full justify-between">
@@ -68,7 +71,7 @@ export default function TradingInput({
             <Button
               title="MAX"
               variant="secondary"
-              className="mr-2 text-sm h-6"
+              className="mx-2 text-sm h-6"
               onClick={() => onMaxButtonClick?.()}
             />
           ) : null}
