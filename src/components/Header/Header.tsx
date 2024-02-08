@@ -70,7 +70,7 @@ export default function Header({
                 <p
                   className={twMerge(
                     'cursor-pointer hover:text-txtregular text-txtfade shrink-0 whitespace-nowrap font-normal text-sm',
-                    pathname === 'swap_alp' && 'text-white',
+                    pathname === '/swap_alp' && 'text-white',
                   )}
                 >
                   Buy

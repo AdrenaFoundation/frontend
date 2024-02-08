@@ -254,12 +254,14 @@ export default function TradingInputs({
       {/* Input A */}
       <TradingInput
         textTopLeft={
-          <>
-            Pay
-            {priceA !== null
-              ? `: ${formatNumber(priceA, USD_DECIMALS)} USD`
-              : null}
-          </>
+          <div className="flex flex-row gap-1 flex-wrap">
+            <p className="opacity-50 text-xs">Pay:</p>
+            <p className="opacity-50 text-xs">
+              {priceA !== null
+                ? ` ${formatNumber(priceA, USD_DECIMALS)} USD`
+                : null}
+            </p>
+          </div>
         }
         textTopRight={
           <>
@@ -313,18 +315,23 @@ export default function TradingInputs({
       {/* Input B */}
       <TradingInput
         textTopLeft={
-          <>
-            {
+          <div className="flex flex-row gap-1 flex-wrap">
+            <p className="opacity-50 text-xs">
               {
-                long: 'Long',
-                short: 'Short',
-                swap: 'Receive',
-              }[actionType]
-            }
-            {priceB !== null
-              ? `: ${formatNumber(priceB, USD_DECIMALS)} USD`
-              : null}
-          </>
+                {
+                  long: 'Long',
+                  short: 'Short',
+                  swap: 'Receive',
+                }[actionType]
+              }
+              :
+            </p>
+            <p className="opacity-50 text-xs">
+              {priceB !== null
+                ? ` ${formatNumber(priceB, USD_DECIMALS)} USD`
+                : null}
+            </p>
+          </div>
         }
         textTopRight={
           <>
@@ -334,13 +341,16 @@ export default function TradingInputs({
                 Leverage{`: ${leverage.toFixed(2)}x`}
               </div>
             ) : (
-              <>
-                {connected && tokenB
-                  ? `Balance: ${(
-                      walletTokenBalances?.[tokenB.symbol] ?? '0'
-                    ).toLocaleString()}`
-                  : null}
-              </>
+              <div className="flex flex-row gap-1 flex-wrap">
+                <p className="opacity-50 text-xs">Balance:</p>
+                <p className="opacity-50 text-xs">
+                  {connected && tokenB
+                    ? ` ${(
+                        walletTokenBalances?.[tokenB.symbol] ?? '0'
+                      ).toLocaleString()}`
+                    : null}
+                </p>
+              </div>
             )}
           </>
         }

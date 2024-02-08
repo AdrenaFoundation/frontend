@@ -8,6 +8,7 @@ export default function InputNumber({
   className,
   max,
   inputFontSize,
+  decimalConstraint,
 }: {
   value?: number;
   disabled?: boolean;
@@ -16,6 +17,7 @@ export default function InputNumber({
   className?: string;
   max?: number;
   inputFontSize?: string;
+  decimalConstraint?: number;
 }) {
   return (
     <input
@@ -32,6 +34,10 @@ export default function InputNumber({
         }
 
         const nb = Math.abs(Number(v.target.value));
+
+        const decimals = nb.toString().split('.')[1]?.length;
+
+        if (Number(decimals) >= Number(decimalConstraint)) return;
 
         // Set max input value to 500m
         onChange(Math.min(nb, max ?? 500_000_000));

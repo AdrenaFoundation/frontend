@@ -36,6 +36,8 @@ export default function TradingInput({
   onChange: (v: number | null) => void;
   onMaxButtonClick?: () => void;
 }) {
+  const decimalConstraint = selectedToken?.decimals ?? 18;
+
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       {/* Input A */}
@@ -46,7 +48,7 @@ export default function TradingInput({
           inputClassName,
         )}
       >
-        <div className="shrink-0 flex items-center w-full justify-between">
+        <div className="shrink-0 flex gap-3 items-center w-full justify-between">
           <div className="text-txtfade text-xs font-mono">{textTopLeft}</div>
           <div className="text-txtfade text-xs font-mono">{textTopRight}</div>
         </div>
@@ -64,6 +66,7 @@ export default function TradingInput({
                 disabled ? 'bg-transparent' : 'bg-[#030609]',
               )}
               onChange={onChange}
+              decimalConstraint={decimalConstraint}
             />
           )}
 
@@ -87,9 +90,16 @@ export default function TradingInput({
               onSelect={(name) => {
                 // Force linting, you cannot not find the token in the list
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                onTokenSelect(
-                  tokenList.find((token) => token.symbol === name)!,
-                );
+                const token = tokenList.find((t) => t.symbol === name)!;
+                onTokenSelect(token);
+
+                // if the prev value has more decimals than the new token, we need to adjust the value
+                const newTokenDecimals = token.decimals ?? 18;
+                const decimals = value?.toString().split('.')[1]?.length;
+
+                if (Number(decimals) > Number(newTokenDecimals)) {
+                  onChange(Number(value?.toFixed(newTokenDecimals)));
+                }
               }}
             />
           ) : (

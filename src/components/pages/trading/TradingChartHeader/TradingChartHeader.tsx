@@ -57,7 +57,7 @@ export default function TradingInputs({
       </div>
 
       <div className="flex flex-row gap-3 p-3 items-center">
-        <div className="font-mono mr-3 text-xl">
+        <div className="font-mono mr-3 text-lg">
           {tokenPrices && tokenPrices[selected.symbol]
             ? // Force linting, we check it just bellow
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
