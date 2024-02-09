@@ -8,5 +8,14 @@ export default function MenuItems({
   className?: string;
   children: ReactNode;
 }) {
-  return <ul className={twMerge('w-full', className)}>{children}</ul>;
+  return (
+    <ul
+      className={twMerge(
+        'w-full border border-dark rounded-xl overflow-hidden',
+        className,
+      )}
+    >
+      {children}
+    </ul>
+  );
 }

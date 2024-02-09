@@ -8,17 +8,21 @@ function TermsAndConditionsModal({
   isOpen,
   // User don't agree or decline, just read it
   readonly = false,
-  agreeTrigger,
-  declineTrigger,
-  closeTrigger,
-}: {
-  className?: string;
-  isOpen: boolean;
-  readonly: boolean;
-  agreeTrigger?: () => void;
-  declineTrigger?: () => void;
-  closeTrigger?: () => void;
-}) {
+  ...args
+}:
+  | {
+      className?: string;
+      isOpen: boolean;
+      readonly: true;
+      closeTrigger: () => void;
+    }
+  | {
+      className?: string;
+      isOpen: boolean;
+      readonly: false;
+      agreeTrigger: () => void;
+      declineTrigger: () => void;
+    }) {
   if (!isOpen) {
     return null;
   }
@@ -27,7 +31,9 @@ function TermsAndConditionsModal({
     <Modal
       title="Terms and conditions"
       close={() => {
-        closeTrigger?.();
+        if ('closeTrigger' in args) {
+          args.closeTrigger();
+        }
       }}
       className={twMerge(
         className,
@@ -82,7 +88,9 @@ function TermsAndConditionsModal({
               variant="primary"
               className="w-full"
               onClick={() => {
-                closeTrigger?.();
+                if ('closeTrigger' in args) {
+                  args.closeTrigger();
+                }
               }}
             />
           </>
@@ -94,16 +102,20 @@ function TermsAndConditionsModal({
               variant="outline"
               className="w-full"
               onClick={() => {
-                declineTrigger?.();
+                if ('declineTrigger' in args) {
+                  args.declineTrigger();
+                }
               }}
             />
 
             <Button
-              title="[A]ggree"
+              title="[A]gree"
               size="lg"
               className="w-full"
               onClick={() => {
-                agreeTrigger?.();
+                if ('agreeTrigger' in args) {
+                  args.agreeTrigger();
+                }
               }}
             />
           </>

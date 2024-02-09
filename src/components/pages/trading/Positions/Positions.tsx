@@ -27,7 +27,7 @@ export default function Positions({
     null,
   );
 
-  const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
 
   if (isBigScreen === null) return null;
 

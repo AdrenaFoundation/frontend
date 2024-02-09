@@ -2,7 +2,7 @@ import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 
 import Head from 'next/head';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
@@ -21,7 +21,25 @@ const RootLayout = ({
   userProfile: UserProfileExtended | null | false;
 }) => {
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
+  const [pages, setPages] = useState<{ name: string; link: string }[]>([
+    { name: 'Dashboard', link: '/dashboard' },
+    { name: 'Earn', link: '/earn' },
+    { name: 'Buy', link: '/swap_alp' },
+    // { name: 'Referral', link: '/referral' },
+    { name: 'Backoffice', link: '/backoffice' },
+    // { name: 'Docs', link: 'https://www.gitbook.com/' },
+  ]);
 
+  useEffect(() => {
+    if (window.adrena.cluster === 'devnet') {
+      return setPages((prev) =>
+        prev.concat([
+          { name: 'Faucet', link: '/faucet_devnet' },
+          { name: 'On-chain Info', link: '/onchain_info' },
+        ]),
+      );
+    }
+  }, []);
   if (isBigScreen === null) {
     return null;
   }
@@ -36,9 +54,9 @@ const RootLayout = ({
       </Head>
 
       {isBigScreen ? (
-        <Header userProfile={userProfile} />
+        <Header userProfile={userProfile} PAGES={pages} />
       ) : (
-        <BurgerMenu userProfile={userProfile} />
+        <BurgerMenu userProfile={userProfile} PAGES={pages} />
       )}
 
       <div className="w-full flex p-4 justify-center">

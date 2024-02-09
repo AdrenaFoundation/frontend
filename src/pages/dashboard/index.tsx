@@ -1,11 +1,11 @@
-import { DotLottiePlayer, PlayerEvents } from '@dotlottie/react-player';
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { ChartData } from 'chart.js';
 import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
 import Details from '@/components/pages/dashboard/Details/Details';
 import Overview from '@/components/pages/dashboard/Overview/Overview';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
@@ -19,8 +19,6 @@ import {
 } from '@/utils';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
-  const [isAnimationLoaded, setIsAnimationLoaded] = useState(false);
-
   const alpTotalSupply = useALPTotalSupply();
   const adxTotalSupply = useADXTotalSupply();
 
@@ -177,25 +175,14 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     },
   ];
 
-  // full animation
-  // https://lottie.host/37e1ec5d-b487-44e1-b4e9-ac7f51500eee/ydhCjShFMH.lottie
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
   return (
     <>
-      <DotLottiePlayer
-        src="https://lottie.host/f7973135-c929-4978-b0cb-df671f50d021/eGqcR9lFei.lottie"
-        autoplay={!isSafari}
-        loop={!isSafari}
-        className={twMerge(
-          isAnimationLoaded ? 'opacity-100' : 'opacity-0',
-          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 transition-opacity duration-300 w-[80%]',
-        )}
-        onEvent={(event: PlayerEvents) => {
-          if (event === PlayerEvents.Ready) {
-            setIsAnimationLoaded(true);
-          }
-        }}
+      <RiveAnimation
+        src="./rive/mid-monster.riv"
+        layout={new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })}
+        className={
+          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 w-full h-full'
+        }
       />
 
       <h2 className="text-2xl mb-3 font-medium z-20">Dashboard</h2>

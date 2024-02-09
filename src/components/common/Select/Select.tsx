@@ -32,40 +32,44 @@ export default function Select<T extends string>({
               ) : null}
               <span className="text-lg font-medium">{selected}</span>
             </div>
+
             {options.length > 1 ? (
-              <Image
-                className="ml-2"
-                src={chevronDownIcon}
-                alt="chevron down"
-                width={12}
-                height={12}
-              />
+              <div className="flex bg-gray-200 rounded-full p-1 h-5 w-5 items-center justify-center ml-2">
+                <Image src={chevronDownIcon} alt="chevron down" />
+              </div>
             ) : null}
           </div>
         }
         className="right-1 mt-2 w-fit"
       >
-        <MenuItems className="w-[120px] justify-center">
-          {options
-            .filter((option) => option.title !== selected)
-            .map((option, i) => (
-              <>
-                {!!i && <MenuSeperator key={'sep' + option.title} />}
-                <MenuItem
-                  className="flex flex-row gap-1 items-center text-center text-lg"
-                  onClick={() => {
-                    onSelect(option.title);
-                  }}
-                  key={option.title}
-                >
-                  {option?.img ? (
-                    <Image src={option.img} alt="logo" width="16" height="16" />
-                  ) : null}
-                  {option.title}
-                </MenuItem>
-              </>
-            ))}
-        </MenuItems>
+        {options.length > 1 && (
+          <MenuItems className="w-[120px] justify-center">
+            {options
+              .filter((option) => option.title !== selected)
+              .map((option, i) => (
+                <>
+                  {!!i && <MenuSeperator key={'sep' + option.title} />}
+                  <MenuItem
+                    className="flex flex-row gap-1 items-center text-center text-lg"
+                    onClick={() => {
+                      onSelect(option.title);
+                    }}
+                    key={option.title + i}
+                  >
+                    {option?.img ? (
+                      <Image
+                        src={option.img}
+                        alt="logo"
+                        width="16"
+                        height="16"
+                      />
+                    ) : null}
+                    {option.title}
+                  </MenuItem>
+                </>
+              ))}
+          </MenuItems>
+        )}
       </Menu>
     </div>
   );

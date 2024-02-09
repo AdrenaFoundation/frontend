@@ -42,19 +42,19 @@ export default function SaveOnFeesBlocks({
         <div
           key={row.token.symbol}
           className={twMerge(
-            'flex flex-col w-full border rounded-lg transition-border duration-300 cursor-pointer hover:border-gray-400',
+            'flex flex-col w-full border rounded-2xl transition-border duration-300 cursor-pointer hover:border-gray-500',
             isFeesLoading && 'opacity-25 cursor-wait',
             collateralToken?.symbol === row.token.symbol
-              ? 'border-gray-400'
-              : 'border-gray-300',
+              ? 'border-gray-500'
+              : 'border-gray-400',
           )}
           onClick={() => {
             onCollateralTokenChange(row.token);
             setCollateralInput(row.equivalentAmount);
           }}
         >
-          <div className="flex items-center justify-between border-b border-b-gray-300 p-3 py-2">
-            <div className="flex flex-row gap-2 items-center">
+          <div className="flex items-center justify-between border-b border-b-gray-200 p-3 py-2">
+            <div className="flex flex-row gap-2 items-center flex-none">
               <input
                 className="cursor-pointer mx-1"
                 type="radio"
@@ -73,7 +73,7 @@ export default function SaveOnFeesBlocks({
                   {row.token.symbol}
                 </p>
                 <h3 className="text-sm capitalize font-mono">
-                  {row.token.symbol}
+                  {row.token.name}
                 </h3>
               </div>
             </div>
@@ -93,15 +93,15 @@ export default function SaveOnFeesBlocks({
                           : 'text-red-500',
                       )}
                     >
-                      {currentFee > row.fee ? 'Save up ' : 'Spend extra '}
-
                       {currentFee - row.fee !== 0 &&
                         formatPriceInfo(
-                          currentFee - row.fee,
+                          Math.abs(currentFee - row.fee),
                           undefined,
                           2,
                           true,
                         )}
+
+                      {currentFee > row.fee ? ' more' : ' less'}
                     </p>
                   )}
 
@@ -116,7 +116,7 @@ export default function SaveOnFeesBlocks({
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-full bg-[rgb(36,36,36)]/30 rounded-b-lg p-3 h-full">
+          <div className="flex flex-col gap-2 w-full bg-gray-200 rounded-b-2xl p-3 h-full">
             <p className="opacity-25 text-xs">Details</p>
             <div className="flex w-full justify-between">
               <p className="text-sm opacity-50">Price</p>

@@ -40,9 +40,9 @@ export default function StakeBlocks({
         }) => (
           <div
             key={Number(stakeResolutionThreadId)}
-            className="bg-[#242424] p-3 rounded-lg border border-gray-300"
+            className="bg-gray-300 p-3 rounded-xl border border-gray-200"
           >
-            <div className="pb-2 flex flex-row justify-between border-b border-b-gray-300">
+            <div className="pb-2 flex flex-row justify-between border-b border-b-gray-200">
               <div className="flex flex-row gap-2 items-center">
                 <div
                   className={`p-1 bg-${

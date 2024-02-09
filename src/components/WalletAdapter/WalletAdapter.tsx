@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -16,6 +17,10 @@ import disconnectIcon from '../../../public/images/disconnect.png';
 import threeDotsIcon from '../../../public/images/three-dots.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
+import Menu from '../common/Menu/Menu';
+import MenuItem from '../common/Menu/MenuItem';
+import MenuItems from '../common/Menu/MenuItems';
+import MenuSeperator from '../common/Menu/MenuSeperator';
 import WalletSelectionModal from './WalletSelectionModal';
 
 function WalletAdapter({
@@ -71,24 +76,57 @@ function WalletAdapter({
   return (
     <div className="relative">
       {connected ? (
-        <Button
-          className={twMerge(
-            // use monster font when displaying the nickname only
-            userProfile ? 'font-specialmonster text-md' : '',
-            className,
-          )}
-          title={
-            userProfile
-              ? getAbbrevNickname(userProfile.nickname)
-              : getAbbrevWalletAddress(wallet.walletAddress)
+        <Menu
+          trigger={
+            <Button
+              className={twMerge(
+                // use monster font when displaying the nickname only
+                userProfile ? 'font-specialmonster text-md' : '',
+                className,
+              )}
+              title={
+                userProfile
+                  ? getAbbrevNickname(userProfile.nickname)
+                  : getAbbrevWalletAddress(wallet.walletAddress)
+              }
+              rightIcon={threeDotsIcon}
+              alt="wallet icon"
+              variant="outline"
+              onClick={() => {
+                setMenuIsOpen(!menuIsOpen);
+              }}
+            />
           }
-          rightIcon={threeDotsIcon}
-          alt="wallet icon"
-          variant="outline"
-          onClick={() => {
-            setMenuIsOpen(!menuIsOpen);
-          }}
-        />
+          className="w-[120px] right-0"
+        >
+          <MenuItems>
+            <MenuItem
+              href={'/user_profile'}
+              onClick={() => {
+                setMenuIsOpen(false);
+              }}
+            >
+              Profile
+            </MenuItem>
+
+            <MenuSeperator />
+
+            <MenuItem
+              onClick={() => {
+                setMenuIsOpen(!menuIsOpen);
+
+                if (!connected) return;
+
+                console.log('Disconnect wallet');
+
+                dispatch(disconnectWalletAction(wallet.adapterName));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+            >
+              Disconnect
+            </MenuItem>
+          </MenuItems>
+        </Menu>
       ) : (
         <Button
           className={className}
@@ -104,7 +142,7 @@ function WalletAdapter({
         />
       )}
 
-      {menuIsOpen ? (
+      {/* {menuIsOpen ? (
         <div className="absolute right-0 bg-main min-w-[10em] p-2">
           <Button
             className="text-sm"
@@ -135,7 +173,7 @@ function WalletAdapter({
             }}
           />
         </div>
-      ) : null}
+      ) : null} */}
 
       <WalletSelectionModal />
     </div>

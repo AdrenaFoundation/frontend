@@ -9,6 +9,7 @@ import Select from '../../../common/Select/Select';
 
 export default function TradingInput({
   className,
+  inputClassName,
   disabled,
   loading,
   textTopLeft,
@@ -22,6 +23,7 @@ export default function TradingInput({
   onMaxButtonClick,
 }: {
   className?: string;
+  inputClassName?: string;
   disabled?: boolean;
   loading?: boolean;
   textTopLeft?: ReactNode;
@@ -34,16 +36,19 @@ export default function TradingInput({
   onChange: (v: number | null) => void;
   onMaxButtonClick?: () => void;
 }) {
+  const decimalConstraint = selectedToken?.decimals ?? 18;
+
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       {/* Input A */}
       <div
         className={twMerge(
-          'h-24 p-4  border border-gray-300 rounded-lg flex items-center w-full justify-between flex-col',
-          disabled ? 'bg-gray-200' : 'bg-dark',
+          'h-24 p-4  border border-gray-200 rounded-2xl flex items-center w-full justify-between flex-col',
+          disabled ? 'bg-transparent' : 'bg-[#030609]',
+          inputClassName,
         )}
       >
-        <div className="shrink-0 flex items-center w-full justify-between">
+        <div className="shrink-0 flex gap-3 items-center w-full justify-between">
           <div className="text-txtfade text-xs font-mono">{textTopLeft}</div>
           <div className="text-txtfade text-xs font-mono">{textTopRight}</div>
         </div>
@@ -58,16 +63,18 @@ export default function TradingInput({
               placeholder="0.00"
               className={twMerge(
                 'font-mono font-medium border-0 text-lg outline-none w-full',
-                disabled ? 'bg-gray-200' : 'bg-dark',
+                disabled ? 'bg-transparent' : 'bg-[#030609]',
               )}
               onChange={onChange}
+              decimalConstraint={decimalConstraint}
             />
           )}
 
           {maxButton ? (
             <Button
               title="MAX"
-              className="bg-gray-300 opacity-50 hover:opacity-100 border-grey mr-2 text-sm h-6"
+              variant="secondary"
+              className="mx-2 text-sm h-6"
               onClick={() => onMaxButtonClick?.()}
             />
           ) : null}
@@ -83,9 +90,16 @@ export default function TradingInput({
               onSelect={(name) => {
                 // Force linting, you cannot not find the token in the list
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                onTokenSelect(
-                  tokenList.find((token) => token.symbol === name)!,
-                );
+                const token = tokenList.find((t) => t.symbol === name)!;
+                onTokenSelect(token);
+
+                // if the prev value has more decimals than the new token, we need to adjust the value
+                const newTokenDecimals = token.decimals ?? 18;
+                const decimals = value?.toString().split('.')[1]?.length;
+
+                if (Number(decimals) > Number(newTokenDecimals)) {
+                  onChange(Number(value?.toFixed(newTokenDecimals)));
+                }
               }}
             />
           ) : (

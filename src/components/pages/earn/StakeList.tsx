@@ -67,7 +67,7 @@ export default function StakeList({
               <tr
                 key={String(stakeResolutionThreadId)}
                 className={twMerge(
-                  i !== positions.length - 1 && 'border-b border-b-gray-300',
+                  i !== positions.length - 1 && 'border-b border-b-gray-200',
                 )}
               >
                 <td className="py-5 text-sm font-mono">

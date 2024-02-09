@@ -38,7 +38,6 @@ import {
   Cortex,
   Custody,
   CustodyExtended,
-  DeleteUserProfile,
   EditUserProfile,
   FinalizeLockedStakeAccounts,
   ImageRef,
@@ -1039,8 +1038,6 @@ export class AdrenaClient {
     const principalCustodyTokenAccount =
       this.findCustodyTokenAccountAddress(mint);
 
-    //
-
     const fundingAccount = findATAAddressSync(owner, collateralMint);
 
     const position = this.findPositionAddress(owner, principalCustody, side);
@@ -1070,6 +1067,7 @@ export class AdrenaClient {
       collateralMint: collateralMint.toString(),
       mint: mint.toString(),
       size: size.toString(),
+      userProfile,
     });
 
     const accounts: OpenPositionWithSwapAccounts = {
@@ -1101,7 +1099,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
-      userProfile,
+      userProfile: userProfile ?? null,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       adrenaProgram: this.adrenaProgram.programId,
@@ -1193,7 +1191,7 @@ export class AdrenaClient {
       lpStakingRewardTokenVault,
       lpTokenMint: this.lpTokenMint,
       stakingRewardTokenMint,
-      userProfile,
+      userProfile: userProfile ?? null,
       adrenaProgram: this.adrenaProgram.programId,
     };
 
@@ -1503,7 +1501,7 @@ export class AdrenaClient {
       adrenaProgram: this.adrenaProgram.programId,
       collateralCustodyOracleAccount,
       collateralCustodyTokenAccount,
-      userProfile: userProfile ? userProfile.pubkey : undefined,
+      userProfile: userProfile ? userProfile.pubkey : null,
     };
 
     return this.signAndExecuteTx(
@@ -1754,18 +1752,6 @@ export class AdrenaClient {
       throw new Error('no connection');
     }
 
-    // if (mint.equals(collateralMint)) {
-    //   return this.openPosition({
-    //     owner,
-    //     mint,
-    //     price,
-    //     collateralMint,
-    //     collateralAmount,
-    //     size,
-    //     side: 'long',
-    //   });
-    // }
-
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
@@ -1989,7 +1975,13 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
-  public async initUserProfile({ nickname }: { nickname: string }) {
+  public async initUserProfile({
+    nickname,
+    sponsor,
+  }: {
+    nickname: string;
+    sponsor?: PublicKey;
+  }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
@@ -2006,6 +1998,7 @@ export class AdrenaClient {
       tokenProgram: TOKEN_PROGRAM_ID,
       userProfile: userProfilePda,
       user: wallet.publicKey,
+      sponsor,
     };
 
     const transaction = await this.adrenaProgram.methods
@@ -2018,7 +2011,7 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
-  public async editUserProfile({ nickname }: { nickname?: string }) {
+  public async editUserProfile({ nickname }: { nickname: string }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
@@ -2031,11 +2024,13 @@ export class AdrenaClient {
       systemProgram: SystemProgram.programId,
       userProfile: userProfilePda,
       user: wallet.publicKey,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      payer: wallet.publicKey,
     };
 
     const transaction = await this.adrenaProgram.methods
       .editUserProfile({
-        nickname: nickname ?? null,
+        nickname,
       })
       .accounts(accounts)
       .transaction();
@@ -2043,30 +2038,8 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
-  public async deleteUserProfile() {
-    if (!this.connection || !this.adrenaProgram) {
-      throw new Error('adrena program not ready');
-    }
-
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-
-    const userProfilePda = this.getUserProfilePda(wallet.publicKey);
-
-    const accounts: DeleteUserProfile = {
-      payer: wallet.publicKey,
-      cortex: this.cortex,
-      systemProgram: SystemProgram.programId,
-      tokenProgram: TOKEN_PROGRAM_ID,
-      userProfile: userProfilePda,
-      user: wallet.publicKey,
-    };
-
-    const transaction = await this.adrenaProgram.methods
-      .deleteUserProfile()
-      .accounts(accounts)
-      .transaction();
-
-    return this.signAndExecuteTx(transaction);
+  public async deleteUserProfile(): Promise<string> {
+    throw new Error('deleteUserProfile instruction only available to admin');
   }
 
   public buildAddCollateralTx({

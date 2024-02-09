@@ -302,11 +302,10 @@ export default function EditPositionCollateral({
               onClick={(title) => {
                 setInput(
                   Number(
-                    formatNumber(
+                    Number(
                       (position.collateralUsd * Number(title.split('%')[0])) /
                         100,
-                      USD_DECIMALS,
-                    ),
+                    ).toFixed(USD_DECIMALS),
                   ),
                 );
               }}

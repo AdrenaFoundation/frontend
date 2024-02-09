@@ -7,6 +7,7 @@ import btcLogo from '../../public/images/btc.svg';
 import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
+import usdtLogo from '../../public/images/usdt.svg';
 import IConfiguration from './IConfiguration';
 
 class DevnetConfiguration implements IConfiguration {
@@ -26,6 +27,13 @@ class DevnetConfiguration implements IConfiguration {
       symbol: 'USDC',
       image: usdcLogo,
       coingeckoId: 'usd-coin',
+      decimals: 6,
+    },
+    CXFBW6kuWfCUKbD2CZN2nz3B4YQywJFozzMBkryM4rA: {
+      name: 'Theter',
+      symbol: 'USDT',
+      image: usdtLogo,
+      coingeckoId: 'tether',
       decimals: 6,
     },
     '3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr': {
@@ -74,7 +82,7 @@ class DevnetConfiguration implements IConfiguration {
   // 'https://api.devnet.solana.com';
 
   public readonly mainPool: PublicKey = new PublicKey(
-    'ARQ3BgX5XvACEHTHJSPxcAeJ7KoKXgaZF94GR8rcKjiG',
+    '9YWFZGLxTsXUFN613fH5UAeSn38eoycSEEU65rpf4Ljk',
   );
 }
 

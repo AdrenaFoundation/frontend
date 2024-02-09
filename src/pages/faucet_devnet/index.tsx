@@ -20,7 +20,10 @@ import {
   uiToNative,
 } from '@/utils';
 
-export default function FaucetDevnet({ wallet }: PageProps) {
+export default function FaucetDevnet({
+  wallet,
+  triggerWalletTokenBalancesReload,
+}: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [pendingTx, setPendingTx] = useState<boolean>(false);
@@ -79,6 +82,7 @@ export default function FaucetDevnet({ wallet }: PageProps) {
       );
 
       setPendingTx(false);
+      triggerWalletTokenBalancesReload();
 
       return addSuccessTxNotification({
         title: 'Successfull Transaction',
@@ -150,7 +154,7 @@ export default function FaucetDevnet({ wallet }: PageProps) {
         <div key={token.symbol} className="mt-8 flex flex-col items-center">
           <Button
             disabled={pendingTx}
-            className="bg-secondary w-[30em]"
+            className="bg-secondary w-full md:w-[30em]"
             title={`Get ${token.symbol}`}
             onClick={() =>
               token.mint.equals(NATIVE_MINT)

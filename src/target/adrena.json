@@ -2945,14 +2945,7 @@
           "docs": ["#7"]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "GetLiquidationStateParams"
-          }
-        }
-      ],
+      "args": [],
       "returns": "u8"
     },
     {
@@ -2983,14 +2976,7 @@
           "docs": ["#4"]
         }
       ],
-      "args": [
-        {
-          "name": "params",
-          "type": {
-            "defined": "GetOraclePriceParams"
-          }
-        }
-      ],
+      "args": [],
       "returns": "u64"
     },
     {
@@ -3221,27 +3207,34 @@
         },
         {
           "name": "cortex",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "docs": ["#4"]
+        },
+        {
+          "name": "sponsor",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true,
+          "docs": ["#5"]
         },
         {
           "name": "perpetuals",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#5"]
+          "docs": ["#6"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#6"]
+          "docs": ["#7"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#7"]
+          "docs": ["#8"]
         }
       ],
       "args": [
@@ -3263,16 +3256,28 @@
           "docs": ["#1"]
         },
         {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": ["#2"]
+        },
+        {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "docs": ["#2"]
+          "docs": ["#3"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#3"]
+          "docs": ["#4"]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#5"]
         }
       ],
       "args": [
@@ -3288,40 +3293,52 @@
       "name": "deleteUserProfile",
       "accounts": [
         {
-          "name": "user",
+          "name": "admin",
           "isMut": false,
           "isSigner": true,
           "docs": ["#1"]
         },
         {
+          "name": "user",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#2"]
+        },
+        {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": ["#2"]
+          "docs": ["#3"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "docs": ["#3"]
+          "docs": ["#4"]
         },
         {
           "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#5"]
+        },
+        {
+          "name": "perpetuals",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#4"]
+          "docs": ["#6"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#5"]
+          "docs": ["#7"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#6"]
+          "docs": ["#8"]
         }
       ],
       "args": []
@@ -4239,6 +4256,79 @@
       "args": []
     },
     {
+      "name": "claimReferalRewards",
+      "accounts": [
+        {
+          "name": "sponsor",
+          "isMut": true,
+          "isSigner": true,
+          "docs": ["#1"]
+        },
+        {
+          "name": "receivingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#2"]
+        },
+        {
+          "name": "sponsorProfile",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#3"]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#4"]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#5"]
+        },
+        {
+          "name": "perpetuals",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#6"]
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#7"]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#8"]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#9"]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#10"]
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#11"]
+        }
+      ],
+      "args": [],
+      "returns": "u64"
+    },
+    {
       "name": "finalizeLockedStake",
       "accounts": [
         {
@@ -4785,6 +4875,18 @@
           {
             "name": "ecosystemBucketMintedAmount",
             "type": "u64"
+          },
+          {
+            "name": "referalRewardsLimit",
+            "type": "u64"
+          },
+          {
+            "name": "referalRewardsEmitted",
+            "type": "u64"
+          },
+          {
+            "name": "userProfileAmount",
+            "type": "u64"
           }
         ]
       }
@@ -4912,10 +5014,6 @@
           },
           {
             "name": "conf",
-            "type": "u64"
-          },
-          {
-            "name": "ema",
             "type": "u64"
           },
           {
@@ -5215,6 +5313,20 @@
             "type": {
               "defined": "TradingStats"
             }
+          },
+          {
+            "name": "sponsor",
+            "type": {
+              "option": "publicKey"
+            }
+          },
+          {
+            "name": "referalClaimedVolumeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "sponsorClaimedRewardAmount",
+            "type": "u64"
           }
         ]
       }
@@ -5484,9 +5596,7 @@
         "fields": [
           {
             "name": "nickname",
-            "type": {
-              "option": "string"
-            }
+            "type": "string"
           }
         ]
       }
@@ -5568,13 +5678,6 @@
       }
     },
     {
-      "name": "GetLiquidationStateParams",
-      "type": {
-        "kind": "struct",
-        "fields": []
-      }
-    },
-    {
       "name": "GetLpTokenPriceParams",
       "type": {
         "kind": "struct",
@@ -5599,18 +5702,6 @@
             "type": {
               "defined": "Side"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "GetOraclePriceParams",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "ema",
-            "type": "bool"
           }
         ]
       }
@@ -5761,6 +5852,10 @@
           },
           {
             "name": "ecosystemBucketAllocation",
+            "type": "u64"
+          },
+          {
+            "name": "referalRewardsLimit",
             "type": "u64"
           }
         ]
@@ -5990,10 +6085,6 @@
             "type": "u64"
           },
           {
-            "name": "ema",
-            "type": "u64"
-          },
-          {
             "name": "publishTime",
             "type": "i64"
           }
@@ -6098,16 +6189,6 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "mode",
-            "type": {
-              "defined": "FeesMode"
-            }
-          },
-          {
-            "name": "ratioMult",
-            "type": "u16"
-          },
-          {
             "name": "utilizationMult",
             "type": "u16"
           },
@@ -6148,15 +6229,11 @@
             "type": "u16"
           },
           {
-            "name": "protocolShare",
-            "type": "u16"
-          },
-          {
             "name": "feeMax",
             "type": "u16"
           },
           {
-            "name": "feeOptimal",
+            "name": "protocolShare",
             "type": "u16"
           }
         ]
@@ -6280,24 +6357,8 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "useEma",
-            "type": "bool"
-          },
-          {
             "name": "useUnrealizedPnlInAum",
             "type": "bool"
-          },
-          {
-            "name": "tradeSpreadLong",
-            "type": "u16"
-          },
-          {
-            "name": "tradeSpreadShort",
-            "type": "u16"
-          },
-          {
-            "name": "swapSpread",
-            "type": "u16"
           },
           {
             "name": "minInitialLeverage",
@@ -6457,6 +6518,10 @@
           {
             "name": "exponent",
             "type": "i32"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
           }
         ]
       }
@@ -6870,26 +6935,6 @@
       }
     },
     {
-      "name": "AumCalcMode",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "Min"
-          },
-          {
-            "name": "Max"
-          },
-          {
-            "name": "Last"
-          },
-          {
-            "name": "EMA"
-          }
-        ]
-      }
-    },
-    {
       "name": "Side",
       "type": {
         "kind": "enum",
@@ -7153,9 +7198,19 @@
       "code": 6042,
       "name": "UserNicknameTooShort",
       "msg": "User nickname is less than 3 characters"
+    },
+    {
+      "code": 6043,
+      "name": "SelfSponsored",
+      "msg": "User cannot sponsor itself"
+    },
+    {
+      "code": 6044,
+      "name": "ReferalRewardLimitReached",
+      "msg": "Referal reward limit reached"
     }
   ],
   "metadata": {
-    "address": "EZK4ihCZmukjZhjWM8BP2J4HBpQk1bzxSwpDdddd5mu"
+    "address": "5cZNXs1coWbw5XYLozEK1LV7GYYWvKUp8Z97rCDm5k7t"
   }
 }
