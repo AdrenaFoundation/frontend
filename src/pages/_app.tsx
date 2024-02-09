@@ -26,6 +26,7 @@ import { SupportedCluster } from '@/types';
 import logo from '../../public/images/logo.svg';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
+import GeoBlockedPage from '../pages/geoblocked/index';
 import store from '../store/store';
 
 function Loader(): JSX.Element {
@@ -89,6 +90,10 @@ export default function App(props: AppProps) {
 
   if (!isInitialized) return <Loader />;
 
+  if (!window.adrena.geoBlockingData.allowed) {
+    return <GeoBlockedPage {...window.adrena.geoBlockingData} />;
+  }
+
   return (
     <Provider store={store}>
       <CookiesProvider>
@@ -108,6 +113,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
+  const router = useRouter();
 
   const { positions, triggerPositionsReload } = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
@@ -164,14 +170,9 @@ function AppComponent({ Component, pageProps }: AppProps) {
             setCookie('terms-and-conditions-acceptance', 'true');
           }}
           declineTrigger={() => {
-            setIsTermsAndConditionModalOpen(true);
-
-            // Redirect the user to landing page
-            // TODO
-            console.log(
-              'SHOULD REDIRECT USER TO LANDING PAGE, USER CANNOT USE THE APP',
-            );
+            router.push('https://landing.adrena.xyz/');
           }}
+          readonly={false}
         />
       }
 
