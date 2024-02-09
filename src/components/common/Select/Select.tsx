@@ -42,27 +42,34 @@ export default function Select<T extends string>({
         }
         className="right-1 mt-2 w-fit"
       >
-        <MenuItems className="w-[120px] justify-center">
-          {options
-            .filter((option) => option.title !== selected)
-            .map((option, i) => (
-              <>
-                {!!i && <MenuSeperator key={'sep' + option.title} />}
-                <MenuItem
-                  className="flex flex-row gap-1 items-center text-center text-lg"
-                  onClick={() => {
-                    onSelect(option.title);
-                  }}
-                  key={option.title + i}
-                >
-                  {option?.img ? (
-                    <Image src={option.img} alt="logo" width="16" height="16" />
-                  ) : null}
-                  {option.title}
-                </MenuItem>
-              </>
-            ))}
-        </MenuItems>
+        {options.length > 1 && (
+          <MenuItems className="w-[120px] justify-center">
+            {options
+              .filter((option) => option.title !== selected)
+              .map((option, i) => (
+                <>
+                  {!!i && <MenuSeperator key={'sep' + option.title} />}
+                  <MenuItem
+                    className="flex flex-row gap-1 items-center text-center text-lg"
+                    onClick={() => {
+                      onSelect(option.title);
+                    }}
+                    key={option.title + i}
+                  >
+                    {option?.img ? (
+                      <Image
+                        src={option.img}
+                        alt="logo"
+                        width="16"
+                        height="16"
+                      />
+                    ) : null}
+                    {option.title}
+                  </MenuItem>
+                </>
+              ))}
+          </MenuItems>
+        )}
       </Menu>
     </div>
   );

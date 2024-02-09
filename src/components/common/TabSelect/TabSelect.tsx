@@ -1,6 +1,9 @@
 import { createRef, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { useResize } from '@/hooks/useResize';
+
 export default function TabSelect<T extends string | number>({
   selected,
   onClick,
@@ -23,6 +26,8 @@ export default function TabSelect<T extends string | number>({
     x: 0,
   });
 
+  const [size] = useResize();
+
   const [activeTab, setActiveTab] = useState<null | number>(
     selected !== undefined ? 0 : null,
   );
@@ -38,7 +43,7 @@ export default function TabSelect<T extends string | number>({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab, size.width]);
 
   return (
     <div

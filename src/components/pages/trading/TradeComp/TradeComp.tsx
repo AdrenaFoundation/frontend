@@ -48,7 +48,7 @@ export const TradeComp = ({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full lg:w-[30em]  flex-col sm:flex-row lg:flex-col gap-3 mt-4 lg:ml-4 lg:mt-0',
+        'sm:flex w-full lg:w-[30em] min-w-[350px] flex-col sm:flex-row lg:flex-col gap-3 mt-4 lg:ml-4 lg:mt-0',
         className,
       )}
     >

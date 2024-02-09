@@ -154,7 +154,7 @@ export default function FaucetDevnet({
         <div key={token.symbol} className="mt-8 flex flex-col items-center">
           <Button
             disabled={pendingTx}
-            className="bg-secondary w-[30em]"
+            className="bg-secondary w-full md:w-[30em]"
             title={`Get ${token.symbol}`}
             onClick={() =>
               token.mint.equals(NATIVE_MINT)

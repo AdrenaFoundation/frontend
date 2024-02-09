@@ -22,22 +22,15 @@ import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
   userProfile,
+  PAGES,
 }: {
   userProfile: UserProfileExtended | null | false;
+  PAGES: { name: string; link: string }[];
 }) {
   const { pathname } = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const clusterSwitchEnabled = false;
-
-  const PAGES: { name: string; link: string }[] = [
-    { name: 'Dashboard', link: '/dashboard' },
-    { name: 'Earn', link: '/earn' },
-    { name: 'Buy', link: '/swap_alp' },
-    { name: 'On-chain Info', link: '/onchain_info' },
-    { name: 'Faucet', link: '/faucet_devnet' },
-    // { name: 'Docs', link: 'https://www.gitbook.com/' },
-  ];
 
   useEffect(() => {
     if (isOpen) {

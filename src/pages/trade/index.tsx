@@ -336,7 +336,7 @@ export default function Trade({
 
   return (
     <>
-      <>
+      <div className="absolute w-full left-0 top-0 h-full overflow-hidden">
         <RiveAnimation
           src="./rive/blob-bg.riv"
           layout={
@@ -370,7 +370,7 @@ export default function Trade({
             'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] h-full'
           }
         />
-      </>
+      </div>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10">
         <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em] lg:min-h-[766px]">
           {/* Trading chart header */}

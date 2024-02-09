@@ -21,7 +21,7 @@ export default function TradingInputs({
   const stats = useDailyStats();
 
   const infoStyle =
-    'hidden sm:flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full';
+    'hidden sm:flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full flex-wrap';
 
   return (
     <div
@@ -57,7 +57,7 @@ export default function TradingInputs({
       </div>
 
       <div className="flex flex-row gap-3 p-3 items-center">
-        <div className="font-mono mr-3 text-xl">
+        <div className="font-mono mr-3 text-lg">
           {tokenPrices && tokenPrices[selected.symbol]
             ? // Force linting, we check it just bellow
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

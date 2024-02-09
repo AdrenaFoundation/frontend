@@ -54,7 +54,7 @@ export default function SaveOnFeesBlocks({
           }}
         >
           <div className="flex items-center justify-between border-b border-b-gray-200 p-3 py-2">
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-row gap-2 items-center flex-none">
               <input
                 className="cursor-pointer mx-1"
                 type="radio"
