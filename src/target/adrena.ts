@@ -5642,7 +5642,7 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'size';
+            name: 'leverage';
             type: 'u64';
           },
           {
@@ -5694,7 +5694,7 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'size';
+            name: 'leverage';
             type: 'u64';
           },
           {
@@ -5751,7 +5751,7 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'size';
+            name: 'leverage';
             type: 'u64';
           },
           {
@@ -5904,7 +5904,7 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'size';
+            name: 'leverage';
             type: 'u64';
           },
           {
@@ -5930,7 +5930,7 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'size';
+            name: 'leverage';
             type: 'u64';
           },
           {
@@ -7086,126 +7086,131 @@ export type Adrena = {
     },
     {
       code: 6020;
+      name: 'MinLeverage';
+      msg: 'Position leverage under minimum';
+    },
+    {
+      code: 6021;
       name: 'CustodyAmountLimit';
       msg: 'Custody amount limit exceeded';
     },
     {
-      code: 6021;
+      code: 6022;
       name: 'PositionAmountLimit';
       msg: 'Position amount limit exceeded';
     },
     {
-      code: 6022;
+      code: 6023;
       name: 'TokenRatioOutOfRange';
       msg: 'Token ratio out of range';
     },
     {
-      code: 6023;
+      code: 6024;
       name: 'UnsupportedToken';
       msg: 'Token is not supported';
     },
     {
-      code: 6024;
+      code: 6025;
       name: 'InstructionNotAllowed';
       msg: 'Instruction is not allowed at this time';
     },
     {
-      code: 6025;
+      code: 6026;
       name: 'MaxUtilization';
       msg: 'Token utilization limit exceeded';
     },
     {
-      code: 6026;
+      code: 6027;
       name: 'InvalidGovernanceProgram';
       msg: "Governance program do not match Cortex's";
     },
     {
-      code: 6027;
+      code: 6028;
       name: 'InvalidGovernanceRealm';
       msg: "Governance realm do not match Cortex's";
     },
     {
-      code: 6028;
+      code: 6029;
       name: 'InvalidVestingUnlockTime';
       msg: 'Vesting unlock time is too close or passed';
     },
     {
-      code: 6029;
+      code: 6030;
       name: 'InvalidStakingLockingTime';
       msg: 'Invalid staking locking time';
     },
     {
-      code: 6030;
+      code: 6031;
       name: 'CannotFoundStake';
       msg: 'Cannot found stake';
     },
     {
-      code: 6031;
+      code: 6032;
       name: 'UnresolvedStake';
       msg: 'Stake is not resolved';
     },
     {
-      code: 6032;
+      code: 6033;
       name: 'BucketMintLimit';
       msg: 'Reached bucket mint limit';
     },
     {
-      code: 6033;
+      code: 6034;
       name: 'GenesisAlpLimitReached';
       msg: 'Genesis ALP add liquidity limit reached';
     },
     {
-      code: 6034;
+      code: 6035;
       name: 'PermissionlessOracleMissingSignature';
       msg: 'Permissionless oracle update must be preceded by Ed25519 signature verification instruction';
     },
     {
-      code: 6035;
+      code: 6036;
       name: 'PermissionlessOracleMalformedEd25519Data';
       msg: 'Ed25519 signature verification data does not match expected format';
     },
     {
-      code: 6036;
+      code: 6037;
       name: 'PermissionlessOracleSignerMismatch';
       msg: 'Ed25519 signature was not signed by the oracle authority';
     },
     {
-      code: 6037;
+      code: 6038;
       name: 'PermissionlessOracleMessageMismatch';
       msg: 'Signed message does not match instruction params';
     },
     {
-      code: 6038;
+      code: 6039;
       name: 'CustodyStableLockedAmountNotFound';
       msg: 'Cannot find custody stable locked amount';
     },
     {
-      code: 6039;
+      code: 6040;
       name: 'CustodyNotFound';
       msg: 'Cannot find custody';
     },
     {
-      code: 6040;
+      code: 6041;
       name: 'InsufficientBucketReserve';
       msg: 'The bucket does not contain enough token for reserving this allocation';
     },
     {
-      code: 6041;
+      code: 6042;
       name: 'UserNicknameTooLong';
       msg: 'User nickname exceed 24 characters';
     },
     {
-      code: 6042;
+      code: 6043;
       name: 'UserNicknameTooShort';
       msg: 'User nickname is less than 3 characters';
     },
     {
-      code: 6043;
+      code: 6044;
       name: 'SelfSponsored';
       msg: 'User cannot sponsor itself';
     },
     {
-      code: 6044;
+      code: 6045;
       name: 'ReferalRewardLimitReached';
       msg: 'Referal reward limit reached';
     },
@@ -12856,7 +12861,7 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'size',
+            name: 'leverage',
             type: 'u64',
           },
           {
@@ -12908,7 +12913,7 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'size',
+            name: 'leverage',
             type: 'u64',
           },
           {
@@ -12965,7 +12970,7 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'size',
+            name: 'leverage',
             type: 'u64',
           },
           {
@@ -13118,7 +13123,7 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'size',
+            name: 'leverage',
             type: 'u64',
           },
           {
@@ -13144,7 +13149,7 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'size',
+            name: 'leverage',
             type: 'u64',
           },
           {
@@ -14300,126 +14305,131 @@ export const IDL: Adrena = {
     },
     {
       code: 6020,
+      name: 'MinLeverage',
+      msg: 'Position leverage under minimum',
+    },
+    {
+      code: 6021,
       name: 'CustodyAmountLimit',
       msg: 'Custody amount limit exceeded',
     },
     {
-      code: 6021,
+      code: 6022,
       name: 'PositionAmountLimit',
       msg: 'Position amount limit exceeded',
     },
     {
-      code: 6022,
+      code: 6023,
       name: 'TokenRatioOutOfRange',
       msg: 'Token ratio out of range',
     },
     {
-      code: 6023,
+      code: 6024,
       name: 'UnsupportedToken',
       msg: 'Token is not supported',
     },
     {
-      code: 6024,
+      code: 6025,
       name: 'InstructionNotAllowed',
       msg: 'Instruction is not allowed at this time',
     },
     {
-      code: 6025,
+      code: 6026,
       name: 'MaxUtilization',
       msg: 'Token utilization limit exceeded',
     },
     {
-      code: 6026,
+      code: 6027,
       name: 'InvalidGovernanceProgram',
       msg: "Governance program do not match Cortex's",
     },
     {
-      code: 6027,
+      code: 6028,
       name: 'InvalidGovernanceRealm',
       msg: "Governance realm do not match Cortex's",
     },
     {
-      code: 6028,
+      code: 6029,
       name: 'InvalidVestingUnlockTime',
       msg: 'Vesting unlock time is too close or passed',
     },
     {
-      code: 6029,
+      code: 6030,
       name: 'InvalidStakingLockingTime',
       msg: 'Invalid staking locking time',
     },
     {
-      code: 6030,
+      code: 6031,
       name: 'CannotFoundStake',
       msg: 'Cannot found stake',
     },
     {
-      code: 6031,
+      code: 6032,
       name: 'UnresolvedStake',
       msg: 'Stake is not resolved',
     },
     {
-      code: 6032,
+      code: 6033,
       name: 'BucketMintLimit',
       msg: 'Reached bucket mint limit',
     },
     {
-      code: 6033,
+      code: 6034,
       name: 'GenesisAlpLimitReached',
       msg: 'Genesis ALP add liquidity limit reached',
     },
     {
-      code: 6034,
+      code: 6035,
       name: 'PermissionlessOracleMissingSignature',
       msg: 'Permissionless oracle update must be preceded by Ed25519 signature verification instruction',
     },
     {
-      code: 6035,
+      code: 6036,
       name: 'PermissionlessOracleMalformedEd25519Data',
       msg: 'Ed25519 signature verification data does not match expected format',
     },
     {
-      code: 6036,
+      code: 6037,
       name: 'PermissionlessOracleSignerMismatch',
       msg: 'Ed25519 signature was not signed by the oracle authority',
     },
     {
-      code: 6037,
+      code: 6038,
       name: 'PermissionlessOracleMessageMismatch',
       msg: 'Signed message does not match instruction params',
     },
     {
-      code: 6038,
+      code: 6039,
       name: 'CustodyStableLockedAmountNotFound',
       msg: 'Cannot find custody stable locked amount',
     },
     {
-      code: 6039,
+      code: 6040,
       name: 'CustodyNotFound',
       msg: 'Cannot find custody',
     },
     {
-      code: 6040,
+      code: 6041,
       name: 'InsufficientBucketReserve',
       msg: 'The bucket does not contain enough token for reserving this allocation',
     },
     {
-      code: 6041,
+      code: 6042,
       name: 'UserNicknameTooLong',
       msg: 'User nickname exceed 24 characters',
     },
     {
-      code: 6042,
+      code: 6043,
       name: 'UserNicknameTooShort',
       msg: 'User nickname is less than 3 characters',
     },
     {
-      code: 6043,
+      code: 6044,
       name: 'SelfSponsored',
       msg: 'User cannot sponsor itself',
     },
     {
-      code: 6044,
+      code: 6045,
       name: 'ReferalRewardLimitReached',
       msg: 'Referal reward limit reached',
     },

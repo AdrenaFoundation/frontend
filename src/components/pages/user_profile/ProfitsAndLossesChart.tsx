@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { formatPriceInfo } from '@/utils';
 
-import NumberInfo from '../backoffice/NumberInfo';
+import NumberInfo from '../monitoring/NumberInfo';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

@@ -5,8 +5,8 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import YesOrNoModal from '@/components/common/YesOrNoModal/YesOrNoModal';
-import DateInfo from '@/components/pages/backoffice/DateInfo';
-import OnchainAccountInfo from '@/components/pages/backoffice/OnchainAccountInfo';
+import DateInfo from '@/components/pages/monitoring/DateInfo';
+import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
 import {
   addFailedTxNotification,

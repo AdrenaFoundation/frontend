@@ -88,11 +88,6 @@ export class AdrenaClient {
     AdrenaClient.programId,
   )[0];
 
-  public static multisigAddress = PublicKey.findProgramAddressSync(
-    [Buffer.from('multisig')],
-    AdrenaClient.programId,
-  )[0];
-
   public static transferAuthorityAddress = PublicKey.findProgramAddressSync(
     [Buffer.from('transfer_authority')],
     AdrenaClient.programId,
@@ -873,7 +868,7 @@ export class AdrenaClient {
     price,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
     userProfile,
   }: {
@@ -882,7 +877,7 @@ export class AdrenaClient {
     price: BN;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
     userProfile?: PublicKey;
   }) {
@@ -928,7 +923,7 @@ export class AdrenaClient {
       collateralAmount: collateralAmount.toString(),
       collateralMint: collateralMint.toString(),
       mint: mint.toString(),
-      size: size.toString(),
+      leverage: leverage.toString(),
     });
 
     const accounts: OpenPositionAccounts = {
@@ -965,7 +960,7 @@ export class AdrenaClient {
       .openPosition({
         price: priceWithSlippage,
         collateral: collateralAmount,
-        size,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
@@ -979,7 +974,7 @@ export class AdrenaClient {
     price,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
     userProfile,
   }: {
@@ -988,7 +983,7 @@ export class AdrenaClient {
     price: BN;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
     userProfile?: PublicKey;
   }) {
@@ -1066,7 +1061,7 @@ export class AdrenaClient {
       collateralAmount: collateralAmount.toString(),
       collateralMint: collateralMint.toString(),
       mint: mint.toString(),
-      size: size.toString(),
+      leverage: leverage.toString(),
       userProfile,
     });
 
@@ -1109,7 +1104,7 @@ export class AdrenaClient {
       .openPositionWithSwap({
         price: priceWithSlippage,
         collateral: collateralAmount,
-        size,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
@@ -1292,7 +1287,7 @@ export class AdrenaClient {
     price,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
   }: {
     owner: PublicKey;
@@ -1300,7 +1295,7 @@ export class AdrenaClient {
     price: BN;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
   }): Promise<string> {
     if (!this.connection) {
@@ -1375,7 +1370,7 @@ export class AdrenaClient {
       price,
       collateralMint,
       collateralAmount,
-      size,
+      leverage,
       side,
       userProfile: userProfile ? userProfile.pubkey : undefined,
     })
@@ -1539,16 +1534,14 @@ export class AdrenaClient {
     price,
     // amount of collateralMint token provided as collateral
     collateralAmount,
-    // the amount of tokenB to open a position for
-    // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
-    size,
+    leverage,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
     mint: PublicKey;
     price: BN;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1621,7 +1614,7 @@ export class AdrenaClient {
       price,
       collateralMint,
       collateralAmount,
-      size,
+      leverage,
       side: 'short',
       userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
@@ -1640,15 +1633,15 @@ export class AdrenaClient {
   public async getOpenPositionWithConditionalSwapInfos({
     tokenA,
     tokenB,
-    amountA,
-    amountB,
+    collateralAmount,
+    leverage,
     side,
     tokenPrices,
   }: {
     tokenA: Token;
     tokenB: Token;
-    amountA: BN;
-    amountB: BN;
+    collateralAmount: BN;
+    leverage: BN;
     side: 'long' | 'short';
     tokenPrices: TokenPricesState;
   }): Promise<{
@@ -1671,13 +1664,11 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
-    const collateralAmount: BN = amountA;
-
     const info = await this.getOpenPositionWithSwapAmountAndFees({
       mint: tokenB.mint,
       collateralMint: tokenA.mint,
       collateralAmount,
-      size: amountB,
+      leverage,
       side,
     });
 
@@ -1737,16 +1728,14 @@ export class AdrenaClient {
     price,
     // amount of collateralMint token provided as collateral
     collateralAmount,
-    // the amount of tokenB to open a position for
-    // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
-    size,
+    leverage,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
     mint: PublicKey;
     price: BN;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1807,7 +1796,7 @@ export class AdrenaClient {
       price,
       collateralMint,
       collateralAmount,
-      size,
+      leverage,
       side: 'long',
       userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
@@ -2897,13 +2886,13 @@ export class AdrenaClient {
     mint,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
   }: {
     mint: PublicKey;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
     if (!this.readonlyAdrenaProgram.views) {
@@ -2935,7 +2924,7 @@ export class AdrenaClient {
     const instruction = await this.readonlyAdrenaProgram.methods
       .getOpenPositionWithSwapAmountAndFees({
         collateralAmount: collateralAmount,
-        size,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
@@ -2963,13 +2952,13 @@ export class AdrenaClient {
     token,
     collateralToken,
     collateralAmount,
-    size,
+    leverage,
     side,
   }: {
     token: Token;
     collateralToken: Token;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
   }): Promise<NewPositionPricesAndFee | null> {
     if (!token.custody || !collateralToken.custody) {
@@ -2988,7 +2977,7 @@ export class AdrenaClient {
     return this.readonlyAdrenaProgram.views.getEntryPriceAndFee(
       {
         collateral: collateralAmount,
-        size,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,

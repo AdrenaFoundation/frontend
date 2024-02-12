@@ -83,6 +83,12 @@ export function nativeToUi(nb: BN, decimals: number): number {
   return nb.toNumber() / 10 ** decimals;
 }
 
+// 10_000 = x1 leverage
+// 500_000 = x50 leverage
+export function uiLeverageToNative(leverage: number): BN {
+  return new BN(Math.floor(leverage * 10_000));
+}
+
 export function uiToNative(nb: number, decimals: number): BN {
   return new BN(Math.floor(nb * 10 ** decimals));
 }

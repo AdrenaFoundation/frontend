@@ -6,7 +6,12 @@ import { twMerge } from 'tailwind-merge';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { formatNumber, formatPriceInfo, uiToNative } from '@/utils';
+import {
+  formatNumber,
+  formatPriceInfo,
+  uiLeverageToNative,
+  uiToNative,
+} from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 
@@ -59,8 +64,8 @@ export default function PositionInfos({
           await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
             tokenA,
             tokenB,
-            amountA: uiToNative(inputA, tokenA.decimals),
-            amountB: uiToNative(inputB, tokenB.decimals),
+            collateralAmount: uiToNative(inputA, tokenA.decimals),
+            leverage: uiLeverageToNative(leverage),
             side,
             tokenPrices,
           });

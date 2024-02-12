@@ -1,15 +1,15 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 
-import AccountsBloc from '@/components/pages/backoffice/Blocs/AccountsBloc';
-import AssetsUnderManagementBloc from '@/components/pages/backoffice/Blocs/AssetsUnderManagementBloc';
-import BucketsBloc from '@/components/pages/backoffice/Blocs/BucketsBloc';
-import FeeCustodyBreakdownBloc from '@/components/pages/backoffice/Blocs/FeeCustodyBreakdownBloc';
-import GlobalOverviewBloc from '@/components/pages/backoffice/Blocs/GlobalOverviewBloc';
-import PoolBloc from '@/components/pages/backoffice/Blocs/PoolBloc';
-import PositionsBloc from '@/components/pages/backoffice/Blocs/PositionsBloc';
-import StakingBloc from '@/components/pages/backoffice/Blocs/StakingBloc';
-import VestingBloc from '@/components/pages/backoffice/Blocs/VestingBloc';
-import VolumeCustodyBreakdownBloc from '@/components/pages/backoffice/Blocs/VolumeCustodyBreakdownBloc';
+import AccountsBloc from '@/components/pages/monitoring/Blocs/AccountsBloc';
+import AssetsUnderManagementBloc from '@/components/pages/monitoring/Blocs/AssetsUnderManagementBloc';
+import BucketsBloc from '@/components/pages/monitoring/Blocs/BucketsBloc';
+import FeeCustodyBreakdownBloc from '@/components/pages/monitoring/Blocs/FeeCustodyBreakdownBloc';
+import GlobalOverviewBloc from '@/components/pages/monitoring/Blocs/GlobalOverviewBloc';
+import PoolBloc from '@/components/pages/monitoring/Blocs/PoolBloc';
+import PositionsBloc from '@/components/pages/monitoring/Blocs/PositionsBloc';
+import StakingBloc from '@/components/pages/monitoring/Blocs/StakingBloc';
+import VestingBloc from '@/components/pages/monitoring/Blocs/VestingBloc';
+import VolumeCustodyBreakdownBloc from '@/components/pages/monitoring/Blocs/VolumeCustodyBreakdownBloc';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
@@ -23,7 +23,7 @@ import { PageProps } from '@/types';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
-export default function Backoffice({ mainPool, custodies }: PageProps) {
+export default function Monitoring({ mainPool, custodies }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const cortex = useCortex();
   const perpetuals = usePerpetuals();

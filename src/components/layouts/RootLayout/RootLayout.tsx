@@ -26,17 +26,14 @@ const RootLayout = ({
     { name: 'Earn', link: '/earn' },
     { name: 'Buy', link: '/swap_alp' },
     // { name: 'Referral', link: '/referral' },
-    { name: 'Backoffice', link: '/backoffice' },
+    { name: 'Monitoring', link: '/monitoring' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
 
   useEffect(() => {
     if (window.adrena.cluster === 'devnet') {
       return setPages((prev) =>
-        prev.concat([
-          { name: 'Faucet', link: '/faucet_devnet' },
-          { name: 'On-chain Info', link: '/onchain_info' },
-        ]),
+        prev.concat([{ name: 'Faucet', link: '/faucet_devnet' }]),
       );
     }
   }, []);
