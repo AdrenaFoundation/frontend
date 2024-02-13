@@ -16,12 +16,18 @@ export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
 
 export type SupportedCluster = 'devnet' | 'mainnet';
 
+export type GeoBlockingData = {
+  country?: string;
+  allowed: boolean;
+};
+
 export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
+  geoBlockingData: GeoBlockingData;
 };
 
 declare global {

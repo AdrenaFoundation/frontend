@@ -7,6 +7,8 @@ import IConfiguration from '@/config/IConfiguration';
 import { DEFAULT_PERPS_USER } from '@/constant';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 
+import { GeoBlockingData } from './types';
+
 function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
     connection,
@@ -43,6 +45,12 @@ function createReadOnlyAdrenaProgram(connection: Connection) {
   return new Program(ADRENA_IDL, AdrenaClient.programId, readOnlyProvider);
 }
 
+async function fetchGeoBlockingData(): Promise<GeoBlockingData> {
+  const res = await fetch(`https://api.adrena.xyz/api/geoapi`);
+
+  return res.json();
+}
+
 // Initialize all objects that are required to launch the app
 // theses objects doesn't change on the way
 // for changing objects, use hooks like useCustodies/usePositions etc.
@@ -52,7 +60,10 @@ export default async function initializeApp(config: IConfiguration) {
 
   const readOnlyAdrenaProgram = createReadOnlyAdrenaProgram(mainConnection);
 
-  const client = await AdrenaClient.initialize(readOnlyAdrenaProgram, config);
+  const [client, geoBlockingData] = await Promise.all([
+    AdrenaClient.initialize(readOnlyAdrenaProgram, config),
+    fetchGeoBlockingData(),
+  ]);
 
   window.adrena = {
     config,
@@ -60,5 +71,6 @@ export default async function initializeApp(config: IConfiguration) {
     mainConnection,
     pythConnection,
     cluster: config.cluster,
+    geoBlockingData,
   };
 }
