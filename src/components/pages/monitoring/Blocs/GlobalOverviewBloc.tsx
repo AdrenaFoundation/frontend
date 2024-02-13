@@ -5,6 +5,7 @@ import { Cortex, CustodyExtended, PoolExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import Bloc from '../Bloc';
+import InfoAnnotation from '../InfoAnnotation';
 import NumberInfo from '../NumberInfo';
 import Table from '../Table';
 import TitleAnnotation from '../TitleAnnotation';
@@ -46,31 +47,77 @@ export default function GlobalOverviewBloc({
         rowTitleWidth="50%"
         data={[
           {
-            rowTitle: 'Total Value',
+            rowTitle: (
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="Sum of all assets owned by the protocol, adjusted for the current value of traders' positions."
+                  className="mr-1"
+                />
+                Total Value
+              </div>
+            ),
+
             value: <NumberInfo value={mainPool.aumUsd} />,
           },
 
-          ...(totalPoolAssetHardValue !== CANNOT_CALCULATE
-            ? [
-                {
-                  rowTitle: 'Raw Total Assets Value',
-                  value: <NumberInfo value={totalPoolAssetHardValue} />,
-                },
-              ]
-            : []),
+          {
+            rowTitle: (
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="Sum of all assets owned by the protocol."
+                  className="mr-1"
+                />
+                Raw Total Assets Value
+              </div>
+            ),
+
+            value:
+              totalPoolAssetHardValue !== CANNOT_CALCULATE ? (
+                <NumberInfo value={totalPoolAssetHardValue} />
+              ) : (
+                '-'
+              ),
+          },
 
           {
-            rowTitle: 'Total Volume',
+            rowTitle: (
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="The cumulative value of all assets traded or swapped within the protocol."
+                  className="mr-1"
+                />
+                Total Volume
+              </div>
+            ),
+
             value: <NumberInfo value={mainPool.totalVolume} />,
           },
 
           {
-            rowTitle: 'Total Fee Collected',
+            rowTitle: (
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="The aggregate amount of fees the protocol has earned from trades and swaps."
+                  className="mr-1"
+                />
+                Total Fee Collected
+              </div>
+            ),
+
             value: <NumberInfo value={mainPool.totalFeeCollected} />,
           },
 
           {
-            rowTitle: 'ADX total supply',
+            rowTitle: (
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="Total amount of ADX tokens that have been minted."
+                  className="mr-1"
+                />
+                ADX Total Supply
+              </div>
+            ),
+
             value: (
               <NumberInfo
                 value={adxTotalSupply}
@@ -81,7 +128,16 @@ export default function GlobalOverviewBloc({
           },
 
           {
-            rowTitle: 'ALP total supply',
+            rowTitle: (
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="Total amount of ALP tokens that have been minted."
+                  className="mr-1"
+                />
+                ALP Total Supply
+              </div>
+            ),
+
             value: (
               <NumberInfo
                 value={alpTotalSupply}
@@ -93,9 +149,12 @@ export default function GlobalOverviewBloc({
 
           {
             rowTitle: (
-              <div>
-                Total Vested
-                <TitleAnnotation text="Unrealized" />
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="The quantity of ADX tokens assigned for gradual release to specific recipients over a predetermined period."
+                  className="mr-1"
+                />
+                Total Vested <TitleAnnotation text="Unrealized" />
               </div>
             ),
             value: (
@@ -111,7 +170,16 @@ export default function GlobalOverviewBloc({
           },
 
           {
-            rowTitle: 'Number of Vest',
+            rowTitle: (
+              <div className="flex items-center">
+                <InfoAnnotation
+                  text="The count of individuals or entities designated to receive ADX tokens via a vesting schedule."
+                  className="mr-1"
+                />
+                Number of Vest
+              </div>
+            ),
+
             value: (
               <NumberInfo
                 value={cortex.vests.length}

@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { twMerge } from 'tailwind-merge';
 
 import { AdrenaClient } from '@/AdrenaClient';
