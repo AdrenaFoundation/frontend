@@ -5180,6 +5180,14 @@ export type Adrena = {
             name: 'bump';
             type: 'u8';
           },
+          {
+            name: 'exitFeeUsd';
+            type: 'u64';
+          },
+          {
+            name: 'liquidationFeeUsd';
+            type: 'u64';
+          },
         ];
       };
     },
@@ -6477,13 +6485,21 @@ export type Adrena = {
             type: 'u128';
           },
           {
+            name: 'exitFeeUsd';
+            type: 'u64';
+          },
+          {
+            name: 'liquidationFeeUsd';
+            type: 'u64';
+          },
+          {
             name: 'stableLockedAmount';
             type: {
               array: [
                 {
                   defined: 'StableLockedAmountStat';
                 },
-                3,
+                2,
               ];
             };
           },
@@ -12399,6 +12415,14 @@ export const IDL: Adrena = {
             name: 'bump',
             type: 'u8',
           },
+          {
+            name: 'exitFeeUsd',
+            type: 'u64',
+          },
+          {
+            name: 'liquidationFeeUsd',
+            type: 'u64',
+          },
         ],
       },
     },
@@ -13696,13 +13720,21 @@ export const IDL: Adrena = {
             type: 'u128',
           },
           {
+            name: 'exitFeeUsd',
+            type: 'u64',
+          },
+          {
+            name: 'liquidationFeeUsd',
+            type: 'u64',
+          },
+          {
             name: 'stableLockedAmount',
             type: {
               array: [
                 {
                   defined: 'StableLockedAmountStat',
                 },
-                3,
+                2,
               ],
             },
           },

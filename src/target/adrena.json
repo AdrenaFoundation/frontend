@@ -5179,6 +5179,14 @@
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "exitFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationFeeUsd",
+            "type": "u64"
           }
         ]
       }
@@ -6477,13 +6485,21 @@
             "type": "u128"
           },
           {
+            "name": "exitFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "stableLockedAmount",
             "type": {
               "array": [
                 {
                   "defined": "StableLockedAmountStat"
                 },
-                3
+                2
               ]
             }
           }
@@ -7216,6 +7232,6 @@
     }
   ],
   "metadata": {
-    "address": "5cZNXs1coWbw5XYLozEK1LV7GYYWvKUp8Z97rCDm5k7t"
+    "address": "HL9XZLuuNy2BTXfyEQDn21guS1sBEej2xrwWmyQygy6t"
   }
 }
