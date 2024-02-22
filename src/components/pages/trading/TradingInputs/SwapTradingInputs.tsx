@@ -2,25 +2,20 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import InputNumber from '@/components/common/InputNumber/InputNumber';
 import { USD_DECIMALS } from '@/constant';
 import { TokenPricesState } from '@/reducers/tokenPricesReducer';
 import { useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { Token } from '@/types';
 import { formatNumber } from '@/utils';
 
 import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
-import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
-import PositionInfos from './PositionInfos';
 import SwapInfo from './SwapInfo';
 
 function recalculateInputs({
   mainInput,
   secondaryInput,
   tokenPrices,
-  leverage,
-  manualUserInput,
 }: {
   mainInput: {
     value: number | null;
@@ -35,8 +30,6 @@ function recalculateInputs({
     setInput: (v: number | null) => void;
   };
   tokenPrices: TokenPricesState;
-  leverage: number;
-  manualUserInput: null | 'A' | 'B';
 }) {
   const nb = Number(mainInput.value);
 
@@ -76,8 +69,7 @@ function recalculateInputs({
   }
 
   // TODO: take into account the fees to be paid by the user
-  const secondaryPrice =
-    manualUserInput === 'A' ? mainPrice * leverage : mainPrice / leverage;
+  const secondaryPrice = mainPrice;
 
   secondaryInput.setPrice(secondaryPrice);
   secondaryInput.setInput(
@@ -85,32 +77,26 @@ function recalculateInputs({
   );
 }
 
-export default function TradingInputs({
-  actionType,
+export default function SwapTradingInputs({
   className,
   tokenA,
   tokenB,
   allowedTokenA,
   allowedTokenB,
-  openedPosition,
   onChangeInputA,
   onChangeInputB,
   setTokenA,
   setTokenB,
-  onChangeLeverage,
 }: {
-  actionType: 'short' | 'long' | 'swap';
   className?: string;
   tokenA: Token;
   tokenB: Token;
   allowedTokenA: Token[];
   allowedTokenB: Token[];
-  openedPosition: PositionExtended | null;
   onChangeInputA: (v: number | null) => void;
   onChangeInputB: (v: number | null) => void;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
-  onChangeLeverage: (v: number) => void;
 }) {
   const wallet = useSelector((s) => s.walletState);
   const connected = !!wallet;
@@ -124,18 +110,11 @@ export default function TradingInputs({
     null,
   );
 
-  // Use this state to allow user to remove everything in the input
-  // overwise the user is stuck with one number, which is bad ux
-  const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
-    useState<boolean>(false);
-
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
 
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
-
-  const [leverage, setLeverage] = useState<number>(1);
 
   // Propagate changes to upper component
   {
@@ -148,18 +127,7 @@ export default function TradingInputs({
       const nb = Number(inputB);
       onChangeInputB(isNaN(nb) || inputB === null ? null : nb);
     }, [inputB, onChangeInputB]);
-
-    useEffect(() => {
-      onChangeLeverage(leverage);
-    }, [onChangeLeverage, leverage]);
   }
-
-  // Set leverage to 1 when swapping
-  useEffect(() => {
-    if (actionType === 'swap') {
-      setLeverage(1);
-    }
-  }, [actionType]);
 
   // Switch inputs values and tokens
   const switchAB = () => {
@@ -202,8 +170,6 @@ export default function TradingInputs({
         mainInput: inputAInfos,
         secondaryInput: inputBInfos,
         tokenPrices,
-        leverage,
-        manualUserInput,
       });
     }
 
@@ -213,15 +179,12 @@ export default function TradingInputs({
         mainInput: inputBInfos,
         secondaryInput: inputAInfos,
         tokenPrices,
-        leverage,
-        manualUserInput,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     inputA,
     inputB,
-    leverage,
     manualUserInput,
     // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -316,16 +279,7 @@ export default function TradingInputs({
       <TradingInput
         textTopLeft={
           <div className="flex flex-row gap-1 flex-wrap">
-            <p className="opacity-50 text-xs">
-              {
-                {
-                  long: 'Long',
-                  short: 'Short',
-                  swap: 'Receive',
-                }[actionType]
-              }
-              :
-            </p>
+            <p className="opacity-50 text-xs">Receive:</p>
             <p className="opacity-50 text-xs">
               {priceB !== null
                 ? ` ${formatNumber(priceB, USD_DECIMALS)} USD`
@@ -335,23 +289,16 @@ export default function TradingInputs({
         }
         textTopRight={
           <>
-            {/* Display leverage if short/long, otherwise display wallet balance */}
-            {actionType === 'short' || actionType === 'long' ? (
-              <div className="text-txtfade">
-                Leverage{`: ${leverage.toFixed(2)}x`}
-              </div>
-            ) : (
-              <div className="flex flex-row gap-1 flex-wrap">
-                <p className="opacity-50 text-xs">Balance:</p>
-                <p className="opacity-50 text-xs">
-                  {connected && tokenB
-                    ? ` ${(
-                        walletTokenBalances?.[tokenB.symbol] ?? '0'
-                      ).toLocaleString()}`
-                    : null}
-                </p>
-              </div>
-            )}
+            <div className="flex flex-row gap-1 flex-wrap">
+              <p className="opacity-50 text-xs">Balance:</p>
+              <p className="opacity-50 text-xs">
+                {connected && tokenB
+                  ? ` ${(
+                      walletTokenBalances?.[tokenB.symbol] ?? '0'
+                    ).toLocaleString()}`
+                  : null}
+              </p>
+            </div>
           </>
         }
         value={inputB}
@@ -363,57 +310,7 @@ export default function TradingInputs({
         inputClassName="rounded-t-none border-t-0"
       />
 
-      {actionType === 'short' || actionType === 'long' ? (
-        <>
-          {/* Leverage (only in short/long) */}
-          <>
-            <div className="w-full mt-6 mb-2 text-txtfade text-sm flex justify-between items-center">
-              <span>Leverage Slider</span>
-
-              <div>
-                <span className="text-txtfade">x </span>
-                <InputNumber
-                  className="w-10  text-center rounded-md bg-dark"
-                  value={isLeverageInputEmpty ? undefined : leverage}
-                  max={50}
-                  onChange={function (value: number | null): void {
-                    // throw new Error('Function not implemented.');
-                    if (value === null) {
-                      setIsLeverageInputEmpty(true);
-                      return;
-                    }
-
-                    setLeverage(value);
-                    setIsLeverageInputEmpty(false);
-                  }}
-                  inputFontSize="1.1em"
-                />
-              </div>
-            </div>
-            <div className="w-full flex flex-col justify-center items-center">
-              <LeverageSlider
-                value={leverage}
-                className="w-full m-auto pr-3"
-                onChange={(v: number) => setLeverage(v)}
-              />
-            </div>
-          </>
-
-          {/* Position basic infos */}
-          <PositionInfos
-            className="mt-8 text-sm"
-            side={actionType}
-            tokenB={tokenB}
-            inputB={inputB}
-            leverage={leverage}
-            openedPosition={openedPosition}
-            tokenA={tokenA}
-            inputA={inputA}
-          />
-        </>
-      ) : (
-        <SwapInfo tokenA={tokenA} tokenB={tokenB} inputB={inputB} />
-      )}
+      <SwapInfo tokenA={tokenA} tokenB={tokenB} inputB={inputB} />
     </div>
   );
 }

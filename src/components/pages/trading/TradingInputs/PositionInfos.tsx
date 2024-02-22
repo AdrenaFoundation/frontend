@@ -1,111 +1,101 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useDebounce } from '@/hooks/useDebounce';
+import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import {
-  formatNumber,
-  formatPriceInfo,
-  uiLeverageToNative,
-  uiToNative,
-} from '@/utils';
+import { formatNumber, formatPriceInfo } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
-
-// use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
-let loadingCounter = 0;
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 
 export default function PositionInfos({
   className,
-  side,
-  tokenA,
+  positionInfos,
   tokenB,
-  inputA,
-  inputB,
   leverage,
   openedPosition,
 }: {
-  side: 'short' | 'long';
   className?: string;
-  tokenA: Token;
+  positionInfos: {
+    collateralUsd: number;
+    sizeUsd: number;
+    size: number;
+    swapFeeUsd: number | null;
+    openPositionFeeUsd: number;
+    totalOpenPositionFeeUsd: number;
+    entryPrice: number;
+    liquidationPrice: number;
+    exitFeeUsd: number;
+    liquidationFeeUsd: number;
+  } | null;
   tokenB: Token;
-  inputA: number | null;
-  inputB: number | null;
   leverage: number;
   openedPosition: PositionExtended | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  const [infos, setInfos] = useState<{
-    swapFeeUsd: number | null;
-    openPositionFeeUsd: number;
-    totalFeeUsd: number;
-    entryPrice: number;
-    liquidationPrice: number;
-  } | null>(null);
-
-  const debouncedInputs = useDebounce(inputB);
-
-  useEffect(() => {
-    if (!tokenA || !tokenB || !inputA || !inputB || inputB <= 0) {
-      setInfos(null);
-      return;
-    }
-
-    const localLoadingCounter = ++loadingCounter;
-
-    (async () => {
-      try {
-        const infos =
-          await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
-            tokenA,
-            tokenB,
-            collateralAmount: uiToNative(inputA, tokenA.decimals),
-            leverage: uiLeverageToNative(leverage),
-            side,
-            tokenPrices,
-          });
-
-        // Verify that information is not outdated
-        // If loaderCounter doesn't match it means
-        // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) {
-          return;
-        }
-
-        setInfos(infos);
-      } catch (err) {
-        console.log('Ignored error:', err);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedInputs, side, tokenA, tokenB]);
+  const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 
   return (
-    <div className={twMerge('relative', 'flex', 'flex-col', className)}>
+    <div className={twMerge('relative flex flex-col', className)}>
       <div className={infoRowStyle}>
-        <span className="text-txtfade">Collateral In</span>
-        <span className="font-mono">{side === 'long' ? 'USD' : 'USDC'}</span>
+        <span className="text-txtfade text-xs flex">
+          <InfoAnnotation
+            text="Tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay borrow fees. If the position runs out of collateral, it gets liquidated."
+            className="mr-1 w-3"
+          />
+          Collateral
+        </span>
+
+        <span className="font-mono text-xs">
+          {positionInfos ? formatPriceInfo(positionInfos.collateralUsd) : '-'}
+        </span>
       </div>
 
       <div className={infoRowStyle}>
-        <span className="text-txtfade">Leverage</span>
-        <span className="font-mono">
+        <span className="text-txtfade text-xs flex">
+          <InfoAnnotation
+            text="Amount of tokens being traded."
+            className="mr-1 w-3"
+          />
+          Size
+        </span>
+
+        <span className="font-mono text-xs">
+          {positionInfos ? formatPriceInfo(positionInfos.sizeUsd) : '-'}
+        </span>
+      </div>
+
+      <div className={infoRowStyle}>
+        <span className="text-txtfade text-xs flex">
+          <InfoAnnotation
+            text="Multiplier applied to the collateral to determine the size of the position."
+            className="mr-1 w-3"
+          />
+          Leverage
+        </span>
+
+        <span className="font-mono text-xs">
           {leverage !== null ? `${formatNumber(leverage, 2)}x` : '-'}
         </span>
       </div>
 
       <div className={infoRowStyle}>
-        <span className="text-txtfade">Entry Price</span>
-        <span className="flex font-mono">
+        <span className="text-txtfade text-xs flex">
+          <InfoAnnotation
+            text="Token's price at which the trade begins."
+            className="mr-1 w-3"
+          />
+          Entry Price
+        </span>
+
+        <span className="flex font-mono text-xs">
           {(() => {
-            if (!infos) return '-';
+            if (!positionInfos) return '-';
 
             if (openedPosition) {
               return (
@@ -121,21 +111,28 @@ export default function PositionInfos({
                   />
 
                   {/* New position entry price */}
-                  <div>{formatPriceInfo(infos.entryPrice)}</div>
+                  <div>{formatPriceInfo(positionInfos.entryPrice)}</div>
                 </>
               );
             }
 
-            return formatPriceInfo(infos.entryPrice);
+            return formatPriceInfo(positionInfos.entryPrice);
           })()}
         </span>
       </div>
 
       <div className={infoRowStyle}>
-        <span className="text-txtfade">Liq. Price</span>
-        <span className="flex font-mono">
+        <span className="text-txtfade text-xs flex">
+          <InfoAnnotation
+            text="If the token's price hits this point, the position is automatically closed to prevent further losses."
+            className="mr-1 w-3"
+          />
+          Liquidation Price
+        </span>
+
+        <span className="flex font-mono text-xs">
           {(() => {
-            if (!infos) return '-';
+            if (!positionInfos) return '-';
 
             if (openedPosition) {
               if (!openedPosition.liquidationPrice) return '-';
@@ -153,34 +150,41 @@ export default function PositionInfos({
                   />
 
                   {/* New position entry price */}
-                  <div>{formatPriceInfo(infos.liquidationPrice)}</div>
+                  <div>{formatPriceInfo(positionInfos.liquidationPrice)}</div>
                 </>
               );
             }
 
-            return formatPriceInfo(infos.liquidationPrice);
+            return formatPriceInfo(positionInfos.liquidationPrice);
           })()}
         </span>
       </div>
 
       <div className={infoRowStyle}>
-        <span className="text-txtfade">Fees</span>
-        <span className="font-mono">
-          {infos && infos?.swapFeeUsd ? (
+        <span className="text-txtfade text-xs flex">
+          <InfoAnnotation
+            text="Fees paid when opening the position."
+            className="mr-1 w-3"
+          />
+          Open Position Fees
+        </span>
+
+        <span className="font-mono text-xs">
+          {positionInfos && positionInfos?.swapFeeUsd ? (
             <Tippy
               content={
                 <ul className="flex flex-col gap-2">
                   <li className="flex flex-row gap-2 justify-between">
                     <p className="text-sm text-txtfade">Swap fees:</p>
                     <p className="text-sm font-mono">
-                      {`${formatPriceInfo(infos.swapFeeUsd)}`}
+                      {`${formatPriceInfo(positionInfos.swapFeeUsd)}`}
                     </p>
                   </li>
 
                   <li className="flex flex-row gap-2 justify-between">
                     <p className="text-sm text-txtfade">Open position fees:</p>
                     <p className="text-sm font-mono">
-                      {`${formatPriceInfo(infos.openPositionFeeUsd)}`}
+                      {`${formatPriceInfo(positionInfos.openPositionFeeUsd)}`}
                     </p>
                   </li>
 
@@ -189,7 +193,9 @@ export default function PositionInfos({
                   <li className="flex flex-row gap-2 justify-between">
                     <p className="text-sm text-txtfade">Total fees:</p>
                     <p className="text-sm font-mono">
-                      {`${formatPriceInfo(infos.totalFeeUsd)}`}
+                      {`${formatPriceInfo(
+                        positionInfos.totalOpenPositionFeeUsd,
+                      )}`}
                     </p>
                   </li>
                 </ul>
@@ -197,15 +203,96 @@ export default function PositionInfos({
               placement="bottom"
             >
               <div className="tooltip-target">
-                {formatPriceInfo(infos.totalFeeUsd)}
+                {formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)}
               </div>
             </Tippy>
-          ) : infos ? (
-            formatPriceInfo(infos.totalFeeUsd)
+          ) : positionInfos ? (
+            formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)
           ) : (
             '-'
           )}
         </span>
+      </div>
+
+      <div className={infoRowStyle}>
+        <span className="text-txtfade text-xs flex">
+          <InfoAnnotation
+            text="Amount of funds available to enter new trades."
+            className="mr-1 w-3"
+          />
+          Available Liquidity
+        </span>
+
+        <span className="font-mono text-xs">
+          {custody && tokenB && tokenPrices && tokenPrices[tokenB.symbol]
+            ? formatPriceInfo(
+                custody.liquidity *
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  tokenPrices[tokenB.symbol]!,
+              )
+            : '-'}
+        </span>
+      </div>
+
+      <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
+
+      <div className={infoRowStyle}>
+        <span className="text-txtfade text-xs relative flex">
+          <InfoAnnotation
+            text="Fees paid when closing the position."
+            className="mr-1 w-3"
+          />
+          Exit Position Fees
+          <span className="text-[0.7em] text-txtfade absolute top-[-0.6em] right-[-0.7em]">
+            *
+          </span>
+        </span>
+
+        <span className="font-mono text-xs text-txtfade">
+          {positionInfos ? formatPriceInfo(positionInfos.exitFeeUsd) : '-'}
+        </span>
+      </div>
+
+      <div className={infoRowStyle}>
+        <span className="text-txtfade text-xs relative flex">
+          <InfoAnnotation
+            text="Fees paid when the position is liquidated."
+            className="mr-1 w-3"
+          />
+          Liquidation Fees
+          <span className="text-[0.7em] text-txtfade absolute top-[-0.6em] right-[-0.7em]">
+            *
+          </span>
+        </span>
+
+        <span className="font-mono text-xs text-txtfade">
+          {positionInfos
+            ? formatPriceInfo(positionInfos.liquidationFeeUsd)
+            : '-'}
+        </span>
+      </div>
+
+      <div className={infoRowStyle}>
+        <span className="text-txtfade text-xs relative flex">
+          <InfoAnnotation
+            text="Fees charged for borrowing funds for the position. Greater leverage means borrowing more tokens, resulting in higher fees."
+            className="mr-1 w-3"
+          />
+          Current Borrow Fees
+          <span className="text-[0.7em] text-txtfade absolute top-[-0.6em] right-[-0.7em]">
+            *
+          </span>
+        </span>
+
+        <span className="font-mono text-xs text-txtfade">
+          {custody && tokenB
+            ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}%/hr`
+            : '-'}
+        </span>
+      </div>
+
+      <div className="italic text-[0.7em] text-txtfade ml-auto mt-4">
+        * Estimated
       </div>
     </div>
   );

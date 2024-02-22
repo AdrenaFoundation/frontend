@@ -6614,7 +6614,19 @@
             "type": "u64"
           },
           {
-            "name": "fee",
+            "name": "entryFee",
+            "type": "u64"
+          },
+          {
+            "name": "exitFee",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationFee",
+            "type": "u64"
+          },
+          {
+            "name": "size",
             "type": "u64"
           }
         ]
@@ -6643,6 +6655,18 @@
           },
           {
             "name": "openPositionFee",
+            "type": "u64"
+          },
+          {
+            "name": "exitFee",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationFee",
+            "type": "u64"
+          },
+          {
+            "name": "size",
             "type": "u64"
           }
         ]

@@ -553,6 +553,8 @@ export class AdrenaClient {
         maxRatio: ratios.max.toNumber(),
         targetRatio: ratios.target.toNumber(),
         maxLeverage: custody.pricing.maxLeverage / BPS,
+        minInitialLeverage: custody.pricing.minInitialLeverage / BPS,
+        maxInitialLeverage: custody.pricing.maxInitialLeverage / BPS,
         owned: nativeToUi(custody.assets.owned, custody.decimals),
         liquidity: nativeToUi(
           custody.assets.owned.sub(custody.assets.locked),
@@ -1645,11 +1647,16 @@ export class AdrenaClient {
     side: 'long' | 'short';
     tokenPrices: TokenPricesState;
   }): Promise<{
+    collateralUsd: number;
+    sizeUsd: number;
+    size: number;
     swapFeeUsd: number | null;
     openPositionFeeUsd: number;
-    totalFeeUsd: number;
+    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
+    exitFeeUsd: number;
+    liquidationFeeUsd: number;
   }> {
     const usdcToken = this.getUsdcToken();
 
@@ -1675,11 +1682,14 @@ export class AdrenaClient {
     if (info === null) throw new Error('cannot calculate fees');
 
     const {
+      size: nativeSize,
       entryPrice,
       liquidationPrice,
       swapFeeIn,
       swapFeeOut,
       openPositionFee,
+      exitFee,
+      liquidationFee,
     } = info;
 
     const { swapedTokenDecimals, swapedTokenPrice } =
@@ -1700,11 +1710,28 @@ export class AdrenaClient {
     const openPositionFeeUsd =
       nativeToUi(openPositionFee, tokenB.decimals) * tokenBPrice;
 
+    const exitFeeUsd = nativeToUi(exitFee, tokenB.decimals) * tokenBPrice;
+
+    const liquidationFeeUsd =
+      nativeToUi(liquidationFee, tokenB.decimals) * tokenBPrice;
+
+    const collateralUsd =
+      nativeToUi(collateralAmount, tokenA.decimals) * tokenAPrice;
+
+    const size = nativeToUi(nativeSize, tokenB.decimals);
+
+    const sizeUsd = size * tokenBPrice;
+
     // calculate and return fee amount in usd
     return {
+      collateralUsd,
+      size,
+      sizeUsd,
       swapFeeUsd,
       openPositionFeeUsd,
-      totalFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
+      exitFeeUsd,
+      liquidationFeeUsd,
+      totalOpenPositionFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
       entryPrice: nativeToUi(entryPrice, PRICE_DECIMALS),
       liquidationPrice: nativeToUi(liquidationPrice, PRICE_DECIMALS),
     };

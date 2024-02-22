@@ -421,11 +421,8 @@ export default function Trade({
             tokenB={tokenB}
             setTokenA={setTokenA}
             setTokenB={setTokenB}
-            inputAValue={inputAValue}
-            inputBValue={inputBValue}
             setInputAValue={setInputAValue}
             setInputBValue={setInputBValue}
-            tokenPrices={tokenPrices}
             openedPosition={openedPosition}
             setLeverage={setLeverage}
             buttonTitle={buttonTitle}
@@ -490,11 +487,8 @@ export default function Trade({
                     tokenB={tokenB}
                     setTokenA={setTokenA}
                     setTokenB={setTokenB}
-                    inputAValue={inputAValue}
-                    inputBValue={inputBValue}
                     setInputAValue={setInputAValue}
                     setInputBValue={setInputBValue}
-                    tokenPrices={tokenPrices}
                     openedPosition={openedPosition}
                     setLeverage={setLeverage}
                     buttonTitle={buttonTitle}

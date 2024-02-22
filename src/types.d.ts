@@ -58,6 +58,8 @@ export type CustodyExtended = {
   isStable: boolean;
   decimals: number;
   maxLeverage: number;
+  minInitialLeverage: number;
+  maxInitialLeverage: number;
   targetRatio: number;
   maxRatio: number;
   minRatio: number;

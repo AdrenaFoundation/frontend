@@ -40,13 +40,23 @@ export default function TradingInput({
 
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
-      {/* Input A */}
       <div
         className={twMerge(
           'h-24 p-4  border border-gray-200 rounded-2xl flex items-center w-full justify-between flex-col',
           disabled ? 'bg-transparent' : 'bg-[#030609]',
           inputClassName,
         )}
+        style={{
+          background: disabled
+            ? `repeating-linear-gradient(
+            45deg,
+            #0f1418,
+            #0f1418 10px,
+            #1b2126 10px,
+            #1b2126 20px
+          )`
+            : '',
+        }}
       >
         <div className="shrink-0 flex gap-3 items-center w-full justify-between">
           <div className="text-txtfade text-xs font-mono">{textTopLeft}</div>
