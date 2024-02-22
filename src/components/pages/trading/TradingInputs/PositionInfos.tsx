@@ -36,6 +36,8 @@ export default function PositionInfos({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
+  const tokenPriceB = tokenPrices?.[tokenB.symbol];
+
   const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
@@ -51,8 +53,37 @@ export default function PositionInfos({
           Collateral
         </span>
 
-        <span className="font-mono text-xs">
-          {positionInfos ? formatPriceInfo(positionInfos.collateralUsd) : '-'}
+        <span className="font-mono text-xs flex">
+          {(() => {
+            if (!positionInfos) return '-';
+
+            if (openedPosition) {
+              return (
+                <>
+                  {/* Opened position */}
+                  <div>{formatPriceInfo(openedPosition.collateralUsd)}</div>
+
+                  <Image
+                    className="ml-2 mr-2"
+                    src={arrowRightIcon}
+                    height={16}
+                    width={16}
+                    alt="Arrow"
+                  />
+
+                  {/* New position */}
+                  <div>
+                    {formatPriceInfo(
+                      positionInfos.collateralUsd +
+                        openedPosition.collateralUsd,
+                    )}
+                  </div>
+                </>
+              );
+            }
+
+            return formatPriceInfo(positionInfos.collateralUsd);
+          })()}
         </span>
       </div>
 
@@ -65,8 +96,36 @@ export default function PositionInfos({
           Size
         </span>
 
-        <span className="font-mono text-xs">
-          {positionInfos ? formatPriceInfo(positionInfos.sizeUsd) : '-'}
+        <span className="font-mono text-xs flex">
+          {(() => {
+            if (!positionInfos || !tokenPriceB) return '-';
+
+            if (openedPosition) {
+              return (
+                <>
+                  {/* Opened position */}
+                  <div>{formatPriceInfo(openedPosition.sizeUsd)}</div>
+
+                  <Image
+                    className="ml-2 mr-2"
+                    src={arrowRightIcon}
+                    height={16}
+                    width={16}
+                    alt="Arrow"
+                  />
+
+                  {/* New position */}
+                  <div>
+                    {formatPriceInfo(
+                      positionInfos.sizeUsd + openedPosition.sizeUsd,
+                    )}
+                  </div>
+                </>
+              );
+            }
+
+            return formatPriceInfo(positionInfos.sizeUsd);
+          })()}
         </span>
       </div>
 
@@ -79,8 +138,37 @@ export default function PositionInfos({
           Leverage
         </span>
 
-        <span className="font-mono text-xs">
-          {leverage !== null ? `${formatNumber(leverage, 2)}x` : '-'}
+        <span className="font-mono text-xs flex">
+          {(() => {
+            if (!positionInfos || !tokenPriceB) return '-';
+
+            if (openedPosition) {
+              const newLeverage =
+                (openedPosition.sizeUsd * openedPosition.leverage +
+                  positionInfos.sizeUsd * leverage) /
+                (openedPosition.sizeUsd + positionInfos.sizeUsd);
+
+              return (
+                <>
+                  {/* Opened position */}
+                  <div>{formatNumber(openedPosition.leverage, 2)}x</div>
+
+                  <Image
+                    className="ml-2 mr-2"
+                    src={arrowRightIcon}
+                    height={16}
+                    width={16}
+                    alt="Arrow"
+                  />
+
+                  {/* New position */}
+                  <div>{formatNumber(newLeverage, 2)}x</div>
+                </>
+              );
+            }
+
+            return <div>{formatNumber(leverage, 2)}x</div>;
+          })()}
         </span>
       </div>
 
@@ -95,23 +183,29 @@ export default function PositionInfos({
 
         <span className="flex font-mono text-xs">
           {(() => {
-            if (!positionInfos) return '-';
+            if (!positionInfos || !tokenPriceB) return '-';
 
             if (openedPosition) {
+              const newEntryPrice =
+                (openedPosition.sizeUsd * openedPosition.price +
+                  positionInfos.sizeUsd * tokenPriceB) /
+                (openedPosition.sizeUsd + positionInfos.sizeUsd);
+
               return (
                 <>
-                  {/* Opened position entry price */}
+                  {/* Opened position */}
                   <div>{formatPriceInfo(openedPosition.price)}</div>
 
                   <Image
+                    className="ml-2 mr-2"
                     src={arrowRightIcon}
                     height={16}
                     width={16}
                     alt="Arrow"
                   />
 
-                  {/* New position entry price */}
-                  <div>{formatPriceInfo(positionInfos.entryPrice)}</div>
+                  {/* New position */}
+                  <div>{formatPriceInfo(newEntryPrice)}</div>
                 </>
               );
             }
@@ -137,20 +231,26 @@ export default function PositionInfos({
             if (openedPosition) {
               if (!openedPosition.liquidationPrice) return '-';
 
+              const newLiquidationPrice =
+                (openedPosition.sizeUsd * openedPosition.liquidationPrice +
+                  positionInfos.sizeUsd * positionInfos.liquidationPrice) /
+                (openedPosition.sizeUsd + positionInfos.sizeUsd);
+
               return (
                 <>
-                  {/* Opened position liquidation price */}
+                  {/* Opened position */}
                   <div>{formatPriceInfo(openedPosition.liquidationPrice)}</div>
 
                   <Image
+                    className="ml-2 mr-2"
                     src={arrowRightIcon}
                     height={16}
                     width={16}
                     alt="Arrow"
                   />
 
-                  {/* New position entry price */}
-                  <div>{formatPriceInfo(positionInfos.liquidationPrice)}</div>
+                  {/* New position */}
+                  <div>{formatPriceInfo(newLiquidationPrice)}</div>
                 </>
               );
             }
@@ -163,10 +263,12 @@ export default function PositionInfos({
       <div className={infoRowStyle}>
         <span className="text-txtfade text-xs flex">
           <InfoAnnotation
-            text="Fees paid when opening the position."
+            text={`Fees paid when ${
+              openedPosition ? 'increasing' : 'opening'
+            } the position.`}
             className="mr-1 w-3"
           />
-          Open Position Fees
+          {openedPosition ? 'Increase' : 'Open'} Position Fees
         </span>
 
         <span className="font-mono text-xs">
@@ -224,12 +326,8 @@ export default function PositionInfos({
         </span>
 
         <span className="font-mono text-xs">
-          {custody && tokenB && tokenPrices && tokenPrices[tokenB.symbol]
-            ? formatPriceInfo(
-                custody.liquidity *
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  tokenPrices[tokenB.symbol]!,
-              )
+          {custody && tokenPriceB
+            ? formatPriceInfo(custody.liquidity * tokenPriceB)
             : '-'}
         </span>
       </div>
@@ -248,8 +346,38 @@ export default function PositionInfos({
           </span>
         </span>
 
-        <span className="font-mono text-xs text-txtfade">
-          {positionInfos ? formatPriceInfo(positionInfos.exitFeeUsd) : '-'}
+        <span className="font-mono text-xs text-txtfade flex">
+          {(() => {
+            if (!positionInfos) return '-';
+
+            if (openedPosition) {
+              if (!openedPosition.nativeObject.exitFeeUsd) return '-';
+
+              return (
+                <>
+                  {/* Opened position */}
+                  <div>{formatPriceInfo(openedPosition.exitFeeUsd)}</div>
+
+                  <Image
+                    className="ml-2 mr-2"
+                    src={arrowRightIcon}
+                    height={16}
+                    width={16}
+                    alt="Arrow"
+                  />
+
+                  {/* New position */}
+                  <div>
+                    {formatPriceInfo(
+                      openedPosition.exitFeeUsd + positionInfos.exitFeeUsd,
+                    )}
+                  </div>
+                </>
+              );
+            }
+
+            return formatPriceInfo(positionInfos.exitFeeUsd);
+          })()}
         </span>
       </div>
 
@@ -265,10 +393,39 @@ export default function PositionInfos({
           </span>
         </span>
 
-        <span className="font-mono text-xs text-txtfade">
-          {positionInfos
-            ? formatPriceInfo(positionInfos.liquidationFeeUsd)
-            : '-'}
+        <span className="font-mono text-xs text-txtfade flex">
+          {(() => {
+            if (!positionInfos) return '-';
+
+            if (openedPosition) {
+              if (!openedPosition.nativeObject.liquidationFeeUsd) return '-';
+
+              return (
+                <>
+                  {/* Opened position */}
+                  <div>{formatPriceInfo(openedPosition.liquidationFeeUsd)}</div>
+
+                  <Image
+                    className="ml-2 mr-2"
+                    src={arrowRightIcon}
+                    height={16}
+                    width={16}
+                    alt="Arrow"
+                  />
+
+                  {/* New position */}
+                  <div>
+                    {formatPriceInfo(
+                      openedPosition.liquidationFeeUsd +
+                        positionInfos.liquidationFeeUsd,
+                    )}
+                  </div>
+                </>
+              );
+            }
+
+            return formatPriceInfo(positionInfos.liquidationFeeUsd);
+          })()}
         </span>
       </div>
 

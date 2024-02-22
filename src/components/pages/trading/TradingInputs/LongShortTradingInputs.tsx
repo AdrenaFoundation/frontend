@@ -133,9 +133,10 @@ export default function LongShortTradingInputs({
     }
 
     const tokenPriceA = tokenPrices[tokenA.symbol];
+    const tokenPriceB = tokenPrices[tokenB.symbol];
 
     // No price available yet
-    if (!tokenPriceA) {
+    if (!tokenPriceA || !tokenPriceB) {
       setPriceA(null);
       setPriceB(null);
       setInputB(null);
@@ -146,8 +147,20 @@ export default function LongShortTradingInputs({
 
     // Use positionInfos only
     if (positionInfos) {
-      setPriceB(positionInfos.sizeUsd);
-      setInputB(positionInfos.size);
+      let priceUsd = positionInfos.sizeUsd;
+      let size = positionInfos.size;
+
+      // Add current position
+      if (openedPosition) {
+        size += openedPosition.sizeUsd / tokenPriceB;
+        priceUsd += openedPosition.sizeUsd;
+      }
+
+      // Round to token decimals
+      size = Number(size.toFixed(tokenB.decimals));
+
+      setPriceB(priceUsd);
+      setInputB(size);
     } else {
       setPriceB(null);
       setInputB(null);
@@ -284,15 +297,7 @@ export default function LongShortTradingInputs({
       <TradingInput
         textTopLeft={
           <div className="flex flex-row gap-1 flex-wrap">
-            <p className="opacity-50 text-xs">
-              {
-                {
-                  long: 'Long',
-                  short: 'Short',
-                }[side]
-              }
-              :
-            </p>
+            <p className="opacity-50 text-xs">Size:</p>
             <p className="opacity-50 text-xs">
               {priceB !== null
                 ? ` ${formatNumber(priceB, USD_DECIMALS)} USD`

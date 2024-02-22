@@ -45,12 +45,12 @@ export default function SwapInfo({
   return (
     <div className="mt-4">
       <div className="w-full flex justify-between items-center">
-        <span className="text-sm text-txtfade">Slippage</span>
-        <span className="text-sm font-mono">0.3%</span>
+        <span className="text-xs text-txtfade">Slippage</span>
+        <span className="text-xs font-mono">0.3%</span>
       </div>
       <div className="w-full flex justify-between items-center mt-2">
-        <span className="text-sm text-txtfade">Fees</span>
-        <span className="text-sm font-mono">
+        <span className="text-xs text-txtfade">Fees</span>
+        <span className="text-xs font-mono">
           {swapFeesAndAmount
             ? formatPriceInfo(
                 nativeToUi(swapFeesAndAmount.feeIn, tokenB.decimals),

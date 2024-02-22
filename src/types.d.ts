@@ -89,6 +89,8 @@ export type PositionExtended = {
   collateralUsd: number;
   price: number;
   collateralAmount: number;
+  exitFeeUsd: number;
+  liquidationFeeUsd: number;
 
   // Onchain data
   nativeObject: Position;

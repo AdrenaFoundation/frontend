@@ -131,10 +131,11 @@ export default function SwapTradingInputs({
 
   // Switch inputs values and tokens
   const switchAB = () => {
+    console.log({ tokenA, tokenB, allowedTokenA, allowedTokenB });
+
     if (!tokenA || !tokenB) return;
     if (!allowedTokenB.find((token) => token.mint.equals(tokenA.mint))) return;
 
-    console.log({ allowedTokenA, allowedTokenB });
     setInputA(inputB);
     setInputB(inputA);
 

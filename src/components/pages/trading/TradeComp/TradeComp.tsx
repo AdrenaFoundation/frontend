@@ -75,12 +75,8 @@ export const TradeComp = ({
               />
             ) : (
               <SwapTradingInputs
-                allowedTokenA={window.adrena.client.tokens.filter(
-                  (t) => t.symbol !== tokenB.symbol,
-                )}
-                allowedTokenB={window.adrena.client.tokens.filter(
-                  (t) => t.symbol !== tokenA.symbol,
-                )}
+                allowedTokenA={window.adrena.client.tokens}
+                allowedTokenB={window.adrena.client.tokens}
                 tokenA={tokenA}
                 tokenB={tokenB}
                 onChangeInputA={setInputAValue}

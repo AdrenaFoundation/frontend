@@ -3208,6 +3208,8 @@ export class AdrenaClient {
               position.collateralAmount,
               token.decimals,
             ),
+            exitFeeUsd: nativeToUi(position.exitFeeUsd, 6),
+            liquidationFeeUsd: nativeToUi(position.liquidationFeeUsd, 6),
             //
             nativeObject: position,
           },
