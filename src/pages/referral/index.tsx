@@ -22,7 +22,7 @@ export default function Referral() {
   return (
     <>
       <RiveAnimation
-        src="./rive/btm-monster.riv"
+        animation="btm-monster"
         layout={
           new Layout({ fit: Fit.Contain, alignment: Alignment.BottomRight })
         }

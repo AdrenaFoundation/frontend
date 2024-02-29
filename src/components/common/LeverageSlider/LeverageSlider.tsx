@@ -32,13 +32,10 @@ export default function LeverageSlider({
         value={value}
         defaultValue={1}
         step={0.1}
-        marks={[2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50].reduce(
-          (acc, mark) => {
-            acc[mark] = <span className="text-txtfade">x{mark}</span>;
-            return acc;
-          },
-          {} as Record<number, ReactNode>,
-        )}
+        marks={[1, 10, 20, 30, 40, 50].reduce((acc, mark) => {
+          acc[mark] = <span className="text-txtfade">x{mark}</span>;
+          return acc;
+        }, {} as Record<number, ReactNode>)}
         railStyle={{
           backgroundColor: colorB,
         }}

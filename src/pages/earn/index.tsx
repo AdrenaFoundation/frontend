@@ -328,7 +328,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     <>
       <div className="absolute w-full h-full left-0 top-0 overflow-hidden">
         <RiveAnimation
-          src="./rive/fred-bg.riv"
+          animation="fred-bg"
           layout={new Layout({ fit: Fit.Fill, alignment: Alignment.TopLeft })}
           className={
             'absolute top-0 left-0 rotate-180 bottom-0 w-[1000px] lg:w-full h-full'
@@ -336,7 +336,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
         />
 
         <RiveAnimation
-          src="./rive/fred-bg.riv"
+          animation="fred-bg"
           layout={
             new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })
           }
@@ -344,89 +344,90 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
         />
       </div>
 
-      <h2 className="z-20">Earn</h2>
-      <p className="z-20">
-        Governed by the Adrena community, conferring control and economic reward
-        to the collective.
-      </p>
-      <div className="flex flex-col lg:flex-row gap-5 z-20">
-        <div className="w-full">
-          <div className="flex flex-col lg:flex-row gap-5 mt-8">
-            <StakeOverview
-              tokenDetails={adxDetails}
-              setActiveToken={setActiveStakingToken}
-              setActiveRedeemToken={setActiveRedeemToken}
-            />
-            <StakeOverview
-              tokenDetails={alpDetails}
-              setActiveToken={setActiveStakingToken}
-              setActiveRedeemToken={setActiveRedeemToken}
-            />
-          </div>
-          <div className="flex flex-col gap-3 bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 pb-8 mt-8">
-            <div className="flex flex-row gap-2 items-center mb-3">
-              <Image src={lockIcon} width={16} height={16} alt="lock icon" />
-              <h4>My Locked Stake</h4>
-            </div>
-
-            {wallet ? (
-              isBigScreen ? (
-                <StakeList
-                  positions={stakePositions}
-                  handleRemoveLockedStake={handleRemoveLockedStake}
-                />
-              ) : (
-                <StakeBlocks
-                  positions={stakePositions}
-                  handleRemoveLockedStake={handleRemoveLockedStake}
-                />
-              )
-            ) : (
-              <p className="text-sm opacity-50">
-                Connect your wallet to see your locked stake
-              </p>
-            )}
-          </div>
-        </div>
-
-        <AnimatePresence>
-          {activeStakingToken && (
-            <Modal
-              title={`Stake ${activeStakingToken}`}
-              close={() => {
-                setAmount(null);
-                setLockPeriod(0);
-                setActiveStakingToken(null);
-              }}
-            >
-              <StakeToken
-                tokenSymbol={activeStakingToken}
-                amount={amount}
-                setAmount={setAmount}
-                onStakeAmountChange={onStakeAmountChange}
-                errorMessage={errorMessage}
-                stakeAmount={stakeAmount}
-                balance={activeStakingToken === 'ADX' ? adxBalance : alpBalance}
-                lockPeriod={lockPeriod}
-                setLockPeriod={setLockPeriod}
-              />
-            </Modal>
-          )}
-
-          {activeRedeemToken && (
-            <Modal
-              title={`Redeem ${activeRedeemToken}`}
-              close={() => setActiveRedeemToken(null)}
-            >
-              <StakeRedeem
-                tokenSymbol={activeRedeemToken}
-                totalLiquidStaked={getTotalReedemableStake(activeRedeemToken)}
-                handleRemoveLiquidStake={handleRemoveLiquidStake}
-              />
-            </Modal>
-          )}
-        </AnimatePresence>
+      <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-4 py-6 z-20">
+        <h2>Earn</h2>
+        <p className="mt-2 opacity-75 max-w-lg">
+          Governed by the Adrena community, conferring control and economic
+          reward to the collective.
+        </p>
       </div>
+
+      <div className="w-full">
+        <div className="flex flex-col lg:flex-row gap-5 mt-8">
+          <StakeOverview
+            tokenDetails={adxDetails}
+            setActiveToken={setActiveStakingToken}
+            setActiveRedeemToken={setActiveRedeemToken}
+          />
+          <StakeOverview
+            tokenDetails={alpDetails}
+            setActiveToken={setActiveStakingToken}
+            setActiveRedeemToken={setActiveRedeemToken}
+          />
+        </div>
+        <div className="flex flex-col gap-3 bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 pb-8 mt-8">
+          <div className="flex flex-row gap-2 items-center mb-3">
+            <Image src={lockIcon} width={16} height={16} alt="lock icon" />
+            <h4>My Locked Stake</h4>
+          </div>
+
+          {wallet ? (
+            isBigScreen ? (
+              <StakeList
+                positions={stakePositions}
+                handleRemoveLockedStake={handleRemoveLockedStake}
+              />
+            ) : (
+              <StakeBlocks
+                positions={stakePositions}
+                handleRemoveLockedStake={handleRemoveLockedStake}
+              />
+            )
+          ) : (
+            <p className="text-sm opacity-50">
+              Connect your wallet to see your locked stake
+            </p>
+          )}
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {activeStakingToken && (
+          <Modal
+            title={`Stake ${activeStakingToken}`}
+            close={() => {
+              setAmount(null);
+              setLockPeriod(0);
+              setActiveStakingToken(null);
+            }}
+          >
+            <StakeToken
+              tokenSymbol={activeStakingToken}
+              amount={amount}
+              setAmount={setAmount}
+              onStakeAmountChange={onStakeAmountChange}
+              errorMessage={errorMessage}
+              stakeAmount={stakeAmount}
+              balance={activeStakingToken === 'ADX' ? adxBalance : alpBalance}
+              lockPeriod={lockPeriod}
+              setLockPeriod={setLockPeriod}
+            />
+          </Modal>
+        )}
+
+        {activeRedeemToken && (
+          <Modal
+            title={`Redeem ${activeRedeemToken}`}
+            close={() => setActiveRedeemToken(null)}
+          >
+            <StakeRedeem
+              tokenSymbol={activeRedeemToken}
+              totalLiquidStaked={getTotalReedemableStake(activeRedeemToken)}
+              handleRemoveLiquidStake={handleRemoveLiquidStake}
+            />
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 }

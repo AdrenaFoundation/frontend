@@ -34,7 +34,7 @@ export default function Overview({
             <p className="font-mono">{formatPriceInfo(longPositions)}</p>
           </div>
           <div className="flex flex-row justify-between">
-            <p className="opacity-50">Active Position</p>
+            <p className="opacity-50">Active Positions</p>
             <p className="font-mono">
               {nbOpenLongPositions !== null ? nbOpenLongPositions : '-'}
             </p>
@@ -61,7 +61,7 @@ export default function Overview({
             <p className="font-mono">{formatPriceInfo(shortPositions)}</p>
           </div>
           <div className="flex flex-row justify-between">
-            <p className="opacity-50">Active Position</p>
+            <p className="opacity-50">Active Positions</p>
             <p className="font-mono">
               {nbOpenShortPositions !== null ? nbOpenShortPositions : '-'}
             </p>

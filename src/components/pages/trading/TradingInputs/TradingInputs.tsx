@@ -367,13 +367,14 @@ export default function TradingInputs({
         <>
           {/* Leverage (only in short/long) */}
           <>
-            <div className="w-full mt-6 mb-2 text-txtfade text-sm flex justify-between items-center">
-              <span>Leverage Slider</span>
-
-              <div>
+            <span className="mt-6 mb-3 opacity-50 text-sm">
+              Leverage Slider
+            </span>
+            <div className="w-full flex flex-row gap-3 justify-between items-center">
+              <div className="flex flex-row gap-2 items-center">
                 <span className="text-txtfade">x </span>
                 <InputNumber
-                  className="w-10  text-center rounded-md bg-dark"
+                  className="w-14  text-center rounded-xl bg-dark text-sm border border-gray-200 px-3 py-2"
                   value={isLeverageInputEmpty ? undefined : leverage}
                   max={50}
                   onChange={function (value: number | null): void {
@@ -386,16 +387,17 @@ export default function TradingInputs({
                     setLeverage(value);
                     setIsLeverageInputEmpty(false);
                   }}
-                  inputFontSize="1.1em"
+                  inputFontSize="0.875rem"
                 />
               </div>
-            </div>
-            <div className="w-full flex flex-col justify-center items-center">
-              <LeverageSlider
-                value={leverage}
-                className="w-full m-auto pr-3"
-                onChange={(v: number) => setLeverage(v)}
-              />
+
+              <div className="w-full flex flex-col justify-center items-center">
+                <LeverageSlider
+                  value={leverage}
+                  className="w-full m-auto"
+                  onChange={(v: number) => setLeverage(v)}
+                />
+              </div>
             </div>
           </>
 

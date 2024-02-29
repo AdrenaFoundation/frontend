@@ -28,7 +28,7 @@ export default function OnchainInfo({}: PageProps) {
   return (
     <>
       <RiveAnimation
-        src="./rive/top-monster.riv"
+        animation="hero-monster"
         layout={new Layout({ fit: Fit.Cover, alignment: Alignment.Center })}
         className={'fixed top-0 left-0 w-full h-full'}
       />
