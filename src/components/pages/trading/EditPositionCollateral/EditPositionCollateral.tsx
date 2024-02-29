@@ -241,12 +241,12 @@ export default function EditPositionCollateral({
 
       {selectedAction === 'deposit' ? (
         <TradingInput
-          textTopLeft="Deposit"
-          textTopRight={`Max · ${(() => {
-            if (walletBalance === null) return null;
+          // textTopLeft="Deposit"
+          // textTopRight={`Max · ${(() => {
+          //   if (walletBalance === null) return null;
 
-            return formatNumber(walletBalance, position.token.decimals);
-          })()}`}
+          //   return formatNumber(walletBalance, position.token.decimals);
+          // })()}`}
           value={input}
           maxButton={true}
           selectedToken={position.token}
@@ -259,7 +259,7 @@ export default function EditPositionCollateral({
         />
       ) : (
         <TradingInput
-          textTopLeft={
+          /*textTopLeft={
             <>
               Withdraw
               {input && markPrice
@@ -272,7 +272,7 @@ export default function EditPositionCollateral({
           textTopRight={`Max · ${formatNumber(
             position.collateralUsd,
             USD_DECIMALS,
-          )}`}
+          )}`}*/
           value={input}
           maxButton={true}
           selectedToken={

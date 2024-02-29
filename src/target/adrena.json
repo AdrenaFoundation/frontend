@@ -5181,6 +5181,10 @@
             "type": "u8"
           },
           {
+            "name": "entryFeeUsd",
+            "type": "u64"
+          },
+          {
             "name": "exitFeeUsd",
             "type": "u64"
           },
@@ -6196,10 +6200,6 @@
       "type": {
         "kind": "struct",
         "fields": [
-          {
-            "name": "utilizationMult",
-            "type": "u16"
-          },
           {
             "name": "swapIn",
             "type": "u16"
@@ -7256,6 +7256,6 @@
     }
   ],
   "metadata": {
-    "address": "HL9XZLuuNy2BTXfyEQDn21guS1sBEej2xrwWmyQygy6t"
+    "address": "HQr3vHJN6XiqBZrRsswBNg9LnYYpa3dBewu9Z9gk8DYL"
   }
 }

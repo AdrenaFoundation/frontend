@@ -12,12 +12,12 @@ export default function TradingInput({
   inputClassName,
   disabled,
   loading,
-  textTopLeft,
-  textTopRight,
   value,
+  subText,
   maxButton,
   selectedToken,
   tokenList,
+  prefix,
   onTokenSelect,
   onChange,
   onMaxButtonClick,
@@ -26,12 +26,12 @@ export default function TradingInput({
   inputClassName?: string;
   disabled?: boolean;
   loading?: boolean;
-  textTopLeft?: ReactNode;
-  textTopRight?: ReactNode;
+  subText?: ReactNode;
   value?: number | null;
   maxButton?: boolean;
   selectedToken?: Token;
   tokenList: Token[];
+  prefix?: ReactNode;
   onTokenSelect: (t: Token) => void;
   onChange: (v: number | null) => void;
   onMaxButtonClick?: () => void;
@@ -42,80 +42,85 @@ export default function TradingInput({
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       <div
         className={twMerge(
-          'h-24 p-4  border border-gray-200 rounded-2xl flex items-center w-full justify-between flex-col',
+          'rounded-2xl flex w-full border h-16',
           disabled ? 'bg-transparent' : 'bg-[#030609]',
           inputClassName,
         )}
-        style={{
-          background: disabled
-            ? `repeating-linear-gradient(
-            45deg,
-            #0f1418,
-            #0f1418 10px,
-            #1b2126 10px,
-            #1b2126 20px
-          )`
-            : '',
-        }}
+        style={
+          disabled
+            ? {
+                backgroundImage:
+                  'linear-gradient(45deg, rgba(3, 6, 9, 0.1) 25%, transparent 25%, transparent 50%, rgba(3, 6, 9, 0.1) 50%, rgba(3, 6, 9, 0.1) 75%, transparent 75%, transparent)',
+                backgroundSize: '10px 10px',
+                backgroundColor: '#21272d',
+                cursor: 'not-allowed',
+              }
+            : {}
+        }
       >
-        <div className="shrink-0 flex gap-3 items-center w-full justify-between">
-          <div className="text-txtfade text-xs font-mono">{textTopLeft}</div>
-          <div className="text-txtfade text-xs font-mono">{textTopRight}</div>
+        <div className="flex items-center w-full justify-center flex-col pl-4">
+          <div className="flex w-full items-center">
+            {loading ? (
+              <span className="w-full text-txtfade">loading ...</span>
+            ) : (
+              <>
+                {prefix ? prefix : null}
+
+                <div className="flex flex-col">
+                  <InputNumber
+                    disabled={disabled}
+                    value={value ?? undefined}
+                    placeholder="0.00"
+                    className={twMerge(
+                      'font-mono font-medium border-0 text-lg outline-none w-full',
+                      disabled ? 'bg-transparent' : 'bg-dark',
+                    )}
+                    onChange={onChange}
+                    decimalConstraint={decimalConstraint}
+                  />
+
+                  {subText ? subText : null}
+                </div>
+              </>
+            )}
+
+            {maxButton ? (
+              <Button
+                title="MAX"
+                variant="secondary"
+                className="mx-2 text-sm h-6"
+                onClick={() => onMaxButtonClick?.()}
+              />
+            ) : null}
+          </div>
         </div>
 
-        <div className="flex w-full items-center">
-          {loading ? (
-            <span className="w-full text-txtfade">loading ...</span>
-          ) : (
-            <InputNumber
-              disabled={disabled}
-              value={value ?? undefined}
-              placeholder="0.00"
-              className={twMerge(
-                'font-mono font-medium border-0 text-lg outline-none w-full',
-                disabled ? 'bg-transparent' : 'bg-[#030609]',
-              )}
-              onChange={onChange}
-              decimalConstraint={decimalConstraint}
-            />
-          )}
+        {tokenList.length ? (
+          <Select
+            className="shrink-0 bg-secondary h-full flex items-center pl-2 pr-2 pt-1 pb-1 rounded-tr-2xl rounded-br-2xl w-24 justify-end"
+            selected={selectedToken?.symbol ?? ''}
+            options={tokenList.map((token) => ({
+              title: token.symbol,
+              img: token.image,
+            }))}
+            onSelect={(name) => {
+              // Force linting, you cannot not find the token in the list
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const token = tokenList.find((t) => t.symbol === name)!;
+              onTokenSelect(token);
 
-          {maxButton ? (
-            <Button
-              title="MAX"
-              variant="secondary"
-              className="mx-2 text-sm h-6"
-              onClick={() => onMaxButtonClick?.()}
-            />
-          ) : null}
+              // if the prev value has more decimals than the new token, we need to adjust the value
+              const newTokenDecimals = token.decimals ?? 18;
+              const decimals = value?.toString().split('.')[1]?.length;
 
-          {tokenList.length ? (
-            <Select
-              className="shrink-0 text-2xl"
-              selected={selectedToken?.symbol ?? ''}
-              options={tokenList.map((token) => ({
-                title: token.symbol,
-                img: token.image,
-              }))}
-              onSelect={(name) => {
-                // Force linting, you cannot not find the token in the list
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                const token = tokenList.find((t) => t.symbol === name)!;
-                onTokenSelect(token);
-
-                // if the prev value has more decimals than the new token, we need to adjust the value
-                const newTokenDecimals = token.decimals ?? 18;
-                const decimals = value?.toString().split('.')[1]?.length;
-
-                if (Number(decimals) > Number(newTokenDecimals)) {
-                  onChange(Number(value?.toFixed(newTokenDecimals)));
-                }
-              }}
-            />
-          ) : (
-            <div>{selectedToken?.symbol ?? '-'}</div>
-          )}
-        </div>
+              if (Number(decimals) > Number(newTokenDecimals)) {
+                onChange(Number(value?.toFixed(newTokenDecimals)));
+              }
+            }}
+          />
+        ) : (
+          <div>{selectedToken?.symbol ?? '-'}</div>
+        )}
       </div>
     </div>
   );

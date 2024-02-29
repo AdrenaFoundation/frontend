@@ -2,10 +2,9 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatNumber, nativeToUi, uiToNative } from '@/utils';
+import { nativeToUi, uiToNative } from '@/utils';
 
 import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
 import TradingInput from '../../trading/TradingInput/TradingInput';
@@ -22,11 +21,9 @@ export default function ALPSwapInputs({
   allowedCollateralTokens,
   alpInput,
   onChangeAlpInput,
-  alpPrice,
   setAlpPrice,
   collateralInput,
   onChangeCollateralInput,
-  collateralPrice,
   setCollateralPrice,
   setActionType,
   onCollateralTokenChange,
@@ -39,21 +36,16 @@ export default function ALPSwapInputs({
   collateralToken: Token;
   collateralInput: number | null;
   allowedCollateralTokens: Token[] | null;
-  collateralPrice: number | null;
   setCollateralPrice: (v: number | null) => void;
   alpInput: number | null;
   onChangeAlpInput: (v: number | null) => void;
   onChangeCollateralInput: (v: number | null) => void;
-  alpPrice: number | null;
   setAlpPrice: (v: number | null) => void;
   setActionType: (a: 'buy' | 'sell') => void;
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   setIsFeesLoading: (v: boolean) => void;
 }) {
-  const wallet = useSelector((s) => s.walletState);
-  const connected = !!wallet;
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
@@ -266,23 +258,6 @@ export default function ALPSwapInputs({
     <TradingInput
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
-      textTopLeft={
-        <>
-          {actionType === 'buy' ? 'Receive' : 'Pay'}
-          {alpPrice !== null
-            ? ` · ${formatNumber(alpPrice, USD_DECIMALS)} USD`
-            : null}
-        </>
-      }
-      textTopRight={
-        <>
-          {connected && alpToken
-            ? `Balance · ${(
-                walletTokenBalances?.[alpToken.symbol] ?? '0'
-              ).toLocaleString()}`
-            : null}
-        </>
-      }
       value={alpInput}
       maxButton={actionType === 'sell'}
       selectedToken={alpToken}
@@ -304,24 +279,6 @@ export default function ALPSwapInputs({
     <TradingInput
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
-      textTopLeft={
-        <>
-          {actionType === 'buy' ? 'Pay' : 'Receive'}
-          {collateralPrice !== null
-            ? ` · ${formatNumber(collateralPrice, USD_DECIMALS)} USD`
-            : null}
-        </>
-      }
-      textTopRight={
-        <>
-          {/* Display wallet balance */}
-          {connected && collateralToken
-            ? `Balance · ${(
-                walletTokenBalances?.[collateralToken.symbol] ?? '0'
-              ).toLocaleString()}`
-            : null}
-        </>
-      }
       value={collateralInput}
       maxButton={actionType === 'buy'}
       selectedToken={collateralToken}

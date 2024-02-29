@@ -1,16 +1,18 @@
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import InputNumber from '@/components/common/InputNumber/InputNumber';
-import { USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { formatNumber, uiLeverageToNative, uiToNative } from '@/utils';
+import {
+  formatNumber,
+  formatPriceInfo,
+  uiLeverageToNative,
+  uiToNative,
+} from '@/utils';
 
-import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
 
@@ -50,11 +52,6 @@ export default function LongShortTradingInputs({
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
-  // Use this state to allow user to remove everything in the input
-  // overwise the user is stuck with one number, which is bad ux
-  const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
-    useState<boolean>(false);
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -115,6 +112,8 @@ export default function LongShortTradingInputs({
         }
 
         setPositionInfos(infos);
+
+        console.log('Position infos', infos);
       } catch (err) {
         console.log('Ignored error:', err);
       }
@@ -196,22 +195,6 @@ export default function LongShortTradingInputs({
     }, [onChangeLeverage, leverage]);
   }
 
-  // Switch inputs values and tokens
-  const switchAB = () => {
-    if (!tokenA || !tokenB) return;
-    if (!allowedTokenB.find((token) => token.mint.equals(tokenA.mint))) return;
-
-    console.log({ allowedTokenA, allowedTokenB });
-    setInputA(inputB);
-    setInputB(inputA);
-
-    // if tokenB is not allowed, use default value
-    setTokenA(tokenB);
-
-    // if tokenA is not allowed, use default value
-    setTokenB(tokenA);
-  };
-
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
     setInputA(v);
@@ -222,145 +205,117 @@ export default function LongShortTradingInputs({
     setInputB(v);
   };
 
-  const rotateIcon = () => {
-    const icon = document.getElementById('switch-icon');
-
-    if (icon) {
-      icon.classList.toggle('rotate-180');
-    }
-  };
-
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
+      <div className="text-xs text-txtfade flex items-center">
+        Pay
+        <InfoAnnotation
+          text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
+          className="w-3 ml-1"
+        />
+      </div>
+
       {/* Input A */}
-      <TradingInput
-        textTopLeft={
-          <div className="flex flex-row gap-1 flex-wrap">
-            <p className="opacity-50 text-xs">Pay:</p>
-            <p className="opacity-50 text-xs">
-              {priceA !== null
-                ? ` ${formatNumber(priceA, USD_DECIMALS)} USD`
-                : null}
-            </p>
-          </div>
-        }
-        textTopRight={
-          <>
-            {connected && tokenA
-              ? `Balance: ${(
-                  walletTokenBalances?.[tokenA.symbol] ?? '0'
-                ).toLocaleString()}`
-              : null}
-          </>
-        }
-        value={inputA}
-        maxButton={connected}
-        selectedToken={tokenA}
-        tokenList={allowedTokenA}
-        onTokenSelect={setTokenA}
-        onChange={handleInputAChange}
-        onMaxButtonClick={() => {
-          if (!walletTokenBalances || !tokenA) return;
+      <div className="flex">
+        <div className="flex flex-col">
+          <TradingInput
+            className="mt-2 text-xs"
+            value={inputA}
+            subText={
+              priceA ? (
+                <div className="text-xs text-txtfade">
+                  {formatPriceInfo(priceA)}
+                </div>
+              ) : null
+            }
+            maxButton={connected}
+            selectedToken={tokenA}
+            tokenList={allowedTokenA}
+            onTokenSelect={setTokenA}
+            onChange={handleInputAChange}
+            onMaxButtonClick={() => {
+              if (!walletTokenBalances || !tokenA) return;
 
-          const amount = walletTokenBalances[tokenA.symbol];
+              const amount = walletTokenBalances[tokenA.symbol];
 
-          console.log('max button triggered', amount);
+              console.log('max button triggered', amount);
 
-          handleInputAChange(amount);
-        }}
-        inputClassName="rounded-b-none"
-      />
-
-      {/* Switch AB */}
-      <div className="relative w-full overflow-visible flex justify-center items-center z-[2]">
-        <div
-          className={twMerge(
-            'group absolute bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center',
-          )}
-          onClick={() => {
-            switchAB();
-            rotateIcon();
-          }}
-        >
-          <Image
-            src={arrowDownUpIcon}
-            alt="switch icon"
-            height={16}
-            width={16}
-            id="switch-icon"
-            className="opacity-50 group-hover:opacity-100 transition-all duration-300"
+              handleInputAChange(amount);
+            }}
           />
+
+          {
+            /* Display wallet balance */
+            (() => {
+              if (!tokenA || !walletTokenBalances) return null;
+
+              const balance = walletTokenBalances[tokenA.symbol];
+              if (balance === null) return null;
+
+              return (
+                <div className="text-txtfade text-xs ml-auto mt-3">
+                  {formatNumber(balance, tokenA.decimals)} {tokenA.symbol} in
+                  wallet
+                </div>
+              );
+            })()
+          }
         </div>
       </div>
 
-      {/* Input B */}
-      <TradingInput
-        textTopLeft={
-          <div className="flex flex-row gap-1 flex-wrap">
-            <p className="opacity-50 text-xs">Size:</p>
-            <p className="opacity-50 text-xs">
-              {priceB !== null
-                ? ` ${formatNumber(priceB, USD_DECIMALS)} USD`
-                : null}
-            </p>
-          </div>
-        }
-        textTopRight={
-          <div className="text-txtfade">
-            Leverage{`: ${leverage.toFixed(2)}x`}
-          </div>
-        }
-        value={inputB}
-        maxButton={false}
-        selectedToken={tokenB}
-        tokenList={allowedTokenB}
-        onTokenSelect={setTokenB}
-        onChange={handleInputBChange}
-        inputClassName="rounded-t-none border-t-0"
-        disabled={true}
-      />
-
       {/* Leverage (only in short/long) */}
-      <>
-        <div className="w-full mt-6 mb-2 text-txtfade text-sm flex justify-between items-center">
-          <span>Leverage Slider</span>
 
-          <div>
-            <span className="text-txtfade">x </span>
-            <InputNumber
-              className="w-10  text-center rounded-md bg-dark"
-              value={isLeverageInputEmpty ? undefined : leverage}
-              max={50}
-              onChange={function (value: number | null): void {
-                // throw new Error('Function not implemented.');
-                if (value === null) {
-                  setIsLeverageInputEmpty(true);
-                  return;
-                }
-
-                setLeverage(value);
-                setIsLeverageInputEmpty(false);
-              }}
-              inputFontSize="1.1em"
-            />
-          </div>
-        </div>
-        <div className="w-full flex flex-col justify-center items-center">
-          <LeverageSlider
-            value={leverage}
-            className="w-full m-auto pr-3"
-            onChange={(v: number) => setLeverage(v)}
+      <div className="flex flex-col">
+        <div className="text-xs text-txtfade flex items-center">
+          Leverage
+          <InfoAnnotation
+            text="Select a multiplier to apply to the collateral to determine the size of the position."
+            className="w-3 ml-1"
           />
         </div>
-      </>
 
-      <PositionInfos
-        className="mt-8 text-sm"
-        positionInfos={positionInfos}
-        tokenB={tokenB}
-        leverage={leverage}
-        openedPosition={openedPosition}
-      />
+        <LeverageSlider
+          value={leverage}
+          className="mt-3 w-full"
+          onChange={(v: number) => setLeverage(v)}
+        />
+      </div>
+
+      <div className="flex flex-col mt-5">
+        <div className="text-xs text-txtfade flex items-center">
+          Verify
+          <InfoAnnotation
+            text={
+              <div className="flex flex-col">
+                <span>
+                  Below are various details regarding the future position.
+                  Please review them carefully to ensure you are comfortable
+                  with the parameters.
+                </span>
+                <span className="mt-2">
+                  <b>Note:</b> The information provided is based on best-effort
+                  estimations. Actual numbers will be calculated when the order
+                  is executed.
+                </span>
+              </div>
+            }
+            className="w-3 ml-1"
+          />
+        </div>
+
+        <PositionInfos
+          className="mt-3"
+          positionInfos={positionInfos}
+          tokenB={tokenB}
+          leverage={leverage}
+          openedPosition={openedPosition}
+          allowedTokenB={allowedTokenB}
+          inputB={inputB}
+          priceB={priceB}
+          setTokenB={setTokenB}
+          handleInputBChange={handleInputBChange}
+        />
+      </div>
     </div>
   );
 }

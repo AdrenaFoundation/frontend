@@ -13,6 +13,7 @@ import {
   SystemProgram,
   TransactionInstruction,
 } from '@solana/web3.js';
+import { BigNumber } from 'bignumber.js';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { toast } from 'react-toastify';
@@ -80,7 +81,7 @@ export function formatPercentage(
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {
-  return nb.toNumber() / 10 ** decimals;
+  return new BigNumber(nb.toString()).shiftedBy(-decimals).toNumber();
 }
 
 // 10_000 = x1 leverage

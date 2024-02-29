@@ -207,7 +207,7 @@ export default function ClosePosition({
   return (
     <div className={twMerge('flex', 'flex-col', 'h-full', className)}>
       <TradingInput
-        textTopLeft={
+        /* textTopLeft={
           <>
             Close
             {input && markPrice
@@ -219,7 +219,7 @@ export default function ClosePosition({
         }
         textTopRight={
           <>{`Max: ${formatNumber(position.collateralUsd, USD_DECIMALS)}`}</>
-        }
+        } */
         value={input}
         maxButton={true}
         selectedToken={

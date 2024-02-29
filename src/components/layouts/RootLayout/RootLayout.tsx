@@ -58,7 +58,7 @@ const RootLayout = ({
 
       <div className="w-full flex p-4 justify-center">
         <div
-          className={twMerge('w-full flex max-w-[1400px] flex-col py-[75px]')}
+          className={twMerge('w-full flex max-w-[1400px] flex-col py-[70px]')}
         >
           {children}
         </div>

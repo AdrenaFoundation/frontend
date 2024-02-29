@@ -27,9 +27,7 @@ export default function ALPSwap({
   allowedCollateralTokens,
   selectedAction,
   setSelectedAction,
-  alpPrice,
   setAlpPrice,
-  collateralPrice,
   setCollateralPrice,
   setIsFeesLoading,
 }: {
@@ -201,8 +199,6 @@ export default function ALPSwap({
             setActionType={setSelectedAction}
             onCollateralTokenChange={onCollateralTokenChange}
             setFeesUsd={setFeesUsd}
-            alpPrice={alpPrice}
-            collateralPrice={collateralPrice}
             setAlpPrice={setAlpPrice}
             setCollateralPrice={setCollateralPrice}
             setIsFeesLoading={setIsFeesLoading}

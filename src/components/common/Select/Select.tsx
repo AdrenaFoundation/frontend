@@ -30,7 +30,7 @@ export default function Select<T extends string>({
               {selectedImg ? (
                 <Image src={selectedImg} alt="logo" width="16" height="16" />
               ) : null}
-              <span className="text-lg font-medium">{selected}</span>
+              <span className="text-md font-medium">{selected}</span>
             </div>
 
             {options.length > 1 ? (

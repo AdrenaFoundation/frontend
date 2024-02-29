@@ -5181,6 +5181,10 @@ export type Adrena = {
             type: 'u8';
           },
           {
+            name: 'entryFeeUsd';
+            type: 'u64';
+          },
+          {
             name: 'exitFeeUsd';
             type: 'u64';
           },
@@ -6196,10 +6200,6 @@ export type Adrena = {
       type: {
         kind: 'struct';
         fields: [
-          {
-            name: 'utilizationMult';
-            type: 'u16';
-          },
           {
             name: 'swapIn';
             type: 'u16';
@@ -12440,6 +12440,10 @@ export const IDL: Adrena = {
             type: 'u8',
           },
           {
+            name: 'entryFeeUsd',
+            type: 'u64',
+          },
+          {
             name: 'exitFeeUsd',
             type: 'u64',
           },
@@ -13455,10 +13459,6 @@ export const IDL: Adrena = {
       type: {
         kind: 'struct',
         fields: [
-          {
-            name: 'utilizationMult',
-            type: 'u16',
-          },
           {
             name: 'swapIn',
             type: 'u16',
