@@ -2782,7 +2782,7 @@
         }
       ],
       "returns": {
-        "defined": "PriceAndFee"
+        "defined": "ExitPriceAndFee"
       }
     },
     {
@@ -6569,7 +6569,7 @@
       }
     },
     {
-      "name": "PriceAndFee",
+      "name": "ExitPriceAndFee",
       "type": {
         "kind": "struct",
         "fields": [
@@ -6579,6 +6579,18 @@
           },
           {
             "name": "fee",
+            "type": "u64"
+          },
+          {
+            "name": "amountOut",
+            "type": "u64"
+          },
+          {
+            "name": "profitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lossUsd",
             "type": "u64"
           }
         ]

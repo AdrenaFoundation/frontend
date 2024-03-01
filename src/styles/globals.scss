@@ -238,3 +238,24 @@ input[type='radio']:checked {
 .rc-slider-handle:active {
   box-shadow: 0 0 5px 10px rgba(42, 48, 238, 0.2) !important;
 }
+
+/* Works on Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff #16293d;
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 8px; /* width of the entire scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  background: #16293d; /* color of the tracking area */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ffffff; /* color of the scroll thumb */
+  border-radius: 6px; /* roundness of the scroll thumb */
+  border: 3px solid #16293d; /* creates padding around scroll thumb */
+}

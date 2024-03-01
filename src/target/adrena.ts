@@ -2782,7 +2782,7 @@ export type Adrena = {
         },
       ];
       returns: {
-        defined: 'PriceAndFee';
+        defined: 'ExitPriceAndFee';
       };
     },
     {
@@ -6569,7 +6569,7 @@ export type Adrena = {
       };
     },
     {
-      name: 'PriceAndFee';
+      name: 'ExitPriceAndFee';
       type: {
         kind: 'struct';
         fields: [
@@ -6579,6 +6579,18 @@ export type Adrena = {
           },
           {
             name: 'fee';
+            type: 'u64';
+          },
+          {
+            name: 'amountOut';
+            type: 'u64';
+          },
+          {
+            name: 'profitUsd';
+            type: 'u64';
+          },
+          {
+            name: 'lossUsd';
             type: 'u64';
           },
         ];
@@ -10041,7 +10053,7 @@ export const IDL: Adrena = {
         },
       ],
       returns: {
-        defined: 'PriceAndFee',
+        defined: 'ExitPriceAndFee',
       },
     },
     {
@@ -13828,7 +13840,7 @@ export const IDL: Adrena = {
       },
     },
     {
-      name: 'PriceAndFee',
+      name: 'ExitPriceAndFee',
       type: {
         kind: 'struct',
         fields: [
@@ -13838,6 +13850,18 @@ export const IDL: Adrena = {
           },
           {
             name: 'fee',
+            type: 'u64',
+          },
+          {
+            name: 'amountOut',
+            type: 'u64',
+          },
+          {
+            name: 'profitUsd',
+            type: 'u64',
+          },
+          {
+            name: 'lossUsd',
             type: 'u64',
           },
         ],

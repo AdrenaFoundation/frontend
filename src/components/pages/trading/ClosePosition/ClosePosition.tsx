@@ -3,11 +3,9 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
-import Checkbox from '@/components/common/Checkbox/Checkbox';
-import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
-import { PositionExtended, PriceAndFee, Token } from '@/types';
+import { ExitPriceAndFee, PositionExtended } from '@/types';
 import {
   addFailedTxNotification,
   addNotification,
@@ -15,10 +13,7 @@ import {
   formatNumber,
   formatPriceInfo,
   nativeToUi,
-  uiToNative,
 } from '@/utils';
-
-import TradingInput from '../TradingInput/TradingInput';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
@@ -35,112 +30,38 @@ export default function ClosePosition({
   triggerPositionsReload: () => void;
   onClose: () => void;
 }) {
-  const [allowedIncreasedSlippage, setAllowedIncreasedSlippage] =
-    useState<boolean>(false);
-  const [input, setInput] = useState<number | null>(null);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  const [exitPriceAndFee, setExitPriceAndFee] = useState<PriceAndFee | null>(
-    null,
-  );
+  const [exitPriceAndFee, setExitPriceAndFee] =
+    useState<ExitPriceAndFee | null>(null);
 
   const markPrice: number | null = tokenPrices[position.token.symbol];
-
-  const entryPrice: number | null = exitPriceAndFee
-    ? nativeToUi(exitPriceAndFee.price, 6)
-    : null;
+  const collateralMarkPrice: number | null =
+    tokenPrices[position.collateralToken.symbol];
 
   useEffect(() => {
-    if (!input) {
-      return;
-    }
-
     const localLoadingCounter = ++loadingCounter;
 
-    window.adrena.client
-      .getExitPriceAndFee({
+    (async () => {
+      const exitPriceAndFee = await window.adrena.client.getExitPriceAndFee({
         position,
-      })
-      .then((exitPriceAndFee: PriceAndFee | null) => {
-        // Verify that information is not outdated
-        // If loaderCounter doesn't match it means
-        // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) {
-          return;
-        }
-
-        setExitPriceAndFee(exitPriceAndFee);
-      })
-      .catch((e) => {
-        // Ignore error
-        console.log('error', e);
       });
-  }, [position, input]);
+
+      // Verify that information is not outdated
+      // If loaderCounter doesn't match it means
+      // an other request has been casted due to input change
+      if (localLoadingCounter !== loadingCounter) {
+        return;
+      }
+
+      setExitPriceAndFee(exitPriceAndFee);
+    })().catch(/* ignore error */);
+
+    // Trick here so we reload only when one of the prices changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [position, (markPrice ?? 0) + (collateralMarkPrice ?? 0)]);
 
   const rowStyle = 'w-full flex justify-between mt-2';
-
-  const updatedLeverage: number | null = (() => {
-    if (!input) return null;
-
-    // PnL is taken into account when calculating new position leverage
-    const newPositionUsd = position.collateralUsd - input + (position.pnl ?? 0);
-
-    if (newPositionUsd <= 0) {
-      return newPositionUsd;
-    }
-
-    return position.sizeUsd / newPositionUsd;
-  })();
-
-  const maxAuthorizedLeverage =
-    window.adrena.client?.custodies.find((custody) =>
-      custody.pubkey.equals(position.custody),
-    )?.maxLeverage ?? null;
-
-  const closing = input == position.collateralUsd;
-
-  const overMaxAuthorizedLeverage: boolean | null =
-    maxAuthorizedLeverage === null || updatedLeverage === null
-      ? null
-      : (updatedLeverage < 0 || updatedLeverage > maxAuthorizedLeverage) &&
-        !closing;
-
-  const executeBtnText = (() => {
-    if (!input) return 'Enter an amount';
-
-    if (overMaxAuthorizedLeverage) {
-      return 'Leverage over limit';
-    }
-
-    if (!closing) {
-      return 'Partial Position Close';
-    }
-
-    return 'Close Position';
-  })();
-
-  const doPartialClose = async () => {
-    if (!input) return;
-
-    try {
-      const txHash = await window.adrena.client.removeCollateral({
-        position,
-        collateralUsd: uiToNative(input, USD_DECIMALS),
-      });
-
-      addSuccessTxNotification({
-        title: 'Successfull Partial Position Close',
-        txHash,
-      });
-
-      triggerPositionsReload();
-    } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Partial Position Close',
-        error,
-      });
-    }
-  };
 
   const doFullClose = async () => {
     if (!markPrice) return;
@@ -157,7 +78,8 @@ export default function ClosePosition({
         });
       }
 
-      const slippageInBps = allowedIncreasedSlippage ? 1 : 0.3 * 100;
+      // 1%
+      const slippageInBps = 100;
 
       const priceWithSlippage =
         position.side === 'short'
@@ -178,7 +100,12 @@ export default function ClosePosition({
         txHash,
       });
 
-      triggerPositionsReload();
+      // Reload positions just after closing the popup
+      setTimeout(() => {
+        triggerPositionsReload();
+      }, 0);
+
+      onClose();
     } catch (error) {
       return addFailedTxNotification({
         title: 'Error Closing Position',
@@ -188,195 +115,81 @@ export default function ClosePosition({
   };
 
   const handleExecute = async () => {
-    if (!input) return;
-
-    if (input > position.collateralUsd) {
-      setInput(position.collateralUsd);
-      return;
-    }
-
-    if (closing) {
-      await doFullClose();
-    } else {
-      await doPartialClose();
-    }
-
-    onClose();
+    await doFullClose();
   };
 
   return (
-    <div className={twMerge('flex', 'flex-col', 'h-full', className)}>
-      <TradingInput
-        /* textTopLeft={
-          <>
-            Close
-            {input && markPrice
-              ? `: ${formatNumber(input / markPrice, 6)} ${
-                  position.token.symbol
-                }`
-              : null}
-          </>
-        }
-        textTopRight={
-          <>{`Max: ${formatNumber(position.collateralUsd, USD_DECIMALS)}`}</>
-        } */
-        value={input}
-        maxButton={true}
-        selectedToken={
-          {
-            symbol: 'USD',
-          } as Token
-        }
-        tokenList={[]}
-        onTokenSelect={() => {
-          // One token only
-        }}
-        onChange={setInput}
-        onMaxButtonClick={() => {
-          setInput(position.collateralUsd);
-        }}
-      />
+    <div className={twMerge('flex flex-col h-full w-[22em]', className)}>
+      <div className="flex items-center">
+        <div className="flex border p-4 bg-dark rounded-2xl w-full justify-between items-center">
+          <div className="text-2xl tracking-wider font-specialmonster ml-4">
+            Receive
+          </div>
 
-      <div className="flex flex-col text-sm">
-        <div className="flex w-full justify-evenly mt-4">
-          <TabSelect
-            tabs={[
-              { title: '25%' },
-              { title: '50%' },
-              { title: '75%' },
-              { title: '100%' },
-            ]}
-            onClick={(title) => {
-              setInput(
-                Number(
-                  Number(
-                    (position.collateralUsd * Number(title.split('%')[0])) /
-                      100,
-                  ).toFixed(USD_DECIMALS),
-                ),
-              );
-            }}
-          />
+          <div className="flex flex-col items-end mr-4">
+            <div className="text-md">
+              {exitPriceAndFee
+                ? nativeToUi(
+                    exitPriceAndFee.amountOut,
+                    position.collateralToken.decimals,
+                  )
+                : '-'}{' '}
+              {position.collateralToken.symbol}
+            </div>
+
+            <div className="text-md">
+              {exitPriceAndFee && collateralMarkPrice
+                ? formatPriceInfo(
+                    nativeToUi(
+                      exitPriceAndFee.amountOut,
+                      position.collateralToken.decimals,
+                    ) * collateralMarkPrice,
+                  )
+                : '-'}
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div className="mt-2 h-[1px] w-full bg-grey" />
+      <div className="text-white text-xs mt-6">Position to close</div>
 
-        <div className={`${rowStyle} mt-4`}>
-          <div className="text-txtfade">Allow up to 1% slippage</div>
-          <div className="flex items-center">
-            <Checkbox
-              checked={allowedIncreasedSlippage}
-              onChange={setAllowedIncreasedSlippage}
-            />
+      <div className="flex flex-col border p-4 pt-2 bg-dark mt-3 rounded-2xl">
+        <div className={rowStyle}>
+          <div className="text-txtfade text-xs">Size</div>
+          <div className="flex text-xs">
+            {formatPriceInfo(position.sizeUsd)}
           </div>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade">Allowed slippage</div>
-          <div>{allowedIncreasedSlippage ? '1.00%' : '0.30%'}</div>
-        </div>
-
-        <div className="mt-2 h-[1px] w-full bg-grey" />
-
-        <div className={rowStyle}>
-          <div className="text-txtfade">Mark Price</div>
-          <div>{formatPriceInfo(markPrice)}</div>
-        </div>
-
-        <div className={rowStyle}>
-          <div className="text-txtfade">Entry Price</div>
-          <div>{formatPriceInfo(entryPrice)}</div>
-        </div>
-
-        <div className={rowStyle}>
-          <div className="text-txtfade">Liq. Price</div>
-          <div>{formatPriceInfo(position.liquidationPrice ?? null)}</div>
-        </div>
-
-        <div className="mt-2 h-[1px] w-full bg-grey" />
-
-        <div className={rowStyle}>
-          <div className="text-txtfade">Size</div>
-          <div className="flex">
-            {!input ? formatPriceInfo(position.collateralUsd) : null}
-
-            {input ? (
-              <>
-                {formatPriceInfo(position.collateralUsd)}
-                {
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src="images/arrow-right.svg" alt="arrow right" />
-                }
-                {formatPriceInfo(position.collateralUsd - input)}
-              </>
-            ) : null}
-          </div>
-        </div>
-
-        <div className={rowStyle}>
-          <div className="text-txtfade">Leverage</div>
-          <div className="flex">
-            {closing ? (
-              '-'
-            ) : (
-              <>
-                {updatedLeverage !== 0 ? (
-                  <div>{formatNumber(position.leverage, 2)}x</div>
-                ) : (
-                  '-'
-                )}
-                {input && updatedLeverage ? (
-                  <>
-                    {
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src="images/arrow-right.svg" alt="arrow right" />
-                    }
-                    <div
-                      className={twMerge(
-                        overMaxAuthorizedLeverage && 'text-red-400',
-                      )}
-                    >
-                      {updatedLeverage > 0 ? (
-                        `${formatNumber(updatedLeverage, 2)}x`
-                      ) : (
-                        <span>OVER LIMIT</span>
-                      )}
-                    </div>
-                  </>
-                ) : null}
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className={rowStyle}>
-          <div className="text-txtfade">
+          <div className="text-txtfade text-xs">
             Collateral ({position.token.symbol})
           </div>
-          <div className="flex">
-            {!input && markPrice
-              ? formatNumber(position.collateralUsd / markPrice, 6)
-              : null}
-
-            {input && markPrice ? (
-              <>
-                {formatNumber(position.collateralUsd / markPrice, 6)}
-                {
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src="images/arrow-right.svg" alt="arrow right" />
-                }
-                {formatNumber((position.collateralUsd - input) / markPrice, 6)}
-              </>
-            ) : null}
+          <div className="flex text-xs">
+            {formatNumber(position.collateralUsd, USD_DECIMALS)}
           </div>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade">PnL</div>
-          <div>
+          <div className="text-txtfade text-xs">Leverage</div>
+          <div className="flex text-xs">
+            <div>{formatNumber(position.leverage, 2)}x</div>
+          </div>
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-txtfade text-xs">Entry Price</div>
+          <div className="text-xs">{formatPriceInfo(position.price)}</div>
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-txtfade text-xs">PnL</div>
+          <div className="text-xs">
             {position.pnl && markPrice ? (
               <span
-                className={`text-${position.pnl > 0 ? 'green' : 'red'}-400`}
+                className={`text-xs text-${
+                  position.pnl > 0 ? 'green' : 'red'
+                }-500`}
               >
                 {formatPriceInfo(position.pnl, true)}
               </span>
@@ -385,10 +198,19 @@ export default function ClosePosition({
             )}
           </div>
         </div>
+      </div>
+
+      <div className="text-white text-xs mt-6">Exit settings</div>
+
+      <div className="flex flex-col border p-4 pt-2 bg-dark mt-3 rounded-2xl">
+        <div className={rowStyle}>
+          <div className="text-txtfade text-xs">Exit Price</div>
+          <div className="text-xs">{formatPriceInfo(markPrice)}</div>
+        </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade">Fees</div>
-          <div>
+          <div className="text-txtfade text-xs">Exit Fees</div>
+          <div className="text-xs">
             {exitPriceAndFee
               ? formatPriceInfo(nativeToUi(exitPriceAndFee.fee, USD_DECIMALS))
               : '-'}
@@ -397,11 +219,10 @@ export default function ClosePosition({
       </div>
 
       <Button
-        className="mt-4"
+        className="mt-8"
         size="lg"
-        title={executeBtnText}
+        title="Close position"
         onClick={() => handleExecute()}
-        disabled={!!overMaxAuthorizedLeverage}
       />
     </div>
   );

@@ -8,7 +8,6 @@ import { Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
-  formatPriceInfo,
   uiToNative,
 } from '@/utils';
 
@@ -193,6 +192,7 @@ export default function ALPSwap({
             collateralToken={collateralToken}
             allowedCollateralTokens={allowedCollateralTokens}
             alpInput={alpInput}
+            feesUsd={feesUsd}
             onChangeAlpInput={setAlpInput}
             collateralInput={collateralInput}
             onChangeCollateralInput={setCollateralInput}
@@ -203,13 +203,6 @@ export default function ALPSwap({
             setCollateralPrice={setCollateralPrice}
             setIsFeesLoading={setIsFeesLoading}
           />
-
-          <div className="flex w-full justify-between mt-4">
-            <span className="text-sm opacity-50">Fees</span>
-            <span className="text-sm font-mono">
-              {formatPriceInfo(feesUsd)}
-            </span>
-          </div>
 
           {/* Button to execute action */}
           <Button

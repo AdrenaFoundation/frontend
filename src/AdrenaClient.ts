@@ -39,6 +39,7 @@ import {
   Custody,
   CustodyExtended,
   EditUserProfile,
+  ExitPriceAndFee,
   FinalizeLockedStakeAccounts,
   ImageRef,
   InitUserProfile,
@@ -52,7 +53,6 @@ import {
   PoolExtended,
   Position,
   PositionExtended,
-  PriceAndFee,
   ProfitAndLoss,
   RemoveCollateralAccounts,
   RemoveLiquidityAccounts,
@@ -3027,7 +3027,7 @@ export class AdrenaClient {
     position,
   }: {
     position: PositionExtended;
-  }): Promise<PriceAndFee | null> {
+  }): Promise<ExitPriceAndFee | null> {
     if (!this.readonlyAdrenaProgram.views) {
       return null;
     }
@@ -3049,7 +3049,7 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
-          collateralCustody: position.custody,
+          collateralCustody: position.collateralCustody,
           collateralCustodyOracleAccount:
             custody.nativeObject.oracle.oracleAccount,
         },
@@ -3187,8 +3187,14 @@ export class AdrenaClient {
             (token) => token.custody && token.custody.equals(position.custody),
           ) ?? null;
 
+        const collateralToken =
+          this.tokens.find(
+            (token) =>
+              token.custody && token.custody.equals(position.collateralCustody),
+          ) ?? null;
+
         // Ignore position with unknown tokens
-        if (!token) {
+        if (!token || !collateralToken) {
           return acc;
         }
 
@@ -3200,6 +3206,7 @@ export class AdrenaClient {
             owner: position.owner,
             pubkey: possiblePositionAddresses[index],
             token,
+            collateralToken,
             side: Object.keys(position.side)[0] as 'long' | 'short',
             sizeUsd: nativeToUi(position.sizeUsd, 6),
             collateralUsd: nativeToUi(position.collateralUsd, 6),
@@ -3444,6 +3451,10 @@ export class AdrenaClient {
         };
       }),
     ];
+  }
+
+  public getCustodyByPubkey(custody: PublicKey): CustodyExtended | null {
+    return this.custodies.find((c) => c.pubkey.equals(custody)) ?? null;
   }
 
   public getCustodyByMint(mint: PublicKey): CustodyExtended {

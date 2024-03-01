@@ -2,11 +2,13 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { nativeToUi, uiToNative } from '@/utils';
+import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 // use the counter to handle asynchronous multiple loading
@@ -20,6 +22,7 @@ export default function ALPSwapInputs({
   collateralToken,
   allowedCollateralTokens,
   alpInput,
+  feesUsd,
   onChangeAlpInput,
   setAlpPrice,
   collateralInput,
@@ -33,6 +36,7 @@ export default function ALPSwapInputs({
   actionType: 'buy' | 'sell';
   className?: string;
   alpToken: Token;
+  feesUsd: number | null;
   collateralToken: Token;
   collateralInput: number | null;
   allowedCollateralTokens: Token[] | null;
@@ -256,6 +260,7 @@ export default function ALPSwapInputs({
 
   const alpInputComponent = (
     <TradingInput
+      className="text-xs"
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       value={alpInput}
@@ -269,14 +274,12 @@ export default function ALPSwapInputs({
         // only one token
       }}
       onChange={handleAlpInputChange}
-      inputClassName={
-        actionType === 'buy' ? 'rounded-t-none' : 'rounded-b-none border-b-0'
-      }
     />
   );
 
   const collateralComponent = (
     <TradingInput
+      className="text-xs"
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
       value={collateralInput}
@@ -290,9 +293,6 @@ export default function ALPSwapInputs({
       }}
       onTokenSelect={onCollateralTokenChange}
       onChange={handleCollateralInputChange}
-      inputClassName={
-        actionType === 'buy' ? 'rounded-b-none border-b-0' : 'rounded-t-none'
-      }
     />
   );
 
@@ -306,12 +306,32 @@ export default function ALPSwapInputs({
 
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
+      <div className="text-xs text-txtfade mb-3">Pay</div>
+
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
+      {
+        /* Display wallet balance */
+        (() => {
+          const token = actionType === 'buy' ? collateralToken : alpToken;
+
+          if (!token || !walletTokenBalances) return null;
+
+          const balance = walletTokenBalances[token.symbol];
+          if (balance === null) return null;
+
+          return (
+            <div className="text-txtfade text-xs ml-auto mt-3">
+              {formatNumber(balance, token.decimals)} {token.symbol} in wallet
+            </div>
+          );
+        })()
+      }
+
       {/* Switch Buy/Sell */}
-      <div className="relative w-full overflow-visible flex justify-center items-center z-[2]">
+      <div className="relative w-full overflow-visible flex justify-center items-center z-[2] mt-6">
         <div
-          className="group absolute bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
+          className="group bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
           onClick={() => {
             switchBuySell();
             rotateIcon();
@@ -328,7 +348,33 @@ export default function ALPSwapInputs({
         </div>
       </div>
 
+      <div className="text-xs text-txtfade mt-2 mb-3">Receive</div>
+
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
+
+      <div className="text-xs text-txtfade mt-6">Verify</div>
+
+      <div
+        className={twMerge(
+          'flex flex-col bg-secondary border rounded-2xl p-2',
+          className,
+        )}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <InfoAnnotation
+              text="Amount of tokens being traded."
+              className="w-3 grow-0 mr-1"
+            />
+
+            <div className="text-xs text-txtfade">Fees</div>
+          </div>
+
+          <div className="relative flex flex-col text-xs">
+            {formatPriceInfo(feesUsd, false, USD_DECIMALS)}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -266,7 +266,7 @@ export default function LongShortTradingInputs({
       {/* Leverage (only in short/long) */}
 
       <div className="flex flex-col">
-        <div className="text-xs text-txtfade flex items-center">
+        <div className="text-xs text-txtfade flex items-center mt-3">
           Leverage
           <InfoAnnotation
             text="Select a multiplier to apply to the collateral to determine the size of the position."

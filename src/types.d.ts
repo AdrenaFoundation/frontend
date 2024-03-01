@@ -82,6 +82,7 @@ export type PositionExtended = {
   pubkey: PublicKey;
   leverage: number;
   token: Token;
+  collateralToken: Token;
   side: 'long' | 'short';
   pnl?: number | null;
   liquidationPrice?: number;
@@ -210,7 +211,7 @@ export type BorrowRateParams = Params['BorrowRateParams'];
 export type BorrowRateState = Params['BorrowRateState'];
 export type PositionStats = Params['PositionStats'];
 export type OraclePrice = Params['OraclePrice'];
-export type PriceAndFee = Params['PriceAndFee'];
+export type ExitPriceAndFee = Params['ExitPriceAndFee'];
 export type NewPositionPricesAndFee = Params['NewPositionPricesAndFee'];
 export type OpenPositionWithSwapAmountAndFees =
   Params['OpenPositionWithSwapAmountAndFees'];

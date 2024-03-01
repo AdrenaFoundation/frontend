@@ -97,7 +97,10 @@ export default function TradingInput({
 
         {tokenList.length ? (
           <Select
-            className="shrink-0 bg-secondary h-full flex items-center pl-2 pr-2 pt-1 pb-1 rounded-tr-2xl rounded-br-2xl w-24 justify-end"
+            className={twMerge(
+              'shrink-0 bg-secondary h-full flex items-center pl-2 pr-2 pt-1 pb-1 rounded-tr-2xl rounded-br-2xl w-24',
+              tokenList.length > 1 ? 'justify-end' : 'justify-center',
+            )}
             selected={selectedToken?.symbol ?? ''}
             options={tokenList.map((token) => ({
               title: token.symbol,
@@ -119,7 +122,9 @@ export default function TradingInput({
             }}
           />
         ) : (
-          <div>{selectedToken?.symbol ?? '-'}</div>
+          <div className="flex items-center mr-4">
+            {selectedToken?.symbol ?? '-'}
+          </div>
         )}
       </div>
     </div>
