@@ -262,7 +262,7 @@ export default function EditPositionCollateral({
   const rowStyle = 'w-full flex justify-between mt-2';
 
   return (
-    <div className={twMerge('flex flex-col gap-3 h-full w-[30em]', className)}>
+    <div className={twMerge('flex flex-col gap-3 h-full w-[24em]', className)}>
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'deposit' }, { title: 'withdraw' }]}
@@ -297,7 +297,7 @@ export default function EditPositionCollateral({
               if (balance === null) return null;
 
               return (
-                <div className="text-txtfade text-xs ml-auto">
+                <div className="text-txtfade text-sm ml-auto">
                   {formatNumber(balance, position.collateralToken.decimals)}{' '}
                   {position.collateralToken.symbol} in wallet
                 </div>
@@ -321,7 +321,7 @@ export default function EditPositionCollateral({
             onChange={setInput}
           />
 
-          <div className="text-txtfade text-xs ml-auto">
+          <div className="text-txtfade text-sm ml-auto">
             {formatPriceInfo(position.collateralUsd)} of collateral in the
             position
           </div>
@@ -354,28 +354,28 @@ export default function EditPositionCollateral({
 
         <div className="flex flex-col border p-4 pt-2 bg-dark rounded-2xl">
           <div className={rowStyle}>
-            <div className="text-txtfade text-xs">Size</div>
-            <div className="flex text-xs">
+            <div className="text-txtfade text-sm">Size</div>
+            <div className="flex text-sm">
               {formatPriceInfo(position.sizeUsd)}
             </div>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-xs">Entry Price</div>
-            <div className="text-xs">{formatPriceInfo(position.price)}</div>
+            <div className="text-txtfade text-sm">Entry Price</div>
+            <div className="text-sm">{formatPriceInfo(position.price)}</div>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-xs">Mark Price</div>
-            <div className="text-xs">{formatPriceInfo(markPrice)}</div>
+            <div className="text-txtfade text-sm">Mark Price</div>
+            <div className="text-sm">{formatPriceInfo(markPrice)}</div>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-xs">PnL</div>
-            <div className="text-xs">
+            <div className="text-txtfade text-sm">PnL</div>
+            <div className="text-sm">
               {position.pnl && markPrice ? (
                 <span
-                  className={`text-xs text-${
+                  className={`text-sm text-${
                     position.pnl > 0 ? 'green' : 'red'
                   }-500`}
                 >
@@ -388,11 +388,11 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-xs">Collateral</div>
+            <div className="text-txtfade text-sm">Collateral</div>
 
             <div className="flex">
               <div className="flex flex-col items-end">
-                <div className="flex text-xs">
+                <div className="flex text-sm">
                   {formatNumber(
                     position.collateralAmount,
                     position.collateralToken.decimals,
@@ -400,7 +400,7 @@ export default function EditPositionCollateral({
                   {position.collateralToken.symbol}
                 </div>
 
-                <div className="flex text-xs text-txtfade">
+                <div className="flex text-sm text-txtfade">
                   {formatPriceInfo(position.collateralUsd)}
                 </div>
               </div>
@@ -417,7 +417,7 @@ export default function EditPositionCollateral({
 
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end">
-                      <div className="text-xs">
+                      <div className="text-sm">
                         {updatedInfos
                           ? formatNumber(
                               updatedInfos.collateral,
@@ -427,7 +427,7 @@ export default function EditPositionCollateral({
                         {position.collateralToken.symbol}
                       </div>
 
-                      <div className="text-xs text-txtfade">
+                      <div className="text-sm text-txtfade">
                         {updatedInfos
                           ? formatPriceInfo(updatedInfos.collateralUsd)
                           : '-'}
@@ -440,9 +440,9 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-xs">Leverage</div>
+            <div className="text-txtfade text-sm">Leverage</div>
             <div className="flex">
-              <div className="flex text-xs">
+              <div className="flex text-sm">
                 {formatNumber(position.leverage, 2)}x
               </div>
 
@@ -458,9 +458,9 @@ export default function EditPositionCollateral({
 
                   {updatedInfos ? (
                     updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
-                      <span className="text-xs text-txtfade">Overflow</span>
+                      <span className="text-sm text-txtfade">Overflow</span>
                     ) : (
-                      <span className="text-xs">
+                      <span className="text-sm">
                         {formatNumber(updatedInfos.leverage, 2)}x
                       </span>
                     )
@@ -473,9 +473,9 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-xs">Liquidation Price</div>
+            <div className="text-txtfade text-sm">Liquidation Price</div>
             <div className="flex">
-              <div className="text-xs">
+              <div className="text-sm">
                 {formatPriceInfo(position.liquidationPrice)}
               </div>
 
@@ -489,7 +489,7 @@ export default function EditPositionCollateral({
                     alt="Arrow"
                   />
 
-                  <div className="text-xs">
+                  <div className="text-sm">
                     {liquidationPrice !== null
                       ? formatPriceInfo(liquidationPrice)
                       : '-'}

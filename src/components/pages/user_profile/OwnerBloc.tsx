@@ -175,7 +175,7 @@ export default function OwnerBloc({
             <EmphasizedTitle title="Profile Creation date" />
 
             <DateInfo
-              className="text-txtfade text-xs ml-1"
+              className="text-txtfade text-sm ml-1"
               timestamp={userProfile.nativeObject.createdAt}
               shorten={true}
             />
@@ -183,7 +183,7 @@ export default function OwnerBloc({
 
           <div className="flex flex-col m-auto w-full items-center mt-8">
             <div className="flex items-center w-full justify-between">
-              <div className=" text-txtfade text-xs opacity-70">
+              <div className=" text-txtfade text-sm opacity-70">
                 owner&apos;s wallet
               </div>
 
@@ -195,7 +195,7 @@ export default function OwnerBloc({
             </div>
 
             <div className="flex items-center w-full justify-between">
-              <div className="text-txtfade text-xs opacity-70">
+              <div className="text-txtfade text-sm opacity-70">
                 onchain profile account
               </div>
 

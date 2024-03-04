@@ -151,43 +151,43 @@ export default function ClosePosition({
         </div>
       </div>
 
-      <div className="text-white text-xs mt-6">Position to close</div>
+      <div className="text-white text-sm mt-6">Position to close</div>
 
       <div className="flex flex-col border p-4 pt-2 bg-dark mt-3 rounded-2xl">
         <div className={rowStyle}>
-          <div className="text-txtfade text-xs">Size</div>
-          <div className="flex text-xs">
+          <div className="text-txtfade text-sm">Size</div>
+          <div className="flex text-sm">
             {formatPriceInfo(position.sizeUsd)}
           </div>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade text-xs">
+          <div className="text-txtfade text-sm">
             Collateral ({position.token.symbol})
           </div>
-          <div className="flex text-xs">
+          <div className="flex text-sm">
             {formatNumber(position.collateralUsd, USD_DECIMALS)}
           </div>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade text-xs">Leverage</div>
-          <div className="flex text-xs">
+          <div className="text-txtfade text-sm">Leverage</div>
+          <div className="flex text-sm">
             <div>{formatNumber(position.leverage, 2)}x</div>
           </div>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade text-xs">Entry Price</div>
-          <div className="text-xs">{formatPriceInfo(position.price)}</div>
+          <div className="text-txtfade text-sm">Entry Price</div>
+          <div className="text-sm">{formatPriceInfo(position.price)}</div>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade text-xs">PnL</div>
-          <div className="text-xs">
+          <div className="text-txtfade text-sm">PnL</div>
+          <div className="text-sm">
             {position.pnl && markPrice ? (
               <span
-                className={`text-xs text-${
+                className={`text-sm text-${
                   position.pnl > 0 ? 'green' : 'red'
                 }-500`}
               >
@@ -200,17 +200,17 @@ export default function ClosePosition({
         </div>
       </div>
 
-      <div className="text-white text-xs mt-6">Exit settings</div>
+      <div className="text-white text-sm mt-6">Exit settings</div>
 
       <div className="flex flex-col border p-4 pt-2 bg-dark mt-3 rounded-2xl">
         <div className={rowStyle}>
-          <div className="text-txtfade text-xs">Exit Price</div>
-          <div className="text-xs">{formatPriceInfo(markPrice)}</div>
+          <div className="text-txtfade text-sm">Exit Price</div>
+          <div className="text-sm">{formatPriceInfo(markPrice)}</div>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade text-xs">Exit Fees</div>
-          <div className="text-xs">
+          <div className="text-txtfade text-sm">Exit Fees</div>
+          <div className="text-sm">
             {exitPriceAndFee
               ? formatPriceInfo(nativeToUi(exitPriceAndFee.fee, USD_DECIMALS))
               : '-'}

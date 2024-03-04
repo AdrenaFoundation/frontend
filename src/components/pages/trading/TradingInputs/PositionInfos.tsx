@@ -103,7 +103,7 @@ export default function PositionInfos({
                     : '-'}
                 </div>
 
-                <div className="text-xs text-txtfade">
+                <div className="text-sm text-txtfade">
                   {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
                 </div>
               </div>
@@ -123,7 +123,7 @@ export default function PositionInfos({
               <div>
                 {inputB !== null ? formatNumber(inputB, tokenB.decimals) : '-'}
               </div>
-              <div className="text-xs text-txtfade">
+              <div className="text-sm text-txtfade">
                 {formatPriceInfo(priceB, false, 2)}
               </div>
             </div>
@@ -133,7 +133,7 @@ export default function PositionInfos({
 
       <div className="flex flex-col pt-2 pb-2 pl-4 pr-4">
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs flex">
+          <span className="text-txtfade text-sm flex">
             <InfoAnnotation
               text="Tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay borrow fees. If the position runs out of collateral, it gets liquidated."
               className="mr-1 w-3"
@@ -141,7 +141,7 @@ export default function PositionInfos({
             Collateral
           </span>
 
-          <span className="font-mono text-xs flex">
+          <span className="font-mono text-sm flex">
             {(() => {
               if (!positionInfos) return '-';
 
@@ -176,7 +176,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs flex">
+          <span className="text-txtfade text-sm flex">
             <InfoAnnotation
               text="Multiplier applied to the collateral to determine the size of the position."
               className="mr-1 w-3"
@@ -184,7 +184,7 @@ export default function PositionInfos({
             Leverage
           </span>
 
-          <span className="font-mono text-xs flex">
+          <span className="font-mono text-sm flex">
             {(() => {
               if (!positionInfos || !tokenPriceB) return '-';
 
@@ -219,7 +219,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs flex">
+          <span className="text-txtfade text-sm flex">
             <InfoAnnotation
               text="Token's price at which the trade begins."
               className="mr-1 w-3"
@@ -227,7 +227,7 @@ export default function PositionInfos({
             Entry Price
           </span>
 
-          <span className="flex font-mono text-xs">
+          <span className="flex font-mono text-sm">
             {(() => {
               if (!positionInfos || !tokenPriceB) return '-';
 
@@ -262,7 +262,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs flex">
+          <span className="text-txtfade text-sm flex">
             <InfoAnnotation
               text="If the token's price hits this point, the position is automatically closed to prevent further losses."
               className="mr-1 w-3"
@@ -270,7 +270,7 @@ export default function PositionInfos({
             Liquidation Price
           </span>
 
-          <span className="flex font-mono text-xs">
+          <span className="flex font-mono text-sm">
             {(() => {
               if (!positionInfos) return '-';
 
@@ -309,7 +309,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs flex">
+          <span className="text-txtfade text-sm flex">
             <InfoAnnotation
               text="Amount of funds available to enter new trades."
               className="mr-1 w-3"
@@ -317,7 +317,7 @@ export default function PositionInfos({
             Available Liquidity
           </span>
 
-          <span className="font-mono text-xs">
+          <span className="font-mono text-sm">
             {custody && tokenPriceB
               ? formatPriceInfo(custody.liquidity * tokenPriceB)
               : '-'}
@@ -327,7 +327,7 @@ export default function PositionInfos({
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs flex">
+          <span className="text-txtfade text-sm flex">
             <InfoAnnotation
               text={`Fees paid when ${
                 openedPosition ? 'increasing' : 'opening'
@@ -337,7 +337,7 @@ export default function PositionInfos({
             {openedPosition ? 'Increase' : 'Open'} Position Fees
           </span>
 
-          <span className="font-mono text-xs">
+          <span className="font-mono text-sm">
             {positionInfos && positionInfos?.swapFeeUsd ? (
               <Tippy
                 content={
@@ -385,7 +385,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs relative flex">
+          <span className="text-txtfade text-sm relative flex">
             <InfoAnnotation
               text="Fees paid when closing the position."
               className="mr-1 w-3"
@@ -393,7 +393,7 @@ export default function PositionInfos({
             Exit Position Fees
           </span>
 
-          <span className="font-mono text-xs flex">
+          <span className="font-mono text-sm flex">
             {(() => {
               if (!positionInfos) return '-';
 
@@ -429,7 +429,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs relative flex">
+          <span className="text-txtfade text-sm relative flex">
             <InfoAnnotation
               text="Fees paid when the position is liquidated."
               className="mr-1 w-3"
@@ -437,7 +437,7 @@ export default function PositionInfos({
             Liquidation Fees
           </span>
 
-          <span className="font-mono text-xs flex">
+          <span className="font-mono text-sm flex">
             {(() => {
               if (!positionInfos) return '-';
 
@@ -476,7 +476,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-xs relative flex">
+          <span className="text-txtfade text-sm relative flex">
             <InfoAnnotation
               text="Fees charged for borrowing funds for the position. Greater leverage means borrowing more tokens, resulting in higher fees."
               className="mr-1 w-3"
@@ -484,7 +484,7 @@ export default function PositionInfos({
             Current Borrow Fees
           </span>
 
-          <span className="font-mono text-xs">
+          <span className="font-mono text-sm">
             {custody && tokenB
               ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}%/hr`
               : '-'}

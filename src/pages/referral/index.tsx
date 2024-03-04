@@ -128,28 +128,28 @@ export default function Referral() {
                     />
 
                     <div>
-                      <p className="opacity-50 text-xs mb-1">name</p>
+                      <p className="opacity-50 text-sm mb-1">name</p>
                       <p className="font-medium">Orex</p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="opacity-50 text-xs mb-1">Current level</p>
+                    <p className="opacity-50 text-sm mb-1">Current level</p>
                     <p className="font-medium">Sage</p>
                   </div>
 
                   <div>
-                    <p className="opacity-50 text-xs mb-1">Referred</p>
+                    <p className="opacity-50 text-sm mb-1">Referred</p>
                     <p className="font-medium">10/10/23</p>
                   </div>
 
                   <div>
-                    <p className="opacity-50 text-xs mb-1">Trading volum</p>
+                    <p className="opacity-50 text-sm mb-1">Trading volum</p>
                     <p className="font-medium font-mono">$10,391</p>
                   </div>
 
                   <div>
-                    <p className="opacity-50 text-xs mb-1">Claimable ADX</p>
+                    <p className="opacity-50 text-sm mb-1">Claimable ADX</p>
                     <p className="font-medium font-mono">1 ADX</p>
                   </div>
                 </div>

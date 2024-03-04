@@ -54,7 +54,7 @@ export default function StakeBlocks({
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium opacity-50">
+                  <p className="text-sm font-medium opacity-50">
                     {tokenSymbol}
                   </p>
                   <p>

@@ -207,7 +207,7 @@ export default function LongShortTradingInputs({
 
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
-      <div className="text-xs text-txtfade flex items-center">
+      <div className="text-sm text-txtfade flex items-center">
         Pay
         <InfoAnnotation
           text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
@@ -219,11 +219,11 @@ export default function LongShortTradingInputs({
       <div className="flex">
         <div className="flex flex-col">
           <TradingInput
-            className="mt-2 text-xs"
+            className="mt-2 text-sm"
             value={inputA}
             subText={
               priceA ? (
-                <div className="text-xs text-txtfade">
+                <div className="text-sm text-txtfade">
                   {formatPriceInfo(priceA)}
                 </div>
               ) : null
@@ -253,7 +253,7 @@ export default function LongShortTradingInputs({
               if (balance === null) return null;
 
               return (
-                <div className="text-txtfade text-xs ml-auto mt-3">
+                <div className="text-txtfade text-sm ml-auto mt-3">
                   {formatNumber(balance, tokenA.decimals)} {tokenA.symbol} in
                   wallet
                 </div>
@@ -266,7 +266,7 @@ export default function LongShortTradingInputs({
       {/* Leverage (only in short/long) */}
 
       <div className="flex flex-col">
-        <div className="text-xs text-txtfade flex items-center mt-3">
+        <div className="text-sm text-txtfade flex items-center mt-3">
           Leverage
           <InfoAnnotation
             text="Select a multiplier to apply to the collateral to determine the size of the position."
@@ -282,7 +282,7 @@ export default function LongShortTradingInputs({
       </div>
 
       <div className="flex flex-col mt-5">
-        <div className="text-xs text-txtfade flex items-center">
+        <div className="text-sm text-txtfade flex items-center">
           Verify
           <InfoAnnotation
             text={

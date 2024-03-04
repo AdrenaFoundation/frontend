@@ -37,10 +37,10 @@ export default function SwapInfo({
             text="The slippage represents the permissible deviation between the price shown in the website during the swap transaction preview and the final execution price."
             className="w-3 grow-0 mr-1"
           />
-          <span className="text-xs text-txtfade flex">Slippage</span>
+          <span className="text-sm text-txtfade flex">Slippage</span>
         </div>
 
-        <span className="text-xs font-mono">0.3%</span>
+        <span className="text-sm font-mono">0.3%</span>
       </div>
 
       <div className="w-full flex justify-between items-start mt-3">
@@ -50,12 +50,12 @@ export default function SwapInfo({
             className="w-3 grow-0 mr-1"
           />
 
-          <span className="text-xs text-txtfade flex">Fees</span>
+          <span className="text-sm text-txtfade flex">Fees</span>
         </div>
 
-        <span className="text-xs font-mono">
+        <span className="text-sm font-mono">
           {swapFeesAndAmount ? (
-            <div className="text-txtfade text-xs">
+            <div className="text-txtfade text-sm">
               {tokenPriceA && tokenPriceB
                 ? formatPriceInfo(
                     nativeToUi(swapFeesAndAmount.feeIn, tokenA.decimals) *
@@ -75,9 +75,9 @@ export default function SwapInfo({
 
       <div className="flex flex-col mt-3">
         <div className="w-full flex justify-between items-start">
-          <span className="text-xs text-txtfade flex ml-4">Fees IN</span>
+          <span className="text-sm text-txtfade flex ml-4">Fees IN</span>
 
-          <span className="text-xs font-mono">
+          <span className="text-sm font-mono">
             {swapFeesAndAmount ? (
               <div className="flex flex-col items-end">
                 <div>
@@ -106,9 +106,9 @@ export default function SwapInfo({
         </div>
 
         <div className="w-full flex justify-between items-start mt-2">
-          <span className="text-xs text-txtfade flex ml-4">Fees OUT</span>
+          <span className="text-sm text-txtfade flex ml-4">Fees OUT</span>
 
-          <span className="text-xs font-mono">
+          <span className="text-sm font-mono">
             {swapFeesAndAmount ? (
               <div className="flex flex-col items-end">
                 <div>

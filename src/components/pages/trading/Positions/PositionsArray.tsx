@@ -3,17 +3,12 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
-import Menu from '@/components/common/Menu/Menu';
-import MenuItem from '@/components/common/Menu/MenuItem';
-import MenuItems from '@/components/common/Menu/MenuItems';
-import MenuSeperator from '@/components/common/Menu/MenuSeperator';
 import Loader from '@/components/Loader/Loader';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-import threeDotsIcon from '../../../../../public/images/Icons/three-dots.svg';
 import phantomLogo from '../../../../../public/images/phantom.png';
 
 export default function PositionsArray({
@@ -50,7 +45,7 @@ export default function PositionsArray({
           onClick={handleClick}
         />
 
-        <p className="text-xs opacity-50 font-normal">
+        <p className="text-sm opacity-50 font-normal">
           Waiting for wallet connection
         </p>
 
@@ -70,7 +65,7 @@ export default function PositionsArray({
   if (positions && !positions.length) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-xs opacity-50 font-normal">No opened position</p>
+        <p className="text-sm opacity-50 font-normal">No opened position</p>
       </div>
     );
   }
@@ -81,23 +76,27 @@ export default function PositionsArray({
 
       <thead>
         <tr>
-          {[
-            'Position',
-            'Leverage',
-            'Net Value',
-            'Size',
-            'Collateral',
-            'Entry Price',
-            'Market Price',
-            'Liq. Price',
-          ].map((header) => (
-            <th
-              className="text-xs text-left opacity-50 font-medium"
-              key={header}
-            >
-              {header}
-            </th>
-          ))}
+          <th className="text-sm text-left opacity-50 font-medium">Position</th>
+          <th className="text-sm text-left opacity-50 font-medium">Leverage</th>
+          <th className="text-sm text-left opacity-50 font-medium">
+            Net Value
+          </th>
+          <th className="text-sm text-left opacity-50 font-medium">Size</th>
+          <th className="text-sm text-left opacity-50 font-medium">
+            Collateral
+          </th>
+          <th className="text-sm text-left opacity-50 font-medium">
+            Entry Price
+          </th>
+          <th className="text-sm text-left opacity-50 font-medium">
+            Market Price
+          </th>
+          <th className="text-sm text-left opacity-50 font-medium">
+            Liq. Price
+          </th>
+          <th className="text-sm text-right opacity-50 font-medium w-12 shrink-0 grow-0">
+            Actions
+          </th>
         </tr>
       </thead>
 
@@ -128,7 +127,7 @@ export default function PositionsArray({
                   <span className="font-mono">{position.token.symbol}</span>
                   <div
                     className={twMerge(
-                      'text-xs font-mono capitalize',
+                      'text-sm font-mono capitalize',
                       `text-${position.side === 'long' ? 'green' : 'red'}-500`,
                     )}
                   >
@@ -179,35 +178,29 @@ export default function PositionsArray({
               {formatPriceInfo(position.liquidationPrice ?? null)}
             </td>
 
-            <td>
-              <Menu
-                trigger={
-                  <Button
-                    variant="text"
-                    className="px-1"
-                    leftIcon={threeDotsIcon}
-                  />
-                }
-                className="w-fit"
-              >
-                <MenuItems>
-                  <MenuItem
-                    onClick={() => {
-                      triggerEditPositionCollateral(position);
-                    }}
-                  >
-                    Edit Collateral
-                  </MenuItem>
-                  <MenuSeperator />
-                  <MenuItem
-                    onClick={() => {
-                      triggerClosePosition(position);
-                    }}
-                  >
-                    Close
-                  </MenuItem>
-                </MenuItems>
-              </Menu>
+            <td
+              className={twMerge(
+                columnStyle,
+                'font-mono flex flex-col w-12 shrink-0 grow-0 justify-center items-center',
+              )}
+            >
+              <Button
+                className="text-xs"
+                title="close"
+                variant="text"
+                onClick={() => {
+                  triggerClosePosition(position);
+                }}
+              />
+
+              <Button
+                className="text-xs"
+                title="edit"
+                variant="text"
+                onClick={() => {
+                  triggerEditPositionCollateral(position);
+                }}
+              />
             </td>
           </tr>
         ))}

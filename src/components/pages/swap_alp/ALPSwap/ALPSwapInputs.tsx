@@ -260,7 +260,7 @@ export default function ALPSwapInputs({
 
   const alpInputComponent = (
     <TradingInput
-      className="text-xs"
+      className="text-sm"
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       value={alpInput}
@@ -279,7 +279,7 @@ export default function ALPSwapInputs({
 
   const collateralComponent = (
     <TradingInput
-      className="text-xs"
+      className="text-sm"
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
       value={collateralInput}
@@ -306,7 +306,7 @@ export default function ALPSwapInputs({
 
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
-      <div className="text-xs text-txtfade mb-3">Pay</div>
+      <div className="text-sm text-txtfade mb-3">Pay</div>
 
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
@@ -321,7 +321,7 @@ export default function ALPSwapInputs({
           if (balance === null) return null;
 
           return (
-            <div className="text-txtfade text-xs ml-auto mt-3">
+            <div className="text-txtfade text-sm ml-auto mt-3">
               {formatNumber(balance, token.decimals)} {token.symbol} in wallet
             </div>
           );
@@ -348,11 +348,11 @@ export default function ALPSwapInputs({
         </div>
       </div>
 
-      <div className="text-xs text-txtfade mt-2 mb-3">Receive</div>
+      <div className="text-sm text-txtfade mt-2 mb-3">Receive</div>
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
 
-      <div className="text-xs text-txtfade mt-6">Verify</div>
+      <div className="text-sm text-txtfade mt-6">Verify</div>
 
       <div
         className={twMerge(
@@ -367,10 +367,10 @@ export default function ALPSwapInputs({
               className="w-3 grow-0 mr-1"
             />
 
-            <div className="text-xs text-txtfade">Fees</div>
+            <div className="text-sm text-txtfade">Fees</div>
           </div>
 
-          <div className="relative flex flex-col text-xs">
+          <div className="relative flex flex-col text-sm">
             {formatPriceInfo(feesUsd, false, USD_DECIMALS)}
           </div>
         </div>

@@ -41,7 +41,7 @@ export default function StakeOverview({
         <div>
           <div className="flex flex-row gap-1 items-center opacity-50">
             <Image src={walletIcon} width={16} height={16} alt="wallet" />
-            <p className="text-xs font-mono">
+            <p className="text-sm font-mono">
               {tokenDetails.balance
                 ? `${formatNumber(tokenDetails.balance, 3)} ${
                     tokenDetails.token.symbol

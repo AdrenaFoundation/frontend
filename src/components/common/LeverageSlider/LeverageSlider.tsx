@@ -99,7 +99,7 @@ export default function LeverageSlider({
           step={0.1}
           marks={[2, 5, 10, 15, 20, 30, 40, 50].reduce((acc, mark) => {
             acc[mark] = (
-              <span className="text-white text-xs opacity-30 hover:opacity-100">
+              <span className="text-white text-sm opacity-30 hover:opacity-100">
                 x{mark}
               </span>
             );

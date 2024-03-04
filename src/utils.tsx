@@ -116,7 +116,7 @@ export function addNotification({
       <div className="border-b border-white/10 pb-2 text-sm font-medium font-mono">
         {title}
       </div>
-      <div className="mt-4 text-xs font-mono">{message}</div>
+      <div className="mt-4 text-sm font-mono">{message}</div>
     </div>
   ) : (
     <p className="text-sm font-mono font-medium">{title}</p>

@@ -74,7 +74,7 @@ export default function OtherUserProfile(pageProps: PageProps) {
         <div className="mt-16">
           <EmphasizedTitle title="User wallet" />
 
-          <div className="text-xs italic text-txtfade mt-2 w-[30em] text-center">
+          <div className="text-sm italic text-txtfade mt-2 w-[30em] text-center">
             {router.query.wallet ?? '-'}
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function OtherUserProfile(pageProps: PageProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="text-xs ml-4 flex items-center border-b border-white w-[18em]">
+      <div className="text-sm ml-4 flex items-center border-b border-white w-[18em]">
         <div>
           Visiting
           <span className="font-specialmonster text-lg ml-2 mr-2">

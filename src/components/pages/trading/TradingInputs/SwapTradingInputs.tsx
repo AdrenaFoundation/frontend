@@ -202,7 +202,7 @@ export default function SwapTradingInputs({
   return (
     <div className={twMerge('relative flex flex-col', className)}>
       {/* Input A */}
-      <div className="text-xs text-txtfade flex items-center">
+      <div className="text-sm text-txtfade flex items-center">
         Pay
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."
@@ -211,11 +211,11 @@ export default function SwapTradingInputs({
       </div>
 
       <TradingInput
-        className="mt-2 text-xs"
+        className="mt-2 text-sm"
         value={inputA}
         subText={
           priceA ? (
-            <div className="text-xs text-txtfade">
+            <div className="text-sm text-txtfade">
               {formatPriceInfo(priceA)}
             </div>
           ) : null
@@ -249,7 +249,7 @@ export default function SwapTradingInputs({
             balance = walletTokenBalances[tokenA.symbol];
 
           return (
-            <div className="text-txtfade text-xs ml-auto mt-3">
+            <div className="text-txtfade text-sm ml-auto mt-3">
               {balance !== null ? formatNumber(balance, tokenA.decimals) : '-'}{' '}
               {tokenA.symbol} in wallet
             </div>
@@ -280,7 +280,7 @@ export default function SwapTradingInputs({
       </div>
 
       {/* Input B */}
-      <div className="text-xs text-txtfade flex items-center mt-3">
+      <div className="text-sm text-txtfade flex items-center mt-3">
         Receive
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."
@@ -290,11 +290,11 @@ export default function SwapTradingInputs({
 
       <TradingInput
         disabled={true}
-        className="mt-3 text-xs"
+        className="mt-3 text-sm"
         value={inputB}
         subText={
           priceB ? (
-            <div className="text-xs text-txtfade">
+            <div className="text-sm text-txtfade">
               {formatPriceInfo(priceB)}
             </div>
           ) : null
@@ -315,7 +315,7 @@ export default function SwapTradingInputs({
           if (balance === null) return null;
 
           return (
-            <div className="text-txtfade text-xs ml-auto mt-3">
+            <div className="text-txtfade text-sm ml-auto mt-3">
               {custodyTokenB
                 ? formatNumber(custodyTokenB.liquidity, tokenB.decimals)
                 : '-'}{' '}
@@ -326,7 +326,7 @@ export default function SwapTradingInputs({
       }
 
       <div className="flex flex-col mt-5">
-        <div className="text-xs text-txtfade flex items-center">
+        <div className="text-sm text-txtfade flex items-center">
           Verify
           <InfoAnnotation
             text={
@@ -348,7 +348,7 @@ export default function SwapTradingInputs({
         </div>
 
         <SwapInfo
-          className="mt-3 text-xs"
+          className="mt-3 text-sm"
           tokenA={tokenA}
           tokenB={tokenB}
           swapFeesAndAmount={swapFeesAndAmount}

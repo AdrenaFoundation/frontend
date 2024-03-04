@@ -57,7 +57,7 @@ export default function TradingInputs({
       </div>
 
       <div className="flex flex-row gap-3 p-3 items-center">
-        <div className="font-mono mr-3 text-lg">
+        <div className="font-mono mr-3 text-base">
           {tokenPrices && tokenPrices[selected.symbol]
             ? // Force linting, we check it just bellow
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -68,7 +68,7 @@ export default function TradingInputs({
         <div className={infoStyle}>
           <span
             className={twMerge(
-              'font-mono text-xs',
+              'font-mono text-sm',
               stats && stats[selected.symbol].dailyChange > 0
                 ? 'text-green-500'
                 : 'text-red-500',
@@ -78,14 +78,14 @@ export default function TradingInputs({
               ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
               : '-'}
           </span>
-          <span className="text-xs text-txtfade">24h Change</span>
+          <span className="text-sm text-txtfade">24h Change</span>
         </div>
 
         <div className={infoStyle}>
-          <span className="font-mono text-xs">
+          <span className="font-mono text-sm">
             {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
           </span>
-          <span className="text-xs text-txtfade">24h Volume</span>
+          <span className="text-sm text-txtfade">24h Volume</span>
         </div>
       </div>
     </div>
