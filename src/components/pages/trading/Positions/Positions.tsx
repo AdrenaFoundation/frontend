@@ -51,7 +51,9 @@ export default function Positions({
         )}
         {positionToEdit && (
           <Modal
-            title={`Edit ${positionToEdit.side} ${positionToEdit.token.symbol} Position`}
+            title={`Edit ${positionToEdit.side === 'long' ? 'Long' : 'Short'} ${
+              positionToEdit.token.symbol
+            } Position's Collateral`}
             close={() => setPositionToEdit(null)}
             className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
           >
