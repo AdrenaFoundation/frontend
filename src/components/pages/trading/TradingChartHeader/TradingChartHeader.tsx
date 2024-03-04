@@ -20,9 +20,6 @@ export default function TradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
 
-  const infoStyle =
-    'hidden sm:flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full flex-wrap';
-
   return (
     <div
       className={twMerge(
@@ -65,7 +62,7 @@ export default function TradingInputs({
             : null}
         </div>
 
-        <div className={infoStyle}>
+        <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
           <span
             className={twMerge(
               'font-mono text-sm',
@@ -78,14 +75,18 @@ export default function TradingInputs({
               ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
               : '-'}
           </span>
-          <span className="text-sm text-txtfade">24h Change</span>
+          <span className="text-sm text-txtfade ml-2 relative top-[0.1em]">
+            24h Change
+          </span>
         </div>
 
-        <div className={infoStyle}>
+        <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
           <span className="font-mono text-sm">
             {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
           </span>
-          <span className="text-sm text-txtfade">24h Volume</span>
+          <span className="text-sm text-txtfade ml-2 relative top-[0.1em]">
+            24h Volume
+          </span>
         </div>
       </div>
     </div>
