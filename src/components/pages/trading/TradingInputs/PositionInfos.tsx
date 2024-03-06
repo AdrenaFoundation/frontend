@@ -8,7 +8,9 @@ import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
+import arrowDownRedIcon from '../../../../../public/images/arrow-down-red.png';
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
+import arrowUpGreenIcon from '../../../../../public/images/arrow-up-green.png';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 
 export default function PositionInfos({
@@ -52,6 +54,33 @@ export default function PositionInfos({
   const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
+
+  const arrowElement = (side: 'up' | 'down', className?: string) => {
+    const pxSize = 12;
+
+    return (
+      <Image
+        className={twMerge(
+          `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center ml-1`,
+          className,
+        )}
+        src={side === 'down' ? arrowDownRedIcon : arrowUpGreenIcon}
+        height={pxSize}
+        width={pxSize}
+        alt="Arrow"
+      />
+    );
+  };
+
+  const rightArrowElement = (
+    <Image
+      className="ml-2 mr-2"
+      src={arrowRightIcon}
+      height={16}
+      width={16}
+      alt="Arrow"
+    />
+  );
 
   return (
     <div
@@ -108,13 +137,7 @@ export default function PositionInfos({
                 </div>
               </div>
 
-              <Image
-                className="ml-2 mr-2"
-                src={arrowRightIcon}
-                height={16}
-                width={16}
-                alt="Arrow"
-              />
+              {rightArrowElement}
             </>
           ) : null}
 
@@ -128,6 +151,10 @@ export default function PositionInfos({
               </div>
             </div>
           </div>
+
+          {openedPosition && tokenPriceB && inputB && priceB
+            ? arrowElement(openedPosition.sizeUsd < priceB ? 'up' : 'down')
+            : null}
         </div>
       </div>
 
@@ -146,26 +173,24 @@ export default function PositionInfos({
               if (!positionInfos) return '-';
 
               if (openedPosition) {
+                const newCollateralUsd =
+                  positionInfos.collateralUsd + openedPosition.collateralUsd;
+
                 return (
                   <>
                     {/* Opened position */}
                     <div>{formatPriceInfo(openedPosition.collateralUsd)}</div>
 
-                    <Image
-                      className="ml-2 mr-2"
-                      src={arrowRightIcon}
-                      height={16}
-                      width={16}
-                      alt="Arrow"
-                    />
+                    {rightArrowElement}
 
                     {/* New position */}
-                    <div>
-                      {formatPriceInfo(
-                        positionInfos.collateralUsd +
-                          openedPosition.collateralUsd,
-                      )}
-                    </div>
+                    <div>{formatPriceInfo(newCollateralUsd)}</div>
+
+                    {arrowElement(
+                      newCollateralUsd > positionInfos.collateralUsd
+                        ? 'up'
+                        : 'down',
+                    )}
                   </>
                 );
               }
@@ -199,16 +224,14 @@ export default function PositionInfos({
                     {/* Opened position */}
                     <div>{formatNumber(openedPosition.leverage, 2)}x</div>
 
-                    <Image
-                      className="ml-2 mr-2"
-                      src={arrowRightIcon}
-                      height={16}
-                      width={16}
-                      alt="Arrow"
-                    />
+                    {rightArrowElement}
 
                     {/* New position */}
                     <div>{formatNumber(newLeverage, 2)}x</div>
+
+                    {arrowElement(
+                      newLeverage > openedPosition.leverage ? 'up' : 'down',
+                    )}
                   </>
                 );
               }
@@ -242,16 +265,14 @@ export default function PositionInfos({
                     {/* Opened position */}
                     <div>{formatPriceInfo(openedPosition.price)}</div>
 
-                    <Image
-                      className="ml-2 mr-2"
-                      src={arrowRightIcon}
-                      height={16}
-                      width={16}
-                      alt="Arrow"
-                    />
+                    {rightArrowElement}
 
                     {/* New position */}
                     <div>{formatPriceInfo(newEntryPrice)}</div>
+
+                    {arrowElement(
+                      newEntryPrice > openedPosition.price ? 'up' : 'down',
+                    )}
                   </>
                 );
               }
@@ -289,16 +310,16 @@ export default function PositionInfos({
                       {formatPriceInfo(openedPosition.liquidationPrice)}
                     </div>
 
-                    <Image
-                      className="ml-2 mr-2"
-                      src={arrowRightIcon}
-                      height={16}
-                      width={16}
-                      alt="Arrow"
-                    />
+                    {rightArrowElement}
 
                     {/* New position */}
                     <div>{formatPriceInfo(newLiquidationPrice)}</div>
+
+                    {arrowElement(
+                      newLiquidationPrice > openedPosition.price
+                        ? 'up'
+                        : 'down',
+                    )}
                   </>
                 );
               }
@@ -400,25 +421,24 @@ export default function PositionInfos({
               if (openedPosition) {
                 if (!openedPosition.nativeObject.exitFeeUsd) return '-';
 
+                const newExitPositionFeeUsd =
+                  openedPosition.exitFeeUsd + positionInfos.exitFeeUsd;
+
                 return (
                   <>
                     {/* Opened position */}
                     <div>{formatPriceInfo(openedPosition.exitFeeUsd)}</div>
 
-                    <Image
-                      className="ml-2 mr-2"
-                      src={arrowRightIcon}
-                      height={16}
-                      width={16}
-                      alt="Arrow"
-                    />
+                    {rightArrowElement}
 
                     {/* New position */}
-                    <div>
-                      {formatPriceInfo(
-                        openedPosition.exitFeeUsd + positionInfos.exitFeeUsd,
-                      )}
-                    </div>
+                    <div>{formatPriceInfo(newExitPositionFeeUsd)}</div>
+
+                    {arrowElement(
+                      newExitPositionFeeUsd > openedPosition.exitFeeUsd
+                        ? 'up'
+                        : 'down',
+                    )}
                   </>
                 );
               }
@@ -444,6 +464,10 @@ export default function PositionInfos({
               if (openedPosition) {
                 if (!openedPosition.nativeObject.liquidationFeeUsd) return '-';
 
+                const newLiquidationFeeUsd =
+                  openedPosition.liquidationFeeUsd +
+                  positionInfos.liquidationFeeUsd;
+
                 return (
                   <>
                     {/* Opened position */}
@@ -451,21 +475,16 @@ export default function PositionInfos({
                       {formatPriceInfo(openedPosition.liquidationFeeUsd)}
                     </div>
 
-                    <Image
-                      className="ml-2 mr-2"
-                      src={arrowRightIcon}
-                      height={16}
-                      width={16}
-                      alt="Arrow"
-                    />
+                    {rightArrowElement}
 
                     {/* New position */}
-                    <div>
-                      {formatPriceInfo(
-                        openedPosition.liquidationFeeUsd +
-                          positionInfos.liquidationFeeUsd,
-                      )}
-                    </div>
+                    <div>{formatPriceInfo(newLiquidationFeeUsd)}</div>
+
+                    {arrowElement(
+                      newLiquidationFeeUsd > openedPosition.liquidationFeeUsd
+                        ? 'up'
+                        : 'down',
+                    )}
                   </>
                 );
               }

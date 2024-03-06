@@ -30,7 +30,7 @@ export default function Select<T extends string>({
               {selectedImg ? (
                 <Image src={selectedImg} alt="logo" width="16" height="16" />
               ) : null}
-              <span className="text-md font-medium">{selected}</span>
+              <span className="text-md font-medium text-sm">{selected}</span>
             </div>
 
             {options.length > 1 ? (
@@ -49,6 +49,7 @@ export default function Select<T extends string>({
               .map((option, i) => (
                 <>
                   {!!i && <MenuSeperator key={'sep' + option.title} />}
+
                   <MenuItem
                     className="flex flex-row gap-1 items-center text-center text-lg"
                     onClick={() => {

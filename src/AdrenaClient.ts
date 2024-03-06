@@ -1671,6 +1671,21 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
+    console.log(
+      'CALL GET INFO',
+      JSON.stringify(
+        {
+          mint: tokenB.mint.toBase58(),
+          collateralMint: tokenA.mint.toBase58(),
+          collateralAmount: collateralAmount.toString(),
+          leverage: leverage.toString(),
+          side,
+        },
+        null,
+        2,
+      ),
+    );
+
     const info = await this.getOpenPositionWithSwapAmountAndFees({
       mint: tokenB.mint,
       collateralMint: tokenA.mint,
@@ -2950,7 +2965,7 @@ export class AdrenaClient {
     // Need to do it manually, so we can get the correct amounts
     const instruction = await this.readonlyAdrenaProgram.methods
       .getOpenPositionWithSwapAmountAndFees({
-        collateralAmount: collateralAmount,
+        collateralAmount,
         leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3036,7 +3051,11 @@ export class AdrenaClient {
       custody.pubkey.equals(position.custody),
     );
 
-    if (!custody) {
+    const collateralCustody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.collateralCustody),
+    );
+
+    if (!custody || !collateralCustody) {
       throw new Error('Cannot find custody related to position');
     }
 
@@ -3051,7 +3070,7 @@ export class AdrenaClient {
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
           collateralCustody: position.collateralCustody,
           collateralCustodyOracleAccount:
-            custody.nativeObject.oracle.oracleAccount,
+            collateralCustody.nativeObject.oracle.oracleAccount,
         },
       },
     );
@@ -3471,21 +3490,23 @@ export class AdrenaClient {
     instructions: TransactionInstruction[],
     typeName: string,
   ): Promise<T> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram || !this.readonlyConnection) {
       throw new Error('adrena program not ready');
     }
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
+      .wallet;
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
-      recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+      recentBlockhash: (await this.readonlyConnection.getLatestBlockhash())
+        .blockhash,
       instructions,
     }).compileToV0Message();
 
     const versionnedTransaction = new VersionedTransaction(messageV0);
 
-    const result = await this.connection.simulateTransaction(
+    const result = await this.readonlyConnection.simulateTransaction(
       versionnedTransaction,
       {
         sigVerify: false,
@@ -3494,7 +3515,7 @@ export class AdrenaClient {
 
     if (result.value.err) {
       const adrenaError = parseTransactionError(
-        this.adrenaProgram,
+        this.readonlyAdrenaProgram,
         result.value.err,
       );
       throw adrenaError;

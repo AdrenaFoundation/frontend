@@ -57,9 +57,14 @@ export function formatPriceInfo(
     return '-';
   }
 
+  if (price == 0) {
+    return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+  }
+
   // If the price is very low, display it as it is, to not display $0
   if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
-    return `$${price}`;
+    // Never go more than 9 decimals
+    return `$${formatNumber(price, 9, displayPlusSymbol)}`;
   }
 
   if (price < 0) {
