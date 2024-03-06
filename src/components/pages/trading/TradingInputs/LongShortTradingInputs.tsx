@@ -59,7 +59,7 @@ export default function LongShortTradingInputs({
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
 
-  const [leverage, setLeverage] = useState<number>(1);
+  const [leverage, setLeverage] = useState<number>(5);
 
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
@@ -207,7 +207,7 @@ export default function LongShortTradingInputs({
 
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
-      <div className="text-sm text-txtfade flex items-center">
+      <div className="text-sm  flex items-center">
         Pay
         <InfoAnnotation
           text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
@@ -223,7 +223,7 @@ export default function LongShortTradingInputs({
             value={inputA}
             subText={
               priceA ? (
-                <div className="text-sm text-txtfade">
+                <div className="text-sm text-txtfade font-mono">
                   {formatPriceInfo(priceA)}
                 </div>
               ) : null
@@ -254,8 +254,10 @@ export default function LongShortTradingInputs({
 
               return (
                 <div className="text-txtfade text-sm ml-auto mt-3">
-                  {formatNumber(balance, tokenA.decimals)} {tokenA.symbol} in
-                  wallet
+                  <span className="text-txtfade font-mono">
+                    {formatNumber(balance, tokenA.decimals)}
+                  </span>{' '}
+                  {tokenA.symbol} in wallet
                 </div>
               );
             })()
@@ -266,7 +268,7 @@ export default function LongShortTradingInputs({
       {/* Leverage (only in short/long) */}
 
       <div className="flex flex-col">
-        <div className="text-sm text-txtfade flex items-center mt-3">
+        <div className="text-sm  flex items-center mt-3">
           Leverage
           <InfoAnnotation
             text="Select a multiplier to apply to the collateral to determine the size of the position."
@@ -276,13 +278,13 @@ export default function LongShortTradingInputs({
 
         <LeverageSlider
           value={leverage}
-          className="mt-3 w-full"
+          className="mt-3 w-full font-mono"
           onChange={(v: number) => setLeverage(v)}
         />
       </div>
 
       <div className="flex flex-col mt-5">
-        <div className="text-sm text-txtfade flex items-center">
+        <div className="text-sm flex items-center">
           Verify
           <InfoAnnotation
             text={

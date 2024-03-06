@@ -261,6 +261,16 @@ export default function EditPositionCollateral({
 
   const rowStyle = 'w-full flex justify-between mt-2';
 
+  const rightArrowElement = (
+    <Image
+      className="ml-2 mr-2 opacity-60"
+      src={arrowRightIcon}
+      height={16}
+      width={16}
+      alt="Arrow"
+    />
+  );
+
   return (
     <div className={twMerge('flex flex-col gap-3 h-full w-[24em]', className)}>
       <TabSelect
@@ -297,9 +307,13 @@ export default function EditPositionCollateral({
               if (balance === null) return null;
 
               return (
-                <div className="text-txtfade text-sm ml-auto">
-                  {formatNumber(balance, position.collateralToken.decimals)}{' '}
-                  {position.collateralToken.symbol} in wallet
+                <div className="ml-auto">
+                  <span className="text-txtfade text-sm font-mono">
+                    {formatNumber(balance, position.collateralToken.decimals)}
+                  </span>
+                  <span className="text-txtfade text-sm ml-1">
+                    {position.collateralToken.symbol} in wallet
+                  </span>
                 </div>
               );
             })()
@@ -332,19 +346,19 @@ export default function EditPositionCollateral({
         {selectedAction === 'withdraw' ? (
           <div className="bg-dark flex justify-evenly p-2 rounded-2xl border">
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer"
+              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(25))}
             >
               25%
             </div>
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer"
+              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(50))}
             >
               50%
             </div>
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer"
+              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(75))}
             >
               75%
@@ -355,24 +369,32 @@ export default function EditPositionCollateral({
         <div className="flex flex-col border p-4 pt-2 bg-dark rounded-2xl">
           <div className={rowStyle}>
             <div className="text-txtfade text-sm">Size</div>
-            <div className="flex text-sm">
+
+            <div className="flex text-sm font-mono">
               {formatPriceInfo(position.sizeUsd)}
             </div>
           </div>
 
           <div className={rowStyle}>
             <div className="text-txtfade text-sm">Entry Price</div>
-            <div className="text-sm">{formatPriceInfo(position.price)}</div>
+
+            <div className="text-sm font-mono">
+              {formatPriceInfo(position.price)}
+            </div>
           </div>
 
           <div className={rowStyle}>
             <div className="text-txtfade text-sm">Mark Price</div>
-            <div className="text-sm">{formatPriceInfo(markPrice)}</div>
+
+            <div className="text-sm font-mono">
+              {formatPriceInfo(markPrice)}
+            </div>
           </div>
 
           <div className={rowStyle}>
             <div className="text-txtfade text-sm">PnL</div>
-            <div className="text-sm">
+
+            <div className="text-sm font-mono">
               {position.pnl && markPrice ? (
                 <span
                   className={`text-sm text-${
@@ -391,43 +413,61 @@ export default function EditPositionCollateral({
             <div className="text-txtfade text-sm">Collateral</div>
 
             <div className="flex">
-              <div className="flex flex-col items-end">
-                <div className="flex text-sm">
-                  {formatNumber(
-                    position.collateralAmount,
-                    position.collateralToken.decimals,
-                  )}{' '}
-                  {position.collateralToken.symbol}
+              <div className="flex flex-col items-end justify-center">
+                <div className="flex">
+                  <span
+                    className={twMerge(
+                      'font-mono',
+                      input ? 'text-txtfade text-xs' : 'text-sm',
+                    )}
+                  >
+                    {formatNumber(
+                      position.collateralAmount,
+                      position.collateralToken.decimals,
+                    )}{' '}
+                  </span>
+
+                  <span
+                    className={twMerge(
+                      'font-mono ml-1',
+                      input ? 'text-txtfade text-xs' : 'text-sm',
+                    )}
+                  >
+                    {position.collateralToken.symbol}
+                  </span>
                 </div>
 
-                <div className="flex text-sm text-txtfade">
+                <div
+                  className={twMerge(
+                    'flex text-txtfade font-mono',
+                    input ? 'text-xs' : 'text-sm',
+                  )}
+                >
                   {formatPriceInfo(position.collateralUsd)}
                 </div>
               </div>
 
               {input ? (
                 <>
-                  <Image
-                    className="ml-2 mr-2"
-                    src={arrowRightIcon}
-                    height={16}
-                    width={16}
-                    alt="Arrow"
-                  />
+                  {rightArrowElement}
 
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end">
-                      <div className="text-sm">
-                        {updatedInfos
-                          ? formatNumber(
-                              updatedInfos.collateral,
-                              position.collateralToken.decimals,
-                            )
-                          : '-'}{' '}
-                        {position.collateralToken.symbol}
+                      <div>
+                        <span className="text-sm font-mono">
+                          {updatedInfos
+                            ? formatNumber(
+                                updatedInfos.collateral,
+                                position.collateralToken.decimals,
+                              )
+                            : '-'}{' '}
+                        </span>
+                        <span className="text-sm">
+                          {position.collateralToken.symbol}
+                        </span>
                       </div>
 
-                      <div className="text-sm text-txtfade">
+                      <div className="text-sm text-txtfade font-mono">
                         {updatedInfos
                           ? formatPriceInfo(updatedInfos.collateralUsd)
                           : '-'}
@@ -441,26 +481,25 @@ export default function EditPositionCollateral({
 
           <div className={rowStyle}>
             <div className="text-txtfade text-sm">Leverage</div>
-            <div className="flex">
-              <div className="flex text-sm">
+            <div className="flex items-center">
+              <div
+                className={twMerge(
+                  'flex font-mono',
+                  input ? 'text-txtfade text-xs' : 'text-sm',
+                )}
+              >
                 {formatNumber(position.leverage, 2)}x
               </div>
 
               {input ? (
                 <>
-                  <Image
-                    className="ml-2 mr-2"
-                    src={arrowRightIcon}
-                    height={16}
-                    width={16}
-                    alt="Arrow"
-                  />
+                  {rightArrowElement}
 
                   {updatedInfos ? (
                     updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
                       <span className="text-sm text-txtfade">Overflow</span>
                     ) : (
-                      <span className="text-sm">
+                      <span className="text-sm font-mono">
                         {formatNumber(updatedInfos.leverage, 2)}x
                       </span>
                     )
@@ -474,22 +513,21 @@ export default function EditPositionCollateral({
 
           <div className={rowStyle}>
             <div className="text-txtfade text-sm">Liquidation Price</div>
-            <div className="flex">
-              <div className="text-sm">
+            <div className="flex items-center">
+              <div
+                className={twMerge(
+                  'font-mono',
+                  input ? 'text-txtfade text-xs' : 'text-sm',
+                )}
+              >
                 {formatPriceInfo(position.liquidationPrice)}
               </div>
 
               {input ? (
                 <>
-                  <Image
-                    className="ml-2 mr-2"
-                    src={arrowRightIcon}
-                    height={16}
-                    width={16}
-                    alt="Arrow"
-                  />
+                  {rightArrowElement}
 
-                  <div className="text-sm">
+                  <div className="text-sm font-mono">
                     {liquidationPrice !== null
                       ? formatPriceInfo(liquidationPrice)
                       : '-'}

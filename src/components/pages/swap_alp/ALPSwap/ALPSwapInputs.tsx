@@ -321,8 +321,13 @@ export default function ALPSwapInputs({
           if (balance === null) return null;
 
           return (
-            <div className="text-txtfade text-sm ml-auto mt-3">
-              {formatNumber(balance, token.decimals)} {token.symbol} in wallet
+            <div className="ml-auto mt-3">
+              <span className="text-txtfade text-sm font-mono">
+                {formatNumber(balance, token.decimals)}
+              </span>
+              <span className="text-txtfade text-sm ml-1">
+                {token.symbol} in wallet
+              </span>
             </div>
           );
         })()
@@ -370,7 +375,7 @@ export default function ALPSwapInputs({
             <div className="text-sm text-txtfade">Fees</div>
           </div>
 
-          <div className="relative flex flex-col text-sm">
+          <div className="relative flex flex-col text-sm font-mono">
             {formatPriceInfo(feesUsd, false, USD_DECIMALS)}
           </div>
         </div>

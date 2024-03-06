@@ -8,9 +8,9 @@ import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-import arrowDownRedIcon from '../../../../../public/images/arrow-down-red.png';
+import arrowDown from '../../../../../public/images/arrow-down.png';
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
-import arrowUpGreenIcon from '../../../../../public/images/arrow-up-green.png';
+import arrowUp from '../../../../../public/images/arrow-up.png';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 
 export default function PositionInfos({
@@ -56,15 +56,15 @@ export default function PositionInfos({
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 
   const arrowElement = (side: 'up' | 'down', className?: string) => {
-    const pxSize = 12;
+    const pxSize = 9;
 
     return (
       <Image
         className={twMerge(
-          `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center ml-1`,
+          `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center absolute right-[-0.2em]`,
           className,
         )}
-        src={side === 'down' ? arrowDownRedIcon : arrowUpGreenIcon}
+        src={side === 'down' ? arrowDown : arrowUp}
         height={pxSize}
         width={pxSize}
         alt="Arrow"
@@ -74,7 +74,7 @@ export default function PositionInfos({
 
   const rightArrowElement = (
     <Image
-      className="ml-2 mr-2"
+      className="ml-2 mr-2 opacity-60"
       src={arrowRightIcon}
       height={16}
       width={16}
@@ -84,14 +84,11 @@ export default function PositionInfos({
 
   return (
     <div
-      className={twMerge(
-        'flex flex-col bg-secondary border rounded-2xl',
-        className,
-      )}
+      className={twMerge('flex flex-col bg-dark border rounded-2xl', className)}
     >
-      <div className="flex items-center border-b h-12 pr-4 pl-3">
+      <div className="flex items-center border-b h-14 pr-3 pl-3">
         <Select
-          className="shrink-0 bg-secondary h-full flex items-center pl-2 pr-2 pt-1 pb-1 rounded-tr-2xl rounded-br-2xl"
+          className="shrink-0 bg-dark h-full flex items-center pl-2 pr-2 pt-1 pb-1 rounded-tr-2xl rounded-br-2xl"
           selected={tokenB.symbol}
           options={allowedTokenB.map((token) => ({
             title: token.symbol,
@@ -122,28 +119,30 @@ export default function PositionInfos({
           {openedPosition && tokenPriceB && inputB ? (
             <>
               {/* Opened position */}
-              <div className="flex flex-col">
-                <div>
+              <div className="flex flex-col self-center items-end">
+                <div className="text-txtfade">
                   {inputB !== null && tokenPriceB
                     ? formatNumber(
                         openedPosition.sizeUsd / tokenPriceB,
                         tokenB.decimals,
                       )
-                    : '-'}
+                    : ''}
                 </div>
 
-                <div className="text-sm text-txtfade">
+                <div className="text-txtfade text-xs">
                   {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
                 </div>
               </div>
 
-              {rightArrowElement}
+              <div className="ml-2 mr-2 flex items-center">
+                {rightArrowElement}
+              </div>
             </>
           ) : null}
 
           <div className="relative flex flex-col">
-            <div className="flex flex-col items-end">
-              <div>
+            <div className="flex flex-col items-end font-mono">
+              <div className="text-base">
                 {inputB !== null ? formatNumber(inputB, tokenB.decimals) : '-'}
               </div>
               <div className="text-sm text-txtfade">
@@ -179,7 +178,9 @@ export default function PositionInfos({
                 return (
                   <>
                     {/* Opened position */}
-                    <div>{formatPriceInfo(openedPosition.collateralUsd)}</div>
+                    <div className="text-txtfade text-xs self-center">
+                      {formatPriceInfo(openedPosition.collateralUsd)}
+                    </div>
 
                     {rightArrowElement}
 
@@ -222,7 +223,9 @@ export default function PositionInfos({
                 return (
                   <>
                     {/* Opened position */}
-                    <div>{formatNumber(openedPosition.leverage, 2)}x</div>
+                    <div className="text-txtfade text-xs self-center">
+                      {formatNumber(openedPosition.leverage, 2)}x
+                    </div>
 
                     {rightArrowElement}
 
@@ -263,7 +266,9 @@ export default function PositionInfos({
                 return (
                   <>
                     {/* Opened position */}
-                    <div>{formatPriceInfo(openedPosition.price)}</div>
+                    <div className="text-txtfade text-xs self-center">
+                      {formatPriceInfo(openedPosition.price)}
+                    </div>
 
                     {rightArrowElement}
 
@@ -306,7 +311,7 @@ export default function PositionInfos({
                 return (
                   <>
                     {/* Opened position */}
-                    <div>
+                    <div className="text-txtfade text-xs self-center">
                       {formatPriceInfo(openedPosition.liquidationPrice)}
                     </div>
 
@@ -326,22 +331,6 @@ export default function PositionInfos({
 
               return formatPriceInfo(positionInfos.liquidationPrice);
             })()}
-          </span>
-        </div>
-
-        <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm flex">
-            <InfoAnnotation
-              text="Amount of funds available to enter new trades."
-              className="mr-1 w-3"
-            />
-            Available Liquidity
-          </span>
-
-          <span className="font-mono text-sm">
-            {custody && tokenPriceB
-              ? formatPriceInfo(custody.liquidity * tokenPriceB)
-              : '-'}
           </span>
         </div>
 
@@ -427,7 +416,9 @@ export default function PositionInfos({
                 return (
                   <>
                     {/* Opened position */}
-                    <div>{formatPriceInfo(openedPosition.exitFeeUsd)}</div>
+                    <div className="text-txtfade text-xs self-center">
+                      {formatPriceInfo(openedPosition.exitFeeUsd)}
+                    </div>
 
                     {rightArrowElement}
 
@@ -471,7 +462,7 @@ export default function PositionInfos({
                 return (
                   <>
                     {/* Opened position */}
-                    <div>
+                    <div className="text-txtfade text-xs self-center">
                       {formatPriceInfo(openedPosition.liquidationFeeUsd)}
                     </div>
 
@@ -506,6 +497,24 @@ export default function PositionInfos({
           <span className="font-mono text-sm">
             {custody && tokenB
               ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}%/hr`
+              : '-'}
+          </span>
+        </div>
+
+        <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
+
+        <div className={infoRowStyle}>
+          <span className="text-txtfade text-sm flex mb-1">
+            <InfoAnnotation
+              text="Amount of funds available to enter new trades."
+              className="mr-1 w-3"
+            />
+            Available Liquidity
+          </span>
+
+          <span className="font-mono text-sm">
+            {custody && tokenPriceB
+              ? formatPriceInfo(custody.liquidity * tokenPriceB)
               : '-'}
           </span>
         </div>

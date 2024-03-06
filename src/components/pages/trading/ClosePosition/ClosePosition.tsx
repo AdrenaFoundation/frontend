@@ -127,17 +127,21 @@ export default function ClosePosition({
           </div>
 
           <div className="flex flex-col items-end mr-4">
-            <div className="text-md">
-              {exitPriceAndFee
-                ? nativeToUi(
-                    exitPriceAndFee.amountOut,
-                    position.collateralToken.decimals,
-                  )
-                : '-'}{' '}
-              {position.collateralToken.symbol}
+            <div>
+              <span className="font-mono text-lg">
+                {exitPriceAndFee
+                  ? nativeToUi(
+                      exitPriceAndFee.amountOut,
+                      position.collateralToken.decimals,
+                    )
+                  : '-'}
+              </span>
+              <span className="text-lg ml-1">
+                {position.collateralToken.symbol}
+              </span>
             </div>
 
-            <div className="text-md">
+            <div className="font-mono text-sm text-txtfade">
               {exitPriceAndFee && collateralMarkPrice
                 ? formatPriceInfo(
                     nativeToUi(
@@ -156,7 +160,8 @@ export default function ClosePosition({
       <div className="flex flex-col border p-4 pt-2 bg-dark mt-3 rounded-2xl">
         <div className={rowStyle}>
           <div className="text-txtfade text-sm">Size</div>
-          <div className="flex text-sm">
+
+          <div className="flex text-sm font-mono">
             {formatPriceInfo(position.sizeUsd)}
           </div>
         </div>
@@ -165,14 +170,16 @@ export default function ClosePosition({
           <div className="text-txtfade text-sm">
             Collateral ({position.token.symbol})
           </div>
-          <div className="flex text-sm">
+
+          <div className="flex text-sm font-mono">
             {formatNumber(position.collateralUsd, USD_DECIMALS)}
           </div>
         </div>
 
         <div className={rowStyle}>
           <div className="text-txtfade text-sm">Leverage</div>
-          <div className="flex text-sm">
+
+          <div className="flex text-sm font-mono">
             <div>{formatNumber(position.leverage, 2)}x</div>
           </div>
         </div>
@@ -184,7 +191,8 @@ export default function ClosePosition({
 
         <div className={rowStyle}>
           <div className="text-txtfade text-sm">PnL</div>
-          <div className="text-sm">
+
+          <div className="text-sm font-mono">
             {position.pnl && markPrice ? (
               <span
                 className={`text-sm text-${
@@ -205,12 +213,14 @@ export default function ClosePosition({
       <div className="flex flex-col border p-4 pt-2 bg-dark mt-3 rounded-2xl">
         <div className={rowStyle}>
           <div className="text-txtfade text-sm">Exit Price</div>
-          <div className="text-sm">{formatPriceInfo(markPrice)}</div>
+
+          <div className="text-sm font-mono">{formatPriceInfo(markPrice)}</div>
         </div>
 
         <div className={rowStyle}>
           <div className="text-txtfade text-sm">Exit Fees</div>
-          <div className="text-sm">
+
+          <div className="text-sm font-mono">
             {exitPriceAndFee
               ? formatPriceInfo(nativeToUi(exitPriceAndFee.fee, USD_DECIMALS))
               : '-'}

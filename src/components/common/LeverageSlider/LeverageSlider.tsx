@@ -55,7 +55,7 @@ export default function LeverageSlider({
             onChange(value);
             setIsLeverageInputEmpty(false);
           }}
-          inputFontSize="1.1em"
+          inputFontSize="1em"
         />
 
         <div
@@ -89,7 +89,7 @@ export default function LeverageSlider({
         </div>
       </div>
 
-      <div className="flex p-6 h-[3.5em] bg-secondary">
+      <div className="flex p-6 h-[3.5em] bg-dark border-t border-gray-200">
         <Slider
           className="relative bottom-3"
           min={1}

@@ -25,8 +25,6 @@ export default function PositionsArray({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const connected = !!useSelector((s) => s.walletState.wallet);
 
-  const columnStyle = 'text-sm py-5';
-
   const handleClick = () => {
     if (!connected) {
       dispatch(openCloseConnectionModalAction(true));
@@ -70,31 +68,29 @@ export default function PositionsArray({
     );
   }
 
+  const columnHeadStyle = 'text-sm text-center opacity-50 font-medium py-2';
+  const columnStyle = 'text-sm py-1 text-center';
+
   return (
     <table className="w-full">
       {/* Header */}
 
       <thead>
         <tr>
-          <th className="text-sm text-left opacity-50 font-medium">Position</th>
-          <th className="text-sm text-left opacity-50 font-medium">Leverage</th>
-          <th className="text-sm text-left opacity-50 font-medium">
-            Net Value
-          </th>
-          <th className="text-sm text-left opacity-50 font-medium">Size</th>
-          <th className="text-sm text-left opacity-50 font-medium">
-            Collateral
-          </th>
-          <th className="text-sm text-left opacity-50 font-medium">
-            Entry Price
-          </th>
-          <th className="text-sm text-left opacity-50 font-medium">
-            Market Price
-          </th>
-          <th className="text-sm text-left opacity-50 font-medium">
-            Liq. Price
-          </th>
-          <th className="text-sm text-right opacity-50 font-medium w-12 shrink-0 grow-0">
+          <th className={twMerge(columnHeadStyle, 'w-18')}>Position</th>
+          <th className={columnHeadStyle}>Leverage</th>
+          <th className={columnHeadStyle}>Net Value</th>
+          <th className={columnHeadStyle}>Size</th>
+          <th className={columnHeadStyle}>Collateral</th>
+          <th className={columnHeadStyle}>Entry Price</th>
+          <th className={columnHeadStyle}>Market Price</th>
+          <th className={columnHeadStyle}>Liq. Price</th>
+          <th
+            className={twMerge(
+              columnHeadStyle,
+              'shrink-0 grow-0 text-right w-12',
+            )}
+          >
             Actions
           </th>
         </tr>
@@ -111,12 +107,12 @@ export default function PositionsArray({
           >
             <td
               className={twMerge(
-                'flex-col justify-center items-start',
+                'flex-col justify-center items-center',
                 columnStyle,
                 i === 0 && 'pt-3',
               )}
             >
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-row gap-2 items-center w-18">
                 <Image
                   height={32}
                   width={32}

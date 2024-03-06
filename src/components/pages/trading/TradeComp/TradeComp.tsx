@@ -41,11 +41,11 @@ export const TradeComp = ({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full lg:w-[30em] min-w-[350px] flex-col sm:flex-row lg:flex-col mt-4 lg:ml-4 lg:mt-0 h-full',
+        'sm:flex w-full lg:w-[30em] min-w-[350px] flex-col sm:flex-row lg:flex-col mt-4 lg:ml-4 lg:mt-0',
         className,
       )}
     >
-      <div className="w-full bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-3 h-full flex flex-col">
+      <div className="w-full bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl pt-3 pl-3 pr-3 pb-4 flex flex-col">
         <TabSelect
           selected={selectedAction}
           tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
@@ -90,9 +90,9 @@ export const TradeComp = ({
 
         {/* Button to execute action */}
         <Button
+          className="w-full justify-center mt-8"
           size="lg"
           title={buttonTitle}
-          className="w-full justify-center mt-auto"
           disabled={
             buttonTitle.includes('Insufficient') ||
             buttonTitle.includes('not handled yet')

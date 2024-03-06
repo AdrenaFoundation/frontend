@@ -18,6 +18,7 @@ export default function TradingInput({
   selectedToken,
   tokenList,
   prefix,
+  placeholder = '0.00',
   onTokenSelect,
   onChange,
   onMaxButtonClick,
@@ -32,6 +33,7 @@ export default function TradingInput({
   selectedToken?: Token;
   tokenList: Token[];
   prefix?: ReactNode;
+  placeholder?: string;
   onTokenSelect: (t: Token) => void;
   onChange: (v: number | null) => void;
   onMaxButtonClick?: () => void;
@@ -39,11 +41,11 @@ export default function TradingInput({
   const decimalConstraint = selectedToken?.decimals ?? 18;
 
   return (
-    <div className={twMerge('relative', 'flex', 'flex-col', className)}>
+    <div className={twMerge('relative flex flex-col', className)}>
       <div
         className={twMerge(
           'rounded-2xl flex w-full border h-16',
-          disabled ? 'bg-transparent' : 'bg-[#030609]',
+          disabled ? 'bg-transparent' : 'bg-dark',
           inputClassName,
         )}
         style={
@@ -70,9 +72,9 @@ export default function TradingInput({
                   <InputNumber
                     disabled={disabled}
                     value={value ?? undefined}
-                    placeholder="0.00"
+                    placeholder={placeholder}
                     className={twMerge(
-                      'font-mono font-medium border-0 text-lg outline-none w-full',
+                      'font-mono border-0 text-lg outline-none w-full',
                       disabled ? 'bg-transparent' : 'bg-dark',
                     )}
                     onChange={onChange}
