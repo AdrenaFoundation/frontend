@@ -61,7 +61,7 @@ export default function PositionInfos({
     return (
       <Image
         className={twMerge(
-          `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center absolute right-[-0.2em]`,
+          `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center absolute right-[0.9em]`,
           className,
         )}
         src={side === 'down' ? arrowDown : arrowUp}
@@ -84,11 +84,15 @@ export default function PositionInfos({
 
   return (
     <div
-      className={twMerge('flex flex-col bg-dark border rounded-2xl', className)}
+      className={twMerge(
+        'flex flex-col bg-dark border rounded-2xl pr-3',
+        className,
+      )}
     >
-      <div className="flex items-center border-b h-14 pr-3 pl-3">
+      <div className="flex items-center border-b h-14 pr-4">
         <Select
-          className="shrink-0 bg-dark h-full flex items-center pl-2 pr-2 pt-1 pb-1 rounded-tr-2xl rounded-br-2xl"
+          className="shrink-0 bg-dark h-full flex items-center rounded-tr-2xl rounded-br-2xl"
+          selectedClassName="w-20"
           selected={tokenB.symbol}
           options={allowedTokenB.map((token) => ({
             title: token.symbol,
@@ -150,11 +154,14 @@ export default function PositionInfos({
               </div>
             </div>
           </div>
-
-          {openedPosition && tokenPriceB && inputB && priceB
-            ? arrowElement(openedPosition.sizeUsd < priceB ? 'up' : 'down')
-            : null}
         </div>
+
+        {openedPosition && tokenPriceB && inputB && priceB
+          ? arrowElement(
+              openedPosition.sizeUsd < priceB ? 'up' : 'down',
+              'right-[0.7em]',
+            )
+          : null}
       </div>
 
       <div className="flex flex-col pt-2 pb-2 pl-4 pr-4">

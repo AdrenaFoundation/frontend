@@ -57,8 +57,8 @@ module.exports = {
 
     fontFamily: {
       regular: ['regular'],
-      thin: ['thin'],
-      bold: ['bold'],
+      txtthin: ['thin'],
+      txtbold: ['bold'],
       mono: 'Roboto Mono',
 
       specialmonster: ['specialmonster'],

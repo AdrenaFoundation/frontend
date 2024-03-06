@@ -7,10 +7,12 @@ import { useOnClickOutside } from '@/hooks/onClickOutside';
 export default function Menu({
   trigger,
   className,
+  openMenuClassName,
   children,
 }: {
   trigger: ReactNode;
   className?: string;
+  openMenuClassName?: string;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -25,7 +27,10 @@ export default function Menu({
 
   return (
     <AnimatePresence>
-      <div className="relative" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+      <div
+        className={twMerge('relative', className)}
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+      >
         {trigger}
         {isMenuOpen && (
           <motion.div
@@ -36,7 +41,7 @@ export default function Menu({
             transition={{ duration: 0.1 }}
             className={twMerge(
               'absolute flex flex-col border border-gray-200 bg-dark rounded-xl shadow-lg mt-2 overflow-hidden z-10 w-full',
-              className,
+              openMenuClassName,
             )}
           >
             {children}

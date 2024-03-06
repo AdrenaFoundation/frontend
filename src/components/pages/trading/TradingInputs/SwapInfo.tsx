@@ -31,18 +31,6 @@ export default function SwapInfo({
         className,
       )}
     >
-      <div className="w-full flex justify-between items-center">
-        <div className="flex">
-          <InfoAnnotation
-            text="The slippage represents the permissible deviation between the price shown in the website during the swap transaction preview and the final execution price."
-            className="w-3 grow-0 mr-1"
-          />
-          <span className="text-sm text-txtfade flex">Slippage</span>
-        </div>
-
-        <span className="text-sm font-mono">0.3%</span>
-      </div>
-
       <div className="w-full flex justify-between items-start mt-3">
         <div className="flex">
           <InfoAnnotation
@@ -50,7 +38,7 @@ export default function SwapInfo({
             className="w-3 grow-0 mr-1"
           />
 
-          <span className="text-sm text-txtfade flex">Fees</span>
+          <span className="text-sm text-txtfade flex">Total Fees</span>
         </div>
 
         <span className="text-sm font-mono">
@@ -73,9 +61,11 @@ export default function SwapInfo({
         </span>
       </div>
 
+      <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
+
       <div className="flex flex-col mt-3">
         <div className="w-full flex justify-between items-start">
-          <span className="text-sm text-txtfade flex ml-4">Fees IN</span>
+          <span className="text-sm text-txtfade flex ml-4">Fees</span>
 
           <span className="text-sm font-mono">
             {swapFeesAndAmount ? (

@@ -196,7 +196,6 @@ export default function ALPSwap({
             onChangeAlpInput={setAlpInput}
             collateralInput={collateralInput}
             onChangeCollateralInput={setCollateralInput}
-            setActionType={setSelectedAction}
             onCollateralTokenChange={onCollateralTokenChange}
             setFeesUsd={setFeesUsd}
             setAlpPrice={setAlpPrice}

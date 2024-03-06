@@ -77,7 +77,7 @@ export default function Header({
                 </p>
               }
               key={page.name}
-              className="w-fit"
+              openMenuClassName="w-fit"
             >
               <MenuItems>
                 <MenuItem href={'/swap_alp'} linkClassName="group p-2">

@@ -70,19 +70,20 @@ export default function PositionsBlocks({
           key={position.pubkey.toBase58()}
         >
           <div className="flex flex-col bg-secondary border border-gray-200 rounded-lg w-full">
-            <div className="flex flex-row  justify-between items-center p-4 border-b border-gray-200">
-              <div className="flex flex-row gap-3 items-center">
+            <div className="flex flex-row justify-between items-center border-b border-gray-200">
+              <div className="flex flex-row h-10 pl-2 items-center relative overflow-hidden">
                 <Image
+                  className="absolute left-[-0.7em] top-auto grayscale opacity-40"
                   src={position.token.image}
-                  width={25}
-                  height={25}
+                  width={70}
+                  height={70}
                   alt={`${position.token.symbol} logo`}
                 />
 
                 <div className="flex">
                   <span
                     className={twMerge(
-                      'ml-1 capitalize font-mono',
+                      'ml-16 capitalize font-mono',
                       position.side === 'long'
                         ? 'text-green-500'
                         : 'text-red-500',
@@ -99,7 +100,7 @@ export default function PositionsBlocks({
 
               <div></div>
 
-              <div className="flex ml-auto mr-4">
+              <div className="flex ml-auto mr-3">
                 <Button
                   className="text-xs"
                   title="close"

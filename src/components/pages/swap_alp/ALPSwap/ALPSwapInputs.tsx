@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -7,7 +6,6 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
-import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
@@ -28,7 +26,6 @@ export default function ALPSwapInputs({
   collateralInput,
   onChangeCollateralInput,
   setCollateralPrice,
-  setActionType,
   onCollateralTokenChange,
   setFeesUsd,
   setIsFeesLoading,
@@ -45,7 +42,6 @@ export default function ALPSwapInputs({
   onChangeAlpInput: (v: number | null) => void;
   onChangeCollateralInput: (v: number | null) => void;
   setAlpPrice: (v: number | null) => void;
-  setActionType: (a: 'buy' | 'sell') => void;
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   setIsFeesLoading: (v: boolean) => void;
@@ -54,23 +50,6 @@ export default function ALPSwapInputs({
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
   const [isLoading, setLoading] = useState<boolean>(false);
-
-  // Goes from "buy" to "sell"
-  const switchBuySell = () => {
-    if (!alpToken || !collateralToken) return;
-
-    onChangeAlpInput(null);
-    onChangeCollateralInput(null);
-    setFeesUsd(null);
-    setAlpPrice(null);
-    setCollateralPrice(null);
-
-    // deprecate current loading
-    setLoading(false);
-
-    loadingCounter += 1;
-    setActionType(actionType === 'buy' ? 'sell' : 'buy');
-  };
 
   // When price change or input change, recalculate inputs and displayed price
   {
@@ -296,14 +275,6 @@ export default function ALPSwapInputs({
     />
   );
 
-  const rotateIcon = () => {
-    const icon = document.getElementById('switch-icon');
-
-    if (icon) {
-      icon.classList.toggle('rotate-180');
-    }
-  };
-
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
       <div className="text-sm text-txtfade mb-3">Pay</div>
@@ -333,26 +304,6 @@ export default function ALPSwapInputs({
         })()
       }
 
-      {/* Switch Buy/Sell */}
-      <div className="relative w-full overflow-visible flex justify-center items-center z-[2] mt-6">
-        <div
-          className="group bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
-          onClick={() => {
-            switchBuySell();
-            rotateIcon();
-          }}
-        >
-          <Image
-            src={arrowDownUpIcon}
-            alt="switch icon"
-            height={16}
-            width={16}
-            id="switch-icon"
-            className="opacity-50 group-hover:opacity-100 transition-all duration-300 "
-          />
-        </div>
-      </div>
-
       <div className="text-sm text-txtfade mt-2 mb-3">Receive</div>
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
@@ -361,7 +312,7 @@ export default function ALPSwapInputs({
 
       <div
         className={twMerge(
-          'flex flex-col bg-secondary border rounded-2xl p-2',
+          'flex flex-col bg-black border rounded-2xl p-2',
           className,
         )}
       >

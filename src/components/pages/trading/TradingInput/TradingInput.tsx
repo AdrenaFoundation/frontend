@@ -100,7 +100,7 @@ export default function TradingInput({
         {tokenList.length ? (
           <Select
             className={twMerge(
-              'shrink-0 bg-secondary h-full flex items-center pl-2 pr-2 pt-1 pb-1 rounded-tr-2xl rounded-br-2xl w-24',
+              'shrink-0 bg-secondary h-full flex items-center rounded-tr-2xl rounded-br-2xl w-24',
               tokenList.length > 1 ? 'justify-end' : 'justify-center',
             )}
             selected={selectedToken?.symbol ?? ''}
