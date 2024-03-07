@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import closeBtnIcon from '../../../../public/images/Icons/close-btn.svg';
+import closeBtnIcon from '../../../../public/images/Icons/cross.svg';
 
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
@@ -70,16 +70,19 @@ const Modal = ({
           className="min-w-20 min-h-10 z-[102] rounded-2xl border border-gray-200 bg-gray-300 mx-4"
           role="dialog"
         >
-          <div className="h-14 w-full flex flex-row items-center justify-between border-b border-grey pl-4 pr-4">
-            <div className="text-sm opacity-50 w-full">{title}</div>
-            <Image
-              className="cursor-pointer opacity-50 hover:opacity-100 transition-opacity duration-300"
-              src={closeBtnIcon}
-              alt="close icon"
-              width={16}
-              height={16}
-              onClick={() => close()}
-            />
+          <div className="h-14 w-full flex flex-row items-center justify-center border-b border-grey pl-4 pr-4 pt-2 relative overflow-hidden">
+            <div className="text-lg font-extrabold uppercase">{title}</div>
+
+            <div className="w-10 h-10 bg-dark absolute right-0 top-0 border-l flex items-center justify-center rounded-bl-2xl rounded-tr-2xl pl-1">
+              <Image
+                className="cursor-pointer opacity-40 hover:opacity-100 transition-opacity duration-300"
+                src={closeBtnIcon}
+                alt="close icon"
+                width={24}
+                height={24}
+                onClick={() => close()}
+              />
+            </div>
           </div>
 
           <div className={className ?? ''}>{children}</div>

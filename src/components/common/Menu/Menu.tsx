@@ -43,7 +43,9 @@ export default function Menu({
         <div
           className={twMerge(
             'flex h-full w-full border border-transparent',
-            isMenuOpen && withBorder ? 'border-white' : '',
+            isMenuOpen && withBorder
+              ? 'border-zinc-700 shadow-zinc-800 shadow-lg'
+              : '',
           )}
         >
           {trigger}
@@ -58,7 +60,9 @@ export default function Menu({
             transition={{ duration: 0.3 }}
             className={twMerge(
               'absolute flex flex-col bg-dark overflow-hidden z-50 border mt-2',
-              withBorder ? 'border border-white' : '',
+              withBorder
+                ? 'border border-zinc-700 shadow-zinc-800 shadow-lg'
+                : '',
               openMenuClassName,
             )}
           >

@@ -66,13 +66,13 @@ export default function ALPDetails({
         <div className="flex flex-col sm:flex-row items-center">
           <div className="flex flex-col gap-3 grow border border-r-gray-300 h-full p-4">
             <div>
-              <p className="opacity-50 mb-1">Price</p>
-              <p className="font-mono text-lg">{formatPriceInfo(alpPrice)}</p>
+              <p className="text-txtfade mb-1">Price</p>
+              <p className="font-mono">{formatPriceInfo(alpPrice)}</p>
             </div>
 
             <div>
-              <div className="opacity-50 mb-1">Supply</div>
-              <p className="font-mono text-lg">
+              <div className="text-txtfade mb-1">Supply</div>
+              <p className="font-mono">
                 {alpTotalSupply !== null
                   ? `${formatNumber(
                       alpTotalSupply,
@@ -83,13 +83,13 @@ export default function ALPDetails({
             </div>
 
             <div>
-              <p className="opacity-50 mb-1">Market Cap</p>
-              <p className="font-mono text-lg">{formatPriceInfo(marketCap)}</p>
+              <p className="text-txtfade mb-1">Market Cap</p>
+              <p className="font-mono">{formatPriceInfo(marketCap)}</p>
             </div>
 
             <div>
-              <p className="opacity-50 mb-1">Stablecoin Percentage</p>
-              <p className="font-mono text-lg">
+              <p className="text-txtfade mb-1">Stablecoin Percentage</p>
+              <p className="font-mono">
                 {formatPercentage(stablecoinPercentage, 2)}
               </p>
             </div>

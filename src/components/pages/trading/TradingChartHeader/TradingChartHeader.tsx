@@ -27,8 +27,10 @@ export default function TradingInputs({
         className,
       )}
     >
-      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full p-3">
+      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full">
         <Select
+          className="w-[8em]"
+          selectedClassName="p-2"
           selected={`${selected.symbol} / USD`}
           options={tokenList
             .filter((token) => token.symbol !== selected.symbol)

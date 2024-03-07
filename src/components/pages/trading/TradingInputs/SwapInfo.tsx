@@ -27,7 +27,7 @@ export default function SwapInfo({
   return (
     <div
       className={twMerge(
-        'flex flex-col bg-secondary border p-4 rounded-2xl',
+        'flex flex-col bg-dark border p-4 rounded-2xl',
         className,
       )}
     >
