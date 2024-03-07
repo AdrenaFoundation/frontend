@@ -58,6 +58,8 @@ export type CustodyExtended = {
   isStable: boolean;
   decimals: number;
   maxLeverage: number;
+  minInitialLeverage: number;
+  maxInitialLeverage: number;
   targetRatio: number;
   maxRatio: number;
   minRatio: number;
@@ -80,6 +82,7 @@ export type PositionExtended = {
   pubkey: PublicKey;
   leverage: number;
   token: Token;
+  collateralToken: Token;
   side: 'long' | 'short';
   pnl?: number | null;
   liquidationPrice?: number;
@@ -87,6 +90,8 @@ export type PositionExtended = {
   collateralUsd: number;
   price: number;
   collateralAmount: number;
+  exitFeeUsd: number;
+  liquidationFeeUsd: number;
 
   // Onchain data
   nativeObject: Position;
@@ -206,7 +211,7 @@ export type BorrowRateParams = Params['BorrowRateParams'];
 export type BorrowRateState = Params['BorrowRateState'];
 export type PositionStats = Params['PositionStats'];
 export type OraclePrice = Params['OraclePrice'];
-export type PriceAndFee = Params['PriceAndFee'];
+export type ExitPriceAndFee = Params['ExitPriceAndFee'];
 export type NewPositionPricesAndFee = Params['NewPositionPricesAndFee'];
 export type OpenPositionWithSwapAmountAndFees =
   Params['OpenPositionWithSwapAmountAndFees'];

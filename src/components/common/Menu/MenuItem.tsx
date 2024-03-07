@@ -7,6 +7,8 @@ export default function MenuItem({
   linkClassName,
   children,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   selected,
   href,
   target,
@@ -18,15 +20,19 @@ export default function MenuItem({
   selected?: boolean;
   href?: string;
   target?: string;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }) {
   const item = (
     <li
       className={twMerge(
-        'text-sm font-normal bg-gray-200 hover:bg-dark duration-300 cursor-pointer opacity-75 hover:opacity-100 w-full whitespace-nowrap',
-        selected && 'bg-gray-300 opacity-100',
+        'text-sm bg-dark hover:bg-secondary duration-300 cursor-pointer w-full whitespace-nowrap',
+        selected && 'bg-gray-300',
         href ? 'p-0' : 'p-1 px-3',
         className,
       )}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
       {!href && children}

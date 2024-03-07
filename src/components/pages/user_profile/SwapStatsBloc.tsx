@@ -2,7 +2,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { UserProfileExtended } from '@/types';
 
-import NumberInfo from '../backoffice/NumberInfo';
+import NumberInfo from '../monitoring/NumberInfo';
 
 export default function SwapStatsBloc({
   userProfile,

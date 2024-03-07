@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { formatPriceInfo } from '@/utils';
 
-import NumberInfo from '../backoffice/NumberInfo';
+import NumberInfo from '../monitoring/NumberInfo';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -29,14 +29,14 @@ export default function ProfitsAndLossesChart({
           <div className="flex flex-col space-y-1 text-sm">
             <div className="flex items-center">
               <span className="font-specialmonster">Profits:</span>
-              <span className="ml-1 text-xs text-[#32a330]">
+              <span className="ml-1 text-sm text-[#32a330]">
                 {formatPriceInfo(longProfitsUsd + shortProfitsUsd)}
               </span>
             </div>
 
             <div className="flex items-center">
               <span className="font-specialmonster">Losses:</span>
-              <span className="ml-1 text-xs text-[#d23e3e]">
+              <span className="ml-1 text-sm text-[#d23e3e]">
                 -{formatPriceInfo(longLossesUsd + shortLossesUsd)}
               </span>
             </div>

@@ -3,16 +3,11 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
-import Menu from '@/components/common/Menu/Menu';
-import MenuItem from '@/components/common/Menu/MenuItem';
-import MenuItems from '@/components/common/Menu/MenuItems';
-import MenuSeperator from '@/components/common/Menu/MenuSeperator';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-import threeDotsIcon from '../../../../../public/images/Icons/three-dots.svg';
 import phantomLogo from '../../../../../public/images/phantom.png';
 
 export default function PositionsBlocks({
@@ -50,7 +45,7 @@ export default function PositionsBlocks({
           onClick={handleClick}
         />
 
-        <p className="text-xs opacity-50 font-normal">
+        <p className="text-sm opacity-50 font-normal">
           Waiting for wallet connection
         </p>
 
@@ -74,65 +69,55 @@ export default function PositionsBlocks({
           className="flex gap-1 flex-col w-full"
           key={position.pubkey.toBase58()}
         >
-          <div className="ml-auto">
-            <Menu
-              trigger={
-                <Button
-                  variant="text"
-                  className="px-1"
-                  leftIcon={threeDotsIcon}
-                />
-              }
-              className="w-fit left-[-100px] mt-0"
-            >
-              <MenuItems>
-                <MenuItem
-                  onClick={() => {
-                    triggerEditPositionCollateral(position);
-                  }}
-                >
-                  Edit Collateral
-                </MenuItem>
-                <MenuSeperator />
-                <MenuItem
-                  onClick={() => {
-                    triggerClosePosition(position);
-                  }}
-                >
-                  Close
-                </MenuItem>
-              </MenuItems>
-            </Menu>
-          </div>
           <div className="flex flex-col bg-secondary border border-gray-200 rounded-lg w-full">
-            <div className="flex flex-row  justify-between items-center p-4 border-b border-gray-200">
-              <div className="flex flex-row gap-3 items-center">
+            <div className="flex flex-row justify-between items-center border-b border-gray-200">
+              <div className="flex flex-row h-10 pl-2 items-center relative overflow-hidden">
                 <Image
+                  className="absolute left-[-0.7em] top-auto grayscale opacity-40"
                   src={position.token.image}
-                  width={30}
-                  height={30}
+                  width={70}
+                  height={70}
                   alt={`${position.token.symbol} logo`}
                 />
-                <div>
-                  <p className="text-xs opacity-50 font-mono">
-                    {position.token.symbol}
-                  </p>
-                  <h3 className="text-sm capitalize font-mono">
+
+                <div className="flex">
+                  <span
+                    className={twMerge(
+                      'ml-16 capitalize font-mono',
+                      position.side === 'long'
+                        ? 'text-green-500'
+                        : 'text-red-500',
+                    )}
+                  >
+                    {position.side}
+                  </span>
+
+                  <h3 className="text-sm capitalize font-mono ml-2">
                     {position.token.name}
                   </h3>
                 </div>
               </div>
-              <div>
-                <p
-                  className={twMerge(
-                    'ml-1 capitalize',
-                    position.side === 'long'
-                      ? 'text-green-500'
-                      : 'text-red-500',
-                  )}
-                >
-                  {position.side}
-                </p>
+
+              <div></div>
+
+              <div className="flex ml-auto mr-3">
+                <Button
+                  className="text-xs"
+                  title="close"
+                  variant="secondary"
+                  onClick={() => {
+                    triggerClosePosition(position);
+                  }}
+                />
+
+                <Button
+                  className="text-xs ml-4"
+                  title="edit"
+                  variant="secondary"
+                  onClick={() => {
+                    triggerEditPositionCollateral(position);
+                  }}
+                />
               </div>
             </div>
 

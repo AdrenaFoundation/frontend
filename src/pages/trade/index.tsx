@@ -19,6 +19,7 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
+  uiLeverageToNative,
   uiToNative,
 } from '@/utils';
 
@@ -181,6 +182,7 @@ export default function Trade({
       document.body.classList.remove('overflow-hidden');
     }
   }, [activePositionModal]);
+
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
       dispatch(openCloseConnectionModalAction(true));
@@ -235,14 +237,13 @@ export default function Trade({
     // Existing position or not, it's the same
 
     const collateralAmount = uiToNative(inputAValue, tokenA.decimals);
-    const size = uiToNative(inputBValue, tokenB.decimals);
 
     const openPositionWithSwapAmountAndFees =
       await window.adrena.client.getOpenPositionWithSwapAmountAndFees({
         collateralMint: tokenA.mint,
         mint: tokenB.mint,
         collateralAmount,
-        size,
+        leverage: uiLeverageToNative(leverage),
         side: selectedAction,
       });
 
@@ -262,7 +263,7 @@ export default function Trade({
             mint: tokenB.mint,
             price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
-            size,
+            leverage: uiLeverageToNative(leverage),
           })
         : window.adrena.client.openShortPositionWithConditionalSwap({
             owner: new PublicKey(wallet.publicKey),
@@ -270,7 +271,7 @@ export default function Trade({
             mint: tokenB.mint,
             price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
-            size,
+            leverage: uiLeverageToNative(leverage),
           }));
 
       triggerPositionsReload();
@@ -420,11 +421,8 @@ export default function Trade({
             tokenB={tokenB}
             setTokenA={setTokenA}
             setTokenB={setTokenB}
-            inputAValue={inputAValue}
-            inputBValue={inputBValue}
             setInputAValue={setInputAValue}
             setInputBValue={setInputBValue}
-            tokenPrices={tokenPrices}
             openedPosition={openedPosition}
             setLeverage={setLeverage}
             buttonTitle={buttonTitle}
@@ -489,11 +487,8 @@ export default function Trade({
                     tokenB={tokenB}
                     setTokenA={setTokenA}
                     setTokenB={setTokenB}
-                    inputAValue={inputAValue}
-                    inputBValue={inputBValue}
                     setInputAValue={setInputAValue}
                     setInputBValue={setInputBValue}
-                    tokenPrices={tokenPrices}
                     openedPosition={openedPosition}
                     setLeverage={setLeverage}
                     buttonTitle={buttonTitle}

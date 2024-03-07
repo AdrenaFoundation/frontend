@@ -56,7 +56,7 @@ export default function GeoBlocked({ country }: GeoBlockingData) {
           />
         </div>
 
-        <div className="absolute bottom-4 sm:right-4 text-xs italic m-w-[80%] text-center">
+        <div className="absolute bottom-4 sm:right-4 text-sm italic m-w-[80%] text-center">
           * You are connecting from a country that is not allowed to use Adrena
           (Country tag: {`"`}
           {country}

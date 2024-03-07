@@ -1,13 +1,12 @@
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatNumber, nativeToUi, uiToNative } from '@/utils';
+import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
-import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 // use the counter to handle asynchronous multiple loading
@@ -21,14 +20,12 @@ export default function ALPSwapInputs({
   collateralToken,
   allowedCollateralTokens,
   alpInput,
+  feesUsd,
   onChangeAlpInput,
-  alpPrice,
   setAlpPrice,
   collateralInput,
   onChangeCollateralInput,
-  collateralPrice,
   setCollateralPrice,
-  setActionType,
   onCollateralTokenChange,
   setFeesUsd,
   setIsFeesLoading,
@@ -36,45 +33,23 @@ export default function ALPSwapInputs({
   actionType: 'buy' | 'sell';
   className?: string;
   alpToken: Token;
+  feesUsd: number | null;
   collateralToken: Token;
   collateralInput: number | null;
   allowedCollateralTokens: Token[] | null;
-  collateralPrice: number | null;
   setCollateralPrice: (v: number | null) => void;
   alpInput: number | null;
   onChangeAlpInput: (v: number | null) => void;
   onChangeCollateralInput: (v: number | null) => void;
-  alpPrice: number | null;
   setAlpPrice: (v: number | null) => void;
-  setActionType: (a: 'buy' | 'sell') => void;
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   setIsFeesLoading: (v: boolean) => void;
 }) {
-  const wallet = useSelector((s) => s.walletState);
-  const connected = !!wallet;
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
   const [isLoading, setLoading] = useState<boolean>(false);
-
-  // Goes from "buy" to "sell"
-  const switchBuySell = () => {
-    if (!alpToken || !collateralToken) return;
-
-    onChangeAlpInput(null);
-    onChangeCollateralInput(null);
-    setFeesUsd(null);
-    setAlpPrice(null);
-    setCollateralPrice(null);
-
-    // deprecate current loading
-    setLoading(false);
-
-    loadingCounter += 1;
-    setActionType(actionType === 'buy' ? 'sell' : 'buy');
-  };
 
   // When price change or input change, recalculate inputs and displayed price
   {
@@ -264,25 +239,9 @@ export default function ALPSwapInputs({
 
   const alpInputComponent = (
     <TradingInput
+      className="text-sm"
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
-      textTopLeft={
-        <>
-          {actionType === 'buy' ? 'Receive' : 'Pay'}
-          {alpPrice !== null
-            ? ` · ${formatNumber(alpPrice, USD_DECIMALS)} USD`
-            : null}
-        </>
-      }
-      textTopRight={
-        <>
-          {connected && alpToken
-            ? `Balance · ${(
-                walletTokenBalances?.[alpToken.symbol] ?? '0'
-              ).toLocaleString()}`
-            : null}
-        </>
-      }
       value={alpInput}
       maxButton={actionType === 'sell'}
       selectedToken={alpToken}
@@ -294,34 +253,14 @@ export default function ALPSwapInputs({
         // only one token
       }}
       onChange={handleAlpInputChange}
-      inputClassName={
-        actionType === 'buy' ? 'rounded-t-none' : 'rounded-b-none border-b-0'
-      }
     />
   );
 
   const collateralComponent = (
     <TradingInput
+      className="text-sm"
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
-      textTopLeft={
-        <>
-          {actionType === 'buy' ? 'Pay' : 'Receive'}
-          {collateralPrice !== null
-            ? ` · ${formatNumber(collateralPrice, USD_DECIMALS)} USD`
-            : null}
-        </>
-      }
-      textTopRight={
-        <>
-          {/* Display wallet balance */}
-          {connected && collateralToken
-            ? `Balance · ${(
-                walletTokenBalances?.[collateralToken.symbol] ?? '0'
-              ).toLocaleString()}`
-            : null}
-        </>
-      }
       value={collateralInput}
       maxButton={actionType === 'buy'}
       selectedToken={collateralToken}
@@ -333,45 +272,65 @@ export default function ALPSwapInputs({
       }}
       onTokenSelect={onCollateralTokenChange}
       onChange={handleCollateralInputChange}
-      inputClassName={
-        actionType === 'buy' ? 'rounded-b-none border-b-0' : 'rounded-t-none'
-      }
     />
   );
 
-  const rotateIcon = () => {
-    const icon = document.getElementById('switch-icon');
-
-    if (icon) {
-      icon.classList.toggle('rotate-180');
-    }
-  };
-
   return (
     <div className={twMerge('relative', 'flex', 'flex-col', className)}>
+      <div className="text-sm text-txtfade mb-3">Pay</div>
+
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
-      {/* Switch Buy/Sell */}
-      <div className="relative w-full overflow-visible flex justify-center items-center z-[2]">
-        <div
-          className="group absolute bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center"
-          onClick={() => {
-            switchBuySell();
-            rotateIcon();
-          }}
-        >
-          <Image
-            src={arrowDownUpIcon}
-            alt="switch icon"
-            height={16}
-            width={16}
-            id="switch-icon"
-            className="opacity-50 group-hover:opacity-100 transition-all duration-300 "
-          />
-        </div>
-      </div>
+      {
+        /* Display wallet balance */
+        (() => {
+          const token = actionType === 'buy' ? collateralToken : alpToken;
+
+          if (!token || !walletTokenBalances) return null;
+
+          const balance = walletTokenBalances[token.symbol];
+          if (balance === null) return null;
+
+          return (
+            <div className="ml-auto mt-3">
+              <span className="text-txtfade text-sm font-mono">
+                {formatNumber(balance, token.decimals)}
+              </span>
+              <span className="text-txtfade text-sm ml-1">
+                {token.symbol} in wallet
+              </span>
+            </div>
+          );
+        })()
+      }
+
+      <div className="text-sm text-txtfade mt-2 mb-3">Receive</div>
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
+
+      <div className="text-sm text-txtfade mt-6">Verify</div>
+
+      <div
+        className={twMerge(
+          'flex flex-col bg-black border rounded-2xl p-2',
+          className,
+        )}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <InfoAnnotation
+              text="Amount of tokens being traded."
+              className="w-3 grow-0 mr-1"
+            />
+
+            <div className="text-sm text-txtfade">Fees</div>
+          </div>
+
+          <div className="relative flex flex-col text-sm font-mono">
+            {formatPriceInfo(feesUsd, false, USD_DECIMALS)}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

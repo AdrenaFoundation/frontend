@@ -20,9 +20,6 @@ export default function TradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const stats = useDailyStats();
 
-  const infoStyle =
-    'hidden sm:flex flex-col sm:flex-row gap-1 xl:gap-2 bg-white/5 p-1 px-5 rounded-full flex-wrap';
-
   return (
     <div
       className={twMerge(
@@ -30,8 +27,10 @@ export default function TradingInputs({
         className,
       )}
     >
-      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full p-3">
+      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full">
         <Select
+          className="w-[8em]"
+          selectedClassName="p-2"
           selected={`${selected.symbol} / USD`}
           options={tokenList
             .filter((token) => token.symbol !== selected.symbol)
@@ -57,7 +56,7 @@ export default function TradingInputs({
       </div>
 
       <div className="flex flex-row gap-3 p-3 items-center">
-        <div className="font-mono mr-3 text-lg">
+        <div className="font-mono mr-3 text-base">
           {tokenPrices && tokenPrices[selected.symbol]
             ? // Force linting, we check it just bellow
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -65,10 +64,10 @@ export default function TradingInputs({
             : null}
         </div>
 
-        <div className={infoStyle}>
+        <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
           <span
             className={twMerge(
-              'font-mono text-xs',
+              'font-mono text-sm',
               stats && stats[selected.symbol].dailyChange > 0
                 ? 'text-green-500'
                 : 'text-red-500',
@@ -78,14 +77,18 @@ export default function TradingInputs({
               ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
               : '-'}
           </span>
-          <span className="text-xs text-txtfade">24h Change</span>
+          <span className="text-sm text-txtfade ml-2 relative top-[0.1em]">
+            24h Change
+          </span>
         </div>
 
-        <div className={infoStyle}>
-          <span className="font-mono text-xs">
+        <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
+          <span className="font-mono text-sm">
             {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
           </span>
-          <span className="text-xs text-txtfade">24h Volume</span>
+          <span className="text-sm text-txtfade ml-2 relative top-[0.1em]">
+            24h Volume
+          </span>
         </div>
       </div>
     </div>

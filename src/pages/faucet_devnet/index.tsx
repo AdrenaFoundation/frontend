@@ -163,7 +163,7 @@ export default function FaucetDevnet({
             }
           />
 
-          <div className="text-xs mt-4 text-txtfade">
+          <div className="text-sm mt-4 text-txtfade">
             {(() => {
               if (token.mint.equals(NATIVE_MINT) || token.symbol === 'ADX')
                 return 'Aidropped 1 ';
@@ -172,7 +172,7 @@ export default function FaucetDevnet({
             token at a time
           </div>
 
-          <div className="text-xs mt-2 text-txtfade">
+          <div className="text-sm mt-2 text-txtfade">
             {token.mint.toBase58()}
           </div>
         </div>

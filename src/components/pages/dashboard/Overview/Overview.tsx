@@ -41,7 +41,7 @@ export default function Overview({
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Average Leverage</p>
-            <p className="text-xs opacity-25 italic">
+            <p className="text-sm opacity-25 italic">
               {averageLongLeverage
                 ? `${formatNumber(averageLongLeverage, 2)}x`
                 : 'Coming soon'}
@@ -68,7 +68,7 @@ export default function Overview({
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Average Leverage</p>
-            <p className="text-xs opacity-25 italic">
+            <p className="text-sm opacity-25 italic">
               {averageShortLeverage
                 ? `${formatNumber(averageShortLeverage, 2)}x`
                 : 'Coming soon'}
