@@ -91,8 +91,8 @@ export default function PositionInfos({
     >
       <div className="flex items-center border-b h-14 pr-4">
         <Select
-          className="shrink-0 bg-dark h-full flex items-center rounded-tr-2xl rounded-br-2xl"
-          selectedClassName="w-20"
+          className="shrink-0 bg-dark h-full flex items-center rounded-tr-2xl rounded-br-2xl w-[8em]"
+          selectedClassName="w-14"
           selected={tokenB.symbol}
           options={allowedTokenB.map((token) => ({
             title: token.symbol,

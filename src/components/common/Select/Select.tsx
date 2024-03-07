@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageRef } from '@/types';
@@ -24,11 +25,21 @@ export default function Select<T extends string>({
 }) {
   const selectedImg = options.find((option) => option.title === selected)?.img;
 
+  // Option hovering on
+  const [optionHover, setOptionHover] = useState<number | null>(null);
+
   return (
     <div className={className}>
       <Menu
+        disabled={options.length <= 1}
+        withBorder={true}
         trigger={
-          <div className="flex justify-center items-center cursor-pointer whitespace-nowrap hover:opacity-90 shadow-xl overflow-hidden relative h-full w-full">
+          <div
+            className={twMerge(
+              'flex justify-center items-center whitespace-nowrap hover:opacity-90 shadow-xl overflow-hidden relative h-full w-full',
+              options.length > 1 ? 'cursor-pointer' : '',
+            )}
+          >
             <div
               className={twMerge(
                 'flex flex-row gap-1 items-center',
@@ -38,7 +49,7 @@ export default function Select<T extends string>({
               {selectedImg ? (
                 <Image
                   src={selectedImg}
-                  className="absolute top-auto left-[-15px] opacity-[15%] grayscale"
+                  className="absolute top-auto left-[-32px] opacity-[15%] grayscale"
                   alt="logo"
                   width="80"
                   height="80"
@@ -58,10 +69,10 @@ export default function Select<T extends string>({
           </div>
         }
         className="h-full w-full"
-        openMenuClassName="right-1 mt-2 w-fit"
+        openMenuClassName="w-full"
       >
         {options.length > 1 && (
-          <MenuItems className="w-[120px] justify-center border-2 border-[#ffffff20]">
+          <MenuItems className="w-[8em] justify-center">
             {options
               .filter((option) => option.title !== selected)
               .map((option, i) => (
@@ -69,7 +80,9 @@ export default function Select<T extends string>({
                   {!!i && <MenuSeperator key={'sep' + option.title} />}
 
                   <MenuItem
-                    className="flex flex-row items-center justify-end text-center text-lg relative overflow-hidden"
+                    className="flex flex-row items-center justify-end text-center relative overflow-hidden h-14 grayscale hover:grayscale-0"
+                    onMouseEnter={() => setOptionHover(i)}
+                    onMouseLeave={() => setOptionHover(null)}
                     onClick={() => {
                       onSelect(option.title);
                     }}
@@ -78,13 +91,18 @@ export default function Select<T extends string>({
                     {option?.img ? (
                       <Image
                         src={option.img}
-                        className="absolute top-auto left-[-15px] opacity-20 z-10"
+                        className={twMerge(
+                          'absolute top-auto left-[-32px] z-10',
+                          optionHover === i ? 'opacity-60' : 'opacity-20',
+                        )}
                         alt="logo"
                         width="80"
                         height="80"
                       />
                     ) : null}
-                    <span className="font-semibold z-20">{option.title}</span>
+                    <span className="font-semibold z-20 m-auto text-base">
+                      {option.title}
+                    </span>
                   </MenuItem>
                 </>
               ))}

@@ -9,11 +9,15 @@ export default function Menu({
   className,
   openMenuClassName,
   children,
+  withBorder,
+  disabled,
 }: {
   trigger: ReactNode;
   className?: string;
   openMenuClassName?: string;
   children: ReactNode;
+  withBorder?: boolean;
+  disabled?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -25,22 +29,36 @@ export default function Menu({
     setIsMenuOpen(!isMenuOpen);
   });
 
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+  };
+
   return (
     <AnimatePresence>
       <div
         className={twMerge('relative', className)}
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        onClick={() => !disabled && setIsMenuOpen(!isMenuOpen)}
       >
-        {trigger}
+        <div
+          className={twMerge(
+            'flex h-full w-full border border-transparent',
+            isMenuOpen && withBorder ? 'border-white' : '',
+          )}
+        >
+          {trigger}
+        </div>
+
         {isMenuOpen && (
           <motion.div
             ref={ref}
-            initial={{ opacity: 0, scale: 0.9, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: -10 }}
-            transition={{ duration: 0.1 }}
+            initial="hidden"
+            animate="visible"
+            variants={variants}
+            transition={{ duration: 0.3 }}
             className={twMerge(
-              'absolute flex flex-col border border-gray-200 bg-dark rounded-xl shadow-lg mt-2 overflow-hidden z-10 w-full',
+              'absolute flex flex-col bg-dark overflow-hidden z-50 border mt-2',
+              withBorder ? 'border border-white' : '',
               openMenuClassName,
             )}
           >

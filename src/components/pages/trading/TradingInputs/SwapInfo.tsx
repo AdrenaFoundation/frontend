@@ -43,7 +43,7 @@ export default function SwapInfo({
 
         <span className="text-sm font-mono">
           {swapFeesAndAmount ? (
-            <div className="text-txtfade text-sm">
+            <div className="text-sm">
               {tokenPriceA && tokenPriceB
                 ? formatPriceInfo(
                     nativeToUi(swapFeesAndAmount.feeIn, tokenA.decimals) *
@@ -65,7 +65,7 @@ export default function SwapInfo({
 
       <div className="flex flex-col mt-3">
         <div className="w-full flex justify-between items-start">
-          <span className="text-sm text-txtfade flex ml-4">Fees</span>
+          <span className="text-sm text-txtfade flex ml-4">Fees IN</span>
 
           <span className="text-sm font-mono">
             {swapFeesAndAmount ? (

@@ -249,9 +249,15 @@ export default function SwapTradingInputs({
             balance = walletTokenBalances[tokenA.symbol];
 
           return (
-            <div className="text-txtfade text-sm ml-auto mt-3">
-              {balance !== null ? formatNumber(balance, tokenA.decimals) : '-'}{' '}
-              {tokenA.symbol} in wallet
+            <div className="ml-auto mt-3">
+              <span className="text-txtfade text-sm font-mono">
+                {balance !== null
+                  ? formatNumber(balance, tokenA.decimals)
+                  : '-'}{' '}
+              </span>
+              <span className="text-txtfade text-sm">
+                {tokenA.symbol} in wallet
+              </span>
             </div>
           );
         })()
@@ -294,7 +300,7 @@ export default function SwapTradingInputs({
         value={inputB}
         subText={
           priceB ? (
-            <div className="text-sm text-txtfade">
+            <div className="text-sm text-txtfade font-mono">
               {formatPriceInfo(priceB)}
             </div>
           ) : null
@@ -315,11 +321,15 @@ export default function SwapTradingInputs({
           if (balance === null) return null;
 
           return (
-            <div className="text-txtfade text-sm ml-auto mt-3">
-              {custodyTokenB
-                ? formatNumber(custodyTokenB.liquidity, tokenB.decimals)
-                : '-'}{' '}
-              {tokenB.symbol} available
+            <div className="ml-auto mt-3">
+              <span className="text-txtfade text-sm font-mono">
+                {custodyTokenB
+                  ? formatNumber(custodyTokenB.liquidity, tokenB.decimals)
+                  : '-'}{' '}
+              </span>
+              <span className="text-txtfade text-sm">
+                {tokenB.symbol} available
+              </span>
             </div>
           );
         })()
