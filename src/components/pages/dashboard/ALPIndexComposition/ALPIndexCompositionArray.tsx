@@ -68,11 +68,11 @@ export default function ALPIndexCompositionArray({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono">
+                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono text-base">
                   {formatPriceInfo(composition.price)}
                 </div>
 
-                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono">
+                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono text-base">
                   {formatPriceInfo(composition.custodyUsdValue)}
                 </div>
 
@@ -107,7 +107,7 @@ export default function ALPIndexCompositionArray({
                   }
                   placement="bottom"
                 >
-                  <div className="flex items-center justify-end w-40 shrink-0 grow">
+                  <div className="flex items-center justify-end w-40 shrink-0 grow text-base">
                     <div className="flex tooltip-target">
                       <span
                         className={`font-mono ${calculateOffset(
@@ -125,7 +125,7 @@ export default function ALPIndexCompositionArray({
                   </div>
                 </Tippy>
 
-                <div className="flex items-center w-40 shrink-0 grow justify-end font-mono">
+                <div className="flex items-center w-40 shrink-0 grow justify-end font-mono text-base">
                   {formatPercentage(composition.utilization, 4)}
                 </div>
               </div>

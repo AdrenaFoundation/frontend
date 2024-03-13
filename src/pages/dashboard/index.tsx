@@ -148,7 +148,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     ],
   };
 
-  const comingSoon = <p className="opacity-25 text-xs italic">coming soon</p>;
+  const comingSoon = <p className="opacity-25 text-sm italic">coming soon</p>;
 
   const ALPDetailsArray = [
     { title: 'Price', value: formatPriceInfo(alpPrice) },

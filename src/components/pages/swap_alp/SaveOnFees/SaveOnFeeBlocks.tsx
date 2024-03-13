@@ -69,7 +69,7 @@ export default function SaveOnFeesBlocks({
                 alt={`${row.token.symbol} logo`}
               />
               <div>
-                <p className="text-xs opacity-50 font-mono">
+                <p className="text-sm opacity-50 font-mono">
                   {row.token.symbol}
                 </p>
                 <h3 className="text-sm capitalize font-mono">
@@ -79,7 +79,7 @@ export default function SaveOnFeesBlocks({
             </div>
 
             <div>
-              <p className="text-xs opacity-50 text-right">Fees</p>
+              <p className="text-sm opacity-50 text-right">Fees</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-end text-right">
                 {!isFeesLoading &&
                   currentFee &&
@@ -87,7 +87,7 @@ export default function SaveOnFeesBlocks({
                   collateralToken?.symbol !== row.token.symbol && (
                     <p
                       className={twMerge(
-                        'text-xs font-medium text-right order-1 sm:order-none',
+                        'text-sm font-medium text-right order-1 sm:order-none',
                         currentFee > row.fee
                           ? 'text-green-500'
                           : 'text-red-500',
@@ -117,7 +117,7 @@ export default function SaveOnFeesBlocks({
           </div>
 
           <div className="flex flex-col gap-2 w-full bg-gray-200 rounded-b-2xl p-3 h-full">
-            <p className="opacity-25 text-xs">Details</p>
+            <p className="opacity-25 text-sm">Details</p>
             <div className="flex w-full justify-between">
               <p className="text-sm opacity-50">Price</p>
               <p className="text-sm font-mono text-right">

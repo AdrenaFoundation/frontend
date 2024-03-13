@@ -41,7 +41,7 @@ export default function StakeList({
             'Vote Multiplier',
             'Actions',
           ].map((header) => (
-            <th className="text-xs text-left opacity-50" key={header}>
+            <th className="text-sm text-left opacity-50" key={header}>
               {header}
             </th>
           ))}
@@ -82,7 +82,7 @@ export default function StakeList({
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium opacity-50">
+                      <p className="text-sm font-medium opacity-50">
                         {tokenSymbol}
                       </p>
                       <p>
@@ -151,7 +151,7 @@ export default function StakeList({
 
                 <td className="py-5 text-sm">
                   <Button
-                    className="w-full max-w-[200px] mt-3 text-xs"
+                    className="w-full max-w-[200px] mt-3 text-sm"
                     variant="secondary"
                     rightIcon={
                       getDaysRemaining(stakeTime, lockDuration) <= 0

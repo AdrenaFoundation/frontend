@@ -52,8 +52,8 @@ export default function StakeToken({
 
         <div>
           <div className="flex flex-row justify-between mb-2">
-            <p className="text-xs opacity-50 font-medium"> Enter Amount</p>
-            <p className="text-xs font-medium">
+            <p className="text-sm opacity-50 font-medium"> Enter Amount</p>
+            <p className="text-sm font-medium">
               <span className="opacity-50"> Balance · </span>
               {balance ? `${formatNumber(balance, 2)} ${tokenSymbol}` : '–'}
             </p>
@@ -91,7 +91,7 @@ export default function StakeToken({
         <div>
           <div className="flex flex-row gap-1  mb-2">
             <Image src={lockIcon} width={14} height={14} alt="lock icon" />
-            <p className="text-xs opacity-50 font-medium ">
+            <p className="text-sm opacity-50 font-medium ">
               Choose a lock period (days)
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function StakeToken({
 
       <div className="flex flex-col gap-5 justify-between w-full p-5 ">
         <ul className="flex flex-col gap-2">
-          <li className="text-xs opacity-25">Benefits</li>
+          <li className="text-sm opacity-25">Benefits</li>
           <li className="flex flex-row justify-between">
             <p className="text-sm opacity-50"> Days </p>
             <p className="text-sm font-mono"> {lockPeriod} </p>

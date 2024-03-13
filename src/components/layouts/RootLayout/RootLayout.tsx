@@ -26,17 +26,14 @@ const RootLayout = ({
     { name: 'Earn', link: '/earn' },
     { name: 'Buy', link: '/swap_alp' },
     // { name: 'Referral', link: '/referral' },
-    { name: 'Backoffice', link: '/backoffice' },
+    { name: 'Monitoring', link: '/monitoring' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
 
   useEffect(() => {
     if (window.adrena.cluster === 'devnet') {
       return setPages((prev) =>
-        prev.concat([
-          { name: 'Faucet', link: '/faucet_devnet' },
-          { name: 'On-chain Info', link: '/onchain_info' },
-        ]),
+        prev.concat([{ name: 'Faucet', link: '/faucet_devnet' }]),
       );
     }
   }, []);
@@ -61,7 +58,9 @@ const RootLayout = ({
 
       <div className="w-full flex p-4 justify-center">
         <div
-          className={twMerge('w-full flex max-w-[1400px] flex-col py-[75px]')}
+          className={twMerge(
+            'w-full flex max-w-[1400px] flex-col pt-[5em] pb-[3em] sm:pb-0 sm:pt-[3.5em]',
+          )}
         >
           {children}
         </div>

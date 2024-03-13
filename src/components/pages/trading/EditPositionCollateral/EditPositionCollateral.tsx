@@ -1,12 +1,14 @@
 import { BN } from '@coral-xyz/anchor';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import { USD_DECIMALS } from '@/constant';
+import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
-import { AmountAndFee, PositionExtended, Token } from '@/types';
+import { PositionExtended, Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -16,7 +18,10 @@ import {
   uiToNative,
 } from '@/utils';
 
+import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import TradingInput from '../TradingInput/TradingInput';
+
+const LEVERAGE_OVERFLOW = 999;
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
@@ -40,65 +45,61 @@ export default function EditPositionCollateral({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  const [amountAndFee, setAmountAndFee] = useState<AmountAndFee | null>(null);
   const [liquidationPrice, setLiquidationPrice] = useState<number | null>(
     position.liquidationPrice ?? null,
   );
 
+  const debouncedInput = useDebounce(input);
+
+  const [updatedInfos, setUpdatedInfos] = useState<{
+    leverage: number;
+    collateral: number;
+    collateralUsd: number;
+  } | null>();
+
   const markPrice: number | null = tokenPrices[position.token.symbol];
+  const markCollateralPrice: number | null =
+    tokenPrices[position.collateralToken.symbol];
 
   const walletBalance: number | null =
     walletTokenBalances?.[position.token.symbol] ?? null;
 
-  const listStyle = 'w-full flex justify-between';
-
-  const entryPrice: number = position.price;
-
-  /**/
-  const updatedLeverage: number | null = (() => {
-    if (!input || markPrice === null) return null;
-
-    // PnL is taken into account when calculating new position leverage
-    const newPositionUsd =
-      selectedAction === 'deposit'
-        ? position.collateralUsd + markPrice * input + (position.pnl ?? 0)
-        : position.collateralUsd - input + (position.pnl ?? 0);
-
-    if (newPositionUsd <= 0) {
-      return newPositionUsd;
-    }
-
-    return position.sizeUsd / newPositionUsd;
-  })();
-
-  const { minLeverage, maxLeverage } = (() => {
-    const custody = window.adrena.client.getCustodyByMint(position.token.mint);
-
-    return {
-      minLeverage: 1,
-      maxLeverage: custody.maxLeverage,
-    };
-  })();
-
-  const overMaxAuthorizedLeverage: boolean | null =
-    maxLeverage === null || updatedLeverage === null
-      ? null
-      : updatedLeverage < 0 || updatedLeverage > maxLeverage;
-
-  const overMinAuthorizedLeverage: boolean | null =
-    maxLeverage === null || updatedLeverage === null
-      ? null
-      : updatedLeverage < 0 || updatedLeverage < minLeverage;
+  const [underLeverage, setUnderLeverage] = useState<boolean>(false);
+  const [overLeverage, setOverLeverage] = useState<boolean>(false);
 
   const executeBtnText = (() => {
     if (!input) return 'Enter an amount';
 
-    if (overMaxAuthorizedLeverage || overMinAuthorizedLeverage) {
+    if (underLeverage) {
+      return 'Leverage under limit';
+    }
+
+    if (overLeverage) {
       return 'Leverage over limit';
     }
 
     return selectedAction === 'deposit' ? 'Deposit' : 'Withdraw';
   })();
+
+  useEffect(() => {
+    if (!updatedInfos) {
+      setUnderLeverage(false);
+      setOverLeverage(false);
+      return;
+    }
+
+    if (updatedInfos && updatedInfos.leverage < 1) {
+      setUnderLeverage(true);
+      setOverLeverage(false);
+      return;
+    }
+
+    if (updatedInfos && updatedInfos.leverage > 52) {
+      setUnderLeverage(false);
+      setOverLeverage(true);
+      return;
+    }
+  }, [updatedInfos]);
 
   const doRemoveCollateral = async () => {
     if (!input) return;
@@ -147,69 +148,101 @@ export default function EditPositionCollateral({
   };
 
   useEffect(() => {
-    if (!input) {
-      setAmountAndFee(null);
+    if (!input || !markCollateralPrice) {
       setLiquidationPrice(null);
       return;
     }
 
     const localLoadingCounter = ++loadingCounter;
 
-    // Load new amount and fee
-    (selectedAction === 'deposit'
-      ? window.adrena.client.getAddLiquidityAmountAndFee({
-          amountIn: uiToNative(input, position.token.decimals),
-          token: position.token,
-        })
-      : window.adrena.client.getRemoveLiquidityAmountAndFee({
-          lpAmountIn: uiToNative(input, window.adrena.client.alpToken.decimals),
-          token: position.token,
-        })
-    )
-      .then((amountAndFee: AmountAndFee | null) => {
-        // Verify that information is not outdated
-        // If loaderCounter doesn't match it means
-        // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) {
-          return;
-        }
+    (async () => {
+      const liquidationPrice = await (selectedAction === 'deposit'
+        ? window.adrena.client.getPositionLiquidationPrice({
+            position,
+            addCollateral: uiToNative(input, position.token.decimals),
+            removeCollateral: new BN(0),
+          })
+        : window.adrena.client.getPositionLiquidationPrice({
+            position,
+            addCollateral: new BN(0),
+            removeCollateral: uiToNative(
+              input / markCollateralPrice,
+              position.token.decimals,
+            ),
+          }));
 
-        setAmountAndFee(amountAndFee);
-      })
-      .catch((e) => {
-        // Ignore error
-        console.log(e);
-      });
+      // Verify that information is not outdated
+      // If loaderCounter doesn't match it means
+      // an other request has been casted due to input change
+      if (localLoadingCounter !== loadingCounter) {
+        return;
+      }
 
-    // Load new liquidation price
-    window.adrena.client
-      .getPositionLiquidationPrice({
-        position,
-        addCollateral:
-          selectedAction === 'deposit'
-            ? uiToNative(input, position.token.decimals)
-            : new BN(0),
-        removeCollateral: new BN(0),
-      })
-      .then((liquidationPrice: BN | null) => {
-        // Verify that information is not outdated
-        // If loaderCounter doesn't match it means
-        // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) {
-          return;
-        }
+      setLiquidationPrice(
+        liquidationPrice ? nativeToUi(liquidationPrice, PRICE_DECIMALS) : null,
+      );
+    })().catch((e) => {
+      // Ignore error
+      console.log(e);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedInput, position, position.token, selectedAction]);
 
-        setLiquidationPrice(
-          liquidationPrice
-            ? nativeToUi(liquidationPrice, position.token.decimals)
-            : null,
-        );
-      })
-      .catch((e) => {
-        // Ignore error
-        console.log(e);
-      });
-  }, [input, position, position.token, selectedAction]);
+  // Recalculate leverage/collateral depending on the input and price
+  useEffect(() => {
+    if (
+      !input ||
+      !markCollateralPrice ||
+      position.pnl === null ||
+      typeof position.pnl === 'undefined'
+    ) {
+      setUpdatedInfos(null);
+      return;
+    }
+
+    let updatedCollateralAmount: number;
+    let updatedCollateralUsd: number;
+
+    if (selectedAction === 'deposit') {
+      updatedCollateralAmount =
+        position.collateralUsd / markCollateralPrice + input;
+
+      updatedCollateralUsd = updatedCollateralAmount * markCollateralPrice;
+    } else {
+      updatedCollateralUsd = position.collateralUsd - input;
+
+      updatedCollateralAmount = updatedCollateralUsd / markCollateralPrice;
+    }
+
+    let updatedLeverage =
+      position.sizeUsd / (updatedCollateralUsd - position.pnl);
+
+    // Leverage overflow
+    if (updatedLeverage < 0) {
+      updatedLeverage = LEVERAGE_OVERFLOW;
+    }
+
+    setUpdatedInfos({
+      leverage: updatedLeverage,
+      collateral: updatedCollateralAmount,
+      collateralUsd: updatedCollateralUsd,
+    });
+  }, [
+    input,
+    markCollateralPrice,
+    position.collateralAmount,
+    position.collateralUsd,
+    position.pnl,
+    position.sizeUsd,
+    selectedAction,
+  ]);
+
+  const calculateCollateralPercentage = (percentage: number) =>
+    Number(
+      Number((position.collateralUsd * Number(percentage)) / 100).toFixed(
+        USD_DECIMALS,
+      ),
+    );
 
   const handleExecute = async () => {
     if (!input) return;
@@ -226,197 +259,284 @@ export default function EditPositionCollateral({
     }
   };
 
+  const rowStyle = 'w-full flex justify-between mt-2';
+
+  const rightArrowElement = (
+    <Image
+      className="ml-2 mr-2 opacity-60"
+      src={arrowRightIcon}
+      height={16}
+      width={16}
+      alt="Arrow"
+    />
+  );
+
   return (
-    <div className={twMerge('flex flex-col gap-3 h-full', className)}>
+    <div className={twMerge('flex flex-col gap-3 h-full w-[24em]', className)}>
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'deposit' }, { title: 'withdraw' }]}
         onClick={(title) => {
           // Reset input when changing selected action
           setInput(null);
-          setAmountAndFee(null);
           setSelectedAction(title);
         }}
       />
 
       {selectedAction === 'deposit' ? (
-        <TradingInput
-          textTopLeft="Deposit"
-          textTopRight={`Max · ${(() => {
-            if (walletBalance === null) return null;
+        <>
+          <TradingInput
+            value={input}
+            maxButton={true}
+            selectedToken={position.token}
+            tokenList={[]}
+            onTokenSelect={() => {
+              // One token only
+            }}
+            onChange={setInput}
+            onMaxButtonClick={() => setInput(walletBalance)}
+          />
 
-            return formatNumber(walletBalance, position.token.decimals);
-          })()}`}
-          value={input}
-          maxButton={true}
-          selectedToken={position.token}
-          tokenList={[]}
-          onTokenSelect={() => {
-            // One token only
-          }}
-          onChange={setInput}
-          onMaxButtonClick={() => setInput(walletBalance)}
-        />
+          {
+            /* Display wallet balance */
+            (() => {
+              if (!walletTokenBalances) return null;
+
+              const balance =
+                walletTokenBalances[position.collateralToken.symbol];
+              if (balance === null) return null;
+
+              return (
+                <div className="ml-auto">
+                  <span className="text-txtfade text-sm font-mono">
+                    {formatNumber(balance, position.collateralToken.decimals)}
+                  </span>
+                  <span className="text-txtfade text-sm ml-1">
+                    {position.collateralToken.symbol} in wallet
+                  </span>
+                </div>
+              );
+            })()
+          }
+        </>
       ) : (
-        <TradingInput
-          textTopLeft={
-            <>
-              Withdraw
-              {input && markPrice
-                ? ` · ${formatNumber(input / markPrice, 6)} ${
-                    position.token.symbol
-                  }`
-                : null}
-            </>
-          }
-          textTopRight={`Max · ${formatNumber(
-            position.collateralUsd,
-            USD_DECIMALS,
-          )}`}
-          value={input}
-          maxButton={true}
-          selectedToken={
-            {
-              symbol: 'USD',
-            } as Token
-          }
-          tokenList={[]}
-          onTokenSelect={() => {
-            // One token only
-          }}
-          onChange={setInput}
-          onMaxButtonClick={() => setInput(position.collateralUsd)}
-        />
+        <>
+          <TradingInput
+            value={input}
+            selectedToken={
+              {
+                symbol: 'USD',
+              } as Token
+            }
+            tokenList={[]}
+            onTokenSelect={() => {
+              // One token only
+            }}
+            onChange={setInput}
+          />
+
+          <div className="text-txtfade text-sm ml-auto">
+            {formatPriceInfo(position.collateralUsd)} of collateral in the
+            position
+          </div>
+        </>
       )}
 
-      <div className="flex flex-col gap-3 text-sm mt-3">
+      <div className="flex flex-col gap-3 text-sm mt-1">
         {selectedAction === 'withdraw' ? (
-          <>
-            <TabSelect
-              tabs={[
-                { title: '25%' },
-                { title: '50%' },
-                { title: '75%' },
-                { title: '100%' },
-              ]}
-              onClick={(title) => {
-                setInput(
-                  Number(
-                    Number(
-                      (position.collateralUsd * Number(title.split('%')[0])) /
-                        100,
-                    ).toFixed(USD_DECIMALS),
-                  ),
-                );
-              }}
-            />
-          </>
+          <div className="bg-dark flex justify-evenly p-2 rounded-2xl border">
+            <div
+              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              onClick={() => setInput(calculateCollateralPercentage(25))}
+            >
+              25%
+            </div>
+            <div
+              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              onClick={() => setInput(calculateCollateralPercentage(50))}
+            >
+              50%
+            </div>
+            <div
+              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              onClick={() => setInput(calculateCollateralPercentage(75))}
+            >
+              75%
+            </div>
+          </div>
         ) : null}
 
-        <div className={listStyle}>
-          <p className="text-txtfade">Leverage</p>
-          <div className="flex font-mono text-right">
-            {updatedLeverage !== 0 ? (
-              <p>{formatNumber(position.leverage, 2)}x</p>
-            ) : (
-              '-'
-            )}
+        <div className="flex flex-col border p-4 pt-2 bg-dark rounded-2xl">
+          <div className={rowStyle}>
+            <div className="text-txtfade text-sm">Size</div>
 
-            {input && updatedLeverage ? (
-              <>
-                {
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src="images/arrow-right.svg" alt="arrow right" />
-                }
+            <div className="flex text-sm font-mono">
+              {formatPriceInfo(position.sizeUsd)}
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-txtfade text-sm">Entry Price</div>
+
+            <div className="text-sm font-mono">
+              {formatPriceInfo(position.price)}
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-txtfade text-sm">Mark Price</div>
+
+            <div className="text-sm font-mono">
+              {formatPriceInfo(markPrice)}
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-txtfade text-sm">PnL</div>
+
+            <div className="text-sm font-mono">
+              {position.pnl && markPrice ? (
+                <span
+                  className={`text-sm text-${
+                    position.pnl > 0 ? 'green' : 'red'
+                  }-500`}
+                >
+                  {formatPriceInfo(position.pnl, true)}
+                </span>
+              ) : (
+                '-'
+              )}
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-txtfade text-sm">Collateral</div>
+
+            <div className="flex">
+              <div className="flex flex-col items-end justify-center">
+                <div className="flex">
+                  <span
+                    className={twMerge(
+                      'font-mono',
+                      input ? 'text-txtfade text-xs' : 'text-sm',
+                    )}
+                  >
+                    {formatNumber(
+                      position.collateralAmount,
+                      position.collateralToken.decimals,
+                    )}{' '}
+                  </span>
+
+                  <span
+                    className={twMerge(
+                      'font-mono ml-1',
+                      input ? 'text-txtfade text-xs' : 'text-sm',
+                    )}
+                  >
+                    {position.collateralToken.symbol}
+                  </span>
+                </div>
+
                 <div
                   className={twMerge(
-                    (overMaxAuthorizedLeverage || overMinAuthorizedLeverage) &&
-                      'text-red-500',
+                    'flex text-txtfade font-mono',
+                    input ? 'text-xs' : 'text-sm',
                   )}
                 >
-                  {updatedLeverage > 0 ? (
-                    `${formatNumber(updatedLeverage, 2)}x`
-                  ) : (
-                    <span>OVER LIMIT</span>
-                  )}
+                  {formatPriceInfo(position.collateralUsd)}
                 </div>
-              </>
-            ) : null}
-          </div>
-        </div>
+              </div>
 
-        <div className="h-[1px] w-full bg-gray-300 rounded" />
-
-        <ul className="flex flex-col gap-2">
-          <li className={listStyle}>
-            <p className="opacity-50">Mark Price</p>
-            <p className="font-mono text-right">{formatPriceInfo(markPrice)}</p>
-          </li>
-          <li className={listStyle}>
-            <p className="opacity-50">Entry Price</p>
-            <p className="font-mono text-right">
-              {formatPriceInfo(entryPrice)}
-            </p>
-          </li>
-          <li className={listStyle}>
-            <p className="opacity-50">Liq. Price</p>
-            <p className="font-mono text-right">
-              {formatPriceInfo(liquidationPrice)}
-            </p>
-          </li>
-        </ul>
-
-        <div className="h-[1px] w-full bg-gray-300 rounded" />
-
-        <ul className="flex flex-col gap-2">
-          <li className={listStyle}>
-            <p className="opacity-50">Size</p>
-
-            <p className="font-mono text-right">
-              {formatPriceInfo(position.collateralUsd)}
-            </p>
-          </li>
-          <li className={listStyle}>
-            <p className="opacity-50">Collateral ({position.token.symbol})</p>
-            <p className="flex font-mono text-right">
-              {!input && markPrice
-                ? formatNumber(position.collateralUsd / markPrice, USD_DECIMALS)
-                : null}
-
-              {input && markPrice ? (
+              {input ? (
                 <>
-                  {formatNumber(
-                    position.collateralUsd / markPrice,
-                    USD_DECIMALS,
-                  )}
-                  {
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src="images/arrow-right.svg" alt="arrow right" />
-                  }
-                  {/* TODO: properly account for fees here on final displayed numbers */}
-                  {selectedAction === 'deposit'
-                    ? formatNumber(
-                        position.collateralUsd / markPrice + input,
-                        USD_DECIMALS,
-                      )
-                    : formatNumber(
-                        (position.collateralUsd - input) / markPrice,
-                        USD_DECIMALS,
-                      )}
+                  {rightArrowElement}
+
+                  <div className="flex flex-col">
+                    <div className="flex flex-col items-end">
+                      <div>
+                        <span className="text-sm font-mono">
+                          {updatedInfos
+                            ? formatNumber(
+                                updatedInfos.collateral,
+                                position.collateralToken.decimals,
+                              )
+                            : '-'}{' '}
+                        </span>
+                        <span className="text-sm">
+                          {position.collateralToken.symbol}
+                        </span>
+                      </div>
+
+                      <div className="text-sm text-txtfade font-mono">
+                        {updatedInfos
+                          ? formatPriceInfo(updatedInfos.collateralUsd)
+                          : '-'}
+                      </div>
+                    </div>
+                  </div>
                 </>
               ) : null}
-            </p>
-          </li>
+            </div>
+          </div>
 
-          <li className={listStyle}>
-            <p className="opacity-50">Fees </p>
-            <p className="font-mono text-right">
-              {amountAndFee
-                ? formatPriceInfo(nativeToUi(amountAndFee.fee, USD_DECIMALS))
-                : '-'}
-            </p>
-          </li>
-        </ul>
+          <div className={rowStyle}>
+            <div className="text-txtfade text-sm">Leverage</div>
+            <div className="flex items-center">
+              <div
+                className={twMerge(
+                  'flex font-mono',
+                  input ? 'text-txtfade text-xs' : 'text-sm',
+                )}
+              >
+                {formatNumber(position.leverage, 2)}x
+              </div>
+
+              {input ? (
+                <>
+                  {rightArrowElement}
+
+                  {updatedInfos ? (
+                    updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
+                      <span className="text-sm text-txtfade">Overflow</span>
+                    ) : (
+                      <span className="text-sm font-mono">
+                        {formatNumber(updatedInfos.leverage, 2)}x
+                      </span>
+                    )
+                  ) : (
+                    '-'
+                  )}
+                </>
+              ) : null}
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-txtfade text-sm">Liquidation Price</div>
+            <div className="flex items-center">
+              <div
+                className={twMerge(
+                  'font-mono',
+                  input ? 'text-txtfade text-xs' : 'text-sm',
+                )}
+              >
+                {formatPriceInfo(position.liquidationPrice)}
+              </div>
+
+              {input ? (
+                <>
+                  {rightArrowElement}
+
+                  <div className="text-sm font-mono">
+                    {liquidationPrice !== null
+                      ? formatPriceInfo(liquidationPrice)
+                      : '-'}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
       </div>
 
       <Button
@@ -424,7 +544,7 @@ export default function EditPositionCollateral({
         size="lg"
         title={executeBtnText}
         onClick={() => handleExecute()}
-        disabled={!!overMaxAuthorizedLeverage || !!overMinAuthorizedLeverage}
+        // disabled={!!overMaxAuthorizedLeverage || !!overMinAuthorizedLeverage}
       />
     </div>
   );

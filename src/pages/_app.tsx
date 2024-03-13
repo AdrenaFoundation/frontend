@@ -143,6 +143,8 @@ function AppComponent({ Component, pageProps }: AppProps) {
       return;
     }
 
+    console.log('SET ADRENA PROGRAM');
+
     window.adrena.client.setAdrenaProgram(
       new Program(
         ADRENA_IDL,

@@ -40,6 +40,7 @@ export default function SwapALP({
   const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
+
   const debouncedInputs = useDebounce(
     selectedAction === 'buy' ? collateralInput : alpInput,
     1000,
@@ -259,10 +260,10 @@ export default function SwapALP({
           onCollateralTokenChange={onCollateralTokenChange}
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
-          alpPrice={alpPrice}
-          collateralPrice={collateralPrice}
           setAlpPrice={setAlpPrice}
           setCollateralPrice={setCollateralPrice}
+          alpPrice={alpPrice}
+          collateralPrice={collateralPrice}
         />
 
         <SaveOnFees

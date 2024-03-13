@@ -13,6 +13,7 @@ import {
   SystemProgram,
   TransactionInstruction,
 } from '@solana/web3.js';
+import { BigNumber } from 'bignumber.js';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { toast } from 'react-toastify';
@@ -56,9 +57,14 @@ export function formatPriceInfo(
     return '-';
   }
 
+  if (price == 0) {
+    return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+  }
+
   // If the price is very low, display it as it is, to not display $0
   if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
-    return `$${price}`;
+    // Never go more than 9 decimals
+    return `$${formatNumber(price, 9, displayPlusSymbol)}`;
   }
 
   if (price < 0) {
@@ -80,7 +86,13 @@ export function formatPercentage(
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {
-  return nb.toNumber() / 10 ** decimals;
+  return new BigNumber(nb.toString()).shiftedBy(-decimals).toNumber();
+}
+
+// 10_000 = x1 leverage
+// 500_000 = x50 leverage
+export function uiLeverageToNative(leverage: number): BN {
+  return new BN(Math.floor(leverage * 10_000));
 }
 
 export function uiToNative(nb: number, decimals: number): BN {
@@ -109,7 +121,7 @@ export function addNotification({
       <div className="border-b border-white/10 pb-2 text-sm font-medium font-mono">
         {title}
       </div>
-      <div className="mt-4 text-xs font-mono">{message}</div>
+      <div className="mt-4 text-sm font-mono">{message}</div>
     </div>
   ) : (
     <p className="text-sm font-mono font-medium">{title}</p>

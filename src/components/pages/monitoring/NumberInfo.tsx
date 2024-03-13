@@ -35,7 +35,7 @@ export default function NumberInfo({
       <div>{wholePart}</div>
 
       {Number(fractionalPart) ? (
-        <div className="text-txtfade text-xs">.{fractionalPart}</div>
+        <div className="text-txtfade text-sm">.{fractionalPart}</div>
       ) : null}
 
       {denominationPos === 'suffix' ? (

@@ -82,7 +82,7 @@ class DevnetConfiguration implements IConfiguration {
   // 'https://api.devnet.solana.com';
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '9YWFZGLxTsXUFN613fH5UAeSn38eoycSEEU65rpf4Ljk',
+    '8Hgu4wTyMvdQk9gfXxoEtujfumMMWuPVdMWVrs73qgsa',
   );
 }
 

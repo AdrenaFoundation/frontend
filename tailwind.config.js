@@ -7,7 +7,7 @@ module.exports = {
         // background colors
         // ADRENA Style
         main: '#171717',
-        secondary: '#0c0f13',
+        secondary: '#151923',
         third: '#343232',
         highlight: '#36538f', // RED: #C43152
 
@@ -16,7 +16,7 @@ module.exports = {
         txtregular: '#ffffff',
 
         light: 'var(--color-light)',
-        dark: 'var(--color-dark)',
+        dark: '#0b0e13',
 
         gray: {
           200: 'var(--color-gray-200)',
@@ -38,6 +38,18 @@ module.exports = {
           500: 'var(--color-red-500)',
         },
       },
+      fontSize: {
+        xs: '0.65rem', // Extra Small
+        sm: '0.75rem', // Small
+        base: '0.875rem', // Base
+        lg: '1rem', // Large
+        xl: '1.125rem', // Extra Large
+        '2xl': '1.25rem', // 2 Extra Large
+        '3xl': '1.5rem', // 3 Extra Large
+        '4xl': '1.875rem', // 4 Extra Large
+        '5xl': '2.25rem', // 5 Extra Large
+        '6xl': '2.625rem', // 6 Extra Large
+      },
     },
     font: {
       mono: ['Roboto Mono', 'sans-serif'],
@@ -45,8 +57,8 @@ module.exports = {
 
     fontFamily: {
       regular: ['regular'],
-      thin: ['thin'],
-      bold: ['bold'],
+      txtthin: ['thin'],
+      txtbold: ['bold'],
       mono: 'Roboto Mono',
 
       specialmonster: ['specialmonster'],

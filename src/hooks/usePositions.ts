@@ -19,11 +19,16 @@ const usePositions = (): {
       return;
     }
 
-    setPositions(
-      await window.adrena.client.loadUserPositions(
-        new PublicKey(wallet.walletAddress),
-      ),
-    );
+    try {
+      setPositions(
+        await window.adrena.client.loadUserPositions(
+          new PublicKey(wallet.walletAddress),
+        ),
+      );
+    } catch (e) {
+      console.log('Error loading positions', e, String(e));
+      throw e;
+    }
   }, [wallet]);
 
   useEffect(() => {

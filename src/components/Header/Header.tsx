@@ -77,13 +77,13 @@ export default function Header({
                 </p>
               }
               key={page.name}
-              className="w-fit"
+              openMenuClassName="w-fit"
             >
               <MenuItems>
                 <MenuItem href={'/swap_alp'} linkClassName="group p-2">
                   <div className="flex flex-row gap-2 items-center">
                     <div className="relative flex items-center justify-center p-1 bg-blue-500 border border-transparent rounded-full group-hover:bg-transparent group-hover:border-gray-200 transition-all duration-300 overflow-hidden h-7 w-7">
-                      <p className="absolute text-xs font-specialmonster group-hover:opacity-0 group-hover:translate-y-1 transition-all duration-300">
+                      <p className="absolute text-sm font-specialmonster group-hover:opacity-0 group-hover:translate-y-1 transition-all duration-300">
                         ALP
                       </p>
                       <p className="absolute -translate-y-1 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
@@ -106,7 +106,7 @@ export default function Header({
                 >
                   <div className="flex flex-row gap-2 items-center">
                     <div className="relative flex items-center justify-center p-1 bg-red-500 border border-transparent rounded-full group-hover:bg-transparent group-hover:border-gray-200 transition-all duration-300 overflow-hidden h-7 w-7">
-                      <p className="absolute text-xs font-specialmonster group-hover:opacity-0 group-hover:translate-y-1 transition-all duration-300">
+                      <p className="absolute text-sm font-specialmonster group-hover:opacity-0 group-hover:translate-y-1 transition-all duration-300">
                         ADX
                       </p>
                       <p className="absolute -translate-y-1 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">

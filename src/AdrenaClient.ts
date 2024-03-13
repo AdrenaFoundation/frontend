@@ -39,6 +39,7 @@ import {
   Custody,
   CustodyExtended,
   EditUserProfile,
+  ExitPriceAndFee,
   FinalizeLockedStakeAccounts,
   ImageRef,
   InitUserProfile,
@@ -52,7 +53,6 @@ import {
   PoolExtended,
   Position,
   PositionExtended,
-  PriceAndFee,
   ProfitAndLoss,
   RemoveCollateralAccounts,
   RemoveLiquidityAccounts,
@@ -85,11 +85,6 @@ export class AdrenaClient {
 
   public static perpetualsAddress = PublicKey.findProgramAddressSync(
     [Buffer.from('perpetuals')],
-    AdrenaClient.programId,
-  )[0];
-
-  public static multisigAddress = PublicKey.findProgramAddressSync(
-    [Buffer.from('multisig')],
     AdrenaClient.programId,
   )[0];
 
@@ -558,6 +553,8 @@ export class AdrenaClient {
         maxRatio: ratios.max.toNumber(),
         targetRatio: ratios.target.toNumber(),
         maxLeverage: custody.pricing.maxLeverage / BPS,
+        minInitialLeverage: custody.pricing.minInitialLeverage / BPS,
+        maxInitialLeverage: custody.pricing.maxInitialLeverage / BPS,
         owned: nativeToUi(custody.assets.owned, custody.decimals),
         liquidity: nativeToUi(
           custody.assets.owned.sub(custody.assets.locked),
@@ -873,7 +870,7 @@ export class AdrenaClient {
     price,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
     userProfile,
   }: {
@@ -882,7 +879,7 @@ export class AdrenaClient {
     price: BN;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
     userProfile?: PublicKey;
   }) {
@@ -928,7 +925,7 @@ export class AdrenaClient {
       collateralAmount: collateralAmount.toString(),
       collateralMint: collateralMint.toString(),
       mint: mint.toString(),
-      size: size.toString(),
+      leverage: leverage.toString(),
     });
 
     const accounts: OpenPositionAccounts = {
@@ -965,7 +962,7 @@ export class AdrenaClient {
       .openPosition({
         price: priceWithSlippage,
         collateral: collateralAmount,
-        size,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
@@ -979,7 +976,7 @@ export class AdrenaClient {
     price,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
     userProfile,
   }: {
@@ -988,7 +985,7 @@ export class AdrenaClient {
     price: BN;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
     userProfile?: PublicKey;
   }) {
@@ -1066,7 +1063,7 @@ export class AdrenaClient {
       collateralAmount: collateralAmount.toString(),
       collateralMint: collateralMint.toString(),
       mint: mint.toString(),
-      size: size.toString(),
+      leverage: leverage.toString(),
       userProfile,
     });
 
@@ -1109,7 +1106,7 @@ export class AdrenaClient {
       .openPositionWithSwap({
         price: priceWithSlippage,
         collateral: collateralAmount,
-        size,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
@@ -1292,7 +1289,7 @@ export class AdrenaClient {
     price,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
   }: {
     owner: PublicKey;
@@ -1300,7 +1297,7 @@ export class AdrenaClient {
     price: BN;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
   }): Promise<string> {
     if (!this.connection) {
@@ -1375,7 +1372,7 @@ export class AdrenaClient {
       price,
       collateralMint,
       collateralAmount,
-      size,
+      leverage,
       side,
       userProfile: userProfile ? userProfile.pubkey : undefined,
     })
@@ -1539,16 +1536,14 @@ export class AdrenaClient {
     price,
     // amount of collateralMint token provided as collateral
     collateralAmount,
-    // the amount of tokenB to open a position for
-    // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
-    size,
+    leverage,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
     mint: PublicKey;
     price: BN;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1621,7 +1616,7 @@ export class AdrenaClient {
       price,
       collateralMint,
       collateralAmount,
-      size,
+      leverage,
       side: 'short',
       userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
@@ -1640,23 +1635,28 @@ export class AdrenaClient {
   public async getOpenPositionWithConditionalSwapInfos({
     tokenA,
     tokenB,
-    amountA,
-    amountB,
+    collateralAmount,
+    leverage,
     side,
     tokenPrices,
   }: {
     tokenA: Token;
     tokenB: Token;
-    amountA: BN;
-    amountB: BN;
+    collateralAmount: BN;
+    leverage: BN;
     side: 'long' | 'short';
     tokenPrices: TokenPricesState;
   }): Promise<{
+    collateralUsd: number;
+    sizeUsd: number;
+    size: number;
     swapFeeUsd: number | null;
     openPositionFeeUsd: number;
-    totalFeeUsd: number;
+    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
+    exitFeeUsd: number;
+    liquidationFeeUsd: number;
   }> {
     const usdcToken = this.getUsdcToken();
 
@@ -1671,24 +1671,40 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
-    const collateralAmount: BN = amountA;
+    console.log(
+      'CALL GET INFO',
+      JSON.stringify(
+        {
+          mint: tokenB.mint.toBase58(),
+          collateralMint: tokenA.mint.toBase58(),
+          collateralAmount: collateralAmount.toString(),
+          leverage: leverage.toString(),
+          side,
+        },
+        null,
+        2,
+      ),
+    );
 
     const info = await this.getOpenPositionWithSwapAmountAndFees({
       mint: tokenB.mint,
       collateralMint: tokenA.mint,
       collateralAmount,
-      size: amountB,
+      leverage,
       side,
     });
 
     if (info === null) throw new Error('cannot calculate fees');
 
     const {
+      size: nativeSize,
       entryPrice,
       liquidationPrice,
       swapFeeIn,
       swapFeeOut,
       openPositionFee,
+      exitFee,
+      liquidationFee,
     } = info;
 
     const { swapedTokenDecimals, swapedTokenPrice } =
@@ -1709,11 +1725,28 @@ export class AdrenaClient {
     const openPositionFeeUsd =
       nativeToUi(openPositionFee, tokenB.decimals) * tokenBPrice;
 
+    const exitFeeUsd = nativeToUi(exitFee, tokenB.decimals) * tokenBPrice;
+
+    const liquidationFeeUsd =
+      nativeToUi(liquidationFee, tokenB.decimals) * tokenBPrice;
+
+    const collateralUsd =
+      nativeToUi(collateralAmount, tokenA.decimals) * tokenAPrice;
+
+    const size = nativeToUi(nativeSize, tokenB.decimals);
+
+    const sizeUsd = size * tokenBPrice;
+
     // calculate and return fee amount in usd
     return {
+      collateralUsd,
+      size,
+      sizeUsd,
       swapFeeUsd,
       openPositionFeeUsd,
-      totalFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
+      exitFeeUsd,
+      liquidationFeeUsd,
+      totalOpenPositionFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
       entryPrice: nativeToUi(entryPrice, PRICE_DECIMALS),
       liquidationPrice: nativeToUi(liquidationPrice, PRICE_DECIMALS),
     };
@@ -1737,16 +1770,14 @@ export class AdrenaClient {
     price,
     // amount of collateralMint token provided as collateral
     collateralAmount,
-    // the amount of tokenB to open a position for
-    // if mintB is ETH (6 decimals), if size equals 9000000, will open a long position of 9 ETH
-    size,
+    leverage,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
     mint: PublicKey;
     price: BN;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1807,7 +1838,7 @@ export class AdrenaClient {
       price,
       collateralMint,
       collateralAmount,
-      size,
+      leverage,
       side: 'long',
       userProfile: userProfile ? userProfile.pubkey : undefined,
     }).instruction();
@@ -2897,13 +2928,13 @@ export class AdrenaClient {
     mint,
     collateralMint,
     collateralAmount,
-    size,
+    leverage,
     side,
   }: {
     mint: PublicKey;
     collateralMint: PublicKey;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
     if (!this.readonlyAdrenaProgram.views) {
@@ -2934,8 +2965,8 @@ export class AdrenaClient {
     // Need to do it manually, so we can get the correct amounts
     const instruction = await this.readonlyAdrenaProgram.methods
       .getOpenPositionWithSwapAmountAndFees({
-        collateralAmount: collateralAmount,
-        size,
+        collateralAmount,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
@@ -2963,13 +2994,13 @@ export class AdrenaClient {
     token,
     collateralToken,
     collateralAmount,
-    size,
+    leverage,
     side,
   }: {
     token: Token;
     collateralToken: Token;
     collateralAmount: BN;
-    size: BN;
+    leverage: BN;
     side: 'long' | 'short';
   }): Promise<NewPositionPricesAndFee | null> {
     if (!token.custody || !collateralToken.custody) {
@@ -2988,7 +3019,7 @@ export class AdrenaClient {
     return this.readonlyAdrenaProgram.views.getEntryPriceAndFee(
       {
         collateral: collateralAmount,
-        size,
+        leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
@@ -3011,7 +3042,7 @@ export class AdrenaClient {
     position,
   }: {
     position: PositionExtended;
-  }): Promise<PriceAndFee | null> {
+  }): Promise<ExitPriceAndFee | null> {
     if (!this.readonlyAdrenaProgram.views) {
       return null;
     }
@@ -3020,7 +3051,11 @@ export class AdrenaClient {
       custody.pubkey.equals(position.custody),
     );
 
-    if (!custody) {
+    const collateralCustody = this.custodies.find((custody) =>
+      custody.pubkey.equals(position.collateralCustody),
+    );
+
+    if (!custody || !collateralCustody) {
       throw new Error('Cannot find custody related to position');
     }
 
@@ -3033,9 +3068,9 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
-          collateralCustody: position.custody,
+          collateralCustody: position.collateralCustody,
           collateralCustodyOracleAccount:
-            custody.nativeObject.oracle.oracleAccount,
+            collateralCustody.nativeObject.oracle.oracleAccount,
         },
       },
     );
@@ -3171,8 +3206,14 @@ export class AdrenaClient {
             (token) => token.custody && token.custody.equals(position.custody),
           ) ?? null;
 
+        const collateralToken =
+          this.tokens.find(
+            (token) =>
+              token.custody && token.custody.equals(position.collateralCustody),
+          ) ?? null;
+
         // Ignore position with unknown tokens
-        if (!token) {
+        if (!token || !collateralToken) {
           return acc;
         }
 
@@ -3184,6 +3225,7 @@ export class AdrenaClient {
             owner: position.owner,
             pubkey: possiblePositionAddresses[index],
             token,
+            collateralToken,
             side: Object.keys(position.side)[0] as 'long' | 'short',
             sizeUsd: nativeToUi(position.sizeUsd, 6),
             collateralUsd: nativeToUi(position.collateralUsd, 6),
@@ -3192,6 +3234,8 @@ export class AdrenaClient {
               position.collateralAmount,
               token.decimals,
             ),
+            exitFeeUsd: nativeToUi(position.exitFeeUsd, 6),
+            liquidationFeeUsd: nativeToUi(position.liquidationFeeUsd, 6),
             //
             nativeObject: position,
           },
@@ -3428,6 +3472,10 @@ export class AdrenaClient {
     ];
   }
 
+  public getCustodyByPubkey(custody: PublicKey): CustodyExtended | null {
+    return this.custodies.find((c) => c.pubkey.equals(custody)) ?? null;
+  }
+
   public getCustodyByMint(mint: PublicKey): CustodyExtended {
     const custody = this.custodies.find((custody) => custody.mint.equals(mint));
 
@@ -3442,21 +3490,23 @@ export class AdrenaClient {
     instructions: TransactionInstruction[],
     typeName: string,
   ): Promise<T> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram || !this.readonlyConnection) {
       throw new Error('adrena program not ready');
     }
 
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
+      .wallet;
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
-      recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+      recentBlockhash: (await this.readonlyConnection.getLatestBlockhash())
+        .blockhash,
       instructions,
     }).compileToV0Message();
 
     const versionnedTransaction = new VersionedTransaction(messageV0);
 
-    const result = await this.connection.simulateTransaction(
+    const result = await this.readonlyConnection.simulateTransaction(
       versionnedTransaction,
       {
         sigVerify: false,
@@ -3465,7 +3515,7 @@ export class AdrenaClient {
 
     if (result.value.err) {
       const adrenaError = parseTransactionError(
-        this.adrenaProgram,
+        this.readonlyAdrenaProgram,
         result.value.err,
       );
       throw adrenaError;

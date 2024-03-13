@@ -1,7 +1,6 @@
 import { createRef, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useResize } from '@/hooks/useResize';
 
 export default function TabSelect<T extends string | number>({

@@ -44,7 +44,7 @@ export default function Table({
       {data.map(({ rowTitle, ...v }, i) => (
         <div
           key={i}
-          className="flex w-full border-b last:border-b-0 border-gray-400 text-xs"
+          className="flex w-full border-b last:border-b-0 border-gray-400 text-sm"
         >
           <div
             className="flex shrink-0 items-center"

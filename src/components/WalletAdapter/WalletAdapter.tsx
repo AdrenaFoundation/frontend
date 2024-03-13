@@ -97,7 +97,7 @@ function WalletAdapter({
               }}
             />
           }
-          className="w-[120px] right-0"
+          openMenuClassName="w-[120px] right-0"
         >
           <MenuItems>
             <MenuItem
