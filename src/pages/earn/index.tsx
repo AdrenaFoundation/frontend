@@ -3,7 +3,7 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -16,7 +16,7 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockPeriod, PageProps, StakePositionsExtended } from '@/types';
+import { LockPeriod, PageProps, StakePositionsExtended, Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
@@ -36,6 +36,50 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const alpPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
+
+  const [adxDetails, setAdxDetails] = useState<{
+    token: Token;
+    balance: number | null;
+    totalLiquidStaked: number | null;
+    totalLockedStake: number | null;
+    totalStaked: number | null;
+    totalReedemableStake: number | null;
+    totalLiquidStakedUSD: number | null;
+    totalLockedStakeUSD: number | null;
+    totalReedemableStakeUSD: number | null;
+  }>({
+    token: { ...window.adrena.client.adxToken },
+    balance: null,
+    totalLiquidStaked: null,
+    totalLockedStake: null,
+    totalStaked: null,
+    totalReedemableStake: null,
+    totalLiquidStakedUSD: null,
+    totalLockedStakeUSD: null,
+    totalReedemableStakeUSD: null,
+  });
+
+  const [alpDetails, setAlpDetails] = useState<{
+    token: Token;
+    balance: number | null;
+    totalLiquidStaked: number | null;
+    totalLockedStake: number | null;
+    totalStaked: number | null;
+    totalReedemableStake: number | null;
+    totalLiquidStakedUSD: number | null;
+    totalLockedStakeUSD: number | null;
+    totalReedemableStakeUSD: number | null;
+  }>({
+    token: { ...window.adrena.client.alpToken },
+    balance: null,
+    totalLiquidStaked: null,
+    totalLockedStake: null,
+    totalStaked: null,
+    totalReedemableStake: null,
+    totalLiquidStakedUSD: null,
+    totalLockedStakeUSD: null,
+    totalReedemableStakeUSD: null,
+  });
 
   const { stakingAccounts, triggerWalletStakingAccountsReload } =
     useWalletStakingAccounts();
@@ -191,43 +235,23 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     }
   };
 
-  const getTotalLiquidStaked = (token: 'ADX' | 'ALP') =>
-    stakingAccounts?.[token]?.liquidStake
-      ? nativeToUi(
-          stakingAccounts[token]!.liquidStake.amount,
-          token === 'ALP'
-            ? window.adrena.client.alpToken.decimals
-            : window.adrena.client.adxToken.decimals,
-        )
-      : 0;
+  const getTotalLiquidStaked = useCallback(
+    (token: 'ADX' | 'ALP') =>
+      stakingAccounts?.[token]?.liquidStake
+        ? nativeToUi(
+            stakingAccounts[token]!.liquidStake.amount,
+            token === 'ALP'
+              ? window.adrena.client.alpToken.decimals
+              : window.adrena.client.adxToken.decimals,
+          )
+        : 0,
+    [stakingAccounts],
+  );
 
-  const getTotalLockedStake = (token: 'ADX' | 'ALP') => {
-    return (
-      stakingAccounts?.[token]?.lockedStakes.reduce((acc, stake) => {
-        const val = nativeToUi(
-          stake.amount,
-          token === 'ALP'
-            ? window.adrena.client.alpToken.decimals
-            : window.adrena.client.adxToken.decimals,
-        );
-
-        return acc + val;
-      }, 0) ?? 0
-    );
-  };
-
-  const getTotalStaked = (token: 'ADX' | 'ALP') =>
-    getTotalLiquidStaked(token) + getTotalLockedStake(token);
-
-  const getTotalReedemableLockedStake = (token: 'ADX' | 'ALP') => {
-    return (
-      stakingAccounts?.[token]?.lockedStakes.reduce((acc, stake) => {
-        const daysRemaining = getDaysRemaining(
-          stake.stakeTime,
-          stake.lockDuration,
-        );
-
-        if (daysRemaining <= 0) {
+  const getTotalLockedStake = useCallback(
+    (token: 'ADX' | 'ALP') => {
+      return (
+        stakingAccounts?.[token]?.lockedStakes.reduce((acc, stake) => {
           const val = nativeToUi(
             stake.amount,
             token === 'ALP'
@@ -236,15 +260,50 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
           );
 
           return acc + val;
-        }
-        return acc;
-      }, 0) ?? 0
-    );
-  };
+        }, 0) ?? 0
+      );
+    },
+    [stakingAccounts],
+  );
 
-  const getTotalReedemableStake = (token: 'ADX' | 'ALP') => {
-    return getTotalReedemableLockedStake(token) + getTotalLiquidStaked(token);
-  };
+  const getTotalStaked = useCallback(
+    (token: 'ADX' | 'ALP') =>
+      getTotalLiquidStaked(token) + getTotalLockedStake(token),
+    [getTotalLiquidStaked, getTotalLockedStake],
+  );
+
+  const getTotalReedemableLockedStake = useCallback(
+    (token: 'ADX' | 'ALP') => {
+      return (
+        stakingAccounts?.[token]?.lockedStakes.reduce((acc, stake) => {
+          const daysRemaining = getDaysRemaining(
+            stake.stakeTime,
+            stake.lockDuration,
+          );
+
+          if (daysRemaining <= 0) {
+            const val = nativeToUi(
+              stake.amount,
+              token === 'ALP'
+                ? window.adrena.client.alpToken.decimals
+                : window.adrena.client.adxToken.decimals,
+            );
+
+            return acc + val;
+          }
+          return acc;
+        }, 0) ?? 0
+      );
+    },
+    [stakingAccounts],
+  );
+
+  const getTotalReedemableStake = useCallback(
+    (token: 'ADX' | 'ALP') => {
+      return getTotalReedemableLockedStake(token) + getTotalLiquidStaked(token);
+    },
+    [getTotalLiquidStaked, getTotalReedemableLockedStake],
+  );
 
   const onStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -275,37 +334,50 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     setAmount(Number(value));
   };
 
-  const adxDetails = {
-    token: { ...window.adrena.client.adxToken },
-    balance: adxBalance,
-    totalLiquidStaked: wallet ? getTotalLiquidStaked('ADX') : null,
-    totalLiquidStakedUSD:
-      wallet && adxPrice ? adxPrice * getTotalLiquidStaked('ADX') : null,
-    totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
+  useEffect(() => {
+    setAdxDetails({
+      ...adxDetails,
+      balance: adxBalance,
+      totalLiquidStaked: wallet ? getTotalLiquidStaked('ADX') : null,
+      totalLiquidStakedUSD:
+        wallet && adxPrice ? adxPrice * getTotalLiquidStaked('ADX') : null,
+      totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
 
-    totalLockedStakeUSD:
-      wallet && adxPrice ? adxPrice * getTotalLockedStake('ADX') : null,
-    totalStaked: wallet ? getTotalStaked('ADX') : null,
-    totalReedemableStake: wallet ? getTotalReedemableStake('ADX') : null,
-    totalReedemableStakeUSD:
-      wallet && adxPrice ? adxPrice * getTotalReedemableStake('ADX') : null,
-  };
+      totalLockedStakeUSD:
+        wallet && adxPrice ? adxPrice * getTotalLockedStake('ADX') : null,
+      totalStaked: wallet ? getTotalStaked('ADX') : null,
+      totalReedemableStake: wallet ? getTotalReedemableStake('ADX') : null,
+      totalReedemableStakeUSD:
+        wallet && adxPrice ? adxPrice * getTotalReedemableStake('ADX') : null,
+    });
 
-  const alpDetails = {
-    token: { ...window.adrena.client.alpToken },
-    balance: alpBalance,
-    totalLiquidStaked: wallet ? getTotalLiquidStaked('ALP') : null,
-    totalLiquidStakedUSD:
-      wallet && alpPrice ? alpPrice * getTotalLiquidStaked('ALP') : null,
-    totalLockedStake: wallet ? getTotalLockedStake('ALP') : null,
+    setAlpDetails({
+      ...alpDetails,
+      balance: alpBalance,
+      totalLiquidStaked: wallet ? getTotalLiquidStaked('ALP') : null,
+      totalLiquidStakedUSD:
+        wallet && alpPrice ? alpPrice * getTotalLiquidStaked('ALP') : null,
+      totalLockedStake: wallet ? getTotalLockedStake('ALP') : null,
 
-    totalLockedStakeUSD:
-      wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
-    totalStaked: wallet ? getTotalStaked('ALP') : null,
-    totalReedemableStake: wallet ? getTotalReedemableStake('ALP') : null,
-    totalReedemableStakeUSD:
-      wallet && alpPrice ? alpPrice * getTotalReedemableStake('ALP') : null,
-  };
+      totalLockedStakeUSD:
+        wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
+      totalStaked: wallet ? getTotalStaked('ALP') : null,
+      totalReedemableStake: wallet ? getTotalReedemableStake('ALP') : null,
+      totalReedemableStakeUSD:
+        wallet && alpPrice ? alpPrice * getTotalReedemableStake('ALP') : null,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    adxBalance,
+    adxPrice,
+    alpBalance,
+    alpPrice,
+    getTotalLiquidStaked,
+    getTotalLockedStake,
+    getTotalReedemableStake,
+    getTotalStaked,
+    wallet,
+  ]);
 
   const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
@@ -345,10 +417,12 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       </div>
 
       <h2 className="z-20">Earn</h2>
+
       <p className="z-20">
         Governed by the Adrena community, conferring control and economic reward
         to the collective.
       </p>
+
       <div className="flex flex-col lg:flex-row gap-5 z-20">
         <div className="w-full">
           <div className="flex flex-col lg:flex-row gap-5 mt-8">
@@ -363,6 +437,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               setActiveRedeemToken={setActiveRedeemToken}
             />
           </div>
+
           <div className="flex flex-col gap-3 bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 pb-8 mt-8">
             <div className="flex flex-row gap-2 items-center mb-3">
               <Image src={lockIcon} width={16} height={16} alt="lock icon" />

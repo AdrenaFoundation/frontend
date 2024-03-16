@@ -167,12 +167,17 @@ export default function ClosePosition({
         </div>
 
         <div className={rowStyle}>
-          <div className="text-txtfade text-sm">
-            Collateral ({position.token.symbol})
-          </div>
+          <div className="text-txtfade text-sm">Collateral</div>
 
           <div className="flex text-sm font-mono">
-            {formatNumber(position.collateralUsd, USD_DECIMALS)}
+            {collateralMarkPrice != null
+              ? formatNumber(
+                  position.collateralUsd / collateralMarkPrice,
+                  USD_DECIMALS,
+                )
+              : '-'}
+
+            <span className="ml-1">{position.collateralToken.symbol}</span>
           </div>
         </div>
 

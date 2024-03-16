@@ -42,7 +42,7 @@ export default function StakeOverview({
           <div className="flex flex-row gap-1 items-center opacity-50">
             <Image src={walletIcon} width={16} height={16} alt="wallet" />
             <p className="text-sm font-mono">
-              {tokenDetails.balance
+              {tokenDetails.balance !== null
                 ? `${formatNumber(tokenDetails.balance, 3)} ${
                     tokenDetails.token.symbol
                   }`
@@ -69,6 +69,7 @@ export default function StakeOverview({
             <p className="text-lg font-medium font-mono">
               {tokenDetails.totalLiquidStaked} {tokenDetails.token.symbol}
             </p>
+
             <p className="opacity-50 font-mono overflow-hidden text-ellipsis">
               {formatPriceInfo(tokenDetails.totalLiquidStakedUSD)}
             </p>
