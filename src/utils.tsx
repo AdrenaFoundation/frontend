@@ -63,8 +63,8 @@ export function formatPriceInfo(
 
   // If the price is very low, display it as it is, to not display $0
   if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
-    // Never go more than 9 decimals
-    return `$${formatNumber(price, 9, displayPlusSymbol)}`;
+    // Never go more than 6 decimals
+    return `$${formatNumber(price, 6, displayPlusSymbol)}`;
   }
 
   if (price < 0) {
