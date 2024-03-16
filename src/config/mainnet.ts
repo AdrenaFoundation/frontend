@@ -68,6 +68,8 @@ class MainnetConfiguration implements IConfiguration {
     'C1ockworkPayer11111111111111111111111111111',
   );
 
+  public readonly governanceRealmName = 'AdrenaRealm5';
+
   public readonly mainRPC: string = 'https://api.mainnet-beta.solana.com';
 
   public readonly pythRPC: string = 'https://api.mainnet-beta.solana.com';

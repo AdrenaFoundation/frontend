@@ -188,7 +188,7 @@ export class AdrenaClient {
   )[0];
 
   public governanceRealm = PublicKey.findProgramAddressSync(
-    [Buffer.from('governance'), Buffer.from('AdrenaRealm')],
+    [Buffer.from('governance'), Buffer.from(config.governanceRealmName)],
     config.governanceProgram,
   )[0];
 
@@ -2725,6 +2725,7 @@ export class AdrenaClient {
 
     if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
       console.log('init user reward account');
+
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: rewardTokenAccount,
@@ -2736,6 +2737,7 @@ export class AdrenaClient {
 
     if (!(await isATAInitialized(this.connection, tokenAccount))) {
       console.log('init user staking');
+
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: tokenAccount,
