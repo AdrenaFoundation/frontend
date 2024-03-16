@@ -172,7 +172,12 @@ export default function ClosePosition({
           </div>
 
           <div className="flex text-sm font-mono">
-            {formatNumber(position.collateralUsd, USD_DECIMALS)}
+            {collateralMarkPrice
+              ? formatNumber(
+                  position.collateralUsd / collateralMarkPrice,
+                  USD_DECIMALS,
+                )
+              : '-'}
           </div>
         </div>
 

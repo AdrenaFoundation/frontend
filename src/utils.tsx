@@ -61,17 +61,24 @@ export function formatPriceInfo(
     return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
   }
 
+  let display = '';
+
   // If the price is very low, display it as it is, to not display $0
   if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
     // Never go more than 9 decimals
-    return `$${formatNumber(price, 9, displayPlusSymbol)}`;
+    display = `$${formatNumber(price, 9, displayPlusSymbol)}`;
+  } else if (price < 0) {
+    display = `-$${formatNumber(price * -1, decimals)}`;
+  } else {
+    display = `$${formatNumber(price, decimals, displayPlusSymbol)}`;
   }
 
-  if (price < 0) {
-    return `-$${formatNumber(price * -1, decimals)}`;
+  if (displayPlusSymbol && price > 0) {
+    display = display.replace('+', '');
+    display = `+${display}`;
   }
 
-  return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+  return display;
 }
 
 export function formatPercentage(
@@ -129,11 +136,11 @@ export function addNotification({
 
   toast[type](content, {
     position,
-    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration],
+    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
     hideProgressBar: true,
     closeOnClick: true,
     pauseOnHover: true,
-    draggable: true,
+    draggable: false,
     progress: undefined,
     theme: 'colored',
     icon: false,
