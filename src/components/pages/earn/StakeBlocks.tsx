@@ -73,7 +73,7 @@ export default function StakeBlocks({
                     nativeToUi(amount, window.adrena.client.adxToken.decimals),
                     2,
                   )}{' '}
-                  ADX
+                  {tokenSymbol}
                 </p>
               </li>
 

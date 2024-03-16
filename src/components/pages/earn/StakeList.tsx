@@ -99,7 +99,7 @@ export default function StakeList({
                     nativeToUi(amount, window.adrena.client.adxToken.decimals),
                     2,
                   )}{' '}
-                  ADX
+                  {tokenSymbol}
                 </td>
 
                 <td className="py-5 text-sm font-mono">
