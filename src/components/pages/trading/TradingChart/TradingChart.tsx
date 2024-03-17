@@ -44,7 +44,7 @@ export default function TradingChart({ token }: { token: Token }) {
           symbol: `Crypto.${token.symbol}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#0b0e13',
+          toolbar_bg: '#0a0e13',
           datafeed,
           loading_screen: {
             backgroundColor: '#101419',
@@ -91,7 +91,7 @@ export default function TradingChart({ token }: { token: Token }) {
           custom_css_url: '/tradingview.css',
           overrides: {
             // Adapt colors
-            'paneProperties.background': '#0b0e13',
+            'paneProperties.background': '#0a0e13',
             'paneProperties.backgroundType': 'solid',
             // Hides the legend
             'paneProperties.legendProperties.showStudyArguments': false,
@@ -181,7 +181,7 @@ export default function TradingChart({ token }: { token: Token }) {
             .setPrice(position.price)
             .setLineColor(position.side === 'long' ? '#1d8c46' : '#ac302f')
             .setQuantityBackgroundColor(
-              position.side === 'long' ? '#1d8c46B0' : '#ac302fB0',
+              position.side === 'long' ? '#1d8c46a0' : '#ac302fa0',
             )
             .setQuantityBorderColor(
               position.side === 'long' ? '#22c55e' : '#c83a38',
@@ -190,7 +190,7 @@ export default function TradingChart({ token }: { token: Token }) {
               position.side === 'long' ? '#22c55e' : '#c83a38',
             )
             .setBodyBackgroundColor(
-              position.side === 'long' ? '#1d8c46B0' : '#ac302fB0',
+              position.side === 'long' ? '#1d8c46a0' : '#ac302fa0',
             )
             .setBodyTextColor('#ffffff'),
         );
@@ -211,10 +211,10 @@ export default function TradingChart({ token }: { token: Token }) {
               .setQuantity(formatPriceInfo(position.liquidationPrice))
               .setPrice(position.liquidationPrice)
               .setLineColor(position.side === 'long' ? '#656565' : '#656565')
-              .setQuantityBackgroundColor('#656565B0')
+              .setQuantityBackgroundColor('#656565a0')
               .setQuantityBorderColor('#939393')
               .setBodyBorderColor('#939393')
-              .setBodyBackgroundColor('#656565B0')
+              .setBodyBackgroundColor('#656565a0')
               .setBodyTextColor('#ffffff'),
           );
       });
