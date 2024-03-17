@@ -1,18 +1,13 @@
-import { PublicKey } from '@solana/web3.js';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import usePositions from '@/hooks/usePositions';
-import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import { useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { Token } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import {
   IChartingLibraryWidget,
   IChartWidgetApi,
-  IDatafeedChartApi,
-  IDatafeedQuotesApi,
-  IExternalDatafeed,
   IPositionLineAdapter,
   ResolutionString,
 } from '../../../../../public/charting_library/charting_library';
@@ -25,20 +20,14 @@ type Widget = IChartingLibraryWidget;
 export default function TradingChart({ token }: { token: Token }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
-  const [widgetReady, setWidgetReady] = useState<boolean>(false);
-  const [chartPositions, setChartPositions] = useState<
-    [
-      PublicKey,
-      {
-        entryPrice: IPositionLineAdapter;
-        liquidationPrice: IPositionLineAdapter | null;
-      },
-    ][]
-  >([]);
+
+  const [positionLines, setPositionLines] = useState<IPositionLineAdapter[]>(
+    [],
+  );
 
   const tokenPrice = useSelector((s) => s.tokenPrices[token.symbol]) ?? null;
 
-  const { positions, triggerPositionsReload } = usePositions();
+  const { positions } = usePositions();
 
   useEffect(() => {
     function createWidget() {
@@ -111,6 +100,9 @@ export default function TradingChart({ token }: { token: Token }) {
             'paneProperties.legendProperties.showSeriesTitle': false,
             'paneProperties.legendProperties.showBarChange': false,
             'paneProperties.legendProperties.showSeriesOHLC': true,
+
+            // Last price line
+            'mainSeriesProperties.priceLineColor': 'yellow',
           },
           theme: 'Dark',
           interval: 'D' as ResolutionString,
@@ -120,7 +112,6 @@ export default function TradingChart({ token }: { token: Token }) {
         console.log('window.TradingView', window.TradingView);
 
         setWidget(widget);
-        setWidgetReady(true);
       }
     }
 
@@ -142,8 +133,7 @@ export default function TradingChart({ token }: { token: Token }) {
 
     return () => {
       // Reset charts positions
-      setWidgetReady(false);
-      setChartPositions([]);
+      setPositionLines([]);
       onLoadScriptRef.current = null;
     };
 
@@ -151,113 +141,89 @@ export default function TradingChart({ token }: { token: Token }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // useEffect(() => {
-  //   if (!widget) return;
+  useEffect(() => {
+    // tricks to make sure the widget is ready, otherwise it crashed when calling .chart());
+    if (!widget || !(widget as unknown as { _ready: boolean })._ready) return;
 
-  //   widget.options.symbol = `Bitfinex:${token.symbol}USD`;
+    const chart: IChartWidgetApi = widget.chart();
 
-  //   widget.reload();
-  // }, [token, widget]);
+    // Remove everything
+    positionLines.forEach((positionLine) => {
+      positionLine.remove();
+    });
 
-  // useEffect(() => {
-  //   try {
-  //     if (!widgetReady || !widget || typeof widget.chart !== 'function') return;
+    const newPositionLines: IPositionLineAdapter[] = [];
 
-  //     const chart: IChartWidgetApi = widget.chart();
+    if (positions) {
+      positions.forEach((position) => {
+        // Ignore positions about different pairs
+        if (position.token.symbol !== token.symbol) {
+          return;
+        }
 
-  //     //
-  //     // Delete all and recreate
-  //     // Not optimized, but otherwise, sometimes it doesn't show up
-  //     //
-  //     Object.values(chartPositions).map(([, positionLine]) => {
-  //       try {
-  //         positionLine.entryPrice.remove();
-  //         positionLine.liquidationPrice?.remove();
-  //       } catch (e) {
-  //         console.log(e);
-  //         // ignore error due to position not existing anymore on the chart
-  //         // could be because user changed of pair
-  //       }
-  //     });
+        const liquidationToken =
+          position.liquidationPrice !== null &&
+          typeof position.liquidationPrice !== 'undefined' &&
+          tokenPrice !== null
+            ? position.liquidationPrice / tokenPrice
+            : null;
 
-  //     if (!chart) {
-  //       setChartPositions([]);
-  //       return;
-  //     }
+        newPositionLines.push(
+          chart
+            .createPositionLine({})
+            .setText(
+              `${token.symbol} ${
+                position.side === 'long' ? 'Long' : 'Short'
+              } Entry Price`,
+            )
+            .setLineLength(3)
+            .setQuantity(formatPriceInfo(position.sizeUsd))
+            .setPrice(position.price)
+            .setLineColor(position.side === 'long' ? '#1d8c46' : '#ac302f')
+            .setQuantityBackgroundColor(
+              position.side === 'long' ? '#1d8c46B0' : '#ac302fB0',
+            )
+            .setQuantityBorderColor(
+              position.side === 'long' ? '#22c55e' : '#c83a38',
+            )
+            .setBodyBorderColor(
+              position.side === 'long' ? '#22c55e' : '#c83a38',
+            )
+            .setBodyBackgroundColor(
+              position.side === 'long' ? '#1d8c46B0' : '#ac302fB0',
+            )
+            .setBodyTextColor('#ffffff'),
+        );
 
-  //     console.log('positions', positions);
+        if (
+          liquidationToken !== null &&
+          typeof position.liquidationPrice !== 'undefined'
+        )
+          newPositionLines.push(
+            chart
+              .createPositionLine({})
+              .setText(
+                `${token.symbol} ${
+                  position.side === 'long' ? 'Long' : 'Short'
+                } Liquidation Price`,
+              )
+              .setLineLength(3)
+              .setQuantity(formatPriceInfo(position.liquidationPrice))
+              .setPrice(position.liquidationPrice)
+              .setLineColor(position.side === 'long' ? '#656565' : '#656565')
+              .setQuantityBackgroundColor('#656565B0')
+              .setQuantityBorderColor('#939393')
+              .setBodyBorderColor('#939393')
+              .setBodyBackgroundColor('#656565B0')
+              .setBodyTextColor('#ffffff'),
+          );
+      });
+    }
 
-  //     const updatedChartPositions: [
-  //       PublicKey,
-  //       {
-  //         entryPrice: IPositionLineAdapter;
-  //         liquidationPrice: IPositionLineAdapter | null;
-  //       },
-  //     ][] = [];
+    setPositionLines(newPositionLines);
 
-  //     if (positions) {
-  //       positions.forEach((position) => {
-  //         // Ignore positions about different pairs
-  //         if (position.token.symbol !== token.symbol) {
-  //           console.log('position wrong symbol');
-  //           return;
-  //         }
-
-  //         // Calculate liquidation price in asset
-  //         const liquidationToken =
-  //           position.liquidationPrice !== null &&
-  //           typeof position.liquidationPrice !== 'undefined' &&
-  //           tokenPrice !== null
-  //             ? position.liquidationPrice / tokenPrice
-  //             : null;
-
-  //         // Add position
-  //         console.log('add position', position.pubkey);
-
-  //         console.log('liquidationToken', liquidationToken);
-
-  //         updatedChartPositions.push([
-  //           position.pubkey,
-  //           {
-  //             entryPrice: chart
-  //               .createPositionLine({})
-  //               .setText(`${token.symbol} ${position.side} Entry Price`)
-  //               .setLineLength(3)
-  //               .setQuantity(formatPriceInfo(position.sizeUsd))
-  //               .setPrice(position.price)
-  //               .setLineColor(position.side === 'long' ? 'green' : 'red'),
-  //             liquidationPrice:
-  //               typeof position.liquidationPrice !== 'undefined'
-  //                 ? chart
-  //                     .createPositionLine({})
-  //                     .setText(
-  //                       `${token.symbol} ${position.side} Liquidation Price`,
-  //                     )
-  //                     .setLineLength(3)
-  //                     .setQuantity(formatPriceInfo(position.liquidationPrice))
-  //                     .setPrice(position.liquidationPrice)
-  //                     .setLineColor(position.side === 'long' ? 'gray' : 'gray')
-  //                 : null,
-  //           },
-  //         ]);
-  //       });
-  //     }
-
-  //     setChartPositions(updatedChartPositions);
-
-  //     // const highPositionLine = widget.chart().createPositionLine({});
-  //     // highPositionLine
-  //     //   .setText('MY POSITION')
-  //     //   .setQuantity('500')
-  //     //   .setLineLength(3)
-  //     //   .setPrice(3200)
-  //     //   .setLineColor('yellow');
-  //   } catch (e) {
-  //     // Ignore error, will retry automatically
-  //     // Can happens when something happens to the chart
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [widgetReady, positions, tokenPrice, widget, token.symbol]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positions, token.symbol, tokenPrice, widget]);
 
   return (
     <div className="flex flex-col w-full mb-5 border border-gray-200 rounded-2xl rounded-t-none overflow-hidden bg-gray-200/85 backdrop-blur-md">
