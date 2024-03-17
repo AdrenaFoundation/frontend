@@ -182,9 +182,11 @@ export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
 export type UserProfile = Accounts['userProfile'];
 
-type StakePositionsExtended = UserStaking['lockedStakes'][0] & {
+export type LockedStake = UserStaking['lockedStakes'][0];
+
+export type LockedStakeExtended = UserStaking['lockedStakes'][0] & {
+  index: number;
   tokenSymbol: 'ADX' | 'ALP';
-  lockedStakeIndex: number;
 };
 
 //
@@ -278,6 +280,7 @@ export type FinalizeLockedStakeAccounts =
 export type InitUserStakingAccounts = ExtractAccounts<'initUserStaking'>;
 export type AddLiquidityAccounts = ExtractAccounts<'addLiquidity'>;
 export type RemoveLiquidityAccounts = ExtractAccounts<'removeLiquidity'>;
+export type ClaimStakesAccounts = ExtractAccounts<'claimStakes'>;
 
 //
 // Program

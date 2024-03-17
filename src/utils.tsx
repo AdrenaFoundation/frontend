@@ -423,6 +423,45 @@ export function getDaysRemaining(startDate: BN, totalDays: BN) {
   return daysRemaining;
 }
 
+export function formatMilliseconds(milliseconds: number): string {
+  const seconds = Math.floor((milliseconds / 1000) % 60);
+  const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+  const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
+
+  let formatted = '';
+
+  if (days) {
+    formatted = `${days}d`;
+  }
+
+  if (hours || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${hours}h`;
+  }
+
+  if (minutes || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${minutes}m`;
+  }
+
+  if (seconds || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${seconds}s`;
+  }
+
+  return formatted;
+}
+
+// in milliseconds
+export function getLockedStakeRemainingTime(
+  startDate: BN,
+  lockDuration: BN, // in seconds
+): number {
+  const start = new Date(startDate.toNumber() * 1000).getTime();
+
+  const endDate = start + lockDuration.toNumber() * 1000;
+
+  return endDate - Date.now();
+}
+
 // i.e percentage = -2 (for -2%)
 // i.e percentage = 5 (for 5%)
 export function applySlippage(nb: BN, percentage: number): BN {
