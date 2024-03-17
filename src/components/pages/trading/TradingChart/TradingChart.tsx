@@ -83,25 +83,34 @@ export default function TradingChart({ token }: { token: Token }) {
             'display_market_status',
             'create_volume_indicator_by_default',
             'header_undo_redo',
+            'symbol_info',
+            'symbol_info_long_description',
+            'symbol_info_price_source',
           ],
 
-          // TODO:
-          // - Rewrite last price indicator css
-          // - Set favorites for resolutions
-          // - Disable volume
           enabled_features: [
             'header_fullscreen_button',
             'hide_left_toolbar_by_default',
             'header_saveload',
             'header_screenshot',
             'header_settings',
+
+            // Favorite times are displayed in the top of the chart
             'items_favoriting',
           ],
 
           custom_css_url: '/tradingview.css',
           overrides: {
+            // Adapt colors
             'paneProperties.background': '#0b0e13',
             'paneProperties.backgroundType': 'solid',
+            // Hides the legend
+            'paneProperties.legendProperties.showStudyArguments': false,
+            'paneProperties.legendProperties.showStudyTitles': false,
+            'paneProperties.legendProperties.showStudyValues': false,
+            'paneProperties.legendProperties.showSeriesTitle': false,
+            'paneProperties.legendProperties.showBarChange': false,
+            'paneProperties.legendProperties.showSeriesOHLC': true,
           },
           theme: 'Dark',
           interval: 'D' as ResolutionString,
