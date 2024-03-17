@@ -110,7 +110,7 @@ export class AdrenaClient {
 
   public alpToken: Token = {
     mint: this.lpTokenMint,
-    name: 'Adrena LP Token',
+    name: 'The Pool Token',
     symbol: 'ALP',
     decimals: 6,
     isStable: false,
@@ -119,7 +119,7 @@ export class AdrenaClient {
 
   public adxToken: Token = {
     mint: this.lmTokenMint,
-    name: 'Adrena LM Token',
+    name: 'The Governance Token',
     symbol: 'ADX',
     decimals: 6,
     isStable: false,
@@ -188,7 +188,7 @@ export class AdrenaClient {
   )[0];
 
   public governanceRealm = PublicKey.findProgramAddressSync(
-    [Buffer.from('governance'), Buffer.from('AdrenaRealm')],
+    [Buffer.from('governance'), Buffer.from(config.governanceRealmName)],
     config.governanceProgram,
   )[0];
 
@@ -1251,17 +1251,19 @@ export class AdrenaClient {
       );
     }
 
-    // fix
-    const receivingAccount = findATAAddressSync(owner, mintB);
+    // Create the receiving ATA except if WSOL as we are already creating it
+    if (!mintB.equals(NATIVE_MINT)) {
+      const receivingAccount = findATAAddressSync(owner, mintB);
 
-    if (!(await isATAInitialized(this.connection, receivingAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: receivingAccount,
-          mint: mintB,
-          owner,
-        }),
-      );
+      if (!(await isATAInitialized(this.connection, receivingAccount))) {
+        preInstructions.push(
+          this.createATAInstruction({
+            ataAddress: receivingAccount,
+            mint: mintB,
+            owner,
+          }),
+        );
+      }
     }
 
     const userProfile = await this.loadUserProfile();
@@ -1272,108 +1274,6 @@ export class AdrenaClient {
       minAmountOut,
       mintA,
       mintB,
-      userProfile: userProfile ? userProfile.pubkey : undefined,
-    })
-      .preInstructions(preInstructions)
-      .postInstructions(postInstructions)
-      .transaction();
-
-    return this.signAndExecuteTx(transaction);
-  }
-
-  // When shorting, collateralMint should be a stable token
-  // When longing, collateralMint should be the same as the mint
-  public async openPosition({
-    owner,
-    mint,
-    price,
-    collateralMint,
-    collateralAmount,
-    leverage,
-    side,
-  }: {
-    owner: PublicKey;
-    mint: PublicKey;
-    price: BN;
-    collateralMint: PublicKey;
-    collateralAmount: BN;
-    leverage: BN;
-    side: 'long' | 'short';
-  }): Promise<string> {
-    if (!this.connection) {
-      throw new Error('not connected');
-    }
-
-    if (side === 'long' && !mint.equals(collateralMint)) {
-      throw new Error(
-        'Opening a long position requires collateralMint and mint to be the same',
-      );
-    }
-
-    if (side === 'short' && !this.isTokenStable(collateralMint)) {
-      throw new Error(
-        'Opening a short position requires collateralMint to be a stable token',
-      );
-    }
-
-    const preInstructions: TransactionInstruction[] = [];
-    const postInstructions: TransactionInstruction[] = [];
-
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 500_000,
-    });
-
-    preInstructions.push(modifyComputeUnitsIx);
-
-    if (collateralMint.equals(NATIVE_MINT)) {
-      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
-
-      // Make sure there are enough WSOL available in WSOL ATA
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          // TODO: provide just enough
-          // 10% pre-provided
-          // openPosition makes users to pay fees on top of added collateral
-          // fees have to be paid in WSOL, so WSOL ATA needs to have enough for
-          // both added collateral + fees
-          amount: new BN(Math.ceil(collateralAmount.toNumber() * 1.1)),
-          connection: this.connection,
-          owner,
-          wsolATA,
-        })),
-      );
-
-      // Close the WSOL account after all done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA,
-          owner,
-        }),
-      );
-    }
-
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
-
-    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: lmTokenAccount,
-          mint: this.lmTokenMint,
-          owner,
-        }),
-      );
-    }
-
-    const userProfile = await this.loadUserProfile();
-
-    const transaction = await this.buildOpenPositionTx({
-      owner,
-      mint,
-      price,
-      collateralMint,
-      collateralAmount,
-      leverage,
-      side,
       userProfile: userProfile ? userProfile.pubkey : undefined,
     })
       .preInstructions(preInstructions)
@@ -1818,16 +1718,19 @@ export class AdrenaClient {
       );
     }
 
-    const mintATA = findATAAddressSync(owner, mint);
+    // Create ATA if it doesn't exist yet except for WSOL as we are already creating it
+    if (!mint.equals(NATIVE_MINT)) {
+      const mintATA = findATAAddressSync(owner, mint);
 
-    if (!(await isATAInitialized(this.connection, mintATA))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: mintATA,
-          mint,
-          owner,
-        }),
-      );
+      if (!(await isATAInitialized(this.connection, mintATA))) {
+        preInstructions.push(
+          this.createATAInstruction({
+            ataAddress: mintATA,
+            mint,
+            owner,
+          }),
+        );
+      }
     }
 
     const userProfile = await this.loadUserProfile();
@@ -2822,6 +2725,7 @@ export class AdrenaClient {
 
     if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
       console.log('init user reward account');
+
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: rewardTokenAccount,
@@ -2833,6 +2737,7 @@ export class AdrenaClient {
 
     if (!(await isATAInitialized(this.connection, tokenAccount))) {
       console.log('init user staking');
+
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: tokenAccount,
@@ -3227,15 +3132,18 @@ export class AdrenaClient {
             token,
             collateralToken,
             side: Object.keys(position.side)[0] as 'long' | 'short',
-            sizeUsd: nativeToUi(position.sizeUsd, 6),
-            collateralUsd: nativeToUi(position.collateralUsd, 6),
-            price: nativeToUi(position.price, 6),
+            sizeUsd: nativeToUi(position.sizeUsd, USD_DECIMALS),
+            collateralUsd: nativeToUi(position.collateralUsd, USD_DECIMALS),
+            price: nativeToUi(position.price, USD_DECIMALS),
             collateralAmount: nativeToUi(
               position.collateralAmount,
-              token.decimals,
+              collateralToken.decimals,
             ),
-            exitFeeUsd: nativeToUi(position.exitFeeUsd, 6),
-            liquidationFeeUsd: nativeToUi(position.liquidationFeeUsd, 6),
+            exitFeeUsd: nativeToUi(position.exitFeeUsd, USD_DECIMALS),
+            liquidationFeeUsd: nativeToUi(
+              position.liquidationFeeUsd,
+              USD_DECIMALS,
+            ),
             //
             nativeObject: position,
           },

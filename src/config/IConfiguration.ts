@@ -21,6 +21,8 @@ export default interface IConfiguration {
   readonly clockworkProgram: PublicKey;
   readonly stakesClaimPayer: PublicKey;
 
+  readonly governanceRealmName: string;
+
   readonly mainRPC: string;
   readonly pythRPC: string;
 

@@ -3,13 +3,18 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
+import ADXStakeOverview, {
+  ADXTokenDetails,
+} from '@/components/pages/earn/ADXStakeOverview';
+import ALPStakeOverview, {
+  ALPTokenDetails,
+} from '@/components/pages/earn/ALPStakeOverview';
 import StakeBlocks from '@/components/pages/earn/StakeBlocks';
 import StakeList from '@/components/pages/earn/StakeList';
-import StakeOverview from '@/components/pages/earn/StakeOverview';
 import StakeRedeem from '@/components/pages/earn/StakeRedeem';
 import StakeToken from '@/components/pages/earn/StakeToken';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
@@ -37,6 +42,25 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
 
+  const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
+    balance: null,
+    totalLiquidStaked: null,
+    totalLockedStake: null,
+    totalStaked: null,
+    totalRedeemableStake: null,
+    totalLiquidStakedUSD: null,
+    totalLockedStakeUSD: null,
+    totalRedeemableStakeUSD: null,
+  });
+
+  const [alpDetails, setAlpDetails] = useState<ALPTokenDetails>({
+    balance: null,
+    totalLockedStake: null,
+    totalRedeemableStake: null,
+    totalLockedStakeUSD: null,
+    totalRedeemableStakeUSD: null,
+  });
+
   const { stakingAccounts, triggerWalletStakingAccountsReload } =
     useWalletStakingAccounts();
 
@@ -44,9 +68,8 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     'ADX' | 'ALP' | null
   >(null);
 
-  const [activeRedeemToken, setActiveRedeemToken] = useState<
-    'ADX' | 'ALP' | null
-  >(null);
+  const [activeRedeemLiquidADX, setActiveRedeemLiquidADX] =
+    useState<boolean>(false);
 
   const [lockPeriod, setLockPeriod] = useState<LockPeriod>(0);
 
@@ -114,18 +137,15 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     }
   };
 
-  const handleRemoveLiquidStake = async (amount: number) => {
+  const handleRemoveADXLiquidStake = async (amount: number) => {
     if (!owner) {
       toast.error('Please connect your wallet');
       return;
     }
 
-    if (!activeRedeemToken) return;
+    if (!activeRedeemLiquidADX) return;
 
-    const stakedTokenMint =
-      activeRedeemToken === 'ADX'
-        ? window.adrena.client.adxToken.mint
-        : window.adrena.client.alpToken.mint;
+    const stakedTokenMint = window.adrena.client.adxToken.mint;
 
     try {
       const txHash = await window.adrena.client.removeLiquidStake({
@@ -141,7 +161,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
-      setActiveRedeemToken(null);
+      setActiveRedeemLiquidADX(false);
     } catch (error) {
       return addFailedTxNotification({
         title: 'Error Removing Liquid Stake',
@@ -182,7 +202,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
-      setActiveRedeemToken(null);
+      setActiveRedeemLiquidADX(false);
     } catch (error) {
       return addFailedTxNotification({
         title: 'Error Removing Liquid Stake',
@@ -191,60 +211,86 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     }
   };
 
-  const getTotalLiquidStaked = (token: 'ADX' | 'ALP') =>
-    stakingAccounts?.[token]?.liquidStake
-      ? nativeToUi(
-          stakingAccounts[token]!.liquidStake.amount,
-          token === 'ALP'
-            ? window.adrena.client.alpToken.decimals
-            : window.adrena.client.adxToken.decimals,
-        )
-      : 0;
+  const getTotalADXLiquidStaked = useCallback(() => {
+    if (!stakingAccounts || !stakingAccounts.ADX) return 0;
 
-  const getTotalLockedStake = (token: 'ADX' | 'ALP') => {
-    return (
-      stakingAccounts?.[token]?.lockedStakes.reduce((acc, stake) => {
-        const val = nativeToUi(
-          stake.amount,
-          token === 'ALP'
-            ? window.adrena.client.alpToken.decimals
-            : window.adrena.client.adxToken.decimals,
-        );
-
-        return acc + val;
-      }, 0) ?? 0
+    return nativeToUi(
+      stakingAccounts.ADX.liquidStake.amount,
+      window.adrena.client.adxToken.decimals,
     );
-  };
+  }, [stakingAccounts]);
 
-  const getTotalStaked = (token: 'ADX' | 'ALP') =>
-    getTotalLiquidStaked(token) + getTotalLockedStake(token);
+  const getTotalLockedStake = useCallback(
+    (token: 'ADX' | 'ALP') => {
+      if (!stakingAccounts) return 0;
 
-  const getTotalReedemableLockedStake = (token: 'ADX' | 'ALP') => {
-    return (
-      stakingAccounts?.[token]?.lockedStakes.reduce((acc, stake) => {
-        const daysRemaining = getDaysRemaining(
-          stake.stakeTime,
-          stake.lockDuration,
-        );
+      const tokenObj = stakingAccounts[token];
+      if (!tokenObj) return 0;
 
-        if (daysRemaining <= 0) {
-          const val = nativeToUi(
-            stake.amount,
-            token === 'ALP'
-              ? window.adrena.client.alpToken.decimals
-              : window.adrena.client.adxToken.decimals,
+      const decimals =
+        token === 'ALP'
+          ? window.adrena.client.alpToken.decimals
+          : window.adrena.client.adxToken.decimals;
+
+      return tokenObj.lockedStakes.reduce(
+        (acc, stake) => acc + nativeToUi(stake.amount, decimals),
+        0,
+      );
+    },
+    [stakingAccounts],
+  );
+
+  const getTotalStaked = useCallback(
+    (token: 'ADX' | 'ALP') => {
+      if (token === 'ADX') {
+        return getTotalADXLiquidStaked() + getTotalLockedStake(token);
+      }
+
+      return getTotalLockedStake(token);
+    },
+    [getTotalADXLiquidStaked, getTotalLockedStake],
+  );
+
+  const getTotalRedeemableLockedStake = useCallback(
+    (token: 'ADX' | 'ALP') => {
+      if (!stakingAccounts) return 0;
+
+      const tokenObj = stakingAccounts[token];
+      if (!tokenObj) return 0;
+
+      const decimals =
+        token === 'ALP'
+          ? window.adrena.client.alpToken.decimals
+          : window.adrena.client.adxToken.decimals;
+
+      return (
+        tokenObj.lockedStakes.reduce((acc, stake) => {
+          const daysRemaining = getDaysRemaining(
+            stake.stakeTime,
+            stake.lockDuration,
           );
 
-          return acc + val;
-        }
-        return acc;
-      }, 0) ?? 0
-    );
-  };
+          if (daysRemaining <= 0) {
+            return acc + nativeToUi(stake.amount, decimals);
+          }
 
-  const getTotalReedemableStake = (token: 'ADX' | 'ALP') => {
-    return getTotalReedemableLockedStake(token) + getTotalLiquidStaked(token);
-  };
+          return acc;
+        }, 0) ?? 0
+      );
+    },
+    [stakingAccounts],
+  );
+
+  const getTotalRedeemableStake = useCallback(
+    (token: 'ADX' | 'ALP') => {
+      if (token === 'ADX') {
+        return getTotalADXLiquidStaked() + getTotalRedeemableLockedStake(token);
+      }
+
+      return getTotalRedeemableLockedStake(token);
+    },
+    [getTotalADXLiquidStaked, getTotalRedeemableLockedStake],
+  );
 
   const onStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -275,37 +321,43 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     setAmount(Number(value));
   };
 
-  const adxDetails = {
-    token: { ...window.adrena.client.adxToken },
-    balance: adxBalance,
-    totalLiquidStaked: wallet ? getTotalLiquidStaked('ADX') : null,
-    totalLiquidStakedUSD:
-      wallet && adxPrice ? adxPrice * getTotalLiquidStaked('ADX') : null,
-    totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
+  useEffect(() => {
+    setAdxDetails({
+      balance: adxBalance,
+      totalLiquidStaked: wallet ? getTotalADXLiquidStaked() : null,
+      totalLiquidStakedUSD:
+        wallet && adxPrice ? adxPrice * getTotalADXLiquidStaked() : null,
+      totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
 
-    totalLockedStakeUSD:
-      wallet && adxPrice ? adxPrice * getTotalLockedStake('ADX') : null,
-    totalStaked: wallet ? getTotalStaked('ADX') : null,
-    totalReedemableStake: wallet ? getTotalReedemableStake('ADX') : null,
-    totalReedemableStakeUSD:
-      wallet && adxPrice ? adxPrice * getTotalReedemableStake('ADX') : null,
-  };
+      totalLockedStakeUSD:
+        wallet && adxPrice ? adxPrice * getTotalLockedStake('ADX') : null,
+      totalStaked: wallet ? getTotalStaked('ADX') : null,
+      totalRedeemableStake: wallet ? getTotalRedeemableStake('ADX') : null,
+      totalRedeemableStakeUSD:
+        wallet && adxPrice ? adxPrice * getTotalRedeemableStake('ADX') : null,
+    });
 
-  const alpDetails = {
-    token: { ...window.adrena.client.alpToken },
-    balance: alpBalance,
-    totalLiquidStaked: wallet ? getTotalLiquidStaked('ALP') : null,
-    totalLiquidStakedUSD:
-      wallet && alpPrice ? alpPrice * getTotalLiquidStaked('ALP') : null,
-    totalLockedStake: wallet ? getTotalLockedStake('ALP') : null,
-
-    totalLockedStakeUSD:
-      wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
-    totalStaked: wallet ? getTotalStaked('ALP') : null,
-    totalReedemableStake: wallet ? getTotalReedemableStake('ALP') : null,
-    totalReedemableStakeUSD:
-      wallet && alpPrice ? alpPrice * getTotalReedemableStake('ALP') : null,
-  };
+    setAlpDetails({
+      balance: alpBalance,
+      totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
+      totalLockedStakeUSD:
+        wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
+      totalRedeemableStake: wallet ? getTotalRedeemableStake('ALP') : null,
+      totalRedeemableStakeUSD:
+        wallet && alpPrice ? alpPrice * getTotalRedeemableStake('ALP') : null,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    adxBalance,
+    adxPrice,
+    alpBalance,
+    alpPrice,
+    getTotalADXLiquidStaked,
+    getTotalLockedStake,
+    getTotalRedeemableStake,
+    getTotalStaked,
+    wallet,
+  ]);
 
   const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
 
@@ -345,24 +397,26 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       </div>
 
       <h2 className="z-20">Earn</h2>
+
       <p className="z-20">
         Governed by the Adrena community, conferring control and economic reward
         to the collective.
       </p>
+
       <div className="flex flex-col lg:flex-row gap-5 z-20">
         <div className="w-full">
           <div className="flex flex-col lg:flex-row gap-5 mt-8">
-            <StakeOverview
+            <ADXStakeOverview
               tokenDetails={adxDetails}
-              setActiveToken={setActiveStakingToken}
-              setActiveRedeemToken={setActiveRedeemToken}
+              setActiveToken={() => setActiveStakingToken('ADX')}
+              setActiveRedeemToken={() => setActiveRedeemLiquidADX(true)}
             />
-            <StakeOverview
+            <ALPStakeOverview
               tokenDetails={alpDetails}
-              setActiveToken={setActiveStakingToken}
-              setActiveRedeemToken={setActiveRedeemToken}
+              setActiveToken={() => setActiveStakingToken('ALP')}
             />
           </div>
+
           <div className="flex flex-col gap-3 bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 pb-8 mt-8">
             <div className="flex flex-row gap-2 items-center mb-3">
               <Image src={lockIcon} width={16} height={16} alt="lock icon" />
@@ -413,15 +467,15 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
             </Modal>
           )}
 
-          {activeRedeemToken && (
+          {activeRedeemLiquidADX && (
             <Modal
-              title={`Redeem ${activeRedeemToken}`}
-              close={() => setActiveRedeemToken(null)}
+              title="Redeem Liquid ADX"
+              close={() => setActiveRedeemLiquidADX(false)}
             >
               <StakeRedeem
-                tokenSymbol={activeRedeemToken}
-                totalLiquidStaked={getTotalReedemableStake(activeRedeemToken)}
-                handleRemoveLiquidStake={handleRemoveLiquidStake}
+                tokenSymbol="ADX"
+                totalLiquidStaked={getTotalADXLiquidStaked()}
+                handleRemoveLiquidStake={handleRemoveADXLiquidStake}
               />
             </Modal>
           )}

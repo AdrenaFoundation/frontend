@@ -36,7 +36,7 @@ export function formatNumber(
   displayPlusSymbol = false,
 ): string {
   const str = Number(nb.toFixed(precision)).toLocaleString(undefined, {
-    minimumFractionDigits: precision,
+    minimumFractionDigits: 0,
     maximumFractionDigits: precision,
   });
 
@@ -61,21 +61,23 @@ export function formatPriceInfo(
     return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
   }
 
+  if (price < 0) {
+    return `-$${formatNumber(price * -1, decimals)}`;
+  }
+
   let display = '';
 
   // If the price is very low, display it as it is, to not display $0
   if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
-    // Never go more than 9 decimals
-    display = `$${formatNumber(price, 9, displayPlusSymbol)}`;
-  } else if (price < 0) {
-    display = `-$${formatNumber(price * -1, decimals)}`;
+    // Never go more than 6 decimals
+    display = `$${formatNumber(price, 6, displayPlusSymbol)}`;
   } else {
     display = `$${formatNumber(price, decimals, displayPlusSymbol)}`;
   }
 
-  if (displayPlusSymbol && price > 0) {
-    display = display.replace('+', '');
-    display = `+${display}`;
+  // Put the + in front of the $ if needed
+  if (displayPlusSymbol) {
+    display = `+${display.replace('+', '')}`;
   }
 
   return display;
