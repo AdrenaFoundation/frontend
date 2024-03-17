@@ -17,7 +17,7 @@ import { LockedStakeExtended, LockPeriod, PageProps } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
-  getDaysRemaining,
+  getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
 
@@ -305,7 +305,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
       return (
         tokenObj.lockedStakes.reduce((acc, stake) => {
-          const daysRemaining = getDaysRemaining(
+          const daysRemaining = getLockedStakeRemainingTime(
             stake.stakeTime,
             stake.lockDuration,
           );

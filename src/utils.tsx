@@ -410,19 +410,6 @@ export function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(address.length - 6)}`;
 }
 
-export function getDaysRemaining(startDate: BN, totalDays: BN) {
-  const start = new Date(startDate.toNumber() * 1000).getTime();
-
-  const today = Date.now();
-
-  const daysElapsed = Math.floor((today - start) / 1000 / 3600 / 24);
-
-  const daysRemaining =
-    Math.floor(totalDays.toNumber() / 3600 / 24) - daysElapsed;
-
-  return daysRemaining;
-}
-
 export function formatMilliseconds(milliseconds: number): string {
   const seconds = Math.floor((milliseconds / 1000) % 60);
   const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
