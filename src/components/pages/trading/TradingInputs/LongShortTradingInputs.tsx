@@ -33,6 +33,8 @@ export default function LongShortTradingInputs({
   setTokenA,
   setTokenB,
   onChangeLeverage,
+  isInfoLoading,
+  setIsInfoLoading,
 }: {
   side: 'short' | 'long';
   className?: string;
@@ -46,6 +48,8 @@ export default function LongShortTradingInputs({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   onChangeLeverage: (v: number) => void;
+  isInfoLoading: boolean;
+  setIsInfoLoading: (v: boolean) => void;
 }) {
   const wallet = useSelector((s) => s.walletState);
   const connected = !!wallet;
@@ -85,6 +89,8 @@ export default function LongShortTradingInputs({
       return;
     }
 
+    setIsInfoLoading(true);
+
     // Reset inputB as the infos are not accurate anymore
     setPositionInfos(null);
     setInputB(null);
@@ -112,9 +118,14 @@ export default function LongShortTradingInputs({
         }
 
         setPositionInfos(infos);
-
+        setTimeout(() => {
+          setIsInfoLoading(false);
+        }, 500);
         console.log('Position infos', infos);
       } catch (err) {
+        setTimeout(() => {
+          setIsInfoLoading(false);
+        }, 500);
         console.log('Ignored error:', err);
       }
     })();
@@ -283,7 +294,7 @@ export default function LongShortTradingInputs({
         />
       </div>
 
-      <div className="flex flex-col mt-5">
+      <div className="flex flex-col mt-5 transition-opacity duration-500">
         <div className="text-sm flex items-center">
           Verify
           <InfoAnnotation
@@ -308,6 +319,7 @@ export default function LongShortTradingInputs({
         <PositionInfos
           className="mt-3"
           positionInfos={positionInfos}
+          inputA={inputA}
           tokenB={tokenB}
           leverage={leverage}
           openedPosition={openedPosition}
@@ -316,6 +328,7 @@ export default function LongShortTradingInputs({
           priceB={priceB}
           setTokenB={setTokenB}
           handleInputBChange={handleInputBChange}
+          isInfoLoading={isInfoLoading}
         />
       </div>
     </div>

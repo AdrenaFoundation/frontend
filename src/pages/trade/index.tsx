@@ -4,6 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
@@ -48,6 +49,7 @@ export default function Trade({
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
+  const [cookies] = useCookies(['terms-and-conditions-acceptance']);
 
   // There is one position max per side per custody
   // If the position exist for the selected custody, store it in this variable
@@ -57,6 +59,8 @@ export default function Trade({
 
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
+
+  const isEligibleToTrade = Boolean(cookies['terms-and-conditions-acceptance']);
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -219,7 +223,6 @@ export default function Trade({
           mintA: tokenA.mint,
           mintB: tokenB.mint,
         });
-
         triggerWalletTokenBalancesReload();
 
         return addSuccessTxNotification({
@@ -277,6 +280,7 @@ export default function Trade({
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
       setActivePositionModal(null);
+
       return addSuccessTxNotification({
         title: 'Successfully Opened Position',
         txHash,
@@ -293,11 +297,16 @@ export default function Trade({
 
   const buttonTitle = (() => {
     // If wallet not connected, then user need to connect wallet
+    console.log(inputAValue, inputBValue);
+    if (!isEligibleToTrade) {
+      return 'Not eligible to trade';
+    }
+
     if (!connected) {
       return 'Connect wallet';
     }
 
-    if (inputAValue === null || inputBValue === null) {
+    if (inputAValue === null) {
       return 'Enter an amount';
     }
 
@@ -406,7 +415,7 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 h-full z-30">
+          <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl h-full z-30 overflow-hidden">
             <Positions
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}

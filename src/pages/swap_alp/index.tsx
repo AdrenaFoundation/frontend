@@ -183,11 +183,6 @@ export default function SwapALP({
   }, [getFeesAndAmounts, debouncedInputs]);
 
   useEffect(() => {
-    // setIsFeesLoading(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAction === 'buy' ? collateralInput : alpInput]);
-
-  useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
 
     if (!collateralToken) {

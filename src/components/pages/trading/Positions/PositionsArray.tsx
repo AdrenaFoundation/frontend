@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
@@ -68,14 +69,14 @@ export default function PositionsArray({
     );
   }
 
-  const columnHeadStyle = 'text-sm text-center opacity-50 font-medium py-2';
-  const columnStyle = 'text-sm py-1 text-center h-10';
+  const columnHeadStyle = 'text-sm text-center opacity-50 font-medium p-3 ';
+  const columnStyle = 'text-sm text-center h-10';
 
   return (
     <table className="w-full">
       {/* Header */}
 
-      <thead>
+      <thead className="bg-dark border-b border-b-gray-200">
         <tr>
           <th className={twMerge(columnHeadStyle, 'w-[6.5em]')}>Position</th>
           <th className={columnHeadStyle}>Leverage</th>
@@ -85,7 +86,12 @@ export default function PositionsArray({
           <th className={columnHeadStyle}>Entry Price</th>
           <th className={columnHeadStyle}>Market Price</th>
           <th className={columnHeadStyle}>Liq. Price</th>
-          <th className={twMerge(columnHeadStyle, 'shrink-0 grow-0 w-[7em]')}>
+          <th
+            className={twMerge(
+              columnHeadStyle,
+              'shrink-0 grow-0 w-[7em] border-none',
+            )}
+          >
             Actions
           </th>
         </tr>
@@ -134,17 +140,60 @@ export default function PositionsArray({
             </td>
 
             <td className={twMerge(columnStyle, 'font-mono')}>
-              {position.pnl ? (
-                <span
-                  className={`text-${
-                    position.pnl > 0 ? 'green' : 'red'
-                  }-500 font-mono`}
-                >
-                  {formatPriceInfo(position.pnl)}
-                </span>
-              ) : (
-                '-'
-              )}
+              <Tippy
+                content={
+                  <ul className="flex flex-col gap-2">
+                    <li className="flex flex-row gap-2 justify-between">
+                      <p className="text-sm text-txtfade">
+                        initial collateral:
+                      </p>
+                      <p className="text-sm font-mono">-</p>
+                    </li>
+
+                    <li className="flex flex-row gap-2 justify-between">
+                      <p className="text-sm text-txtfade">PnL:</p>
+                      <p className="text-sm font-mono">-</p>
+                    </li>
+
+                    <li className="flex flex-row gap-2 justify-between">
+                      <p className="text-sm text-txtfade">Borrow fee:</p>
+                      <p className="text-sm font-mono">-</p>
+                    </li>
+
+                    <li className="flex flex-row gap-2 justify-between">
+                      <p className="text-sm text-txtfade">Open fee:</p>
+                      <p className="text-sm font-mono">-</p>
+                    </li>
+
+                    <li className="flex flex-row gap-2 justify-between">
+                      <p className="text-sm text-txtfade">Close fee:</p>
+                      <p className="text-sm font-mono">-</p>
+                    </li>
+
+                    <div className="w-full h-[1px] bg-gray-300" />
+
+                    <li className="flex flex-row gap-2 justify-between">
+                      <p className="text-sm text-txtfade">Pnl after fees:</p>
+                      <p className="text-sm font-mono">-</p>
+                    </li>
+                  </ul>
+                }
+                placement="bottom"
+              >
+                <div className="tooltip-target">
+                  {position.pnl ? (
+                    <span
+                      className={`text-${
+                        position.pnl > 0 ? 'green' : 'red'
+                      }-500 font-mono`}
+                    >
+                      {formatPriceInfo(position.pnl)}
+                    </span>
+                  ) : (
+                    '-'
+                  )}
+                </div>
+              </Tippy>
             </td>
 
             <td className={twMerge(columnStyle, 'font-mono')}>
