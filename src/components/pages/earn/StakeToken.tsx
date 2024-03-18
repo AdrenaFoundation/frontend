@@ -30,15 +30,17 @@ export default function StakeToken({
   stakeAmount: () => void;
   errorMessage: string;
 }) {
-  const LOCK_PERIODS: { title: LockPeriod }[] = [
-    { title: 0 },
-    { title: 30 },
-    { title: 60 },
-    { title: 90 },
-    { title: 180 },
-    { title: 360 },
-    { title: 720 },
-  ];
+  const LOCK_PERIODS = (
+    [
+      { title: 0 },
+      { title: 30 },
+      { title: 60 },
+      { title: 90 },
+      { title: 180 },
+      { title: 360 },
+      { title: 720 },
+    ] as { title: LockPeriod }[]
+  ).filter((period) => period.title > 0);
 
   return (
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
@@ -90,9 +92,13 @@ export default function StakeToken({
               Choose a lock period (days)
             </p>
           </div>
+
           <TabSelect
             className="font-mono"
             selected={lockPeriod}
+            initialSelectedIndex={LOCK_PERIODS.findIndex(
+              (x) => x.title === lockPeriod,
+            )}
             tabs={LOCK_PERIODS}
             onClick={(title) => {
               setLockPeriod(title);

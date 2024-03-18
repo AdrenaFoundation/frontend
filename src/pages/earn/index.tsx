@@ -2,34 +2,45 @@ import { BN } from '@coral-xyz/anchor';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
-import ADXStakeOverview, {
-  ADXTokenDetails,
-} from '@/components/pages/earn/ADXStakeOverview';
-import ALPStakeOverview, {
-  ALPTokenDetails,
-} from '@/components/pages/earn/ALPStakeOverview';
-import StakeBlocks from '@/components/pages/earn/StakeBlocks';
-import StakeList from '@/components/pages/earn/StakeList';
+import ADXStakeOverview from '@/components/pages/earn/ADXStakeOverview';
+import ALPStakeOverview from '@/components/pages/earn/ALPStakeOverview';
 import StakeRedeem from '@/components/pages/earn/StakeRedeem';
 import StakeToken from '@/components/pages/earn/StakeToken';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockPeriod, PageProps, StakePositionsExtended } from '@/types';
+import { LockedStakeExtended, LockPeriod, PageProps } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
-  getDaysRemaining,
+  getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
 
-import lockIcon from '../../../public/images/Icons/lock.svg';
+export type ADXTokenDetails = {
+  balance: number | null;
+  totalLiquidStaked: number | null;
+  totalStaked: number | null;
+  totalLiquidStakedUSD: number | null;
+  totalLockedStake: number | null;
+  totalRedeemableStake: number | null;
+  totalLockedStakeUSD: number | null;
+  totalRedeemableStakeUSD: number | null;
+};
+
+export type ALPTokenDetails = {
+  balance: number | null;
+  totalLockedStake: number | null;
+  totalRedeemableStake: number | null;
+  totalLockedStakeUSD: number | null;
+  totalRedeemableStakeUSD: number | null;
+};
+
+export const DEFAULT_LOCKED_STAKE_DURATION = 90;
 
 export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -41,6 +52,9 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const alpPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
+
+  const { stakingAccounts, triggerWalletStakingAccountsReload } =
+    useWalletStakingAccounts();
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
@@ -61,9 +75,6 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     totalRedeemableStakeUSD: null,
   });
 
-  const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts();
-
   const [activeStakingToken, setActiveStakingToken] = useState<
     'ADX' | 'ALP' | null
   >(null);
@@ -71,7 +82,9 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
   const [activeRedeemLiquidADX, setActiveRedeemLiquidADX] =
     useState<boolean>(false);
 
-  const [lockPeriod, setLockPeriod] = useState<LockPeriod>(0);
+  const [lockPeriod, setLockPeriod] = useState<LockPeriod>(
+    DEFAULT_LOCKED_STAKE_DURATION,
+  );
 
   const [amount, setAmount] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -125,7 +138,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       });
 
       setAmount(null);
-      setLockPeriod(0);
+      setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
       setActiveStakingToken(null);
@@ -170,29 +183,24 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     }
   };
 
-  const handleRemoveLockedStake = async (
-    tokenSymbol: 'ADX' | 'ALP',
-    resolved: boolean,
-    threadId: BN,
-    lockedStakeIndex: number,
-  ) => {
+  const handleLockedStakeRedeem = async (lockedStake: LockedStakeExtended) => {
     if (!owner) {
       toast.error('Please connect your wallet');
       return;
     }
 
     const stakedTokenMint =
-      tokenSymbol === 'ADX'
+      lockedStake.tokenSymbol === 'ADX'
         ? window.adrena.client.adxToken.mint
         : window.adrena.client.alpToken.mint;
 
     try {
       const txHash = await window.adrena.client.removeLockedStake({
         owner,
-        resolved,
-        threadId,
+        resolved: lockedStake.resolved,
+        threadId: lockedStake.stakeResolutionThreadId,
         stakedTokenMint,
-        lockedStakeIndex: new BN(lockedStakeIndex),
+        lockedStakeIndex: new BN(lockedStake.index),
       });
 
       addSuccessTxNotification({
@@ -205,7 +213,39 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
       setActiveRedeemLiquidADX(false);
     } catch (error) {
       return addFailedTxNotification({
-        title: 'Error Removing Liquid Stake',
+        title: 'Error Removing Locked Stake',
+        error,
+      });
+    }
+  };
+
+  const handleClaimRewards = async (tokenSymbol: 'ADX' | 'ALP') => {
+    if (!owner) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+
+    const stakedTokenMint =
+      tokenSymbol === 'ADX'
+        ? window.adrena.client.adxToken.mint
+        : window.adrena.client.alpToken.mint;
+
+    try {
+      const txHash = await window.adrena.client.claimStakes({
+        owner,
+        stakedTokenMint,
+      });
+
+      addSuccessTxNotification({
+        title: 'Successfully Claimed Rewards',
+        txHash,
+      });
+
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Claiming Rewards',
         error,
       });
     }
@@ -265,7 +305,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
       return (
         tokenObj.lockedStakes.reduce((acc, stake) => {
-          const daysRemaining = getDaysRemaining(
+          const daysRemaining = getLockedStakeRemainingTime(
             stake.stakeTime,
             stake.lockDuration,
           );
@@ -359,22 +399,27 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
     wallet,
   ]);
 
-  const isBigScreen = useBetterMediaQuery('(min-width: 950px)');
+  const adxLockedStakes: LockedStakeExtended[] | null =
+    (
+      stakingAccounts?.ADX?.lockedStakes.sort(
+        (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
+      ) as LockedStakeExtended[]
+    ).map((stake, index) => ({
+      ...stake,
+      index,
+      tokenSymbol: 'ADX',
+    })) ?? null;
 
-  const stakePositions = Object.entries(stakingAccounts ?? {})
-    .map(([tokenSymbol, details], index) => {
-      if (details === null) return [];
-
-      return details.lockedStakes.map((position) => ({
-        ...position,
-        lockedStakeIndex: index,
-        tokenSymbol,
-      }));
-    })
-    .flat()
-    .sort(
-      (a, b) => Number(a?.stakeTime) - Number(b?.stakeTime),
-    ) as StakePositionsExtended[];
+  const alpLockedStakes: LockedStakeExtended[] | null =
+    (
+      stakingAccounts?.ALP?.lockedStakes.sort(
+        (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
+      ) as LockedStakeExtended[]
+    ).map((stake, index) => ({
+      ...stake,
+      index,
+      tokenSymbol: 'ALP',
+    })) ?? null;
 
   return (
     <>
@@ -396,52 +441,30 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
         />
       </div>
 
-      <h2 className="z-20">Earn</h2>
+      <div className="flex flex-col lg:flex-row items-evenly gap-x-4">
+        <ADXStakeOverview
+          totalLockedStake={adxDetails.totalLockedStake}
+          totalLiquidStaked={adxDetails.totalLiquidStaked}
+          lockedStakes={adxLockedStakes}
+          handleLockedStakeRedeem={handleLockedStakeRedeem}
+          handleClickOnStakeMore={(initialLockPeriod: LockPeriod) => {
+            setLockPeriod(initialLockPeriod);
+            setActiveStakingToken('ADX');
+          }}
+          handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
+          handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
+        />
 
-      <p className="z-20">
-        Governed by the Adrena community, conferring control and economic reward
-        to the collective.
-      </p>
-
-      <div className="flex flex-col lg:flex-row gap-5 z-20">
-        <div className="w-full">
-          <div className="flex flex-col lg:flex-row gap-5 mt-8">
-            <ADXStakeOverview
-              tokenDetails={adxDetails}
-              setActiveToken={() => setActiveStakingToken('ADX')}
-              setActiveRedeemToken={() => setActiveRedeemLiquidADX(true)}
-            />
-            <ALPStakeOverview
-              tokenDetails={alpDetails}
-              setActiveToken={() => setActiveStakingToken('ALP')}
-            />
-          </div>
-
-          <div className="flex flex-col gap-3 bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 pb-8 mt-8">
-            <div className="flex flex-row gap-2 items-center mb-3">
-              <Image src={lockIcon} width={16} height={16} alt="lock icon" />
-              <h4>My Locked Stake</h4>
-            </div>
-
-            {wallet ? (
-              isBigScreen ? (
-                <StakeList
-                  positions={stakePositions}
-                  handleRemoveLockedStake={handleRemoveLockedStake}
-                />
-              ) : (
-                <StakeBlocks
-                  positions={stakePositions}
-                  handleRemoveLockedStake={handleRemoveLockedStake}
-                />
-              )
-            ) : (
-              <p className="text-sm opacity-50">
-                Connect your wallet to see your locked stake
-              </p>
-            )}
-          </div>
-        </div>
+        <ALPStakeOverview
+          totalLockedStake={alpDetails.totalLockedStake}
+          lockedStakes={alpLockedStakes}
+          handleLockedStakeRedeem={handleLockedStakeRedeem}
+          handleClickOnStakeMore={(initialLockPeriod: LockPeriod) => {
+            setLockPeriod(initialLockPeriod);
+            setActiveStakingToken('ALP');
+          }}
+          handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
+        />
 
         <AnimatePresence>
           {activeStakingToken && (
@@ -449,7 +472,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
               title={`Stake ${activeStakingToken}`}
               close={() => {
                 setAmount(null);
-                setLockPeriod(0);
+                setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
                 setActiveStakingToken(null);
               }}
             >

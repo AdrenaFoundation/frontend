@@ -34,6 +34,7 @@ import {
   AddLiquidStakeAccounts,
   AddLockedStakeAccounts,
   AmountAndFee,
+  ClaimStakesAccounts,
   ClosePositionAccounts,
   Cortex,
   Custody,
@@ -2576,12 +2577,91 @@ export class AdrenaClient {
       tokenProgram: TOKEN_PROGRAM_ID,
     };
 
-    return await this.adrenaProgram.methods
+    return this.adrenaProgram.methods
       .finalizeLockedStake({
         threadId,
       })
       .accounts(accounts)
       .instruction();
+  }
+
+  public async claimStakes({
+    owner,
+    stakedTokenMint,
+  }: {
+    owner: PublicKey;
+    stakedTokenMint: PublicKey;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+
+    const rewardTokenAccount = findATAAddressSync(
+      owner,
+      stakingRewardTokenMint,
+    );
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
+    const staking = this.getStakingPda(stakedTokenMint);
+    const userStaking = this.getUserStakingPda(owner, staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: rewardTokenAccount,
+          mint: stakingRewardTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: lmTokenAccount,
+          mint: this.lmTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    const accounts: ClaimStakesAccounts = {
+      caller: owner,
+      payer: owner,
+      owner,
+      rewardTokenAccount,
+      lmTokenAccount,
+      stakingRewardTokenVault,
+      stakingLmRewardTokenVault,
+      transferAuthority: AdrenaClient.transferAuthorityAddress,
+      userStaking,
+      staking,
+      cortex: this.cortex,
+      perpetuals: AdrenaClient.perpetualsAddress,
+      lmTokenMint: this.lmTokenMint,
+      stakingRewardTokenMint,
+      adrenaProgram: this.adrenaProgram.programId,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+    };
+
+    const transaction = await this.adrenaProgram.methods
+      .claimStakes()
+      .accounts(accounts)
+      .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
   public async removeLockedStake({

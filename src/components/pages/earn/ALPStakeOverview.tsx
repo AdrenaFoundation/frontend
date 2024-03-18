@@ -2,86 +2,115 @@ import Image from 'next/image';
 import React from 'react';
 
 import Button from '@/components/common/Button/Button';
-import { formatNumber, formatPriceInfo } from '@/utils';
-
-import walletIcon from '../../../../public/images/wallet-icon.svg';
-
-export type ALPTokenDetails = {
-  balance: number | null;
-  totalLockedStake: number | null;
-  totalLockedStakeUSD: number | null;
-  totalRedeemableStake: number | null;
-  totalRedeemableStakeUSD: number | null;
-};
+import LockedStakedElement from '@/components/pages/earn/LockedStakedElement';
+import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/earn';
+import { LockedStakeExtended, LockPeriod } from '@/types';
 
 export default function ALPStakeOverview({
-  tokenDetails,
-  setActiveToken,
+  totalLockedStake,
+  lockedStakes,
+  handleLockedStakeRedeem,
+  handleClickOnStakeMore,
+  handleClickOnClaimRewards,
 }: {
-  tokenDetails: ALPTokenDetails;
-  setActiveToken: () => void;
+  totalLockedStake: number | null;
+  lockedStakes: LockedStakeExtended[] | null;
+  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleClickOnStakeMore: (initialLockPeriod: LockPeriod) => void;
+  handleClickOnClaimRewards: () => void;
 }) {
-  const token = window.adrena.client.alpToken;
-
   return (
-    <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 lg:w-1/2 rounded-2xl">
-      <div className="flex flex-row gap-2 items-center p-4 border-b border-b-gray-200">
-        <div className={`p-1 bg-blue-500 rounded-full`}>
-          <p className="flex items-center justify-center text-sm font-specialmonster h-7 w-7">
-            ALP
-          </p>
-        </div>
-        <div>
-          <div className="flex flex-row gap-1 items-center opacity-50">
-            <Image src={walletIcon} width={16} height={16} alt="wallet" />
-            <p className="text-sm font-mono">
-              {tokenDetails.balance !== null
-                ? `${formatNumber(tokenDetails.balance, 3)} ALP`
-                : '-'}
-            </p>
-          </div>
+    <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+      <div className="flex items-center">
+        <Image
+          src={window.adrena.client.alpToken.image}
+          width={32}
+          height={32}
+          alt="ALP icon"
+        />
 
-          <p className="font-medium">{token.name}</p>
+        <div className="flex flex-col justify-start ml-2">
+          <h2 className="">ALP</h2>
+          <span className="opacity-50">The Pool Token</span>
         </div>
       </div>
 
-      <div className="p-4">
-        <div>
-          <p className="text-sm opacity-50">My Total Stake</p>
-          <p className="text-xl font-medium font-mono">
-            {formatNumber(tokenDetails.totalLockedStake ?? 0, 2)} ALP
-          </p>
+      <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
+        <h3>Duration-Locked Staking</h3>
+
+        <p className="mt-4 flex flex-col ">
+          <span className="text-txtfade text-xs">
+            Stake and lock your ALP for a time to earn ADX and USDC rewards. The
+            longer the period, the bigger the rewards.
+          </span>
+          <span className="mt-2 text-txtfade text-xs">
+            ADX and USDC rewards accrue automatically every ~6 hours and get
+            auto-claimed every 18 days. You can manually claim rewards.
+          </span>
+
+          <span className="mt-2 text-txtfade text-xs">
+            The locked ALP tokens can be redeemed once the locking period is
+            over.
+          </span>
+        </p>
+
+        <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
+
+        <div className="flex w-full justify-between bg-dark rounded-2xl pt-2 pb-2 pl-4 pr-4 border border-gray-200">
+          <span>Locked</span>
+
+          <div>
+            <span className="font-mono">{totalLockedStake ?? '-'}</span>
+            <span className="ml-1">ALP</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-0 justify-between bg-dark border border-gray-200 rounded-2xl mt-5 p-4">
-          <div className="sm:text-center">
-            <p className="text-sm opacity-50">My Locked Stake</p>
-            <p className="text-lg font-medium font-mono">
-              {formatNumber(tokenDetails.totalLockedStake ?? 0, 2)} ALP
-            </p>
-            <p className="opacity-50 font-mono overflow-hidden text-ellipsis">
-              {formatPriceInfo(tokenDetails.totalLockedStakeUSD)}
-            </p>
-          </div>
+        {totalLockedStake !== null && totalLockedStake > 0 ? (
+          <>
+            <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
 
-          <div className="sm:text-right sm:border-l sm:border-l-gray-200">
-            <p className="text-sm opacity-50">Total Redeemable ALP</p>
-            <p className="text-lg font-medium font-mono">
-              {tokenDetails.totalRedeemableStake} ALP
-            </p>
-            <p className="opacity-50 font-mono  overflow-hidden text-ellipsis">
-              {formatPriceInfo(tokenDetails.totalRedeemableStakeUSD)}
-            </p>
-          </div>
-        </div>
+            <span className="font-bold">
+              My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked
+              Stakes
+            </span>
 
-        <div className="flex flex-row gap-3 mt-5">
+            <div className="flex flex-col mt-2 gap-y-2">
+              {lockedStakes ? (
+                lockedStakes.map((lockedStake, i) => (
+                  <LockedStakedElement
+                    lockedStake={lockedStake}
+                    key={i}
+                    token={window.adrena.client.alpToken}
+                    handleRedeem={handleLockedStakeRedeem}
+                  />
+                ))
+              ) : (
+                <div className="text-sm m-auto mt-4 mb-4 text-txtfade">
+                  No Active Locked Stakes
+                </div>
+              )}
+            </div>
+          </>
+        ) : null}
+
+        <div className="flex gap-x-4">
           <Button
-            className="w-full"
+            className="w-full mt-4"
             variant="primary"
             size="lg"
-            title="Stake ALP"
-            onClick={() => setActiveToken()}
+            title="Stake More"
+            onClick={() =>
+              handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+            }
+          />
+
+          <Button
+            className="w-full mt-4"
+            disabled={totalLockedStake === 0}
+            variant="outline"
+            size="lg"
+            title="Claim Rewards"
+            onClick={() => handleClickOnClaimRewards()}
           />
         </div>
       </div>

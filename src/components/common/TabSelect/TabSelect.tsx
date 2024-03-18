@@ -5,12 +5,14 @@ import { useResize } from '@/hooks/useResize';
 
 export default function TabSelect<T extends string | number>({
   selected,
+  initialSelectedIndex,
   onClick,
   tabs,
   wrapperClassName,
   className,
 }: {
   selected?: T;
+  initialSelectedIndex?: number;
   tabs: {
     title: T;
     icon?: string;
@@ -28,7 +30,7 @@ export default function TabSelect<T extends string | number>({
   const [size] = useResize();
 
   const [activeTab, setActiveTab] = useState<null | number>(
-    selected !== undefined ? 0 : null,
+    selected !== undefined ? initialSelectedIndex ?? 0 : null,
   );
 
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());

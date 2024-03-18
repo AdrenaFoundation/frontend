@@ -410,17 +410,43 @@ export function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(address.length - 6)}`;
 }
 
-export function getDaysRemaining(startDate: BN, totalDays: BN) {
+export function formatMilliseconds(milliseconds: number): string {
+  const seconds = Math.floor((milliseconds / 1000) % 60);
+  const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+  const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
+
+  let formatted = '';
+
+  if (days) {
+    formatted = `${days}d`;
+  }
+
+  if (hours || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${hours}h`;
+  }
+
+  if (minutes || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${minutes}m`;
+  }
+
+  if (seconds || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${seconds}s`;
+  }
+
+  return formatted;
+}
+
+// in milliseconds
+export function getLockedStakeRemainingTime(
+  startDate: BN,
+  lockDuration: BN, // in seconds
+): number {
   const start = new Date(startDate.toNumber() * 1000).getTime();
 
-  const today = Date.now();
+  const endDate = start + lockDuration.toNumber() * 1000;
 
-  const daysElapsed = Math.floor((today - start) / 1000 / 3600 / 24);
-
-  const daysRemaining =
-    Math.floor(totalDays.toNumber() / 3600 / 24) - daysElapsed;
-
-  return daysRemaining;
+  return endDate - Date.now();
 }
 
 // i.e percentage = -2 (for -2%)
