@@ -138,11 +138,11 @@ export function addNotification({
 
   toast[type](content, {
     position,
-    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration],
+    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
     hideProgressBar: true,
     closeOnClick: true,
     pauseOnHover: true,
-    draggable: true,
+    draggable: false,
     progress: undefined,
     theme: 'colored',
     icon: false,

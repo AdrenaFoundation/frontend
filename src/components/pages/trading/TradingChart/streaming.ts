@@ -1,57 +1,52 @@
-import { io } from 'socket.io-client';
-
-import { parseFullSymbol } from '@/utils';
-
 import {
   Bar,
   LibrarySymbolInfo,
   ResolutionString,
+  SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library';
 
-const socket = io('wss://streamer.cryptocompare.com');
-const channelToSubscription: any = new Map();
+const streamingUrl =
+  'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
 
-socket.on('connect', () => {
-  console.log('[socket] Connected');
-});
+type PythStreamingData = {
+  id: string; // i.e, "Crypto.SOL/USD"
+  p: number; // i.e, 172.70134218
+  t: number; // i.e, 1710418210
+  f: string; // i.e, "t"
+  s: number; // i.e, 0
+};
 
-socket.on('disconnect', (reason) => {
-  console.log('[socket] Disconnected:', reason);
-});
-
-socket.on('error', (error) => {
-  console.log('[socket] Error:', error);
-});
-
-socket.on('m', (data) => {
-  console.log('[socket] Message:', data);
-  const [
-    eventTypeStr,
-    exchange,
-    fromSymbol,
-    toSymbol,
-    ,
-    ,
-    tradeTimeStr,
-    ,
-    tradePriceStr,
-  ] = data.split('~');
-
-  if (parseInt(eventTypeStr) !== 0) {
-    // skip all non-TRADE events
-    return;
+const channelToSubscription = new Map<
+  string,
+  {
+    subscriberUID: string;
+    resolution: ResolutionString;
+    lastDailyBar: Bar;
+    handlers: {
+      id: string;
+      callback: SubscribeBarsCallback;
+    }[];
   }
-  const tradePrice = parseFloat(tradePriceStr);
-  const tradeTime = parseInt(tradeTimeStr);
-  const channelString = `0~${exchange}~${fromSymbol}~${toSymbol}`;
+>();
+
+function handleStreamingData(data: PythStreamingData) {
+  const { id, p, t } = data;
+
+  const tradePrice = p;
+  const tradeTime = t * 1000; // Multiplying by 1000 to get milliseconds
+
+  const channelString = id;
   const subscriptionItem = channelToSubscription.get(channelString);
-  if (subscriptionItem === undefined) {
+
+  if (!subscriptionItem) {
     return;
   }
+
   const lastDailyBar = subscriptionItem.lastDailyBar;
   const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
 
   let bar: Bar;
+
   if (tradeTime >= nextDailyBarTime) {
     bar = {
       time: nextDailyBarTime,
@@ -60,7 +55,8 @@ socket.on('m', (data) => {
       low: tradePrice,
       close: tradePrice,
     };
-    console.log('[socket] Generate new bar', bar);
+
+    // console.log('[stream] Generate new bar', bar);
   } else {
     bar = {
       ...lastDailyBar,
@@ -68,76 +64,150 @@ socket.on('m', (data) => {
       low: Math.min(lastDailyBar.low, tradePrice),
       close: tradePrice,
     };
-    console.log('[socket] Update the latest bar by price', tradePrice);
+
+    console.log('[stream] Update the latest bar by price', tradePrice);
   }
+
   subscriptionItem.lastDailyBar = bar;
 
-  // send data to every subscriber of that symbol
-  subscriptionItem.handlers.forEach((handler: any) => handler.callback(bar));
-});
+  // Send data to every subscriber of that symbol
+  subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
+
+  channelToSubscription.set(channelString, subscriptionItem);
+}
+
+function startStreaming(retries = 3, delay = 3000) {
+  fetch(streamingUrl)
+    .then((response) => {
+      if (response.body == null) {
+        throw new Error('rrror starting streaming');
+      }
+
+      const reader = response.body.getReader();
+
+      function streamData() {
+        reader
+          .read()
+          .then(({ value, done }) => {
+            if (done) {
+              console.error('[stream] Streaming ended.');
+              return;
+            }
+
+            // Assuming the streaming data is separated by line breaks
+            const dataStrings = new TextDecoder().decode(value).split('\n');
+
+            dataStrings.forEach((dataString) => {
+              const trimmedDataString = dataString.trim();
+
+              if (trimmedDataString) {
+                try {
+                  const jsonData = JSON.parse(trimmedDataString);
+
+                  handleStreamingData(jsonData);
+                } catch (e: unknown) {
+                  console.error(
+                    'Error parsing JSON:',
+                    e instanceof Error ? e.message : String(e),
+                  );
+                }
+              }
+            });
+
+            streamData(); // Continue processing the stream
+          })
+          .catch((error) => {
+            console.error('[stream] Error reading from stream:', error);
+            attemptReconnect(retries, delay);
+          });
+      }
+
+      streamData();
+    })
+    .catch((error) => {
+      console.error(
+        '[stream] Error fetching from the streaming endpoint:',
+        error,
+      );
+    });
+
+  function attemptReconnect(retriesLeft: number, delay: number) {
+    if (retriesLeft > 0) {
+      console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
+
+      setTimeout(() => {
+        startStreaming(retriesLeft - 1, delay);
+      }, delay);
+    } else {
+      console.error('[stream] Maximum reconnection attempts reached.');
+    }
+  }
+}
 
 function getNextDailyBarTime(barTime: number) {
   const date = new Date(barTime * 1000);
+
   date.setDate(date.getDate() + 1);
+
   return date.getTime() / 1000;
 }
 
 export function subscribeOnStream(
   symbolInfo: LibrarySymbolInfo,
   resolution: ResolutionString,
-  onRealtimeCallback: any,
-  subscribeUID: any,
-  onResetCacheNeededCallback: any,
-  lastDailyBar: any,
+  onRealtimeCallback: SubscribeBarsCallback,
+  subscriberUID: string,
+  onResetCacheNeededCallback: () => void,
+  lastDailyBar: Bar,
 ) {
-  const parsedSymbol = parseFullSymbol(symbolInfo.full_name);
-  const channelString = `0~${parsedSymbol?.exchange}~${parsedSymbol?.fromSymbol}~${parsedSymbol?.toSymbol}`;
+  const channelString = symbolInfo.ticker;
   const handler = {
-    id: subscribeUID,
+    id: subscriberUID,
     callback: onRealtimeCallback,
   };
+
+  if (!channelString) return;
+
   let subscriptionItem = channelToSubscription.get(channelString);
-  if (subscriptionItem) {
-    // already subscribed to the channel, use the existing subscription
-    subscriptionItem.handlers.push(handler);
-    return;
-  }
+
   subscriptionItem = {
-    subscribeUID,
+    subscriberUID,
     resolution,
     lastDailyBar,
     handlers: [handler],
   };
+
   channelToSubscription.set(channelString, subscriptionItem);
+
   console.log(
     '[subscribeBars]: Subscribe to streaming. Channel:',
     channelString,
   );
-  socket.emit('SubAdd', { subs: [channelString] });
+
+  // Start streaming when the first subscription is made
+  startStreaming();
 }
 
-export function unsubscribeFromStream(subscriberUID: any) {
-  // find a subscription with id === subscriberUID
-  for (const channelString of channelToSubscription.keys()) {
+export function unsubscribeFromStream(subscriberUID: string) {
+  // Find a subscription with id === subscriberUID
+  for (const channelString of Object.keys(channelToSubscription)) {
     const subscriptionItem = channelToSubscription.get(channelString);
+
+    if (!subscriptionItem) continue;
+
     const handlerIndex = subscriptionItem.handlers.findIndex(
-      (handler: any) => handler.id === subscriberUID,
+      (handler) => handler.id === subscriberUID,
     );
 
     if (handlerIndex !== -1) {
-      // remove from handlers
-      subscriptionItem.handlers.splice(handlerIndex, 1);
+      // Unsubscribe from the channel if it is the last handler
+      console.log(
+        '[unsubscribeBars]: Unsubscribe from streaming. Channel:',
+        channelString,
+      );
 
-      if (subscriptionItem.handlers.length === 0) {
-        // unsubscribe from the channel, if it was the last handler
-        console.log(
-          '[unsubscribeBars]: Unsubscribe from streaming. Channel:',
-          channelString,
-        );
-        socket.emit('SubRemove', { subs: [channelString] });
-        channelToSubscription.delete(channelString);
-        break;
-      }
+      channelToSubscription.delete(channelString);
+      break;
     }
   }
 }
