@@ -72,7 +72,6 @@ const RiveAnimation = ({
 
   useEffect(() => {
     if (assetsLoaded === totalAssets) {
-      console.log(assetsLoaded, totalAssets);
       setIsLoaded(true);
     }
   }, [assetsLoaded, totalAssets]);
