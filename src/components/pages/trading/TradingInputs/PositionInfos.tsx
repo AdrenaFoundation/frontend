@@ -175,7 +175,7 @@ export default function PositionInfos({
               : null}
           </>
         ) : (
-          <div className="w-full h-[40px] placeholder-shimmer rounded-xl" />
+          <div className="w-full h-[40px] bg-gray-300 rounded-xl" />
         )}
       </div>
 
@@ -223,7 +223,7 @@ export default function PositionInfos({
               })()}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -269,7 +269,7 @@ export default function PositionInfos({
               })()}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -316,7 +316,7 @@ export default function PositionInfos({
               })()}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -366,7 +366,7 @@ export default function PositionInfos({
               })()}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -431,7 +431,7 @@ export default function PositionInfos({
               )}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -479,7 +479,7 @@ export default function PositionInfos({
               })()}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -530,7 +530,7 @@ export default function PositionInfos({
               })()}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -549,7 +549,7 @@ export default function PositionInfos({
                 : '-'}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
 
@@ -571,7 +571,7 @@ export default function PositionInfos({
                 : '-'}
             </span>
           ) : (
-            <div className="w-[45%] h-[18px] placeholder-shimmer rounded-xl" />
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
           )}
         </div>
       </div>

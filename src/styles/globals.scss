@@ -259,28 +259,3 @@ input[type='radio']:checked {
   border-radius: 6px; /* roundness of the scroll thumb */
   border: 3px solid #16293d; /* creates padding around scroll thumb */
 }
-
-.placeholder-shimmer {
-  animation-duration: 1s;
-  animation-fill-mode: forwards;
-  animation-iteration-count: infinite;
-  animation-name: placeHolderShimmer;
-  animation-timing-function: linear;
-  background: linear-gradient(
-    to right,
-    var(--color-gray-200) 2%,
-    #4b4f7f 18%,
-    var(--color-gray-200) 2%
-  );
-  background-size: 800px 104px;
-  position: relative;
-}
-
-@keyframes placeHolderShimmer {
-  0% {
-    background-position: -468px 0;
-  }
-  100% {
-    background-position: 468px 0;
-  }
-}

@@ -30,18 +30,20 @@ export default function StakeToken({
   stakeAmount: () => void;
   errorMessage: string;
 }) {
-  const LOCK_PERIODS = (
-    [
-      { title: 0 },
-      { title: 30 },
-      { title: 60 },
-      { title: 90 },
-      { title: 180 },
-      { title: 360 },
-      { title: 720 },
-    ] as { title: LockPeriod }[]
-  ).filter((period) => period.title > 0);
+  let LOCK_PERIODS = [
+    { title: 30 },
+    { title: 60 },
+    { title: 90 },
+    { title: 180 },
+    { title: 360 },
+    { title: 720 },
+  ] as { title: LockPeriod }[];
 
+  if (tokenSymbol === 'ADX') {
+    LOCK_PERIODS = [{ title: 0 }, ...LOCK_PERIODS];
+  }
+
+  console.log('LOCK_PERIODS', LOCK_PERIODS, tokenSymbol);
   return (
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">

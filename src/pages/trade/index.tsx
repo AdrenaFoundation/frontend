@@ -296,12 +296,6 @@ export default function Trade({
   };
 
   const buttonTitle = (() => {
-    // If wallet not connected, then user need to connect wallet
-    console.log(inputAValue, inputBValue);
-    if (!isEligibleToTrade) {
-      return 'Not eligible to trade';
-    }
-
     if (!connected) {
       return 'Connect wallet';
     }

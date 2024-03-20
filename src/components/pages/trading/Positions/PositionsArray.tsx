@@ -37,7 +37,11 @@ export default function PositionsArray({
     return (
       <div className="flex flex-col h-full items-center justify-center">
         <Button
-          title="Connect Wallet"
+          title={
+            !window.adrena.geoBlockingData.allowed
+              ? 'Not elligable to trade'
+              : 'Connect wallet'
+          }
           variant="secondary"
           rightIcon={phantomLogo}
           className="mb-2"
@@ -140,7 +144,18 @@ export default function PositionsArray({
             </td>
 
             <td className={twMerge(columnStyle, 'font-mono')}>
-              <Tippy
+              {position.pnl ? (
+                <span
+                  className={`text-${
+                    position.pnl > 0 ? 'green' : 'red'
+                  }-500 font-mono`}
+                >
+                  {formatPriceInfo(position.pnl)}
+                </span>
+              ) : (
+                '-'
+              )}
+              {/* <Tippy
                 content={
                   <ul className="flex flex-col gap-2">
                     <li className="flex flex-row gap-2 justify-between">
@@ -179,6 +194,7 @@ export default function PositionsArray({
                   </ul>
                 }
                 placement="bottom"
+                disabled={true}
               >
                 <div className="tooltip-target">
                   {position.pnl ? (
@@ -193,7 +209,7 @@ export default function PositionsArray({
                     '-'
                   )}
                 </div>
-              </Tippy>
+              </Tippy> */}
             </td>
 
             <td className={twMerge(columnStyle, 'font-mono')}>
