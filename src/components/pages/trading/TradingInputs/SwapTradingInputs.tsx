@@ -1,11 +1,23 @@
+import { BN, Wallet } from '@coral-xyz/anchor';
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { openCloseConnectionModalAction } from '@/actions/walletActions';
+import Button from '@/components/common/Button/Button';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { SwapAmountAndFees, Token } from '@/types';
-import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
+import {
+  addFailedTxNotification,
+  addNotification,
+  addSuccessTxNotification,
+  formatNumber,
+  formatPriceInfo,
+  nativeToUi,
+  uiToNative,
+} from '@/utils';
 
 import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.svg';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
@@ -13,7 +25,7 @@ import TradingInput from '../TradingInput/TradingInput';
 import SwapInfo from './SwapInfo';
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 export default function SwapTradingInputs({
@@ -22,26 +34,26 @@ export default function SwapTradingInputs({
   tokenB,
   allowedTokenA,
   allowedTokenB,
-  onChangeInputA,
-  onChangeInputB,
+  wallet,
   setTokenA,
   setTokenB,
+  triggerWalletTokenBalancesReload,
 }: {
   className?: string;
   tokenA: Token;
   tokenB: Token;
   allowedTokenA: Token[];
   allowedTokenB: Token[];
-  onChangeInputA: (v: number | null) => void;
-  onChangeInputB: (v: number | null) => void;
+  wallet: Wallet | null;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
+  triggerWalletTokenBalancesReload: () => void;
 }) {
-  const wallet = useSelector((s) => s.walletState);
-  const connected = !!wallet;
+  const dispatch = useDispatch();
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [connected, setConnected] = useState<boolean>(false);
 
   // Keep track of the last input modified by the user
   // We consider it as the reference value
@@ -57,21 +69,14 @@ export default function SwapTradingInputs({
 
   const debouncedInputA = useDebounce(inputA);
 
+  const [buttonTitle, setButtonTitle] = useState<string>('');
+
   const [swapFeesAndAmount, setSwapFeesAndAmount] =
     useState<SwapAmountAndFees | null>(null);
 
-  // Propagate changes to upper component
-  {
-    useEffect(() => {
-      const nb = Number(inputA);
-      onChangeInputA(isNaN(nb) || inputA === null ? null : nb);
-    }, [inputA, onChangeInputA]);
-
-    useEffect(() => {
-      const nb = Number(inputB);
-      onChangeInputB(isNaN(nb) || inputB === null ? null : nb);
-    }, [inputB, onChangeInputB]);
-  }
+  useEffect(() => {
+    setConnected(!!wallet);
+  }, [wallet]);
 
   // Switch inputs values and tokens
   const switchAB = () => {
@@ -199,6 +204,75 @@ export default function SwapTradingInputs({
   const custodyTokenB =
     window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
+  const handleExecuteButton = async (): Promise<void> => {
+    if (!dispatch || !connected || !wallet) {
+      dispatch(openCloseConnectionModalAction(true));
+      return;
+    }
+
+    if (!tokenA || !tokenB || !inputA || !inputB) {
+      return addNotification({
+        type: 'info',
+        title: 'Cannot perform swap',
+        message: 'Missing information',
+      });
+    }
+
+    try {
+      const txHash = await window.adrena.client.swap({
+        owner: new PublicKey(wallet.publicKey),
+        amountIn: uiToNative(inputA, tokenA.decimals),
+
+        // TODO
+        // How to handle slippage?
+        // the inputBValue should take fees into account, for now it doesn't.
+        minAmountOut: new BN(0),
+        mintA: tokenA.mint,
+        mintB: tokenB.mint,
+      });
+
+      triggerWalletTokenBalancesReload();
+
+      return addSuccessTxNotification({
+        title: 'Successful Swap',
+        txHash,
+      });
+    } catch (error) {
+      return addFailedTxNotification({
+        title: 'Error Swapping',
+        error,
+      });
+    }
+  };
+
+  useEffect(() => {
+    // If wallet not connected, then user need to connect wallet
+    if (!wallet) {
+      return setButtonTitle('Connect wallet');
+    }
+
+    if (inputA === null || inputB === null) {
+      return setButtonTitle('Enter an amount');
+    }
+
+    // Loading, should happens quickly
+    if (!tokenA) {
+      return setButtonTitle('...');
+    }
+
+    const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
+
+    // Loading, should happens quickly
+    if (typeof walletTokenABalance === 'undefined') {
+      return setButtonTitle('...');
+    }
+
+    // If user wallet balance doesn't have enough tokens, tell user
+    if (!walletTokenABalance || inputA > walletTokenABalance) {
+      return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
+    }
+  }, [inputA, inputB, tokenA, wallet, walletTokenBalances]);
+
   return (
     <div className={twMerge('relative flex flex-col', className)}>
       {/* Input A */}
@@ -220,7 +294,7 @@ export default function SwapTradingInputs({
             </div>
           ) : null
         }
-        maxButton={connected}
+        maxButton={!connected}
         selectedToken={tokenA}
         tokenList={allowedTokenA}
         onTokenSelect={setTokenA}
@@ -313,7 +387,7 @@ export default function SwapTradingInputs({
       />
 
       {
-        /* Display avaialbe */
+        /* Display available */
         (() => {
           if (!tokenA || !walletTokenBalances) return null;
 
@@ -364,6 +438,18 @@ export default function SwapTradingInputs({
           swapFeesAndAmount={swapFeesAndAmount}
         />
       </div>
+
+      {/* Button to execute action */}
+      <Button
+        className="w-full justify-center mt-8"
+        size="lg"
+        title={buttonTitle}
+        disabled={
+          buttonTitle.includes('Insufficient') ||
+          buttonTitle.includes('not handled yet')
+        }
+        onClick={handleExecuteButton}
+      />
     </div>
   );
 }

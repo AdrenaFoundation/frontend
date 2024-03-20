@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import infoIcon from '../../../../public/images/Icons/info.png';
+import infoIcon from '../../../../public/images/Icons/info.svg';
 
 const InfoAnnotation = ({
   text,
@@ -23,8 +23,8 @@ const InfoAnnotation = ({
         className={twMerge('opacity-50 hover:opacity-100', className)}
         src={infoIcon}
         alt="info icon"
-        width="16"
-        height="16"
+        width="10"
+        height="10"
       />
     </div>
   </Tippy>

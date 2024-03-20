@@ -1,7 +1,7 @@
+import { Wallet } from '@coral-xyz/anchor';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token } from '@/types';
@@ -14,28 +14,24 @@ export const TradeComp = ({
   setSelectedAction,
   tokenA,
   tokenB,
+  wallet,
   setTokenA,
   setTokenB,
-  setInputAValue,
-  setInputBValue,
   openedPosition,
-  setLeverage,
-  buttonTitle,
-  handleExecuteButton,
+  triggerPositionsReload,
+  triggerWalletTokenBalancesReload,
   className,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
   tokenA: Token | null;
   tokenB: Token | null;
+  wallet: Wallet | null;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
-  setInputAValue: (v: number | null) => void;
-  setInputBValue: (v: number | null) => void;
   openedPosition: PositionExtended | null;
-  setLeverage: (value: number) => void;
-  buttonTitle: string;
-  handleExecuteButton: () => void;
+  triggerPositionsReload: () => void;
+  triggerWalletTokenBalancesReload: () => void;
   className?: string;
 }) => {
   return (
@@ -67,11 +63,13 @@ export const TradeComp = ({
                 tokenA={tokenA}
                 tokenB={tokenB}
                 openedPosition={openedPosition}
-                onChangeInputA={setInputAValue}
-                onChangeInputB={setInputBValue}
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
-                onChangeLeverage={setLeverage}
+                wallet={wallet}
+                triggerPositionsReload={triggerPositionsReload}
+                triggerWalletTokenBalancesReload={
+                  triggerWalletTokenBalancesReload
+                }
               />
             ) : (
               <SwapTradingInputs
@@ -79,26 +77,16 @@ export const TradeComp = ({
                 allowedTokenB={window.adrena.client.tokens}
                 tokenA={tokenA}
                 tokenB={tokenB}
-                onChangeInputA={setInputAValue}
-                onChangeInputB={setInputBValue}
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
+                wallet={wallet}
+                triggerWalletTokenBalancesReload={
+                  triggerWalletTokenBalancesReload
+                }
               />
             )}
           </>
         )}
-
-        {/* Button to execute action */}
-        <Button
-          className="w-full justify-center mt-8"
-          size="lg"
-          title={buttonTitle}
-          disabled={
-            buttonTitle.includes('Insufficient') ||
-            buttonTitle.includes('not handled yet')
-          }
-          onClick={handleExecuteButton}
-        />
       </div>
     </div>
   );

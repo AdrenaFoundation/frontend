@@ -124,7 +124,7 @@ export default function PositionInfos({
             <>
               {/* Opened position */}
               <div className="flex flex-col self-center items-end">
-                <div className="text-txtfade">
+                <div className="text-txtfade text-sm font-mono">
                   {inputB !== null && tokenPriceB
                     ? formatNumber(
                         openedPosition.sizeUsd / tokenPriceB,
@@ -133,12 +133,12 @@ export default function PositionInfos({
                     : ''}
                 </div>
 
-                <div className="text-txtfade text-xs">
+                <div className="text-txtfade text-xs font-mono">
                   {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
                 </div>
               </div>
 
-              <div className="ml-2 mr-2 flex items-center">
+              <div className="ml-1 mr-1 flex items-center">
                 {rightArrowElement}
               </div>
             </>
@@ -146,7 +146,7 @@ export default function PositionInfos({
 
           <div className="relative flex flex-col">
             <div className="flex flex-col items-end font-mono">
-              <div className="text-base">
+              <div className="text-base font-mono">
                 {inputB !== null
                   ? formatNumber(
                       inputB,
@@ -154,7 +154,7 @@ export default function PositionInfos({
                     )
                   : '-'}
               </div>
-              <div className="text-sm text-txtfade">
+              <div className="text-sm text-txtfade font-mono">
                 {formatPriceInfo(priceB, false, 2)}
               </div>
             </div>
