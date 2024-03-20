@@ -36,7 +36,7 @@ export function formatNumber(
   displayPlusSymbol = false,
 ): string {
   const str = Number(nb.toFixed(precision)).toLocaleString(undefined, {
-    minimumFractionDigits: precision,
+    minimumFractionDigits: 0,
     maximumFractionDigits: precision,
   });
 
@@ -61,17 +61,26 @@ export function formatPriceInfo(
     return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
   }
 
-  // If the price is very low, display it as it is, to not display $0
-  if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
-    // Never go more than 9 decimals
-    return `$${formatNumber(price, 9, displayPlusSymbol)}`;
-  }
-
   if (price < 0) {
     return `-$${formatNumber(price * -1, decimals)}`;
   }
 
-  return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+  let display = '';
+
+  // If the price is very low, display it as it is, to not display $0
+  if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
+    // Never go more than 6 decimals
+    display = `$${formatNumber(price, 6, displayPlusSymbol)}`;
+  } else {
+    display = `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+  }
+
+  // Put the + in front of the $ if needed
+  if (displayPlusSymbol) {
+    display = `+${display.replace('+', '')}`;
+  }
+
+  return display;
 }
 
 export function formatPercentage(
@@ -129,11 +138,11 @@ export function addNotification({
 
   toast[type](content, {
     position,
-    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration],
+    autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
     hideProgressBar: true,
     closeOnClick: true,
     pauseOnHover: true,
-    draggable: true,
+    draggable: false,
     progress: undefined,
     theme: 'colored',
     icon: false,
@@ -401,17 +410,43 @@ export function getAbbrevWalletAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(address.length - 6)}`;
 }
 
-export function getDaysRemaining(startDate: BN, totalDays: BN) {
+export function formatMilliseconds(milliseconds: number): string {
+  const seconds = Math.floor((milliseconds / 1000) % 60);
+  const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+  const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+  const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
+
+  let formatted = '';
+
+  if (days) {
+    formatted = `${days}d`;
+  }
+
+  if (hours || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${hours}h`;
+  }
+
+  if (minutes || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${minutes}m`;
+  }
+
+  if (seconds || formatted.length) {
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${seconds}s`;
+  }
+
+  return formatted;
+}
+
+// in milliseconds
+export function getLockedStakeRemainingTime(
+  startDate: BN,
+  lockDuration: BN, // in seconds
+): number {
   const start = new Date(startDate.toNumber() * 1000).getTime();
 
-  const today = Date.now();
+  const endDate = start + lockDuration.toNumber() * 1000;
 
-  const daysElapsed = Math.floor((today - start) / 1000 / 3600 / 24);
-
-  const daysRemaining =
-    Math.floor(totalDays.toNumber() / 3600 / 24) - daysElapsed;
-
-  return daysRemaining;
+  return endDate - Date.now();
 }
 
 // i.e percentage = -2 (for -2%)

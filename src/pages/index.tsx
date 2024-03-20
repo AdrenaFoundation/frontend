@@ -6,9 +6,9 @@ export default function Home() {
   const router = useRouter();
 
   // Unused page
-  // Redirect on dashboard
+  // Redirect on trade
   useEffect(() => {
-    router.push('/dashboard');
+    router.push('/trade');
   }, [router]);
 
   return <main className={twMerge('w-full', 'h-full', 'flex', '')}></main>;

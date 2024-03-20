@@ -30,36 +30,34 @@ export default function StakeToken({
   stakeAmount: () => void;
   errorMessage: string;
 }) {
-  const LOCK_PERIODS: { title: LockPeriod }[] = [
-    { title: 0 },
-    { title: 30 },
-    { title: 60 },
-    { title: 90 },
-    { title: 180 },
-    { title: 360 },
-    { title: 720 },
-  ];
+  const LOCK_PERIODS = (
+    [
+      { title: 0 },
+      { title: 30 },
+      { title: 60 },
+      { title: 90 },
+      { title: 180 },
+      { title: 360 },
+      { title: 720 },
+    ] as { title: LockPeriod }[]
+  ).filter((period) => period.title > 0);
 
   return (
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">
-        <div className="mt-5">
-          <h3> Stake {tokenSymbol} </h3>
-          <p className="opacity-75 mt-1">
-            Adrena&apos;s native utility and governance token
-          </p>
-        </div>
-
-        <div>
+        <div className="mt-4">
           <div className="flex flex-row justify-between mb-2">
             <p className="text-sm opacity-50 font-medium"> Enter Amount</p>
+
             <p className="text-sm font-medium">
               <span className="opacity-50"> Balance · </span>
-              {balance ? `${formatNumber(balance, 2)} ${tokenSymbol}` : '–'}
+              {balance !== null
+                ? `${formatNumber(balance, 2)} ${tokenSymbol}`
+                : '–'}
             </p>
           </div>
 
-          <div className="relative flex flex-row w-full">
+          <div className="relative flex flex-row w-full mt-2">
             <div className="flex items-center bg-gray-200 border border-gray-400 rounded-l-xl px-3  border-r-none">
               <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
             </div>
@@ -79,9 +77,8 @@ export default function StakeToken({
               title="MAX"
               variant="secondary"
               onClick={() => {
-                if (!balance) {
-                  return;
-                }
+                if (balance === null) return;
+
                 setAmount(balance);
               }}
             />
@@ -95,9 +92,13 @@ export default function StakeToken({
               Choose a lock period (days)
             </p>
           </div>
+
           <TabSelect
             className="font-mono"
             selected={lockPeriod}
+            initialSelectedIndex={LOCK_PERIODS.findIndex(
+              (x) => x.title === lockPeriod,
+            )}
             tabs={LOCK_PERIODS}
             onClick={(title) => {
               setLockPeriod(title);

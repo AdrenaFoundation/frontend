@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
-import { RATE_DECIMALS } from '@/constant';
+import { RATE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -134,17 +134,12 @@ export default function PositionInfos({
                       {inputB !== null && tokenPriceB
                         ? formatNumber(
                             openedPosition.sizeUsd / tokenPriceB,
-                            tokenB.decimals,
+                            tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
                           )
                         : ''}
                     </div>
 
-                    <div
-                      className={twMerge(
-                        isInfoLoading ? 'opacity-25' : 'opacity-100',
-                        'text-txtfade text-xs transition-opacity duration-300',
-                      )}
-                    >
+                    <div className="text-txtfade text-xs">
                       {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
                     </div>
                   </div>
@@ -159,10 +154,12 @@ export default function PositionInfos({
                 <div className="flex flex-col items-end font-mono">
                   <div className="text-base">
                     {inputB !== null
-                      ? formatNumber(inputB, tokenB.decimals)
+                      ? formatNumber(
+                          inputB,
+                          tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
+                        )
                       : '-'}
                   </div>
-
                   <div className="text-sm text-txtfade">
                     {formatPriceInfo(priceB, false, 2)}
                   </div>
