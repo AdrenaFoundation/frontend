@@ -4,7 +4,6 @@ import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
@@ -49,7 +48,6 @@ export default function Trade({
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
   const [isInitialized, setIsInitialize] = useState<boolean>(false);
-  const [cookies] = useCookies(['terms-and-conditions-acceptance']);
 
   // There is one position max per side per custody
   // If the position exist for the selected custody, store it in this variable
@@ -59,8 +57,6 @@ export default function Trade({
 
   // Unused for now
   const [leverage, setLeverage] = useState<number | null>(null);
-
-  const isEligibleToTrade = Boolean(cookies['terms-and-conditions-acceptance']);
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
