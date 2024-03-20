@@ -43,7 +43,6 @@ export default function StakeToken({
     LOCK_PERIODS = [{ title: 0 }, ...LOCK_PERIODS];
   }
 
-  console.log('LOCK_PERIODS', LOCK_PERIODS, tokenSymbol);
   return (
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">
