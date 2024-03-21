@@ -2,8 +2,8 @@ import Image from 'next/image';
 import React from 'react';
 
 import Button from '@/components/common/Button/Button';
-import LockedStakedElement from '@/components/pages/earn/LockedStakedElement';
-import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/earn';
+import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
+import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
 import { LockedStakeExtended, LockPeriod } from '@/types';
 
 export default function ADXStakeOverview({
