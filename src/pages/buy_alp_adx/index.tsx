@@ -13,8 +13,13 @@ import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
+import coralImg from '../../../public/images/coral.svg';
 import externalLinkIcon from '../../../public/images/external-link-logo.png';
+import fishImg from '../../../public/images/fish.svg';
+import gradientImg from '../../../public/images/gradient.svg';
+import jellyfishImg from '../../../public/images/jellyfish.svg';
 import orcaImg from '../../../public/images/orca.png';
+import shimmerImg from '../../../public/images/shimer.svg';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -255,11 +260,44 @@ export default function Buy({
           </div>
         </div>
 
-        <div className="bg-[#ffd15d] rounded-2xl h-full w-full flex relative p-4 justify-center">
+        <div
+          className="rounded-2xl h-full w-full flex relative p-4 justify-center bg-cover bg-center"
+          style={{ backgroundImage: `url('')` }}
+        >
           <Image
             src={orcaImg}
             alt="ADX icon"
             className="absolute mb-12 mt-8 w-[20em]"
+          />
+
+          <Image
+            src={jellyfishImg}
+            alt="ADX icon"
+            className="absolute mb-12 mt-8 w-[20em]"
+          />
+
+          <Image
+            src={fishImg}
+            alt="ADX icon"
+            className="absolute mb-12 mt-8 w-[20em]"
+          />
+
+          <Image
+            src={coralImg}
+            alt="ADX icon"
+            className="absolute mb-12 mt-8 w-[20em]"
+          />
+
+          <Image
+            src={shimmerImg}
+            alt="ADX icon"
+            className="absolute mb-12 mt-8 w-[20em]"
+          />
+
+          <Image
+            src={gradientImg}
+            alt="ADX icon"
+            className="absolute top-0 left-0 w-full h-full bg-cover"
           />
 
           <Button
