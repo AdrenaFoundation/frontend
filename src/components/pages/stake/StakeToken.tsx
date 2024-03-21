@@ -40,7 +40,13 @@ export default function StakeToken({
       { title: 360 },
       { title: 720 },
     ] as { title: LockPeriod }[]
-  ).filter((period) => period.title > 0);
+  ).filter((period) => {
+    if (tokenSymbol === 'ALP') {
+      return period.title > 0;
+    }
+
+    return true;
+  });
 
   return (
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
