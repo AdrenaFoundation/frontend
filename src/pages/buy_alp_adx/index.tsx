@@ -1,18 +1,23 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
-import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
-import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
-import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
+import ALPInfo from '@/components/pages/buy_alp_adx/ALPInfo/ALPInfo';
+import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
+import SaveOnFees from '@/components/pages/buy_alp_adx/SaveOnFees/SaveOnFees';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
+import externalLinkIcon from '../../../public/images/external-link-logo.png';
+import orcaImg from '../../../public/images/orca.png';
+
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 type feesAndAmountsType = {
@@ -23,46 +28,27 @@ type feesAndAmountsType = {
   };
 };
 
-export default function SwapALP({
+export default function Buy({
   triggerWalletTokenBalancesReload,
   custodies,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
-  const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
-  const [feesUsd, setFeesUsd] = useState<number | null>(null);
-  const [feesAndAmounts, setFeesAndAmounts] =
-    useState<feesAndAmountsType | null>(null);
+  const [alpInput, setAlpInput] = useState<number | null>(null);
   const [allowedCollateralTokens, setAllowedCollateralTokens] = useState<
     Token[] | null
   >(null);
+  const [feesUsd, setFeesUsd] = useState<number | null>(null);
+  const [feesAndAmounts, setFeesAndAmounts] =
+    useState<feesAndAmountsType | null>(null);
+  const [isFeesLoading, setIsFeesLoading] = useState(false);
   const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
-
   const debouncedInputs = useDebounce(
     selectedAction === 'buy' ? collateralInput : alpInput,
     1000,
-  );
-  const [isFeesLoading, setIsFeesLoading] = useState(false);
-
-  const marketCap = useMemo(
-    () =>
-      window.adrena.client.tokens.reduce((acc, token) => {
-        const custody = custodies
-          ? custodies.find((cus) => cus.mint === token.mint)
-          : null;
-
-        if (!custody) return acc;
-
-        const price = tokenPrices[token.symbol];
-        if (price === null || custody.owned === null) {
-          return acc;
-        }
-        return acc + custody.owned * price;
-      }, 0),
-    [tokenPrices, custodies],
   );
 
   const getFeesAndAmounts = useCallback(async () => {
@@ -217,34 +203,22 @@ export default function SwapALP({
   }
 
   return (
-    <>
-      <div className="absolute w-full h-full left-0 top-0 bottom-0 overflow-hidden">
-        <RiveAnimation
-          src="./rive/blob-bg.riv"
-          layout={
-            new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopLeft })
-          }
-          className={'absolute top-0 md:top-[-50px] left-0 w-[700px] h-full'}
-        />
+    <div className="flex flex-col lg:flex-row items-evenly gap-x-4">
+      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+        <div className="flex items-center">
+          <Image
+            src={window.adrena.client.alpToken.image}
+            width={32}
+            height={32}
+            alt="ALP icon"
+          />
 
-        <RiveAnimation
-          src="./rive/fred-bg.riv"
-          layout={
-            new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopRight })
-          }
-          className={'absolute right-0 w-[1500px]  h-full'}
-        />
-      </div>
+          <div className="flex flex-col justify-start ml-2">
+            <h2 className="">ALP</h2>
+            <span className="opacity-50">The Pool Token</span>
+          </div>
+        </div>
 
-      <h2 className="z-20">Buy / Sell ALP</h2>
-
-      <p className="z-20">
-        Purchase ALP tokens to earn fees from swaps and leverages trading.
-      </p>
-
-      <ALPInfo marketCap={marketCap} />
-
-      <div className="flex flex-col lg:flex-row gap-5 mt-5 z-20">
         <ALPSwap
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}
@@ -264,18 +238,41 @@ export default function SwapALP({
           alpPrice={alpPrice}
           collateralPrice={collateralPrice}
         />
-
-        <SaveOnFees
-          feesAndAmounts={feesAndAmounts}
-          allowedCollateralTokens={allowedCollateralTokens}
-          onCollateralTokenChange={onCollateralTokenChange}
-          setCollateralInput={setCollateralInput}
-          collateralToken={collateralToken}
-          selectedAction={selectedAction}
-          marketCap={marketCap}
-          isFeesLoading={isFeesLoading}
-        />
       </div>
-    </>
+
+      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+        <div className="flex items-center">
+          <Image
+            src={window.adrena.client.adxToken.image}
+            width={32}
+            height={32}
+            alt="ADX icon"
+          />
+
+          <div className="flex flex-col justify-start ml-2">
+            <h2 className="">ADX</h2>
+            <span className="opacity-50">The Governance Token</span>
+          </div>
+        </div>
+
+        <div className="bg-[#ffd15d] rounded-2xl h-full w-full flex relative p-4 justify-center">
+          <Image
+            src={orcaImg}
+            alt="ADX icon"
+            className="absolute mb-12 mt-8 w-[20em]"
+          />
+
+          <Button
+            className="mt-auto w-full ml-auto mr-auto"
+            rightIcon={externalLinkIcon}
+            title="Buy ADX on Orca"
+            size="lg"
+            onClick={() => {
+              window.open('https://www.orca.so');
+            }}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -5,7 +5,6 @@ import { twMerge } from 'tailwind-merge';
 
 import { UserProfileExtended } from '@/types';
 
-import arrowIcon from '../../../public/images/arrow-right.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
@@ -53,29 +52,6 @@ export default function Header({
           : null} */}
 
         {PAGES.map((page) => {
-          if (page.name === 'Buy ADX') {
-            return (
-              <Link
-                target="__blank"
-                href={page.link}
-                className={twMerge(
-                  'font-normal text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 flex',
-                  pathname === page.link ? 'opacity-100' : '',
-                )}
-                key={page.name}
-              >
-                <span>{page.name}</span>
-                <Image
-                  src={arrowIcon}
-                  alt="arrow"
-                  width={12}
-                  height={12}
-                  className="rotate-[-45deg] ml-1"
-                />
-              </Link>
-            );
-          }
-
           return (
             <Link
               href={page.link}

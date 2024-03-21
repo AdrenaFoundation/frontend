@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -29,6 +30,7 @@ export default function ALPSwap({
   setAlpPrice,
   setCollateralPrice,
   setIsFeesLoading,
+  className,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
@@ -174,7 +176,12 @@ export default function ALPSwap({
   })();
 
   return (
-    <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 lg:w-[450px] p-4 rounded-2xl h-fit">
+    <div
+      className={twMerge(
+        'bg-gray-300/85 backdrop-blur-md border border-gray-200 p-4 rounded-2xl h-fit',
+        className,
+      )}
+    >
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'buy' }, { title: 'sell' }]}

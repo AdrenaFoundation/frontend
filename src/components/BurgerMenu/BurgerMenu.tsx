@@ -7,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 
 import { UserProfileExtended } from '@/types';
 
-import arrowIcon from '../../../public/images/arrow-right.svg';
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import githubLogo from '../../../public/images/github.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
@@ -80,34 +79,6 @@ export default function BurgerMenu({
             <div>
               <ul className="flex flex-col gap-3 mt-4">
                 {PAGES.map((page) => {
-                  if (page.name === 'Buy ADX') {
-                    return (
-                      <li
-                        className={twMerge(
-                          'font-normal text-xl opacity-50 hover:opacity-100 transition-opacity duration-300 w-full',
-                          pathname === page.link ? 'opacity-100' : '',
-                        )}
-                        key={page.name}
-                      >
-                        <Link
-                          target="__blank"
-                          href={page.link}
-                          className="w-full flex"
-                          onClick={() => setIsOpen(!open)}
-                        >
-                          <div>{page.name}</div>
-                          <Image
-                            src={arrowIcon}
-                            alt="arrow"
-                            width={16}
-                            height={16}
-                            className="rotate-[-45deg] ml-1"
-                          />
-                        </Link>
-                      </li>
-                    );
-                  }
-
                   return (
                     <li
                       className={twMerge(
