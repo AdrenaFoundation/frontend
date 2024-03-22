@@ -1338,7 +1338,7 @@ export class AdrenaClient {
 
     preInstructions.push(modifyComputeUnitsIx);
 
-    if (position.token.mint.equals(NATIVE_MINT)) {
+    if (position.collateralToken.mint.equals(NATIVE_MINT)) {
       // Make sure the WSOL ATA exists
       preInstructions.push(
         ...(await createPrepareWSOLAccountInstructions({

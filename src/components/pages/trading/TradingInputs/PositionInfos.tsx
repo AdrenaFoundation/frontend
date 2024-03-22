@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
-import { RATE_DECIMALS, USD_DECIMALS } from '@/constant';
+import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -24,6 +24,7 @@ export default function PositionInfos({
   priceB,
   setTokenB,
   handleInputBChange,
+  isInfoLoading,
 }: {
   className?: string;
   positionInfos: {
@@ -46,6 +47,7 @@ export default function PositionInfos({
   priceB: null | number;
   setTokenB: (t: Token | null) => void;
   handleInputBChange: (n: number) => void;
+  isInfoLoading: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -114,103 +116,113 @@ export default function PositionInfos({
           }}
         />
 
-        <div className="flex ml-auto">
-          <InfoAnnotation
-            text="Amount of tokens being traded."
-            className="w-3 grow-0 mr-3 mb-4"
-          />
+        {!isInfoLoading ? (
+          <>
+            <div className="flex ml-auto">
+              <InfoAnnotation
+                text="Amount of tokens being traded."
+                className="w-3 grow-0 mr-3 mb-4"
+              />
 
-          {openedPosition && tokenPriceB && inputB ? (
-            <>
-              {/* Opened position */}
-              <div className="flex flex-col self-center items-end">
-                <div className="text-txtfade text-sm font-mono">
-                  {inputB !== null && tokenPriceB
-                    ? formatNumber(
-                        openedPosition.sizeUsd / tokenPriceB,
-                        tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
-                      )
-                    : ''}
+              {openedPosition && tokenPriceB && inputB ? (
+                <>
+                  {/* Opened position */}
+                  <div className="flex flex-col self-center items-end">
+                    <div className="text-txtfade">
+                      {inputB !== null && tokenPriceB
+                        ? formatNumber(
+                            openedPosition.sizeUsd / tokenPriceB,
+                            tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
+                          )
+                        : ''}
+                    </div>
+
+                    <div className="text-txtfade text-xs">
+                      {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
+                    </div>
+                  </div>
+
+                  <div className="ml-2 mr-2 flex items-center">
+                    {rightArrowElement}
+                  </div>
+                </>
+              ) : null}
+
+              <div className="relative flex flex-col">
+                <div className="flex flex-col items-end font-mono">
+                  <div className="text-base">
+                    {inputB !== null
+                      ? formatNumber(
+                          inputB,
+                          tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
+                        )
+                      : '-'}
+                  </div>
+                  <div className="text-sm text-txtfade">
+                    {formatPriceInfo(priceB, false, 2)}
+                  </div>
                 </div>
-
-                <div className="text-txtfade text-xs font-mono">
-                  {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
-                </div>
-              </div>
-
-              <div className="ml-1 mr-1 flex items-center">
-                {rightArrowElement}
-              </div>
-            </>
-          ) : null}
-
-          <div className="relative flex flex-col">
-            <div className="flex flex-col items-end font-mono">
-              <div className="text-base font-mono">
-                {inputB !== null
-                  ? formatNumber(
-                      inputB,
-                      tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
-                    )
-                  : '-'}
-              </div>
-              <div className="text-sm text-txtfade font-mono">
-                {formatPriceInfo(priceB, false, 2)}
               </div>
             </div>
-          </div>
-        </div>
 
-        {openedPosition && tokenPriceB && inputB && priceB
-          ? arrowElement(
-              openedPosition.sizeUsd < priceB ? 'up' : 'down',
-              'right-[0.7em]',
-            )
-          : null}
+            {openedPosition && tokenPriceB && inputB && priceB
+              ? arrowElement(
+                  openedPosition.sizeUsd < priceB ? 'up' : 'down',
+                  'right-[0.7em]',
+                )
+              : null}
+          </>
+        ) : (
+          <div className="w-full h-[40px] bg-gray-300 rounded-xl" />
+        )}
       </div>
 
       <div className="flex flex-col pt-2 pb-2 pl-4 pr-4">
         <div className={infoRowStyle}>
           <span className="text-txtfade text-sm flex">
             <InfoAnnotation
-              text="Tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay borrow fees. If the position runs out of collateral, it gets liquidated."
+              text="Collateral backing the position. Position can be liquidated if this drop below xx% of position value"
               className="mr-1 w-3"
             />
             Collateral
           </span>
 
-          <span className="font-mono text-sm flex">
-            {(() => {
-              if (!positionInfos) return '-';
+          {!isInfoLoading ? (
+            <span className="font-mono text-sm flex">
+              {(() => {
+                if (!positionInfos) return '-';
 
-              if (openedPosition) {
-                const newCollateralUsd =
-                  positionInfos.collateralUsd + openedPosition.collateralUsd;
+                if (openedPosition) {
+                  const newCollateralUsd =
+                    positionInfos.collateralUsd + openedPosition.collateralUsd;
 
-                return (
-                  <>
-                    {/* Opened position */}
-                    <div className="text-txtfade text-xs self-center">
-                      {formatPriceInfo(openedPosition.collateralUsd)}
-                    </div>
+                  return (
+                    <>
+                      {/* Opened position */}
+                      <div className="text-txtfade text-xs self-center">
+                        {formatPriceInfo(openedPosition.collateralUsd)}
+                      </div>
 
-                    {rightArrowElement}
+                      {rightArrowElement}
 
-                    {/* New position */}
-                    <div>{formatPriceInfo(newCollateralUsd)}</div>
+                      {/* New position */}
+                      <div>{formatPriceInfo(newCollateralUsd)}</div>
 
-                    {arrowElement(
-                      newCollateralUsd > positionInfos.collateralUsd
-                        ? 'up'
-                        : 'down',
-                    )}
-                  </>
-                );
-              }
+                      {arrowElement(
+                        newCollateralUsd > positionInfos.collateralUsd
+                          ? 'up'
+                          : 'down',
+                      )}
+                    </>
+                  );
+                }
 
-              return formatPriceInfo(positionInfos.collateralUsd);
-            })()}
-          </span>
+                return formatPriceInfo(positionInfos.collateralUsd);
+              })()}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className={infoRowStyle}>
@@ -222,81 +234,89 @@ export default function PositionInfos({
             Leverage
           </span>
 
-          <span className="font-mono text-sm flex">
-            {(() => {
-              if (!positionInfos || !tokenPriceB) return '-';
+          {!isInfoLoading ? (
+            <span className="font-mono text-sm flex">
+              {(() => {
+                if (!positionInfos || !tokenPriceB) return '-';
 
-              if (openedPosition) {
-                const newLeverage =
-                  (openedPosition.sizeUsd * openedPosition.leverage +
-                    positionInfos.sizeUsd * leverage) /
-                  (openedPosition.sizeUsd + positionInfos.sizeUsd);
+                if (openedPosition) {
+                  const newLeverage =
+                    (openedPosition.sizeUsd * openedPosition.leverage +
+                      positionInfos.sizeUsd * leverage) /
+                    (openedPosition.sizeUsd + positionInfos.sizeUsd);
 
-                return (
-                  <>
-                    {/* Opened position */}
-                    <div className="text-txtfade text-xs self-center">
-                      {formatNumber(openedPosition.leverage, 2)}x
-                    </div>
+                  return (
+                    <>
+                      {/* Opened position */}
+                      <div className="text-txtfade text-xs self-center">
+                        {formatNumber(openedPosition.leverage, 2)}x
+                      </div>
 
-                    {rightArrowElement}
+                      {rightArrowElement}
 
-                    {/* New position */}
-                    <div>{formatNumber(newLeverage, 2)}x</div>
+                      {/* New position */}
+                      <div>{formatNumber(newLeverage, 2)}x</div>
 
-                    {arrowElement(
-                      newLeverage > openedPosition.leverage ? 'up' : 'down',
-                    )}
-                  </>
-                );
-              }
+                      {arrowElement(
+                        newLeverage > openedPosition.leverage ? 'up' : 'down',
+                      )}
+                    </>
+                  );
+                }
 
-              return <div>{formatNumber(leverage, 2)}x</div>;
-            })()}
-          </span>
+                return <div>{formatNumber(leverage, 2)}x</div>;
+              })()}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className={infoRowStyle}>
           <span className="text-txtfade text-sm flex">
             <InfoAnnotation
-              text="Token's price at which the trade begins."
+              text="Token price at which the position is opened."
               className="mr-1 w-3"
             />
             Entry Price
           </span>
 
-          <span className="flex font-mono text-sm">
-            {(() => {
-              if (!positionInfos || !tokenPriceB) return '-';
+          {!isInfoLoading ? (
+            <span className="flex font-mono text-sm">
+              {(() => {
+                if (!positionInfos || !tokenPriceB) return '-';
 
-              if (openedPosition) {
-                const newEntryPrice =
-                  (openedPosition.sizeUsd * openedPosition.price +
-                    positionInfos.sizeUsd * tokenPriceB) /
-                  (openedPosition.sizeUsd + positionInfos.sizeUsd);
+                if (openedPosition) {
+                  const newEntryPrice =
+                    (openedPosition.sizeUsd * openedPosition.price +
+                      positionInfos.sizeUsd * tokenPriceB) /
+                    (openedPosition.sizeUsd + positionInfos.sizeUsd);
 
-                return (
-                  <>
-                    {/* Opened position */}
-                    <div className="text-txtfade text-xs self-center">
-                      {formatPriceInfo(openedPosition.price)}
-                    </div>
+                  return (
+                    <>
+                      {/* Opened position */}
+                      <div className="text-txtfade text-xs self-center">
+                        {formatPriceInfo(openedPosition.price)}
+                      </div>
 
-                    {rightArrowElement}
+                      {rightArrowElement}
 
-                    {/* New position */}
-                    <div>{formatPriceInfo(newEntryPrice)}</div>
+                      {/* New position */}
+                      <div>{formatPriceInfo(newEntryPrice)}</div>
 
-                    {arrowElement(
-                      newEntryPrice > openedPosition.price ? 'up' : 'down',
-                    )}
-                  </>
-                );
-              }
+                      {arrowElement(
+                        newEntryPrice > openedPosition.price ? 'up' : 'down',
+                      )}
+                    </>
+                  );
+                }
 
-              return formatPriceInfo(positionInfos.entryPrice);
-            })()}
-          </span>
+                return formatPriceInfo(positionInfos.entryPrice);
+              })()}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className={infoRowStyle}>
@@ -308,42 +328,46 @@ export default function PositionInfos({
             Liquidation Price
           </span>
 
-          <span className="flex font-mono text-sm">
-            {(() => {
-              if (!positionInfos) return '-';
+          {!isInfoLoading ? (
+            <span className="flex font-mono text-sm">
+              {(() => {
+                if (!positionInfos) return '-';
 
-              if (openedPosition) {
-                if (!openedPosition.liquidationPrice) return '-';
+                if (openedPosition) {
+                  if (!openedPosition.liquidationPrice) return '-';
 
-                const newLiquidationPrice =
-                  (openedPosition.sizeUsd * openedPosition.liquidationPrice +
-                    positionInfos.sizeUsd * positionInfos.liquidationPrice) /
-                  (openedPosition.sizeUsd + positionInfos.sizeUsd);
+                  const newLiquidationPrice =
+                    (openedPosition.sizeUsd * openedPosition.liquidationPrice +
+                      positionInfos.sizeUsd * positionInfos.liquidationPrice) /
+                    (openedPosition.sizeUsd + positionInfos.sizeUsd);
 
-                return (
-                  <>
-                    {/* Opened position */}
-                    <div className="text-txtfade text-xs self-center">
-                      {formatPriceInfo(openedPosition.liquidationPrice)}
-                    </div>
+                  return (
+                    <>
+                      {/* Opened position */}
+                      <div className="text-txtfade text-xs self-center">
+                        {formatPriceInfo(openedPosition.liquidationPrice)}
+                      </div>
 
-                    {rightArrowElement}
+                      {rightArrowElement}
 
-                    {/* New position */}
-                    <div>{formatPriceInfo(newLiquidationPrice)}</div>
+                      {/* New position */}
+                      <div>{formatPriceInfo(newLiquidationPrice)}</div>
 
-                    {arrowElement(
-                      newLiquidationPrice > openedPosition.price
-                        ? 'up'
-                        : 'down',
-                    )}
-                  </>
-                );
-              }
+                      {arrowElement(
+                        newLiquidationPrice > openedPosition.price
+                          ? 'up'
+                          : 'down',
+                      )}
+                    </>
+                  );
+                }
 
-              return formatPriceInfo(positionInfos.liquidationPrice);
-            })()}
-          </span>
+                return formatPriceInfo(positionInfos.liquidationPrice);
+              })()}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
@@ -359,51 +383,57 @@ export default function PositionInfos({
             {openedPosition ? 'Increase' : 'Open'} Position Fees
           </span>
 
-          <span className="font-mono text-sm">
-            {positionInfos && positionInfos?.swapFeeUsd ? (
-              <Tippy
-                content={
-                  <ul className="flex flex-col gap-2">
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Swap fees:</p>
-                      <p className="text-sm font-mono">
-                        {`${formatPriceInfo(positionInfos.swapFeeUsd)}`}
-                      </p>
-                    </li>
+          {!isInfoLoading ? (
+            <span className="font-mono text-sm">
+              {positionInfos && positionInfos?.swapFeeUsd ? (
+                <Tippy
+                  content={
+                    <ul className="flex flex-col gap-2">
+                      <li className="flex flex-row gap-2 justify-between">
+                        <p className="text-sm text-txtfade">Swap fees:</p>
+                        <p className="text-sm font-mono">
+                          {`${formatPriceInfo(positionInfos.swapFeeUsd)}`}
+                        </p>
+                      </li>
 
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">
-                        Open position fees:
-                      </p>
-                      <p className="text-sm font-mono">
-                        {`${formatPriceInfo(positionInfos.openPositionFeeUsd)}`}
-                      </p>
-                    </li>
+                      <li className="flex flex-row gap-2 justify-between">
+                        <p className="text-sm text-txtfade">
+                          Open position fees:
+                        </p>
+                        <p className="text-sm font-mono">
+                          {`${formatPriceInfo(
+                            positionInfos.openPositionFeeUsd,
+                          )}`}
+                        </p>
+                      </li>
 
-                    <div className="w-full h-[1px] bg-gray-300" />
+                      <div className="w-full h-[1px] bg-gray-300" />
 
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Total fees:</p>
-                      <p className="text-sm font-mono">
-                        {`${formatPriceInfo(
-                          positionInfos.totalOpenPositionFeeUsd,
-                        )}`}
-                      </p>
-                    </li>
-                  </ul>
-                }
-                placement="bottom"
-              >
-                <div className="tooltip-target">
-                  {formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)}
-                </div>
-              </Tippy>
-            ) : positionInfos ? (
-              formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)
-            ) : (
-              '-'
-            )}
-          </span>
+                      <li className="flex flex-row gap-2 justify-between">
+                        <p className="text-sm text-txtfade">Total fees:</p>
+                        <p className="text-sm font-mono">
+                          {`${formatPriceInfo(
+                            positionInfos.totalOpenPositionFeeUsd,
+                          )}`}
+                        </p>
+                      </li>
+                    </ul>
+                  }
+                  placement="bottom"
+                >
+                  <div className="tooltip-target">
+                    {formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)}
+                  </div>
+                </Tippy>
+              ) : positionInfos ? (
+                formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)
+              ) : (
+                '-'
+              )}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className={infoRowStyle}>
@@ -415,40 +445,44 @@ export default function PositionInfos({
             Exit Position Fees
           </span>
 
-          <span className="font-mono text-sm flex">
-            {(() => {
-              if (!positionInfos) return '-';
+          {!isInfoLoading ? (
+            <span className="font-mono text-sm flex">
+              {(() => {
+                if (!positionInfos) return '-';
 
-              if (openedPosition) {
-                if (!openedPosition.nativeObject.exitFeeUsd) return '-';
+                if (openedPosition) {
+                  if (!openedPosition.nativeObject.exitFeeUsd) return '-';
 
-                const newExitPositionFeeUsd =
-                  openedPosition.exitFeeUsd + positionInfos.exitFeeUsd;
+                  const newExitPositionFeeUsd =
+                    openedPosition.exitFeeUsd + positionInfos.exitFeeUsd;
 
-                return (
-                  <>
-                    {/* Opened position */}
-                    <div className="text-txtfade text-xs self-center">
-                      {formatPriceInfo(openedPosition.exitFeeUsd)}
-                    </div>
+                  return (
+                    <>
+                      {/* Opened position */}
+                      <div className="text-txtfade text-xs self-center">
+                        {formatPriceInfo(openedPosition.exitFeeUsd)}
+                      </div>
 
-                    {rightArrowElement}
+                      {rightArrowElement}
 
-                    {/* New position */}
-                    <div>{formatPriceInfo(newExitPositionFeeUsd)}</div>
+                      {/* New position */}
+                      <div>{formatPriceInfo(newExitPositionFeeUsd)}</div>
 
-                    {arrowElement(
-                      newExitPositionFeeUsd > openedPosition.exitFeeUsd
-                        ? 'up'
-                        : 'down',
-                    )}
-                  </>
-                );
-              }
+                      {arrowElement(
+                        newExitPositionFeeUsd > openedPosition.exitFeeUsd
+                          ? 'up'
+                          : 'down',
+                      )}
+                    </>
+                  );
+                }
 
-              return formatPriceInfo(positionInfos.exitFeeUsd);
-            })()}
-          </span>
+                return formatPriceInfo(positionInfos.exitFeeUsd);
+              })()}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className={infoRowStyle}>
@@ -460,41 +494,46 @@ export default function PositionInfos({
             Liquidation Fees
           </span>
 
-          <span className="font-mono text-sm flex">
-            {(() => {
-              if (!positionInfos) return '-';
+          {!isInfoLoading ? (
+            <span className="font-mono text-sm flex">
+              {(() => {
+                if (!positionInfos) return '-';
 
-              if (openedPosition) {
-                if (!openedPosition.nativeObject.liquidationFeeUsd) return '-';
+                if (openedPosition) {
+                  if (!openedPosition.nativeObject.liquidationFeeUsd)
+                    return '-';
 
-                const newLiquidationFeeUsd =
-                  openedPosition.liquidationFeeUsd +
-                  positionInfos.liquidationFeeUsd;
+                  const newLiquidationFeeUsd =
+                    openedPosition.liquidationFeeUsd +
+                    positionInfos.liquidationFeeUsd;
 
-                return (
-                  <>
-                    {/* Opened position */}
-                    <div className="text-txtfade text-xs self-center">
-                      {formatPriceInfo(openedPosition.liquidationFeeUsd)}
-                    </div>
+                  return (
+                    <>
+                      {/* Opened position */}
+                      <div className="text-txtfade text-xs self-center">
+                        {formatPriceInfo(openedPosition.liquidationFeeUsd)}
+                      </div>
 
-                    {rightArrowElement}
+                      {rightArrowElement}
 
-                    {/* New position */}
-                    <div>{formatPriceInfo(newLiquidationFeeUsd)}</div>
+                      {/* New position */}
+                      <div>{formatPriceInfo(newLiquidationFeeUsd)}</div>
 
-                    {arrowElement(
-                      newLiquidationFeeUsd > openedPosition.liquidationFeeUsd
-                        ? 'up'
-                        : 'down',
-                    )}
-                  </>
-                );
-              }
+                      {arrowElement(
+                        newLiquidationFeeUsd > openedPosition.liquidationFeeUsd
+                          ? 'up'
+                          : 'down',
+                      )}
+                    </>
+                  );
+                }
 
-              return formatPriceInfo(positionInfos.liquidationFeeUsd);
-            })()}
-          </span>
+                return formatPriceInfo(positionInfos.liquidationFeeUsd);
+              })()}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className={infoRowStyle}>
@@ -506,11 +545,15 @@ export default function PositionInfos({
             Current Borrow Fees
           </span>
 
-          <span className="font-mono text-sm">
-            {custody && tokenB
-              ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}%/hr`
-              : '-'}
-          </span>
+          {!isInfoLoading ? (
+            <span className="font-mono text-sm">
+              {custody && tokenB
+                ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}%/hr`
+                : '-'}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
 
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
@@ -524,11 +567,15 @@ export default function PositionInfos({
             Available Liquidity
           </span>
 
-          <span className="font-mono text-sm">
-            {custody && tokenPriceB
-              ? formatPriceInfo(custody.liquidity * tokenPriceB)
-              : '-'}
-          </span>
+          {!isInfoLoading ? (
+            <span className="font-mono text-sm">
+              {custody && tokenPriceB
+                ? formatPriceInfo(custody.liquidity * tokenPriceB)
+                : '-'}
+            </span>
+          ) : (
+            <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+          )}
         </div>
       </div>
     </div>

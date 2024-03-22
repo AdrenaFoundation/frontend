@@ -74,6 +74,8 @@ export default function LongShortTradingInputs({
   const [buttonTitle, setButtonTitle] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [isInfoLoading, setIsInfoLoading] = useState(false);
+
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
 
@@ -206,6 +208,8 @@ export default function LongShortTradingInputs({
       return;
     }
 
+    setIsInfoLoading(true);
+
     // Reset inputB as the infos are not accurate anymore
     setPositionInfos(null);
     setInputB(null);
@@ -239,6 +243,10 @@ export default function LongShortTradingInputs({
         setErrorMessage('Error calculating position');
 
         console.log('Ignored error:', err);
+      } finally {
+        setTimeout(() => {
+          setIsInfoLoading(false);
+        }, 500);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -415,7 +423,7 @@ export default function LongShortTradingInputs({
         />
       </div>
 
-      <div className="flex flex-col mt-5">
+      <div className="flex flex-col mt-5 transition-opacity duration-500">
         <div className="text-sm flex items-center">
           Position
           <InfoAnnotation
@@ -448,6 +456,7 @@ export default function LongShortTradingInputs({
           priceB={priceB}
           setTokenB={setTokenB}
           handleInputBChange={handleInputBChange}
+          isInfoLoading={isInfoLoading}
         />
 
         {errorMessage !== null ? (

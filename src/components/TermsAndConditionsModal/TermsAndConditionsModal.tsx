@@ -79,7 +79,7 @@ function TermsAndConditionsModal({
         </span>
       </div>
 
-      <div className="flex w-full justify-around pt-6 mt-6 border-t border-grey">
+      <div className="flex w-full flex-row gap-3  pt-6 mt-6 border-t border-grey">
         {readonly ? (
           <>
             <Button
@@ -97,7 +97,7 @@ function TermsAndConditionsModal({
         ) : (
           <>
             <Button
-              title="[D]ecline"
+              title="Decline"
               size="lg"
               variant="outline"
               className="w-full"
@@ -109,7 +109,7 @@ function TermsAndConditionsModal({
             />
 
             <Button
-              title="[A]gree"
+              title="Agree"
               size="lg"
               className="w-full"
               onClick={() => {
