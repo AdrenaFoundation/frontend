@@ -79,6 +79,7 @@ export default function ALPSwap({
         });
 
         triggerWalletTokenBalancesReload();
+        setCollateralInput(null);
 
         return addSuccessTxNotification({
           title: 'Successful Transaction',
@@ -109,6 +110,7 @@ export default function ALPSwap({
       });
 
       triggerWalletTokenBalancesReload();
+      setCollateralInput(null);
 
       return addSuccessTxNotification({
         title: 'Successfull Transaction',
