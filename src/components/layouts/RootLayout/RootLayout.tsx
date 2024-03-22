@@ -26,7 +26,6 @@ const RootLayout = ({
     { name: 'Stake', link: '/stake' },
     { name: 'Buy ALP/ADX', link: '/buy_alp_adx' },
     // { name: 'Buy ADX', link: 'https://www.orca.so' },
-    // { name: 'Referral', link: '/referral' },
     { name: 'Monitoring', link: '/monitoring' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
