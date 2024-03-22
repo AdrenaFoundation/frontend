@@ -1,25 +1,14 @@
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
-import ALPInfo from '@/components/pages/buy_alp_adx/ALPInfo/ALPInfo';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
-import SaveOnFees from '@/components/pages/buy_alp_adx/SaveOnFees/SaveOnFees';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import OrcaLink from '@/components/pages/buy_alp_adx/OrcaLink/OrcaLink';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
-
-import coralImg from '../../../public/images/coral.svg';
-import externalLinkIcon from '../../../public/images/external-link-logo.png';
-import fishImg from '../../../public/images/fish.svg';
-import gradientImg from '../../../public/images/gradient.svg';
-import jellyfishImg from '../../../public/images/jellyfish.svg';
-import orcaImg from '../../../public/images/orca.png';
-import shimmerImg from '../../../public/images/shimer.svg';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -198,7 +187,7 @@ export default function Buy({
       setCollateralPrice(null);
       setFeesUsd(null);
     }
-    // Reset the loading counter to ignore outdated informations
+    // Reset the loading counter to ignore outdated information
     loadingCounter += 1;
     setCollateralToken(t);
   };
@@ -208,7 +197,7 @@ export default function Buy({
   }
 
   return (
-    <div className="flex flex-col lg:flex-row items-evenly gap-x-4">
+    <div className="flex flex-col md:flex-row items-evenly gap-x-4">
       <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
         <div className="flex items-center">
           <Image
@@ -245,8 +234,8 @@ export default function Buy({
         />
       </div>
 
-      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
-        <div className="flex items-center">
+      <div className="flex w-full h-auto flex-col border border-gray-200 rounded-2xl relative">
+        <div className="flex items-center absolute z-20 top-4 left-4">
           <Image
             src={window.adrena.client.adxToken.image}
             width={32}
@@ -260,56 +249,7 @@ export default function Buy({
           </div>
         </div>
 
-        <div
-          className="rounded-2xl h-full w-full flex relative p-4 justify-center bg-cover bg-center"
-          style={{ backgroundImage: `url('')` }}
-        >
-          <Image
-            src={orcaImg}
-            alt="ADX icon"
-            className="absolute mb-12 mt-8 w-[20em]"
-          />
-
-          <Image
-            src={jellyfishImg}
-            alt="ADX icon"
-            className="absolute mb-12 mt-8 w-[20em]"
-          />
-
-          <Image
-            src={fishImg}
-            alt="ADX icon"
-            className="absolute mb-12 mt-8 w-[20em]"
-          />
-
-          <Image
-            src={coralImg}
-            alt="ADX icon"
-            className="absolute mb-12 mt-8 w-[20em]"
-          />
-
-          <Image
-            src={shimmerImg}
-            alt="ADX icon"
-            className="absolute mb-12 mt-8 w-[20em]"
-          />
-
-          <Image
-            src={gradientImg}
-            alt="ADX icon"
-            className="absolute top-0 left-0 w-full h-full bg-cover"
-          />
-
-          <Button
-            className="mt-auto w-full ml-auto mr-auto"
-            rightIcon={externalLinkIcon}
-            title="Buy ADX on Orca"
-            size="lg"
-            onClick={() => {
-              window.open('https://www.orca.so');
-            }}
-          />
-        </div>
+        <OrcaLink />
       </div>
     </div>
   );
