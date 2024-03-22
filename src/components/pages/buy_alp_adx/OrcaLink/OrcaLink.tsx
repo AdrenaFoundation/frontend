@@ -5,7 +5,6 @@ import Button from '@/components/common/Button/Button';
 
 import coralImg from '../../../../../public/images/coral.svg';
 import externalLinkIcon from '../../../../../public/images/external-link-logo.png';
-import jellyfishImg from '../../../../../public/images/jellyfish.svg';
 
 export default function OrcaLink() {
   return (
@@ -21,9 +20,9 @@ export default function OrcaLink() {
           style={{
             backgroundImage: `url('images/shimmer.svg')`,
           }}
-          initial={{ opacity: 0.4 }}
+          initial={{ opacity: 0.2 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0.4 }}
+          exit={{ opacity: 1 }}
           transition={{
             repeat: Infinity,
             repeatType: 'reverse',
@@ -38,8 +37,8 @@ export default function OrcaLink() {
           src="images/orca.svg"
           alt="Orca"
           className="absolute right-4 top-[20%] w-[15em]"
-          initial={{ rotate: -25 }}
-          animate={{ rotate: 25 }}
+          initial={{ rotate: -15 }}
+          animate={{ rotate: 15 }}
           transition={{
             repeat: Infinity,
             repeatType: 'reverse',
@@ -51,11 +50,21 @@ export default function OrcaLink() {
 
       <Image src={coralImg} alt="Coral" className="absolute bottom-0 w-full" />
 
-      <Image
-        src={jellyfishImg}
-        alt="Jellyfish"
-        className="absolute left-6 bottom-[50%] w-[4em]"
-      />
+      <AnimatePresence>
+        <motion.img
+          src="images/jellyfish.svg"
+          alt="Jellyfish"
+          className="absolute left-6 top-0 w-[7em] rotate-180"
+          initial={{ top: 0 }}
+          animate={{ top: '100%' }}
+          transition={{
+            repeat: Infinity,
+            repeatType: 'reverse',
+            duration: 120,
+            ease: 'linear',
+          }}
+        />
+      </AnimatePresence>
 
       <AnimatePresence>
         <motion.img

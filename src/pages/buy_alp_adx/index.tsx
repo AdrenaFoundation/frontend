@@ -1,6 +1,5 @@
-import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
@@ -14,18 +13,16 @@ import { nativeToUi, uiToNative } from '@/utils';
 // always ignore outdated information
 let loadingCounter = 0;
 
-type feesAndAmountsType = {
+export type FeesAndAmountsType = {
   [tokenSymbol: string]: {
+    token: Token;
     fees: number | null;
     amount: number | null;
     equivalentAmount: number | null;
   };
 };
 
-export default function Buy({
-  triggerWalletTokenBalancesReload,
-  custodies,
-}: PageProps) {
+export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
@@ -35,8 +32,7 @@ export default function Buy({
   >(null);
   const [feesUsd, setFeesUsd] = useState<number | null>(null);
   const [feesAndAmounts, setFeesAndAmounts] =
-    useState<feesAndAmountsType | null>(null);
-  const [isFeesLoading, setIsFeesLoading] = useState(false);
+    useState<FeesAndAmountsType | null>(null);
   const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
@@ -54,7 +50,7 @@ export default function Buy({
 
         if (!price || !collateralToken || !alpInput || !collateralInput) {
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: null,
             amount: null,
             equivalentAmount: null,
@@ -67,7 +63,7 @@ export default function Buy({
 
         if (collateralTokenPrice === null) {
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: null,
             amount: null,
             equivalentAmount: null,
@@ -78,7 +74,7 @@ export default function Buy({
 
         if (equivalentAmount === 0) {
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: 0,
             amount: 0,
             equivalentAmount,
@@ -101,7 +97,7 @@ export default function Buy({
 
           if (amountAndFees === null) {
             return {
-              tokenSymbol: token.symbol,
+              token,
               fees: null,
               amount: null,
               equivalentAmount,
@@ -109,7 +105,7 @@ export default function Buy({
           }
 
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: price * nativeToUi(amountAndFees.fee, token.decimals),
             amount: nativeToUi(
               amountAndFees.amount,
@@ -120,7 +116,7 @@ export default function Buy({
         } catch (e) {
           console.log(e);
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: null,
             amount: null,
             equivalentAmount,
@@ -129,30 +125,20 @@ export default function Buy({
       }),
     );
 
-    const formattedData = data.reduce((acc, token) => {
-      if (token === null) return acc;
+    const formattedData = data.reduce((acc, v) => {
       return {
         ...acc,
-        [token.tokenSymbol]: {
-          fees: token.fees,
-          amount: token.amount,
-          equivalentAmount: token.equivalentAmount,
-        },
+        [v.token.symbol]: v,
       };
-    }, {} as feesAndAmountsType);
+    }, {} as FeesAndAmountsType);
 
     // Verify that information is not outdated
     // If loaderCounter doesn't match it means
     // an other request has been casted due to input change
     if (localLoadingCounter !== loadingCounter) {
-      setIsFeesLoading(false);
-      console.log('Ignore deprecated result');
       return;
     }
 
-    console.count('fetched fees and amounts...');
-
-    setIsFeesLoading(false);
     setFeesAndAmounts(formattedData);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,6 +200,7 @@ export default function Buy({
         </div>
 
         <ALPSwap
+          className="lg:max-w-[30em] self-center"
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}
           setCollateralInput={setCollateralInput}
@@ -223,7 +210,6 @@ export default function Buy({
           allowedCollateralTokens={allowedCollateralTokens}
           feesUsd={feesUsd}
           setFeesUsd={setFeesUsd}
-          setIsFeesLoading={setIsFeesLoading}
           onCollateralTokenChange={onCollateralTokenChange}
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
@@ -231,6 +217,7 @@ export default function Buy({
           setCollateralPrice={setCollateralPrice}
           alpPrice={alpPrice}
           collateralPrice={collateralPrice}
+          feesAndAmounts={feesAndAmounts}
         />
       </div>
 

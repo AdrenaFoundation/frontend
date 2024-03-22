@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {
@@ -29,7 +30,7 @@ export default function ALPSwap({
   setSelectedAction,
   setAlpPrice,
   setCollateralPrice,
-  setIsFeesLoading,
+  feesAndAmounts,
   className,
 }: {
   className?: string;
@@ -48,8 +49,8 @@ export default function ALPSwap({
   setFeesUsd: (v: number | null) => void;
   allowedCollateralTokens: Token[] | null;
   selectedAction: 'buy' | 'sell';
-  setIsFeesLoading: (v: boolean) => void;
   setSelectedAction: (v: 'buy' | 'sell') => void;
+  feesAndAmounts: FeesAndAmountsType | null;
 }) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const connected = !!wallet;
@@ -80,7 +81,7 @@ export default function ALPSwap({
         triggerWalletTokenBalancesReload();
 
         return addSuccessTxNotification({
-          title: 'Successfull Transaction',
+          title: 'Successful Transaction',
           txHash,
         });
       } catch (error) {
@@ -207,7 +208,7 @@ export default function ALPSwap({
             setFeesUsd={setFeesUsd}
             setAlpPrice={setAlpPrice}
             setCollateralPrice={setCollateralPrice}
-            setIsFeesLoading={setIsFeesLoading}
+            feesAndAmounts={feesAndAmounts}
           />
 
           {/* Button to execute action */}
