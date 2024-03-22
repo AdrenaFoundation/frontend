@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import usePositions from '@/hooks/usePositions';
@@ -228,7 +229,18 @@ export default function TradingChart({ token }: { token: Token }) {
   return (
     <div className="flex flex-col w-full mb-5 border border-gray-200 rounded-2xl rounded-t-none overflow-hidden bg-gray-200/85 backdrop-blur-md">
       <div id="chart-area" className="h-full rounded-b-lg" />
-      <div className="tradingview-widget-copyright"></div>
+      <div className="copyright text-xs bg-[#0a0e13] flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
+        The chart is provided by TradingView, an advanced platform that provides
+        unparalleled access to live data e.g.
+        <Link
+          href={`https://www.tradingview.com/symbols/${token.symbol}USD/`}
+          target="__blank"
+          className="ml-1 underline"
+        >
+          {token.symbol} USD chart
+        </Link>
+        .
+      </div>
     </div>
   );
 }
