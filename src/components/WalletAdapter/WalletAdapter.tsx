@@ -130,7 +130,11 @@ function WalletAdapter({
       ) : (
         <Button
           className={className}
-          title="Connect wallet"
+          title={
+            !window.adrena.geoBlockingData.allowed
+              ? 'Not elligable to trade'
+              : 'Connect wallet'
+          }
           rightIcon={walletIcon}
           alt="wallet icon"
           variant="outline"

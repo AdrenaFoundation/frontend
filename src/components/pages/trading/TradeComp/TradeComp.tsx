@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -38,6 +38,8 @@ export const TradeComp = ({
   handleExecuteButton: () => void;
   className?: string;
 }) => {
+  const [isInfoLoading, setIsInfoLoading] = useState(false);
+
   return (
     <div
       className={twMerge(
@@ -72,6 +74,8 @@ export const TradeComp = ({
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 onChangeLeverage={setLeverage}
+                setIsInfoLoading={setIsInfoLoading}
+                isInfoLoading={isInfoLoading}
               />
             ) : (
               <SwapTradingInputs
@@ -95,7 +99,10 @@ export const TradeComp = ({
           title={buttonTitle}
           disabled={
             buttonTitle.includes('Insufficient') ||
-            buttonTitle.includes('not handled yet')
+            buttonTitle.includes('not handled yet') ||
+            buttonTitle === 'Not eligible to trade' ||
+            buttonTitle === 'Enter an amount' ||
+            isInfoLoading
           }
           onClick={handleExecuteButton}
         />

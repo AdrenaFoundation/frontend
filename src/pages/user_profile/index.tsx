@@ -70,7 +70,7 @@ export default function UserProfile({
       <>
         <div className="absolute w-full h-full left-0 top-0 bottom-0 overflow-hidden">
           <RiveAnimation
-            src="./rive/blob-bg.riv"
+            animation="blob-bg"
             layout={
               new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopLeft })
             }
@@ -78,7 +78,7 @@ export default function UserProfile({
           />
 
           <RiveAnimation
-            src="./rive/fred-bg.riv"
+            animation="fred-bg"
             layout={
               new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopRight })
             }

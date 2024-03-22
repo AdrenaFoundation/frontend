@@ -1,5 +1,7 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { ChartData } from 'chart.js';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
@@ -17,6 +19,8 @@ import {
   formatPriceInfo,
   nativeToUi,
 } from '@/utils';
+
+import midImage from '../../../public/images/mid-monster.png';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
   const alpTotalSupply = useALPTotalSupply();
@@ -175,10 +179,12 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
     },
   ];
 
+  const isLoaded = false;
+
   return (
     <>
       <RiveAnimation
-        src="./rive/mid-monster.riv"
+        animation="mid-monster"
         layout={new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })}
         className={
           'fixed lg:absolute top-[50px] md:top-[-50px] right-0 w-full h-full'

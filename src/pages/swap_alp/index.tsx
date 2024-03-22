@@ -183,11 +183,6 @@ export default function SwapALP({
   }, [getFeesAndAmounts, debouncedInputs]);
 
   useEffect(() => {
-    // setIsFeesLoading(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAction === 'buy' ? collateralInput : alpInput]);
-
-  useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
 
     if (!collateralToken) {
@@ -220,7 +215,7 @@ export default function SwapALP({
     <>
       <div className="absolute w-full h-full left-0 top-0 bottom-0 overflow-hidden">
         <RiveAnimation
-          src="./rive/blob-bg.riv"
+          animation="blob-bg"
           layout={
             new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopLeft })
           }
@@ -228,7 +223,7 @@ export default function SwapALP({
         />
 
         <RiveAnimation
-          src="./rive/fred-bg.riv"
+          animation="fred-bg"
           layout={
             new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopRight })
           }
@@ -236,14 +231,15 @@ export default function SwapALP({
         />
       </div>
 
-      <h2 className="z-20">Buy / Sell ALP</h2>
+      <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-4 z-20">
+        <h2>Buy / Sell ALP</h2>
 
-      <p className="z-20">
-        Purchase ALP tokens to earn fees from swaps and leverages trading.
-      </p>
+        <p className="mt-2 opacity-75 max-w-lg">
+          Purchase ALP tokens to earn fees from swaps and leverages trading.
+        </p>
 
-      <ALPInfo marketCap={marketCap} />
-
+        <ALPInfo marketCap={marketCap} />
+      </div>
       <div className="flex flex-col lg:flex-row gap-5 mt-5 z-20">
         <ALPSwap
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}

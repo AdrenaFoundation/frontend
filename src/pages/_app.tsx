@@ -165,7 +165,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
         <TermsAndConditionsModal
           isOpen={isTermsAndConditionModalOpen}
           agreeTrigger={() => {
-            // User aggreed to terms and conditions
+            // User agreed to terms and conditions
             setIsTermsAndConditionModalOpen(false);
 
             // Save the user actions to the website
