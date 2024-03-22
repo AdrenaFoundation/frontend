@@ -135,7 +135,7 @@ export default function UserProfile({
         <OwnerBloc
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
-          canDeleteProfile={!readonly}
+          canDeleteProfile={false}
           canUpdateNickname={!readonly}
           className="min-w-[24em] w-[24em] max-w-[24em] items-start"
         />
