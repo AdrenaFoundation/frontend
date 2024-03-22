@@ -219,7 +219,7 @@
           "isSigner": false,
           "docs": [
             "#13",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -338,7 +338,7 @@
           "isSigner": false,
           "docs": [
             "#12",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -1402,7 +1402,7 @@
           "isSigner": false,
           "docs": [
             "#20",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -3212,29 +3212,22 @@
           "docs": ["#4"]
         },
         {
-          "name": "sponsor",
-          "isMut": false,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": ["#5"]
-        },
-        {
           "name": "perpetuals",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#6"]
+          "docs": ["#5"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#7"]
+          "docs": ["#6"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#8"]
+          "docs": ["#7"]
         }
       ],
       "args": [
@@ -3570,7 +3563,7 @@
           "isSigner": false,
           "docs": [
             "#19",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -3736,7 +3729,7 @@
           "isSigner": false,
           "docs": [
             "#17",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -3920,7 +3913,7 @@
           "isSigner": false,
           "docs": [
             "#19",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -4092,7 +4085,7 @@
           "isSigner": false,
           "docs": [
             "#18",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -4256,79 +4249,6 @@
       "args": []
     },
     {
-      "name": "claimReferalRewards",
-      "accounts": [
-        {
-          "name": "sponsor",
-          "isMut": true,
-          "isSigner": true,
-          "docs": ["#1"]
-        },
-        {
-          "name": "receivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": ["#2"]
-        },
-        {
-          "name": "sponsorProfile",
-          "isMut": true,
-          "isSigner": false,
-          "docs": ["#3"]
-        },
-        {
-          "name": "transferAuthority",
-          "isMut": false,
-          "isSigner": false,
-          "docs": ["#4"]
-        },
-        {
-          "name": "cortex",
-          "isMut": true,
-          "isSigner": false,
-          "docs": ["#5"]
-        },
-        {
-          "name": "perpetuals",
-          "isMut": false,
-          "isSigner": false,
-          "docs": ["#6"]
-        },
-        {
-          "name": "lmTokenMint",
-          "isMut": true,
-          "isSigner": false,
-          "docs": ["#7"]
-        },
-        {
-          "name": "adrenaProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": ["#8"]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": ["#9"]
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false,
-          "docs": ["#10"]
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false,
-          "docs": ["#11"]
-        }
-      ],
-      "args": [],
-      "returns": "u64"
-    },
-    {
       "name": "finalizeLockedStake",
       "accounts": [
         {
@@ -4415,7 +4335,7 @@
           "isSigner": false,
           "docs": [
             "#13",
-            "Account owned by governance storing user informations"
+            "Account owned by governance storing user information"
           ]
         },
         {
@@ -4877,14 +4797,6 @@
             "type": "u64"
           },
           {
-            "name": "referalRewardsLimit",
-            "type": "u64"
-          },
-          {
-            "name": "referalRewardsEmitted",
-            "type": "u64"
-          },
-          {
             "name": "userProfileAmount",
             "type": "u64"
           }
@@ -5325,20 +5237,6 @@
             "type": {
               "defined": "TradingStats"
             }
-          },
-          {
-            "name": "sponsor",
-            "type": {
-              "option": "publicKey"
-            }
-          },
-          {
-            "name": "referalClaimedVolumeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "sponsorClaimedRewardAmount",
-            "type": "u64"
           }
         ]
       }
@@ -5864,10 +5762,6 @@
           },
           {
             "name": "ecosystemBucketAllocation",
-            "type": "u64"
-          },
-          {
-            "name": "referalRewardsLimit",
             "type": "u64"
           }
         ]
@@ -7255,16 +7149,6 @@
       "code": 6043,
       "name": "UserNicknameTooShort",
       "msg": "User nickname is less than 3 characters"
-    },
-    {
-      "code": 6044,
-      "name": "SelfSponsored",
-      "msg": "User cannot sponsor itself"
-    },
-    {
-      "code": 6045,
-      "name": "ReferalRewardLimitReached",
-      "msg": "Referal reward limit reached"
     }
   ],
   "metadata": {

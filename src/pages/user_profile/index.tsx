@@ -59,6 +59,7 @@ export default function UserProfile({
           txHash,
         });
       } catch (error) {
+        console.log('error', error);
         return addFailedTxNotification({
           title: 'Error Creating Profile',
           error,

@@ -217,10 +217,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#13',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#13', 'Account owned by governance storing user information'];
         },
         {
           name: 'governanceProgram';
@@ -336,10 +333,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#12',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#12', 'Account owned by governance storing user information'];
         },
         {
           name: 'governanceProgram';
@@ -1400,10 +1394,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#20',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#20', 'Account owned by governance storing user information'];
         },
         {
           name: 'lpStakeResolutionThread';
@@ -3212,29 +3203,22 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'sponsor';
-          isMut: false;
-          isSigner: false;
-          isOptional: true;
-          docs: ['#5'];
-        },
-        {
           name: 'perpetuals';
           isMut: false;
           isSigner: false;
-          docs: ['#6'];
+          docs: ['#5'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#6'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#7'];
         },
       ];
       args: [
@@ -3568,10 +3552,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#19',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#19', 'Account owned by governance storing user information'];
         },
         {
           name: 'stakesClaimCronThread';
@@ -3734,10 +3715,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#17',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#17', 'Account owned by governance storing user information'];
         },
         {
           name: 'stakeResolutionThread';
@@ -3918,10 +3896,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#19',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#19', 'Account owned by governance storing user information'];
         },
         {
           name: 'stakesClaimCronThread';
@@ -4090,10 +4065,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#18',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#18', 'Account owned by governance storing user information'];
         },
         {
           name: 'stakesClaimCronThread';
@@ -4256,79 +4228,6 @@ export type Adrena = {
       args: [];
     },
     {
-      name: 'claimReferalRewards';
-      accounts: [
-        {
-          name: 'sponsor';
-          isMut: true;
-          isSigner: true;
-          docs: ['#1'];
-        },
-        {
-          name: 'receivingAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#2'];
-        },
-        {
-          name: 'sponsorProfile';
-          isMut: true;
-          isSigner: false;
-          docs: ['#3'];
-        },
-        {
-          name: 'transferAuthority';
-          isMut: false;
-          isSigner: false;
-          docs: ['#4'];
-        },
-        {
-          name: 'cortex';
-          isMut: true;
-          isSigner: false;
-          docs: ['#5'];
-        },
-        {
-          name: 'perpetuals';
-          isMut: false;
-          isSigner: false;
-          docs: ['#6'];
-        },
-        {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#7'];
-        },
-        {
-          name: 'adrenaProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#8'];
-        },
-        {
-          name: 'systemProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#9'];
-        },
-        {
-          name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
-          name: 'rent';
-          isMut: false;
-          isSigner: false;
-          docs: ['#11'];
-        },
-      ];
-      args: [];
-      returns: 'u64';
-    },
-    {
       name: 'finalizeLockedStake';
       accounts: [
         {
@@ -4413,10 +4312,7 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: [
-            '#13',
-            'Account owned by governance storing user informations',
-          ];
+          docs: ['#13', 'Account owned by governance storing user information'];
         },
         {
           name: 'governanceProgram';
@@ -4877,14 +4773,6 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'referalRewardsLimit';
-            type: 'u64';
-          },
-          {
-            name: 'referalRewardsEmitted';
-            type: 'u64';
-          },
-          {
             name: 'userProfileAmount';
             type: 'u64';
           },
@@ -5325,20 +5213,6 @@ export type Adrena = {
             type: {
               defined: 'TradingStats';
             };
-          },
-          {
-            name: 'sponsor';
-            type: {
-              option: 'publicKey';
-            };
-          },
-          {
-            name: 'referalClaimedVolumeUsd';
-            type: 'u64';
-          },
-          {
-            name: 'sponsorClaimedRewardAmount';
-            type: 'u64';
           },
         ];
       };
@@ -5864,10 +5738,6 @@ export type Adrena = {
           },
           {
             name: 'ecosystemBucketAllocation';
-            type: 'u64';
-          },
-          {
-            name: 'referalRewardsLimit';
             type: 'u64';
           },
         ];
@@ -7256,16 +7126,6 @@ export type Adrena = {
       name: 'UserNicknameTooShort';
       msg: 'User nickname is less than 3 characters';
     },
-    {
-      code: 6044;
-      name: 'SelfSponsored';
-      msg: 'User cannot sponsor itself';
-    },
-    {
-      code: 6045;
-      name: 'ReferalRewardLimitReached';
-      msg: 'Referal reward limit reached';
-    },
   ];
 };
 
@@ -7488,10 +7348,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#13',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#13', 'Account owned by governance storing user information'],
         },
         {
           name: 'governanceProgram',
@@ -7607,10 +7464,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#12',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#12', 'Account owned by governance storing user information'],
         },
         {
           name: 'governanceProgram',
@@ -8671,10 +8525,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#20',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#20', 'Account owned by governance storing user information'],
         },
         {
           name: 'lpStakeResolutionThread',
@@ -10483,29 +10334,22 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'sponsor',
-          isMut: false,
-          isSigner: false,
-          isOptional: true,
-          docs: ['#5'],
-        },
-        {
           name: 'perpetuals',
           isMut: false,
           isSigner: false,
-          docs: ['#6'],
+          docs: ['#5'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#6'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#7'],
         },
       ],
       args: [
@@ -10839,10 +10683,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#19',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#19', 'Account owned by governance storing user information'],
         },
         {
           name: 'stakesClaimCronThread',
@@ -11005,10 +10846,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#17',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#17', 'Account owned by governance storing user information'],
         },
         {
           name: 'stakeResolutionThread',
@@ -11189,10 +11027,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#19',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#19', 'Account owned by governance storing user information'],
         },
         {
           name: 'stakesClaimCronThread',
@@ -11361,10 +11196,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#18',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#18', 'Account owned by governance storing user information'],
         },
         {
           name: 'stakesClaimCronThread',
@@ -11527,79 +11359,6 @@ export const IDL: Adrena = {
       args: [],
     },
     {
-      name: 'claimReferalRewards',
-      accounts: [
-        {
-          name: 'sponsor',
-          isMut: true,
-          isSigner: true,
-          docs: ['#1'],
-        },
-        {
-          name: 'receivingAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#2'],
-        },
-        {
-          name: 'sponsorProfile',
-          isMut: true,
-          isSigner: false,
-          docs: ['#3'],
-        },
-        {
-          name: 'transferAuthority',
-          isMut: false,
-          isSigner: false,
-          docs: ['#4'],
-        },
-        {
-          name: 'cortex',
-          isMut: true,
-          isSigner: false,
-          docs: ['#5'],
-        },
-        {
-          name: 'perpetuals',
-          isMut: false,
-          isSigner: false,
-          docs: ['#6'],
-        },
-        {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#7'],
-        },
-        {
-          name: 'adrenaProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#8'],
-        },
-        {
-          name: 'systemProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#9'],
-        },
-        {
-          name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
-          name: 'rent',
-          isMut: false,
-          isSigner: false,
-          docs: ['#11'],
-        },
-      ],
-      args: [],
-      returns: 'u64',
-    },
-    {
       name: 'finalizeLockedStake',
       accounts: [
         {
@@ -11684,10 +11443,7 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: [
-            '#13',
-            'Account owned by governance storing user informations',
-          ],
+          docs: ['#13', 'Account owned by governance storing user information'],
         },
         {
           name: 'governanceProgram',
@@ -12148,14 +11904,6 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'referalRewardsLimit',
-            type: 'u64',
-          },
-          {
-            name: 'referalRewardsEmitted',
-            type: 'u64',
-          },
-          {
             name: 'userProfileAmount',
             type: 'u64',
           },
@@ -12596,20 +12344,6 @@ export const IDL: Adrena = {
             type: {
               defined: 'TradingStats',
             },
-          },
-          {
-            name: 'sponsor',
-            type: {
-              option: 'publicKey',
-            },
-          },
-          {
-            name: 'referalClaimedVolumeUsd',
-            type: 'u64',
-          },
-          {
-            name: 'sponsorClaimedRewardAmount',
-            type: 'u64',
           },
         ],
       },
@@ -13135,10 +12869,6 @@ export const IDL: Adrena = {
           },
           {
             name: 'ecosystemBucketAllocation',
-            type: 'u64',
-          },
-          {
-            name: 'referalRewardsLimit',
             type: 'u64',
           },
         ],
@@ -14526,16 +14256,6 @@ export const IDL: Adrena = {
       code: 6043,
       name: 'UserNicknameTooShort',
       msg: 'User nickname is less than 3 characters',
-    },
-    {
-      code: 6044,
-      name: 'SelfSponsored',
-      msg: 'User cannot sponsor itself',
-    },
-    {
-      code: 6045,
-      name: 'ReferalRewardLimitReached',
-      msg: 'Referal reward limit reached',
     },
   ],
 };
