@@ -6,10 +6,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
-import ADXStakeOverview from '@/components/pages/earn/ADXStakeOverview';
-import ALPStakeOverview from '@/components/pages/earn/ALPStakeOverview';
-import StakeRedeem from '@/components/pages/earn/StakeRedeem';
-import StakeToken from '@/components/pages/earn/StakeToken';
+import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';
+import ALPStakeOverview from '@/components/pages/stake/ALPStakeOverview';
+import StakeRedeem from '@/components/pages/stake/StakeRedeem';
+import StakeToken from '@/components/pages/stake/StakeToken';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
@@ -42,7 +42,7 @@ export type ALPTokenDetails = {
 
 export const DEFAULT_LOCKED_STAKE_DURATION = 90;
 
-export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
+export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const adxPrice: number | null =
@@ -379,7 +379,7 @@ export default function Earn({ triggerWalletTokenBalancesReload }: PageProps) {
 
     setAlpDetails({
       balance: alpBalance,
-      totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
+      totalLockedStake: wallet ? getTotalLockedStake('ALP') : null,
       totalLockedStakeUSD:
         wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
       totalRedeemableStake: wallet ? getTotalRedeemableStake('ALP') : null,
