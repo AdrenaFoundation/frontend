@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import { USD_DECIMALS } from '@/constant';
 import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
 import { useSelector } from '@/store/store';
@@ -373,56 +374,57 @@ export default function ALPSwapInputs({
         <div className="flex flex-col mt-4">
           <div className="text-sm">Fees Reduction Routes</div>
 
-          <div className="p-4 bg-black border rounded-2xl mt-4">
-            {saveUpFees !== null && saveUpFees.length ? (
-              <>
-                {saveUpFees.map(([key, value]) => {
-                  return feesUsd ? (
-                    <div
-                      key={key}
-                      className="cursor-pointer opacity-50 hover:opacity-100"
-                      onClick={() => {
-                        onCollateralTokenChange(value.token);
+          {saveUpFees !== null && saveUpFees.length ? (
+            <>
+              {saveUpFees.map(([key, value]) => {
+                return feesUsd ? (
+                  <Button
+                    title={
+                      <div className="flex">
+                        <span className="">use {key} and save up</span>
+                        <span className="font-mono ml-1">
+                          {
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            formatPriceInfo(feesUsd - value.fees!)
+                          }
+                        </span>
+                        <span className="ml-1">of fees</span>
+                      </div>
+                    }
+                    size="lg"
+                    variant="secondary"
+                    className="justify-center w-full mt-5"
+                    onClick={() => {
+                      onCollateralTokenChange(value.token);
 
-                        // Wait for the input to be updated, then change the input
-                        setTimeout(() => {
-                          onChangeCollateralInput(
-                            Number(
-                              value.equivalentAmount?.toFixed(
-                                value.token.decimals,
-                              ),
+                      // Wait for the input to be updated, then change the input
+                      setTimeout(() => {
+                        onChangeCollateralInput(
+                          Number(
+                            value.equivalentAmount?.toFixed(
+                              value.token.decimals,
                             ),
-                          );
-                        }, 0);
-                      }}
-                    >
-                      <span className="">use {key} and save up</span>
+                          ),
+                        );
+                      }, 0);
+                    }}
+                  />
+                ) : null;
+              })}
+            </>
+          ) : null}
 
-                      <span className="font-mono ml-1">
-                        {
-                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          formatPriceInfo(feesUsd - value.fees!)
-                        }
-                      </span>
+          {saveUpFees !== null && !saveUpFees.length ? (
+            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-2xl mt-4 flex justify-center flex-col">
+              <span className="text-txtfade">You are using the best route</span>
+            </div>
+          ) : null}
 
-                      <span className="ml-1">of fees</span>
-                    </div>
-                  ) : null;
-                })}
-              </>
-            ) : null}
-
-            {saveUpFees !== null && !saveUpFees.length ? (
-              <span className="text-txtfade">
-                {' '}
-                You are using the best route
-              </span>
-            ) : null}
-
-            {saveUpFees === null ? (
+          {saveUpFees === null ? (
+            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-2xl mt-4 flex justify-center flex-col">
               <span className="text-txtfade">Loading ...</span>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

@@ -38,7 +38,11 @@ export default function PositionsBlocks({
     return (
       <div className="flex flex-col h-full items-center justify-center">
         <Button
-          title="Connect Wallet"
+          title={
+            !window.adrena.geoBlockingData.allowed
+              ? 'Not elligable to trade'
+              : 'Connect wallet'
+          }
           variant="secondary"
           rightIcon={phantomLogo}
           className="mb-2"

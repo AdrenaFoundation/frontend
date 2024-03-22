@@ -54,7 +54,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
   return (
     <>
       <RiveAnimation
-        src="./rive/mid-monster.riv"
+        animation="mid-monster"
         layout={new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })}
         className={
           'fixed lg:absolute top-[50px] md:top-[-50px] right-0 w-full h-full'

@@ -15,12 +15,23 @@ import backpackLogo from '../../../public/images/backpack.png';
 import phantomLogo from '../../../public/images/phantom.png';
 import walletConnectLogo from '../../../public/images/wallet-connect.png';
 import Modal from '../common/Modal/Modal';
+import TermsAndConditionsModal from '../TermsAndConditionsModal/TermsAndConditionsModal';
 
 function WalletSelectionModal() {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
 
   if (!modalIsOpen) return <></>;
+
+  if (!window.adrena.geoBlockingData.allowed) {
+    return (
+      <TermsAndConditionsModal
+        isOpen={modalIsOpen}
+        readonly={true}
+        closeTrigger={() => dispatch(openCloseConnectionModalAction(false))}
+      />
+    );
+  }
 
   return (
     <Modal

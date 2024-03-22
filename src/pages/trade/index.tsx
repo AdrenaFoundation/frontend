@@ -219,7 +219,6 @@ export default function Trade({
           mintA: tokenA.mint,
           mintB: tokenB.mint,
         });
-
         triggerWalletTokenBalancesReload();
 
         return addSuccessTxNotification({
@@ -277,6 +276,7 @@ export default function Trade({
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
       setActivePositionModal(null);
+
       return addSuccessTxNotification({
         title: 'Successfully Opened Position',
         txHash,
@@ -292,12 +292,11 @@ export default function Trade({
   };
 
   const buttonTitle = (() => {
-    // If wallet not connected, then user need to connect wallet
     if (!connected) {
       return 'Connect wallet';
     }
 
-    if (inputAValue === null || inputBValue === null) {
+    if (inputAValue === null) {
       return 'Enter an amount';
     }
 
@@ -339,7 +338,7 @@ export default function Trade({
     <>
       <div className="absolute w-full left-0 top-0 h-full overflow-hidden">
         <RiveAnimation
-          src="./rive/blob-bg.riv"
+          animation="blob-bg"
           layout={
             new Layout({ fit: Fit.Contain, alignment: Alignment.TopCenter })
           }
@@ -347,7 +346,7 @@ export default function Trade({
         />
 
         <RiveAnimation
-          src="./rive/fred-bg.riv"
+          animation="fred-bg"
           layout={
             new Layout({
               fit: Fit.Fill,
@@ -355,12 +354,12 @@ export default function Trade({
             })
           }
           className={
-            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-[100vw] h-full'
+            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-full h-full'
           }
         />
 
         <RiveAnimation
-          src="./rive/fred-bg.riv"
+          animation="fred-bg"
           layout={
             new Layout({
               fit: Fit.Fill,
@@ -368,7 +367,7 @@ export default function Trade({
             })
           }
           className={
-            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-[100vw] h-full'
+            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-full h-full'
           }
         />
       </div>
@@ -406,7 +405,7 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-5 h-full z-30">
+          <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl h-full z-30 overflow-hidden">
             <Positions
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}

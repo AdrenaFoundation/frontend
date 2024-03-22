@@ -427,7 +427,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
     <>
       <div className="absolute w-full h-full left-0 top-0 overflow-hidden">
         <RiveAnimation
-          src="./rive/fred-bg.riv"
+          animation="fred-bg"
           layout={new Layout({ fit: Fit.Fill, alignment: Alignment.TopLeft })}
           className={
             'absolute top-0 left-0 rotate-180 bottom-0 w-[1000px] lg:w-full h-full'
@@ -435,7 +435,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
         />
 
         <RiveAnimation
-          src="./rive/fred-bg.riv"
+          animation="fred-bg"
           layout={
             new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })
           }
