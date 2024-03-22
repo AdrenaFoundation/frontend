@@ -1,68 +1,44 @@
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
-import ALPInfo from '@/components/pages/swap_alp/ALPInfo/ALPInfo';
-import ALPSwap from '@/components/pages/swap_alp/ALPSwap/ALPSwap';
-import SaveOnFees from '@/components/pages/swap_alp/SaveOnFees/SaveOnFees';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
+import OrcaLink from '@/components/pages/buy_alp_adx/OrcaLink/OrcaLink';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
-type feesAndAmountsType = {
+export type FeesAndAmountsType = {
   [tokenSymbol: string]: {
+    token: Token;
     fees: number | null;
     amount: number | null;
     equivalentAmount: number | null;
   };
 };
 
-export default function SwapALP({
-  triggerWalletTokenBalancesReload,
-  custodies,
-}: PageProps) {
+export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
-  const [alpInput, setAlpInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
-  const [feesUsd, setFeesUsd] = useState<number | null>(null);
-  const [feesAndAmounts, setFeesAndAmounts] =
-    useState<feesAndAmountsType | null>(null);
+  const [alpInput, setAlpInput] = useState<number | null>(null);
   const [allowedCollateralTokens, setAllowedCollateralTokens] = useState<
     Token[] | null
   >(null);
+  const [feesUsd, setFeesUsd] = useState<number | null>(null);
+  const [feesAndAmounts, setFeesAndAmounts] =
+    useState<FeesAndAmountsType | null>(null);
   const [selectedAction, setSelectedAction] = useState<'buy' | 'sell'>('buy');
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
   const [collateralPrice, setCollateralPrice] = useState<number | null>(null);
-
   const debouncedInputs = useDebounce(
     selectedAction === 'buy' ? collateralInput : alpInput,
     1000,
-  );
-  const [isFeesLoading, setIsFeesLoading] = useState(false);
-
-  const marketCap = useMemo(
-    () =>
-      window.adrena.client.tokens.reduce((acc, token) => {
-        const custody = custodies
-          ? custodies.find((cus) => cus.mint === token.mint)
-          : null;
-
-        if (!custody) return acc;
-
-        const price = tokenPrices[token.symbol];
-        if (price === null || custody.owned === null) {
-          return acc;
-        }
-        return acc + custody.owned * price;
-      }, 0),
-    [tokenPrices, custodies],
   );
 
   const getFeesAndAmounts = useCallback(async () => {
@@ -74,7 +50,7 @@ export default function SwapALP({
 
         if (!price || !collateralToken || !alpInput || !collateralInput) {
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: null,
             amount: null,
             equivalentAmount: null,
@@ -87,7 +63,7 @@ export default function SwapALP({
 
         if (collateralTokenPrice === null) {
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: null,
             amount: null,
             equivalentAmount: null,
@@ -98,7 +74,7 @@ export default function SwapALP({
 
         if (equivalentAmount === 0) {
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: 0,
             amount: 0,
             equivalentAmount,
@@ -121,7 +97,7 @@ export default function SwapALP({
 
           if (amountAndFees === null) {
             return {
-              tokenSymbol: token.symbol,
+              token,
               fees: null,
               amount: null,
               equivalentAmount,
@@ -129,7 +105,7 @@ export default function SwapALP({
           }
 
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: price * nativeToUi(amountAndFees.fee, token.decimals),
             amount: nativeToUi(
               amountAndFees.amount,
@@ -140,7 +116,7 @@ export default function SwapALP({
         } catch (e) {
           console.log(e);
           return {
-            tokenSymbol: token.symbol,
+            token,
             fees: null,
             amount: null,
             equivalentAmount,
@@ -149,30 +125,20 @@ export default function SwapALP({
       }),
     );
 
-    const formattedData = data.reduce((acc, token) => {
-      if (token === null) return acc;
+    const formattedData = data.reduce((acc, v) => {
       return {
         ...acc,
-        [token.tokenSymbol]: {
-          fees: token.fees,
-          amount: token.amount,
-          equivalentAmount: token.equivalentAmount,
-        },
+        [v.token.symbol]: v,
       };
-    }, {} as feesAndAmountsType);
+    }, {} as FeesAndAmountsType);
 
     // Verify that information is not outdated
     // If loaderCounter doesn't match it means
     // an other request has been casted due to input change
     if (localLoadingCounter !== loadingCounter) {
-      setIsFeesLoading(false);
-      console.log('Ignore deprecated result');
       return;
     }
 
-    console.count('fetched fees and amounts...');
-
-    setIsFeesLoading(false);
     setFeesAndAmounts(formattedData);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -202,7 +168,7 @@ export default function SwapALP({
       setCollateralPrice(null);
       setFeesUsd(null);
     }
-    // Reset the loading counter to ignore outdated informations
+    // Reset the loading counter to ignore outdated information
     loadingCounter += 1;
     setCollateralToken(t);
   };
@@ -212,36 +178,24 @@ export default function SwapALP({
   }
 
   return (
-    <>
-      <div className="absolute w-full h-full left-0 top-0 bottom-0 overflow-hidden">
-        <RiveAnimation
-          animation="blob-bg"
-          layout={
-            new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopLeft })
-          }
-          className={'absolute top-0 md:top-[-50px] left-0 w-[700px] h-full'}
-        />
+    <div className="flex flex-col md:flex-row items-evenly gap-x-4">
+      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+        <div className="flex items-center">
+          <Image
+            src={window.adrena.client.alpToken.image}
+            width={32}
+            height={32}
+            alt="ALP icon"
+          />
 
-        <RiveAnimation
-          animation="fred-bg"
-          layout={
-            new Layout({ fit: Fit.FitWidth, alignment: Alignment.TopRight })
-          }
-          className={'absolute right-0 w-[1500px]  h-full'}
-        />
-      </div>
+          <div className="flex flex-col justify-start ml-2">
+            <h2 className="">ALP</h2>
+            <span className="opacity-50">The Pool Token</span>
+          </div>
+        </div>
 
-      <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl p-4 z-20">
-        <h2>Buy / Sell ALP</h2>
-
-        <p className="mt-2 opacity-75 max-w-lg">
-          Purchase ALP tokens to earn fees from swaps and leverages trading.
-        </p>
-
-        <ALPInfo marketCap={marketCap} />
-      </div>
-      <div className="flex flex-col lg:flex-row gap-5 mt-5 z-20">
         <ALPSwap
+          className="lg:max-w-[30em] self-center"
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           collateralInput={collateralInput}
           setCollateralInput={setCollateralInput}
@@ -251,7 +205,6 @@ export default function SwapALP({
           allowedCollateralTokens={allowedCollateralTokens}
           feesUsd={feesUsd}
           setFeesUsd={setFeesUsd}
-          setIsFeesLoading={setIsFeesLoading}
           onCollateralTokenChange={onCollateralTokenChange}
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
@@ -259,19 +212,27 @@ export default function SwapALP({
           setCollateralPrice={setCollateralPrice}
           alpPrice={alpPrice}
           collateralPrice={collateralPrice}
-        />
-
-        <SaveOnFees
           feesAndAmounts={feesAndAmounts}
-          allowedCollateralTokens={allowedCollateralTokens}
-          onCollateralTokenChange={onCollateralTokenChange}
-          setCollateralInput={setCollateralInput}
-          collateralToken={collateralToken}
-          selectedAction={selectedAction}
-          marketCap={marketCap}
-          isFeesLoading={isFeesLoading}
         />
       </div>
-    </>
+
+      <div className="flex w-full h-auto flex-col border border-gray-200 rounded-2xl relative">
+        <div className="flex items-center absolute z-20 top-4 left-4">
+          <Image
+            src={window.adrena.client.adxToken.image}
+            width={32}
+            height={32}
+            alt="ADX icon"
+          />
+
+          <div className="flex flex-col justify-start ml-2">
+            <h2 className="">ADX</h2>
+            <span className="opacity-50">The Governance Token</span>
+          </div>
+        </div>
+
+        <OrcaLink />
+      </div>
+    </div>
   );
 }

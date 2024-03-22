@@ -1,8 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {
@@ -28,7 +30,8 @@ export default function ALPSwap({
   setSelectedAction,
   setAlpPrice,
   setCollateralPrice,
-  setIsFeesLoading,
+  feesAndAmounts,
+  className,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
@@ -46,8 +49,8 @@ export default function ALPSwap({
   setFeesUsd: (v: number | null) => void;
   allowedCollateralTokens: Token[] | null;
   selectedAction: 'buy' | 'sell';
-  setIsFeesLoading: (v: boolean) => void;
   setSelectedAction: (v: 'buy' | 'sell') => void;
+  feesAndAmounts: FeesAndAmountsType | null;
 }) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const connected = !!wallet;
@@ -76,9 +79,10 @@ export default function ALPSwap({
         });
 
         triggerWalletTokenBalancesReload();
+        setCollateralInput(null);
 
         return addSuccessTxNotification({
-          title: 'Successfull Transaction',
+          title: 'Successful Transaction',
           txHash,
         });
       } catch (error) {
@@ -106,6 +110,7 @@ export default function ALPSwap({
       });
 
       triggerWalletTokenBalancesReload();
+      setCollateralInput(null);
 
       return addSuccessTxNotification({
         title: 'Successfull Transaction',
@@ -174,7 +179,12 @@ export default function ALPSwap({
   })();
 
   return (
-    <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 lg:w-[450px] p-4 rounded-2xl h-fit">
+    <div
+      className={twMerge(
+        'bg-gray-300/85 backdrop-blur-md border border-gray-200 p-4 rounded-2xl h-fit',
+        className,
+      )}
+    >
       <TabSelect
         selected={selectedAction}
         tabs={[{ title: 'buy' }, { title: 'sell' }]}
@@ -200,7 +210,7 @@ export default function ALPSwap({
             setFeesUsd={setFeesUsd}
             setAlpPrice={setAlpPrice}
             setCollateralPrice={setCollateralPrice}
-            setIsFeesLoading={setIsFeesLoading}
+            feesAndAmounts={feesAndAmounts}
           />
 
           {/* Button to execute action */}

@@ -421,6 +421,8 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
       tokenSymbol: 'ALP',
     })) ?? null;
 
+  console.log('alpLockedStakes', alpLockedStakes);
+
   return (
     <>
       <div className="absolute w-full h-full left-0 top-0 overflow-hidden">
