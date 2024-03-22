@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
-import { RATE_DECIMALS, USD_DECIMALS } from '@/constant';
+import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
@@ -15,7 +15,6 @@ import InfoAnnotation from '../../monitoring/InfoAnnotation';
 
 export default function PositionInfos({
   className,
-  inputA,
   positionInfos,
   tokenB,
   leverage,
@@ -28,7 +27,6 @@ export default function PositionInfos({
   isInfoLoading,
 }: {
   className?: string;
-  inputA: number | null;
   positionInfos: {
     collateralUsd: number;
     sizeUsd: number;
@@ -235,6 +233,7 @@ export default function PositionInfos({
             />
             Leverage
           </span>
+
           {!isInfoLoading ? (
             <span className="font-mono text-sm flex">
               {(() => {
@@ -328,6 +327,7 @@ export default function PositionInfos({
             />
             Liquidation Price
           </span>
+
           {!isInfoLoading ? (
             <span className="flex font-mono text-sm">
               {(() => {
@@ -382,6 +382,7 @@ export default function PositionInfos({
             />
             {openedPosition ? 'Increase' : 'Open'} Position Fees
           </span>
+
           {!isInfoLoading ? (
             <span className="font-mono text-sm">
               {positionInfos && positionInfos?.swapFeeUsd ? (
@@ -443,6 +444,7 @@ export default function PositionInfos({
             />
             Exit Position Fees
           </span>
+
           {!isInfoLoading ? (
             <span className="font-mono text-sm flex">
               {(() => {
@@ -542,6 +544,7 @@ export default function PositionInfos({
             />
             Current Borrow Fees
           </span>
+
           {!isInfoLoading ? (
             <span className="font-mono text-sm">
               {custody && tokenB
