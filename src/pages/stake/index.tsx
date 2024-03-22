@@ -379,7 +379,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
     setAlpDetails({
       balance: alpBalance,
-      totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
+      totalLockedStake: wallet ? getTotalLockedStake('ALP') : null,
       totalLockedStakeUSD:
         wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
       totalRedeemableStake: wallet ? getTotalRedeemableStake('ALP') : null,
