@@ -461,7 +461,7 @@ export default function LongShortTradingInputs({
               style={{ originY: 0 }}
             >
               <Image
-                className="w-auto h-[300%] absolute left-[-1em] opacity-30"
+                className="w-auto h-[1.5em] absolute left-[0.5em]"
                 src={errorImg}
                 alt="Error icon"
               />

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import infoIcon from '../../../../public/images/Icons/info.svg';
+import infoIcon from '../../../../public/images/Icons/info.png';
 
 const InfoAnnotation = ({
   text,
