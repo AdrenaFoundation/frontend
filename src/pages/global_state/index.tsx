@@ -1,12 +1,10 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { ChartData } from 'chart.js';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
-import Details from '@/components/pages/dashboard/Details/Details';
-import Overview from '@/components/pages/dashboard/Overview/Overview';
+import ALPIndexComposition from '@/components/pages/global_state/ALPIndexComposition/ALPIndexComposition';
+import Details from '@/components/pages/global_state/Details/Details';
+import Overview from '@/components/pages/global_state/Overview/Overview';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
@@ -20,9 +18,7 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import midImage from '../../../public/images/mid-monster.png';
-
-export default function Dashboard({ mainPool, custodies }: PageProps) {
+export default function GlobalState({ mainPool, custodies }: PageProps) {
   const alpTotalSupply = useALPTotalSupply();
   const adxTotalSupply = useADXTotalSupply();
 
@@ -178,8 +174,6 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
       value: ADXmarketCap ? formatPriceInfo(ADXmarketCap) : comingSoon,
     },
   ];
-
-  const isLoaded = false;
 
   return (
     <>

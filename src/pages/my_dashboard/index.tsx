@@ -391,7 +391,7 @@ export default function MyDashboard({
             Create a profile and get trading and swap stats.
           </span>
 
-          <div className="w-2/3 h-[1px] bg-gray-300 mt-8"></div>
+          <div className="w-2/3 h-[1px] bg-gray-300 mt-2"></div>
 
           <div className="flex flex-col items-center justify-center">
             <div className="font-specialmonster text-xl mt-10 ">
