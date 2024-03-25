@@ -168,11 +168,11 @@ export default function MyDashboard({
       {userProfile ? (
         <div className="flex flex-wrap gap-x-4 gap-y-4">
           <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl grow min-w-[20em]">
-            <h3>Trading Stats</h3>
+            <h4>Trading Stats</h4>
 
             <div className="flex flex-col gap-x-6 mt-4 bg-black p-4 border rounded-2xl">
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Opened Position Count</div>
+                <div className="text-sm">Opened Position Count</div>
 
                 <span>
                   {formatNumber(
@@ -184,7 +184,7 @@ export default function MyDashboard({
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Liquidated Position Count</div>
+                <div className="text-sm">Liquidated Position Count</div>
 
                 <span>
                   {formatNumber(
@@ -196,7 +196,7 @@ export default function MyDashboard({
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Opening Average Leverage</div>
+                <div className="text-sm">Opening Average Leverage</div>
 
                 <span>
                   x
@@ -213,7 +213,7 @@ export default function MyDashboard({
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Opening Size</div>
+                <div className="text-sm">Opening Size</div>
 
                 <span>
                   {formatPriceInfo(
@@ -226,7 +226,7 @@ export default function MyDashboard({
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Profits</div>
+                <div className="text-sm">Profits</div>
 
                 <span>
                   {formatPriceInfo(
@@ -239,7 +239,7 @@ export default function MyDashboard({
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Losses</div>
+                <div className="text-sm">Losses</div>
 
                 <span>
                   {formatPriceInfo(
@@ -252,7 +252,7 @@ export default function MyDashboard({
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Fees Paid</div>
+                <div className="text-sm">Fees Paid</div>
 
                 <span>
                   {formatPriceInfo(
@@ -267,17 +267,17 @@ export default function MyDashboard({
           </div>
 
           <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl grow min-w-[20em]">
-            <h3>Swap Stats</h3>
+            <h4>Swap Stats</h4>
 
             <div className="flex flex-col gap-x-6 mt-4 bg-black p-4 border rounded-2xl">
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Swap Count</div>
+                <div className="text-sm">Swap Count</div>
 
                 <span>{formatNumber(userProfile.swapCount, 1)}</span>
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Swap Volume</div>
+                <div className="text-sm">Swap Volume</div>
 
                 <span>
                   {formatPriceInfo(userProfile.swapVolumeUsd, false, 3)}
@@ -285,7 +285,7 @@ export default function MyDashboard({
               </div>
 
               <div className="flex w-full items-center justify-between">
-                <div className="text-base">Fees Paid</div>
+                <div className="text-sm">Fees Paid</div>
 
                 <span>
                   {formatPriceInfo(userProfile.swapFeePaidUsd, false, 3)}
@@ -297,7 +297,7 @@ export default function MyDashboard({
       ) : null}
 
       <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl grow">
-        <h3 className="mb-4">My Opened Positions</h3>
+        <h4 className="mb-4">My Opened Positions</h4>
 
         <div
           className={twMerge(
@@ -313,11 +313,11 @@ export default function MyDashboard({
       </div>
 
       <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl grow">
-        <h3>My Stakes</h3>
+        <h4>My Stakes</h4>
 
         <div className="flex flex-col gap-x-6 mt-4 bg-black p-4 border rounded-2xl max-w-[25em]">
           <div className="flex w-full items-center justify-between">
-            <div className="text-base">Liquid Staked ADX</div>
+            <div className="text-sm">Liquid Staked ADX</div>
 
             <span>
               {liquidStakedADX !== null
@@ -331,7 +331,7 @@ export default function MyDashboard({
           </div>
 
           <div className="flex w-full items-center justify-between">
-            <div className="text-base">Locked Staked ADX</div>
+            <div className="text-sm">Locked Staked ADX</div>
 
             <span>
               {lockedStakedADX !== null
@@ -345,7 +345,7 @@ export default function MyDashboard({
           </div>
 
           <div className="flex w-full items-center justify-between">
-            <div className="text-base">Locked Staked ALP</div>
+            <div className="text-sm">Locked Staked ALP</div>
 
             <span>
               {lockedStakedALP !== null
@@ -361,7 +361,7 @@ export default function MyDashboard({
 
         {lockedStakes?.length ? (
           <div className="mt-6">
-            <div className="text-base">My Locked Stakes</div>
+            <div className="text-sm">My Locked Stakes</div>
 
             <div className="flex flex-col mt-2 gap-y-2">
               {lockedStakes ? (
