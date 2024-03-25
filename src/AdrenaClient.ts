@@ -141,6 +141,13 @@ export class AdrenaClient {
     )[0];
   };
 
+  public getUserVestPda = (owner: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('vest'), owner.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
   public getUserStakingThreadAuthorityPda = (userStakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
       [Buffer.from('user-staking-thread-authority'), userStakingPda.toBuffer()],
@@ -2103,6 +2110,26 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
     );
+  }
+
+  // null = not ready
+  // false = no vest
+  public async loadUserVest(): Promise<Vest | false | null> {
+    if (!this.adrenaProgram || !this.connection) {
+      return null;
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const userVestPda = this.getUserVestPda(wallet.publicKey);
+
+    const vest = await this.adrenaProgram.account.vest.fetchNullable(
+      userVestPda,
+    );
+
+    if (!vest) return null;
+
+    return vest;
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {
