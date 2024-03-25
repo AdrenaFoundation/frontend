@@ -381,46 +381,66 @@ export default function ALPSwapInputs({
 
       {actionType === 'buy' ? (
         <div className="flex flex-col mt-4">
-          <div className="text-sm">Fees Reduction Routes</div>
+          <div className="text-sm">
+            Alternative Routes <span className="text-xs">(Fee Reduction)</span>
+          </div>
 
           {saveUpFees !== null && saveUpFees.length ? (
-            <>
-              {saveUpFees.map(([key, value]) => {
-                return feesUsd ? (
-                  <Button
-                    title={
-                      <div className="flex">
-                        <span className="">use {key} and save up</span>
-                        <span className="font-mono ml-1">
-                          {
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            formatPriceInfo(feesUsd - value.fees!)
-                          }
-                        </span>
-                        <span className="ml-1">of fees</span>
-                      </div>
-                    }
-                    size="lg"
-                    variant="secondary"
-                    className="justify-center w-full mt-5"
-                    onClick={() => {
-                      onCollateralTokenChange(value.token);
+            <div className="flex flex-col gap-y-4 mt-2">
+              {(() => {
+                const sortedSaveUpFees = saveUpFees
+                  // Highest saving first
+                  .sort(([, a], [, b]) => (a.fees ?? 0) - (b.fees ?? 0));
 
-                      // Wait for the input to be updated, then change the input
-                      setTimeout(() => {
-                        onChangeCollateralInput(
-                          Number(
-                            value.equivalentAmount?.toFixed(
-                              value.token.decimals,
-                            ),
-                          ),
-                        );
-                      }, 0);
-                    }}
-                  />
-                ) : null;
-              })}
-            </>
+                return sortedSaveUpFees.map(([key, value], i) => {
+                  return feesUsd ? (
+                    <div className="flex flex-col">
+                      {i === 0 ? (
+                        <div className="text-xs ml-auto mr-auto mt-2 mb-2">
+                          Recommended
+                        </div>
+                      ) : null}
+
+                      <Button
+                        key={key}
+                        title={
+                          <div className="flex">
+                            <span className="">use {key} and pay</span>
+                            <span className="font-mono ml-1">
+                              {formatPriceInfo(value.fees)}
+                            </span>
+                            <span className="ml-1">of fees</span>
+                          </div>
+                        }
+                        size="lg"
+                        variant="secondary"
+                        className={twMerge(
+                          'justify-center w-full border-2',
+                          i === 0 ||
+                            sortedSaveUpFees[i - 1][1].fees === value.fees
+                            ? 'border-white'
+                            : '',
+                        )}
+                        onClick={() => {
+                          onCollateralTokenChange(value.token);
+
+                          // Wait for the input to be updated, then change the input
+                          setTimeout(() => {
+                            onChangeCollateralInput(
+                              Number(
+                                value.equivalentAmount?.toFixed(
+                                  value.token.decimals,
+                                ),
+                              ),
+                            );
+                          }, 0);
+                        }}
+                      />
+                    </div>
+                  ) : null;
+                });
+              })()}
+            </div>
           ) : null}
 
           {saveUpFees !== null && !saveUpFees.length ? (
