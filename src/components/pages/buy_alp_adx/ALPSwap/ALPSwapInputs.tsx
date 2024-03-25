@@ -27,6 +27,7 @@ export default function ALPSwapInputs({
   setAlpPrice,
   collateralInput,
   onChangeCollateralInput,
+  collateralPrice,
   setCollateralPrice,
   onCollateralTokenChange,
   setFeesUsd,
@@ -39,6 +40,7 @@ export default function ALPSwapInputs({
   collateralToken: Token;
   collateralInput: number | null;
   allowedCollateralTokens: Token[] | null;
+  collateralPrice: number | null;
   setCollateralPrice: (v: number | null) => void;
   alpInput: number | null;
   onChangeAlpInput: (v: number | null) => void;
@@ -276,6 +278,13 @@ export default function ALPSwapInputs({
       maxButton={actionType === 'buy'}
       selectedToken={collateralToken}
       tokenList={allowedCollateralTokens || []}
+      subText={
+        collateralPrice !== null ? (
+          <span className="text-txtfade">
+            {formatPriceInfo(collateralPrice, false, 3)}
+          </span>
+        ) : null
+      }
       onMaxButtonClick={() => {
         setSaveUpFees(null);
         onChangeCollateralInput(
