@@ -40,7 +40,7 @@ export default function PositionsBlocks({
         <Button
           title={
             !window.adrena.geoBlockingData.allowed
-              ? 'Not elligable to trade'
+              ? 'Geo-Restricted Access'
               : 'Connect wallet'
           }
           variant="secondary"

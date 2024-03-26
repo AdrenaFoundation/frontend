@@ -1,5 +1,4 @@
 import { PublicKey } from '@solana/web3.js';
-import router from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -13,7 +12,6 @@ import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
-import disconnectIcon from '../../../public/images/disconnect.png';
 import threeDotsIcon from '../../../public/images/three-dots.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
@@ -38,8 +36,9 @@ function WalletAdapter({
 
   // Load local storage state to auto-connect if needed
   const autoConnectAuthorized: boolean =
-    JSON.parse(localStorage.getItem('autoConnectAuthorized') ?? 'false') ??
-    true;
+    (JSON.parse(localStorage.getItem('autoConnectAuthorized') ?? 'false') ??
+      true) &&
+    window.adrena.geoBlockingData.allowed;
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
@@ -132,7 +131,7 @@ function WalletAdapter({
           className={className}
           title={
             !window.adrena.geoBlockingData.allowed
-              ? 'Not elligable to trade'
+              ? 'Geo-Restricted Access'
               : 'Connect wallet'
           }
           rightIcon={walletIcon}
@@ -145,39 +144,6 @@ function WalletAdapter({
           }}
         />
       )}
-
-      {/* {menuIsOpen ? (
-        <div className="absolute right-0 bg-main min-w-[10em] p-2">
-          <Button
-            className="text-sm"
-            title="Profile"
-            alt="profile icon"
-            variant="text"
-            href={'/user_profile'}
-            onClick={() => {
-              setMenuIsOpen(false);
-            }}
-          />
-
-          <Button
-            className="text-sm"
-            title="Disconnect"
-            rightIcon={disconnectIcon}
-            alt="disconnect icon"
-            variant="text"
-            onClick={() => {
-              setMenuIsOpen(!menuIsOpen);
-
-              if (!connected) return;
-
-              console.log('Disconnect wallet');
-
-              dispatch(disconnectWalletAction(wallet.adapterName));
-              dispatch(openCloseConnectionModalAction(false));
-            }}
-          />
-        </div>
-      ) : null} */}
 
       <WalletSelectionModal />
     </div>

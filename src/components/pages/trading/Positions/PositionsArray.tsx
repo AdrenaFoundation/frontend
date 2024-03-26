@@ -1,4 +1,3 @@
-import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
@@ -39,7 +38,7 @@ export default function PositionsArray({
         <Button
           title={
             !window.adrena.geoBlockingData.allowed
-              ? 'Not elligable to trade'
+              ? 'Geo-Restricted Access'
               : 'Connect wallet'
           }
           variant="secondary"

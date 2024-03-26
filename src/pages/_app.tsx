@@ -90,10 +90,6 @@ export default function App(props: AppProps) {
 
   if (!isInitialized) return <Loader />;
 
-  if (!window.adrena.geoBlockingData.allowed) {
-    return <GeoBlockedPage {...window.adrena.geoBlockingData} />;
-  }
-
   return (
     <Provider store={store}>
       <CookiesProvider>
@@ -142,8 +138,6 @@ function AppComponent({ Component, pageProps }: AppProps) {
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
-
-    console.log('SET ADRENA PROGRAM');
 
     window.adrena.client.setAdrenaProgram(
       new Program(

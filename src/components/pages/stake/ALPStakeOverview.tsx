@@ -99,6 +99,7 @@ export default function ALPStakeOverview({
             variant="primary"
             size="lg"
             title="Stake More"
+            disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
             }
@@ -106,7 +107,9 @@ export default function ALPStakeOverview({
 
           <Button
             className="w-full mt-4"
-            disabled={totalLockedStake === 0}
+            disabled={
+              !window.adrena.geoBlockingData.allowed || totalLockedStake === 0
+            }
             variant="outline"
             size="lg"
             title="Claim Rewards"

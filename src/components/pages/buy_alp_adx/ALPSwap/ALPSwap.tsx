@@ -2,10 +2,11 @@ import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import { twMerge } from 'tailwind-merge';
 
+import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
-import { useSelector } from '@/store/store';
+import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {
   addFailedTxNotification,
@@ -53,11 +54,17 @@ export default function ALPSwap({
   setSelectedAction: (v: 'buy' | 'sell') => void;
   feesAndAmounts: FeesAndAmountsType | null;
 }) {
+  const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
   const handleExecuteButton = async () => {
+    if (!connected) {
+      dispatch(openCloseConnectionModalAction(true));
+      return;
+    }
+
     if (
       !wallet?.walletAddress ||
       !collateralInput ||
@@ -128,6 +135,10 @@ export default function ALPSwap({
   };
 
   const buttonTitle = (() => {
+    if (!connected && !window.adrena.geoBlockingData.allowed) {
+      return 'Geo-Restricted Access';
+    }
+
     // If wallet not connected, then user need to connect wallet
     if (!connected) {
       return 'Connect wallet';
