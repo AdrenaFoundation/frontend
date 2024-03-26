@@ -26,7 +26,6 @@ import { SupportedCluster } from '@/types';
 import logo from '../../public/images/logo.svg';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
-import GeoBlockedPage from '../pages/geoblocked/index';
 import store from '../store/store';
 
 function Loader(): JSX.Element {
