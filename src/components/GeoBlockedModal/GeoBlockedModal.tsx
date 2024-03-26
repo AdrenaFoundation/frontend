@@ -26,7 +26,7 @@ function GeoBlockedModal({
 
   return (
     <Modal
-      title="Geo-Blocked Restricted Access"
+      title="Geo-Restricted Access"
       close={() => {
         closeTrigger();
       }}
