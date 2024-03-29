@@ -59,7 +59,7 @@ export default function Menu({
             variants={variants}
             transition={{ duration: 0.3 }}
             className={twMerge(
-              'absolute flex flex-col bg-dark overflow-hidden z-50 border mt-2',
+              'absolute flex flex-col bg-third overflow-hidden z-50 border mt-2',
               withBorder
                 ? 'border border-zinc-700 shadow-zinc-800 shadow-lg'
                 : '',

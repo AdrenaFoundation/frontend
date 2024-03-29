@@ -38,7 +38,7 @@ function WalletSelectionModal() {
       close={() => dispatch(openCloseConnectionModalAction(false))}
       className="flex flex-col pb-8 pr-16 pl-16 sm:pr-8 sm:pl-8 relative overflow-visible"
     >
-      <div className="text-3xl opacity-80 ml-auto mr-auto mb-8 font-specialmonster mt-5">
+      <div className="text-3xl opacity-80 ml-auto mr-auto mb-8 font-special mt-5">
         Pick a wallet
       </div>
       <div className="flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0 flex-wrap">

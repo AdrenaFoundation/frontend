@@ -6,14 +6,14 @@ module.exports = {
       colors: {
         // background colors
         // ADRENA Style
-        main: '#171717',
-        secondary: '#151923',
-        third: '#343232',
-        highlight: '#36538f', // RED: #C43152
+        main: '#122439',
+        secondary: '#0F293F',
+        third: '#142130',
+        highlight: '#ffffff',
+        bcolor: '#2F3B49',
 
         // text
         txtfade: '#858789',
-        txtregular: '#ffffff',
 
         light: 'var(--color-light)',
         dark: '#0b0e13',
@@ -53,15 +53,13 @@ module.exports = {
     },
     font: {
       mono: ['Roboto Mono', 'sans-serif'],
+      regular: ['regular', 'sans-serif'],
+      special: ['special', 'sans-serif'],
     },
-
     fontFamily: {
       regular: ['regular'],
-      txtthin: ['thin'],
-      txtbold: ['bold'],
+      special: ['special'],
       mono: 'Roboto Mono',
-
-      specialmonster: ['specialmonster'],
     },
   },
   plugins: [],

@@ -16,18 +16,16 @@ export default function PositionsStatsBloc({
     <div className={twMerge('flex flex-col pr-4', className)}>
       <div className="flex w-full justify-center items-center">
         <div className="flex h-[1px] grow bg-gray-300"></div>
-        <div className="font-specialmonster text-2xl pl-6 pr-6">
-          Positions Stats
-        </div>
+        <div className="font-special text-2xl pl-6 pr-6">Positions Stats</div>
         <div className="flex h-[1px] grow bg-gray-300"></div>
       </div>
 
       <div className="flex w-full grow justify-around items-center flex-wrap self-center">
         <div className="flex flex-col items-center m-4 p-4 grow">
-          <div className="text-2xl text-txtfade font-specialmonster">Count</div>
+          <div className="text-2xl text-txtfade font-special">Count</div>
 
           <NumberInfo
-            className="text-4xl font-specialmonster"
+            className="text-4xl font-special"
             value={
               userProfile.longStats.openedPositionCount +
               userProfile.shortStats.openedPositionCount
@@ -38,12 +36,12 @@ export default function PositionsStatsBloc({
         </div>
 
         <div className="flex flex-col items-center m-4 p-4 grow">
-          <div className="text-2xl text-txtfade font-specialmonster">
+          <div className="text-2xl text-txtfade font-special">
             Liquidated Count
           </div>
 
           <NumberInfo
-            className="text-4xl font-specialmonster"
+            className="text-4xl font-special"
             value={
               userProfile.longStats.liquidatedPositionCount +
               userProfile.shortStats.liquidatedPositionCount
@@ -54,14 +52,14 @@ export default function PositionsStatsBloc({
         </div>
 
         <div className="flex flex-col items-center m-4 p-4 grow">
-          <div className="text-2xl text-txtfade font-specialmonster text-center">
+          <div className="text-2xl text-txtfade font-special text-center">
             Average Leverage
           </div>
 
-          <div className="flex items-center font-specialmonster">
+          <div className="flex items-center font-special">
             x
             <NumberInfo
-              className="text-4xl font-specialmonster"
+              className="text-4xl font-special"
               value={
                 (userProfile.longStats.openingAverageLeverage +
                   userProfile.shortStats.openingAverageLeverage) /
@@ -74,12 +72,12 @@ export default function PositionsStatsBloc({
         </div>
 
         <div className="flex flex-col items-center m-4 p-4 grow">
-          <div className="text-2xl text-txtfade font-specialmonster text-center">
+          <div className="text-2xl text-txtfade font-special text-center">
             Volume with leverage
           </div>
 
           <NumberInfo
-            className="text-4xl font-specialmonster"
+            className="text-4xl font-special"
             value={
               userProfile.longStats.openingSizeUsd +
               userProfile.shortStats.openingSizeUsd
@@ -88,12 +86,12 @@ export default function PositionsStatsBloc({
         </div>
 
         <div className="flex flex-col items-center m-4 p-4 grow">
-          <div className="text-2xl text-txtfade font-specialmonster text-center">
+          <div className="text-2xl text-txtfade font-special text-center">
             Fee paid
           </div>
 
           <NumberInfo
-            className="text-4xl font-specialmonster"
+            className="text-4xl font-special"
             value={
               userProfile.longStats.feePaidUsd +
               userProfile.shortStats.feePaidUsd
@@ -102,7 +100,7 @@ export default function PositionsStatsBloc({
         </div>
 
         <div className="flex flex-col items-center m-4 p-4 grow">
-          <div className="text-2xl text-txtfade font-specialmonster">
+          <div className="text-2xl text-txtfade font-special">
             Profits and Losses
           </div>
 
@@ -119,7 +117,7 @@ export default function PositionsStatsBloc({
                 shortLossesUsd={userProfile.shortStats.lossesUsd}
               />
             ) : (
-              <NumberInfo className="text-4xl font-specialmonster" value={0} />
+              <NumberInfo className="text-4xl font-special" value={0} />
             )}
           </div>
         </div>

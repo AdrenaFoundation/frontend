@@ -18,7 +18,7 @@ export default function Bloc({
       )}
     >
       <div className="w-full flex items-center">
-        <div className="font-specialmonster text-xl ml-4 mt-2 mb-4 border-b-2 border-white">
+        <div className="font-special text-xl ml-4 mt-2 mb-4 border-b-2 border-white">
           {title}
         </div>
       </div>

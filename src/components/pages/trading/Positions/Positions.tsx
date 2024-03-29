@@ -49,6 +49,7 @@ export default function Positions({
             />
           </Modal>
         )}
+
         {positionToEdit && (
           <Modal
             title={`Edit ${positionToEdit.side === 'long' ? 'Long' : 'Short'} ${

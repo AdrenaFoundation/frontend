@@ -113,7 +113,7 @@ export default function OwnerBloc({
               {nicknameUpdating ? (
                 <div className="flex flex-col items-center w-full justify-center">
                   <InputString
-                    className="text-center w-full font-specialmonster mt-4"
+                    className="text-center w-full font-special mt-4"
                     value={updatedNickname ?? ''}
                     onChange={setUpdatedNickname}
                     placeholder="The Great Trader"
@@ -148,7 +148,7 @@ export default function OwnerBloc({
                 </div>
               ) : (
                 <div className="flex mt-4">
-                  <div className="font-specialmonster text-4xl ml-2 relative">
+                  <div className="font-special text-4xl ml-2 relative">
                     {userProfile.nickname}
                   </div>
 
@@ -232,9 +232,7 @@ export default function OwnerBloc({
         noVariant="outline"
         body={
           <div className="flex flex-col w-[25em]">
-            <span className="font-specialmonster text-4xl self-center">
-              Warning
-            </span>
+            <span className="font-special text-4xl self-center">Warning</span>
 
             <span className="mt-8 text-center">
               All informations stored in your user profile will be lost, this

@@ -1,33 +1,20 @@
-import { BN } from '@coral-xyz/anchor';
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import { TradeComp } from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import { useDispatch, useSelector } from '@/store/store';
+import { useDispatch } from '@/store/store';
 import { PageProps, PositionExtended, Token } from '@/types';
-import {
-  addFailedTxNotification,
-  addNotification,
-  addSuccessTxNotification,
-  uiLeverageToNative,
-  uiToNative,
-} from '@/utils';
 
 export type Action = 'long' | 'short' | 'swap';
 
 export default function Trade({
   positions,
-  connected,
   wallet,
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
@@ -178,43 +165,8 @@ export default function Trade({
 
   return (
     <>
-      <div className="absolute w-full left-0 top-0 h-full overflow-hidden">
-        <RiveAnimation
-          animation="blob-bg"
-          layout={
-            new Layout({ fit: Fit.Contain, alignment: Alignment.TopCenter })
-          }
-          className={'fixed lg:absolute top-0 w-[500px] left-1/2 h-full'}
-        />
-
-        <RiveAnimation
-          animation="fred-bg"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopRight,
-            })
-          }
-          className={
-            'fixed lg:absolute top-0 right-0 w-[1000px] lg:w-full h-full'
-          }
-        />
-
-        <RiveAnimation
-          animation="fred-bg"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.BottomLeft,
-            })
-          }
-          className={
-            'fixed lg:absolute top-0 left-0 rotate-180 w-[1000px] lg:w-full h-full'
-          }
-        />
-      </div>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10">
-        <div className="flex flex-col w-full h-full lg:w-[80%] lg:max-w-[90em] lg:min-h-[766px]">
+        <div className="flex flex-col w-full h-full mt-2">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -247,7 +199,7 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl h-full z-30 overflow-hidden">
+          <div className="h-full z-30 overflow-hidden bg-secondary">
             <Positions
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}

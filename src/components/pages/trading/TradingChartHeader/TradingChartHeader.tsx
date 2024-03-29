@@ -23,7 +23,7 @@ export default function TradingInputs({
   return (
     <div
       className={twMerge(
-        'flex items-center justify-between sm:justify-start gap-3 h-14 bg-gray-300/85 backdrop-blur-md border border-gray-200 border-b-transparent rounded-t-2xl z-30',
+        'flex items-center justify-between sm:justify-start gap-3 h-14 z-30',
         className,
       )}
     >

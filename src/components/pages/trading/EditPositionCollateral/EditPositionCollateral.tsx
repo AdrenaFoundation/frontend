@@ -344,7 +344,7 @@ export default function EditPositionCollateral({
 
       <div className="flex flex-col gap-3 text-sm mt-1">
         {selectedAction === 'withdraw' ? (
-          <div className="bg-dark flex justify-evenly p-2 rounded-2xl border">
+          <div className="bg-third flex justify-evenly p-2 rounded-2xl border">
             <div
               className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(25))}
@@ -366,7 +366,7 @@ export default function EditPositionCollateral({
           </div>
         ) : null}
 
-        <div className="flex flex-col border p-4 pt-2 bg-dark rounded-2xl">
+        <div className="flex flex-col border p-4 pt-2 bg-third rounded-2xl">
           <div className={rowStyle}>
             <div className="text-txtfade text-sm">Size</div>
 

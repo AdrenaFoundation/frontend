@@ -45,7 +45,7 @@ export default function TradingInput({
       <div
         className={twMerge(
           'rounded-2xl flex w-full border h-16',
-          disabled ? 'bg-transparent' : 'bg-dark',
+          disabled ? 'bg-transparent' : 'bg-third',
           inputClassName,
         )}
         style={
@@ -75,7 +75,7 @@ export default function TradingInput({
                     placeholder={placeholder}
                     className={twMerge(
                       'font-mono border-0 text-lg outline-none w-full',
-                      disabled ? 'bg-transparent' : 'bg-dark',
+                      disabled ? 'bg-transparent' : 'bg-third',
                     )}
                     onChange={onChange}
                     decimalConstraint={decimalConstraint}
@@ -89,7 +89,7 @@ export default function TradingInput({
             {maxButton ? (
               <Button
                 title="MAX"
-                variant="secondary"
+                variant="primary"
                 className="mx-2 text-sm h-6"
                 onClick={() => onMaxButtonClick?.()}
               />

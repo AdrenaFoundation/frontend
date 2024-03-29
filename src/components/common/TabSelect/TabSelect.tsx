@@ -49,12 +49,12 @@ export default function TabSelect<T extends string | number>({
   return (
     <div
       className={twMerge(
-        'relative flex flex-row gap-3 justify-between w-full bg-dark border border-gray-200 rounded-full p-1 mb-3',
+        'relative flex flex-row gap-3 justify-between w-full bg-main border border-gray-200 rounded-full p-1 mb-3',
         wrapperClassName,
       )}
     >
       <div
-        className="absolute h-full bg-gray-200 rounded-full cursor-pointer"
+        className="absolute h-full bg-secondary rounded-full cursor-pointer"
         style={{
           width: activeElement.width,
           height: activeElement.height,

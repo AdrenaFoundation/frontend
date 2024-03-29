@@ -73,7 +73,7 @@ const Modal = ({
           <div className="h-14 w-full flex flex-row items-center justify-center border-b border-grey pl-4 pr-4 pt-2 relative overflow-hidden">
             <div className="text-lg font-bold uppercase">{title}</div>
 
-            <div className="w-10 h-10 bg-dark absolute right-0 top-0 border-l flex items-center justify-center rounded-bl-2xl rounded-tr-2xl pl-1">
+            <div className="w-10 h-10 bg-third absolute right-0 top-0 border-l flex items-center justify-center rounded-bl-2xl rounded-tr-2xl pl-1">
               <Image
                 className="cursor-pointer opacity-40 hover:opacity-100 transition-opacity duration-300"
                 src={closeBtnIcon}

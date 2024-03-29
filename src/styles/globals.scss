@@ -44,28 +44,23 @@
 
 @layer base {
   @font-face {
-    font-family: specialmonster;
-    src: url('/fonts/Pink Blue.ttf');
+    font-family: special;
+    src: url('/fonts/Oswald-Bold.ttf');
   }
 
-  // @font-face {
-  //   font-family: regular;
-  //   src: url('/fonts/Louis George Cafe.ttf');
-  // }
+  @font-face {
+    font-family: regular;
+    src: url('/fonts/Louis George Cafe.ttf');
+  }
 
-  // @font-face {
-  //   font-family: thin;
-  //   src: url('/fonts/Louis George Cafe Light.ttf');
-  // }
-
-  // @font-face {
-  //   font-family: bold;
-  //   src: url('/fonts/Louis George Cafe Bold.ttf');
-  // }
+  div {
+    @apply border-bcolor;
+  }
 
   span,
   p {
     @apply text-sm;
+    @apply font-regular;
   }
 
   h1 {
@@ -120,7 +115,7 @@ body,
   width: 100%;
   min-width: 375px;
   min-height: 100vh;
-  background-color: var(--color-dark);
+  background-color: #122439;
   font-family: 'Inter', sans-serif;
 }
 

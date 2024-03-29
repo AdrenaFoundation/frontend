@@ -38,7 +38,7 @@ export default function LeverageSlider({
         className,
       )}
     >
-      <div className="flex items-center pl-4 pt-2 pr-2 pb-3 bg-dark w-full">
+      <div className="flex items-center pl-4 pt-2 pr-2 pb-3 bg-third w-full">
         <span className="shrink-0 w-3">x</span>
 
         <InputNumber
@@ -89,7 +89,7 @@ export default function LeverageSlider({
         </div>
       </div>
 
-      <div className="flex p-6 h-[3.5em] bg-dark border-t border-gray-200">
+      <div className="flex p-6 h-[3.5em] bg-third border-t">
         <Slider
           className="relative bottom-3"
           min={1}

@@ -27,7 +27,7 @@ export default function Header({
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="fixed top-0 w-full flex flex-row items-center justify-between p-3 px-7 border border-b-gray-200 z-50 bg-gray-300/85 backdrop-blur-md">
+    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b border-bcolor bg-third z-50">
       <div className="flex flex-row items-center gap-6">
         <Link className="font-bold uppercase relative" href="/">
           {
@@ -41,7 +41,7 @@ export default function Header({
           }
 
           {window.adrena.cluster === 'devnet' ? (
-            <span className="absolute font-specialmonster text-blue-500 bottom-[-0.7em] right-[-0.5em]">
+            <span className="absolute font-special text-blue-500 bottom-[-0.7em] right-[-0.5em]">
               Devnet
             </span>
           ) : null}

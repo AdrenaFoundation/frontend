@@ -79,7 +79,7 @@ export default function PositionsArray({
     <table className="w-full">
       {/* Header */}
 
-      <thead className="bg-dark border-b border-b-gray-200">
+      <thead className="">
         <tr>
           <th className={twMerge(columnHeadStyle, 'w-[6.5em]')}>Position</th>
           <th className={columnHeadStyle}>Leverage</th>

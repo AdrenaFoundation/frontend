@@ -42,7 +42,7 @@ export default function BurgerMenu({
 
   return (
     <div className="z-30">
-      <div className="fixed p-4 z-50 flex flex-row justify-between items-center w-full bg-gray-300/85 backdrop-blur-md border-b border-gray-200">
+      <div className="p-4 z-50 flex flex-row justify-between items-center w-full bg-gray-300/85 backdrop-blur-md border-b border-gray-200">
         <div
           className="flex items-center justify-center p-1 border w-9 h-8 border-gray-200 rounded-md hover:bg-gray-200 transition duration-300 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}

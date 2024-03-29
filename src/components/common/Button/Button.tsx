@@ -36,8 +36,9 @@ function Button({
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
 
   const variants = {
-    primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-full',
-    secondary: 'bg-gray-300 hover:bg-gray-400 rounded-full',
+    primary:
+      'bg-highlight text-main opacity-90 hover:opacity-100 font-medium rounded-full',
+    secondary: 'bg-secondary opacity-90 hover:opacity-100 rounded-full',
     danger: 'bg-red-500 hover:bg-red-700 font-medium rounded-full',
     text: 'opacity-50 hover:opacity-100 rounded-full',
     outline: 'border border-gray-200 hover:bg-gray-200 rounded-full',

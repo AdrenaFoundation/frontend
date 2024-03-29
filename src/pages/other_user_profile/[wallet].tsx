@@ -87,7 +87,7 @@ export default function OtherUserProfile(pageProps: PageProps) {
       <div className="text-sm ml-4 flex items-center border-b border-white w-[18em]">
         <div>
           Visiting
-          <span className="font-specialmonster text-lg ml-2 mr-2">
+          <span className="font-special text-lg ml-2 mr-2">
             {otherUserProfile.nickname}
           </span>
           profile

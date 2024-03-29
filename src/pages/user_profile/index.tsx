@@ -88,7 +88,7 @@ export default function UserProfile({
         </div>
 
         <div className="flex flex-col items-center justify-center mt-[6%] z-20 border border-gray-200 bg-gray-300/85 backdrop-blur-md p-7 m-4 w-[25em] self-center rounded-2xl">
-          <div className="font-specialmonster text-3xl text-center">
+          <div className="font-special text-3xl text-center">
             Create my profile
           </div>
 
@@ -101,9 +101,7 @@ export default function UserProfile({
           <div className="w-2/3 h-[1px] bg-gray-300 mt-8"></div>
 
           <div className="flex flex-col items-center justify-center">
-            <div className="font-specialmonster text-xl mt-10 ">
-              My Nickname
-            </div>
+            <div className="font-special text-xl mt-10 ">My Nickname</div>
 
             <InputString
               value={nickname ?? ''}

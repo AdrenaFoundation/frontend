@@ -80,7 +80,7 @@ function WalletAdapter({
             <Button
               className={twMerge(
                 // use monster font when displaying the nickname only
-                userProfile ? 'font-specialmonster text-md' : '',
+                userProfile ? 'font-special text-md' : '',
                 className,
               )}
               title={

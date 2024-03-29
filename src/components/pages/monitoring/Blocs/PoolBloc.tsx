@@ -42,7 +42,7 @@ export default function PoolBloc({
         <PoolRatioChart alpComposition={alpComposition} />
       </div>
 
-      <div className="text-lg ml-4 mt-4 font-specialmonster">Ratio Score</div>
+      <div className="text-lg ml-4 mt-4 font-special">Ratio Score</div>
 
       <Score className="ml-auto mr-auto" score={ratioScore} />
     </Bloc>

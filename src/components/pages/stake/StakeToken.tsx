@@ -68,7 +68,7 @@ export default function StakeToken({
               <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
             </div>
             <input
-              className="w-full bg-dark border border-gray-400 rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-third border border-gray-400 rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value

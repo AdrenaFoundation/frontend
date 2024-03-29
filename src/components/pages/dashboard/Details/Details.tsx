@@ -33,7 +33,7 @@ export default function Details({
               title === 'ADX' ? 'red' : 'blue'
             }-500 rounded-full`}
           >
-            <p className="flex items-center justify-center text-sm font-specialmonster h-7 w-7">
+            <p className="flex items-center justify-center text-sm font-special h-7 w-7">
               {title === 'ADX' ? 'ADX' : 'ALP'}
             </p>
           </div>
