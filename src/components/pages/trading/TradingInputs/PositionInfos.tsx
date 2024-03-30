@@ -85,15 +85,10 @@ export default function PositionInfos({
   );
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col bg-third border rounded-2xl pr-3',
-        className,
-      )}
-    >
+    <div className={twMerge('flex flex-col bg-secondary', className)}>
       <div className="flex items-center border-b h-14 pr-4">
         <Select
-          className="shrink-0 bg-third h-full flex items-center rounded-tr-2xl rounded-br-2xl w-[8em]"
+          className="shrink-0 bg-secondary h-full flex items-center w-[8em]"
           selectedClassName="w-14"
           selected={tokenB.symbol}
           options={allowedTokenB.map((token) => ({
@@ -370,7 +365,7 @@ export default function PositionInfos({
           )}
         </div>
 
-        <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
+        <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
         <div className={infoRowStyle}>
           <span className="text-txtfade text-sm flex">
@@ -556,7 +551,7 @@ export default function PositionInfos({
           )}
         </div>
 
-        <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
+        <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
         <div className={infoRowStyle}>
           <span className="text-txtfade text-sm flex mb-1">

@@ -166,7 +166,7 @@ export default function Trade({
   return (
     <>
       <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10">
-        <div className="flex flex-col w-full h-full mt-2">
+        <div className="flex flex-col w-full h-full pt-2">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -199,13 +199,14 @@ export default function Trade({
             ) : null}
           </div>
 
-          <div className="h-full z-30 overflow-hidden bg-secondary">
+          <div className="h-full z-30 overflow-hidden bg-secondary pr-2">
             <Positions
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
             />
           </div>
         </div>
+
         <>
           <TradeComp
             selectedAction={selectedAction}

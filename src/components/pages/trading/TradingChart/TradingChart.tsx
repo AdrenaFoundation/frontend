@@ -227,8 +227,8 @@ export default function TradingChart({ token }: { token: Token }) {
   }, [positions, token.symbol, tokenPrice, widget]);
 
   return (
-    <div className="flex flex-col w-full mb-5 border border-gray-200 rounded-2xl rounded-t-none overflow-hidden bg-main backdrop-blur-md">
-      <div id="chart-area" className="h-full rounded-b-lg" />
+    <div className="flex flex-col w-full overflow-hidden bg-main">
+      <div id="chart-area" className="h-full" />
       <div className="copyright text-xs bg-main flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
         The chart is provided by TradingView, an advanced platform that provides
         unparalleled access to live data e.g.

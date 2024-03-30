@@ -13,9 +13,7 @@ import InputNumber from '../InputNumber/InputNumber';
 // const colorB = '#232743';
 
 // ADRENA Style
-const colorA = 'var(--color-blue-500)';
-const colorB = 'var(--color-gray-200)';
-// const colorC = 'var(--color-blue-300)';
+const colorB = '#ffffff20';
 
 export default function LeverageSlider({
   className,
@@ -32,17 +30,12 @@ export default function LeverageSlider({
     useState<boolean>(false);
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col rounded-2xl overflow-hidden border',
-        className,
-      )}
-    >
+    <div className={twMerge('flex flex-col overflow-hidden', className)}>
       <div className="flex items-center pl-4 pt-2 pr-2 pb-3 bg-third w-full">
         <span className="shrink-0 w-3">x</span>
 
         <InputNumber
-          className="w-full bg-transparent"
+          className="w-full"
           value={isLeverageInputEmpty ? undefined : value}
           max={50}
           onChange={function (value: number | null): void {
@@ -89,7 +82,7 @@ export default function LeverageSlider({
         </div>
       </div>
 
-      <div className="flex p-6 h-[3.5em] bg-third border-t">
+      <div className="flex p-6 h-[3.5em] bg-main border-t">
         <Slider
           className="relative bottom-3"
           min={1}
@@ -107,6 +100,7 @@ export default function LeverageSlider({
           }, {} as Record<number, ReactNode>)}
           railStyle={{
             backgroundColor: colorB,
+            height: 2,
           }}
           trackStyle={{
             backgroundColor: 'white',
@@ -120,7 +114,7 @@ export default function LeverageSlider({
           }}
           activeDotStyle={{
             backgroundColor: 'white',
-            borderColor: colorA,
+            borderColor: colorB,
           }}
           dotStyle={{
             borderRadius: 0,
