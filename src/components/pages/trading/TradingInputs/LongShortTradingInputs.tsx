@@ -351,7 +351,7 @@ export default function LongShortTradingInputs({
 
   return (
     <div className={twMerge('relative flex flex-col h-full', className)}>
-      <div className="text-sm  flex items-center ml-4 mt-2">
+      <div className="text-sm  flex items-center ml-4 mt-2 font-boldy">
         Collateral deposited
         <InfoAnnotation
           text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
@@ -413,7 +413,7 @@ export default function LongShortTradingInputs({
       {/* Leverage (only in short/long) */}
 
       <div className="flex flex-col">
-        <div className="text-sm flex items-center mt-3 ml-4">
+        <div className="text-sm flex items-center mt-3 ml-4 font-boldy">
           Leverage
           <InfoAnnotation
             text="Select a multiplier to apply to the collateral to determine the size of the position."
@@ -429,7 +429,7 @@ export default function LongShortTradingInputs({
       </div>
 
       <div className="flex flex-col mt-5 transition-opacity duration-500">
-        <div className="text-sm flex items-center ml-4">
+        <div className="text-sm flex items-center ml-4 font-boldy">
           Position
           <InfoAnnotation
             text={

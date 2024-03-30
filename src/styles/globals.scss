@@ -53,6 +53,11 @@
     src: url('/fonts/Louis George Cafe.ttf');
   }
 
+  @font-face {
+    font-family: boldy;
+    src: url('/fonts/Louis George Cafe Bold.ttf');
+  }
+
   div {
     @apply border-bcolor;
   }

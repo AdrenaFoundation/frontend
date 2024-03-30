@@ -27,7 +27,7 @@ export default function Header({
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b border-bcolor bg-third z-50">
+    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b bg-third z-50">
       <div className="flex flex-row items-center gap-6">
         <Link className="font-bold uppercase relative" href="/">
           {
@@ -56,7 +56,7 @@ export default function Header({
             <Link
               href={page.link}
               className={twMerge(
-                'font-normal text-sm opacity-50 hover:opacity-100 transition-opacity duration-300',
+                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300',
                 pathname === page.link ? 'opacity-100' : '',
               )}
               key={page.name}

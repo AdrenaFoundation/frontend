@@ -72,7 +72,7 @@ export default function PositionsArray({
     );
   }
 
-  const columnHeadStyle = 'text-sm text-center opacity-50 font-medium p-3 ';
+  const columnHeadStyle = 'text-sm text-center opacity-50 font-boldy p-3 ';
   const columnStyle = 'text-sm text-center h-10';
 
   return (

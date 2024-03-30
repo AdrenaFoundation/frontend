@@ -54,11 +54,13 @@ module.exports = {
     font: {
       mono: ['Roboto Mono', 'sans-serif'],
       regular: ['regular', 'sans-serif'],
+      boldy: ['boldy', 'sans-serif'],
       special: ['special', 'sans-serif'],
     },
     fontFamily: {
       regular: ['regular'],
       special: ['special'],
+      boldy: ['boldy'],
       mono: 'Roboto Mono',
     },
   },

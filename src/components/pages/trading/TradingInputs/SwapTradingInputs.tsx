@@ -280,7 +280,7 @@ export default function SwapTradingInputs({
   return (
     <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
       {/* Input A */}
-      <div className="text-sm flex items-center ml-4">
+      <div className="text-sm flex items-center ml-4 font-boldy">
         Pay
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."
@@ -365,7 +365,7 @@ export default function SwapTradingInputs({
       </div>
 
       {/* Input B */}
-      <div className="text-sm flex items-center mt-3 ml-4">
+      <div className="text-sm flex items-center mt-3 ml-4 font-boldy">
         Receive
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."
@@ -416,7 +416,7 @@ export default function SwapTradingInputs({
       }
 
       <div className="flex flex-col mt-5">
-        <div className="text-sm flex items-center ml-4">
+        <div className="text-sm flex items-center ml-4 font-boldy">
           Verify
           <InfoAnnotation
             text={
