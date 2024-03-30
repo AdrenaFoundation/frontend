@@ -11,7 +11,7 @@ import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
-import MenuSeperator from '../common/Menu/MenuSeperator';
+import MenuSeparator from '../common/Menu/MenuSeparator';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
@@ -99,7 +99,7 @@ export default function Header({
                 Devnet
               </MenuItem>
 
-              <MenuSeperator />
+              <MenuSeparator />
 
               <MenuItem
                 selected={window.adrena.cluster === 'mainnet'}

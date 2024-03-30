@@ -8,7 +8,7 @@ import chevronDownIcon from '../../../../public/images/Icons/chevron-down.svg';
 import Menu from '../Menu/Menu';
 import MenuItem from '../Menu/MenuItem';
 import MenuItems from '../Menu/MenuItems';
-import MenuSeperator from '../Menu/MenuSeperator';
+import MenuSeparator from '../Menu/MenuSeparator';
 
 export default function Select<T extends string>({
   className,
@@ -62,7 +62,7 @@ export default function Select<T extends string>({
             </div>
 
             {options.length > 1 ? (
-              <div className="flex bg-gray-200 rounded-full p-1 h-5 w-5 items-center justify-center ml-2">
+              <div className="flex bg-secondary rounded-full p-1 h-5 w-5 items-center justify-center ml-2">
                 <Image src={chevronDownIcon} alt="chevron down" />
               </div>
             ) : null}
@@ -77,7 +77,7 @@ export default function Select<T extends string>({
               .filter((option) => option.title !== selected)
               .map((option, i) => (
                 <>
-                  {!!i && <MenuSeperator key={'sep' + option.title} />}
+                  {!!i && <MenuSeparator key={'sep' + option.title} />}
 
                   <MenuItem
                     className="flex flex-row items-center justify-end text-center relative overflow-hidden h-14"

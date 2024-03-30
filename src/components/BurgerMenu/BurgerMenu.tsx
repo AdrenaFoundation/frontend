@@ -12,12 +12,12 @@ import githubLogo from '../../../public/images/github.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
 import logo from '../../../public/images/logo.svg';
-import twitterLogo from '../../../public/images/twitter.svg';
+import twitterLogo from '../../../public/images/x.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
-import MenuSeperator from '../common/Menu/MenuSeperator';
+import MenuSeparator from '../common/Menu/MenuSeparator';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
@@ -125,7 +125,7 @@ export default function BurgerMenu({
                     >
                       Devnet
                     </MenuItem>
-                    <MenuSeperator />
+                    <MenuSeparator />
                     <MenuItem
                       selected={window.adrena.cluster === 'mainnet'}
                       onClick={() => {
