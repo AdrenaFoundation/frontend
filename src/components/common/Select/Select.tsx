@@ -80,7 +80,7 @@ export default function Select<T extends string>({
                   {!!i && <MenuSeperator key={'sep' + option.title} />}
 
                   <MenuItem
-                    className="flex flex-row items-center justify-end text-center relative overflow-hidden h-14 grayscale hover:grayscale-0"
+                    className="flex flex-row items-center justify-end text-center relative overflow-hidden h-14"
                     onMouseEnter={() => setOptionHover(i)}
                     onMouseLeave={() => setOptionHover(null)}
                     onClick={() => {
@@ -92,8 +92,10 @@ export default function Select<T extends string>({
                       <Image
                         src={option.img}
                         className={twMerge(
-                          'absolute top-auto left-[-32px] z-10',
-                          optionHover === i ? 'opacity-60' : 'opacity-20',
+                          'absolute top-auto left-[-32px] z-10 grayscale',
+                          optionHover === i
+                            ? 'opacity-60 grayscale-0'
+                            : 'opacity-20',
                         )}
                         alt="logo"
                         width="80"

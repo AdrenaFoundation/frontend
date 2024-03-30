@@ -56,7 +56,7 @@ const RootLayout = ({
         <BurgerMenu userProfile={userProfile} PAGES={pages} />
       )}
 
-      <div className="w-full flex justify-center">
+      <div className="w-full grow flex justify-center">
         <div className={twMerge('w-full flex flex-col pb-[3em] sm:pb-0')}>
           {children}
         </div>

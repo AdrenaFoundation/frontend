@@ -27,7 +27,7 @@ export default function MenuItem({
     <li
       className={twMerge(
         'text-sm bg-third hover:bg-secondary duration-300 cursor-pointer w-full whitespace-nowrap',
-        selected && 'bg-gray-300',
+        selected && 'bg-main',
         href ? 'p-0' : 'p-1 px-3',
         className,
       )}

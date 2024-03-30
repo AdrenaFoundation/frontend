@@ -44,23 +44,24 @@ export default function TradingInput({
     <div className={twMerge('relative flex flex-col', className)}>
       <div
         className={twMerge(
-          'rounded-2xl flex w-full border h-16',
-          disabled ? 'bg-transparent' : 'bg-third',
+          'rounded-2xl flex w-full border h-16 bg-third',
           inputClassName,
         )}
         style={
           disabled
             ? {
-                backgroundImage:
-                  'linear-gradient(45deg, rgba(3, 6, 9, 0.1) 25%, transparent 25%, transparent 50%, rgba(3, 6, 9, 0.1) 50%, rgba(3, 6, 9, 0.1) 75%, transparent 75%, transparent)',
                 backgroundSize: '10px 10px',
-                backgroundColor: '#21272d',
                 cursor: 'not-allowed',
               }
             : {}
         }
       >
-        <div className="flex items-center w-full justify-center flex-col pl-4">
+        <div
+          className={twMerge(
+            'flex items-center w-full justify-center flex-col pl-4',
+            disabled ? 'opacity-60' : '',
+          )}
+        >
           <div className="flex w-full items-center">
             {loading ? (
               <span className="w-full text-txtfade">loading ...</span>

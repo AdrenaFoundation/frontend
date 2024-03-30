@@ -350,8 +350,8 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col', className)}>
-      <div className="text-sm  flex items-center ml-4">
+    <div className={twMerge('relative flex flex-col h-full', className)}>
+      <div className="text-sm  flex items-center ml-4 mt-2">
         Collateral deposited
         <InfoAnnotation
           text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
@@ -490,10 +490,7 @@ export default function LongShortTradingInputs({
 
       {/* Button to execute action */}
       <Button
-        className={twMerge(
-          'w-full justify-center rounded-none',
-          errorMessage ? 'mt-2' : 'mt-2',
-        )}
+        className={twMerge('w-full justify-center rounded-none', 'mt-auto')}
         size="lg"
         title={buttonTitle}
         disabled={errorMessage != null}
