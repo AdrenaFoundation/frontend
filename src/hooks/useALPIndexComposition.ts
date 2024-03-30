@@ -7,12 +7,14 @@ import { nativeToUi } from '@/utils';
 export type TokenInfo = {
   token: Token;
   price: number | null;
+  color: string | null;
   custodyUsdValue: number | null;
   currentRatio: number | null;
   targetRatio: number | null;
   minRatio: number | null;
   maxRatio: number | null;
   utilization: number | null;
+  ownedAssets: number | null;
 };
 
 export type ALPIndexComposition = TokenInfo[];
@@ -54,8 +56,27 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
         );
       })();
 
+      const ownedAssets = (() => {
+        if (!custody) return null;
+
+        return nativeToUi(custody.nativeObject.assets.owned, custody.decimals);
+      })();
+
+      const color = (() => {
+        if (!custody) return null;
+
+        if (token.symbol === 'USDC') return '#2775ca';
+        if (token.symbol === 'USDT') return '#26a17b';
+        if (token.symbol === 'ETH') return '#3D3E3F';
+        if (token.symbol === 'BTC') return '#f7931a';
+        if (token.symbol === 'SOL') return '#9945FF';
+
+        return '#000000';
+      })();
+
       return {
         token,
+        color,
         price,
         custodyUsdValue,
         currentRatio,
@@ -63,6 +84,7 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
         minRatio: custody ? custody.minRatio / 100 : null,
         maxRatio: custody ? custody.maxRatio / 100 : null,
         utilization,
+        ownedAssets,
       };
     });
 
