@@ -87,7 +87,7 @@ export default function UserProfile({
           />
         </div>
 
-        <div className="flex flex-col items-center justify-center mt-[6%] z-20 border border-gray-200 bg-gray-300/85 backdrop-blur-md p-7 m-4 w-[25em] self-center rounded-2xl">
+        <div className="flex flex-col items-center justify-center mt-[6%] z-20 border border-gray-200 bg-gray-300/85 backdrop-blur-md p-7 m-4 w-[25em] self-center rounded-lg">
           <div className="font-special text-3xl text-center">
             Create my profile
           </div>
@@ -129,7 +129,7 @@ export default function UserProfile({
 
   return (
     <div className="flex flex-wrap">
-      <div className="flex m-2 w-[26em] min-w-[26em] grow  bg-gray-300/85 border border-gray-200 rounded-2xl pt-8 pb-8 pl-2 pr-2 justify-center">
+      <div className="flex m-2 w-[26em] min-w-[26em] grow  bg-gray-300/85 border border-gray-200 rounded-lg pt-8 pb-8 pl-2 pr-2 justify-center">
         <OwnerBloc
           userProfile={userProfile}
           triggerUserProfileReload={triggerUserProfileReload}
@@ -139,7 +139,7 @@ export default function UserProfile({
         />
       </div>
 
-      <div className="flex flex-col w-[40em] min-w-[26em] grow m-2 bg-gray-300/85 border border-gray-200 rounded-2xl">
+      <div className="flex flex-col w-[40em] min-w-[26em] grow m-2 bg-gray-300/85 border border-gray-200 rounded-lg">
         <SwapStatsBloc userProfile={userProfile} className="grow p-4" />
 
         <PositionsStatsBloc userProfile={userProfile} className="grow p-4" />

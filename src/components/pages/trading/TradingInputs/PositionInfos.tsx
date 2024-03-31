@@ -85,10 +85,12 @@ export default function PositionInfos({
   );
 
   return (
-    <div className={twMerge('flex flex-col bg-secondary', className)}>
+    <div
+      className={twMerge('flex flex-col bg-secondary border pr-2', className)}
+    >
       <div className="flex items-center border-b h-14 pr-4">
         <Select
-          className="shrink-0 bg-secondary h-full flex items-center w-[8em]"
+          className="shrink-0 h-full flex items-center w-[7em]"
           selectedClassName="w-14"
           selected={tokenB.symbol}
           options={allowedTokenB.map((token) => ({
@@ -174,7 +176,7 @@ export default function PositionInfos({
 
       <div className="flex flex-col pt-2 pb-2 pl-4 pr-4">
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm flex">
+          <span className="text-sm flex">
             <InfoAnnotation
               text="Collateral backing the position. Position can be liquidated if this drop below xx% of position value"
               className="mr-1 w-3"
@@ -221,7 +223,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm flex">
+          <span className="text-sm flex">
             <InfoAnnotation
               text="Multiplier applied to the collateral to determine the size of the position."
               className="mr-1 w-3"
@@ -268,7 +270,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm flex">
+          <span className="text-sm flex">
             <InfoAnnotation
               text="Token price at which the position is opened."
               className="mr-1 w-3"
@@ -315,7 +317,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm flex">
+          <span className="text-sm flex">
             <InfoAnnotation
               text="If the token's price hits this point, the position is automatically closed to prevent further losses."
               className="mr-1 w-3"
@@ -368,7 +370,7 @@ export default function PositionInfos({
         <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm flex">
+          <span className="text-sm flex">
             <InfoAnnotation
               text={`Fees paid when ${
                 openedPosition ? 'increasing' : 'opening'
@@ -432,7 +434,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm relative flex">
+          <span className="text-sm relative flex">
             <InfoAnnotation
               text="Fees paid when closing the position."
               className="mr-1 w-3"
@@ -481,7 +483,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm relative flex">
+          <span className="text-sm relative flex">
             <InfoAnnotation
               text="Fees paid when the position is liquidated."
               className="mr-1 w-3"
@@ -532,7 +534,7 @@ export default function PositionInfos({
         </div>
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm relative flex">
+          <span className="text-sm relative flex">
             <InfoAnnotation
               text="Fees charged for borrowing funds for the position. Greater leverage means borrowing more tokens, resulting in higher fees."
               className="mr-1 w-3"
@@ -554,7 +556,7 @@ export default function PositionInfos({
         <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
         <div className={infoRowStyle}>
-          <span className="text-txtfade text-sm flex mb-1">
+          <span className="text-sm flex mb-1">
             <InfoAnnotation
               text="Amount of funds available to enter new trades."
               className="mr-1 w-3"

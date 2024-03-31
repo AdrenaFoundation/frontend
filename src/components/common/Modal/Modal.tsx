@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import closeBtnIcon from '../../../../public/images/Icons/cross.svg';
+import closeBtnIcon from '../../../../public/images/Icons/cross-blue.svg';
 
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
@@ -67,25 +67,28 @@ const Modal = ({
         />
 
         <div
-          className="min-w-20 min-h-10 z-[102] rounded-2xl border border-gray-200 bg-gray-300 mx-4"
+          className="min-w-20 min-h-10 z-[102] rounded-lg border bg-secondary mx-4 overflow-hidden"
           role="dialog"
         >
-          <div className="h-14 w-full flex flex-row items-center justify-center border-b border-grey pl-4 pr-4 pt-2 relative overflow-hidden">
-            <div className="text-lg font-bold uppercase">{title}</div>
+          <div className="h-8 w-full flex items-center justify-start border-b border-grey pl-4 pr-4 relative overflow-hidden bg-highlight">
+            <div className="flex text-lg uppercase text-main font-special h-full items-center justify-center opacity-80">
+              <span className="text-main text-xl mr-1 opacity-50">{'>>>'}</span>{' '}
+              {title}
+            </div>
 
-            <div className="w-10 h-10 bg-third absolute right-0 top-0 border-l flex items-center justify-center rounded-bl-2xl rounded-tr-2xl pl-1">
+            <div className="h-full absolute right-2 top-0 flex items-center justify-center pl-1 rounded-tr-lg">
               <Image
                 className="cursor-pointer opacity-40 hover:opacity-100 transition-opacity duration-300"
                 src={closeBtnIcon}
                 alt="close icon"
-                width={24}
-                height={24}
+                width={25}
+                height={25}
                 onClick={() => close()}
               />
             </div>
           </div>
 
-          <div className={className ?? ''}>{children}</div>
+          <div className={className}>{children}</div>
         </div>
       </motion.div>
     </PortalContainer>

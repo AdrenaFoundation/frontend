@@ -45,11 +45,11 @@ export default function TradingChart({ token }: { token: Token }) {
           symbol: `Crypto.${token.symbol}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#122439',
+          toolbar_bg: '#001025',
           datafeed,
           loading_screen: {
-            backgroundColor: '#122439',
-            foregroundColor: '#122439',
+            backgroundColor: '#001025',
+            foregroundColor: '#001025',
           },
           favorites: {
             intervals: [
@@ -92,7 +92,7 @@ export default function TradingChart({ token }: { token: Token }) {
           custom_css_url: '/tradingview.css',
           overrides: {
             // Adapt colors
-            'paneProperties.background': '#122439',
+            'paneProperties.background': '#001025',
             'paneProperties.backgroundType': 'solid',
             // Hides the legend
             'paneProperties.legendProperties.showStudyArguments': false,

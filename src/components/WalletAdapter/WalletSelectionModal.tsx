@@ -105,7 +105,7 @@ const WalletBloc = ({
   const walletBloc = (
     <div
       className={twMerge(
-        'flex flex-col items-center justify-center p-3 border border-gray-200 rounded-2xl h-40 w-40 relative',
+        'flex flex-col items-center justify-center p-3 border border-gray-200 rounded-lg h-40 w-40 relative',
         disabled
           ? 'cursor-not-allowed opacity-40'
           : 'cursor-pointer hover:bg-gray-200 duration-300',

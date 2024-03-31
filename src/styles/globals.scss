@@ -60,6 +60,7 @@
 
   div {
     @apply border-bcolor;
+    @apply font-regular;
   }
 
   span,
@@ -120,7 +121,7 @@ body,
   width: 100%;
   min-width: 375px;
   min-height: 100vh;
-  background-color: #122439;
+  background-color: #001025;
   font-family: 'Inter', sans-serif;
 }
 

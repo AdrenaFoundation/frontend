@@ -25,7 +25,7 @@ export default function SwapInfo({
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   return (
-    <div className={twMerge('flex flex-col p-4 rounded-2xl', className)}>
+    <div className={twMerge('flex flex-col p-4 rounded-lg', className)}>
       <div className="w-full flex justify-between items-start mt-3">
         <div className="flex">
           <InfoAnnotation

@@ -179,7 +179,7 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
 
   return (
     <div className="flex flex-col md:flex-row items-evenly gap-x-4">
-      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-lg p-5">
         <div className="flex items-center">
           <Image
             src={window.adrena.client.alpToken.image}
@@ -216,7 +216,7 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
         />
       </div>
 
-      <div className="flex w-full h-auto flex-col border border-gray-200 rounded-2xl relative">
+      <div className="flex w-full h-auto flex-col border border-gray-200 rounded-lg relative">
         <div className="flex items-center absolute z-20 top-4 left-4">
           <Image
             src={window.adrena.client.adxToken.image}

@@ -324,7 +324,7 @@ export default function ALPSwapInputs({
 
   return (
     <div className={twMerge('relative flex flex-col', className)}>
-      <div className="text-sm text-white mb-3 font-boldy">Pay</div>
+      <div className="text-sm text-white mb-3">Pay</div>
 
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
@@ -351,15 +351,15 @@ export default function ALPSwapInputs({
         })()
       }
 
-      <div className="text-sm text-white mt-2 mb-3 font-boldy">Receive</div>
+      <div className="text-sm text-white mt-2 mb-3">Receive</div>
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
 
-      <div className="text-sm text-white mt-6 font-boldy">Verify</div>
+      <div className="text-sm text-white mt-6">Verify</div>
 
       <div
         className={twMerge(
-          'flex flex-col bg-black border rounded-2xl p-2',
+          'flex flex-col bg-black border rounded-lg p-2',
           className,
         )}
       >
@@ -444,13 +444,13 @@ export default function ALPSwapInputs({
           ) : null}
 
           {saveUpFees !== null && !saveUpFees.length ? (
-            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-2xl mt-4 flex justify-center flex-col">
+            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-lg mt-4 flex justify-center flex-col">
               <span className="text-txtfade">You are using the best route</span>
             </div>
           ) : null}
 
           {saveUpFees === null ? (
-            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-2xl mt-4 flex justify-center flex-col">
+            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-lg mt-4 flex justify-center flex-col">
               <span className="text-txtfade">Loading ...</span>
             </div>
           ) : null}

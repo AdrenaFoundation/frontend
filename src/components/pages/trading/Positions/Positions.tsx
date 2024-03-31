@@ -38,7 +38,7 @@ export default function Positions({
           <Modal
             title={`Close ${positionToClose.side} ${positionToClose.token.symbol} Position`}
             close={() => setPositionToClose(null)}
-            className="flex flex-col items-center p-4"
+            className="flex flex-col items-center"
           >
             <ClosePosition
               position={positionToClose}
@@ -56,7 +56,7 @@ export default function Positions({
               positionToEdit.token.symbol
             } Position`}
             close={() => setPositionToEdit(null)}
-            className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
+            className={twMerge('flex flex-col items-center')}
           >
             <EditPositionCollateral
               position={positionToEdit}

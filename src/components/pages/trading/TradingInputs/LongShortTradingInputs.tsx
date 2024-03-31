@@ -351,7 +351,7 @@ export default function LongShortTradingInputs({
 
   return (
     <div className={twMerge('relative flex flex-col h-full', className)}>
-      <div className="text-sm  flex items-center ml-4 mt-2 font-boldy">
+      <div className="text-sm flex items-center ml-4">
         Collateral deposited
         <InfoAnnotation
           text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
@@ -364,7 +364,6 @@ export default function LongShortTradingInputs({
         <div className="flex flex-col">
           <TradingInput
             className="mt-2 text-sm"
-            inputClassName="border-l-0 border-r-0 rounded-none"
             value={inputA}
             subText={
               priceA ? (
@@ -413,7 +412,7 @@ export default function LongShortTradingInputs({
       {/* Leverage (only in short/long) */}
 
       <div className="flex flex-col">
-        <div className="text-sm flex items-center mt-3 ml-4 font-boldy">
+        <div className="text-sm flex items-center mt-1 ml-4">
           Leverage
           <InfoAnnotation
             text="Select a multiplier to apply to the collateral to determine the size of the position."
@@ -421,15 +420,17 @@ export default function LongShortTradingInputs({
           />
         </div>
 
-        <LeverageSlider
-          value={leverage}
-          className="mt-3 w-full font-mono border-t border-b"
-          onChange={(v: number) => setLeverage(v)}
-        />
+        <div className="mt-4 border rounded-lg overflow-hidden">
+          <LeverageSlider
+            value={leverage}
+            className="w-full font-mono"
+            onChange={(v: number) => setLeverage(v)}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col mt-5 transition-opacity duration-500">
-        <div className="text-sm flex items-center ml-4 font-boldy">
+      <div className="flex flex-col mt-4 transition-opacity duration-500">
+        <div className="text-sm flex items-center ml-4">
           Position
           <InfoAnnotation
             text={
@@ -451,7 +452,7 @@ export default function LongShortTradingInputs({
         </div>
 
         <PositionInfos
-          className="mt-3 w-full h-auto"
+          className="mt-3 w-full h-auto mb-4 rounded-lg overflow-hidden"
           positionInfos={positionInfos}
           tokenB={tokenB}
           leverage={leverage}
@@ -490,7 +491,7 @@ export default function LongShortTradingInputs({
 
       {/* Button to execute action */}
       <Button
-        className={twMerge('w-full justify-center rounded-none', 'mt-auto')}
+        className={twMerge('w-full justify-center mt-auto')}
         size="lg"
         title={buttonTitle}
         disabled={errorMessage != null}

@@ -1,6 +1,6 @@
 .theme-dark:root {
-  --tv-color-platform-background: #122439;
-  --tv-color-pane-background: #122439;
+  --tv-color-platform-background: #001025;
+  --tv-color-pane-background: #001025;
   --tv-color-toolbar-button-background-hover: #151515;
   --tv-color-toolbar-button-background-expanded: #151515;
   --tv-color-toolbar-button-background-active: #151515;
@@ -22,5 +22,5 @@ html.theme-dark .chart-controls-bar {
 }
 
 html.theme-dark .menuWrap-g78rwseC {
-  background-color: #122439 !important;
+  background-color: #001025 !important;
 }

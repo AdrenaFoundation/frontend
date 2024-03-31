@@ -24,7 +24,7 @@ export default function ADXStakeOverview({
   handleClickOnClaimRewards: () => void;
 }) {
   return (
-    <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+    <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-lg p-5">
       <div className="flex items-center">
         <Image
           src={window.adrena.client.adxToken.image}
@@ -39,7 +39,7 @@ export default function ADXStakeOverview({
         </div>
       </div>
 
-      <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
+      <div className="border border-gray-200 bg-gray-300 p-6 rounded-lg">
         <h3>Liquid Staking</h3>
 
         <p className="mt-4 text-txtfade text-xs">
@@ -50,7 +50,7 @@ export default function ADXStakeOverview({
 
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
 
-        <div className="flex w-full justify-between bg-third rounded-2xl pt-2 pb-2 pl-4 pr-4 border border-gray-200">
+        <div className="flex w-full justify-between bg-third rounded-lg pt-2 pb-2 pl-4 pr-4 border border-gray-200">
           <span className="flex items-center">Balance</span>
 
           <div>
@@ -82,7 +82,7 @@ export default function ADXStakeOverview({
         </div>
       </div>
 
-      <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
+      <div className="border border-gray-200 bg-gray-300 p-6 rounded-lg">
         <h3>Duration-Locked Staking</h3>
 
         <p className="mt-4 flex flex-col ">
@@ -104,7 +104,7 @@ export default function ADXStakeOverview({
 
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
 
-        <div className="flex w-full justify-between bg-third rounded-2xl pt-2 pb-2 pl-4 pr-4 border border-gray-200">
+        <div className="flex w-full justify-between bg-third rounded-lg pt-2 pb-2 pl-4 pr-4 border border-gray-200">
           <span className="flex items-center">Locked</span>
 
           <div>

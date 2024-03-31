@@ -6,9 +6,11 @@ module.exports = {
       colors: {
         // background colors
         // ADRENA Style
-        main: '#122439',
-        secondary: '#0F293F',
-        third: '#142130',
+        main: '#001025',
+        // secondary: '#0F293F',
+        secondary: '#001329',
+        third: '#001329',
+        fourth: '#142130',
         highlight: '#ffffff',
         bcolor: '#2F3B49',
 

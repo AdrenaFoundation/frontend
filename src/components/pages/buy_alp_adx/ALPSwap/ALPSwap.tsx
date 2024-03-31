@@ -193,7 +193,7 @@ export default function ALPSwap({
   return (
     <div
       className={twMerge(
-        'bg-gray-300/85 backdrop-blur-md border border-gray-200 p-4 rounded-2xl h-fit',
+        'bg-gray-300/85 backdrop-blur-md border border-gray-200 p-4 rounded-lg h-fit',
         className,
       )}
     >
