@@ -79,9 +79,9 @@ export default function StakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%]"
+              className="absolute right-2 bottom-[20%] text-main"
               title="MAX"
-              variant="secondary"
+              variant="text"
               onClick={() => {
                 if (balance === null) return;
 

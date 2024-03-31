@@ -51,7 +51,7 @@ export default function StakeRedeem({
           <Button
             className="absolute right-2 bottom-[20%]"
             title="MAX"
-            variant="secondary"
+            variant="outline"
             onClick={() => {
               if (!totalLiquidStaked) {
                 return;

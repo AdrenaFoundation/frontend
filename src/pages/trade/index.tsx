@@ -19,8 +19,6 @@ export default function Trade({
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
 }: PageProps) {
-  const dispatch = useDispatch();
-
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );

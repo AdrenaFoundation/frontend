@@ -25,8 +25,8 @@ export default function SwapInfo({
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   return (
-    <div className={twMerge('flex flex-col p-4 rounded-lg', className)}>
-      <div className="w-full flex justify-between items-start mt-3">
+    <div className={twMerge('flex flex-col p-4 rounded-lg border', className)}>
+      <div className="w-full flex justify-between items-start">
         <div className="flex">
           <InfoAnnotation
             text="Swap fees are deducted from both the input token (token IN) and the output token (token OUT). For example, in a BTC to USDC swap, there are fees to be paid in BTC and in USDC."

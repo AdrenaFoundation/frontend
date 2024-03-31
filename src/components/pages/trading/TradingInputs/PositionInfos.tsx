@@ -1,8 +1,10 @@
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -86,8 +88,21 @@ export default function PositionInfos({
 
   return (
     <div
-      className={twMerge('flex flex-col bg-secondary border pr-2', className)}
+      className={twMerge(
+        'flex flex-col bg-secondary border pr-2 relative',
+        className,
+      )}
     >
+      <div className="absolute w-full h-full right-0 bottom-0 overflow-hidden flex items-end justify-end">
+        <RiveAnimation
+          animation="btm-monster"
+          layout={
+            new Layout({ fit: Fit.Cover, alignment: Alignment.BottomRight })
+          }
+          className="absolute w-full h-full right-0 bottom-0 opacity-10"
+        />
+      </div>
+
       <div className="flex items-center border-b h-14 pr-4">
         <Select
           className="shrink-0 h-full flex items-center w-[7em]"

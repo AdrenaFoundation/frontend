@@ -290,7 +290,7 @@ export default function SwapTradingInputs({
 
       <TradingInput
         className="mt-2 text-sm"
-        inputClassName="rounded-none border-l-0 border-r-0"
+        inputClassName="overflow-hidden"
         value={inputA}
         subText={
           priceA ? (
@@ -376,7 +376,7 @@ export default function SwapTradingInputs({
       <TradingInput
         disabled={true}
         className="mt-3 text-sm"
-        inputClassName="rounded-none border-l-0 border-r-0"
+        inputClassName="overflow-hidden"
         value={inputB}
         subText={
           priceB ? (
@@ -447,7 +447,7 @@ export default function SwapTradingInputs({
 
       {/* Button to execute action */}
       <Button
-        className="w-full justify-center border-l-0 border-r-0 rounded-none mt-auto"
+        className="w-full justify-center mt-auto"
         size="lg"
         title={buttonTitle}
         disabled={

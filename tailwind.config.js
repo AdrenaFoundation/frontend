@@ -8,10 +8,10 @@ module.exports = {
         // ADRENA Style
         main: '#001025',
         // secondary: '#0F293F',
-        secondary: '#001329',
-        third: '#001329',
+        secondary: '#000d1f',
+        third: '#000d1f',
         fourth: '#142130',
-        highlight: '#ffffff',
+        highlight: '#fffffff5',
         bcolor: '#2F3B49',
 
         // text
