@@ -242,7 +242,7 @@ export default function ClosePosition({
         size="lg"
         variant="primary"
         title={
-          <span className="text-main font-special text-xl">CLOSE POSITION</span>
+          <span className="text-main font-special text-lg">CLOSE POSITION</span>
         }
         onClick={() => handleExecute()}
       />

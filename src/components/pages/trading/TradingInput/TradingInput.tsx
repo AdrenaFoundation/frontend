@@ -44,7 +44,7 @@ export default function TradingInput({
     <div className={twMerge('relative flex flex-col', className)}>
       <div
         className={twMerge(
-          'rounded-lg flex w-full border h-16 bg-third',
+          'rounded-lg flex w-full border h-16 bg-fourth',
           inputClassName,
         )}
         style={
@@ -76,7 +76,7 @@ export default function TradingInput({
                     placeholder={placeholder}
                     className={twMerge(
                       'font-mono border-0 text-lg outline-none w-full',
-                      disabled ? 'bg-transparent' : 'bg-third',
+                      disabled ? 'bg-transparent' : 'bg-fourth',
                     )}
                     onChange={onChange}
                     decimalConstraint={decimalConstraint}

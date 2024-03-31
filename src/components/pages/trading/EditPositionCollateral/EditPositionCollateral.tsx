@@ -540,7 +540,7 @@ export default function EditPositionCollateral({
       </div>
 
       <Button
-        className="mt-4 rounded-none uppercase text-xl font-special"
+        className="mt-4 rounded-none uppercase text-lg font-special"
         size="lg"
         title={executeBtnText}
         onClick={() => handleExecute()}

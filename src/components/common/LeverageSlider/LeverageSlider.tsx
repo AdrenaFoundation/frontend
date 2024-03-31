@@ -31,7 +31,7 @@ export default function LeverageSlider({
 
   return (
     <div className={twMerge('flex flex-col overflow-hidden', className)}>
-      <div className="flex items-center pl-4 pt-1 pr-2 pb-1 bg-third w-full">
+      <div className="flex items-center pl-4 pt-1 pr-2 pb-1 bg-fourth w-full">
         <span className="shrink-0 w-3">x</span>
 
         <InputNumber
