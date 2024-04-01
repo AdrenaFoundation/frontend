@@ -46,7 +46,7 @@ export default function UsageOverview({
   nbOpenShortPositions: number | null;
 }) {
   return (
-    <div className="flex w-full h-auto flex-col  gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+    <div className="flex h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
       <div className="flex items-center">
         <Image
           //TODO: replace with a monster arm shaped as an arrow going up (generate on midjourney)
@@ -60,7 +60,6 @@ export default function UsageOverview({
           <span className="opacity-50">Visualize the project usage</span>
         </div>
       </div>
-
       <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
         <div className="flex items-center">
           <InfoAnnotationTitle
@@ -91,8 +90,7 @@ export default function UsageOverview({
           </div>
         </div>
       </div>
-
-      <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
+      <div className="h-full border border-gray-200 bg-gray-300 p-6 rounded-2xl">
         <div className="flex items-center">
           <InfoAnnotationTitle
             text="The current utilization of the pool by custody."
@@ -100,7 +98,7 @@ export default function UsageOverview({
             title="Utilization"
           />
         </div>
-        <div className="relative flex flex-col p-4 items-center justify-center m-auto w-full">
+        <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
           {chart ? (
             <>
               <div className="text-xs w-full flex justify-end text-[#666666]">

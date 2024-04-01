@@ -84,7 +84,7 @@ export default function GlobalHealthOverview({
   }
 
   return (
-    <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+    <div className="flex h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
       <div className="flex items-center">
         <Image
           // TODO: replace with monster heart icon
@@ -99,12 +99,11 @@ export default function GlobalHealthOverview({
           <span className="opacity-50">Visualize the project sanity</span>
         </div>
       </div>
-
-      <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
+      <div className="h-full border border-gray-200 bg-gray-300 p-6 rounded-2xl">
         <h3>Assets Under Management</h3>
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
 
-        <div className="flex flex-col gap-x-6 mt-4 bg-black p-4 border rounded-2xl">
+        <div className="flex flex-col gap-x-6 mt-4 bg-black p-4 border rounded-2xl h-auto">
           {
             <div className="flex w-full items-center justify-between">
               <div className="text-sm">Value</div>

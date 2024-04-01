@@ -39,7 +39,7 @@ export default function CoinsOverview({
   }
 
   return (
-    <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
+    <div className="flex h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
       <div className="flex items-center">
         <div className={`p-1 mr-2 bg-${'blue'}-500 rounded-full`}>
           <p className="flex items-center justify-center text-sm font-specialmonster h-7 w-7">
@@ -57,7 +57,7 @@ export default function CoinsOverview({
         </div>
       </div>
 
-      <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
+      <div className="h-full border border-gray-200 bg-gray-300 p-6 rounded-2xl">
         <div className="flex items-center">
           <InfoAnnotationTitle
             text="The currently active Stakes for ALP and ADX."
@@ -65,7 +65,7 @@ export default function CoinsOverview({
             title="Stakes"
           />
         </div>
-        <div className="relative flex flex-col p-4 items-center justify-center m-auto w-full min-width">
+        <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
           {alpChart ? (
             <>
               <Bar
