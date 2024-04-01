@@ -416,6 +416,7 @@ export class AdrenaClient {
         const infos:
           | {
               name: string;
+              color: string;
               symbol: string;
               image: ImageRef;
               coingeckoId: string;
@@ -429,6 +430,7 @@ export class AdrenaClient {
 
         return {
           mint: custody.mint,
+          color: infos.color,
           name: infos.name,
           symbol: infos.symbol,
           decimals: infos.decimals,

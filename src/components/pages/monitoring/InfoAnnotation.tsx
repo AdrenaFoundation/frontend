@@ -8,9 +8,11 @@ import infoIcon from '../../../../public/images/Icons/info.png';
 const InfoAnnotation = ({
   text,
   className,
+  title,
 }: {
   text: ReactNode;
   className: string;
+  title?: string;
 }) => (
   <Tippy
     content={
@@ -19,6 +21,7 @@ const InfoAnnotation = ({
     placement="auto"
   >
     <div className="h-auto w-auto flex items-center justify-center">
+      {title ? <h3 className="pr1 p-1">{title}</h3> : <></>}
       <Image
         className={twMerge('opacity-50 hover:opacity-100', className)}
         src={infoIcon}

@@ -129,6 +129,7 @@ export type TokenSymbol = string;
 export interface Token {
   mint: PublicKey;
   symbol: TokenSymbol;
+  color: string;
   name: TokenName;
   decimals: number;
   isStable: boolean;

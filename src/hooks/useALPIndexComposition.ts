@@ -28,25 +28,21 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
   const calculateALPIndexComposition = useCallback(async () => {
     const alpIndexComposition = window.adrena.client.tokens.map((token) => {
       const price = tokenPrices[token.symbol];
-
+      const color = token.color;
       const custody = custodies?.find(
         (custody) => token.custody && custody.pubkey.equals(token.custody),
       );
-
       const custodyUsdValue =
         custody && price
           ? nativeToUi(custody.nativeObject.assets.owned, token.decimals) *
             price
           : null;
-
       const currentRatio =
         custodyUsdValue !== null
           ? (custodyUsdValue * 100) / window.adrena.client.mainPool.aumUsd
           : null;
-
       const utilization = (() => {
         if (!custody) return null;
-
         if (custody.nativeObject.assets.locked.isZero()) return 0;
 
         return (
@@ -60,18 +56,6 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
         if (!custody) return null;
 
         return nativeToUi(custody.nativeObject.assets.owned, custody.decimals);
-      })();
-
-      const color = (() => {
-        if (!custody) return null;
-
-        if (token.symbol === 'USDC') return '#2775ca';
-        if (token.symbol === 'USDT') return '#26a17b';
-        if (token.symbol === 'ETH') return '#3D3E3F';
-        if (token.symbol === 'BTC') return '#f7931a';
-        if (token.symbol === 'SOL') return '#9945FF';
-
-        return '#000000';
       })();
 
       return {

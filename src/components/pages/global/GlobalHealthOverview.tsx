@@ -1,36 +1,41 @@
-import Image from 'next/image';
-import React from 'react';
 import {
   ActiveElement,
   ArcElement,
+  BarElement,
+  CategoryScale,
   Chart as ChartJS,
   ChartData,
   ChartEvent,
   Legend,
-  Tooltip,
-  CategoryScale,
   LinearScale,
-  BarElement,
   Title,
+  Tooltip,
+  TooltipItem,
 } from 'chart.js';
+import {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _DeepPartialArray,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _DeepPartialObject,
+} from 'chart.js/dist/types/utils';
 import ChartPluginAnnotation, {
   AnnotationOptions,
   AnnotationTypeRegistry,
 } from 'chartjs-plugin-annotation';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-import { formatNumber, formatPriceInfo } from '@/utils';
-
-import InfoAnnotationTitle from '../monitoring/InfoAnnotationTitle';
+import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
+import Image from 'next/image';
+import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import useALPIndexComposition, {
-  ALPIndexComposition,
-  TokenInfo,
-} from '@/hooks/useALPIndexComposition';
+
+import { ALPIndexComposition, TokenInfo } from '@/hooks/useALPIndexComposition';
 import {
-  _DeepPartialArray,
-  _DeepPartialObject,
-} from 'chart.js/dist/types/utils';
+  formatNumber,
+  formatPriceInfo,
+  getDatasetBackgroundColor,
+  getFontSizeWeight,
+} from '@/utils';
+
+import InfoAnnotation from '../monitoring/InfoAnnotation';
 
 ChartJS.register(
   ArcElement,
@@ -46,43 +51,125 @@ ChartJS.register(
   Legend,
 );
 
+function indexToMin(index: number) {
+  return index - 0.36;
+}
+
+function indexToMax(index: number) {
+  return index + 0.36;
+}
+
+function generateLine(
+  index: number,
+  targetRatio: number | null,
+): AnnotationOptions<keyof AnnotationTypeRegistry> {
+  return {
+    type: 'line',
+    borderColor: '#666666',
+    borderWidth: 1,
+    xMax: indexToMax(index) + 0.05,
+    xMin: indexToMin(index) - 0.05,
+    xScaleID: 'x',
+    yMax: () => targetRatio ?? 0,
+    yMin: () => targetRatio ?? 0,
+    yScaleID: 'y',
+  };
+}
+
+function formatOwnedAssets(ownedAssets: unknown): string {
+  return ownedAssets === null ? '-' : formatNumber(ownedAssets as number, 3);
+}
+
+function generateCompositionChart(
+  compositionChartData: ChartData<'bar'>,
+  composition: ALPIndexComposition,
+): JSX.Element {
+  return (
+    <Bar
+      data={compositionChartData}
+      options={{
+        onHover: (event: ChartEvent, activeElements: ActiveElement[]) => {
+          (event?.native?.target as HTMLElement).style.cursor =
+            activeElements?.length > 0 ? 'pointer' : 'auto';
+        },
+        plugins: {
+          datalabels: {
+            align: 'end',
+            anchor: 'end',
+            color: (context: Context) => getDatasetBackgroundColor(context),
+            font: (context: Context) => getFontSizeWeight(context),
+            // display labels (custodies name) on graph
+            formatter: (_, context: Context) => [
+              `${context.chart.data.labels?.[context.dataIndex]}`,
+            ],
+          },
+          annotation: {
+            annotations: composition.reduce(
+              (
+                lines: {
+                  [key: string]: ReturnType<typeof generateLine>;
+                },
+                _: TokenInfo,
+                i: number,
+              ) => ({
+                [`line${i + 1}`]: generateLine(i, composition[i].targetRatio),
+                ...lines,
+              }),
+              {},
+            ),
+          },
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            displayColors: false,
+            callbacks: {
+              label: (context: TooltipItem<'bar'>) => [
+                `${context.chart.data.labels?.[context.dataIndex]} amount:
+                            ${formatOwnedAssets(
+                              composition[context.dataIndex].ownedAssets,
+                            )}`,
+                `value: ${formatPriceInfo(
+                  composition[context.dataIndex].custodyUsdValue,
+                )}`,
+              ],
+              //remove title from tooltip because it is not needed and looks
+              title: () => '',
+            },
+          },
+        },
+        //needed so the labels don't get hidden if bar is 100%
+        layout: {
+          padding: {
+            top: 20,
+          },
+        },
+        scales: {
+          x: {
+            display: false,
+            offset: true,
+          },
+          y: {
+            ticks: {
+              callback: (value: string | number) => value + '%',
+            },
+            beginAtZero: true,
+          },
+        },
+      }}
+    />
+  );
+}
+
 export default function GlobalHealthOverview({
-  chart,
+  compositionChartData,
   aumUsd,
   composition,
 }: {
-  chart: ChartData<'bar'>;
+  compositionChartData: ChartData<'bar'>;
   aumUsd: number | null;
   composition: ALPIndexComposition;
 }) {
-  // categoryPercentage is 0.8 by default
-  // barPercentage is 0.9 by default
-  // 1 * 0.8 * 0.9 = 0.72
-  // 0.72 / 2 = 0.36
-  function indexToMin(index: number) {
-    return index - 0.36;
-  }
-
-  function indexToMax(index: number) {
-    return index + 0.36;
-  }
-
-  function generateLine(
-    index: number,
-  ): AnnotationOptions<keyof AnnotationTypeRegistry> {
-    return {
-      type: 'line',
-      borderColor: '#666666',
-      borderWidth: 1,
-      xMax: indexToMax(index) + 0.05,
-      xMin: indexToMin(index) - 0.05,
-      xScaleID: 'x',
-      yMax: () => composition[index].targetRatio ?? 0,
-      yMin: () => composition[index].targetRatio ?? 0,
-      yScaleID: 'y',
-    };
-  }
-
   return (
     <div className="flex h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
       <div className="flex items-center">
@@ -107,7 +194,7 @@ export default function GlobalHealthOverview({
           {
             <div className="flex w-full items-center justify-between">
               <div className="text-sm">Value</div>
-              <span>{`${formatPriceInfo(aumUsd ?? 0)}`}</span>
+              <span>{aumUsd === null ? '-' : formatPriceInfo(aumUsd)}</span>
             </div>
           }
         </div>
@@ -115,109 +202,20 @@ export default function GlobalHealthOverview({
         <div className="h-[1px] bg-gray-200 h-40 w-full mt-4 mb-4" />
 
         <div className="flex items-center">
-          <InfoAnnotationTitle
+          <InfoAnnotation
             text="Visualize the current and target composition of the pool."
-            className=""
+            className="mr-1"
             title="Pool composition"
           />
         </div>
 
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
-          {chart ? (
+          {compositionChartData ? (
             <>
               <div className="text-xs w-full flex justify-center text-[#666666]">
                 ── target ratio
               </div>
-              <Bar
-                data={chart}
-                options={{
-                  onHover: (
-                    event: ChartEvent,
-                    activeElements: ActiveElement[],
-                  ) => {
-                    (event?.native?.target as HTMLElement).style.cursor =
-                      activeElements?.length > 0 ? 'pointer' : 'auto';
-                  },
-                  plugins: {
-                    datalabels: {
-                      align: 'end',
-                      anchor: 'end',
-                      color: function (context) {
-                        return (
-                          (context.dataset.backgroundColor as string) ?? ''
-                        );
-                      },
-                      font: function (context) {
-                        const w = context.chart.width;
-                        return {
-                          size: w < 512 ? 12 : 14,
-                          weight: 'bold',
-                        };
-                      },
-                      formatter: function (value, context) {
-                        return context.chart.data.labels?.[context.dataIndex];
-                      },
-                    },
-                    annotation: {
-                      annotations: composition.reduce(
-                        (
-                          lines: {
-                            [key: string]: ReturnType<typeof generateLine>;
-                          },
-                          _: TokenInfo,
-                          i: number,
-                        ) => ({
-                          [`line${i + 1}`]: generateLine(i),
-                          ...lines,
-                        }),
-                        {},
-                      ),
-                    },
-                    legend: {
-                      display: false,
-                    },
-                    tooltip: {
-                      displayColors: false,
-                      callbacks: {
-                        label: function (context) {
-                          return [
-                            `${
-                              context.chart.data.labels?.[context.dataIndex]
-                            } amount: ${formatNumber(
-                              composition[context.dataIndex].ownedAssets ?? 0,
-                              3,
-                            )}`,
-                            `value: ${formatPriceInfo(
-                              composition[context.dataIndex].custodyUsdValue,
-                            )}`,
-                          ];
-                        },
-
-                        title: () => '',
-                      },
-                    },
-                  },
-                  layout: {
-                    padding: {
-                      top: 20,
-                    },
-                  },
-                  scales: {
-                    x: {
-                      display: false,
-                      offset: true,
-                    },
-                    y: {
-                      ticks: {
-                        callback: function (value, index, ticks) {
-                          return value + '%';
-                        },
-                      },
-                      beginAtZero: true,
-                    },
-                  },
-                }}
-              />
+              {generateCompositionChart(compositionChartData, composition)}
             </>
           ) : null}
         </div>

@@ -1,22 +1,29 @@
-import Image from 'next/image';
-import longLogo from '../../../../public/images/long.svg';
-import React from 'react';
 import {
   ArcElement,
+  BarElement,
+  CategoryScale,
   Chart as ChartJS,
   ChartData,
   Legend,
-  Tooltip,
-  CategoryScale,
   LinearScale,
-  BarElement,
   Title,
+  Tooltip,
 } from 'chart.js';
 import ChartPluginAnnotation from 'chartjs-plugin-annotation';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
+import Image from 'next/image';
+import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import InfoAnnotationTitle from '../monitoring/InfoAnnotationTitle';
-import { formatNumber, formatPriceInfo } from '@/utils';
+
+import {
+  formatNumber,
+  formatPriceInfo,
+  getDatasetBackgroundColor,
+  getFontSizeWeight,
+} from '@/utils';
+
+import longLogo from '../../../../public/images/long.svg';
+import InfoAnnotation from '../monitoring/InfoAnnotation';
 
 ChartJS.register(
   ArcElement,
@@ -32,14 +39,70 @@ ChartJS.register(
   Legend,
 );
 
+function generateUtilizationChart(utilizationChartData: ChartData<'bar'>) {
+  return (
+    <Bar
+      data={utilizationChartData}
+      options={{
+        plugins: {
+          datalabels: {
+            align: 'end',
+            anchor: 'end',
+            clamp: false,
+            color: (context: Context) => getDatasetBackgroundColor(context),
+            font: (context: Context) => getFontSizeWeight(context),
+            // display labels (staked and liquid) on graph
+            formatter: (_, context: Context) =>
+              context.chart.data.labels?.[context.dataIndex],
+          },
+          legend: {
+            display: false,
+          },
+          tooltip: { enabled: false },
+          annotation: {
+            annotations: {
+              line1: {
+                type: 'line',
+                yMin: 100,
+                yMax: 100,
+                borderColor: '#666666',
+                borderWidth: 2,
+              },
+            },
+          },
+        },
+        //needed so the labels don't get hidden if bar is 100%
+        layout: {
+          padding: {
+            top: 10,
+          },
+        },
+        scales: {
+          x: {
+            display: false,
+            offset: true,
+          },
+          y: {
+            ticks: {
+              callback: (value: string | number) => value + '%',
+            },
+            beginAtZero: true,
+            suggestedMax: 100,
+          },
+        },
+      }}
+    />
+  );
+}
+
 export default function UsageOverview({
-  chart,
+  utilizationChartData,
   oiLongUsd,
   oiShortUsd,
   nbOpenLongPositions,
   nbOpenShortPositions,
 }: {
-  chart: ChartData<'bar'>;
+  utilizationChartData: ChartData<'bar'>;
   oiLongUsd: number | null;
   oiShortUsd: number | null;
   nbOpenLongPositions: number | null;
@@ -62,9 +125,9 @@ export default function UsageOverview({
       </div>
       <div className="border border-gray-200 bg-gray-300 p-6 rounded-2xl">
         <div className="flex items-center">
-          <InfoAnnotationTitle
+          <InfoAnnotation
             text="The active positions held by Adrena project."
-            className=""
+            className="mr-1"
             title="Positions"
           />
         </div>
@@ -75,97 +138,37 @@ export default function UsageOverview({
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Active Positions</div>
             <span>
-              {formatNumber(
-                (nbOpenLongPositions ?? 0) + (nbOpenShortPositions ?? 0),
-                1,
-              )}
+              {nbOpenLongPositions === null || nbOpenShortPositions === null
+                ? '-'
+                : formatNumber(nbOpenLongPositions + nbOpenShortPositions, 1)}
             </span>
           </div>
 
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Total Value</div>
-            <span>{`${formatPriceInfo(
-              (oiLongUsd ?? 0) + (oiShortUsd ?? 0),
-            )}`}</span>
+            <span>
+              {oiLongUsd === null || oiShortUsd === null
+                ? '-'
+                : formatPriceInfo(oiLongUsd + oiShortUsd)}
+            </span>
           </div>
         </div>
       </div>
       <div className="h-full border border-gray-200 bg-gray-300 p-6 rounded-2xl">
         <div className="flex items-center">
-          <InfoAnnotationTitle
+          <InfoAnnotation
             text="The current utilization of the pool by custody."
-            className=""
+            className="mr-1"
             title="Utilization"
           />
         </div>
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
-          {chart ? (
+          {utilizationChartData ? (
             <>
               <div className="text-xs w-full flex justify-end text-[#666666]">
                 max utilization
               </div>
-              <Bar
-                data={chart}
-                options={{
-                  plugins: {
-                    datalabels: {
-                      align: 'end',
-                      anchor: 'end',
-                      clamp: false,
-                      color: function (context) {
-                        return (
-                          (context.dataset.backgroundColor as string) ?? ''
-                        );
-                      },
-                      font: function (context) {
-                        var w = context.chart.width;
-                        return {
-                          size: w < 512 ? 12 : 14,
-                          weight: 'bold',
-                        };
-                      },
-                      formatter: function (value, context) {
-                        return context.chart.data.labels?.[context.dataIndex];
-                      },
-                    },
-                    legend: {
-                      display: false,
-                    },
-                    tooltip: { enabled: false },
-                    annotation: {
-                      annotations: {
-                        line1: {
-                          type: 'line',
-                          yMin: 100,
-                          yMax: 100,
-                          borderColor: '#666666',
-                          borderWidth: 2,
-                        },
-                      },
-                    },
-                  },
-                  layout: {
-                    padding: {
-                      top: 10,
-                    },
-                  },
-                  scales: {
-                    x: {
-                      display: false,
-                      offset: true,
-                    },
-                    y: {
-                      ticks: {
-                        callback: function (value, index, ticks) {
-                          return value + '%';
-                        },
-                      },
-                      beginAtZero: true,
-                      suggestedMax: 100,
-                    },
-                  },
-                }}
-              />
+              {generateUtilizationChart(utilizationChartData)}
             </>
           ) : null}
         </div>

@@ -16,6 +16,7 @@ class DevnetConfiguration implements IConfiguration {
   public readonly tokensInfo: {
     [tokenPubkey: string]: {
       name: string;
+      color: string;
       symbol: string;
       image: ImageRef;
       coingeckoId: string;
@@ -25,6 +26,7 @@ class DevnetConfiguration implements IConfiguration {
     '4ZY3ZH8bStniqdCZdR14xsWW6vrMsCJrusobTdy4JipC': {
       name: 'USD Coin',
       symbol: 'USDC',
+      color: '#2775ca',
       image: usdcLogo,
       coingeckoId: 'usd-coin',
       decimals: 6,
@@ -32,6 +34,7 @@ class DevnetConfiguration implements IConfiguration {
     CXFBW6kuWfCUKbD2CZN2nz3B4YQywJFozzMBkryM4rA: {
       name: 'Theter',
       symbol: 'USDT',
+      color: '#26a17b',
       image: usdtLogo,
       coingeckoId: 'tether',
       decimals: 6,
@@ -39,6 +42,7 @@ class DevnetConfiguration implements IConfiguration {
     '3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr': {
       name: 'Ethereum',
       symbol: 'ETH',
+      color: '#3D3E3F',
       image: ethLogo,
       coingeckoId: 'ethereum',
       decimals: 6,
@@ -46,6 +50,7 @@ class DevnetConfiguration implements IConfiguration {
     HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM: {
       name: 'Bitcoin',
       symbol: 'BTC',
+      color: '#f7931a',
       image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 6,
@@ -53,6 +58,7 @@ class DevnetConfiguration implements IConfiguration {
     [NATIVE_MINT.toBase58()]: {
       name: 'Solana',
       symbol: 'SOL',
+      color: '#9945FF',
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,

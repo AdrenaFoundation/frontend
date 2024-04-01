@@ -1,17 +1,19 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import React, { useEffect, useState } from 'react';
 import { ChartData } from 'chart.js';
+import React, { useEffect, useState } from 'react';
+
+import CoinsOverview from '@/components/pages/global/CoinsOverview';
 import GlobalHealthOverview from '@/components/pages/global/GlobalHealthOverview';
 import UsageOverview from '@/components/pages/global/UsageOverview';
-import CoinsOverview from '@/components/pages/global/CoinsOverview';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import useALPIndexComposition from '@/hooks/useALPIndexComposition';
-import { PageProps } from '@/types';
-import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import { nativeToUi } from '@/utils';
-import { useSelector } from '@/store/store';
+import useALPIndexComposition from '@/hooks/useALPIndexComposition';
+import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useStakingAccount from '@/hooks/useStakingAccount';
+import { useSelector } from '@/store/store';
+import { PageProps } from '@/types';
+import { nativeToUi } from '@/utils';
 
 export const DEFAULT_LOCKED_STAKE_DURATION = 90;
 
@@ -38,7 +40,6 @@ export default function Global({ mainPool, custodies }: PageProps) {
     useState<ChartData<'bar'> | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     if (!alpStakingAccount || !alpTotalSupply) {
       setStakedAlpChartData(null);
       return;
@@ -71,8 +72,6 @@ export default function Global({ mainPool, custodies }: PageProps) {
 
   useEffect(() => {
     if (!window.adrena.client.readonlyConnection) return;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     if (!adxStakingAccount || !adxTotalSupply) {
       setStakedAdxChartData(null);
@@ -156,14 +155,14 @@ export default function Global({ mainPool, custodies }: PageProps) {
       <div className="flex flex-col lg:flex-row items-evenly gap-x-4">
         {alpChartData ? (
           <GlobalHealthOverview
-            chart={alpChartData}
+            compositionChartData={alpChartData}
             aumUsd={mainPool?.aumUsd ?? null}
             composition={composition ?? []}
           />
         ) : null}
         {utilizationChartData ? (
           <UsageOverview
-            chart={utilizationChartData}
+            utilizationChartData={utilizationChartData}
             nbOpenLongPositions={mainPool?.nbOpenLongPositions ?? null}
             oiLongUsd={mainPool?.oiLongUsd ?? null}
             nbOpenShortPositions={mainPool?.nbOpenShortPositions ?? null}
