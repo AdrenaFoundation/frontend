@@ -2,8 +2,8 @@ import Image from 'next/image';
 import React from 'react';
 
 import Button from '@/components/common/Button/Button';
-import LockedStakedElement from '@/components/pages/earn/LockedStakedElement';
-import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/earn';
+import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
+import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
 import { LockedStakeExtended, LockPeriod } from '@/types';
 
 export default function ADXStakeOverview({
@@ -51,7 +51,7 @@ export default function ADXStakeOverview({
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
 
         <div className="flex w-full justify-between bg-dark rounded-2xl pt-2 pb-2 pl-4 pr-4 border border-gray-200">
-          <span>Balance</span>
+          <span className="flex items-center">Balance</span>
 
           <div>
             <span className="font-mono">{totalLiquidStaked ?? '-'}</span>
@@ -65,12 +65,15 @@ export default function ADXStakeOverview({
             variant="primary"
             size="lg"
             title="Stake More"
+            disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() => handleClickOnStakeMore(0)}
           />
 
           <Button
             className="w-full mt-2"
-            disabled={totalLiquidStaked === 0}
+            disabled={
+              !window.adrena.geoBlockingData.allowed || totalLiquidStaked === 0
+            }
             variant="outline"
             size="lg"
             title="Redeem"
@@ -102,7 +105,7 @@ export default function ADXStakeOverview({
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
 
         <div className="flex w-full justify-between bg-dark rounded-2xl pt-2 pb-2 pl-4 pr-4 border border-gray-200">
-          <span>Locked</span>
+          <span className="flex items-center">Locked</span>
 
           <div>
             <span className="font-mono">{totalLockedStake ?? '-'}</span>
@@ -144,6 +147,7 @@ export default function ADXStakeOverview({
             variant="primary"
             size="lg"
             title="Stake More"
+            disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
             }
@@ -151,7 +155,9 @@ export default function ADXStakeOverview({
 
           <Button
             className="w-full mt-4"
-            disabled={totalLockedStake === 0}
+            disabled={
+              !window.adrena.geoBlockingData.allowed || totalLockedStake === 0
+            }
             variant="outline"
             size="lg"
             title="Claim Rewards"

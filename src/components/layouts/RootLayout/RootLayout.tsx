@@ -23,9 +23,9 @@ const RootLayout = ({
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
     { name: 'Dashboard', link: '/dashboard' },
-    { name: 'Earn', link: '/earn' },
-    { name: 'Buy', link: '/swap_alp' },
-    // { name: 'Referral', link: '/referral' },
+    { name: 'Stake', link: '/stake' },
+    { name: 'Buy ALP/ADX', link: '/buy_alp_adx' },
+    // { name: 'Buy ADX', link: 'https://www.orca.so' },
     { name: 'Monitoring', link: '/monitoring' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);

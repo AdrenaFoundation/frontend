@@ -26,7 +26,6 @@ import { SupportedCluster } from '@/types';
 import logo from '../../public/images/logo.svg';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
-import GeoBlockedPage from '../pages/geoblocked/index';
 import store from '../store/store';
 
 function Loader(): JSX.Element {
@@ -90,10 +89,6 @@ export default function App(props: AppProps) {
 
   if (!isInitialized) return <Loader />;
 
-  if (!window.adrena.geoBlockingData.allowed) {
-    return <GeoBlockedPage {...window.adrena.geoBlockingData} />;
-  }
-
   return (
     <Provider store={store}>
       <CookiesProvider>
@@ -142,8 +137,6 @@ function AppComponent({ Component, pageProps }: AppProps) {
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
-
-    console.log('SET ADRENA PROGRAM');
 
     window.adrena.client.setAdrenaProgram(
       new Program(

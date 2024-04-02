@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import { USD_DECIMALS } from '@/constant';
+import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
@@ -25,10 +27,11 @@ export default function ALPSwapInputs({
   setAlpPrice,
   collateralInput,
   onChangeCollateralInput,
+  collateralPrice,
   setCollateralPrice,
   onCollateralTokenChange,
   setFeesUsd,
-  setIsFeesLoading,
+  feesAndAmounts,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
@@ -37,6 +40,7 @@ export default function ALPSwapInputs({
   collateralToken: Token;
   collateralInput: number | null;
   allowedCollateralTokens: Token[] | null;
+  collateralPrice: number | null;
   setCollateralPrice: (v: number | null) => void;
   alpInput: number | null;
   onChangeAlpInput: (v: number | null) => void;
@@ -44,7 +48,7 @@ export default function ALPSwapInputs({
   setAlpPrice: (v: number | null) => void;
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
-  setIsFeesLoading: (v: boolean) => void;
+  feesAndAmounts: FeesAndAmountsType | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -85,6 +89,8 @@ export default function ALPSwapInputs({
         // deprecate current loading
         setLoading(false);
         loadingCounter += 1;
+
+        setSaveUpFees(null);
         onChangeCollateralInput(null);
         setCollateralPrice(null);
         setAlpPrice(null);
@@ -113,6 +119,7 @@ export default function ALPSwapInputs({
 
           if (!amountAndFee) {
             setLoading(false);
+            setSaveUpFees(null);
             onChangeCollateralInput(null);
             setCollateralPrice(null);
             setFeesUsd(null);
@@ -136,6 +143,7 @@ export default function ALPSwapInputs({
         })
         .catch((e) => {
           console.log('e', e);
+          setSaveUpFees(null);
           onChangeCollateralInput(null);
           setCollateralPrice(null);
           setLoading(false);
@@ -161,6 +169,7 @@ export default function ALPSwapInputs({
         loadingCounter += 1;
 
         onChangeAlpInput(null);
+        setSaveUpFees(null);
         setAlpPrice(null);
         setCollateralPrice(null);
         setFeesUsd(null);
@@ -183,12 +192,12 @@ export default function ALPSwapInputs({
           // If loaderCounter doesn't match it means
           // an other request has been casted due to input change
           if (localLoadingCounter !== loadingCounter) {
-            console.log('Ignore deprecated result');
             return;
           }
 
           if (!amountAndFee) {
             setLoading(false);
+            setSaveUpFees(null);
             onChangeAlpInput(null);
             setAlpPrice(null);
             setFeesUsd(null);
@@ -208,6 +217,7 @@ export default function ALPSwapInputs({
         })
         .catch((e) => {
           console.log('e', e);
+          setSaveUpFees(null);
           setAlpPrice(null);
           setLoading(false);
         });
@@ -217,8 +227,8 @@ export default function ALPSwapInputs({
   }
 
   const handleAlpInputChange = (v: number | null) => {
-    setIsFeesLoading(true);
     const nb = Number(v);
+
     if (v === null || isNaN(nb)) {
       onChangeAlpInput(null);
       return;
@@ -228,12 +238,15 @@ export default function ALPSwapInputs({
   };
 
   const handleCollateralInputChange = (v: number | null) => {
-    setIsFeesLoading(true);
     const nb = Number(v);
+
+    setSaveUpFees(null);
+
     if (v === null || isNaN(nb)) {
       onChangeCollateralInput(null);
       return;
     }
+
     onChangeCollateralInput(nb);
   };
 
@@ -265,19 +278,53 @@ export default function ALPSwapInputs({
       maxButton={actionType === 'buy'}
       selectedToken={collateralToken}
       tokenList={allowedCollateralTokens || []}
+      subText={
+        collateralPrice !== null ? (
+          <span className="text-txtfade">
+            {formatPriceInfo(collateralPrice, false, 3)}
+          </span>
+        ) : null
+      }
       onMaxButtonClick={() => {
+        setSaveUpFees(null);
         onChangeCollateralInput(
           walletTokenBalances?.[collateralToken.symbol] ?? 0,
         );
       }}
       onTokenSelect={onCollateralTokenChange}
-      onChange={handleCollateralInputChange}
+      onChange={(v: number | null) => {
+        setSaveUpFees(null);
+        handleCollateralInputChange(v);
+      }}
     />
   );
 
+  const [saveUpFees, setSaveUpFees] = useState<
+    [string, FeesAndAmountsType[0]][] | null
+  >(null);
+
+  useEffect(() => {
+    if (feesAndAmounts === null) {
+      setSaveUpFees(null);
+      return;
+    }
+
+    setSaveUpFees(
+      Object.entries(feesAndAmounts).filter(([_, value]) => {
+        if (value.fees === null) return false;
+
+        const feeNow = feesAndAmounts[collateralToken.symbol]?.fees ?? null;
+
+        if (feeNow === null) return false;
+
+        return value.fees < feeNow;
+      }),
+    );
+  }, [collateralToken.symbol, feesAndAmounts]);
+
   return (
-    <div className={twMerge('relative', 'flex', 'flex-col', className)}>
-      <div className="text-sm text-txtfade mb-3">Pay</div>
+    <div className={twMerge('relative flex flex-col', className)}>
+      <div className="text-sm text-white mb-3">Pay</div>
 
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
@@ -304,11 +351,11 @@ export default function ALPSwapInputs({
         })()
       }
 
-      <div className="text-sm text-txtfade mt-2 mb-3">Receive</div>
+      <div className="text-sm text-white mt-2 mb-3">Receive</div>
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
 
-      <div className="text-sm text-txtfade mt-6">Verify</div>
+      <div className="text-sm text-white mt-6">Verify</div>
 
       <div
         className={twMerge(
@@ -331,6 +378,84 @@ export default function ALPSwapInputs({
           </div>
         </div>
       </div>
+
+      {actionType === 'buy' ? (
+        <div className="flex flex-col mt-4">
+          <div className="text-sm">
+            Alternative Routes <span className="text-xs">(Fee Reduction)</span>
+          </div>
+
+          {saveUpFees !== null && saveUpFees.length ? (
+            <div className="flex flex-col gap-y-4 mt-2">
+              {(() => {
+                const sortedSaveUpFees = saveUpFees
+                  // Highest saving first
+                  .sort(([, a], [, b]) => (a.fees ?? 0) - (b.fees ?? 0));
+
+                return sortedSaveUpFees.map(([key, value], i) => {
+                  return feesUsd ? (
+                    <div className="flex flex-col">
+                      {i === 0 ? (
+                        <div className="text-xs ml-auto mr-auto mt-2 mb-2">
+                          Recommended
+                        </div>
+                      ) : null}
+
+                      <Button
+                        key={key}
+                        title={
+                          <div className="flex">
+                            <span className="">use {key} and pay</span>
+                            <span className="font-mono ml-1">
+                              {formatPriceInfo(value.fees)}
+                            </span>
+                            <span className="ml-1">of fees</span>
+                          </div>
+                        }
+                        size="lg"
+                        variant="secondary"
+                        className={twMerge(
+                          'justify-center w-full border-2',
+                          i === 0 ||
+                            sortedSaveUpFees[i - 1][1].fees === value.fees
+                            ? 'border-white'
+                            : '',
+                        )}
+                        onClick={() => {
+                          onCollateralTokenChange(value.token);
+
+                          // Wait for the input to be updated, then change the input
+                          setTimeout(() => {
+                            onChangeCollateralInput(
+                              Number(
+                                value.equivalentAmount?.toFixed(
+                                  value.token.decimals,
+                                ),
+                              ),
+                            );
+                          }, 0);
+                        }}
+                      />
+                    </div>
+                  ) : null;
+                });
+              })()}
+            </div>
+          ) : null}
+
+          {saveUpFees !== null && !saveUpFees.length ? (
+            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-2xl mt-4 flex justify-center flex-col">
+              <span className="text-txtfade">You are using the best route</span>
+            </div>
+          ) : null}
+
+          {saveUpFees === null ? (
+            <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-2xl mt-4 flex justify-center flex-col">
+              <span className="text-txtfade">Loading ...</span>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

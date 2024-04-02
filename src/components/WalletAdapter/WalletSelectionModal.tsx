@@ -15,7 +15,7 @@ import backpackLogo from '../../../public/images/backpack.png';
 import phantomLogo from '../../../public/images/phantom.png';
 import walletConnectLogo from '../../../public/images/wallet-connect.png';
 import Modal from '../common/Modal/Modal';
-import TermsAndConditionsModal from '../TermsAndConditionsModal/TermsAndConditionsModal';
+import GeoBlockedModal from '../GeoBlockedModal/GeoBlockedModal';
 
 function WalletSelectionModal() {
   const dispatch = useDispatch();
@@ -25,9 +25,8 @@ function WalletSelectionModal() {
 
   if (!window.adrena.geoBlockingData.allowed) {
     return (
-      <TermsAndConditionsModal
+      <GeoBlockedModal
         isOpen={modalIsOpen}
-        readonly={true}
         closeTrigger={() => dispatch(openCloseConnectionModalAction(false))}
       />
     );

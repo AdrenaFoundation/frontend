@@ -23,8 +23,8 @@ const InfoAnnotation = ({
         className={twMerge('opacity-50 hover:opacity-100', className)}
         src={infoIcon}
         alt="info icon"
-        width="16"
-        height="16"
+        width="10"
+        height="10"
       />
     </div>
   </Tippy>

@@ -38,12 +38,8 @@ export default function Trade({
     null,
   );
   const [selectedAction, setSelectedAction] = useState<Action>('long');
-  const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const tokenPrices = useSelector((s) => s.tokenPrices);
   const router = useRouter();
 
-  const [inputAValue, setInputAValue] = useState<number | null>(null);
-  const [inputBValue, setInputBValue] = useState<number | null>(null);
   const [tokenA, setTokenA] = useState<Token | null>(null);
   const [tokenB, setTokenB] = useState<Token | null>(null);
 
@@ -54,9 +50,6 @@ export default function Trade({
   const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(
     null,
   );
-
-  // Unused for now
-  const [leverage, setLeverage] = useState<number | null>(null);
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -69,7 +62,7 @@ export default function Trade({
         action: selectedAction,
       },
     });
-    // Use custom triggers to avoid unwanted refreshs
+    // Use custom triggers to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!router, tokenA?.symbol, tokenB?.symbol, selectedAction]);
 
@@ -183,157 +176,6 @@ export default function Trade({
     }
   }, [activePositionModal]);
 
-  const handleExecuteButton = async (): Promise<void> => {
-    if (!connected || !dispatch || !wallet) {
-      dispatch(openCloseConnectionModalAction(true));
-      return;
-    }
-
-    if (!tokenA || !tokenB || !inputAValue || !inputBValue || !leverage) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: 'Missing informations',
-      });
-    }
-
-    const tokenBPrice = tokenPrices[tokenB.symbol];
-    if (!tokenBPrice) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot open position',
-        message: `Missing ${tokenB.symbol} price`,
-      });
-    }
-
-    if (selectedAction === 'swap') {
-      try {
-        const txHash = await window.adrena.client.swap({
-          owner: new PublicKey(wallet.publicKey),
-          amountIn: uiToNative(inputAValue, tokenA.decimals),
-
-          // TODO
-          // How to handle slippage?
-          // the inputBValue should take fees into account, for now it doesn't.
-          minAmountOut: new BN(0),
-          mintA: tokenA.mint,
-          mintB: tokenB.mint,
-        });
-        triggerWalletTokenBalancesReload();
-
-        return addSuccessTxNotification({
-          title: 'Successfull Swap',
-          txHash,
-        });
-      } catch (error) {
-        return addFailedTxNotification({
-          title: 'Error Swapping',
-          error,
-        });
-      }
-    }
-
-    // Existing position or not, it's the same
-
-    const collateralAmount = uiToNative(inputAValue, tokenA.decimals);
-
-    const openPositionWithSwapAmountAndFees =
-      await window.adrena.client.getOpenPositionWithSwapAmountAndFees({
-        collateralMint: tokenA.mint,
-        mint: tokenB.mint,
-        collateralAmount,
-        leverage: uiLeverageToNative(leverage),
-        side: selectedAction,
-      });
-
-    if (!openPositionWithSwapAmountAndFees) {
-      return addNotification({
-        title: 'Error Opening Position',
-        type: 'error',
-        message: 'Error calculating fees',
-      });
-    }
-
-    try {
-      const txHash = await (selectedAction === 'long'
-        ? window.adrena.client.openLongPositionWithConditionalSwap({
-            owner: new PublicKey(wallet.publicKey),
-            collateralMint: tokenA.mint,
-            mint: tokenB.mint,
-            price: openPositionWithSwapAmountAndFees.entryPrice,
-            collateralAmount,
-            leverage: uiLeverageToNative(leverage),
-          })
-        : window.adrena.client.openShortPositionWithConditionalSwap({
-            owner: new PublicKey(wallet.publicKey),
-            collateralMint: tokenA.mint,
-            mint: tokenB.mint,
-            price: openPositionWithSwapAmountAndFees.entryPrice,
-            collateralAmount,
-            leverage: uiLeverageToNative(leverage),
-          }));
-
-      triggerPositionsReload();
-      triggerWalletTokenBalancesReload();
-      setActivePositionModal(null);
-
-      return addSuccessTxNotification({
-        title: 'Successfully Opened Position',
-        txHash,
-      });
-    } catch (error) {
-      console.log('Error', error);
-      setActivePositionModal(null);
-      return addFailedTxNotification({
-        title: 'Error Opening Position',
-        error,
-      });
-    }
-  };
-
-  const buttonTitle = (() => {
-    if (!connected) {
-      return 'Connect wallet';
-    }
-
-    if (inputAValue === null) {
-      return 'Enter an amount';
-    }
-
-    // Loading, should happens quickly
-    if (!tokenA) {
-      return '...';
-    }
-
-    const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
-
-    // Loading, should happens quickly
-    if (typeof walletTokenABalance === 'undefined') {
-      return '...';
-    }
-
-    // If user wallet balance doesn't have enough tokens, tell user
-    if (!walletTokenABalance || inputAValue > walletTokenABalance) {
-      return `Insufficient ${tokenA.symbol} balance`;
-    }
-
-    if (openedPosition) {
-      if (selectedAction === 'short') {
-        return 'Increase Short';
-      }
-
-      if (selectedAction === 'long') {
-        return 'Increase Position';
-      }
-    }
-
-    if (selectedAction === 'swap') {
-      return 'Swap';
-    }
-
-    return 'Open Position';
-  })();
-
   return (
     <>
       <div className="absolute w-full left-0 top-0 h-full overflow-hidden">
@@ -420,13 +262,11 @@ export default function Trade({
             tokenB={tokenB}
             setTokenA={setTokenA}
             setTokenB={setTokenB}
-            setInputAValue={setInputAValue}
-            setInputBValue={setInputBValue}
             openedPosition={openedPosition}
-            setLeverage={setLeverage}
-            buttonTitle={buttonTitle}
-            handleExecuteButton={handleExecuteButton}
             className="hidden sm:flex"
+            wallet={wallet}
+            triggerPositionsReload={triggerPositionsReload}
+            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           />
 
           <div className="fixed sm:hidden bottom-0 w-full bg-gray-300 backdrop-blur-sm p-5 z-30">
@@ -486,13 +326,13 @@ export default function Trade({
                     tokenB={tokenB}
                     setTokenA={setTokenA}
                     setTokenB={setTokenB}
-                    setInputAValue={setInputAValue}
-                    setInputBValue={setInputBValue}
                     openedPosition={openedPosition}
-                    setLeverage={setLeverage}
-                    buttonTitle={buttonTitle}
-                    handleExecuteButton={handleExecuteButton}
                     className="p-0 m-0"
+                    wallet={wallet}
+                    triggerPositionsReload={triggerPositionsReload}
+                    triggerWalletTokenBalancesReload={
+                      triggerWalletTokenBalancesReload
+                    }
                   />
                 </Modal>
               )}

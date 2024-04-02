@@ -78,23 +78,25 @@ export default function BurgerMenu({
           >
             <div>
               <ul className="flex flex-col gap-3 mt-4">
-                {PAGES.map((page) => (
-                  <li
-                    className={twMerge(
-                      'font-normal text-xl opacity-50 hover:opacity-100 transition-opacity duration-300 w-full',
-                      pathname === page.link ? 'opacity-100' : '',
-                    )}
-                    key={page.name}
-                  >
-                    <Link
-                      href={page.link}
-                      className="block w-full"
-                      onClick={() => setIsOpen(!open)}
+                {PAGES.map((page) => {
+                  return (
+                    <li
+                      className={twMerge(
+                        'font-normal text-xl opacity-50 hover:opacity-100 transition-opacity duration-300 w-full',
+                        pathname === page.link ? 'opacity-100' : '',
+                      )}
+                      key={page.name}
                     >
-                      {page.name}
-                    </Link>
-                  </li>
-                ))}
+                      <Link
+                        href={page.link}
+                        className="block w-full"
+                        onClick={() => setIsOpen(!open)}
+                      >
+                        {page.name}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
 
               {clusterSwitchEnabled ? (

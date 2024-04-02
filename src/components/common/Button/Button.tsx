@@ -37,10 +37,10 @@ function Button({
 
   const variants = {
     primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-full',
-    secondary: 'bg-gray-400 opacity-50 hover:opacity-100 rounded-full',
+    secondary: 'bg-gray-300 hover:bg-gray-400 rounded-full',
     danger: 'bg-red-500 hover:bg-red-700 font-medium rounded-full',
     text: 'opacity-50 hover:opacity-100 rounded-full',
-    outline: ' border border-gray-200 hover:bg-gray-200 rounded-full',
+    outline: 'border border-gray-200 hover:bg-gray-200 rounded-full',
   };
 
   const sizes = {
@@ -55,7 +55,7 @@ function Button({
         'flex flex-row items-center justify-center gap-3 font-mono',
         sizes[size],
         variants[variant],
-        className && className,
+        className,
         disabled || onClickInProgress
           ? 'opacity-25 cursor-not-allowed pointer-events-none'
           : null,
