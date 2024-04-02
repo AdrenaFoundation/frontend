@@ -14,11 +14,13 @@ export default function Select<T extends string>({
   className,
   selected,
   selectedClassName,
+  menuClassName,
   options,
   onSelect,
 }: {
   className?: string;
   selectedClassName?: string;
+  menuClassName?: string;
   selected: T;
   options: { title: T; img?: ImageRef }[];
   onSelect: (opt: T) => void;
@@ -38,6 +40,7 @@ export default function Select<T extends string>({
             className={twMerge(
               'flex justify-center items-center whitespace-nowrap hover:opacity-90 shadow-xl overflow-hidden relative h-full w-full',
               options.length > 1 ? 'cursor-pointer' : '',
+              menuClassName,
             )}
           >
             <div

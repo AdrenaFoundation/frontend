@@ -121,7 +121,7 @@ export default function ClosePosition({
   return (
     <div className={twMerge('flex flex-col h-full w-[22em]', className)}>
       <div className="flex items-center">
-        <div className="flex border p-4 bg-fourth w-full justify-between items-center">
+        <div className="flex border p-4 bg-third w-full justify-between items-center">
           <div className="text-2xl tracking-wider font-special ml-4">
             Receive
           </div>
@@ -159,7 +159,7 @@ export default function ClosePosition({
         Position to close
       </div>
 
-      <div className="flex flex-col border p-4 pt-2 bg-fourth mt-3 ml-4 mr-4 rounded-lg">
+      <div className="flex flex-col border p-4 pt-2 bg-third mt-3 ml-4 mr-4 rounded-lg">
         <div className={rowStyle}>
           <div className="text-sm">Size</div>
 
@@ -219,7 +219,7 @@ export default function ClosePosition({
         Exit settings
       </div>
 
-      <div className="flex flex-col border p-4 pt-2 bg-fourth mt-3 ml-4 mr-4 rounded-lg">
+      <div className="flex flex-col border p-4 pt-2 bg-third mt-3 ml-4 mr-4 rounded-lg">
         <div className={rowStyle}>
           <div className="text-sm">Exit Price</div>
 

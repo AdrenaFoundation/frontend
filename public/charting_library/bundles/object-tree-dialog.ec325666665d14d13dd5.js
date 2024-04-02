@@ -5413,7 +5413,7 @@
           ),
           be(
             fo(r),
-            'Expected "options" provided as the fourth argument to DropTarget to be a plain object when specified. Instead, received %s. Read more: http://react-dnd.github.io/react-dnd/docs/api/drop-target',
+            'Expected "options" provided as the third argument to DropTarget to be a plain object when specified. Instead, received %s. Read more: http://react-dnd.github.io/react-dnd/docs/api/drop-target',
             n,
           ),
           function (e) {
@@ -6203,7 +6203,7 @@
             ),
             be(
               fo(r),
-              'Expected "options" provided as the fourth argument to DragSource to be a plain object when specified. Instead, received %s. Read more: http://react-dnd.github.io/react-dnd/docs/api/drag-source',
+              'Expected "options" provided as the third argument to DragSource to be a plain object when specified. Instead, received %s. Read more: http://react-dnd.github.io/react-dnd/docs/api/drag-source',
               n,
             ),
             function (e) {

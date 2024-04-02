@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import Select from '@/components/common/Select/Select';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
@@ -18,10 +19,12 @@ import {
   addSuccessTxNotification,
   formatNumber,
   formatPriceInfo,
+  getArrowElement,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
 
+import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
@@ -64,6 +67,8 @@ export default function LongShortTradingInputs({
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+
+  const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -269,7 +274,6 @@ export default function LongShortTradingInputs({
     }
 
     const tokenPriceA = tokenPrices[tokenA.symbol];
-    const tokenPriceB = tokenPrices[tokenB.symbol];
 
     // No price available yet
     if (!tokenPriceA || !tokenPriceB) {
@@ -352,7 +356,7 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col h-full', className)}>
+    <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
       <div className="text-sm flex items-center ml-4">
         Collateral deposited
         <InfoAnnotation
@@ -393,10 +397,11 @@ export default function LongShortTradingInputs({
           {
             /* Display wallet balance */
             (() => {
-              if (!tokenA || !walletTokenBalances) return null;
+              if (!tokenA || !walletTokenBalances)
+                return <div className="h-4"></div>;
 
               const balance = walletTokenBalances[tokenA.symbol];
-              if (balance === null) return null;
+              if (balance === null) return <div className="h-4"></div>;
 
               return (
                 <div className="text-txtfade text-sm ml-auto mt-3 mr-4">
@@ -414,7 +419,7 @@ export default function LongShortTradingInputs({
       {/* Leverage (only in short/long) */}
 
       <div className="flex flex-col">
-        <div className="text-sm flex items-center mt-1 ml-4">
+        <div className="text-sm flex items-center ml-4">
           Leverage
           <InfoAnnotation
             text="Select a multiplier to apply to the collateral to determine the size of the position."
@@ -427,6 +432,7 @@ export default function LongShortTradingInputs({
             value={leverage}
             className="w-full font-mono"
             onChange={(v: number) => setLeverage(v)}
+            color={side === 'long' ? '#22c55e' : '#c13332'}
           />
         </div>
       </div>
@@ -453,24 +459,112 @@ export default function LongShortTradingInputs({
           />
         </div>
 
+        <div className="flex items-center border rounded-lg h-16 pr-5 bg-secondary mt-2">
+          <Select
+            className="shrink-0 h-full flex items-center w-[7em]"
+            selectedClassName="w-14"
+            menuClassName="rounded-tl-lg rounded-bl-lg"
+            selected={tokenB.symbol}
+            options={allowedTokenB.map((token) => ({
+              title: token.symbol,
+              img: token.image,
+            }))}
+            onSelect={(name) => {
+              // Force linting, you cannot not find the token in the list
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const token = allowedTokenB.find((t) => t.symbol === name)!;
+              setTokenB(token);
+
+              // if the prev value has more decimals than the new token, we need to adjust the value
+              const newTokenDecimals = token.decimals ?? 18;
+              const decimals = inputB?.toString().split('.')[1]?.length;
+
+              if (Number(decimals) > Number(newTokenDecimals)) {
+                handleInputBChange(Number(inputB?.toFixed(newTokenDecimals)));
+              }
+            }}
+          />
+
+          {!isInfoLoading ? (
+            <>
+              <div className="flex ml-auto">
+                <InfoAnnotation
+                  text="Amount of tokens being traded."
+                  className="w-3 grow-0 mr-3 mb-4"
+                />
+
+                {openedPosition && tokenPriceB && inputB ? (
+                  <>
+                    {/* Opened position */}
+                    <div className="flex flex-col self-center items-end">
+                      <div className="text-txtfade">
+                        {inputB !== null && tokenPriceB
+                          ? formatNumber(
+                              openedPosition.sizeUsd / tokenPriceB,
+                              tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
+                            )
+                          : ''}
+                      </div>
+
+                      <div className="text-txtfade text-xs">
+                        {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
+                      </div>
+                    </div>
+
+                    <div className="ml-2 mr-2 flex items-center">
+                      <Image
+                        className="ml-2 mr-2 opacity-60"
+                        src={arrowRightIcon}
+                        height={16}
+                        width={16}
+                        alt="Arrow"
+                      />
+                    </div>
+                  </>
+                ) : null}
+
+                <div className="relative flex flex-col">
+                  <div className="flex flex-col items-end font-mono">
+                    <div className="text-base">
+                      {inputB !== null
+                        ? formatNumber(
+                            inputB,
+                            tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
+                          )
+                        : '-'}
+                    </div>
+                    <div className="text-sm text-txtfade">
+                      {formatPriceInfo(priceB, false, 2)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {openedPosition && tokenPriceB && inputB && priceB
+                ? getArrowElement(
+                    openedPosition.sizeUsd < priceB ? 'up' : 'down',
+                    'right-[0.5em]',
+                  )
+                : null}
+            </>
+          ) : (
+            <div className="w-full h-[40px] bg-gray-300 rounded-xl" />
+          )}
+        </div>
+
         <PositionInfos
           className="mt-3 w-full h-auto mb-4 overflow-hidden"
           positionInfos={positionInfos}
           tokenB={tokenB}
           leverage={leverage}
           openedPosition={openedPosition}
-          allowedTokenB={allowedTokenB}
-          inputB={inputB}
-          priceB={priceB}
-          setTokenB={setTokenB}
-          handleInputBChange={handleInputBChange}
           isInfoLoading={isInfoLoading}
         />
 
         {errorMessage !== null ? (
           <AnimatePresence>
             <motion.div
-              className="flex w-full h-auto relative overflow-hidden mt-2 pl-6 pt-2 pb-2 pr-2 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
+              className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
               initial={{ opacity: 0, scaleY: 0 }}
               animate={{ opacity: 1, scaleY: 1 }}
               exit={{ opacity: 0, scaleY: 0 }}

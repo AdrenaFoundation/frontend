@@ -6,23 +6,19 @@ import { twMerge } from 'tailwind-merge';
 
 import InputNumber from '../InputNumber/InputNumber';
 
-// Leverage colors
-
-// GMX Style
-// const colorA = '#2d3ed5';
-// const colorB = '#232743';
-
 // ADRENA Style
-const colorB = '#ffffff20';
+const colorA = '#ffffff20';
 
 export default function LeverageSlider({
   className,
   value,
   onChange,
+  color,
 }: {
   value?: number;
   className?: string;
   onChange: (v: number) => void;
+  color?: string;
 }) {
   // Use this state to allow user to remove everything in the input
   // overwise the user is stuck with one number, which is bad ux
@@ -30,8 +26,8 @@ export default function LeverageSlider({
     useState<boolean>(false);
 
   return (
-    <div className={twMerge('flex overflow-hidden h-[3em]', className)}>
-      <div className="flex pl-1 pt-1 pr-2 pb-1 bg-third w-[4em] border-r h-full">
+    <div className={twMerge('flex overflow-hidden h-16', className)}>
+      <div className="flex pl-1 pt-1 pr-2 pb-1 bg-black w-[4em] border-r h-full">
         <div className="flex w-full items-center ml-1 shrink-0">
           <span className="shrink-0 w-2">x</span>
 
@@ -54,9 +50,9 @@ export default function LeverageSlider({
         </div>
       </div>
 
-      <div className="flex h-full w-full bg-third border-t pr-4 pl-2 ml-2">
+      <div className="flex h-full w-full bg-transparent pr-4 pl-2 ml-2">
         <Slider
-          className="relative top-2"
+          className="relative top-4"
           min={1}
           max={50}
           value={value}
@@ -71,30 +67,30 @@ export default function LeverageSlider({
             return acc;
           }, {} as Record<number, ReactNode>)}
           railStyle={{
-            backgroundColor: colorB,
+            backgroundColor: colorA,
             height: 2,
           }}
           trackStyle={{
-            backgroundColor: 'white',
+            backgroundColor: color ?? 'white',
             height: 2,
           }}
           handleStyle={{
-            backgroundColor: 'white',
-            borderColor: 'white',
+            backgroundColor: color ?? 'white',
+            borderColor: color ?? 'white',
             opacity: 1,
             borderWidth: '3px',
           }}
           activeDotStyle={{
-            backgroundColor: 'white',
-            borderColor: colorB,
+            backgroundColor: color ?? 'white',
+            borderColor: colorA,
           }}
           dotStyle={{
             borderRadius: 0,
             width: '2px',
             border: 0,
             height: '0.8em',
-            backgroundColor: colorB,
-            borderColor: colorB,
+            backgroundColor: colorA,
+            borderColor: colorA,
           }}
           // Use as number because we don't use the slider as a range
           onChange={(v) => onChange(v as number)}

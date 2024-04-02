@@ -44,7 +44,11 @@ export const TradeComp = ({
       <div className="w-full bg-transparent flex flex-col h-full p-3">
         <TabSelect
           selected={selectedAction}
-          tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
+          tabs={[
+            { title: 'long', activeColor: '#22c55e' },
+            { title: 'short', activeColor: '#c13332' },
+            { title: 'swap' },
+          ]}
           onClick={(title) => {
             setSelectedAction(title);
           }}

@@ -199,7 +199,10 @@ export default function ALPSwap({
     >
       <TabSelect
         selected={selectedAction}
-        tabs={[{ title: 'buy' }, { title: 'sell' }]}
+        tabs={[
+          { title: 'buy', activeColor: '#22c55e' },
+          { title: 'sell', activeColor: '#c13332' },
+        ]}
         onClick={(title) => {
           setSelectedAction(title);
         }}
