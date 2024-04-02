@@ -1,4 +1,5 @@
 import { Wallet } from '@coral-xyz/anchor';
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
@@ -7,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -452,7 +454,7 @@ export default function LongShortTradingInputs({
         </div>
 
         <PositionInfos
-          className="mt-3 w-full h-auto mb-4 rounded-lg overflow-hidden"
+          className="mt-3 w-full h-auto mb-4 overflow-hidden"
           positionInfos={positionInfos}
           tokenB={tokenB}
           leverage={leverage}
@@ -488,6 +490,17 @@ export default function LongShortTradingInputs({
           </AnimatePresence>
         ) : null}
       </div>
+
+      <RiveAnimation
+        animation="btm-monster"
+        layout={
+          new Layout({
+            fit: Fit.FitWidth,
+            alignment: Alignment.BottomRight,
+          })
+        }
+        className="absolute w-[200%] h-full right-0 bottom-0 opacity-[15%] z-[-1]"
+      />
 
       {/* Button to execute action */}
       <Button

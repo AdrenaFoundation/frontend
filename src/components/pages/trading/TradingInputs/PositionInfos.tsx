@@ -65,7 +65,7 @@ export default function PositionInfos({
     return (
       <Image
         className={twMerge(
-          `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center absolute right-[0.9em]`,
+          `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center absolute right-[0.6em]`,
           className,
         )}
         src={side === 'down' ? arrowDown : arrowUp}
@@ -89,21 +89,11 @@ export default function PositionInfos({
   return (
     <div
       className={twMerge(
-        'flex flex-col bg-secondary border pr-2 relative',
+        'flex flex-col bg-transparent pr-5 relative',
         className,
       )}
     >
-      <div className="absolute w-full h-full right-0 bottom-0 overflow-hidden flex items-end justify-end">
-        <RiveAnimation
-          animation="btm-monster"
-          layout={
-            new Layout({ fit: Fit.Cover, alignment: Alignment.BottomRight })
-          }
-          className="absolute w-full h-full right-0 bottom-0 opacity-10"
-        />
-      </div>
-
-      <div className="flex items-center border-b h-14 pr-4">
+      <div className="flex items-center border-b h-14">
         <Select
           className="shrink-0 h-full flex items-center w-[7em]"
           selectedClassName="w-14"
@@ -180,7 +170,7 @@ export default function PositionInfos({
             {openedPosition && tokenPriceB && inputB && priceB
               ? arrowElement(
                   openedPosition.sizeUsd < priceB ? 'up' : 'down',
-                  'right-[0.7em]',
+                  'right-[0.5em]',
                 )
               : null}
           </>
@@ -189,7 +179,7 @@ export default function PositionInfos({
         )}
       </div>
 
-      <div className="flex flex-col pt-2 pb-2 pl-4 pr-4">
+      <div className="flex flex-col pt-2 pb-2">
         <div className={infoRowStyle}>
           <span className="text-sm flex">
             <InfoAnnotation
