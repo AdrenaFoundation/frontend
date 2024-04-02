@@ -1,4 +1,4 @@
-import { formatNumber, formatPriceInfo } from '@/utils';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function Overview({
   aumUsd,
@@ -31,21 +31,27 @@ export default function Overview({
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Open Interest</p>
-            <p className="font-mono">{formatPriceInfo(longPositions)}</p>
+            <FormatNumber nb={longPositions} format="currency" />
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Active Positions</p>
-            <p className="font-mono">
-              {nbOpenLongPositions !== null ? nbOpenLongPositions : '-'}
-            </p>
+
+            <FormatNumber nb={nbOpenLongPositions} />
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Average Leverage</p>
-            <p className="text-sm opacity-25 italic">
+            {/* <p className="text-sm opacity-25 italic">
               {averageLongLeverage
                 ? `${formatNumber(averageLongLeverage, 2)}x`
                 : 'Coming soon'}
-            </p>
+            </p> */}
+
+            <FormatNumber
+              nb={averageLongLeverage !== 0 ? averageLongLeverage : null} // TODO: to be changed
+              placeholder="Coming soon"
+              placeholderClassName="italic opacity-25 text-sm"
+              unit="x"
+            />
           </div>
         </div>
       </div>
@@ -58,21 +64,20 @@ export default function Overview({
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Open Interest</p>
-            <p className="font-mono">{formatPriceInfo(shortPositions)}</p>
+            <FormatNumber nb={shortPositions} format="currency" />
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Active Positions</p>
-            <p className="font-mono">
-              {nbOpenShortPositions !== null ? nbOpenShortPositions : '-'}
-            </p>
+            <FormatNumber nb={nbOpenShortPositions} />
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Average Leverage</p>
-            <p className="text-sm opacity-25 italic">
-              {averageShortLeverage
-                ? `${formatNumber(averageShortLeverage, 2)}x`
-                : 'Coming soon'}
-            </p>
+            <FormatNumber
+              nb={averageShortLeverage !== 0 ? averageShortLeverage : null} // TODO: to be changed
+              placeholder="Coming soon"
+              placeholderClassName="italic opacity-25 text-sm"
+              unit="x"
+            />
           </div>
         </div>
       </div>
@@ -85,15 +90,15 @@ export default function Overview({
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">
             <p className="opacity-50">AUM</p>
-            <p className="font-mono">{formatPriceInfo(aumUsd)}</p>
+            <FormatNumber nb={aumUsd} format="currency" />
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Total Volume</p>
-            <p className="font-mono">{formatPriceInfo(totalVolume)}</p>
+            <FormatNumber nb={totalVolume} format="currency" />
           </div>
           <div className="flex flex-row justify-between">
             <p className="opacity-50">Total fees</p>
-            <p className="font-mono">{formatPriceInfo(totalCollectedFees)}</p>
+            <FormatNumber nb={totalCollectedFees} format="currency" />
           </div>
         </div>
       </div>

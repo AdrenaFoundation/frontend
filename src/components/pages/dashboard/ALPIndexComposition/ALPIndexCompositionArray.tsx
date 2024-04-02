@@ -2,8 +2,8 @@ import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
-import { formatPercentage, formatPriceInfo } from '@/utils';
 
 export default function ALPIndexCompositionArray({
   alpIndexComposition,
@@ -68,12 +68,21 @@ export default function ALPIndexCompositionArray({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono text-base">
-                  {formatPriceInfo(composition.price)}
+                <div className="flex items-center justify-end w-40 shrink-0 grow ">
+                  <FormatNumber
+                    nb={composition.price}
+                    format="currency"
+                    className="text-base"
+                  />
                 </div>
 
-                <div className="flex items-center justify-end w-40 shrink-0 grow font-mono text-base">
-                  {formatPriceInfo(composition.custodyUsdValue)}
+                <div className="flex items-center justify-end w-40 shrink-0 grow">
+                  {/* {formatPriceInfo(composition.custodyUsdValue)} */}
+                  <FormatNumber
+                    nb={composition.custodyUsdValue}
+                    format="currency"
+                    className="text-base"
+                  />
                 </div>
 
                 <Tippy
@@ -82,25 +91,37 @@ export default function ALPIndexCompositionArray({
                       <div className="flex w-full justify-between">
                         <div className="text-txtfade">Current Weight:</div>
                         <div className="font-mono">
-                          {formatPercentage(composition.currentRatio)}
+                          <FormatNumber
+                            nb={composition.currentRatio}
+                            format="percentage"
+                          />
                         </div>
                       </div>
                       <div className="flex w-full justify-between">
                         <div className="text-txtfade">Target Weight:</div>
                         <div className="font-mono">
-                          {formatPercentage(composition.targetRatio)}
+                          <FormatNumber
+                            nb={composition.targetRatio}
+                            format="percentage"
+                          />
                         </div>
                       </div>
                       <div className="flex w-full justify-between">
                         <div className="text-txtfade">Minimum Weight:</div>
                         <div className="font-mono">
-                          {formatPercentage(composition.minRatio)}
+                          <FormatNumber
+                            nb={composition.minRatio}
+                            format="percentage"
+                          />
                         </div>
                       </div>
                       <div className="flex w-full justify-between">
                         <div className="text-txtfade">Maximum Weight:</div>
                         <div className="font-mono">
-                          {formatPercentage(composition.maxRatio)}
+                          <FormatNumber
+                            nb={composition.maxRatio}
+                            format="percentage"
+                          />
                         </div>
                       </div>
                     </div>
@@ -109,24 +130,32 @@ export default function ALPIndexCompositionArray({
                 >
                   <div className="flex items-center justify-end w-40 shrink-0 grow text-base">
                     <div className="flex tooltip-target">
-                      <span
+                      <FormatNumber
+                        nb={composition.currentRatio}
+                        format="percentage"
                         className={`font-mono ${calculateOffset(
                           composition.targetRatio,
                           composition.currentRatio,
                         )}`}
-                      >
-                        {formatPercentage(composition.currentRatio)}
-                      </span>
+                      />
+
                       <span className="ml-1 mr-1">/</span>
                       <span className="font-mono">
-                        {formatPercentage(composition.targetRatio)}
+                        <FormatNumber
+                          nb={composition.targetRatio}
+                          format="percentage"
+                        />
                       </span>
                     </div>
                   </div>
                 </Tippy>
 
                 <div className="flex items-center w-40 shrink-0 grow justify-end font-mono text-base">
-                  {formatPercentage(composition.utilization, 4)}
+                  <FormatNumber
+                    nb={composition.utilization}
+                    format="percentage"
+                    precision={4}
+                  />
                 </div>
               </div>
             ))}
