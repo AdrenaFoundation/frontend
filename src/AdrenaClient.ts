@@ -1423,7 +1423,7 @@ export class AdrenaClient {
   }
 
   public getStableTokenByMint(mint: PublicKey): Token {
-    const isUsdt = mint.equals(this.getUsdcToken().mint);
+    const isUsdt = this.getTokenBySymbol('USDT')?.mint.equals(mint);
     const stableToken = this.getTokenBySymbol(isUsdt ? 'USDT' : 'USDC');
 
     if (!stableToken) {
@@ -1570,11 +1570,12 @@ export class AdrenaClient {
     exitFeeUsd: number;
     liquidationFeeUsd: number;
   }> {
-    const isUsdt = tokenB.mint.equals(this.getUsdcToken().mint);
-    const stableToken = this.getTokenBySymbol(isUsdt ? 'USDT' : 'USDC');
+    const stableToken = this.getTokenBySymbol(
+      tokenB.symbol === 'USDT' ? 'USDT' : 'USDC',
+    );
 
     if (!stableToken) {
-      throw new Error(`Cannot find stable token: ${isUsdt ? 'USDT' : 'USDC'}`);
+      throw new Error('Cannot find stable token');
     }
 
     const tokenAPrice = tokenPrices[tokenA.symbol];
