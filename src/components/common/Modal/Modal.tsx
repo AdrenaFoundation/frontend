@@ -72,7 +72,7 @@ const Modal = ({
         >
           <div className="h-8 w-full flex items-center justify-start border-b border-grey pl-4 pr-4 relative overflow-hidden bg-highlight">
             <div className="flex text-lg uppercase text-main font-special h-full items-center justify-center opacity-80">
-              <span className="text-main text-xl mr-1 opacity-50">{'>>>'}</span>{' '}
+              <span className="text-main text-lg mr-1 opacity-50">{'>>>'}</span>{' '}
               {title}
             </div>
 
