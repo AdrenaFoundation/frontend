@@ -48,10 +48,7 @@ function createTooltip(
 ) {
   const rawData = raw as number;
   const amountLabel = formatNumber(rawData, 2);
-  const percentageLabel =
-    title === 'ALP'
-      ? getPercentageLabel(rawData, alpTotalSupply)
-      : getPercentageLabel(rawData, adxTotalSupply);
+  const percentageLabel = getPercentageLabel(rawData, title === 'ALP' ? alpTotalSupply: adxTotalSupply);
   const priceLabel =
     title === 'ALP'
       ? getPriceLabel(rawData, alpPrice)
