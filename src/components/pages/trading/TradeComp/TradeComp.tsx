@@ -41,7 +41,7 @@ export const TradeComp = ({
         className,
       )}
     >
-      <div className="w-full bg-transparent flex flex-col h-full p-3">
+      <div className="w-full bg-main flex flex-col h-full p-3">
         <TabSelect
           selected={selectedAction}
           tabs={[

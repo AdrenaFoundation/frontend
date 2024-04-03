@@ -162,135 +162,133 @@ export default function Trade({
   }, [activePositionModal]);
 
   return (
-    <>
-      <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full">
-        <div className="flex flex-col w-full h-full pt-2">
-          {/* Trading chart header */}
-          {tokenB ? (
-            <TradingChartHeader
-              tokenList={
-                selectedAction === 'short' || selectedAction === 'long'
-                  ? window.adrena.client.tokens.filter((t) => !t.isStable)
-                  : window.adrena.client.tokens
-              }
-              selected={tokenB}
-              onChange={(t: Token) => {
-                setTokenB(t);
-              }}
-            />
+    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full">
+      <div className="flex flex-col w-full h-full">
+        {/* Trading chart header */}
+        {tokenB ? (
+          <TradingChartHeader
+            tokenList={
+              selectedAction === 'short' || selectedAction === 'long'
+                ? window.adrena.client.tokens.filter((t) => !t.isStable)
+                : window.adrena.client.tokens
+            }
+            selected={tokenB}
+            onChange={(t: Token) => {
+              setTokenB(t);
+            }}
+          />
+        ) : null}
+
+        <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
+          {/* Display trading chart for appropriate token */}
+          {tokenA && tokenB ? (
+            <>
+              <TradingChart
+                token={
+                  selectedAction === 'short' || selectedAction === 'long'
+                    ? tokenB
+                    : tokenA.isStable
+                    ? tokenB
+                    : tokenA
+                }
+              />
+            </>
           ) : null}
-
-          <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
-            {/* Display trading chart for appropriate token */}
-            {tokenA && tokenB ? (
-              <>
-                <TradingChart
-                  token={
-                    selectedAction === 'short' || selectedAction === 'long'
-                      ? tokenB
-                      : tokenA.isStable
-                      ? tokenB
-                      : tokenA
-                  }
-                />
-              </>
-            ) : null}
-          </div>
-
-          <div className="h-full z-30 overflow-hidden bg-main pr-2">
-            <Positions
-              positions={positions}
-              triggerPositionsReload={triggerPositionsReload}
-            />
-          </div>
         </div>
 
-        <>
-          <TradeComp
-            selectedAction={selectedAction}
-            setSelectedAction={setSelectedAction}
-            tokenA={tokenA}
-            tokenB={tokenB}
-            setTokenA={setTokenA}
-            setTokenB={setTokenB}
-            openedPosition={openedPosition}
-            className="hidden sm:flex"
-            wallet={wallet}
+        <div className="h-full z-30 overflow-hidden bg-main pr-2">
+          <Positions
+            positions={positions}
             triggerPositionsReload={triggerPositionsReload}
-            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           />
-
-          <div className="fixed sm:hidden bottom-0 w-full bg-gray-300 backdrop-blur-sm p-5 z-30">
-            <ul className="flex flex-row gap-3 justify-between">
-              <li>
-                <Button
-                  title="Long"
-                  variant="outline"
-                  size="lg"
-                  className="border-green-500 text-green-500 bg-green-700/10"
-                  onClick={() => {
-                    setActivePositionModal('long');
-                    setSelectedAction('long');
-                  }}
-                />
-              </li>
-              <li>
-                <Button
-                  title="Short"
-                  variant="outline"
-                  size="lg"
-                  className="border-red-500 text-red-500 bg-red-700/10"
-                  onClick={() => {
-                    setActivePositionModal('short');
-                    setSelectedAction('short');
-                  }}
-                />
-              </li>
-              <li>
-                <Button
-                  title="Swap"
-                  variant="outline"
-                  size="lg"
-                  className="border-purple-500 text-purple-500 bg-purple-700/10"
-                  onClick={() => {
-                    setActivePositionModal('swap');
-                    setSelectedAction('swap');
-                  }}
-                />
-              </li>
-            </ul>
-
-            <AnimatePresence>
-              {activePositionModal && (
-                <Modal
-                  title={`${
-                    activePositionModal.charAt(0).toUpperCase() +
-                    activePositionModal.slice(1)
-                  } Position`}
-                  close={() => setActivePositionModal(null)}
-                  className="flex flex-col p-2 overflow-auto h-[75vh]"
-                >
-                  <TradeComp
-                    selectedAction={selectedAction}
-                    setSelectedAction={setSelectedAction}
-                    tokenA={tokenA}
-                    tokenB={tokenB}
-                    setTokenA={setTokenA}
-                    setTokenB={setTokenB}
-                    openedPosition={openedPosition}
-                    className="p-0 m-0"
-                    wallet={wallet}
-                    triggerPositionsReload={triggerPositionsReload}
-                    triggerWalletTokenBalancesReload={
-                      triggerWalletTokenBalancesReload
-                    }
-                  />
-                </Modal>
-              )}
-            </AnimatePresence>
-          </div>
-        </>
+        </div>
       </div>
-    </>
+
+      <>
+        <TradeComp
+          selectedAction={selectedAction}
+          setSelectedAction={setSelectedAction}
+          tokenA={tokenA}
+          tokenB={tokenB}
+          setTokenA={setTokenA}
+          setTokenB={setTokenB}
+          openedPosition={openedPosition}
+          className="hidden sm:flex"
+          wallet={wallet}
+          triggerPositionsReload={triggerPositionsReload}
+          triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+        />
+
+        <div className="fixed sm:hidden bottom-0 w-full bg-gray-300 backdrop-blur-sm p-5 z-30">
+          <ul className="flex flex-row gap-3 justify-between">
+            <li>
+              <Button
+                title="Long"
+                variant="outline"
+                size="lg"
+                className="border-green-500 text-green-500 bg-green-700/10"
+                onClick={() => {
+                  setActivePositionModal('long');
+                  setSelectedAction('long');
+                }}
+              />
+            </li>
+            <li>
+              <Button
+                title="Short"
+                variant="outline"
+                size="lg"
+                className="border-red-500 text-red-500 bg-red-700/10"
+                onClick={() => {
+                  setActivePositionModal('short');
+                  setSelectedAction('short');
+                }}
+              />
+            </li>
+            <li>
+              <Button
+                title="Swap"
+                variant="outline"
+                size="lg"
+                className="border-purple-500 text-purple-500 bg-purple-700/10"
+                onClick={() => {
+                  setActivePositionModal('swap');
+                  setSelectedAction('swap');
+                }}
+              />
+            </li>
+          </ul>
+
+          <AnimatePresence>
+            {activePositionModal && (
+              <Modal
+                title={`${
+                  activePositionModal.charAt(0).toUpperCase() +
+                  activePositionModal.slice(1)
+                } Position`}
+                close={() => setActivePositionModal(null)}
+                className="flex flex-col p-2 overflow-auto h-[75vh]"
+              >
+                <TradeComp
+                  selectedAction={selectedAction}
+                  setSelectedAction={setSelectedAction}
+                  tokenA={tokenA}
+                  tokenB={tokenB}
+                  setTokenA={setTokenA}
+                  setTokenB={setTokenB}
+                  openedPosition={openedPosition}
+                  className="p-0 m-0"
+                  wallet={wallet}
+                  triggerPositionsReload={triggerPositionsReload}
+                  triggerWalletTokenBalancesReload={
+                    triggerWalletTokenBalancesReload
+                  }
+                />
+              </Modal>
+            )}
+          </AnimatePresence>
+        </div>
+      </>
+    </div>
   );
 }

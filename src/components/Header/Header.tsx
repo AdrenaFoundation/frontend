@@ -27,7 +27,7 @@ export default function Header({
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b bg-main z-50">
+    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b bg-secondary z-50">
       <div className="flex flex-row items-center gap-6">
         <Link className="font-bold uppercase relative" href="/">
           {

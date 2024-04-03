@@ -16,6 +16,7 @@ import { Bar } from 'react-chartjs-2';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import {
   formatNumber,
   formatPriceInfo,
@@ -127,7 +128,7 @@ export default function UsageOverview({
           />
         </div>
 
-        <div className="flex flex-col gap-x-6 mt-4 bg-black p-4 border rounded-2xl h-auto">
+        <StyledSubSubContainer className="flex-col">
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Active Positions</div>
             <span>
@@ -145,7 +146,7 @@ export default function UsageOverview({
                 : formatPriceInfo(totalPositionsValue)}
             </span>
           </div>
-        </div>
+        </StyledSubSubContainer>
       </StyledSubContainer>
 
       <StyledSubContainer className="h-auto">

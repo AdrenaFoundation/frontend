@@ -4,11 +4,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // background colors
-        // ADRENA Style
-        main: '#001025',
-        secondary: '#000d1f',
-        third: '#000d1f',
+        main: '#000f23', // 04336a
+        secondary: '#0b192d', // 1b2038
+        third: '#1a2c44', // 181f29 // 000d1f
+        fourth: '#526279', // 526279
         black: '#000000',
         highlight: '#fffffff5',
         bcolor: '#2F3B49',

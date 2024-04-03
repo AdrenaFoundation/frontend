@@ -107,7 +107,7 @@ export default function UserProfile({
               value={nickname ?? ''}
               onChange={setNickname}
               placeholder="The Great Trader"
-              className="mt-4 text-center w-[20em] p-4 bg-black border border-gray-200 rounded-xl"
+              className="mt-4 text-center w-[20em] p-4 bg-fourth border border-gray-200 rounded-xl"
               inputFontSize="1.1em"
               maxLength={24}
             />

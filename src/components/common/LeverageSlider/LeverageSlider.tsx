@@ -25,12 +25,12 @@ export default function LeverageSlider({
 
   return (
     <div className={twMerge('flex overflow-hidden h-16', className)}>
-      <div className="flex pl-1 pt-1 pr-2 pb-1 bg-black w-[4em] border-r h-full">
+      <div className="flex pl-1 pt-1 pr-2 pb-1 bg-third w-[4em] border-r h-full">
         <div className="flex w-full items-center ml-1 shrink-0">
           <span className="shrink-0 w-2">x</span>
 
           <InputNumber
-            className="w-full max-w-full overflow-hidden text-center"
+            className="w-full max-w-full overflow-hidden text-center bg-third"
             value={isLeverageInputEmpty ? undefined : value}
             max={50}
             onChange={function (value: number | null): void {

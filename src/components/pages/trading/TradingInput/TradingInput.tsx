@@ -44,7 +44,7 @@ export default function TradingInput({
     <div className={twMerge('relative flex flex-col', className)}>
       <div
         className={twMerge(
-          'rounded-lg flex w-full border h-16 bg-black',
+          'rounded-lg flex w-full border h-16 bg-third',
           inputClassName,
         )}
         style={
@@ -76,7 +76,7 @@ export default function TradingInput({
                     placeholder={placeholder}
                     className={twMerge(
                       'font-mono border-0 text-lg outline-none w-full',
-                      disabled ? 'bg-transparent' : 'bg-black',
+                      disabled ? 'bg-transparent' : 'bg-third',
                     )}
                     onChange={onChange}
                     decimalConstraint={decimalConstraint}
@@ -101,7 +101,7 @@ export default function TradingInput({
         {tokenList.length ? (
           <Select
             className={twMerge(
-              'shrink-0 bg-secondary h-full flex items-center w-24',
+              'shrink-0 bg-third h-full flex items-center w-24',
               tokenList.length > 1 ? 'justify-end' : 'justify-center',
             )}
             selected={selectedToken?.symbol ?? ''}

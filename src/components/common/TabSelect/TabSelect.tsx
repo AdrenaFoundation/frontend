@@ -29,7 +29,7 @@ export default function TabSelect<T extends string | number>({
   return (
     <div
       className={twMerge(
-        'relative flex flex-row justify-between w-full bg-secondary pb-1 mb-3',
+        'relative flex flex-row justify-between w-full pb-1 mb-3',
         wrapperClassName,
       )}
     >

@@ -11,7 +11,7 @@ export default function StyledSubSubContainer({
   return (
     <div
       className={twMerge(
-        'flex flex-col bg-fourth w-full h-full border rounded-lg p-5 z-10',
+        'flex justify-between bg-fourth w-full h-full border rounded-lg p-3 z-10',
         className,
       )}
     >

@@ -17,6 +17,7 @@ export default function Select<T extends string>({
   menuClassName,
   options,
   onSelect,
+  reversed,
 }: {
   className?: string;
   selectedClassName?: string;
@@ -24,11 +25,31 @@ export default function Select<T extends string>({
   selected: T;
   options: { title: T; img?: ImageRef }[];
   onSelect: (opt: T) => void;
+
+  // Reverse the image position
+  reversed?: boolean;
 }) {
   const selectedImg = options.find((option) => option.title === selected)?.img;
 
   // Option hovering on
   const [optionHover, setOptionHover] = useState<number | null>(null);
+
+  const img = selectedImg ? (
+    <Image
+      src={selectedImg}
+      className="mr-1 ml-1"
+      alt="logo"
+      width="20"
+      height="20"
+    />
+  ) : null;
+
+  const chevron =
+    options.length > 1 ? (
+      <div className="flex h-2 w-2 items-center justify-center shrink-0 mr-1 ml-1">
+        <Image src={chevronDownIcon} alt="chevron down" />
+      </div>
+    ) : null;
 
   return (
     <div className={className}>
@@ -38,7 +59,7 @@ export default function Select<T extends string>({
         trigger={
           <div
             className={twMerge(
-              'flex justify-center items-center whitespace-nowrap hover:opacity-90 shadow-xl overflow-hidden relative h-full w-full',
+              'flex items-center whitespace-nowrap hover:opacity-90 shadow-xl overflow-hidden relative h-full w-full',
               options.length > 1 ? 'cursor-pointer' : '',
               menuClassName,
             )}
@@ -49,26 +70,14 @@ export default function Select<T extends string>({
                 selectedClassName,
               )}
             >
-              {selectedImg ? (
-                <Image
-                  src={selectedImg}
-                  className="absolute top-auto left-[-32px] opacity-[15%] grayscale"
-                  alt="logo"
-                  width="80"
-                  height="80"
-                />
-              ) : null}
+              {reversed ? img : chevron}
 
-              <span className="text-base font-semibold z-20 m-auto pl-2">
+              <span className="text-lg font-special z-20 m-auto">
                 {selected}
               </span>
-            </div>
 
-            {options.length > 1 ? (
-              <div className="flex bg-secondary rounded-full p-1 h-5 w-5 items-center justify-center ml-2">
-                <Image src={chevronDownIcon} alt="chevron down" />
-              </div>
-            ) : null}
+              {reversed ? chevron : img}
+            </div>
           </div>
         }
         className="h-full w-full"
@@ -105,7 +114,8 @@ export default function Select<T extends string>({
                         height="80"
                       />
                     ) : null}
-                    <span className="font-semibold z-20 m-auto text-base">
+
+                    <span className="font-special text-lg z-20 m-auto">
                       {option.title}
                     </span>
                   </MenuItem>

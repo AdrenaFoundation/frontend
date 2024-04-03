@@ -6,7 +6,7 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-export default function TradingInputs({
+export default function TradingChartHeader({
   className,
   tokenList,
   selected,
@@ -23,7 +23,7 @@ export default function TradingInputs({
   return (
     <div
       className={twMerge(
-        'flex items-center justify-between sm:justify-start gap-3 h-14 z-30',
+        'flex items-center justify-between sm:justify-start gap-3 h-14 z-30 bg-main',
         className,
       )}
     >

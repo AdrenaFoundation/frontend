@@ -90,7 +90,7 @@ function WalletAdapter({
               }
               rightIcon={threeDotsIcon}
               alt="wallet icon"
-              variant="outline"
+              variant="secondary"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}

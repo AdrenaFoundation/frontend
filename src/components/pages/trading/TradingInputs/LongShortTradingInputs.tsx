@@ -358,7 +358,7 @@ export default function LongShortTradingInputs({
   return (
     <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
       <h5 className="flex items-center ml-4">
-        Collateral deposited
+        Configuration
         <InfoAnnotation
           text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
           className="w-3 ml-1"
@@ -367,9 +367,10 @@ export default function LongShortTradingInputs({
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col">
+        <div className="flex flex-col border rounded-lg mt-2 overflow-hidden bg-third">
           <TradingInput
-            className="mt-2 text-sm"
+            className="text-sm border-b"
+            inputClassName="border-0"
             value={inputA}
             subText={
               priceA ? (
@@ -394,75 +395,44 @@ export default function LongShortTradingInputs({
             }}
           />
 
-          {
-            /* Display wallet balance */
-            (() => {
-              if (!tokenA || !walletTokenBalances)
-                return <div className="h-4"></div>;
-
-              const balance = walletTokenBalances[tokenA.symbol];
-              if (balance === null) return <div className="h-4"></div>;
-
-              return (
-                <div className="text-txtfade text-sm ml-auto mt-3 mr-4">
-                  <span className="text-txtfade font-mono">
-                    {formatNumber(balance, tokenA.decimals)}
-                  </span>{' '}
-                  {tokenA.symbol} in wallet
-                </div>
-              );
-            })()
-          }
-        </div>
-      </div>
-
-      {/* Leverage (only in short/long) */}
-
-      <div className="flex flex-col">
-        <h5 className="flex items-center ml-4">
-          Leverage
-          <InfoAnnotation
-            text="Select a multiplier to apply to the collateral to determine the size of the position."
-            className="w-3 ml-1"
-          />
-        </h5>
-
-        <div className="mt-4 border rounded-lg overflow-hidden">
           <LeverageSlider
             value={leverage}
-            className="w-full font-mono"
+            className="w-full font-mono bg-third"
             onChange={(v: number) => setLeverage(v)}
           />
         </div>
       </div>
 
+      {(() => {
+        if (!tokenA || !walletTokenBalances) return <div className="h-4"></div>;
+
+        const balance = walletTokenBalances[tokenA.symbol];
+        if (balance === null) return <div className="h-4"></div>;
+
+        return (
+          <div className="text-txtfade text-sm ml-auto mt-3 mr-4">
+            <span className="text-txtfade font-mono">
+              {formatNumber(balance, tokenA.decimals)}
+            </span>{' '}
+            {tokenA.symbol} in wallet
+          </div>
+        );
+      })()}
+
       <div className="flex flex-col mt-4 transition-opacity duration-500">
         <h5 className="flex items-center ml-4">
-          Position
+          Position Size
           <InfoAnnotation
-            text={
-              <div className="flex flex-col">
-                <span>
-                  Below are various details regarding the future position.
-                  Please review them carefully to ensure you are comfortable
-                  with the parameters.
-                </span>
-                <span className="mt-2">
-                  <b>Note:</b> The information provided is based on best-effort
-                  estimations. Actual numbers will be calculated when the order
-                  is executed.
-                </span>
-              </div>
-            }
+            text={<div className="flex flex-col">TODO</div>}
             className="w-3 ml-1"
           />
         </h5>
 
-        <div className="flex items-center border rounded-lg h-16 pr-5 bg-secondary mt-2">
+        <div className="flex items-center h-16 pr-5 bg-main mt-2 border-b">
           <Select
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"
-            menuClassName="rounded-tl-lg rounded-bl-lg"
+            menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
             selected={tokenB.symbol}
             options={allowedTokenB.map((token) => ({
               title: token.symbol,
@@ -482,6 +452,7 @@ export default function LongShortTradingInputs({
                 handleInputBChange(Number(inputB?.toFixed(newTokenDecimals)));
               }
             }}
+            reversed={true}
           />
 
           {!isInfoLoading ? (
@@ -550,6 +521,27 @@ export default function LongShortTradingInputs({
             <div className="w-full h-[40px] bg-gray-300 rounded-xl" />
           )}
         </div>
+
+        <h5 className="flex items-center ml-4 mt-4">
+          Position
+          <InfoAnnotation
+            text={
+              <div className="flex flex-col">
+                <span>
+                  Below are various details regarding the future position.
+                  Please review them carefully to ensure you are comfortable
+                  with the parameters.
+                </span>
+                <span className="mt-2">
+                  <b>Note:</b> The information provided is based on best-effort
+                  estimations. Actual numbers will be calculated when the order
+                  is executed.
+                </span>
+              </div>
+            }
+            className="w-3 ml-1"
+          />
+        </h5>
 
         <PositionInfos
           className="mt-3 w-full h-auto mb-4 overflow-hidden"
