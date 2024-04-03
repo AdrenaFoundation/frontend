@@ -357,13 +357,13 @@ export default function LongShortTradingInputs({
 
   return (
     <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
-      <div className="text-sm flex items-center ml-4">
+      <h5 className="flex items-center ml-4">
         Collateral deposited
         <InfoAnnotation
           text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
           className="w-3 ml-1"
         />
-      </div>
+      </h5>
 
       {/* Input A */}
       <div className="flex">
@@ -419,26 +419,25 @@ export default function LongShortTradingInputs({
       {/* Leverage (only in short/long) */}
 
       <div className="flex flex-col">
-        <div className="text-sm flex items-center ml-4">
+        <h5 className="flex items-center ml-4">
           Leverage
           <InfoAnnotation
             text="Select a multiplier to apply to the collateral to determine the size of the position."
             className="w-3 ml-1"
           />
-        </div>
+        </h5>
 
         <div className="mt-4 border rounded-lg overflow-hidden">
           <LeverageSlider
             value={leverage}
             className="w-full font-mono"
             onChange={(v: number) => setLeverage(v)}
-            color={side === 'long' ? '#22c55e' : '#c13332'}
           />
         </div>
       </div>
 
       <div className="flex flex-col mt-4 transition-opacity duration-500">
-        <div className="text-sm flex items-center ml-4">
+        <h5 className="flex items-center ml-4">
           Position
           <InfoAnnotation
             text={
@@ -457,7 +456,7 @@ export default function LongShortTradingInputs({
             }
             className="w-3 ml-1"
           />
-        </div>
+        </h5>
 
         <div className="flex items-center border rounded-lg h-16 pr-5 bg-secondary mt-2">
           <Select

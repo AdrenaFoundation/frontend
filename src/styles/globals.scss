@@ -84,11 +84,17 @@
   h3 {
     @apply text-xl;
     @apply font-special;
+    text-transform: uppercase;
   }
 
   h4 {
     @apply text-lg;
-    @apply font-special;
+    @apply font-boldy;
+  }
+
+  h5 {
+    @apply text-sm;
+    @apply font-boldy;
   }
 
   button:focus,

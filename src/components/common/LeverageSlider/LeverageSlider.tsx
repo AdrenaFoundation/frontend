@@ -13,12 +13,10 @@ export default function LeverageSlider({
   className,
   value,
   onChange,
-  color,
 }: {
   value?: number;
   className?: string;
   onChange: (v: number) => void;
-  color?: string;
 }) {
   // Use this state to allow user to remove everything in the input
   // overwise the user is stuck with one number, which is bad ux
@@ -71,17 +69,17 @@ export default function LeverageSlider({
             height: 2,
           }}
           trackStyle={{
-            backgroundColor: color ?? 'white',
+            backgroundColor: 'white',
             height: 2,
           }}
           handleStyle={{
-            backgroundColor: color ?? 'white',
-            borderColor: color ?? 'white',
+            backgroundColor: 'white',
+            borderColor: 'white',
             opacity: 1,
             borderWidth: '3px',
           }}
           activeDotStyle={{
-            backgroundColor: color ?? 'white',
+            backgroundColor: 'white',
             borderColor: colorA,
           }}
           dotStyle={{

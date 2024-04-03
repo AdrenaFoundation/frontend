@@ -61,7 +61,7 @@ export default function Header({
               )}
               key={page.name}
             >
-              {page.name}
+              <h5>{page.name}</h5>
             </Link>
           );
         })}

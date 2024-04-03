@@ -58,7 +58,7 @@ export default function ADXStakeOverview({
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
 
         <div className="flex w-full justify-between bg-third rounded-lg pt-2 pb-2 pl-4 pr-4 border border-gray-200">
-          <span className="flex items-center">Balance</span>
+          <h5 className="flex items-center">Balance</h5>
 
           <div>
             <span className="font-mono">{totalLiquidStaked ?? '-'}</span>
@@ -112,7 +112,7 @@ export default function ADXStakeOverview({
         <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
 
         <div className="flex w-full justify-between bg-third rounded-lg pt-2 pb-2 pl-4 pr-4 border border-gray-200">
-          <span className="flex items-center">Locked</span>
+          <h5 className="flex items-center">Locked</h5>
 
           <div>
             <span className="font-mono">{totalLockedStake ?? '-'}</span>

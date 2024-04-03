@@ -36,7 +36,7 @@ export default function TabSelect<T extends string | number>({
       {tabs.map(({ title, activeColor }, index) => (
         <div
           className={twMerge(
-            'text-sm text-center p-1 w-full cursor-pointer z-10 uppercase font-boldy',
+            'ext-center p-1 w-full cursor-pointer z-10',
             className,
             activeTab !== null && index === activeTab
               ? 'opacity-100'
@@ -61,7 +61,7 @@ export default function TabSelect<T extends string | number>({
               activeTab !== null && index === activeTab ? activeColor : '',
           }}
         >
-          {title}
+          <h4 className="text-center uppercase text-sm">{title}</h4>
         </div>
       ))}
     </div>

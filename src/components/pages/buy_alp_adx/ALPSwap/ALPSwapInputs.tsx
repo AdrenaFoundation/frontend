@@ -324,7 +324,7 @@ export default function ALPSwapInputs({
 
   return (
     <div className={twMerge('relative flex flex-col', className)}>
-      <div className="text-sm text-white mb-3">Pay</div>
+      <h5 className="text-white mb-3">Pay</h5>
 
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
@@ -355,7 +355,7 @@ export default function ALPSwapInputs({
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
 
-      <div className="text-sm text-white mt-6">Verify</div>
+      <h5 className="text-white mt-6">Verify</h5>
 
       <div
         className={twMerge(
