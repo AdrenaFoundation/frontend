@@ -273,7 +273,7 @@ export default function MyDashboard({
             className="md:max-w-[23.5em]"
           >
             <StyledSubContainer>
-              <div className="flex w-full items-center justify-between">
+              <div className="flex w-full items-start justify-between">
                 <div className="text-sm">Swap Count</div>
 
                 <span>{formatNumber(userProfile.swapCount, 1)}</span>

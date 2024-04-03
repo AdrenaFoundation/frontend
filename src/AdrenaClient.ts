@@ -111,6 +111,7 @@ export class AdrenaClient {
 
   public alpToken: Token = {
     mint: this.lpTokenMint,
+    color: '',
     name: 'The Pool Token',
     symbol: 'ALP',
     decimals: 6,
@@ -120,6 +121,7 @@ export class AdrenaClient {
 
   public adxToken: Token = {
     mint: this.lmTokenMint,
+    color: '',
     name: 'The Governance Token',
     symbol: 'ADX',
     decimals: 6,
@@ -423,6 +425,7 @@ export class AdrenaClient {
         const infos:
           | {
               name: string;
+              color: string;
               symbol: string;
               image: ImageRef;
               coingeckoId: string;
@@ -436,6 +439,7 @@ export class AdrenaClient {
 
         return {
           mint: custody.mint,
+          color: infos.color,
           name: infos.name,
           symbol: infos.symbol,
           decimals: infos.decimals,

@@ -5,14 +5,14 @@ import { twMerge } from 'tailwind-merge';
 
 import infoIcon from '../../../../public/images/Icons/info.png';
 
-const InfoAnnotation = ({
+const InfoAnnotationTitle = ({
   text,
   className,
   title,
 }: {
   text: ReactNode;
   className: string;
-  title?: string;
+  title: string;
 }) => (
   <Tippy
     content={
@@ -21,16 +21,16 @@ const InfoAnnotation = ({
     placement="auto"
   >
     <div className="h-auto w-auto flex items-center justify-center">
-      {title ? <h3 className="pr1 p-1">{title}</h3> : <></>}
+      <h3 className="pr-1">{title}</h3>
       <Image
         className={twMerge('opacity-50 hover:opacity-100', className)}
         src={infoIcon}
         alt="info icon"
-        width="10"
-        height="10"
+        width="16"
+        height="16"
       />
     </div>
   </Tippy>
 );
 
-export default InfoAnnotation;
+export default InfoAnnotationTitle;

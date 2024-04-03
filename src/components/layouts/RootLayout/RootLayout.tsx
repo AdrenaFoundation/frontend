@@ -23,7 +23,7 @@ const RootLayout = ({
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
     { name: 'My Dashboard', link: '/my_dashboard' },
-    { name: 'Global State', link: '/global_state' },
+    { name: 'Global', link: '/global' },
     { name: 'Stake', link: '/stake' },
     { name: 'Buy ALP/ADX', link: '/buy_alp_adx' },
     { name: 'Monitoring', link: '/monitoring' },
