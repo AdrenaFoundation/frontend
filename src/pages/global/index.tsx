@@ -106,31 +106,36 @@ export default function Global({ mainPool, custodies }: PageProps) {
     if (composition === null) return setAlpChartData(null);
 
     setAlpChartData({
-      labels: composition?.map((comp) => comp.token.symbol),
+      labels: composition.map((comp) => comp.token.symbol),
       datasets: [
         {
           label: 'ALP Pool Current Composition',
-          data: composition?.map((comp) => comp.currentRatio!) || [],
-          backgroundColor: composition?.map((comp) => comp.color!) || [],
-          borderColor: composition?.map((comp) => comp.color!) || [],
+          data: composition.map((comp) => comp.currentRatio),
+          backgroundColor: composition.map((comp) => comp.color!) || [],
+          borderColor: composition.map((comp) => comp.color!) || [],
           borderWidth: 1,
         },
       ],
     });
 
     setUtilizationChartData({
-      labels: composition?.map((comp) => comp.token.symbol),
+      labels: composition.map((comp) => comp.token.symbol),
       datasets: [
         {
           label: 'ALP Pool Utilization',
-          data: composition?.map((comp) => comp.utilization!) || [],
-          backgroundColor: composition?.map((comp) => comp.color!) || [],
-          borderColor: composition?.map((comp) => comp.color!) || [],
+          data: composition.map((comp) => comp.utilization),
+          backgroundColor: composition.map((comp) => comp.color!) || [],
+          borderColor: composition.map((comp) => comp.color!) || [],
           borderWidth: 1,
         },
       ],
     });
   }, [composition]);
+
+  const numberOpenedPositions =
+    mainPool?.nbOpenLongPositions ?? 0 + (mainPool?.nbOpenShortPositions ?? 0);
+  const totalPositionsValue =
+    mainPool?.oiLongUsd ?? 0 + (mainPool?.oiShortUsd ?? 0);
 
   return (
     <>
@@ -163,10 +168,8 @@ export default function Global({ mainPool, custodies }: PageProps) {
         {utilizationChartData ? (
           <UsageOverview
             utilizationChartData={utilizationChartData}
-            nbOpenLongPositions={mainPool?.nbOpenLongPositions ?? null}
-            oiLongUsd={mainPool?.oiLongUsd ?? null}
-            nbOpenShortPositions={mainPool?.nbOpenShortPositions ?? null}
-            oiShortUsd={mainPool?.oiShortUsd ?? null}
+            numberOpenedPositions={numberOpenedPositions}
+            totalPositionsValue={totalPositionsValue}
           />
         ) : null}
         {stakedAlpChartData || stakedAdxChartData ? (

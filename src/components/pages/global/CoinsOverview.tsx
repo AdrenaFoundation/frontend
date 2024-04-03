@@ -41,18 +41,13 @@ function createTooltip(
   label: string,
   raw: unknown,
   title: string,
-  alpTotalSupply: number | null,
-  adxTotalSupply: number | null,
-  alpPrice: number | null,
-  adxPrice: number | null,
+  totalSupply: number | null,
+  price: number | null,
 ) {
   const rawData = raw as number;
   const amountLabel = formatNumber(rawData, 2);
-  const percentageLabel = getPercentageLabel(rawData, title === 'ALP' ? alpTotalSupply: adxTotalSupply);
-  const priceLabel =
-    title === 'ALP'
-      ? getPriceLabel(rawData, alpPrice)
-      : getPercentageLabel(rawData, adxPrice);
+  const percentageLabel = getPercentageLabel(rawData, totalSupply);
+  const priceLabel = getPriceLabel(rawData, price);
 
   return [
     `${title} ${label} amount: ${amountLabel} (${percentageLabel})`,
@@ -63,10 +58,8 @@ function createTooltip(
 function generateBarChat(
   chartData: ChartData<'bar'>,
   title: string,
-  alpTotalSupply: number | null,
-  adxTotalSupply: number | null,
-  alpPrice: number | null,
-  adxPrice: number | null,
+  totalSupply: number | null,
+  price: number | null,
 ): JSX.Element {
   return (
     <Bar
@@ -95,15 +88,7 @@ function generateBarChat(
             callbacks: {
               //destructuration of the object to get the label and raw data values from TooltipItem
               label: ({ label, raw }) =>
-                createTooltip(
-                  label,
-                  raw,
-                  title,
-                  alpTotalSupply,
-                  adxTotalSupply,
-                  alpPrice,
-                  adxPrice,
-                ),
+                createTooltip(label, raw, title, totalSupply, price),
               //remove title from tooltip because it is not needed and looks
               title: () => '',
             },
@@ -125,7 +110,7 @@ function generateBarChat(
               callback: (value: string | number) =>
                 calculatePercentageFromTicks(
                   value as number,
-                  (title === 'ALP' ? alpTotalSupply : adxTotalSupply) as number,
+                  totalSupply as number,
                 ),
             },
             beginAtZero: true,
@@ -180,31 +165,13 @@ export default function CoinsOverview({
           />
         </div>
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
-          {alpChart ? (
-            <>
-              {generateBarChat(
-                alpChart,
-                'ALP',
-                alpTotalSupply,
-                null,
-                alpPrice,
-                null,
-              )}
-            </>
-          ) : null}
+          {alpChart
+            ? generateBarChat(alpChart, 'ALP', alpTotalSupply, alpPrice)
+            : null}
           <div className="h-[1px] bg-gray-200 w-full mt-4 mb-4" />
-          {adxChart ? (
-            <>
-              {generateBarChat(
-                adxChart,
-                'ADX',
-                null,
-                adxTotalSupply,
-                null,
-                adxPrice,
-              )}
-            </>
-          ) : null}
+          {adxChart
+            ? generateBarChat(adxChart, 'ADX', adxTotalSupply, adxPrice)
+            : null}
         </div>
       </div>
     </div>

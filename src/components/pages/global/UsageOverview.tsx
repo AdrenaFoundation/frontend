@@ -97,16 +97,12 @@ function generateUtilizationChart(utilizationChartData: ChartData<'bar'>) {
 
 export default function UsageOverview({
   utilizationChartData,
-  oiLongUsd,
-  oiShortUsd,
-  nbOpenLongPositions,
-  nbOpenShortPositions,
+  numberOpenedPositions,
+  totalPositionsValue,
 }: {
   utilizationChartData: ChartData<'bar'>;
-  oiLongUsd: number | null;
-  oiShortUsd: number | null;
-  nbOpenLongPositions: number | null;
-  nbOpenShortPositions: number | null;
+  numberOpenedPositions: number;
+  totalPositionsValue: number;
 }) {
   return (
     <div className="flex h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
@@ -138,18 +134,18 @@ export default function UsageOverview({
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Active Positions</div>
             <span>
-              {nbOpenLongPositions === null || nbOpenShortPositions === null
+              {numberOpenedPositions === 0
                 ? '-'
-                : formatNumber(nbOpenLongPositions + nbOpenShortPositions, 1)}
+                : formatNumber(numberOpenedPositions, 1)}
             </span>
           </div>
 
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Total Value</div>
             <span>
-              {oiLongUsd === null || oiShortUsd === null
+              {totalPositionsValue === 0
                 ? '-'
-                : formatPriceInfo(oiLongUsd + oiShortUsd)}
+                : formatPriceInfo(totalPositionsValue)}
             </span>
           </div>
         </div>
