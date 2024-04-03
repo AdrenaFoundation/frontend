@@ -111,6 +111,7 @@ export class AdrenaClient {
 
   public alpToken: Token = {
     mint: this.lpTokenMint,
+    color: '',
     name: 'The Pool Token',
     symbol: 'ALP',
     decimals: 6,
@@ -120,6 +121,7 @@ export class AdrenaClient {
 
   public adxToken: Token = {
     mint: this.lmTokenMint,
+    color: '',
     name: 'The Governance Token',
     symbol: 'ADX',
     decimals: 6,

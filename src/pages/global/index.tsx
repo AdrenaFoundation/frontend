@@ -62,8 +62,8 @@ export default function Global({ mainPool, custodies }: PageProps) {
         {
           label: 'ALP Pool stakes',
           data: alpStakeData?.value,
-          backgroundColor: ['rgb(54, 162, 235)', 'rgb(255, 205, 86)'],
-          borderColor: ['rgb(54, 162, 235)', 'rgb(255, 205, 86)'],
+          backgroundColor: ['#36A2EB', '#FFCC66'],
+          borderColor: ['#36A2EB', '#FFCC66'],
           borderWidth: 1,
         },
       ],
@@ -94,8 +94,8 @@ export default function Global({ mainPool, custodies }: PageProps) {
         {
           label: 'ADX Pool stakes',
           data: adxStakeData?.value,
-          backgroundColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
-          borderColor: ['rgb(255, 99, 132)', 'rgb(75, 192, 192)'],
+          backgroundColor: ['#ff6384', '#4BC0C0'],
+          borderColor: ['#ff6384', '#4BC0C0'],
           borderWidth: 1,
         },
       ],
