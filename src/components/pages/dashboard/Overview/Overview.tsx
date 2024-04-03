@@ -24,9 +24,7 @@ export default function Overview({
   return (
     <div className="flex flex-col md:flex-row gap-3 md:gap-5 border border-gray-200 bg-gray-300/85 backdrop-blur-md w-full rounded-lg">
       <div className="w-full p-3 px-5">
-        <h2 className="text-lg font-normal border-b border-b-gray-200 pb-3 mb-3">
-          Long Overview
-        </h2>
+        <h2 className="border-b border-b-gray-200 pb-3 mb-3">Long Overview</h2>
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">
@@ -51,9 +49,7 @@ export default function Overview({
       </div>
 
       <div className="w-full md:border-l md:border-l-gray-200 p-3 px-5">
-        <h2 className="text-lg font-normal border-b border-b-gray-200 pb-3 mb-3">
-          Short Overview
-        </h2>
+        <h2 className="border-b border-b-gray-200 pb-3 mb-3">Short Overview</h2>
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">
@@ -78,9 +74,7 @@ export default function Overview({
       </div>
 
       <div className="w-full md:border-l md:border-l-gray-200 p-3 px-5">
-        <h2 className="text-lg font-normal border-b border-b-gray-200 pb-3 mb-3">
-          Total Stats
-        </h2>
+        <h2 className="border-b border-b-gray-200 pb-3 mb-3">Total Stats</h2>
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-row justify-between">

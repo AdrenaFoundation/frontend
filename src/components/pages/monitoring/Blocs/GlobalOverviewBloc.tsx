@@ -1,10 +1,8 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { useSelector } from '@/store/store';
 import { Cortex, CustodyExtended, PoolExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import Bloc from '../Bloc';
 import InfoAnnotation from '../InfoAnnotation';
 import NumberInfo from '../NumberInfo';
 import Table from '../Table';
@@ -39,10 +37,7 @@ export default function GlobalOverviewBloc({
   }, 0);
 
   return (
-    <Bloc
-      title="Global Overview"
-      className={twMerge('min-w-[20em]', className)}
-    >
+    <StyledContainer title={<h1>Global Overview</h1>} className={className}>
       <Table
         rowTitleWidth="50%"
         data={[
@@ -190,6 +185,6 @@ export default function GlobalOverviewBloc({
           },
         ]}
       />
-    </Bloc>
+    </StyledContainer>
   );
 }

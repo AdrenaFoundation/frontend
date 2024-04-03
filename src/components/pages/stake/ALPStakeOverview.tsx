@@ -2,6 +2,8 @@ import Image from 'next/image';
 import React from 'react';
 
 import Button from '@/components/common/Button/Button';
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
 import { LockedStakeExtended, LockPeriod } from '@/types';
@@ -12,30 +14,35 @@ export default function ALPStakeOverview({
   handleLockedStakeRedeem,
   handleClickOnStakeMore,
   handleClickOnClaimRewards,
+  className,
 }: {
   totalLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnStakeMore: (initialLockPeriod: LockPeriod) => void;
   handleClickOnClaimRewards: () => void;
+  className?: string;
 }) {
   return (
-    <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-lg p-5">
-      <div className="flex items-center">
-        <Image
-          src={window.adrena.client.alpToken.image}
-          width={32}
-          height={32}
-          alt="ALP icon"
-        />
+    <StyledContainer
+      className={className}
+      title={
+        <div className="flex items-center">
+          <Image
+            src={window.adrena.client.alpToken.image}
+            width={32}
+            height={32}
+            alt="ALP icon"
+          />
 
-        <div className="flex flex-col justify-start ml-2">
-          <h2 className="">ALP</h2>
-          <span className="opacity-50">The Pool Token</span>
+          <div className="flex flex-col justify-start ml-2">
+            <h1>ALP</h1>
+            <span className="opacity-50">The Pool Token</span>
+          </div>
         </div>
-      </div>
-
-      <div className="border border-gray-200 bg-gray-300 p-6 rounded-lg">
+      }
+    >
+      <StyledSubContainer>
         <h3>Duration-Locked Staking</h3>
 
         <p className="mt-4 flex flex-col ">
@@ -116,7 +123,7 @@ export default function ALPStakeOverview({
             onClick={() => handleClickOnClaimRewards()}
           />
         </div>
-      </div>
-    </div>
+      </StyledSubContainer>
+    </StyledContainer>
   );
 }

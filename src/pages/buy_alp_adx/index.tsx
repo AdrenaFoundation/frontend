@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Loader from '@/components/Loader/Loader';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import OrcaLink from '@/components/pages/buy_alp_adx/OrcaLink/OrcaLink';
@@ -178,22 +179,24 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-evenly gap-x-4">
-      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-lg p-5">
-        <div className="flex items-center">
-          <Image
-            src={window.adrena.client.alpToken.image}
-            width={32}
-            height={32}
-            alt="ALP icon"
-          />
+    <div className="flex flex-col md:flex-row items-evenly gap-x-4 p-4">
+      <StyledContainer
+        title={
+          <div className="flex items-center">
+            <Image
+              src={window.adrena.client.alpToken.image}
+              width={32}
+              height={32}
+              alt="ALP icon"
+            />
 
-          <div className="flex flex-col justify-start ml-2">
-            <h2 className="">ALP</h2>
-            <span className="opacity-50">The Pool Token</span>
+            <div className="flex flex-col justify-start ml-2">
+              <h1>ALP</h1>
+              <span className="opacity-50">The Pool Token</span>
+            </div>
           </div>
-        </div>
-
+        }
+      >
         <ALPSwap
           className="lg:max-w-[30em] self-center"
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
@@ -214,25 +217,30 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
           collateralPrice={collateralPrice}
           feesAndAmounts={feesAndAmounts}
         />
-      </div>
+      </StyledContainer>
 
-      <div className="flex w-full h-auto flex-col border border-gray-200 rounded-lg relative">
-        <div className="flex items-center absolute z-20 top-4 left-4">
-          <Image
-            src={window.adrena.client.adxToken.image}
-            width={32}
-            height={32}
-            alt="ADX icon"
-          />
+      <StyledContainer
+        className="p-0"
+        titleClassName="p-0"
+        bodyClassName="h-full"
+        title={
+          <div className="flex items-center absolute z-20 top-4 left-4">
+            <Image
+              src={window.adrena.client.adxToken.image}
+              width={32}
+              height={32}
+              alt="ADX icon"
+            />
 
-          <div className="flex flex-col justify-start ml-2">
-            <h2 className="">ADX</h2>
-            <span className="opacity-50">The Governance Token</span>
+            <div className="flex flex-col justify-start ml-2">
+              <h1>ADX</h1>
+              <span className="opacity-50">The Governance Token</span>
+            </div>
           </div>
-        </div>
-
+        }
+      >
         <OrcaLink />
-      </div>
+      </StyledContainer>
     </div>
   );
 }

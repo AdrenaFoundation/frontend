@@ -1,9 +1,7 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { ALPIndexComposition } from '@/hooks/useALPIndexComposition';
 import { CustodyExtended, PoolExtended } from '@/types';
 
-import Bloc from '../Bloc';
 import PoolRatioChart from '../PoolRatioChart';
 import Score from '../Score';
 
@@ -34,10 +32,7 @@ export default function PoolBloc({
     }, 0);
 
   return (
-    <Bloc
-      title="Pool ratios"
-      className={twMerge('min-w-[20em] pb-4', className)}
-    >
+    <StyledContainer title={<h1>Pool ratios</h1>} className={className}>
       <div className="w-full flex h-[100px] items-center pl-4 pr-4 mt-4">
         <PoolRatioChart alpComposition={alpComposition} />
       </div>
@@ -45,6 +40,6 @@ export default function PoolBloc({
       <div className="text-lg ml-4 mt-4 font-special">Ratio Score</div>
 
       <Score className="ml-auto mr-auto" score={ratioScore} />
-    </Bloc>
+    </StyledContainer>
   );
 }

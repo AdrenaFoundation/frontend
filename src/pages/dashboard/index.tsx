@@ -1,7 +1,5 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { ChartData } from 'chart.js';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import ALPIndexComposition from '@/components/pages/dashboard/ALPIndexComposition/ALPIndexComposition';
@@ -19,8 +17,6 @@ import {
   formatPriceInfo,
   nativeToUi,
 } from '@/utils';
-
-import midImage from '../../../public/images/mid-monster.png';
 
 export default function Dashboard({ mainPool, custodies }: PageProps) {
   const alpTotalSupply = useALPTotalSupply();
@@ -191,7 +187,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
         }
       />
 
-      <h2 className="text-2xl mb-3 font-medium z-20">Dashboard</h2>
+      <h1 className="mb-3 z-20">Dashboard</h1>
 
       <div className="flex justify-between flex-col sm:flex-row z-20">
         <Overview
@@ -207,7 +203,7 @@ export default function Dashboard({ mainPool, custodies }: PageProps) {
         />
       </div>
 
-      <h2 className="text-2xl mt-7 font-medium z-20">Tokens</h2>
+      <h2 className="mt-7 z-20">Tokens</h2>
 
       <div className="flex w-full flex-col gap-7 lg:flex-row mt-4 z-20">
         <Details title="ALP" details={ALPDetailsArray} chart={ALPChartData} />

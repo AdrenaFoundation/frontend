@@ -71,22 +71,24 @@
 
   h1 {
     @apply text-4xl;
-    @apply font-medium;
+    @apply font-special;
+    text-transform: uppercase;
   }
 
   h2 {
     @apply text-2xl;
-    @apply font-medium;
+    @apply font-special;
+    text-transform: uppercase;
   }
 
   h3 {
     @apply text-xl;
-    @apply font-medium;
+    @apply font-special;
   }
 
   h4 {
     @apply text-lg;
-    @apply font-medium;
+    @apply font-special;
   }
 
   button:focus,

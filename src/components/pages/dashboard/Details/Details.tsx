@@ -37,7 +37,7 @@ export default function Details({
               {title === 'ADX' ? 'ADX' : 'ALP'}
             </p>
           </div>
-          <h2 className="text-lg font-medium">{title}</h2>
+          <h2>{title}</h2>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center">

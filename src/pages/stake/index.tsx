@@ -443,8 +443,9 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
         />
       </div>
 
-      <div className="flex flex-col lg:flex-row items-evenly gap-x-4">
+      <div className="flex flex-col lg:flex-row items-evenly gap-x-4 p-4 justify-center">
         <ADXStakeOverview
+          className="max-w-[40em]"
           totalLockedStake={adxDetails.totalLockedStake}
           totalLiquidStaked={adxDetails.totalLiquidStaked}
           lockedStakes={adxLockedStakes}
@@ -458,6 +459,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
         />
 
         <ALPStakeOverview
+          className="max-w-[40em]"
           totalLockedStake={alpDetails.totalLockedStake}
           lockedStakes={alpLockedStakes}
           handleLockedStakeRedeem={handleLockedStakeRedeem}
