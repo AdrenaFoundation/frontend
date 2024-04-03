@@ -1010,7 +1010,7 @@ export class AdrenaClient {
       }
 
       // short
-      return this.getUsdcToken().mint;
+      return this.getStableTokenByMint(mint).mint;
     })();
 
     const collateralCustody = this.findCustodyAddress(
@@ -1422,6 +1422,17 @@ export class AdrenaClient {
     return usdcToken;
   }
 
+  public getStableTokenByMint(mint: PublicKey): Token {
+    const isUsdt = mint.equals(this.getUsdcToken().mint);
+    const stableToken = this.getTokenBySymbol(isUsdt ? 'USDT' : 'USDC');
+
+    if (!stableToken) {
+      throw new Error(`Cannot find stable token: ${isUsdt ? 'USDT' : 'USDC'}`);
+    }
+
+    return stableToken;
+  }
+
   // say if given mint matches a stable token mint
   public isTokenStable(mint: PublicKey): boolean {
     return this.tokens.some(
@@ -1465,7 +1476,7 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const usdcToken = this.getUsdcToken();
+    const stableToken = this.getStableTokenByMint(mint);
 
     const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
       units: 1_200_000,
@@ -1496,13 +1507,13 @@ export class AdrenaClient {
         }),
       );
     } else {
-      const usdcAta = findATAAddressSync(owner, usdcToken.mint);
+      const usdcAta = findATAAddressSync(owner, stableToken.mint);
 
       if (!(await isATAInitialized(this.connection, usdcAta))) {
         preInstructions.push(
           this.createATAInstruction({
             ataAddress: usdcAta,
-            mint: usdcToken.mint,
+            mint: stableToken.mint,
             owner,
           }),
         );
@@ -1559,18 +1570,25 @@ export class AdrenaClient {
     exitFeeUsd: number;
     liquidationFeeUsd: number;
   }> {
-    const usdcToken = this.getUsdcToken();
+    const isUsdt = tokenB.mint.equals(this.getUsdcToken().mint);
+    const stableToken = this.getTokenBySymbol(isUsdt ? 'USDT' : 'USDC');
+
+    if (!stableToken) {
+      throw new Error(`Cannot find stable token: ${isUsdt ? 'USDT' : 'USDC'}`);
+    }
 
     const tokenAPrice = tokenPrices[tokenA.symbol];
     const tokenBPrice = tokenPrices[tokenB.symbol];
-    const usdcTokenPrice = tokenPrices[usdcToken.symbol];
+    const stableTokenPrice = tokenPrices[stableToken.symbol];
 
     if (!tokenAPrice)
       throw new Error(`needs find ${tokenA.symbol} price to calculate fees`);
     if (!tokenBPrice)
       throw new Error(`needs find ${tokenB.symbol} price to calculate fees`);
-    if (!usdcTokenPrice)
-      throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
+    if (!stableTokenPrice)
+      throw new Error(
+        `needs find ${stableToken.symbol} price to calculate fees`,
+      );
 
     console.log(
       'CALL GET INFO',
@@ -1615,8 +1633,8 @@ export class AdrenaClient {
             swapedTokenPrice: tokenBPrice,
           }
         : {
-            swapedTokenDecimals: usdcToken.decimals,
-            swapedTokenPrice: usdcTokenPrice,
+            swapedTokenDecimals: stableToken.decimals,
+            swapedTokenPrice: stableTokenPrice,
           };
 
     const swapFeeUsd =
@@ -2939,7 +2957,7 @@ export class AdrenaClient {
         return principalCustody.mint;
       }
 
-      return this.getUsdcToken().mint;
+      return this.getStableTokenByMint(mint).mint;
     })();
 
     const collateralCustody = this.getCustodyByMint(instructionCollateralMint);
