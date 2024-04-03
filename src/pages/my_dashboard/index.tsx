@@ -169,7 +169,7 @@ export default function MyDashboard({
       {userProfile ? (
         <div className="flex flex-wrap gap-4">
           <StyledContainer
-            title={<h3>Trading Stats</h3>}
+            title={<h2>Trading Stats</h2>}
             className="md:max-w-[23.5em]"
           >
             <StyledSubContainer>
@@ -269,7 +269,7 @@ export default function MyDashboard({
           </StyledContainer>
 
           <StyledContainer
-            title={<h3>Swap Stats</h3>}
+            title={<h2>Swap Stats</h2>}
             className="md:max-w-[23.5em]"
           >
             <StyledSubContainer>
@@ -299,14 +299,16 @@ export default function MyDashboard({
         </div>
       ) : null}
 
-      <StyledContainer title={<h3>My Opened Positions</h3>}>
-        <Positions
-          positions={positions}
-          triggerPositionsReload={triggerPositionsReload}
-        />
+      <StyledContainer title={<h2>My Opened Positions</h2>}>
+        <StyledSubContainer className="pt-0 pl-0 pb-0 pr-1">
+          <Positions
+            positions={positions}
+            triggerPositionsReload={triggerPositionsReload}
+          />
+        </StyledSubContainer>
       </StyledContainer>
 
-      <StyledContainer title={<h3>My Stakes</h3>}>
+      <StyledContainer title={<h2>My Stakes</h2>}>
         <StyledSubContainer>
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Liquid Staked ADX</div>
@@ -379,7 +381,7 @@ export default function MyDashboard({
 
       {userProfile === false ? (
         <StyledContainer
-          title={<h3>Create a profile and get trading and swap stats.</h3>}
+          title={<h2>Create a profile and get trading and swap stats.</h2>}
           className="items-center"
         >
           <div className="flex flex-col items-center justify-center">

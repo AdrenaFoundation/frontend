@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import Loader from '@/components/Loader/Loader';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import OrcaLink from '@/components/pages/buy_alp_adx/OrcaLink/OrcaLink';
@@ -197,26 +198,27 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
           </div>
         }
       >
-        <ALPSwap
-          className="lg:max-w-[30em] self-center"
-          triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
-          collateralInput={collateralInput}
-          setCollateralInput={setCollateralInput}
-          alpInput={alpInput}
-          setAlpInput={setAlpInput}
-          collateralToken={collateralToken}
-          allowedCollateralTokens={allowedCollateralTokens}
-          feesUsd={feesUsd}
-          setFeesUsd={setFeesUsd}
-          onCollateralTokenChange={onCollateralTokenChange}
-          selectedAction={selectedAction}
-          setSelectedAction={setSelectedAction}
-          setAlpPrice={setAlpPrice}
-          setCollateralPrice={setCollateralPrice}
-          alpPrice={alpPrice}
-          collateralPrice={collateralPrice}
-          feesAndAmounts={feesAndAmounts}
-        />
+        <StyledSubContainer className="lg:max-w-[30em] self-center">
+          <ALPSwap
+            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+            collateralInput={collateralInput}
+            setCollateralInput={setCollateralInput}
+            alpInput={alpInput}
+            setAlpInput={setAlpInput}
+            collateralToken={collateralToken}
+            allowedCollateralTokens={allowedCollateralTokens}
+            feesUsd={feesUsd}
+            setFeesUsd={setFeesUsd}
+            onCollateralTokenChange={onCollateralTokenChange}
+            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
+            setAlpPrice={setAlpPrice}
+            setCollateralPrice={setCollateralPrice}
+            alpPrice={alpPrice}
+            collateralPrice={collateralPrice}
+            feesAndAmounts={feesAndAmounts}
+          />
+        </StyledSubContainer>
       </StyledContainer>
 
       <StyledContainer
