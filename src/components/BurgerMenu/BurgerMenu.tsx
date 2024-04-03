@@ -11,7 +11,7 @@ import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import githubLogo from '../../../public/images/github.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
-import logo from '../../../public/images/logo.svg';
+import logo from '../../../public/images/logo.png';
 import twitterLogo from '../../../public/images/x.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
