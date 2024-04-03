@@ -1010,7 +1010,7 @@ export class AdrenaClient {
       }
 
       // short
-      return this.getStableTokenByMint(mint).mint;
+      return this.getStableTokenByMint(collateralMint).mint;
     })();
 
     const collateralCustody = this.findCustodyAddress(
@@ -1476,7 +1476,7 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const stableToken = this.getStableTokenByMint(mint);
+    const stableToken = this.getStableTokenByMint(collateralMint);
 
     const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
       units: 1_200_000,
@@ -1507,12 +1507,12 @@ export class AdrenaClient {
         }),
       );
     } else {
-      const usdcAta = findATAAddressSync(owner, stableToken.mint);
+      const stableTokenAta = findATAAddressSync(owner, stableToken.mint);
 
-      if (!(await isATAInitialized(this.connection, usdcAta))) {
+      if (!(await isATAInitialized(this.connection, stableTokenAta))) {
         preInstructions.push(
           this.createATAInstruction({
-            ataAddress: usdcAta,
+            ataAddress: stableTokenAta,
             mint: stableToken.mint,
             owner,
           }),
@@ -2958,7 +2958,7 @@ export class AdrenaClient {
         return principalCustody.mint;
       }
 
-      return this.getStableTokenByMint(mint).mint;
+      return this.getStableTokenByMint(collateralMint).mint;
     })();
 
     const collateralCustody = this.getCustodyByMint(instructionCollateralMint);
