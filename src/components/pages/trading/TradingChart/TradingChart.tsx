@@ -10,6 +10,7 @@ import {
   IChartingLibraryWidget,
   IChartWidgetApi,
   IPositionLineAdapter,
+  ISymbolValueFormatter,
   ResolutionString,
 } from '../../../../../public/charting_library/charting_library';
 import datafeed from './datafeed';
@@ -36,8 +37,7 @@ export default function TradingChart({ token }: { token: Token }) {
         // Force to any because we don't have access to the type of TradingView
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const widget = new window.TradingView.widget({
-          container_id: 'chart-area',
-          container: '',
+          container: 'chart-area',
           library_path: '/charting_library/',
           width: 100,
           height: 100,
@@ -45,11 +45,11 @@ export default function TradingChart({ token }: { token: Token }) {
           symbol: `Crypto.${token.symbol}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#001025',
+          toolbar_bg: '#0a0e13',
           datafeed,
           loading_screen: {
-            backgroundColor: '#001025',
-            foregroundColor: '#001025',
+            backgroundColor: '#101419',
+            foregroundColor: '#101419',
           },
           favorites: {
             intervals: [
@@ -66,7 +66,6 @@ export default function TradingChart({ token }: { token: Token }) {
           disabled_features: [
             'use_localstorage_for_settings',
             'header_symbol_search',
-            'header_layouts',
             'header_chart_type',
             'header_compare',
             'header_indicators',
@@ -92,7 +91,7 @@ export default function TradingChart({ token }: { token: Token }) {
           custom_css_url: '/tradingview.css',
           overrides: {
             // Adapt colors
-            'paneProperties.background': '#001025',
+            'paneProperties.background': '#0a0e13',
             'paneProperties.backgroundType': 'solid',
             // Hides the legend
             'paneProperties.legendProperties.showStudyArguments': false,
@@ -105,8 +104,17 @@ export default function TradingChart({ token }: { token: Token }) {
             // Last price line
             'mainSeriesProperties.priceLineColor': 'yellow',
           },
-          theme: 'Dark',
+          theme: 'dark',
           interval: 'D' as ResolutionString,
+          custom_formatters: {
+            priceFormatterFactory: (): ISymbolValueFormatter | null => {
+              return {
+                format: (price: number): string => {
+                  return `${formatPriceInfo(price)}`;
+                },
+              };
+            },
+          },
         });
 
         console.log('widget', widget);
@@ -209,7 +217,7 @@ export default function TradingChart({ token }: { token: Token }) {
                 } Liquidation Price`,
               )
               .setLineLength(3)
-              .setQuantity(formatPriceInfo(position.liquidationPrice))
+              .setQuantity(formatPriceInfo(position.liquidationPrice, false, 3))
               .setPrice(position.liquidationPrice)
               .setLineColor(position.side === 'long' ? '#656565' : '#656565')
               .setQuantityBackgroundColor('#656565a0')
@@ -227,9 +235,9 @@ export default function TradingChart({ token }: { token: Token }) {
   }, [positions, token.symbol, tokenPrice, widget]);
 
   return (
-    <div className="flex flex-col w-full overflow-hidden bg-main">
-      <div id="chart-area" className="h-full" />
-      <div className="copyright text-xs bg-main flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
+    <div className="flex flex-col w-full mb-5 border border-gray-200 rounded-2xl rounded-t-none overflow-hidden bg-gray-200/85 backdrop-blur-md">
+      <div id="chart-area" className="h-full rounded-b-lg" />
+      <div className="copyright text-[0.6em] bg-[#0a0e13] flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
         The chart is provided by TradingView, an advanced platform that provides
         unparalleled access to live data e.g.
         <Link

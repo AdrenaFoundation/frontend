@@ -39,8 +39,8 @@ export default function TabSelect<T extends string | number>({
             'ext-center p-1 w-full cursor-pointer z-10',
             className,
             activeTab !== null && index === activeTab
-              ? 'opacity-100'
-              : 'opacity-50',
+              ? `opacity-100 border-b-[0.3em] ${activeColor}`
+              : 'opacity-50 border-b-[1px]',
           )}
           ref={refs[index]}
           key={title}
@@ -48,18 +48,20 @@ export default function TabSelect<T extends string | number>({
             onClick(title, index);
             setActiveTab(index);
           }}
-          style={{
-            color:
-              (activeTab !== null && index === activeTab
-                ? activeColor
-                : 'white') ?? 'white',
-            borderBottom:
-              activeTab !== null && index === activeTab
-                ? '0.3em solid'
-                : '1px solid',
-            borderBottomColor:
-              activeTab !== null && index === activeTab ? activeColor : '',
-          }}
+          style={
+            {
+              // color:
+              //   (activeTab !== null && index === activeTab
+              //     ? activeColor
+              //     : 'white') ?? 'white',
+              // borderBottom:
+              //   activeTab !== null && index === activeTab
+              //     ? '0.3em solid'
+              //     : '1px solid',
+              // borderBottomColor:
+              //   activeTab !== null && index === activeTab ? activeColor : '',
+            }
+          }
         >
           <h4 className="text-center uppercase text-sm">{title}</h4>
         </div>
