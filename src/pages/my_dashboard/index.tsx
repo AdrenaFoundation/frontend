@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -10,6 +11,7 @@ import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSub
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import Positions from '@/components/pages/trading/Positions/Positions';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { LockedStakeExtended, PageProps } from '@/types';
@@ -167,6 +169,30 @@ export default function MyDashboard({
 
   return (
     <div className="flex flex-col gap-4 p-4 w-full max-w-[50em] self-center">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
+        <RiveAnimation
+          animation="btm-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
+        />
+
+        <RiveAnimation
+          animation="mid-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
+        />
+      </div>
+
       {userProfile ? (
         <div className="flex flex-wrap gap-4">
           <StyledContainer

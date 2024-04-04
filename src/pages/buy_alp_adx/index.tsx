@@ -1,3 +1,4 @@
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -6,6 +7,7 @@ import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSub
 import Loader from '@/components/Loader/Loader';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import OrcaLink from '@/components/pages/buy_alp_adx/OrcaLink/OrcaLink';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
@@ -180,8 +182,33 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-evenly gap-x-4 p-4">
+    <div className="flex flex-col md:flex-row items-evenly justify-center gap-x-4 p-4">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
+        <RiveAnimation
+          animation="fred-bg"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 left-0 h-[150vh] w-[220vh] scale-x-[-1]"
+        />
+
+        <RiveAnimation
+          animation="fred-bg"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 right-[-8em] h-[190vh] w-[180vh] scale-y-[-1]"
+        />
+      </div>
+
       <StyledContainer
+        className="max-w-[35em]"
         title={
           <div className="flex items-center">
             <Image
@@ -198,7 +225,7 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
           </div>
         }
       >
-        <StyledSubContainer className="lg:max-w-[30em] self-center">
+        <StyledSubContainer className="lg:max-w-[25em] self-center">
           <ALPSwap
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             collateralInput={collateralInput}
@@ -222,7 +249,7 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
       </StyledContainer>
 
       <StyledContainer
-        className="p-0"
+        className="p-0 max-w-[35em]"
         titleClassName="p-0"
         bodyClassName="h-full"
         title={
