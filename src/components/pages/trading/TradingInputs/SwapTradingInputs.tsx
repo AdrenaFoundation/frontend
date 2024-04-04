@@ -365,7 +365,7 @@ export default function SwapTradingInputs({
       </div>
 
       {/* Input B */}
-      <h5 className="flex items-center mt-3 ml-4">
+      <h5 className="flex items-center mt-2 ml-4">
         Receive
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."

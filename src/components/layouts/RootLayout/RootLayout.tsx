@@ -4,7 +4,6 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { twMerge } from 'tailwind-merge';
 
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -57,14 +56,14 @@ const RootLayout = ({
       )}
 
       <div className="w-full grow flex justify-center">
-        <div className={twMerge('w-full flex flex-col pb-[3em] sm:pb-0')}>
+        <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
           {children}
         </div>
       </div>
 
       <ToastContainer newestOnTop />
 
-      <Footer />
+      <Footer className="z-10" />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

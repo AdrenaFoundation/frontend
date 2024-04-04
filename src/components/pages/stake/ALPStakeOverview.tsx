@@ -73,7 +73,7 @@ export default function ALPStakeOverview({
 
         {totalLockedStake !== null && totalLockedStake > 0 ? (
           <>
-            <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
+            <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
             <h5>
               My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked

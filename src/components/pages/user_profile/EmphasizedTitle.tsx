@@ -12,11 +12,11 @@ export default function EmphasizedTitle({
     <div
       className={twMerge('flex w-full justify-center items-center', className)}
     >
-      <div className="flex h-[1px] grow bg-gray-300"></div>
+      <div className="flex h-[1px] grow bg-bcolor"></div>
       <div className="font-special text-sm text-txtfade opacity-70">
         {title}
       </div>
-      <div className="flex h-[1px] grow bg-gray-300"></div>
+      <div className="flex h-[1px] grow bg-bcolor"></div>
     </div>
   );
 }

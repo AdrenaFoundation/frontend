@@ -39,9 +39,9 @@ function Button({
     primary:
       'bg-highlight text-main opacity-90 hover:opacity-100 font-medium rounded-full',
     secondary: 'bg-secondary opacity-90 hover:opacity-100 rounded-full',
-    danger: 'bg-red-500 hover:bg-red-700 font-medium rounded-full',
+    danger: 'bg-red hover:bg-red font-medium rounded-full',
     text: 'opacity-50 hover:opacity-100 rounded-full',
-    outline: 'border border-gray-200 hover:bg-gray-200 rounded-full',
+    outline: 'border hover:bg-bcolor rounded-full',
   };
 
   const sizes = {

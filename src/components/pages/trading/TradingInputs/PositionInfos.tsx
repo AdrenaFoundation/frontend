@@ -1,6 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { twMerge } from 'tailwind-merge';
 
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
@@ -52,8 +53,8 @@ export default function PositionInfos({
   const arrowElementDown = getArrowElement('down');
 
   return (
-    <div
-      className={twMerge('flex flex-col bg-transparent relative', className)}
+    <StyledSubSubContainer
+      className={twMerge('flex-col pr-1 pt-0 pb-0', className)}
     >
       <div className="flex flex-col pr-5">
         <div className="flex flex-col pt-2 pb-2">
@@ -99,7 +100,7 @@ export default function PositionInfos({
                 })()}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -146,7 +147,7 @@ export default function PositionInfos({
                 })()}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -193,7 +194,7 @@ export default function PositionInfos({
                 })()}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -244,7 +245,7 @@ export default function PositionInfos({
                 })()}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -285,7 +286,7 @@ export default function PositionInfos({
                           </p>
                         </li>
 
-                        <div className="w-full h-[1px] bg-gray-300" />
+                        <div className="w-full h-[1px] bg-bcolor" />
 
                         <li className="flex flex-row gap-2 justify-between">
                           <p className="text-sm text-txtfade">Total fees:</p>
@@ -310,7 +311,7 @@ export default function PositionInfos({
                 )}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -357,7 +358,7 @@ export default function PositionInfos({
                 })()}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -406,7 +407,7 @@ export default function PositionInfos({
                 })()}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -426,7 +427,7 @@ export default function PositionInfos({
                   : '-'}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
 
@@ -448,11 +449,11 @@ export default function PositionInfos({
                   : '-'}
               </span>
             ) : (
-              <div className="w-[45%] h-[18px] bg-gray-300 rounded-xl" />
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
           </div>
         </div>
       </div>
-    </div>
+    </StyledSubSubContainer>
   );
 }

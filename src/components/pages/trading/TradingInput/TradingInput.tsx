@@ -10,6 +10,7 @@ import Select from '../../../common/Select/Select';
 export default function TradingInput({
   className,
   inputClassName,
+  maxClassName,
   disabled,
   loading,
   value,
@@ -34,6 +35,7 @@ export default function TradingInput({
   tokenList: Token[];
   prefix?: ReactNode;
   placeholder?: string;
+  maxClassName?: string;
   onTokenSelect: (t: Token) => void;
   onChange: (v: number | null) => void;
   onMaxButtonClick?: () => void;
@@ -91,7 +93,7 @@ export default function TradingInput({
               <Button
                 title="MAX"
                 variant="primary"
-                className="mx-2 text-sm h-6"
+                className={twMerge('mx-2 text-sm h-6', maxClassName)}
                 onClick={() => onMaxButtonClick?.()}
               />
             ) : null}

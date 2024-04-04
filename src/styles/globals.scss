@@ -7,36 +7,13 @@
   --color-light: #f5f5f5;
   --color-dark: #080a0d;
 
-  --color-gray-200: #192128;
-  --color-gray-300: #101419;
-  --color-gray-300-85: #101419d9;
-  --color-gray-400: #222a31;
-  --color-gray-500: #3d4b5b;
+  --color-gray-200: #1a2431;
 
-  --color-blue-200: #101241;
-  --color-blue-300: #191c7b;
-  --color-blue-400: #2126b4;
-  --color-blue-500: #2a30ee;
+  --color-blue-500: #501fda;
 
-  --color-red-200: #361212;
-  --color-red-300: #651d1d;
-  --color-red-400: #932727;
-  --color-red-500: #c13232;
+  --color-red-500: #c9243a;
 
-  --color-green-200: #04a777;
-  --color-green-300: #26552b;
-  --color-green-400: #367c3c;
-  --color-green-500: #45a34e;
-
-  --color-orange-200: #3f2612;
-  --color-orange-300: #76441c;
-  --color-orange-400: #ad6326;
-  --color-orange-500: #e48130;
-
-  --color-pink-200: #3d1325;
-  --color-pink-300: #721f43;
-  --color-pink-400: #a82a60;
-  --color-pink-500: #dd367e;
+  --color-green-500: #07956b;
 
   --bezier-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --bezier-smooth: cubic-bezier(0.2, 0.8, 0.4, 1);
@@ -129,7 +106,7 @@ body,
   width: 100%;
   min-width: 375px;
   min-height: 100vh;
-  background-color: #001531;
+  background-color: #050f19;
   font-family: 'Inter', sans-serif;
 }
 
@@ -193,7 +170,7 @@ input[type='radio'] {
   font: inherit;
   width: 16px;
   height: 16px;
-  border: 1px solid var(--color-gray-400);
+  border: 1px solid var(--color-gray-200);
   border-radius: 50%;
   transition: 0.3s var(--bezier-spring);
   box-shadow: 0 0 0 0px var(--color-dark) inset;

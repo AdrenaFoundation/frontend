@@ -1,3 +1,4 @@
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -8,7 +9,7 @@ import Positions from '@/components/pages/trading/Positions/Positions';
 import { TradeComp } from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
-import { useDispatch } from '@/store/store';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps, PositionExtended, Token } from '@/types';
 
 export type Action = 'long' | 'short' | 'swap';
@@ -162,41 +163,67 @@ export default function Trade({
   }, [activePositionModal]);
 
   return (
-    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full">
-      <div className="flex flex-col w-full h-full">
-        {/* Trading chart header */}
-        {tokenB ? (
-          <TradingChartHeader
-            tokenList={
-              selectedAction === 'short' || selectedAction === 'long'
-                ? window.adrena.client.tokens.filter((t) => !t.isStable)
-                : window.adrena.client.tokens
-            }
-            selected={tokenB}
-            onChange={(t: Token) => {
-              setTokenB(t);
-            }}
-          />
-        ) : null}
+    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-50">
+        <RiveAnimation
+          animation="btm-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
+        />
 
-        <div className="h-[90em] shrink-1 grow flex max-w-full max-h-[30em]">
-          {/* Display trading chart for appropriate token */}
-          {tokenA && tokenB ? (
-            <>
-              <TradingChart
-                token={
-                  selectedAction === 'short' || selectedAction === 'long'
-                    ? tokenB
-                    : tokenA.isStable
-                    ? tokenB
-                    : tokenA
-                }
-              />
-            </>
+        <RiveAnimation
+          animation="mid-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
+        />
+      </div>
+
+      <div className="flex flex-col w-full h-full">
+        <div className="flex flex-col w-full h-full border rounded-lg overflow-hidden">
+          {/* Trading chart header */}
+          {tokenB ? (
+            <TradingChartHeader
+              tokenList={
+                selectedAction === 'short' || selectedAction === 'long'
+                  ? window.adrena.client.tokens.filter((t) => !t.isStable)
+                  : window.adrena.client.tokens
+              }
+              selected={tokenB}
+              onChange={(t: Token) => {
+                setTokenB(t);
+              }}
+            />
           ) : null}
+
+          <div className="min-h-[20em] grow shrink-1 flex max-w-full">
+            {/* Display trading chart for appropriate token */}
+            {tokenA && tokenB ? (
+              <>
+                <TradingChart
+                  token={
+                    selectedAction === 'short' || selectedAction === 'long'
+                      ? tokenB
+                      : tokenA.isStable
+                      ? tokenB
+                      : tokenA
+                  }
+                />
+              </>
+            ) : null}
+          </div>
         </div>
 
-        <div className="h-full z-30 overflow-hidden bg-main pr-2">
+        <div className="min-h-[15em] z-30 overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
           <Positions
             positions={positions}
             triggerPositionsReload={triggerPositionsReload}
@@ -213,20 +240,20 @@ export default function Trade({
           setTokenA={setTokenA}
           setTokenB={setTokenB}
           openedPosition={openedPosition}
-          className="hidden sm:flex"
+          className="hidden sm:flex ml-4"
           wallet={wallet}
           triggerPositionsReload={triggerPositionsReload}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
         />
 
-        <div className="fixed sm:hidden bottom-0 w-full bg-gray-300 backdrop-blur-sm p-5 z-30">
+        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
           <ul className="flex flex-row gap-3 justify-between">
             <li>
               <Button
                 title="Long"
                 variant="outline"
                 size="lg"
-                className="border-green-500 text-green-500 bg-green-700/10"
+                className="border-green text-green bg-green/10"
                 onClick={() => {
                   setActivePositionModal('long');
                   setSelectedAction('long');
@@ -238,7 +265,7 @@ export default function Trade({
                 title="Short"
                 variant="outline"
                 size="lg"
-                className="border-red-500 text-red-500 bg-red-700/10"
+                className="border-red text-red bg-red/10"
                 onClick={() => {
                   setActivePositionModal('short');
                   setSelectedAction('short');

@@ -14,9 +14,9 @@ export default function SwapStatsBloc({
   return (
     <div className={twMerge('flex flex-col', className)}>
       <div className="flex w-full justify-center items-center">
-        <div className="flex h-[1px] grow bg-gray-300"></div>
+        <div className="flex h-[1px] grow bg-bcolor"></div>
         <div className="font-special text-2xl pl-6 pr-6">Swap Stats</div>
-        <div className="flex h-[1px] grow bg-gray-300"></div>
+        <div className="flex h-[1px] grow bg-bcolor"></div>
       </div>
 
       <div className="flex w-full grow justify-around items-center flex-wrap max-w-[30em] self-center">

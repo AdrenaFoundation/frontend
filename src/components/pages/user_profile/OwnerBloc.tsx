@@ -209,7 +209,7 @@ export default function OwnerBloc({
 
           {canDeleteProfile ? (
             <Button
-              className="opacity-50 hover:opacity-100 mt-8 text-red-500 border-red-500"
+              className="opacity-50 hover:opacity-100 mt-8 text-red border-red"
               title="Delete Profile"
               alt="delete icon"
               variant="outline"

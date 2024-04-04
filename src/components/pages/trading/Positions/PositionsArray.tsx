@@ -72,14 +72,14 @@ export default function PositionsArray({
     );
   }
 
-  const columnHeadStyle = 'text-sm text-center opacity-50 font-boldy p-3 ';
+  const columnHeadStyle = 'text-sm text-center opacity-50 font-boldy p-3';
   const columnStyle = 'text-sm text-center h-10';
 
   return (
     <table className="w-full">
       {/* Header */}
 
-      <thead className="">
+      <thead className="border-b border-bcolor">
         <tr>
           <th className={twMerge(columnHeadStyle, 'w-[6.5em]')}>Position</th>
           <th className={columnHeadStyle}>Leverage</th>
@@ -106,7 +106,7 @@ export default function PositionsArray({
           <tr
             key={position.pubkey.toBase58()}
             className={twMerge(
-              i !== positions.length - 1 && 'border-b border-b-gray-200',
+              i !== positions.length - 1 && 'border-b border-bcolor',
             )}
           >
             <td
@@ -115,25 +115,25 @@ export default function PositionsArray({
                 columnStyle,
               )}
             >
-              <div className="flex flex-row h-full items-center w-[6.5em] justify-center relative overflow-hidden">
+              <div className="flex flex-row h-full items-center w-[8em] justify-center relative overflow-hidden pl-2">
                 <Image
-                  className="opacity-[10%] absolute left-[-2.5em] grayscale"
-                  height={80}
-                  width={80}
+                  className=""
+                  height={14}
+                  width={14}
                   src={position.token.image}
                   alt={`${position.token.symbol} logo`}
                 />
 
-                <div className="grow flex h-full items-center justify-start pl-3">
-                  <span className="font-mono">{position.token.symbol}</span>
-                  <div
+                <div className="grow flex h-full items-center justify-start pl-1 mt-[0.2em]">
+                  <span className="font-boldy">{position.token.symbol}</span>
+                  <h5
                     className={twMerge(
-                      'text-sm font-mono capitalize font-bold ml-1',
-                      `text-${position.side === 'long' ? 'green' : 'red'}-500`,
+                      'text-sm uppercase ml-1',
+                      `text-${position.side === 'long' ? 'green' : 'red'}`,
                     )}
                   >
                     {position.side}
-                  </div>
+                  </h5>
                 </div>
               </div>
             </td>
@@ -147,68 +147,13 @@ export default function PositionsArray({
                 <span
                   className={`text-${
                     position.pnl > 0 ? 'green' : 'red'
-                  }-500 font-mono`}
+                  } font-mono`}
                 >
                   {formatPriceInfo(position.pnl)}
                 </span>
               ) : (
                 '-'
               )}
-              {/* <Tippy
-                content={
-                  <ul className="flex flex-col gap-2">
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">
-                        initial collateral:
-                      </p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">PnL:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Borrow fee:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Open fee:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Close fee:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <div className="w-full h-[1px] bg-gray-300" />
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Pnl after fees:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-                  </ul>
-                }
-                placement="bottom"
-                disabled={true}
-              >
-                <div className="tooltip-target">
-                  {position.pnl ? (
-                    <span
-                      className={`text-${
-                        position.pnl > 0 ? 'green' : 'red'
-                      }-500 font-mono`}
-                    >
-                      {formatPriceInfo(position.pnl)}
-                    </span>
-                  ) : (
-                    '-'
-                  )}
-                </div>
-              </Tippy> */}
             </td>
 
             <td className={twMerge(columnStyle, 'font-mono')}>
@@ -248,7 +193,9 @@ export default function PositionsArray({
                   triggerClosePosition(position);
                 }}
               />
+
               <span>/</span>
+
               <Button
                 className="text-xs p-0"
                 title="edit"

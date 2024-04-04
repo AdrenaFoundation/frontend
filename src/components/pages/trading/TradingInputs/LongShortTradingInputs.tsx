@@ -371,6 +371,9 @@ export default function LongShortTradingInputs({
           <TradingInput
             className="text-sm border-b"
             inputClassName="border-0"
+            maxClassName={
+              side === 'short' ? 'bg-red text-white' : 'bg-green text-white'
+            }
             value={inputA}
             subText={
               priceA ? (
@@ -428,7 +431,7 @@ export default function LongShortTradingInputs({
           />
         </h5>
 
-        <div className="flex items-center h-16 pr-5 bg-main mt-2 border-b">
+        <div className="flex items-center h-16 pr-5 bg-third mt-2 border rounded-lg">
           <Select
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"
@@ -518,7 +521,7 @@ export default function LongShortTradingInputs({
                 : null}
             </>
           ) : (
-            <div className="w-full h-[40px] bg-gray-300 rounded-xl" />
+            <div className="w-full h-[40px] bg-bcolor rounded-xl" />
           )}
         </div>
 
@@ -544,7 +547,7 @@ export default function LongShortTradingInputs({
         </h5>
 
         <PositionInfos
-          className="mt-3 w-full h-auto mb-4 overflow-hidden"
+          className="mt-2 w-full h-auto mb-4 overflow-hidden"
           positionInfos={positionInfos}
           tokenB={tokenB}
           leverage={leverage}
@@ -589,7 +592,10 @@ export default function LongShortTradingInputs({
 
       {/* Button to execute action */}
       <Button
-        className={twMerge('w-full justify-center mt-auto')}
+        className={twMerge(
+          'w-full justify-center mt-auto',
+          side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+        )}
         size="lg"
         title={buttonTitle}
         disabled={errorMessage != null}

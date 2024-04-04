@@ -7,6 +7,7 @@ import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -172,7 +173,7 @@ export default function MyDashboard({
             title={<h2>Trading Stats</h2>}
             className="md:max-w-[23.5em]"
           >
-            <StyledSubContainer>
+            <StyledSubSubContainer className="flex-col">
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Opened Position Count</div>
 
@@ -265,14 +266,14 @@ export default function MyDashboard({
                   )}
                 </span>
               </div>
-            </StyledSubContainer>
+            </StyledSubSubContainer>
           </StyledContainer>
 
           <StyledContainer
             title={<h2>Swap Stats</h2>}
             className="md:max-w-[23.5em]"
           >
-            <StyledSubContainer>
+            <StyledSubSubContainer className="flex-col">
               <div className="flex w-full items-start justify-between">
                 <div className="text-sm">Swap Count</div>
 
@@ -294,13 +295,13 @@ export default function MyDashboard({
                   {formatPriceInfo(userProfile.swapFeePaidUsd, false, 3)}
                 </span>
               </div>
-            </StyledSubContainer>
+            </StyledSubSubContainer>
           </StyledContainer>
         </div>
       ) : null}
 
       <StyledContainer title={<h2>My Opened Positions</h2>}>
-        <StyledSubContainer className="pt-0 pl-0 pb-0 pr-1">
+        <StyledSubContainer className="pt-0 pl-0 pb-0 pr-1 bg-third">
           <Positions
             positions={positions}
             triggerPositionsReload={triggerPositionsReload}
@@ -309,7 +310,7 @@ export default function MyDashboard({
       </StyledContainer>
 
       <StyledContainer title={<h2>My Stakes</h2>}>
-        <StyledSubContainer>
+        <StyledSubSubContainer className="flex-col">
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Liquid Staked ADX</div>
 
@@ -351,7 +352,7 @@ export default function MyDashboard({
               ADX
             </span>
           </div>
-        </StyledSubContainer>
+        </StyledSubSubContainer>
 
         {lockedStakes?.length ? (
           <div className="mt-6">
@@ -393,7 +394,7 @@ export default function MyDashboard({
               value={nickname ?? ''}
               onChange={setNickname}
               placeholder="The Great Trader"
-              className="mt-4 text-center w-[20em] p-4 bg-fourth border border-gray-200 rounded-xl"
+              className="mt-4 text-center w-[20em] p-4 bg-third border rounded-xl"
               inputFontSize="1.1em"
               maxLength={24}
             />

@@ -37,16 +37,16 @@ export const TradeComp = ({
   return (
     <div
       className={twMerge(
-        'sm:flex w-full lg:w-[30em] min-w-[350px] flex-col sm:flex-row lg:flex-col mt-4 lg:mt-0 border-l h-full overflow-hidden',
+        'sm:flex w-full lg:w-[30em] min-w-[350px] bg-main/90 flex-col sm:flex-row lg:flex-col mt-4 lg:mt-0 border h-full overflow-hidden rounded-lg',
         className,
       )}
     >
-      <div className="w-full bg-main flex flex-col h-full p-3">
+      <div className="w-full  flex flex-col h-full p-3">
         <TabSelect
           selected={selectedAction}
           tabs={[
-            { title: 'long', activeColor: 'border-b-green-500 text-green-500' },
-            { title: 'short', activeColor: 'border-b-red-500 text-red-500' },
+            { title: 'long', activeColor: 'border-b-green text-green' },
+            { title: 'short', activeColor: 'border-b-red text-red' },
             { title: 'swap' },
           ]}
           onClick={(title) => {

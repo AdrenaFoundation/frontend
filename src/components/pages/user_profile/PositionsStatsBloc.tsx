@@ -15,9 +15,9 @@ export default function PositionsStatsBloc({
   return (
     <div className={twMerge('flex flex-col pr-4', className)}>
       <div className="flex w-full justify-center items-center">
-        <div className="flex h-[1px] grow bg-gray-300"></div>
+        <div className="flex h-[1px] grow bg-bcolor"></div>
         <div className="font-special text-2xl pl-6 pr-6">Positions Stats</div>
-        <div className="flex h-[1px] grow bg-gray-300"></div>
+        <div className="flex h-[1px] grow bg-bcolor"></div>
       </div>
 
       <div className="flex w-full grow justify-around items-center flex-wrap self-center">

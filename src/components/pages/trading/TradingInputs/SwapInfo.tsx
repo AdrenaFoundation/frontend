@@ -1,6 +1,7 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { SwapAmountAndFees, Token } from '@/types';
@@ -25,7 +26,7 @@ export default function SwapInfo({
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   return (
-    <div className={twMerge('flex flex-col pr-4', className)}>
+    <StyledSubSubContainer className={twMerge('flex-col pr-4', className)}>
       <div className="w-full flex justify-between items-start">
         <div className="flex">
           <InfoAnnotation
@@ -121,6 +122,6 @@ export default function SwapInfo({
           </span>
         </div>
       </div>
-    </div>
+    </StyledSubSubContainer>
   );
 }
