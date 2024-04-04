@@ -45,11 +45,11 @@ export default function TradingChart({ token }: { token: Token }) {
           symbol: `Crypto.${token.symbol}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#0a0e13',
+          toolbar_bg: '#000f23',
           datafeed,
           loading_screen: {
-            backgroundColor: '#101419',
-            foregroundColor: '#101419',
+            backgroundColor: '#000f23',
+            foregroundColor: '#000f23',
           },
           favorites: {
             intervals: [
@@ -91,7 +91,7 @@ export default function TradingChart({ token }: { token: Token }) {
           custom_css_url: '/tradingview.css',
           overrides: {
             // Adapt colors
-            'paneProperties.background': '#0a0e13',
+            'paneProperties.background': '#000f23',
             'paneProperties.backgroundType': 'solid',
             // Hides the legend
             'paneProperties.legendProperties.showStudyArguments': false,
@@ -219,11 +219,11 @@ export default function TradingChart({ token }: { token: Token }) {
               .setLineLength(3)
               .setQuantity(formatPriceInfo(position.liquidationPrice, false, 3))
               .setPrice(position.liquidationPrice)
-              .setLineColor(position.side === 'long' ? '#656565' : '#656565')
-              .setQuantityBackgroundColor('#656565a0')
+              .setLineColor(position.side === 'long' ? '#000f23' : '#000f23')
+              .setQuantityBackgroundColor('#000f23a0')
               .setQuantityBorderColor('#939393')
               .setBodyBorderColor('#939393')
-              .setBodyBackgroundColor('#656565a0')
+              .setBodyBackgroundColor('#000f23a0')
               .setBodyTextColor('#ffffff'),
           );
       });
@@ -235,9 +235,9 @@ export default function TradingChart({ token }: { token: Token }) {
   }, [positions, token.symbol, tokenPrice, widget]);
 
   return (
-    <div className="flex flex-col w-full mb-5 border border-gray-200 rounded-2xl rounded-t-none overflow-hidden bg-gray-200/85 backdrop-blur-md">
+    <div className="flex flex-col w-full overflow-hidden bg-gray-200/85 backdrop-blur-md">
       <div id="chart-area" className="h-full rounded-b-lg" />
-      <div className="copyright text-[0.6em] bg-[#0a0e13] flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
+      <div className="copyright text-[0.6em] bg-[#000f23] flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
         The chart is provided by TradingView, an advanced platform that provides
         unparalleled access to live data e.g.
         <Link
