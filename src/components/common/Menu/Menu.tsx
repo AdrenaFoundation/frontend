@@ -11,6 +11,7 @@ export default function Menu({
   children,
   withBorder,
   disabled,
+  disableOnClickInside = false,
 }: {
   trigger: ReactNode;
   className?: string;
@@ -18,6 +19,7 @@ export default function Menu({
   children: ReactNode;
   withBorder?: boolean;
   disabled?: boolean;
+  disableOnClickInside?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,12 +36,15 @@ export default function Menu({
     visible: { opacity: 1 },
   };
 
+  const toggleMenu = () => {
+    if (disabled) return;
+
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <AnimatePresence>
-      <div
-        className={twMerge('relative', className)}
-        onClick={() => !disabled && setIsMenuOpen(!isMenuOpen)}
-      >
+      <div className={twMerge('relative', className)}>
         <div
           className={twMerge(
             'flex h-full w-full border border-transparent',
@@ -47,6 +52,7 @@ export default function Menu({
               ? 'border-zinc-700 shadow-zinc-800 shadow-lg'
               : '',
           )}
+          onClick={() => toggleMenu()}
         >
           {trigger}
         </div>
@@ -54,6 +60,7 @@ export default function Menu({
         {isMenuOpen && (
           <motion.div
             ref={ref}
+            onClick={() => !disableOnClickInside && toggleMenu()}
             initial="hidden"
             animate="visible"
             variants={variants}

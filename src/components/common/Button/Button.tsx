@@ -15,6 +15,7 @@ function Button({
   rightIcon,
   leftIcon,
   className,
+  leftIconClassName,
   onClick,
   href,
   disabled,
@@ -27,6 +28,7 @@ function Button({
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
+  leftIconClassName?: string;
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
@@ -72,7 +74,13 @@ function Button({
       {...rest}
     >
       {leftIcon && !onClickInProgress ? (
-        <Image src={leftIcon} alt={alt} width="12" height="12" />
+        <Image
+          src={leftIcon}
+          alt={alt}
+          width="12"
+          height="12"
+          className={leftIconClassName}
+        />
       ) : null}
 
       {title && !onClickInProgress ? title : null}
