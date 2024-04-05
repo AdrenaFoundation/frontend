@@ -375,7 +375,7 @@ export default function MyDashboard({
                     window.adrena.client.alpToken.decimals,
                   )
                 : '0'}{' '}
-              ADX
+              ALP
             </span>
           </div>
         </StyledSubSubContainer>
@@ -408,19 +408,21 @@ export default function MyDashboard({
 
       {userProfile === false ? (
         <StyledContainer
-          title={<h2>Create a profile and get trading and swap stats.</h2>}
+          title={
+            <h2 className="text-center">
+              Create a profile and get trading and swap stats.
+            </h2>
+          }
           className="items-center"
         >
           <div className="flex flex-col items-center justify-center">
-            <div className="font-specialmonster text-xl mt-10 ">
-              My Nickname
-            </div>
+            <div className="font-special text-xl mt-6 ">My Nickname</div>
 
             <InputString
               value={nickname ?? ''}
               onChange={setNickname}
               placeholder="The Great Trader"
-              className="mt-4 text-center w-[20em] p-4 bg-third border rounded-xl"
+              className="mt-4 text-center w-[20em] p-2 bg-third border rounded-xl"
               inputFontSize="1.1em"
               maxLength={24}
             />
