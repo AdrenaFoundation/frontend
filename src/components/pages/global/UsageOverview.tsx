@@ -128,7 +128,7 @@ export default function UsageOverview({
           />
         </div>
 
-        <StyledSubSubContainer className="flex-col">
+        <StyledSubSubContainer className="flex-col mt-4">
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Active Positions</div>
             <span>

@@ -21,9 +21,9 @@ const InfoAnnotation = ({
     placement="auto"
   >
     <div className="h-auto w-auto flex items-center justify-center">
-      {title ? <h3 className="pr1 p-1">{title}</h3> : <></>}
+      {title ? <h3>{title}</h3> : <></>}
       <Image
-        className={twMerge('opacity-50 hover:opacity-100', className)}
+        className={twMerge('opacity-50 hover:opacity-100 ml-1', className)}
         src={infoIcon}
         alt="info icon"
         width="10"
