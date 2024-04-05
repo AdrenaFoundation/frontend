@@ -1,10 +1,8 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, PoolExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import Bloc from '../Bloc';
 import ComingSoonInfo from '../ComingSoonInfo';
 import LongShortBarChart from '../LongShortBarChart';
 import NumberInfo from '../NumberInfo';
@@ -22,7 +20,7 @@ export default function PositionsBloc({
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   return (
-    <Bloc title="Positions" className={twMerge('min-w-[20em]', className)}>
+    <StyledContainer title={<h1>Positions</h1>} className={className}>
       <Table
         className="pb-0 pt-0"
         rowTitleWidth="35%"
@@ -131,6 +129,6 @@ export default function PositionsBloc({
             })),
         ]}
       />
-    </Bloc>
+    </StyledContainer>
   );
 }

@@ -64,11 +64,11 @@ export default function StakeToken({
           </div>
 
           <div className="relative flex flex-row w-full mt-2">
-            <div className="flex items-center bg-gray-200 border border-gray-400 rounded-l-xl px-3  border-r-none">
+            <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r-none">
               <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
             </div>
             <input
-              className="w-full bg-dark border border-gray-400 rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-third border rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value
@@ -79,9 +79,9 @@ export default function StakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%]"
+              className="absolute right-2 bottom-[20%] text-main"
               title="MAX"
-              variant="secondary"
+              variant="text"
               onClick={() => {
                 if (balance === null) return;
 

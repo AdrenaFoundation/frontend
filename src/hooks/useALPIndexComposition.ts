@@ -7,12 +7,14 @@ import { nativeToUi } from '@/utils';
 export type TokenInfo = {
   token: Token;
   price: number | null;
+  color: string | null;
   custodyUsdValue: number | null;
   currentRatio: number | null;
   targetRatio: number | null;
   minRatio: number | null;
   maxRatio: number | null;
   utilization: number | null;
+  ownedAssets: number | null;
 };
 
 export type ALPIndexComposition = TokenInfo[];
@@ -26,25 +28,21 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
   const calculateALPIndexComposition = useCallback(async () => {
     const alpIndexComposition = window.adrena.client.tokens.map((token) => {
       const price = tokenPrices[token.symbol];
-
+      const color = token.color;
       const custody = custodies?.find(
         (custody) => token.custody && custody.pubkey.equals(token.custody),
       );
-
       const custodyUsdValue =
         custody && price
           ? nativeToUi(custody.nativeObject.assets.owned, token.decimals) *
             price
           : null;
-
       const currentRatio =
         custodyUsdValue !== null
           ? (custodyUsdValue * 100) / window.adrena.client.mainPool.aumUsd
           : null;
-
       const utilization = (() => {
         if (!custody) return null;
-
         if (custody.nativeObject.assets.locked.isZero()) return 0;
 
         return (
@@ -54,8 +52,15 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
         );
       })();
 
+      const ownedAssets = (() => {
+        if (!custody) return null;
+
+        return nativeToUi(custody.nativeObject.assets.owned, custody.decimals);
+      })();
+
       return {
         token,
+        color,
         price,
         custodyUsdValue,
         currentRatio,
@@ -63,6 +68,7 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
         minRatio: custody ? custody.minRatio / 100 : null,
         maxRatio: custody ? custody.maxRatio / 100 : null,
         utilization,
+        ownedAssets,
       };
     });
 

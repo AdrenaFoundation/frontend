@@ -6,12 +6,12 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
-import logo from '../../../public/images/logo.svg';
+import logo from '../../../public/images/logo.png';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
-import MenuSeperator from '../common/Menu/MenuSeperator';
+import MenuSeparator from '../common/Menu/MenuSeparator';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
@@ -27,13 +27,16 @@ export default function Header({
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="fixed top-0 w-full flex flex-row items-center justify-between p-3 px-7 border border-b-gray-200 z-50 bg-gray-300/85 backdrop-blur-md">
+    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b bg-secondary z-50">
       <div className="flex flex-row items-center gap-6">
         <Link className="font-bold uppercase relative" href="/">
           {
             <Image
               src={logo}
-              className="shrink-0"
+              className={twMerge(
+                'shrink-0 relative',
+                window.adrena.cluster === 'devnet' ? 'bottom-1' : null,
+              )}
               alt="logo"
               width={100}
               height={25}
@@ -41,7 +44,7 @@ export default function Header({
           }
 
           {window.adrena.cluster === 'devnet' ? (
-            <span className="absolute font-specialmonster text-blue-500 bottom-[-0.7em] right-[-0.5em]">
+            <span className="absolute font-special text-blue-500 bottom-[-1.1em] right-[-0.5em]">
               Devnet
             </span>
           ) : null}
@@ -56,12 +59,12 @@ export default function Header({
             <Link
               href={page.link}
               className={twMerge(
-                'font-normal text-sm opacity-50 hover:opacity-100 transition-opacity duration-300',
+                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300',
                 pathname === page.link ? 'opacity-100' : '',
               )}
               key={page.name}
             >
-              {page.name}
+              <h5>{page.name}</h5>
             </Link>
           );
         })}
@@ -99,7 +102,7 @@ export default function Header({
                 Devnet
               </MenuItem>
 
-              <MenuSeperator />
+              <MenuSeparator />
 
               <MenuItem
                 selected={window.adrena.cluster === 'mainnet'}

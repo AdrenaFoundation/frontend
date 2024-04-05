@@ -14,11 +14,48 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { BigNumber } from 'bignumber.js';
+import { Context } from 'chartjs-plugin-datalabels';
+import { Font } from 'chartjs-plugin-datalabels/types/options';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { toast } from 'react-toastify';
+import { twMerge } from 'tailwind-merge';
 
 import { Adrena } from '@/target/adrena';
+
+import arrowDown from '../public/images/arrow-down.png';
+import arrowRightIcon from '../public/images/arrow-right.svg';
+import arrowUp from '../public/images/arrow-up.png';
+
+export function getArrowElement(side: 'up' | 'down', className?: string) {
+  const pxSize = 9;
+
+  return (
+    <Image
+      className={twMerge(
+        `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center absolute right-[0.6em]`,
+        className,
+      )}
+      src={side === 'down' ? arrowDown : arrowUp}
+      height={pxSize}
+      width={pxSize}
+      alt="Arrow"
+    />
+  );
+}
+
+export function getRightArrowElement() {
+  return (
+    <Image
+      className="ml-2 mr-2 opacity-60"
+      src={arrowRightIcon}
+      height={16}
+      width={16}
+      alt="Arrow"
+    />
+  );
+}
 
 export function findATAAddressSync(
   wallet: PublicKey,
@@ -496,5 +533,18 @@ export function parseFullSymbol(fullSymbol: string) {
     exchange: match[1],
     fromSymbol: match[2],
     toSymbol: match[3],
+  };
+}
+
+/* Chart js datalabels plugin utils, may export in different file if many come along */
+
+export function getDatasetBackgroundColor(context: Context) {
+  return (context.dataset.backgroundColor as string) ?? '';
+}
+
+export function getFontSizeWeight(context: Context): Font {
+  return {
+    size: context.chart.width < 512 ? 12 : 14,
+    weight: 'bold',
   };
 }

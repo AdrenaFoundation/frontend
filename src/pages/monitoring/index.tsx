@@ -53,17 +53,33 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
 
   return (
     <>
-      <RiveAnimation
-        animation="mid-monster"
-        layout={new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })}
-        className={
-          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 w-full h-full'
-        }
-      />
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
+        <RiveAnimation
+          animation="btm-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
+        />
 
-      <div className="flex flex-wrap z-10 min-w-40 overflow-auto">
+        <RiveAnimation
+          animation="mid-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
+        />
+      </div>
+
+      <div className="flex flex-wrap z-10 min-w-40 gap-4 overflow-auto p-4 justify-center">
         <AccountsBloc
-          className="m-2 grow"
+          className="min-w-[25em] max-w-[40em]"
           perpetuals={perpetuals}
           cortex={cortex}
           mainPool={mainPool}
@@ -71,7 +87,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
         />
 
         <GlobalOverviewBloc
-          className="m-2 grow"
+          className="min-w-[25em] max-w-[40em]"
           cortex={cortex}
           mainPool={mainPool}
           custodies={custodies}
@@ -80,46 +96,53 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
         />
 
         <StakingBloc
-          className="m-2 grow"
+          className="min-w-[25em] max-w-[40em]"
           stakedTokenName={'ADX'}
           stakedTokenDecimals={window.adrena.client.adxToken.decimals}
           staking={adxStakingAccount}
         />
 
         <StakingBloc
-          className="m-2 grow"
+          className="min-w-[25em] max-w-[40em]"
           stakedTokenName={'ALP'}
           stakedTokenDecimals={window.adrena.client.alpToken.decimals}
           staking={alpStakingAccount}
         />
 
         <AssetsUnderManagementBloc
-          className="m-2 grow"
+          className="min-w-[25em] max-w-[40em]"
           mainPool={mainPool}
           custodies={custodies}
         />
 
-        <VestingBloc className="m-2 grow" cortex={cortex} vests={vests} />
+        <PositionsBloc
+          className="min-w-[30em] max-w-[40em]"
+          mainPool={mainPool}
+          custodies={custodies}
+        />
+
+        <VestingBloc
+          className="min-w-[40em] max-w-[80em]"
+          cortex={cortex}
+          vests={vests}
+        />
 
         <PoolBloc
-          className="m-2 grow"
+          className="min-w-[40em] max-w-[80em]"
           mainPool={mainPool}
           custodies={custodies}
           alpComposition={composition}
         />
 
-        <BucketsBloc className="m-2 grow" cortex={cortex} />
+        <BucketsBloc className="min-w-[40em] max-w-[80em]" cortex={cortex} />
 
-        <PositionsBloc
-          className="m-2 grow"
-          mainPool={mainPool}
+        <FeeCustodyBreakdownBloc
+          className="min-w-[40em] max-w-[80em]"
           custodies={custodies}
         />
 
-        <FeeCustodyBreakdownBloc className="m-2 grow" custodies={custodies} />
-
         <VolumeCustodyBreakdownBloc
-          className="m-2 grow"
+          className="min-w-[40em] max-w-[80em]"
           custodies={custodies}
         />
       </div>

@@ -11,13 +11,13 @@ export default function DisplayInfo({
   return (
     <div
       className={twMerge(
-        'flex bg-gray-200 p-4 rounded-lg border border-gray-300 md:bg-transparent md:p-0 md:rounded-none md:border-none flex-col md:flex-row flex-wrap gap-2 md:gap-5 w-full',
+        'flex bg-bcolor p-4 rounded-lg border md:bg-transparent md:p-0 md:rounded-none md:border-none flex-col md:flex-row flex-wrap gap-2 md:gap-5 w-full',
         className,
       )}
     >
       {data.map(({ title, value }, i) => (
         <div
-          className="flex flex-row gap-1 justify-between md:flex-col md:justify-normal md:bg-gray-200 md:border md:border-gray-300 md:rounded-lg md:p-4 flex-1"
+          className="flex flex-row gap-1 justify-between md:flex-col md:justify-normal md:bg-bcolor md:border md:rounded-lg md:p-4 flex-1"
           key={'info' + i}
         >
           <p className="text-base md:text-sm opacity-50">{title}</p>

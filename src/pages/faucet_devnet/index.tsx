@@ -8,6 +8,8 @@ import { Connection } from '@solana/web3.js';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { devnetFaucetBankWallet } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
@@ -149,34 +151,47 @@ export default function FaucetDevnet({
   ];
 
   return (
-    <>
-      {allTokens.map((token) => (
-        <div key={token.symbol} className="mt-8 flex flex-col items-center">
-          <Button
-            disabled={pendingTx}
-            className="bg-secondary w-full md:w-[30em]"
-            title={`Get ${token.symbol}`}
-            onClick={() =>
-              token.mint.equals(NATIVE_MINT)
-                ? airdropDevnetSol()
-                : sendDevnetTokens(token)
-            }
-          />
+    <div className="flex p-4">
+      <StyledContainer
+        className="ml-auto mr-auto"
+        bodyClassName="flex-row max-w-full flex-wrap gap-4 items-center justify-center"
+        title={
+          <h1 className="w-full flex items-center justify-center">
+            GET DEVNET TOKENS
+          </h1>
+        }
+      >
+        {allTokens.map((token) => (
+          <StyledSubContainer
+            key={token.symbol}
+            className="w-[25em] h-[10em] items-center justify-center"
+          >
+            <Button
+              disabled={pendingTx}
+              className="w-full md:w-[30em]"
+              title={`Get ${token.symbol}`}
+              onClick={() =>
+                token.mint.equals(NATIVE_MINT)
+                  ? airdropDevnetSol()
+                  : sendDevnetTokens(token)
+              }
+            />
 
-          <div className="text-sm mt-4 text-txtfade">
-            {(() => {
-              if (token.mint.equals(NATIVE_MINT) || token.symbol === 'ADX')
-                return 'Aidropped 1 ';
-              return '$10k worth of ';
-            })()}
-            token at a time
-          </div>
+            <div className="text-sm mt-4 text-txtfade">
+              {(() => {
+                if (token.mint.equals(NATIVE_MINT) || token.symbol === 'ADX')
+                  return 'Aidropped 1 ';
+                return '$10k worth of ';
+              })()}
+              token at a time
+            </div>
 
-          <div className="text-sm mt-2 text-txtfade">
-            {token.mint.toBase58()}
-          </div>
-        </div>
-      ))}
-    </>
+            <div className="text-sm mt-2 text-txtfade">
+              {token.mint.toBase58()}
+            </div>
+          </StyledSubContainer>
+        ))}
+      </StyledContainer>
+    </div>
   );
 }
