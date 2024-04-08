@@ -233,7 +233,7 @@ export default function Trade({
 
       <>
         <TradeComp
-          className="lg:max-h-[48em] hidden sm:flex ml-4"
+          className="lg:max-h-[50em] hidden sm:flex ml-4"
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
           tokenA={tokenA}

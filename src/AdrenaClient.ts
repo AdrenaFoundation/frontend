@@ -3564,6 +3564,19 @@ export class AdrenaClient {
 
     transaction.feePayer = wallet.publicKey;
 
+    // Check the user SOL balance, and reject if not enough
+    const [userSolBalance, estimatedFee] = await Promise.all([
+      this.connection.getBalance(wallet.publicKey),
+      transaction.getEstimatedFee(this.connection),
+    ]);
+
+    if (estimatedFee !== null && userSolBalance < estimatedFee) {
+      throw new AdrenaTransactionError(
+        null,
+        'Insufficient SOL to pay for fees',
+      );
+    }
+
     let signedTransaction: Transaction;
 
     try {
