@@ -17,8 +17,8 @@ import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
-import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
