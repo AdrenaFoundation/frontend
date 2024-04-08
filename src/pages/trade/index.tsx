@@ -188,8 +188,8 @@ export default function Trade({
         />
       </div>
 
-      <div className="flex flex-col w-full h-full">
-        <div className="flex flex-col w-full h-full border rounded-lg overflow-hidden">
+      <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full border rounded-lg overflow-hidden">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -205,7 +205,7 @@ export default function Trade({
             />
           ) : null}
 
-          <div className="min-h-[20em] grow shrink-1 flex max-w-full">
+          <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
             {/* Display trading chart for appropriate token */}
             {tokenA && tokenB ? (
               <>
@@ -223,7 +223,7 @@ export default function Trade({
           </div>
         </div>
 
-        <div className="min-h-[15em] z-30 overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
+        <div className="min-h-[15em] z-30 grow overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
           <Positions
             positions={positions}
             triggerPositionsReload={triggerPositionsReload}
@@ -233,6 +233,7 @@ export default function Trade({
 
       <>
         <TradeComp
+          className="lg:max-h-[48em] hidden sm:flex ml-4"
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
           tokenA={tokenA}
@@ -240,7 +241,6 @@ export default function Trade({
           setTokenA={setTokenA}
           setTokenB={setTokenB}
           openedPosition={openedPosition}
-          className="hidden sm:flex ml-4"
           wallet={wallet}
           triggerPositionsReload={triggerPositionsReload}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
