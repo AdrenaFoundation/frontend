@@ -179,7 +179,7 @@ export default function Header({
               leftIconClassName="w-4 h-4"
             />
           }
-          openMenuClassName="right-0 rounded-lg w-[300px] bg-gray-300 border border-gray-200 p-3 shadow-lg"
+          openMenuClassName="right-0 rounded-lg w-[300px] bg-secondary border border-third p-3 shadow-lg"
           disableOnClickInside={true}
         >
           <p className="text-xs mb-3 opacity-50">RPC endpoints</p>
@@ -196,16 +196,7 @@ export default function Header({
                 className="w-3"
               />
             </div>
-            {/* <div
-              className={twMerge(
-                'w-[16px] h-[16px] rounded-[4px] bg-gray-200 hover:bg-gray-400 transition duration-300 cursor-pointer',
-                isAutoRPC && 'bg-green-300 hover:bg-green-300',
-              )}
-              onClick={() => {
-                setIsAutoRPC(!isAutoRPC);
-                setCookies('isAutoRPC', !isAutoRPC);
-              }}
-            /> */}
+
             <CheckBox
               checked={isAutoRPC}
               onClick={() => {
@@ -221,7 +212,7 @@ export default function Header({
             />
           </div>
 
-          <div className="w-full h-[1px] bg-gray-200 my-3" />
+          <div className="w-full h-[1px] bg-third my-3" />
 
           <ul
             className={twMerge(
@@ -258,9 +249,9 @@ export default function Header({
                     className={twMerge(
                       'w-[5px] h-[5px] rounded-full ',
                       (() => {
-                        if (rpcOption.latency < 100) return 'bg-green-300';
-                        if (rpcOption.latency < 500) return 'bg-yellow-300';
-                        return 'bg-red-300';
+                        if (rpcOption.latency < 100) return 'bg-green';
+                        if (rpcOption.latency < 500) return 'bg-orange';
+                        return 'bg-red';
                       })(),
                     )}
                   />
@@ -297,7 +288,7 @@ export default function Header({
                 />
                 <div
                   className={twMerge(
-                    'relative w-full  bg-black border border-gray-200 rounded-lg overflow-hidden transition duration-300',
+                    'relative w-full  bg-black border border-third rounded-lg overflow-hidden transition duration-300',
                     !isEditCustomRPCMode &&
                       'bg-transparent font-regular font-medium',
                   )}

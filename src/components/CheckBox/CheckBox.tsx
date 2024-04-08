@@ -10,8 +10,8 @@ export default function CheckBox({ checked, onClick }: CheckBoxProps) {
   return (
     <div
       className={twMerge(
-        'flex justify-center items-center w-[16px] h-[16px] rounded-[4px] bg-gray-200 hover:bg-gray-400 transition duration-300 cursor-pointer',
-        checked && 'bg-green-500 hover:bg-green-500',
+        'flex justify-center items-center w-[16px] h-[16px] rounded-[4px] bg-third hover:bg-four transition duration-300 cursor-pointer',
+        checked && 'bg-green hover:bg-green',
       )}
       onClick={onClick}
     >
