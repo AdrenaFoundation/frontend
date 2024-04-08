@@ -223,7 +223,7 @@ export default function Trade({
           </div>
         </div>
 
-        <div className="min-h-[15em] z-30 grow overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
+        <div className="flex flex-col min-h-[15em] z-30 grow overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
           <Positions
             positions={positions}
             triggerPositionsReload={triggerPositionsReload}
