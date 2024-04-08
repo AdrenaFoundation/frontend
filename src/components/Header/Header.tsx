@@ -1,26 +1,25 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import useRPC from '@/hooks/useRPC';
 import { UserProfileExtended } from '@/types';
+import { addNotification } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import logo from '../../../public/images/logo.svg';
+import CheckBox from '../CheckBox/CheckBox';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeperator from '../common/Menu/MenuSeperator';
-import WalletAdapter from '../WalletAdapter/WalletAdapter';
-import useRPC from '@/hooks/useRPC';
-
-import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
-import CheckBox from '../CheckBox/CheckBox';
-import { addNotification } from '@/utils';
+import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
   userProfile,
@@ -245,7 +244,7 @@ export default function Header({
                   <input
                     type="radio"
                     checked={!isCustomRPC && rpcOption.name === activeRPC}
-                    onChange={() => {}}
+                    onChange={() => false}
                   />
                   <p className="text-sm font-medium">{rpcOption.name}</p>
                 </div>

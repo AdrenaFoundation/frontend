@@ -1,8 +1,8 @@
-import IConfiguration from '@/config/IConfiguration';
-import config from '@/config/devnet';
 import { Connection } from '@solana/web3.js';
-
 import { use, useCallback, useEffect, useState } from 'react';
+
+import config from '@/config/devnet';
+import IConfiguration from '@/config/IConfiguration';
 
 // TOOD: get custom rpc latency
 // TOOD: if there is a better rpc endpoint then let the user know
