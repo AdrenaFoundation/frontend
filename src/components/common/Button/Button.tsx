@@ -35,13 +35,21 @@ function Button({
 }) {
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
 
+  const variantsBgDisabledOpacity = {
+    primary: `bg-highlight/25`,
+    secondary: 'bg-secondary/25',
+    danger: 'bg-red/25',
+    text: 'bg-transparent',
+    outline: 'bg-transparent',
+  };
+
   const variants = {
-    primary:
-      'bg-highlight text-main opacity-90 hover:opacity-100 font-medium rounded-full',
-    secondary: 'bg-secondary opacity-90 hover:opacity-100 rounded-full',
-    danger: 'bg-red hover:bg-red font-medium rounded-full',
-    text: 'opacity-50 hover:opacity-100 rounded-full',
-    outline: 'border hover:bg-bcolor rounded-full',
+    primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium rounded-full`,
+    secondary:
+      'bg-secondary text-white opacity-90 hover:opacity-100 rounded-full',
+    danger: 'bg-red text-white hover:bg-red font-medium rounded-full',
+    text: 'opacity-50 text-white hover:opacity-100 rounded-full',
+    outline: 'border text-white hover:bg-bcolor rounded-full',
   };
 
   const sizes = {
@@ -58,7 +66,11 @@ function Button({
         variants[variant],
         className,
         disabled || onClickInProgress
-          ? 'opacity-25 cursor-not-allowed pointer-events-none'
+          ? ' text-white cursor-not-allowed pointer-events-none'
+          : null,
+
+        disabled || onClickInProgress
+          ? variantsBgDisabledOpacity[variant]
           : null,
         'transition duration-300',
       )}
@@ -82,7 +94,7 @@ function Button({
         <Image src={rightIcon} alt={alt} width="12" height="12" />
       ) : null}
 
-      {onClickInProgress ? <Loader height={20} /> : null}
+      {onClickInProgress ? <Loader height={23} width={50} /> : null}
     </button>
   );
 
