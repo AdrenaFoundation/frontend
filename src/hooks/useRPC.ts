@@ -6,6 +6,7 @@ import { use, useCallback, useEffect, useState } from 'react';
 
 // TOOD: get custom rpc latency
 // TOOD: if there is a better rpc endpoint then let the user know
+// TOOD: check if custom rpc is valid
 const useRPC = ({
   isCustomRPC,
   customRPCUrl,
