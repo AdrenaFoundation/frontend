@@ -1,5 +1,5 @@
 import { NATIVE_MINT } from '@solana/spl-token';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
@@ -71,8 +71,31 @@ class MainnetConfiguration implements IConfiguration {
   public readonly governanceRealmName = 'AdrenaRealm5';
 
   public readonly mainRPC: string = 'https://api.mainnet-beta.solana.com';
-
   public readonly pythRPC: string = 'https://api.mainnet-beta.solana.com';
+
+  public readonly RPCOptions: IConfiguration['RPCOptions'] = [
+    {
+      name: 'Solana RPC',
+      url: 'https://api.devnet.solana.com',
+      connection: new Connection('https://api.devnet.solana.com', 'confirmed'),
+      latency: null,
+    },
+    {
+      name: 'Helius RPC 1',
+      url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+      connection: new Connection(
+        'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+        'confirmed',
+      ),
+      latency: null,
+    },
+    {
+      name: 'Triton RPC Pool 2',
+      url: 'https://api.devnet.solana.com',
+      connection: new Connection('https://api.devnet.solana.com', 'confirmed'),
+      latency: null,
+    },
+  ];
 
   public readonly mainPool: PublicKey = new PublicKey(
     'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',

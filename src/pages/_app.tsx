@@ -49,6 +49,16 @@ export default function App(props: AppProps) {
   const [cluster, setCluster] = useState<SupportedCluster | null>(null);
   const [config, setConfig] = useState<IConfiguration | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [cookies] = useCookies(['activeRPC', 'isCustomRPC', 'customRPC']);
+  const [activeRPC, setActiveRPC] = useState<string>(
+    cookies?.activeRPC ?? 'Solana RPC',
+  );
+  const [customRPCUrl, setCustomRPCUrl] = useState<string>(
+    cookies?.customRPC ?? '',
+  );
+  const [isCustomRPC, setIsCustomRPC] = useState<boolean>(
+    cookies?.isCustomRPC === 'true',
+  );
 
   // Load cluster from router
   useEffect(() => {
@@ -73,15 +83,32 @@ export default function App(props: AppProps) {
   // Load config from cluster
   useEffect(() => {
     if (!cluster) return;
+    const copiedConfig =
+      cluster === 'devnet'
+        ? { ...devnetConfiguration }
+        : { ...mainnetConfiguration };
 
-    setConfig(
-      cluster === 'devnet' ? devnetConfiguration : mainnetConfiguration,
-    );
-  }, [cluster]);
+    if (activeRPC) {
+      const activeRPCOption = copiedConfig.RPCOptions.find(
+        (rpcOption) => rpcOption.name === activeRPC,
+      );
+
+      copiedConfig.mainRPC = activeRPCOption?.url ?? copiedConfig.mainRPC;
+
+      copiedConfig.pythRPC = activeRPCOption?.url ?? copiedConfig.pythRPC;
+    }
+
+    if (isCustomRPC && customRPCUrl !== '') {
+      // check if customRPCUrl is valid
+      copiedConfig.mainRPC = customRPCUrl ?? copiedConfig.mainRPC;
+      copiedConfig.pythRPC = customRPCUrl ?? copiedConfig.pythRPC;
+    }
+
+    setConfig(copiedConfig);
+  }, [cluster, activeRPC, customRPCUrl]);
 
   useEffect(() => {
     if (!config) return;
-
     initializeApp(config).then(() => {
       setIsInitialized(true);
     });
@@ -92,7 +119,15 @@ export default function App(props: AppProps) {
   return (
     <Provider store={store}>
       <CookiesProvider>
-        <AppComponent {...props} />
+        <AppComponent
+          setActiveRPC={setActiveRPC}
+          activeRPC={activeRPC}
+          setCustomRPCUrl={setCustomRPCUrl}
+          customRPCUrl={customRPCUrl}
+          setIsCustomRPC={setIsCustomRPC}
+          isCustomRPC={isCustomRPC}
+          {...props}
+        />
       </CookiesProvider>
     </Provider>
   );
@@ -104,7 +139,23 @@ export default function App(props: AppProps) {
 //
 // Tricks: wrap RootLayout + component here to be able to use hooks
 // without getting error being out of Provider
-function AppComponent({ Component, pageProps }: AppProps) {
+function AppComponent({
+  Component,
+  pageProps,
+  setActiveRPC,
+  activeRPC,
+  setCustomRPCUrl,
+  customRPCUrl,
+  setIsCustomRPC,
+  isCustomRPC,
+}: AppProps & {
+  setActiveRPC: (rpc: string) => void;
+  activeRPC: string;
+  setCustomRPCUrl: (rpc: string) => void;
+  customRPCUrl: string;
+  setIsCustomRPC: (isCustomRPC: boolean) => void;
+  isCustomRPC: boolean;
+}) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
@@ -153,7 +204,15 @@ function AppComponent({ Component, pageProps }: AppProps) {
   const connected = !!wallet;
 
   return (
-    <RootLayout userProfile={userProfile}>
+    <RootLayout
+      userProfile={userProfile}
+      setActiveRPC={setActiveRPC}
+      activeRPC={activeRPC}
+      setCustomRPCUrl={setCustomRPCUrl}
+      customRPCUrl={customRPCUrl}
+      setIsCustomRPC={setIsCustomRPC}
+      isCustomRPC={isCustomRPC}
+    >
       {
         <TermsAndConditionsModal
           isOpen={isTermsAndConditionModalOpen}

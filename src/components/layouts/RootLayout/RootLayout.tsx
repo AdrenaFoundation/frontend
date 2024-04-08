@@ -16,9 +16,21 @@ import Header from '../../Header/Header';
 const RootLayout = ({
   children,
   userProfile,
+  setActiveRPC,
+  activeRPC,
+  setCustomRPCUrl,
+  customRPCUrl,
+  setIsCustomRPC,
+  isCustomRPC,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
+  setActiveRPC: (rpc: string) => void;
+  activeRPC: string;
+  setCustomRPCUrl: (rpc: string) => void;
+  customRPCUrl: string;
+  setIsCustomRPC: (isCustomRPC: boolean) => void;
+  isCustomRPC: boolean;
 }) => {
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
@@ -51,7 +63,16 @@ const RootLayout = ({
       </Head>
 
       {isBigScreen ? (
-        <Header userProfile={userProfile} PAGES={pages} />
+        <Header
+          userProfile={userProfile}
+          PAGES={pages}
+          setActiveRPC={setActiveRPC}
+          activeRPC={activeRPC}
+          setCustomRPCUrl={setCustomRPCUrl}
+          customRPCUrl={customRPCUrl}
+          setIsCustomRPC={setIsCustomRPC}
+          isCustomRPC={isCustomRPC}
+        />
       ) : (
         <BurgerMenu userProfile={userProfile} PAGES={pages} />
       )}
