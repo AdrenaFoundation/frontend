@@ -48,9 +48,7 @@ export default function Menu({
         <div
           className={twMerge(
             'flex h-full w-full border border-transparent',
-            isMenuOpen && withBorder
-              ? 'border-zinc-700 shadow-zinc-800 shadow-lg'
-              : '',
+            isMenuOpen && withBorder ? 'bg-secondary shadow-lg' : '',
           )}
           onClick={() => toggleMenu()}
         >
@@ -66,10 +64,8 @@ export default function Menu({
             variants={variants}
             transition={{ duration: 0.3 }}
             className={twMerge(
-              'absolute flex flex-col bg-dark overflow-hidden z-50 border mt-2',
-              withBorder
-                ? 'border border-zinc-700 shadow-zinc-800 shadow-lg'
-                : '',
+              'absolute flex flex-col bg-third overflow-hidden z-50 border mt-2',
+              withBorder ? 'border bg-third shadow-lg' : '',
               openMenuClassName,
             )}
           >

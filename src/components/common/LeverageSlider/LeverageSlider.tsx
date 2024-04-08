@@ -6,16 +6,8 @@ import { twMerge } from 'tailwind-merge';
 
 import InputNumber from '../InputNumber/InputNumber';
 
-// Leverage colors
-
-// GMX Style
-// const colorA = '#2d3ed5';
-// const colorB = '#232743';
-
 // ADRENA Style
-const colorA = 'var(--color-blue-500)';
-const colorB = 'var(--color-gray-200)';
-// const colorC = 'var(--color-blue-300)';
+const colorA = '#ffffff20';
 
 export default function LeverageSlider({
   className,
@@ -32,66 +24,33 @@ export default function LeverageSlider({
     useState<boolean>(false);
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col rounded-2xl overflow-hidden border',
-        className,
-      )}
-    >
-      <div className="flex items-center pl-4 pt-2 pr-2 pb-3 bg-dark w-full">
-        <span className="shrink-0 w-3">x</span>
+    <div className={twMerge('flex overflow-hidden h-16', className)}>
+      <div className="flex pl-1 pt-1 pr-2 pb-1 bg-third w-[4em] border-r h-full">
+        <div className="flex w-full items-center ml-1 shrink-0">
+          <span className="shrink-0 w-2">x</span>
 
-        <InputNumber
-          className="w-full bg-transparent"
-          value={isLeverageInputEmpty ? undefined : value}
-          max={50}
-          onChange={function (value: number | null): void {
-            // throw new Error('Function not implemented.');
-            if (value === null) {
-              setIsLeverageInputEmpty(true);
-              return;
-            }
+          <InputNumber
+            className="w-full max-w-full overflow-hidden text-center bg-third"
+            value={isLeverageInputEmpty ? undefined : value}
+            max={50}
+            onChange={function (value: number | null): void {
+              // throw new Error('Function not implemented.');
+              if (value === null) {
+                setIsLeverageInputEmpty(true);
+                return;
+              }
 
-            onChange(value);
-            setIsLeverageInputEmpty(false);
-          }}
-          inputFontSize="1em"
-        />
-
-        <div
-          className="w-5 h-5 border flex items-center justify-center rounded cursor-pointer opacity-80 hover:opacity-100"
-          onClick={() => {
-            let newValue: number = value ? value - 1 : 1;
-
-            if (newValue < 1) {
-              newValue = 1;
-            }
-
-            onChange(newValue);
-          }}
-        >
-          -
-        </div>
-
-        <div
-          className="w-5 h-5 border flex items-center justify-center rounded cursor-pointer opacity-80 hover:opacity-100 ml-2"
-          onClick={() => {
-            let newValue: number = value ? value + 1 : 1;
-
-            if (newValue > 50) {
-              newValue = 50;
-            }
-
-            onChange(newValue);
-          }}
-        >
-          +
+              onChange(value);
+              setIsLeverageInputEmpty(false);
+            }}
+            inputFontSize="1em"
+          />
         </div>
       </div>
 
-      <div className="flex p-6 h-[3.5em] bg-dark border-t border-gray-200">
+      <div className="flex h-full w-full bg-transparent pr-4 pl-2 ml-2">
         <Slider
-          className="relative bottom-3"
+          className="relative top-4"
           min={1}
           max={50}
           value={value}
@@ -106,7 +65,8 @@ export default function LeverageSlider({
             return acc;
           }, {} as Record<number, ReactNode>)}
           railStyle={{
-            backgroundColor: colorB,
+            backgroundColor: colorA,
+            height: 2,
           }}
           trackStyle={{
             backgroundColor: 'white',
@@ -127,8 +87,8 @@ export default function LeverageSlider({
             width: '2px',
             border: 0,
             height: '0.8em',
-            backgroundColor: colorB,
-            borderColor: colorB,
+            backgroundColor: colorA,
+            borderColor: colorA,
           }}
           // Use as number because we don't use the slider as a range
           onChange={(v) => onChange(v as number)}

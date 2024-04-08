@@ -1,9 +1,7 @@
-import { twMerge } from 'tailwind-merge';
-
 import { AdrenaClient } from '@/AdrenaClient';
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Cortex, CustodyExtended, Perpetuals, PoolExtended } from '@/types';
 
-import Bloc from '../Bloc';
 import InfoAnnotation from '../InfoAnnotation';
 import OnchainAccountInfo from '../OnchainAccountInfo';
 import Table from '../Table';
@@ -23,7 +21,7 @@ export default function AccountsBloc({
   custodies: CustodyExtended[];
 }) {
   return (
-    <Bloc title="Accounts" className={twMerge('min-w-[30em]', className)}>
+    <StyledContainer title={<h1>Accounts</h1>} className={className}>
       <Table
         rowTitleWidth="30%"
         data={[
@@ -211,6 +209,6 @@ export default function AccountsBloc({
           })),
         ]}
       />
-    </Bloc>
+    </StyledContainer>
   );
 }

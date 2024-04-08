@@ -111,6 +111,7 @@ export class AdrenaClient {
 
   public alpToken: Token = {
     mint: this.lpTokenMint,
+    color: '',
     name: 'The Pool Token',
     symbol: 'ALP',
     decimals: 6,
@@ -120,6 +121,7 @@ export class AdrenaClient {
 
   public adxToken: Token = {
     mint: this.lmTokenMint,
+    color: '',
     name: 'The Governance Token',
     symbol: 'ADX',
     decimals: 6,
@@ -137,6 +139,13 @@ export class AdrenaClient {
   public getUserStakingPda = (owner: PublicKey, stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
       [Buffer.from('user_staking'), owner.toBuffer(), stakingPda.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getUserVestPda = (owner: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('vest'), owner.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
@@ -416,6 +425,7 @@ export class AdrenaClient {
         const infos:
           | {
               name: string;
+              color: string;
               symbol: string;
               image: ImageRef;
               coingeckoId: string;
@@ -429,6 +439,7 @@ export class AdrenaClient {
 
         return {
           mint: custody.mint,
+          color: infos.color,
           name: infos.name,
           symbol: infos.symbol,
           decimals: infos.decimals,
@@ -2103,6 +2114,26 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
     );
+  }
+
+  // null = not ready
+  // false = no vest
+  public async loadUserVest(): Promise<Vest | false | null> {
+    if (!this.adrenaProgram || !this.connection) {
+      return null;
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const userVestPda = this.getUserVestPda(wallet.publicKey);
+
+    const vest = await this.adrenaProgram.account.vest.fetchNullable(
+      userVestPda,
+    );
+
+    if (!vest) return null;
+
+    return vest;
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {

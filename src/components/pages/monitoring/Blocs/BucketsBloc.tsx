@@ -1,10 +1,8 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Cortex } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
-import Bloc from '../Bloc';
 import BucketChart from '../BucketChart';
 
 export default function BucketsBloc({
@@ -15,10 +13,7 @@ export default function BucketsBloc({
   cortex: Cortex;
 }) {
   return (
-    <Bloc
-      title="Buckets"
-      className={twMerge('min-w-[22em] max-w-[22em]', className)}
-    >
+    <StyledContainer title={<h1>Buckets</h1>} className={className}>
       <div className="flex flex-wrap grow items-center justify-evenly">
         {['coreContributor', 'daoTreasury', 'pol', 'ecosystem'].map(
           (bucketName) => (
@@ -48,6 +43,6 @@ export default function BucketsBloc({
           ),
         )}
       </div>
-    </Bloc>
+    </StyledContainer>
   );
 }

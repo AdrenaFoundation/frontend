@@ -38,7 +38,7 @@ function WalletSelectionModal() {
       close={() => dispatch(openCloseConnectionModalAction(false))}
       className="flex flex-col pb-8 pr-16 pl-16 sm:pr-8 sm:pl-8 relative overflow-visible"
     >
-      <div className="text-3xl opacity-80 ml-auto mr-auto mb-8 font-specialmonster mt-5">
+      <div className="text-3xl opacity-80 ml-auto mr-auto mb-8 font-special mt-5">
         Pick a wallet
       </div>
       <div className="flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0 flex-wrap">
@@ -105,10 +105,10 @@ const WalletBloc = ({
   const walletBloc = (
     <div
       className={twMerge(
-        'flex flex-col items-center justify-center p-3 border border-gray-200 rounded-2xl h-40 w-40 relative',
+        'flex flex-col items-center justify-center p-3 border rounded-lg h-40 w-40 relative',
         disabled
           ? 'cursor-not-allowed opacity-40'
-          : 'cursor-pointer hover:bg-gray-200 duration-300',
+          : 'cursor-pointer hover:bg-bcolor duration-300',
         className,
       )}
       onClick={() => {
@@ -121,7 +121,7 @@ const WalletBloc = ({
 
       <p className="mt-6">{name}</p>
 
-      <div className="h-1 w-32 bg-gray-300 absolute bottom-2"></div>
+      <div className="h-1 w-32 bg-bcolor absolute bottom-2"></div>
     </div>
   );
 

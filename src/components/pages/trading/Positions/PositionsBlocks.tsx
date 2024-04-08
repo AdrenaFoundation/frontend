@@ -73,8 +73,8 @@ export default function PositionsBlocks({
           className="flex gap-1 flex-col w-full"
           key={position.pubkey.toBase58()}
         >
-          <div className="flex flex-col bg-secondary border border-gray-200 rounded-lg w-full">
-            <div className="flex flex-row justify-between items-center border-b border-gray-200">
+          <div className="flex flex-col bg-secondary border rounded-lg w-full">
+            <div className="flex flex-row justify-between items-center border-b">
               <div className="flex flex-row h-10 pl-2 items-center relative overflow-hidden">
                 <Image
                   className="absolute left-[-0.7em] top-auto grayscale opacity-40"
@@ -88,9 +88,7 @@ export default function PositionsBlocks({
                   <span
                     className={twMerge(
                       'ml-16 capitalize font-mono',
-                      position.side === 'long'
-                        ? 'text-green-500'
-                        : 'text-red-500',
+                      position.side === 'long' ? 'text-green' : 'text-red',
                     )}
                   >
                     {position.side}

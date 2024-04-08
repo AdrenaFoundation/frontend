@@ -15,6 +15,7 @@ class MainnetConfiguration implements IConfiguration {
   public readonly tokensInfo: {
     [tokenPubkey: string]: {
       name: string;
+      color: string;
       symbol: string;
       image: ImageRef;
       coingeckoId: string;
@@ -23,6 +24,7 @@ class MainnetConfiguration implements IConfiguration {
   } = {
     EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: {
       name: 'USD Coin',
+      color: '#2775ca',
       symbol: 'USDC',
       image: usdcLogo,
       coingeckoId: 'usd-coin',
@@ -32,6 +34,7 @@ class MainnetConfiguration implements IConfiguration {
     // WETH Sollet
     '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk': {
       name: 'Ethereum',
+      color: '#3D3E3F',
       symbol: 'ETH',
       image: ethLogo,
       coingeckoId: 'ethereum',
@@ -40,6 +43,7 @@ class MainnetConfiguration implements IConfiguration {
     // WBTC Sollet
     '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E': {
       name: 'Bitcoin',
+      color: '#f7931a',
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
@@ -48,6 +52,7 @@ class MainnetConfiguration implements IConfiguration {
     [NATIVE_MINT.toBase58()]: {
       name: 'Solana',
       symbol: 'SOL',
+      color: '#9945FF',
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,

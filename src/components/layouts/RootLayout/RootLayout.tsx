@@ -4,7 +4,6 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { twMerge } from 'tailwind-merge';
 
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -34,10 +33,10 @@ const RootLayout = ({
 }) => {
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
-    { name: 'Dashboard', link: '/dashboard' },
+    { name: 'My Dashboard', link: '/my_dashboard' },
+    { name: 'Global', link: '/global' },
     { name: 'Stake', link: '/stake' },
     { name: 'Buy ALP/ADX', link: '/buy_alp_adx' },
-    // { name: 'Buy ADX', link: 'https://www.orca.so' },
     { name: 'Monitoring', link: '/monitoring' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
@@ -77,19 +76,15 @@ const RootLayout = ({
         <BurgerMenu userProfile={userProfile} PAGES={pages} />
       )}
 
-      <div className="w-full flex p-4 justify-center">
-        <div
-          className={twMerge(
-            'w-full flex max-w-[1400px] flex-col pt-[5em] pb-[3em] sm:pb-0 sm:pt-[3.5em]',
-          )}
-        >
+      <div className="w-full grow flex justify-center">
+        <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
           {children}
         </div>
       </div>
 
       <ToastContainer newestOnTop />
 
-      <Footer />
+      <Footer className="z-10" />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

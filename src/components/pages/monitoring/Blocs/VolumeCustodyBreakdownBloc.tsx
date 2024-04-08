@@ -1,11 +1,9 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { USD_DECIMALS } from '@/constant';
 import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
-import Bloc from '../Bloc';
 import NumberInfo from '../NumberInfo';
 import Table from '../Table';
 
@@ -19,9 +17,9 @@ export default function VolumeCustodyBreakdownBloc({
   const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
 
   return (
-    <Bloc
-      title="Volume Custody Breakdown"
-      className={twMerge('min-w-[45em]', className)}
+    <StyledContainer
+      title={<h1>Volume Custody Breakdown</h1>}
+      className={className}
     >
       <Table
         rowTitleWidth="90px"
@@ -62,6 +60,6 @@ export default function VolumeCustodyBreakdownBloc({
           },
         ]}
       />
-    </Bloc>
+    </StyledContainer>
   );
 }

@@ -6,7 +6,7 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-export default function TradingInputs({
+export default function TradingChartHeader({
   className,
   tokenList,
   selected,
@@ -23,11 +23,11 @@ export default function TradingInputs({
   return (
     <div
       className={twMerge(
-        'flex items-center justify-between sm:justify-start gap-3 h-14 bg-gray-300/85 backdrop-blur-md border border-gray-200 border-b-transparent rounded-t-2xl z-30',
+        'flex items-center justify-between sm:justify-start gap-3 h-14 z-30 bg-main',
         className,
       )}
     >
-      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full">
+      <div className="flex items-center h-full">
         <Select
           className="w-[8em]"
           selectedClassName="p-2"
@@ -69,8 +69,8 @@ export default function TradingInputs({
             className={twMerge(
               'font-mono text-sm',
               stats && stats[selected.symbol].dailyChange > 0
-                ? 'text-green-500'
-                : 'text-red-500',
+                ? 'text-green'
+                : 'text-red',
             )}
           >
             {stats

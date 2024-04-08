@@ -9,7 +9,7 @@ import externalLinkIcon from '../../../../../public/images/external-link-logo.pn
 export default function OrcaLink() {
   return (
     <div
-      className="rounded-2xl h-full w-full flex relative justify-center bg-cover bg-center min-h-[30em] overflow-hidden"
+      className="rounded-lg h-full w-full flex relative justify-center bg-cover bg-center min-h-[30em] overflow-hidden"
       style={{
         backgroundImage: `url('images/gradient.svg')`,
       }}

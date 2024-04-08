@@ -1,9 +1,7 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Staking } from '@/types';
 import { getTokenNameByMint, nativeToUi } from '@/utils';
 
-import Bloc from '../Bloc';
 import DateInfo from '../DateInfo';
 import NumberInfo from '../NumberInfo';
 import Table from '../Table';
@@ -23,9 +21,9 @@ export default function StakingBloc({
   const rewardTokenName = getTokenNameByMint(staking.rewardTokenMint);
 
   return (
-    <Bloc
-      title={`${stakedTokenName} Staking`}
-      className={twMerge('min-w-[25em] max-w-[35em]', className)}
+    <StyledContainer
+      title={<h1>{stakedTokenName} Staking</h1>}
+      className={className}
     >
       <Table
         rowTitleWidth="15em"
@@ -57,7 +55,7 @@ export default function StakingBloc({
         ]}
       />
 
-      <div className="text-lg ml-4 font-specialmonster">Resolved Rounds</div>
+      <div className="text-lg ml-4 font-special">Resolved Rounds</div>
 
       <Table
         rowTitleWidth="15em"
@@ -128,6 +126,6 @@ export default function StakingBloc({
           },
         ]}
       />
-    </Bloc>
+    </StyledContainer>
   );
 }

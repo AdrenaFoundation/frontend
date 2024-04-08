@@ -4,6 +4,7 @@ import { ImageRef } from '@/types';
 
 export type TokenInfo = {
   name: string;
+  color: string;
   symbol: string;
   image: ImageRef;
   coingeckoId: string;

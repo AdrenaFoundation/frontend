@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
-import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
@@ -191,15 +190,13 @@ export default function ALPSwap({
   })();
 
   return (
-    <div
-      className={twMerge(
-        'bg-gray-300/85 backdrop-blur-md border border-gray-200 p-4 rounded-2xl h-fit',
-        className,
-      )}
-    >
+    <div className={className}>
       <TabSelect
         selected={selectedAction}
-        tabs={[{ title: 'buy' }, { title: 'sell' }]}
+        tabs={[
+          { title: 'buy', activeColor: '#22c55e' },
+          { title: 'sell', activeColor: '#c13332' },
+        ]}
         onClick={(title) => {
           setSelectedAction(title);
         }}
