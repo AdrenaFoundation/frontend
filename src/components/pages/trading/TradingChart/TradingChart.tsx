@@ -3,12 +3,13 @@ import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { PositionExtended, Side, Token } from '@/types';
-import { formatPriceInfo } from '@/utils';
+import { formatNumber, formatPriceInfo } from '@/utils';
 
 import {
   IChartingLibraryWidget,
   IChartWidgetApi,
   IPositionLineAdapter,
+  ISymbolValueFormatter,
   ResolutionString,
 } from '../../../../../public/charting_library/charting_library';
 import datafeed from './datafeed';
@@ -192,6 +193,15 @@ export default function TradingChart({
           },
           theme: 'dark',
           interval: 'D' as ResolutionString,
+          custom_formatters: {
+            priceFormatterFactory: (): ISymbolValueFormatter | null => {
+              return {
+                format: (price: number): string => {
+                  return formatNumber(price, 0);
+                },
+              };
+            },
+          },
         });
 
         widget.onChartReady(() => {
