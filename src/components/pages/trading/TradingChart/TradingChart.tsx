@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { PositionExtended, Token } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatPriceInfo } from '@/utils';
 
 import {
   IChartingLibraryWidget,
