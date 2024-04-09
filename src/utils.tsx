@@ -180,7 +180,6 @@ export function addNotification({
     closeOnClick: true,
     pauseOnHover: true,
     draggable: false,
-    progress: undefined,
     theme: 'colored',
     icon: false,
     style: {

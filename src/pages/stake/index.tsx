@@ -22,6 +22,7 @@ import {
 } from '@/types';
 import {
   addFailedTxNotification,
+  addNotification,
   addSuccessTxNotification,
   getLockedStakeRemainingTime,
   nativeToUi,
@@ -107,12 +108,19 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
   const stakeAmount = async () => {
     if (!owner) {
-      toast.error('Please connect your wallet');
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
       return;
     }
 
     if (!amount) {
-      toast.error('Please enter an amount');
+      addNotification({
+        type: 'info',
+        title: 'Please enter an amount',
+      });
+
       return;
     }
 
@@ -158,7 +166,10 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
   const handleRemoveADXLiquidStake = async (amount: number) => {
     if (!owner) {
-      toast.error('Please connect your wallet');
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
       return;
     }
 
@@ -191,7 +202,10 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
   const handleLockedStakeRedeem = async (lockedStake: LockedStakeExtended) => {
     if (!owner) {
-      toast.error('Please connect your wallet');
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
       return;
     }
 
@@ -227,7 +241,10 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
   const handleClaimRewards = async (tokenSymbol: 'ADX' | 'ALP') => {
     if (!owner) {
-      toast.error('Please connect your wallet');
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
       return;
     }
 
