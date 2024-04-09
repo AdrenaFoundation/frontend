@@ -2,6 +2,7 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -223,7 +224,14 @@ export default function Trade({
           </div>
         </div>
 
-        <div className="min-h-[15em] z-30 grow overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
+        <div
+          className={twMerge(
+            'flex z-30 grow overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4',
+            !positions?.length
+              ? 'min-h-[15em] items-center justify-center'
+              : null,
+          )}
+        >
           <Positions
             positions={positions}
             triggerPositionsReload={triggerPositionsReload}
