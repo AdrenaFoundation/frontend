@@ -51,7 +51,7 @@ function createLiquidationPositionLine(
       .createPositionLine({})
       .setText(`${position.side === 'long' ? 'Long' : 'Short'} Liq.`)
       .setLineLength(3)
-      .setQuantity(formatPriceInfo(position.liquidationPrice, false, 3))
+      .setQuantity(formatPriceInfo(position.liquidationPrice))
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .setPrice(position.liquidationPrice!) // Price is checked before calling function
       .setLineColor(greyColor)
@@ -190,7 +190,7 @@ export default function TradingChart({
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
                 format: (price: number): string => {
-                  return formatNumber(price, 0);
+                  return formatPriceInfo(price).split('$')[1];
                 },
               };
             },

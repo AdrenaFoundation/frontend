@@ -72,7 +72,9 @@ export function formatNumber(
   precision: number,
   displayPlusSymbol = false,
 ): string {
-  const str = Number(nb.toFixed(precision)).toLocaleString(undefined, {
+  const str = Number(
+    nb === Math.floor(nb) ? nb : nb.toFixed(precision),
+  ).toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: precision,
   });
