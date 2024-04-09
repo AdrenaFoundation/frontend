@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
-import { PositionExtended, Side, Token } from '@/types';
+import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
 
 import {
@@ -17,28 +17,27 @@ import datafeed from './datafeed';
 let tvScriptLoadingPromise: Promise<unknown>;
 
 type Widget = IChartingLibraryWidget;
-const greenColor = 'rgba(7,149,107,0.9)';
-const redColor = 'rgba(201,36,58,0.9)';
-const greyColor = 'rgba(26,36,49,0.9)';
-const whiteColor = 'rgba(255,255,255,1)';
+const greenColor = '#07956be6';
+const redColor = '#c9243ae6';
+const greyColor = '#1A2431A0';
+const whiteColor = '#ffffff';
 
 function createEntryPositionLine(
   chart: IChartWidgetApi,
   position: PositionExtended,
 ): IPositionLineAdapter {
+  const color = position.side === 'long' ? greenColor : redColor;
   return chart
     .createPositionLine({})
     .setText(`${position.side === 'long' ? 'Long' : 'Short'} Open`)
     .setLineLength(3)
     .setQuantity(formatPriceInfo(position.sizeUsd))
     .setPrice(position.price)
-    .setLineColor(position.side === 'long' ? greenColor : redColor)
-    .setQuantityBackgroundColor(
-      position.side === 'long' ? greenColor : redColor,
-    )
-    .setBodyBackgroundColor(position.side === 'long' ? greenColor : redColor)
-    .setBodyBorderColor(position.side === 'long' ? greenColor : redColor)
-    .setQuantityBorderColor(position.side === 'long' ? greenColor : redColor)
+    .setLineColor(color)
+    .setQuantityBackgroundColor(color)
+    .setBodyBackgroundColor(color)
+    .setBodyBorderColor(color)
+    .setQuantityBorderColor(color)
     .setBodyTextColor(whiteColor)
     .setQuantityTextColor(whiteColor);
 }
@@ -76,27 +75,21 @@ export default function TradingChart({
   const [widget, setWidget] = useState<Widget | null>(null);
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
 
+  type PositionLine = {
+    position: PublicKey;
+    liquidation?: IPositionLineAdapter;
+    entry: IPositionLineAdapter;
+  };
+
   const [positionLines, setPositionLines] = useState<{
-    short: {
-      position: PublicKey;
-      liquidation?: IPositionLineAdapter;
-      entry: IPositionLineAdapter;
-    } | null;
-    long: {
-      position: PublicKey;
-      liquidation?: IPositionLineAdapter;
-      entry: IPositionLineAdapter;
-    } | null;
+    short: PositionLine | null;
+    long: PositionLine | null;
   } | null>(null);
 
   function modifyPositionLine(
     chart: IChartWidgetApi,
     position: PositionExtended | null,
-    positionLine: {
-      position: PublicKey;
-      liquidation?: IPositionLineAdapter;
-      entry: IPositionLineAdapter;
-    } | null,
+    positionLine: PositionLine | null,
   ) {
     if (!position || !positionLine) return;
 
@@ -239,10 +232,7 @@ export default function TradingChart({
   // When the token changes, we need to change the symbol of the widget so we only reload the chart
   useEffect(() => {
     setWidgetReady(false);
-    positionLines?.long?.entry.remove();
-    positionLines?.short?.entry.remove();
-    positionLines?.long?.liquidation?.remove();
-    positionLines?.short?.liquidation?.remove();
+
     widget?.setSymbol(
       `Crypto.${token.symbol}/USD`,
       'D' as ResolutionString,
@@ -250,6 +240,13 @@ export default function TradingChart({
         setWidgetReady(true);
       },
     );
+
+    // delete all positions on chart
+    positionLines?.long?.entry.remove();
+    positionLines?.short?.entry.remove();
+    positionLines?.long?.liquidation?.remove();
+    positionLines?.short?.liquidation?.remove();
+
     setPositionLines(null);
   }, [token.symbol]);
 
@@ -320,7 +317,9 @@ export default function TradingChart({
       }
 
       setPositionLines(newPositionLines);
-    } catch (e) {}
+    } catch {
+      // ignore error due to conflicts with charts and react effects
+    }
   }, [positions, token.symbol, !!widget, widgetReady]);
 
   return (
