@@ -1,39 +1,25 @@
-!(function (e, t) {
+!(function (t, e) {
   'object' == typeof exports && 'undefined' != typeof module
-    ? t(exports)
+    ? e(exports)
     : 'function' == typeof define && define.amd
-    ? define(['exports'], t)
-    : t(
-        ((e =
+    ? define(['exports'], e)
+    : e(
+        ((t =
           'undefined' != typeof globalThis
             ? globalThis
-            : e || self).TradingView = {}),
+            : t || self).TradingView = {}),
       );
-})(this, function (e) {
+})(this, function (t) {
   'use strict';
-  function t(e, i) {
-    const n = { ...e };
-    for (const o in i)
-      'object' != typeof e[o] || null === e[o] || Array.isArray(e[o])
-        ? void 0 !== i[o] && (n[o] = i[o])
-        : (n[o] = t(e[o], i[o]));
-    return n;
+  function e(t, n) {
+    const i = { ...t };
+    for (const o in n)
+      'object' != typeof t[o] || null === t[o] || Array.isArray(t[o])
+        ? void 0 !== n[o] && (i[o] = n[o])
+        : (i[o] = e(t[o], n[o]));
+    return i;
   }
-  const i = {
-      mobile: {
-        disabled_features: [
-          'left_toolbar',
-          'header_widget',
-          'timeframes_toolbar',
-          'edit_buttons_in_legend',
-          'context_menus',
-          'control_bar',
-          'border_around_the_chart',
-        ],
-        enabled_features: [],
-      },
-    },
-    n = {
+  const n = {
       width: 800,
       height: 500,
       interval: '1D',
@@ -44,6 +30,8 @@
       widgetbar: {
         details: !1,
         watchlist: !1,
+        news: !1,
+        datawindow: !1,
         watchlist_settings: { default_symbols: [] },
       },
       overrides: { 'mainSeriesProperties.showCountdown': !1 },
@@ -68,14 +56,23 @@
       client_id: '0',
       user_id: '0',
       charts_storage_api_version: '1.0',
-      favorites: { intervals: [], chartTypes: [] },
-    };
+      favorites: {
+        intervals: [],
+        chartTypes: [],
+        indicators: [],
+        drawingTools: [],
+      },
+    },
+    i = JSON.parse(
+      '[{"iso":"ar","dir":"rtl","language":"ar"},{"iso":"pt","dir":"ltr","language":"pt"},{"iso":"ca","dir":"ltr","language":"ca_ES"},{"iso":"cs","dir":"ltr","language":"cs"},{"iso":"de","dir":"ltr","language":"de"},{"iso":"en","dir":"ltr","language":"en"},{"iso":"es","dir":"ltr","language":"es"},{"iso":"fa","dir":"rtl","language":"fa"},{"iso":"fr","dir":"ltr","language":"fr"},{"iso":"he","dir":"rtl","language":"he_IL"},{"iso":"hu","dir":"ltr","language":"hu_HU"},{"iso":"id","dir":"ltr","language":"id_ID"},{"iso":"en","dir":"ltr","language":"en"},{"iso":"it","dir":"ltr","language":"it"},{"iso":"ja","dir":"ltr","language":"ja"},{"iso":"ko","dir":"ltr","language":"ko"},{"iso":"ms","dir":"ltr","language":"ms_MY"},{"iso":"pl","dir":"ltr","language":"pl"},{"iso":"ru","dir":"ltr","language":"ru"},{"iso":"sv","dir":"ltr","language":"sv"},{"iso":"th","dir":"ltr","language":"th"},{"iso":"tr","dir":"ltr","language":"tr"},{"iso":"vi","dir":"ltr","language":"vi"},{"iso":"zh-Hans","dir":"ltr","language":"zh"},{"iso":"zh-Hant","dir":"ltr","language":"zh_TW"},{"iso":"el","dir":"ltr","language":"el"},{"iso":"nl","dir":"ltr","language":"nl_NL"},{"iso":"ro","dir":"ltr","language":"ro"}]',
+    );
   let o = !1;
   function s() {
-    return 'CL v22.032 (internal id e2a841ff @ 2022-07-06T11:53:07.702Z)';
+    return 'CL v27.003 (internal id d1c8c1a5 @ 2024-03-14T16:58:45.558Z)';
   }
   const r = class {
-    constructor(e) {
+    constructor(t) {
+      var i, s;
       if (
         ((this._id = `tradingview_${((1048576 * (1 + Math.random())) | 0)
           .toString(16)
@@ -83,69 +80,73 @@
         (this._ready = !1),
         (this._readyHandlers = []),
         (this._onWindowResize = this._autoResizeChart.bind(this)),
-        !e.datafeed)
+        !t.datafeed)
       )
         throw new Error('Datafeed is not defined');
-      if (((this._options = t(n, e)), e.preset)) {
-        const t = i[e.preset];
-        t
-          ? (void 0 !== this._options.disabled_features
-              ? (this._options.disabled_features =
-                  this._options.disabled_features.concat(t.disabled_features))
-              : (this._options.disabled_features = t.disabled_features),
-            void 0 !== this._options.enabled_features
-              ? (this._options.enabled_features =
-                  this._options.enabled_features.concat(t.enabled_features))
-              : (this._options.enabled_features = t.enabled_features))
-          : console.warn('Unknown preset: `' + e.preset + '`');
-      }
-      'Dark' === this._options.theme &&
+      (null === (i = t.overrides) || void 0 === i
+        ? void 0
+        : i['mainSeriesProperties.priceAxisProperties.lockScale']) &&
+        (console.warn(
+          'mainSeriesProperties.priceAxisProperties.lockScale can not be set to true within the widget constructor',
+        ),
+        delete t.overrides[
+          'mainSeriesProperties.priceAxisProperties.lockScale'
+        ]),
+        (this._options = e(n, t));
+      'dark' ===
+        (null !== (s = this._options.theme) && void 0 !== s
+          ? s
+          : 'light'
+        ).toLowerCase() &&
         void 0 === this._options.loading_screen &&
         (this._options.loading_screen = { backgroundColor: '#131722' }),
         this._options.debug &&
           (o ||
             ((o = !0),
             console.log(
-              'Using CL v22.032 (internal id e2a841ff @ 2022-07-06T11:53:07.702Z)',
+              'Using CL v27.003 (internal id d1c8c1a5 @ 2024-03-14T16:58:45.558Z)',
             ))),
         this._create();
     }
-    onChartReady(e) {
-      this._ready ? e.call(this) : this._readyHandlers.push(e);
+    setDebugMode(t) {
+      this._innerAPI().setDebugMode(t);
+    }
+    onChartReady(t) {
+      this._ready ? t.call(this) : this._readyHandlers.push(t);
     }
     headerReady() {
       return this._innerWindowLoaded.then(() =>
         this._innerWindow().headerReady(),
       );
     }
-    onGrayedObjectClicked(e) {
-      this._doWhenInnerApiLoaded((t) => {
-        t.onGrayedObjectClicked(e);
+    onGrayedObjectClicked(t) {
+      this._doWhenInnerApiLoaded((e) => {
+        e.onGrayedObjectClicked(t);
       });
     }
-    onShortcut(e, t) {
-      this._doWhenInnerWindowLoaded((i) => {
-        i.createShortcutAction(e, t);
+    onShortcut(t, e) {
+      this._doWhenInnerWindowLoaded((n) => {
+        n.createShortcutAction(t, e);
       });
     }
-    subscribe(e, t) {
-      this._doWhenInnerApiLoaded((i) => {
-        i.subscribe(e, t);
+    subscribe(t, e) {
+      this._doWhenInnerApiLoaded((n) => {
+        n.subscribe(t, e);
       });
     }
-    unsubscribe(e, t) {
-      this._doWhenInnerApiLoaded((i) => {
-        i.unsubscribe(e, t);
+    unsubscribe(t, e) {
+      this._doWhenInnerApiLoaded((n) => {
+        n.unsubscribe(t, e);
       });
     }
-    chart(e) {
-      return this._innerAPI().chart(e);
+    chart(t) {
+      return this._innerAPI().chart(t);
     }
     getLanguage() {
       return this._options.locale;
     }
-    setSymbol(e, t, i) {
-      this._innerAPI().changeSymbol(e, t, i);
+    setSymbol(t, e, n) {
+      this._innerAPI().changeSymbol(t, e, n);
     }
     remove() {
       window.removeEventListener('resize', this._onWindowResize),
@@ -155,53 +156,53 @@
           this._iFrame.parentNode.removeChild(this._iFrame);
     }
     closePopupsAndDialogs() {
-      this._doWhenInnerApiLoaded((e) => {
-        e.closePopupsAndDialogs();
+      this._doWhenInnerApiLoaded((t) => {
+        t.closePopupsAndDialogs();
       });
     }
-    selectLineTool(e) {
-      this._innerAPI().selectLineTool(e);
+    selectLineTool(t, e) {
+      this._innerAPI().selectLineTool(t, e);
     }
     selectedLineTool() {
       return this._innerAPI().selectedLineTool();
     }
-    save(e) {
-      this._innerAPI().saveChart(e);
+    save(t, e) {
+      this._innerAPI().saveChart(t, e);
     }
-    load(e, t) {
-      this._innerAPI().loadChart({ json: e, extendedData: t });
+    load(t, e) {
+      this._innerAPI().loadChart({ json: t, extendedData: e });
     }
-    getSavedCharts(e) {
-      this._innerAPI().getSavedCharts(e);
+    getSavedCharts(t) {
+      this._innerAPI().getSavedCharts(t);
     }
-    loadChartFromServer(e) {
-      this._innerAPI().loadChartFromServer(e);
+    loadChartFromServer(t) {
+      this._innerAPI().loadChartFromServer(t);
     }
-    saveChartToServer(e, t, i) {
-      this._innerAPI().saveChartToServer(e, t, i);
+    saveChartToServer(t, e, n) {
+      this._innerAPI().saveChartToServer(t, e, n);
     }
-    removeChartFromServer(e, t) {
-      this._innerAPI().removeChartFromServer(e, t);
+    removeChartFromServer(t, e) {
+      this._innerAPI().removeChartFromServer(t, e);
     }
-    onContextMenu(e) {
-      this._doWhenInnerApiLoaded((t) => {
-        t.onContextMenu(e);
+    onContextMenu(t) {
+      this._doWhenInnerApiLoaded((e) => {
+        e.onContextMenu(t);
       });
     }
-    createButton(e) {
-      return this._innerWindow().createButton(e);
+    createButton(t) {
+      return this._innerWindow().createButton(t);
     }
-    createDropdown(e) {
-      return this._innerWindow().createDropdown(e);
+    createDropdown(t) {
+      return this._innerWindow().createDropdown(t);
     }
-    showNoticeDialog(e) {
-      this._doWhenInnerApiLoaded((t) => {
-        t.showNoticeDialog(e);
+    showNoticeDialog(t) {
+      this._doWhenInnerApiLoaded((e) => {
+        e.showNoticeDialog(t);
       });
     }
-    showConfirmDialog(e) {
-      this._doWhenInnerApiLoaded((t) => {
-        t.showConfirmDialog(e);
+    showConfirmDialog(t) {
+      this._doWhenInnerApiLoaded((e) => {
+        e.showConfirmDialog(t);
       });
     }
     showLoadChartDialog() {
@@ -222,21 +223,24 @@
     getStudiesList() {
       return this._innerAPI().getStudiesList();
     }
-    getStudyInputs(e) {
-      return this._innerAPI().getStudyInputs(e);
+    getStudyInputs(t) {
+      return this._innerAPI().getStudyInputs(t);
     }
-    addCustomCSSFile(e) {
-      this._innerWindow().addCustomCSSFile(e);
+    getStudyStyles(t) {
+      return this._innerAPI().getStudyStyles(t);
     }
-    applyOverrides(e) {
-      (this._options = t(this._options, { overrides: e })),
-        this._doWhenInnerWindowLoaded((t) => {
-          t.applyOverrides(e);
+    addCustomCSSFile(t) {
+      this._innerWindow().addCustomCSSFile(t);
+    }
+    applyOverrides(t) {
+      (this._options = e(this._options, { overrides: t })),
+        this._doWhenInnerWindowLoaded((e) => {
+          e.applyOverrides(t);
         });
     }
-    applyStudiesOverrides(e) {
-      this._doWhenInnerWindowLoaded((t) => {
-        t.applyStudiesOverrides(e);
+    applyStudiesOverrides(t) {
+      this._doWhenInnerWindowLoaded((e) => {
+        e.applyStudiesOverrides(t);
       });
     }
     watchList() {
@@ -251,27 +255,36 @@
     activeChart() {
       return this._innerAPI().activeChart();
     }
+    activeChartIndex() {
+      return this._innerAPI().activeChartIndex();
+    }
+    setActiveChart(t) {
+      return this._innerAPI().setActiveChart(t);
+    }
     chartsCount() {
       return this._innerAPI().chartsCount();
     }
     layout() {
       return this._innerAPI().layout();
     }
-    setLayout(e) {
-      this._innerAPI().setLayout(e);
+    setLayout(t) {
+      this._innerAPI().setLayout(t);
     }
     layoutName() {
       return this._innerAPI().layoutName();
     }
-    changeTheme(e, t) {
-      return this._innerWindow().changeTheme(e, t);
+    resetLayoutSizes(t) {
+      this._innerAPI().resetLayoutSizes(t);
+    }
+    changeTheme(t, e) {
+      return this._innerWindow().changeTheme(t, e);
     }
     getTheme() {
       return this._innerWindow().getTheme();
     }
     takeScreenshot() {
-      this._doWhenInnerApiLoaded((e) => {
-        e.takeScreenshot();
+      this._doWhenInnerApiLoaded((t) => {
+        t.takeScreenshot();
       });
     }
     lockAllDrawingTools() {
@@ -280,8 +293,11 @@
     hideAllDrawingTools() {
       return this._innerAPI().hideAllDrawingTools();
     }
-    drawOnAllCharts(e) {
-      this._innerAPI().drawOnAllCharts(e);
+    drawOnAllChartsEnabled() {
+      return this._innerAPI().drawOnAllChartsEnabled();
+    }
+    drawOnAllCharts(t) {
+      this._innerAPI().drawOnAllCharts(t);
     }
     magnetEnabled() {
       return this._innerAPI().magnetEnabled();
@@ -292,11 +308,14 @@
     undoRedoState() {
       return this._innerAPI().undoRedoState();
     }
-    setIntervalLinkingEnabled(e) {
-      this._innerAPI().setIntervalLinkingEnabled(e);
+    setIntervalLinkingEnabled(t) {
+      this._innerAPI().setIntervalLinkingEnabled(t);
     }
-    setTimeFrame(e) {
-      this._innerAPI().setTimeFrame(e);
+    setDateRangeLinkingEnabled(t) {
+      this._innerAPI().setDateRangeLinkingEnabled(t);
+    }
+    setTimeFrame(t) {
+      this._innerAPI().setTimeFrame(t);
     }
     symbolSync() {
       return this._innerAPI().symbolSync();
@@ -309,6 +328,12 @@
     }
     timeSync() {
       return this._innerAPI().timeSync();
+    }
+    dateRangeSync() {
+      return this._innerAPI().dateRangeSync();
+    }
+    setFeatureEnabled(t, e) {
+      this._innerAPI().setFeatureEnabled(t, e);
     }
     getAllFeatures() {
       return this._innerWindow().getAllFeatures();
@@ -328,8 +353,8 @@
     exitFullscreen() {
       this._innerAPI().exitFullscreen();
     }
-    takeClientScreenshot(e) {
-      return this._innerAPI().takeClientScreenshot(e);
+    takeClientScreenshot(t) {
+      return this._innerAPI().takeClientScreenshot(t);
     }
     navigationButtonsVisibility() {
       return this._innerWindow().getNavigationButtonsVisibility();
@@ -340,75 +365,138 @@
     dateFormat() {
       return this._innerWindow().getDateFormat();
     }
+    timeHoursFormat() {
+      return this._innerWindow().getTimeHoursFormat();
+    }
+    currencyAndUnitVisibility() {
+      return this._innerWindow().getCurrencyAndUnitVisibility();
+    }
+    supportedChartTypes() {
+      return this._innerAPI().supportedChartTypes();
+    }
+    watermark() {
+      return this._innerAPI().watermark();
+    }
+    customSymbolStatus() {
+      return this._innerWindow().customSymbolStatus();
+    }
+    setCSSCustomProperty(t, e) {
+      if (!1 === t.startsWith('--'))
+        throw new Error('customPropertyName should begin with a double hyphen');
+      this._innerWindow().document.body.style.setProperty(t, e);
+    }
+    getCSSCustomPropertyValue(t) {
+      if (!1 === t.startsWith('--'))
+        throw new Error('customPropertyName should begin with a double hyphen');
+      const e = this._innerWindow().document.body,
+        n = e.style.getPropertyValue(t);
+      if (n) return n;
+      return getComputedStyle(e).getPropertyValue(t);
+    }
+    unloadUnusedCharts() {
+      this._innerAPI().unloadUnusedCharts();
+    }
+    linking() {
+      return this._innerAPI().linking;
+    }
     _innerAPI() {
       return this._innerWindow().tradingViewApi;
     }
     _innerWindow() {
       return this._iFrame.contentWindow;
     }
-    _doWhenInnerWindowLoaded(e) {
+    _doWhenInnerWindowLoaded(t) {
       this._ready
-        ? e(this._innerWindow())
+        ? t(this._innerWindow())
         : this._innerWindowLoaded.then(() => {
-            e(this._innerWindow());
+            t(this._innerWindow());
           });
     }
-    _doWhenInnerApiLoaded(e) {
-      this._doWhenInnerWindowLoaded((t) => {
-        t.doWhenApiIsReady(() => e(this._innerAPI()));
+    _doWhenInnerApiLoaded(t) {
+      this._doWhenInnerWindowLoaded((e) => {
+        e.doWhenApiIsReady(() => t(this._innerAPI()));
       });
     }
     _autoResizeChart() {
       this._options.fullscreen &&
-        (this._iFrame.style.height = window.innerHeight + 'px');
+        ((this._iFrame.style.height = window.innerHeight + 'px'),
+        a &&
+          setTimeout(() => {
+            this._iFrame.style.height = window.innerHeight + 'px';
+          }, 30));
     }
     _create() {
-      const e = this._render();
-      this._options.container_id &&
-        console.warn(
-          '`container_id` is now deprecated. Please use `container` instead to either still pass a string or an `HTMLElement`.',
-        );
-      const t = this._options.container_id || this._options.container,
-        i = 'string' == typeof t ? document.getElementById(t) : t;
-      if (null === i)
+      var t, e;
+      const n =
+          null !==
+            (e =
+              null === (t = this._options.enabled_features) || void 0 === t
+                ? void 0
+                : t.includes('iframe_loading_compatibility_mode')) &&
+          void 0 !== e &&
+          e,
+        [i, o] = this._render(!n),
+        s = this._options.container,
+        r = 'string' == typeof s ? document.getElementById(s) : s;
+      if (null === r)
         throw new Error(
           `There is no such element - #${this._options.container}`,
         );
-      (i.innerHTML = e), (this._iFrame = i.querySelector(`#${this._id}`));
-      const n = this._iFrame;
-      (this._options.autosize || this._options.fullscreen) &&
-        ((n.style.width = '100%'),
-        this._options.fullscreen || (n.style.height = '100%')),
+      (r.innerHTML = i), (this._iFrame = r.querySelector(`#${this._id}`));
+      const a = this._iFrame;
+      (this._innerWindowLoaded = new Promise((t) => {
+        const e = () => {
+          a.removeEventListener('load', e, !1), t();
+        };
+        a.addEventListener('load', e, !1);
+      })),
+        n &&
+          (a.contentWindow
+            ? (a.contentWindow.document.open(),
+              a.contentWindow.document.write(o),
+              a.contentWindow.document.close())
+            : console.warn(
+                'Unable to locate contentWindow for the created iframe. Please try disabling the `iframe_loading_compatibility_mode` featureset.',
+              )),
+        (this._options.autosize || this._options.fullscreen) &&
+          ((a.style.width = '100%'),
+          this._options.fullscreen || (a.style.height = '100%')),
         window.addEventListener('resize', this._onWindowResize),
         this._onWindowResize(),
-        (this._innerWindowLoaded = new Promise((e) => {
-          const t = () => {
-            n.removeEventListener('load', t, !1), e();
-          };
-          n.addEventListener('load', t, !1);
-        })),
         this._innerWindowLoaded.then(() => {
-          this._innerWindow().widgetReady(() => {
-            this._ready = !0;
-            for (const e of this._readyHandlers)
-              try {
-                e.call(this);
-              } catch (e) {
-                console.error(e);
-              }
-            this._innerWindow().initializationFinished();
-          });
+          try {
+            this._innerWindow().widgetReady(() => {
+              this._ready = !0;
+              for (const t of this._readyHandlers)
+                try {
+                  t.call(this);
+                } catch (t) {
+                  console.error(t);
+                }
+              this._innerWindow().initializationFinished();
+            });
+          } catch (t) {
+            if (
+              t instanceof Error &&
+              /widgetReady is not a function/.test(t.message)
+            )
+              throw new Error(
+                `There was an error when loading the library. Usually this error means the library failed to load its static files. Check that the library files are available at ${
+                  window.location.host
+                }/${
+                  this._options.library_path || ''
+                } or correct the library_path option.`,
+              );
+          }
         });
     }
-    _render() {
+    _render(t) {
       const e = window;
       if (
         ((e[this._id] = {
           datafeed: this._options.datafeed,
-          customFormatters:
-            this._options.custom_formatters || this._options.customFormatters,
-          brokerFactory:
-            this._options.broker_factory || this._options.brokerFactory,
+          customFormatters: this._options.custom_formatters,
+          brokerFactory: this._options.broker_factory,
           overrides: this._options.overrides,
           studiesOverrides: this._options.studies_overrides,
           tradingCustomization: this._options.trading_customization,
@@ -421,6 +509,7 @@
           logo: this._options.logo,
           numeric_formatting: this._options.numeric_formatting,
           rss_news_feed: this._options.rss_news_feed,
+          rss_news_title: this._options.rss_news_title,
           newsProvider: this._options.news_provider,
           loadLastChart: this._options.load_last_chart,
           saveLoadAdapter: this._options.save_load_adapter,
@@ -434,6 +523,10 @@
           symbolSearchComplete: this._options.symbol_search_complete,
           contextMenu: this._options.context_menu,
           settingsOverrides: this._options.settings_overrides,
+          timeframe: this._options.timeframe,
+          customTimezones: this._options.custom_timezones,
+          customChartDescriptionFunction:
+            this._options.custom_chart_description_function,
         }),
         this._options.saved_data)
       )
@@ -445,17 +538,72 @@
         throw new Error(
           "Symbol is not defined: either 'symbol' or 'load_last_chart' option must be set",
         );
-      const t =
-        (this._options.library_path || '') +
-        `${encodeURIComponent(
-          this._options.locale,
-        )}-tv-chart.e2a841ff.html#symbol=` +
+      if (
+        (this._options.library_path &&
+          !this._options.library_path.endsWith('/') &&
+          console.warn(
+            'library_path option should contain a trailing forward slash',
+          ),
+        this._options.locale)
+      ) {
+        const t = encodeURIComponent(this._options.locale);
+        i.findIndex((e) => e.language === t) >= 0 ||
+          (console.warn("locale isn't supported. Using default of `en`."),
+          (this._options.locale = 'en'));
+      }
+      const n = (function (t, e) {
+        var n;
+        const o = new URL(`${t || ''}`, location.href).href,
+          s = JSON.parse(
+            '["bundles/runtime.13083b9d6b700c731a94.js","bundles/__LANG__.4716.e4ac74dfc9ec5374b00c.js","bundles/6150.bda60280b05cea478076.css","bundles/5142.2c34c8656148cc5203b7.js","bundles/library.73b161994e130a790de4.js"]',
+          ),
+          r = encodeURIComponent(e),
+          a =
+            null !== (n = i.find((t) => t.language === r)) && void 0 !== n
+              ? n
+              : { iso: 'en', dir: 'ltr' },
+          d = `lang="${a.iso}" dir="${a.dir}"`,
+          l = `\n${(function (t, e, n) {
+            if (void 0 === t) return '';
+            const i = [],
+              o = [];
+            for (const s of t)
+              s.endsWith('.js')
+                ? i.push(
+                    `<script defer crossorigin="anonymous" src="${s.replace(
+                      '__LANG__',
+                      n,
+                    )}"><\/script>`,
+                  )
+                : s.endsWith('.css') &&
+                  o.push(
+                    `<link type="text/css" href="${
+                      e ? s.replace(/\.css$/i, '.rtl.css') : s
+                    }" rel="stylesheet"/>`,
+                  );
+            return [...i, ...o].join('\n');
+          })(s, 'rtl' === a.dir, r)}\n`;
+        return `<!DOCTYPE html><html ${
+          (h = { bundles: l, localeLanguage: r, htmlAttrs: d, libraryPath: o })
+            .htmlAttrs
+        }><head><base href="${
+          h.libraryPath
+        }"><meta charset="utf-8"><script>window===window.parent&&(location.href="about:blank")<\/script> ${
+          h.bundles
+        } </head><body class="chart-page unselectable on-widget"><div class="loading-indicator" id="loading-indicator"></div><script>var JSServer={},__initialEnabledFeaturesets=["charting_library"]<\/script><script>(function() {\n\t\twindow.urlParams = (function () {\n\t\t\tvar match,\n\t\t\t\tpl\t = /\\+/g,  // Regex for replacing addition symbol with a space\n\t\t\t\tsearch = /([^&=]+)=?([^&]*)/g,\n\t\t\t\tdecode = function (s) { return decodeURIComponent(s.replace(pl, ' ')).replace(/<\\/?[^>]+(>|$)/g, ''); },\n\t\t\t\tquery = function() {\n\t\t\t\t\t// We don't use hash on the url because: safari 13 throws an error if you attempt this\n\t\t\t\t\t// on a blob, and safari 14 will strip hash from blob urls.\n\t\t\t\t\tif (frameElement && frameElement.dataset.widgetOptions) {\n\t\t\t\t\t\treturn frameElement.dataset.widgetOptions;\n\t\t\t\t\t} else {\n\t\t\t\t\t\tthrow "Unexpected use of this page";\n\t\t\t\t\t}\n\t\t\t\t}(),\n\t\t\t\tresult = {};\n\n\t\t\twhile (match = search.exec(query)) {\n\t\t\t\tresult[decode(match[1])] = decode(match[2]);\n\t\t\t}\n\n\t\t\tvar additionalSettingsObject = window.parent[result.uid];\n\n\t\t\tvar customObjectNames = ['datafeed', 'customFormatters', 'brokerFactory', 'save_load_adapter', 'customTranslateFunction', 'contextMenu'];\n\n\t\t\tfor (var p in additionalSettingsObject) {\n\t\t\t\tif (customObjectNames.indexOf(p) === -1) {\n\t\t\t\t\tresult[p] = JSON.stringify(additionalSettingsObject[p]);\n\t\t\t\t}\n\t\t\t}\n\n\t\t\treturn result;\n\t\t})();\n\n\t\twindow.locale = urlParams.locale;\n\t\twindow.language = urlParams.locale; // a very big attention needed here\n\t\twindow.customTranslateFunction = window.parent[urlParams.uid].customTranslateFunction;\n\t\twindow.customChartDescriptionFunction = window.parent[urlParams.uid].customChartDescriptionFunction;\n\n\t\twindow.addCustomCSSFile = function(href) {\n\t\t\tvar link = document.createElement('link');\n\t\t\tlink.setAttribute('type', 'text/css');\n\t\t\tlink.setAttribute('rel', 'stylesheet');\n\t\t\tlink.setAttribute('href', href);\n\t\t\tlink.setAttribute('cross-origin', 'anonymous');\n\n\t\t\twindow.loadedCustomCss = new Promise((resolve) => {\n\t\t\t\tlink.onload = resolve;\n\t\t\t\tlink.onerror = resolve;\n\t\t\t});\n\t\t\tdocument.body.appendChild(link);\n\t\t};\n\n\t\twindow.loadedCustomCss = Promise.resolve();\n\t\tif (!!urlParams.customCSS) {\n\t\t\twindow.addCustomCSSFile(urlParams.customCSS);\n\t\t}\n\n\t\tvar loadingScreenParams = {};\n\n\t\tif (typeof urlParams.loading_screen === 'string') {\n\t\t\ttry {\n\t\t\t\tloadingScreenParams = JSON.parse(urlParams.loading_screen);\n\t\t\t} catch(e) {}\n\t\t}\n\n\t\tvar loadingIndicatorElement = document.getElementById('loading-indicator');\n\n\t\tif (loadingScreenParams.backgroundColor) {\n\t\t\tloadingIndicatorElement.style = 'background-color: ' + loadingScreenParams.backgroundColor;\n\t\t}\n\n\t\t!function(){"use strict";var t,e=new WeakMap;!function(t){t[t.Element=1]="Element",t[t.Document=9]="Document"}(t||(t={}));var n={mini:"xsmall",xxsmall:"xxsmall",xsmall:"xsmall",small:"small",medium:"medium",large:"large"};var s,i,o,r,l,c=(void 0===l&&(l=""),s='<div class="tv-spinner '.concat(l,'" role="progressbar"></div>'),o=function(n,s){var i,o;return i=null==s?document.documentElement:s.nodeType===t.Document?s.documentElement:s,e&&(o=e.get(i)),o||((o=i.ownerDocument.createRange()).selectNodeContents(i),e&&e.set(i,o)),o.createContextualFragment(n)}(s,i),null!==(r=o.firstElementChild)&&o.removeChild(r),r),a=function(){function t(t){this._shown=!1,this._el=c.cloneNode(!0),this.setSize(n[t||"large"])}return t.prototype.spin=function(t){return this._el.classList.add("tv-spinner--shown"),void 0===this._container&&(this._container=t,void 0!==t&&t.appendChild(this._el)),this._shown=!0,this},t.prototype.stop=function(t){return t&&void 0!==this._container&&this._container.removeChild(this._el),this._el&&this._el.classList.remove("tv-spinner--shown"),this._shown=!1,this},t.prototype.setStyle=function(t){var e=this;return Object.keys(t).forEach((function(n){var s=t[n];void 0!==s&&e._el.style.setProperty(n,s)})),this},t.prototype.style=function(){return this._el.style},t.prototype.setSize=function(t){var e=void 0!==t?"tv-spinner--size_".concat(t):"";return this._el.className="tv-spinner ".concat(e," ").concat(this._shown?"tv-spinner--shown":""),this},t.prototype.getEl=function(){return this._el},t.prototype.destroy=function(){this.stop(),delete this._el,delete this._container},t}();window.Spinner=a}();\n\n\n\t\tvar spinnerColor = (loadingScreenParams.foregroundColor) ? loadingScreenParams.foregroundColor : undefined;\n\n\t\tvar loadingSpinner = new Spinner('large').setStyle({\n\t\t\t'--tv-spinner-color': spinnerColor,\n\t\t\tzIndex: String(2e9),\n\t\t});\n\t\tloadingSpinner.getEl().classList.add('spinner');\n\t\tloadingSpinner.spin(loadingIndicatorElement);\n\t})();<\/script></body></html>`;
+        var h;
+      })(this._options.library_path || '', this._options.locale);
+      let o = new URL('about:blank');
+      if (t) {
+        const t = new Blob([n], { type: 'text/html' }),
+          e = URL.createObjectURL(t);
+        o = new URL(e);
+      }
+      const s =
+        'symbol=' +
         encodeURIComponent(this._options.symbol || '') +
         '&interval=' +
         encodeURIComponent(this._options.interval) +
-        (this._options.timeframe
-          ? '&timeframe=' + encodeURIComponent(this._options.timeframe)
-          : '') +
         (this._options.toolbar_bg
           ? '&toolbarbg=' +
             encodeURIComponent(this._options.toolbar_bg.replace('#', ''))
@@ -532,28 +680,28 @@
           ? '&time_scale=' +
             encodeURIComponent(JSON.stringify(this._options.time_scale))
           : '');
-      return (
-        '<iframe id="' +
-        this._id +
-        '" name="' +
-        this._id +
-        '"  src="' +
-        t +
-        '"' +
-        (this._options.autosize || this._options.fullscreen
-          ? ''
-          : ' width="' +
-            this._options.width +
-            '" height="' +
-            this._options.height +
-            '"') +
-        ' title="Financial Chart" frameborder="0" allowTransparency="true" scrolling="no" allowfullscreen style="display:block;"></iframe>'
-      );
+      return [
+        `<iframe\n\t\tid="${this._id}" name="${this._id}" src="${
+          o.href
+        }" data-widget-options="${s}"\n\t\t${
+          this._options.autosize || this._options.fullscreen
+            ? ''
+            : `width="${this._options.width}" height="${this._options.height}"`
+        } title="Financial Chart" frameborder="0" allowTransparency="true" scrolling="no" allowfullscreen style="display:block;">\n\t</iframe>`,
+        n,
+      ];
     }
   };
-  (window.TradingView = window.TradingView || {}),
-    (window.TradingView.version = s),
-    (e.version = s),
-    (e.widget = r),
-    Object.defineProperty(e, '__esModule', { value: !0 });
+  'undefined' != typeof window &&
+    ((window.TradingView = window.TradingView || {}),
+    (window.TradingView.version = s));
+  const a =
+    !(
+      'undefined' == typeof window ||
+      !window.navigator ||
+      !window.navigator.userAgent
+    ) && window.navigator.userAgent.includes('CriOS');
+  (t.version = s),
+    (t.widget = r),
+    Object.defineProperty(t, '__esModule', { value: !0 });
 });

@@ -1,10 +1,8 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Cortex, VestExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
-import Bloc from '../Bloc';
 import DateInfo from '../DateInfo';
 import NumberInfo from '../NumberInfo';
 import OnchainAccountInfo from '../OnchainAccountInfo';
@@ -21,7 +19,7 @@ export default function VestingBloc({
   vests: VestExtended[] | null;
 }) {
   return (
-    <Bloc title="Vesting" className={twMerge('min-w-[44em]', className)}>
+    <StyledContainer title={<h1>Vesting</h1>} className={className}>
       <Table
         rowTitleWidth="15em"
         data={[
@@ -119,6 +117,6 @@ export default function VestingBloc({
           }))}
         />
       ) : null}
-    </Bloc>
+    </StyledContainer>
   );
 }

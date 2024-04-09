@@ -45,7 +45,7 @@ export default function LockedStakedElement({
   }, [calculateTimeRemaining]);
 
   return (
-    <div className="flex flex-col sm:flex-row border pt-2 pb-2 pl-4 pr-4 justify-between bg-dark rounded-2xl">
+    <div className="flex flex-col sm:flex-row border pt-2 pb-2 pl-4 pr-4 justify-between bg-third rounded-lg">
       <div className="flex flex-row sm:flex-col justify-between">
         <div>
           <span className="text-lg font-mono">

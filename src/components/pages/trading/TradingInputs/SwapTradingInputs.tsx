@@ -278,18 +278,19 @@ export default function SwapTradingInputs({
   }, [inputA, inputB, tokenA, wallet, walletTokenBalances]);
 
   return (
-    <div className={twMerge('relative flex flex-col', className)}>
+    <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
       {/* Input A */}
-      <div className="text-sm text-txtfade flex items-center">
+      <h5 className="flex items-center ml-4">
         Pay
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."
           className="w-3 ml-1"
         />
-      </div>
+      </h5>
 
       <TradingInput
         className="mt-2 text-sm"
+        inputClassName="overflow-hidden"
         value={inputA}
         subText={
           priceA ? (
@@ -327,7 +328,7 @@ export default function SwapTradingInputs({
             balance = walletTokenBalances[tokenA.symbol];
 
           return (
-            <div className="ml-auto mt-3">
+            <div className="ml-auto mt-3 mr-4">
               <span className="text-txtfade text-sm font-mono">
                 {balance !== null
                   ? formatNumber(balance, tokenA.decimals)
@@ -345,7 +346,7 @@ export default function SwapTradingInputs({
       <div className="relative w-full overflow-visible flex justify-center items-center z-[2] mt-8 mb-2">
         <div
           className={twMerge(
-            'group absolute bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center',
+            'group absolute bg-third border flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center',
           )}
           onClick={() => {
             switchAB();
@@ -364,17 +365,18 @@ export default function SwapTradingInputs({
       </div>
 
       {/* Input B */}
-      <div className="text-sm text-txtfade flex items-center mt-3">
+      <h5 className="flex items-center mt-2 ml-4">
         Receive
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."
           className="w-3 ml-1"
         />
-      </div>
+      </h5>
 
       <TradingInput
         disabled={true}
         className="mt-3 text-sm"
+        inputClassName="overflow-hidden"
         value={inputB}
         subText={
           priceB ? (
@@ -399,7 +401,7 @@ export default function SwapTradingInputs({
           if (balance === null) return null;
 
           return (
-            <div className="ml-auto mt-3">
+            <div className="ml-auto mt-3 mr-4">
               <span className="text-txtfade text-sm font-mono">
                 {custodyTokenB
                   ? formatNumber(custodyTokenB.liquidity, tokenB.decimals)
@@ -414,7 +416,7 @@ export default function SwapTradingInputs({
       }
 
       <div className="flex flex-col mt-5">
-        <div className="text-sm text-txtfade flex items-center">
+        <h5 className="text-sm flex items-center ml-4">
           Verify
           <InfoAnnotation
             text={
@@ -433,7 +435,7 @@ export default function SwapTradingInputs({
             }
             className="w-3 ml-1"
           />
-        </div>
+        </h5>
 
         <SwapInfo
           className="mt-3 text-sm"
@@ -445,7 +447,7 @@ export default function SwapTradingInputs({
 
       {/* Button to execute action */}
       <Button
-        className="w-full justify-center mt-8"
+        className="w-full justify-center mt-auto"
         size="lg"
         title={buttonTitle}
         disabled={

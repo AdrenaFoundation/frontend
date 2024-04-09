@@ -28,7 +28,7 @@ export default function Score({
 
   return (
     <div
-      className={twMerge('text-9xl font-specialmonster', className)}
+      className={twMerge('text-9xl font-special', className)}
       style={{
         color,
       }}

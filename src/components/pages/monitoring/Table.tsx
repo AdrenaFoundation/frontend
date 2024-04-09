@@ -34,7 +34,7 @@ export default function Table({
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className="text-lg font-specialmonster overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
+            className="text-lg font-special overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
           >
             {title}
           </div>
@@ -42,10 +42,7 @@ export default function Table({
       </div>
 
       {data.map(({ rowTitle, ...v }, i) => (
-        <div
-          key={i}
-          className="flex w-full border-b last:border-b-0 border-gray-400 text-sm"
-        >
+        <div key={i} className="flex w-full border-b last:border-b-0 text-sm">
           <div
             className="flex shrink-0 items-center"
             style={{

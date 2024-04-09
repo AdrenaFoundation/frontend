@@ -1,9 +1,7 @@
-import { twMerge } from 'tailwind-merge';
-
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, PoolExtended } from '@/types';
 
-import Bloc from '../Bloc';
 import NumberInfo from '../NumberInfo';
 import Table from '../Table';
 
@@ -30,9 +28,9 @@ export default function AssetsUnderManagementBloc({
   }, 0);
 
   return (
-    <Bloc
-      title="Assets Under Management"
-      className={twMerge('min-w-[20em]', className)}
+    <StyledContainer
+      title={<h1>Assets Under Management</h1>}
+      className={className}
     >
       <Table
         rowTitleWidth="50%"
@@ -73,6 +71,6 @@ export default function AssetsUnderManagementBloc({
           })),
         ]}
       />
-    </Bloc>
+    </StyledContainer>
   );
 }

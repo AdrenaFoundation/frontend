@@ -4,39 +4,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // background colors
-        // ADRENA Style
-        main: '#171717',
-        secondary: '#151923',
-        third: '#343232',
-        highlight: '#36538f', // RED: #C43152
+        main: '#060D16',
+        secondary: '#061018',
+        third: '#151e29',
+        black: '#000000',
+        highlight: '#fffffff5',
+        bcolor: '#2a2a2a',
 
         // text
         txtfade: '#858789',
-        txtregular: '#ffffff',
-
         light: 'var(--color-light)',
-        dark: '#0b0e13',
 
-        gray: {
-          200: 'var(--color-gray-200)',
-          300: 'var(--color-gray-300)',
-          '300/85': 'var(--color-gray-300-85)',
-          400: 'var(--color-gray-400)',
-          500: 'var(--color-gray-500)',
-        },
-        blue: {
-          200: 'var(--color-blue-200)',
-          300: 'var(--color-blue-300)',
-          400: 'var(--color-blue-400)',
-          500: 'var(--color-blue-500)',
-        },
-        red: {
-          200: 'var(--color-red-200)',
-          300: 'var(--color-red-300)',
-          400: 'var(--color-red-400)',
-          500: 'var(--color-red-500)',
-        },
+        green: '#07956B',
+        red: '#C9243A',
       },
       fontSize: {
         xs: '0.65rem', // Extra Small
@@ -53,15 +33,15 @@ module.exports = {
     },
     font: {
       mono: ['Roboto Mono', 'sans-serif'],
+      regular: ['regular', 'sans-serif'],
+      boldy: ['boldy', 'sans-serif'],
+      special: ['special', 'sans-serif'],
     },
-
     fontFamily: {
       regular: ['regular'],
-      txtthin: ['thin'],
-      txtbold: ['bold'],
+      special: ['special'],
+      boldy: ['boldy'],
       mono: 'Roboto Mono',
-
-      specialmonster: ['specialmonster'],
     },
   },
   plugins: [],

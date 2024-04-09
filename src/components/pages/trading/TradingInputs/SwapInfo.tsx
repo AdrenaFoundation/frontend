@@ -1,6 +1,7 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { SwapAmountAndFees, Token } from '@/types';
@@ -25,13 +26,8 @@ export default function SwapInfo({
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col bg-dark border p-4 rounded-2xl',
-        className,
-      )}
-    >
-      <div className="w-full flex justify-between items-start mt-3">
+    <StyledSubSubContainer className={twMerge('flex-col pr-4', className)}>
+      <div className="w-full flex justify-between items-start">
         <div className="flex">
           <InfoAnnotation
             text="Swap fees are deducted from both the input token (token IN) and the output token (token OUT). For example, in a BTC to USDC swap, there are fees to be paid in BTC and in USDC."
@@ -61,7 +57,7 @@ export default function SwapInfo({
         </span>
       </div>
 
-      <div className="h-[1px] bg-gray-200 w-full mt-4 mb-2" />
+      <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
       <div className="flex flex-col mt-3">
         <div className="w-full flex justify-between items-start">
@@ -126,6 +122,6 @@ export default function SwapInfo({
           </span>
         </div>
       </div>
-    </div>
+    </StyledSubSubContainer>
   );
 }

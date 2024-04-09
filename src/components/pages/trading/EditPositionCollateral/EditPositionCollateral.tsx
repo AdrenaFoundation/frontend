@@ -24,7 +24,7 @@ import TradingInput from '../TradingInput/TradingInput';
 const LEVERAGE_OVERFLOW = 999;
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 export default function EditPositionCollateral({
@@ -274,6 +274,7 @@ export default function EditPositionCollateral({
   return (
     <div className={twMerge('flex flex-col gap-3 h-full w-[24em]', className)}>
       <TabSelect
+        wrapperClassName="h-12 flex items-center"
         selected={selectedAction}
         tabs={[{ title: 'deposit' }, { title: 'withdraw' }]}
         onClick={(title) => {
@@ -286,6 +287,7 @@ export default function EditPositionCollateral({
       {selectedAction === 'deposit' ? (
         <>
           <TradingInput
+            className="ml-4 mr-4"
             value={input}
             maxButton={true}
             selectedToken={position.token}
@@ -307,11 +309,11 @@ export default function EditPositionCollateral({
               if (balance === null) return null;
 
               return (
-                <div className="ml-auto">
-                  <span className="text-txtfade text-sm font-mono">
+                <div className="ml-auto mr-4">
+                  <span className="text-sm text-txtfade font-mono">
                     {formatNumber(balance, position.collateralToken.decimals)}
                   </span>
-                  <span className="text-txtfade text-sm ml-1">
+                  <span className="text-sm text-txtfade ml-1">
                     {position.collateralToken.symbol} in wallet
                   </span>
                 </div>
@@ -322,6 +324,7 @@ export default function EditPositionCollateral({
       ) : (
         <>
           <TradingInput
+            className="ml-4 mr-4"
             value={input}
             selectedToken={
               {
@@ -335,30 +338,30 @@ export default function EditPositionCollateral({
             onChange={setInput}
           />
 
-          <div className="text-txtfade text-sm ml-auto">
+          <div className="text-sm ml-auto mr-4">
             {formatPriceInfo(position.collateralUsd)} of collateral in the
             position
           </div>
         </>
       )}
 
-      <div className="flex flex-col gap-3 text-sm mt-1">
+      <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">
         {selectedAction === 'withdraw' ? (
-          <div className="bg-dark flex justify-evenly p-2 rounded-2xl border">
+          <div className="bg-third flex justify-evenly p-2 rounded-lg border">
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              className="text-md  hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(25))}
             >
               25%
             </div>
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              className="text-md  hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(50))}
             >
               50%
             </div>
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              className="text-md  hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(75))}
             >
               75%
@@ -366,9 +369,9 @@ export default function EditPositionCollateral({
           </div>
         ) : null}
 
-        <div className="flex flex-col border p-4 pt-2 bg-dark rounded-2xl">
+        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Size</div>
+            <div className="text-sm">Size</div>
 
             <div className="flex text-sm font-mono">
               {formatPriceInfo(position.sizeUsd)}
@@ -376,7 +379,7 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Entry Price</div>
+            <div className="text-sm">Entry Price</div>
 
             <div className="text-sm font-mono">
               {formatPriceInfo(position.price)}
@@ -384,7 +387,7 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Mark Price</div>
+            <div className="text-sm">Mark Price</div>
 
             <div className="text-sm font-mono">
               {formatPriceInfo(markPrice)}
@@ -392,12 +395,12 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">PnL</div>
+            <div className="text-sm">PnL</div>
 
             <div className="text-sm font-mono">
               {position.pnl && markPrice ? (
                 <span
-                  className={`text-sm text-${
+                  className={`text-sm font-mono text-${
                     position.pnl > 0 ? 'green' : 'red'
                   }-500`}
                 >
@@ -410,36 +413,13 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Collateral</div>
+            <div className="text-sm">Initial Collateral</div>
 
             <div className="flex">
               <div className="flex flex-col items-end justify-center">
-                <div className="flex">
-                  <span
-                    className={twMerge(
-                      'font-mono',
-                      input ? 'text-txtfade text-xs' : 'text-sm',
-                    )}
-                  >
-                    {formatNumber(
-                      position.collateralAmount,
-                      position.collateralToken.decimals,
-                    )}{' '}
-                  </span>
-
-                  <span
-                    className={twMerge(
-                      'font-mono ml-1',
-                      input ? 'text-txtfade text-xs' : 'text-sm',
-                    )}
-                  >
-                    {position.collateralToken.symbol}
-                  </span>
-                </div>
-
                 <div
                   className={twMerge(
-                    'flex text-txtfade font-mono',
+                    'flex  font-mono',
                     input ? 'text-xs' : 'text-sm',
                   )}
                 >
@@ -453,21 +433,7 @@ export default function EditPositionCollateral({
 
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end">
-                      <div>
-                        <span className="text-sm font-mono">
-                          {updatedInfos
-                            ? formatNumber(
-                                updatedInfos.collateral,
-                                position.collateralToken.decimals,
-                              )
-                            : '-'}{' '}
-                        </span>
-                        <span className="text-sm">
-                          {position.collateralToken.symbol}
-                        </span>
-                      </div>
-
-                      <div className="text-sm text-txtfade font-mono">
+                      <div className="text-sm font-mono">
                         {updatedInfos
                           ? formatPriceInfo(updatedInfos.collateralUsd)
                           : '-'}
@@ -480,12 +446,12 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Leverage</div>
+            <div className="text-sm">Leverage</div>
             <div className="flex items-center">
               <div
                 className={twMerge(
                   'flex font-mono',
-                  input ? 'text-txtfade text-xs' : 'text-sm',
+                  input ? ' text-xs' : 'text-sm',
                 )}
               >
                 {formatNumber(position.leverage, 2)}x
@@ -497,7 +463,7 @@ export default function EditPositionCollateral({
 
                   {updatedInfos ? (
                     updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
-                      <span className="text-sm text-txtfade">Overflow</span>
+                      <span className="text-sm ">Overflow</span>
                     ) : (
                       <span className="text-sm font-mono">
                         {formatNumber(updatedInfos.leverage, 2)}x
@@ -512,13 +478,10 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Liquidation Price</div>
+            <div className="text-sm">Liquidation Price</div>
             <div className="flex items-center">
               <div
-                className={twMerge(
-                  'font-mono',
-                  input ? 'text-txtfade text-xs' : 'text-sm',
-                )}
+                className={twMerge('font-mono', input ? ' text-xs' : 'text-sm')}
               >
                 {formatPriceInfo(position.liquidationPrice)}
               </div>
@@ -540,11 +503,10 @@ export default function EditPositionCollateral({
       </div>
 
       <Button
-        className="mt-4"
+        className="mt-4 rounded-none font-boldy text-lg"
         size="lg"
         title={executeBtnText}
         onClick={() => handleExecute()}
-        // disabled={!!overMaxAuthorizedLeverage || !!overMinAuthorizedLeverage}
       />
     </div>
   );

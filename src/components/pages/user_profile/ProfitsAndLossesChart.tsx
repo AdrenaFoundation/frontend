@@ -28,14 +28,14 @@ export default function ProfitsAndLossesChart({
         content={
           <div className="flex flex-col space-y-1 text-sm">
             <div className="flex items-center">
-              <span className="font-specialmonster">Profits:</span>
+              <span className="font-special">Profits:</span>
               <span className="ml-1 text-sm text-[#32a330]">
                 {formatPriceInfo(longProfitsUsd + shortProfitsUsd)}
               </span>
             </div>
 
             <div className="flex items-center">
-              <span className="font-specialmonster">Losses:</span>
+              <span className="font-special">Losses:</span>
               <span className="ml-1 text-sm text-[#d23e3e]">
                 -{formatPriceInfo(longLossesUsd + shortLossesUsd)}
               </span>
@@ -85,7 +85,7 @@ export default function ProfitsAndLossesChart({
             <div className="w-[10em] flex items-center justify-center">
               {
                 <NumberInfo
-                  className="text-xl font-specialmonster"
+                  className="text-xl font-special"
                   value={
                     longProfitsUsd +
                     shortProfitsUsd -

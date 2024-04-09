@@ -1,9 +1,13 @@
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import Loader from '@/components/Loader/Loader';
 import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import OrcaLink from '@/components/pages/buy_alp_adx/OrcaLink/OrcaLink';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
@@ -178,61 +182,94 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-evenly gap-x-4">
-      <div className="flex w-full h-auto flex-col gap-3 bg-gray-300/75 backdrop-blur-md border border-gray-200 rounded-2xl p-5">
-        <div className="flex items-center">
-          <Image
-            src={window.adrena.client.alpToken.image}
-            width={32}
-            height={32}
-            alt="ALP icon"
-          />
+    <div className="flex flex-col md:flex-row items-evenly justify-center gap-x-4 p-4">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
+        <RiveAnimation
+          animation="fred-bg"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 left-0 h-[150vh] w-[220vh] scale-x-[-1]"
+        />
 
-          <div className="flex flex-col justify-start ml-2">
-            <h2 className="">ALP</h2>
-            <span className="opacity-50">The Pool Token</span>
-          </div>
-        </div>
-
-        <ALPSwap
-          className="lg:max-w-[30em] self-center"
-          triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
-          collateralInput={collateralInput}
-          setCollateralInput={setCollateralInput}
-          alpInput={alpInput}
-          setAlpInput={setAlpInput}
-          collateralToken={collateralToken}
-          allowedCollateralTokens={allowedCollateralTokens}
-          feesUsd={feesUsd}
-          setFeesUsd={setFeesUsd}
-          onCollateralTokenChange={onCollateralTokenChange}
-          selectedAction={selectedAction}
-          setSelectedAction={setSelectedAction}
-          setAlpPrice={setAlpPrice}
-          setCollateralPrice={setCollateralPrice}
-          alpPrice={alpPrice}
-          collateralPrice={collateralPrice}
-          feesAndAmounts={feesAndAmounts}
+        <RiveAnimation
+          animation="fred-bg"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 right-[-8em] h-[190vh] w-[180vh] scale-y-[-1]"
         />
       </div>
 
-      <div className="flex w-full h-auto flex-col border border-gray-200 rounded-2xl relative">
-        <div className="flex items-center absolute z-20 top-4 left-4">
-          <Image
-            src={window.adrena.client.adxToken.image}
-            width={32}
-            height={32}
-            alt="ADX icon"
-          />
+      <StyledContainer
+        className="max-w-[35em]"
+        title={
+          <div className="flex items-center">
+            <Image
+              src={window.adrena.client.alpToken.image}
+              width={32}
+              height={32}
+              alt="ALP icon"
+            />
 
-          <div className="flex flex-col justify-start ml-2">
-            <h2 className="">ADX</h2>
-            <span className="opacity-50">The Governance Token</span>
+            <div className="flex flex-col justify-start ml-2">
+              <h1>ALP</h1>
+              <span className="opacity-50">The Pool Token</span>
+            </div>
           </div>
-        </div>
+        }
+      >
+        <StyledSubContainer className="lg:max-w-[25em] self-center">
+          <ALPSwap
+            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+            collateralInput={collateralInput}
+            setCollateralInput={setCollateralInput}
+            alpInput={alpInput}
+            setAlpInput={setAlpInput}
+            collateralToken={collateralToken}
+            allowedCollateralTokens={allowedCollateralTokens}
+            feesUsd={feesUsd}
+            setFeesUsd={setFeesUsd}
+            onCollateralTokenChange={onCollateralTokenChange}
+            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
+            setAlpPrice={setAlpPrice}
+            setCollateralPrice={setCollateralPrice}
+            alpPrice={alpPrice}
+            collateralPrice={collateralPrice}
+            feesAndAmounts={feesAndAmounts}
+          />
+        </StyledSubContainer>
+      </StyledContainer>
 
+      <StyledContainer
+        className="p-0 max-w-[35em]"
+        titleClassName="p-0"
+        bodyClassName="h-full"
+        title={
+          <div className="flex items-center absolute z-20 top-4 left-4">
+            <Image
+              src={window.adrena.client.adxToken.image}
+              width={32}
+              height={32}
+              alt="ADX icon"
+            />
+
+            <div className="flex flex-col justify-start ml-2">
+              <h1>ADX</h1>
+              <span className="opacity-50">The Governance Token</span>
+            </div>
+          </div>
+        }
+      >
         <OrcaLink />
-      </div>
+      </StyledContainer>
     </div>
   );
 }

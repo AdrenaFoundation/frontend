@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
 import githubLogo from '../../../public/images/github.svg';
-import twitterLogo from '../../../public/images/twitter.svg';
+import twitterLogo from '../../../public/images/x.svg';
 
 export default function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={twMerge(
-        'mt-auto flex-col w-full pt-4 pb-4 border-t border-grey justify-center items-center bg-gray-300/85 backdrop-blur-md',
+        'flex flex-col w-full border-t border-bcolor justify-center items-center bg-main h-14 shrink-0 max-h-14 min-h-14',
         className,
       )}
     >
@@ -19,7 +19,7 @@ export default function Footer({ className }: { className?: string }) {
           target="_blank"
         >
           <Image
-            className="hover:opacity-90 cursor-pointer"
+            className="hover:opacity-90 cursor-pointer h-5 w-auto"
             src={githubLogo}
             alt="github icon"
             width="25"
@@ -29,7 +29,7 @@ export default function Footer({ className }: { className?: string }) {
 
         <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
           <Image
-            className="hover:opacity-90 cursor-pointer ml-8"
+            className="hover:opacity-90 cursor-pointer ml-8 h-4 w-auto"
             src={twitterLogo}
             alt="twitter icon"
             width="20"
