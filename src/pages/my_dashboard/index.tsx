@@ -50,7 +50,10 @@ export default function MyDashboard({
 
   const handleLockedStakeRedeem = async (lockedStake: LockedStakeExtended) => {
     if (!owner) {
-      toast.error('Please connect your wallet');
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
       return;
     }
 
