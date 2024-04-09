@@ -291,4 +291,6 @@ export type AdrenaProgram = Program<Adrena>;
 //
 // Constants
 //
-export type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;
+
+export type AdxLockPeriod = 0 | 180 | 360 | 540 | 720;
+export type AlpLockPeriod = 180 | 360 | 540 | 720;

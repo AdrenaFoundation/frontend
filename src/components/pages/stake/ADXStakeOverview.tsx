@@ -7,7 +7,7 @@ import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSub
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
-import { LockedStakeExtended, LockPeriod } from '@/types';
+import { AdxLockPeriod, LockedStakeExtended } from '@/types';
 
 export default function ADXStakeOverview({
   totalLiquidStaked,
@@ -23,7 +23,7 @@ export default function ADXStakeOverview({
   totalLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
-  handleClickOnStakeMore: (initialLockPeriod: LockPeriod) => void;
+  handleClickOnStakeMore: (initialLockPeriod: AdxLockPeriod) => void;
   handleClickOnRedeem: () => void;
   handleClickOnClaimRewards: () => void;
   className?: string;

@@ -7,7 +7,7 @@ import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSub
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
-import { LockedStakeExtended, LockPeriod } from '@/types';
+import { AlpLockPeriod, LockedStakeExtended } from '@/types';
 
 export default function ALPStakeOverview({
   totalLockedStake,
@@ -20,7 +20,7 @@ export default function ALPStakeOverview({
   totalLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
-  handleClickOnStakeMore: (initialLockPeriod: LockPeriod) => void;
+  handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod) => void;
   handleClickOnClaimRewards: () => void;
   className?: string;
 }) {
