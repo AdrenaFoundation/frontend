@@ -217,6 +217,7 @@ export default function Trade({
                       ? tokenB
                       : tokenA
                   }
+                  positions={positions}
                 />
               </>
             ) : null}
