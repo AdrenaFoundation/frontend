@@ -18,7 +18,7 @@ let tvScriptLoadingPromise: Promise<unknown>;
 type Widget = IChartingLibraryWidget;
 const greenColor = 'rgba(7,149,107,0.9)';
 const redColor = 'rgba(201,36,58,0.9)';
-const greyColor = 'rgba(26,36,49,1)';
+const greyColor = 'rgba(26,36,49,0.9)';
 const whiteColor = 'rgba(255,255,255,1)';
 
 function createEntryPositionLine(
