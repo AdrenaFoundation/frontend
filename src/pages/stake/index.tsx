@@ -7,13 +7,19 @@ import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
 import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';
+import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeOverview from '@/components/pages/stake/ALPStakeOverview';
+import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
-import StakeToken from '@/components/pages/stake/StakeToken';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockedStakeExtended, LockPeriod, PageProps } from '@/types';
+import {
+  AdxLockPeriod,
+  AlpLockPeriod,
+  LockedStakeExtended,
+  PageProps,
+} from '@/types';
 import {
   addFailedTxNotification,
   addNotification,
@@ -41,7 +47,7 @@ export type ALPTokenDetails = {
   totalRedeemableStakeUSD: number | null;
 };
 
-export const DEFAULT_LOCKED_STAKE_DURATION = 90;
+export const DEFAULT_LOCKED_STAKE_DURATION = 180;
 
 export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -83,7 +89,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
   const [activeRedeemLiquidADX, setActiveRedeemLiquidADX] =
     useState<boolean>(false);
 
-  const [lockPeriod, setLockPeriod] = useState<LockPeriod>(
+  const [lockPeriod, setLockPeriod] = useState<AdxLockPeriod | AlpLockPeriod>(
     DEFAULT_LOCKED_STAKE_DURATION,
   );
 
@@ -136,7 +142,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
           : await window.adrena.client.addLockedStake({
               owner,
               amount,
-              lockedDays: Number(lockPeriod) as LockPeriod,
+              lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
               stakedTokenMint,
             });
 
@@ -473,7 +479,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
           totalLiquidStaked={adxDetails.totalLiquidStaked}
           lockedStakes={adxLockedStakes}
           handleLockedStakeRedeem={handleLockedStakeRedeem}
-          handleClickOnStakeMore={(initialLockPeriod: LockPeriod) => {
+          handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
             setLockPeriod(initialLockPeriod);
             setActiveStakingToken('ADX');
           }}
@@ -486,7 +492,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
           totalLockedStake={alpDetails.totalLockedStake}
           lockedStakes={alpLockedStakes}
           handleLockedStakeRedeem={handleLockedStakeRedeem}
-          handleClickOnStakeMore={(initialLockPeriod: LockPeriod) => {
+          handleClickOnStakeMore={(initialLockPeriod: AlpLockPeriod) => {
             setLockPeriod(initialLockPeriod);
             setActiveStakingToken('ALP');
           }}
@@ -503,17 +509,33 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
                 setActiveStakingToken(null);
               }}
             >
-              <StakeToken
-                tokenSymbol={activeStakingToken}
-                amount={amount}
-                setAmount={setAmount}
-                onStakeAmountChange={onStakeAmountChange}
-                errorMessage={errorMessage}
-                stakeAmount={stakeAmount}
-                balance={activeStakingToken === 'ADX' ? adxBalance : alpBalance}
-                lockPeriod={lockPeriod}
-                setLockPeriod={setLockPeriod}
-              />
+              {activeStakingToken === 'ADX' ? (
+                <ADXStakeToken
+                  amount={amount}
+                  setAmount={setAmount}
+                  onStakeAmountChange={onStakeAmountChange}
+                  errorMessage={errorMessage}
+                  stakeAmount={stakeAmount}
+                  lockPeriod={lockPeriod as AdxLockPeriod}
+                  setLockPeriod={(lockPeriod: AdxLockPeriod) =>
+                    setLockPeriod(lockPeriod)
+                  }
+                  balance={adxBalance}
+                />
+              ) : (
+                <ALPStakeToken
+                  amount={amount}
+                  setAmount={setAmount}
+                  onStakeAmountChange={onStakeAmountChange}
+                  errorMessage={errorMessage}
+                  stakeAmount={stakeAmount}
+                  lockPeriod={lockPeriod as AlpLockPeriod}
+                  setLockPeriod={(lockPeriod: AlpLockPeriod) =>
+                    setLockPeriod(lockPeriod)
+                  }
+                  balance={alpBalance}
+                />
+              )}
             </Modal>
           )}
 

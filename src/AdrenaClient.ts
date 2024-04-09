@@ -33,6 +33,8 @@ import {
   AddLiquidityAccounts,
   AddLiquidStakeAccounts,
   AddLockedStakeAccounts,
+  AdxLockPeriod,
+  AlpLockPeriod,
   AmountAndFee,
   ClaimStakesAccounts,
   ClosePositionAccounts,
@@ -2326,7 +2328,7 @@ export class AdrenaClient {
   }: {
     owner: PublicKey;
     amount: number;
-    lockedDays: 0 | 30 | 60 | 90 | 180 | 360 | 720;
+    lockedDays: AlpLockPeriod | AdxLockPeriod;
     stakedTokenMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
