@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
-import { USD_DECIMALS } from '@/constant';
 import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -83,9 +82,12 @@ export default function ALPSwapInputs({
       if (actionType === 'buy') return;
 
       const collateralTokenPrice = tokenPrices[collateralToken.symbol] ?? null;
-
       // missing informations or empty input
-      if (alpInput === null || collateralTokenPrice === null) {
+      if (
+        alpInput === 0 ||
+        alpInput === null ||
+        collateralTokenPrice === null
+      ) {
         // deprecate current loading
         setLoading(false);
         loadingCounter += 1;
@@ -296,7 +298,7 @@ export default function ALPSwapInputs({
       subText={
         collateralPrice !== null ? (
           <span className="text-txtfade">
-            {formatPriceInfo(collateralPrice, false, 3)}
+            {formatPriceInfo(collateralPrice, 3)}
           </span>
         ) : null
       }
@@ -356,7 +358,7 @@ export default function ALPSwapInputs({
           return (
             <div className="ml-auto mt-3">
               <span className="text-txtfade text-sm font-mono">
-                {formatNumber(balance, token.decimals)}
+                {formatNumber(balance, 4)}
               </span>
               <span className="text-txtfade text-sm ml-1">
                 {token.symbol} in wallet
@@ -389,7 +391,7 @@ export default function ALPSwapInputs({
           </div>
 
           <div className="relative flex flex-col text-sm font-mono">
-            {formatPriceInfo(feesUsd, false, USD_DECIMALS)}
+            {formatPriceInfo(feesUsd, 4)}
           </div>
         </div>
       </div>
@@ -422,7 +424,7 @@ export default function ALPSwapInputs({
                           <div className="flex">
                             <span className="">use {key} and pay</span>
                             <span className="font-mono ml-1">
-                              {formatPriceInfo(value.fees)}
+                              {formatPriceInfo(value.fees, 4)}
                             </span>
                             <span className="ml-1">of fees</span>
                           </div>

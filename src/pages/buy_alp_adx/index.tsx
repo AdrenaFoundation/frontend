@@ -117,7 +117,7 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
             equivalentAmount,
           };
         } catch (e) {
-          console.log(e);
+          console.log(e as Error);
           return {
             token,
             fees: null,

@@ -46,7 +46,6 @@ export default function SwapInfo({
                       tokenPriceA +
                       nativeToUi(swapFeesAndAmount.feeOut, tokenB.decimals) *
                         tokenPriceB,
-                    false,
                     USD_DECIMALS,
                   )
                 : null}
@@ -79,7 +78,6 @@ export default function SwapInfo({
                     ? formatPriceInfo(
                         nativeToUi(swapFeesAndAmount.feeIn, tokenA.decimals) *
                           tokenPriceA,
-                        false,
                         tokenA.decimals,
                       )
                     : null}
@@ -110,7 +108,6 @@ export default function SwapInfo({
                     ? formatPriceInfo(
                         nativeToUi(swapFeesAndAmount.feeOut, tokenB.decimals) *
                           tokenPriceB,
-                        false,
                         tokenB.decimals,
                       )
                     : null}
