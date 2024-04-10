@@ -190,7 +190,8 @@ export default function TradingChart({
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
                 format: (price: number): string => {
-                  return formatPriceInfo(price).split('$')[1];
+                  // remove symbol dollar from price
+                  return formatPriceInfo(price).replace(/\$/g, '');
                 },
               };
             },
