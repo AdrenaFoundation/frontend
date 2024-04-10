@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 import { PositionExtended, Token } from '@/types';
-import { formatPriceInfo } from '@/utils';
+import { formatNumber } from '@/utils';
 
 import {
   IChartingLibraryWidget,
@@ -31,7 +31,7 @@ function createEntryPositionLine(
     .createPositionLine({})
     .setText(`${position.side === 'long' ? 'Long' : 'Short'} Open`)
     .setLineLength(3)
-    .setQuantity(formatPriceInfo(position.sizeUsd))
+    .setQuantity(formatNumber(position.sizeUsd, 2))
     .setPrice(position.price)
     .setLineColor(color)
     .setQuantityBackgroundColor(color)
@@ -51,7 +51,8 @@ function createLiquidationPositionLine(
       .createPositionLine({})
       .setText(`${position.side === 'long' ? 'Long' : 'Short'} Liq.`)
       .setLineLength(3)
-      .setQuantity(formatPriceInfo(position.liquidationPrice))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .setQuantity(formatNumber(position.liquidationPrice!, 2)) // Price is checked before calling function
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .setPrice(position.liquidationPrice!) // Price is checked before calling function
       .setLineColor(greyColor)
@@ -94,7 +95,7 @@ export default function TradingChart({
     if (!position || !positionLine) return;
 
     positionLine.entry.setPrice(position.price);
-    positionLine.entry.setQuantity(formatPriceInfo(position.sizeUsd));
+    positionLine.entry.setQuantity(formatNumber(position.sizeUsd, 2));
 
     // if liquidationPrice is not set, remove liquidation directly
     if (!position.liquidationPrice) {
@@ -106,7 +107,7 @@ export default function TradingChart({
     if (positionLine.liquidation) {
       positionLine.liquidation.setPrice(position.liquidationPrice);
       positionLine.liquidation.setQuantity(
-        formatPriceInfo(position.liquidationPrice, false, 3),
+        formatNumber(position.liquidationPrice, 2),
       );
     } else createLiquidationPositionLine(chart, position);
   }
@@ -190,8 +191,7 @@ export default function TradingChart({
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
                 format: (price: number): string => {
-                  // remove symbol dollar from price
-                  return formatPriceInfo(price).replace(/\$/g, '');
+                  return formatNumber(price, 2);
                 },
               };
             },
