@@ -1,15 +1,10 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
+import { useState } from 'react';
 
-import AccountsBloc from '@/components/pages/monitoring/Blocs/AccountsBloc';
-import AssetsUnderManagementBloc from '@/components/pages/monitoring/Blocs/AssetsUnderManagementBloc';
-import BucketsBloc from '@/components/pages/monitoring/Blocs/BucketsBloc';
-import FeeCustodyBreakdownBloc from '@/components/pages/monitoring/Blocs/FeeCustodyBreakdownBloc';
-import GlobalOverviewBloc from '@/components/pages/monitoring/Blocs/GlobalOverviewBloc';
-import PoolBloc from '@/components/pages/monitoring/Blocs/PoolBloc';
-import PositionsBloc from '@/components/pages/monitoring/Blocs/PositionsBloc';
-import StakingBloc from '@/components/pages/monitoring/Blocs/StakingBloc';
-import VestingBloc from '@/components/pages/monitoring/Blocs/VestingBloc';
-import VolumeCustodyBreakdownBloc from '@/components/pages/monitoring/Blocs/VolumeCustodyBreakdownBloc';
+import TabSelect from '@/components/common/TabSelect/TabSelect';
+import AccountsView from '@/components/pages/monitoring/AccountsView/AccountsView';
+import FeesView from '@/components/pages/monitoring/FeesView/FeesView';
+import PoolView from '@/components/pages/monitoring/PoolView/PoolView';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
@@ -17,6 +12,7 @@ import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
 import usePerpetuals from '@/hooks/usePerpetuals';
 import useStakingAccount from '@/hooks/useStakingAccount';
+import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
 import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
@@ -24,11 +20,31 @@ import { PageProps } from '@/types';
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring({ mainPool, custodies }: PageProps) {
+  const tabs = [
+    'Accounts',
+    'Pool',
+    'Fees',
+    'Staking',
+    'Trading',
+    'Vesting',
+    'ADX tokenomics',
+    'Automation',
+  ] as const;
+  const tabsFormatted = tabs.map((x) => ({ title: x }));
+
+  const [selectedTab, setSelectedTab] =
+    useState<(typeof tabs)[number]>('Accounts');
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const cortex = useCortex();
   const perpetuals = usePerpetuals();
   const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
   const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
+  const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+    window.adrena.client.lpTokenMint,
+  );
+  const adxStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+    window.adrena.client.lmTokenMint,
+  );
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
   const vests = useVests();
@@ -77,7 +93,58 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
         />
       </div>
 
-      <div className="flex flex-wrap z-10 min-w-40 gap-4 overflow-auto p-4 justify-center">
+      <TabSelect
+        wrapperClassName="w-full bg-secondary ml-auto mr-auto pt-2"
+        selected={selectedTab}
+        initialSelectedIndex={tabsFormatted.findIndex(
+          (tab) => tab.title === selectedTab,
+        )}
+        tabs={tabsFormatted}
+        onClick={(tab) => {
+          setSelectedTab(tab);
+        }}
+      />
+
+      <div className="gap-y-4 pb-4 flex-col">
+        {selectedTab === 'Accounts' ? (
+          <>
+            <AccountsView
+              perpetuals={perpetuals}
+              cortex={cortex}
+              mainPool={mainPool}
+              custodies={custodies}
+            />
+          </>
+        ) : null}
+
+        {selectedTab === 'Pool' ? (
+          <>
+            <PoolView
+              perpetuals={perpetuals}
+              cortex={cortex}
+              mainPool={mainPool}
+              custodies={custodies}
+            />
+          </>
+        ) : null}
+
+        {selectedTab === 'Fees' ? (
+          <>
+            <FeesView
+              perpetuals={perpetuals}
+              cortex={cortex}
+              mainPool={mainPool}
+              custodies={custodies}
+              alpStakingAccount={alpStakingAccount}
+              adxStakingAccount={alpStakingAccount}
+              alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
+              adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+            />
+          </>
+        ) : null}
+      </div>
+
+      {/* <div className="flex flex-wrap z-10 min-w-40 gap-4 overflow-auto p-4 justify-center">
         <AccountsBloc
           className="min-w-[25em] max-w-[40em]"
           perpetuals={perpetuals}
@@ -145,7 +212,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
           className="min-w-[40em] max-w-[80em]"
           custodies={custodies}
         />
-      </div>
+      </div> */}
     </>
   );
 }

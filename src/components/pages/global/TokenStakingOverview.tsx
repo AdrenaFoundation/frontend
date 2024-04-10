@@ -141,14 +141,8 @@ export default function TokenStakingOverview({
 }) {
   return (
     <StyledContainer
-      title={
-        <div className="flex items-center">
-          <div className="flex flex-col justify-start ml-2">
-            <h1>Token Staking</h1>
-            <span className="opacity-50">Visualize ADX/ALP staking.</span>
-          </div>
-        </div>
-      }
+      title="Token Staking"
+      subTitle="Visualize ADX/ALP staking."
       className={className}
       bodyClassName="flex-row justify-evenly"
     >

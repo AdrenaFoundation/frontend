@@ -109,14 +109,8 @@ export default function UsageOverview({
 }) {
   return (
     <StyledContainer
-      title={
-        <div className="flex items-center">
-          <div className="flex flex-col justify-start ml-2">
-            <h1>Economic usage</h1>
-            <span className="opacity-50">Visualize the project usage</span>
-          </div>
-        </div>
-      }
+      title="Economic usage"
+      subTitle="Visualize the project usage."
       className={className}
     >
       <StyledSubContainer>

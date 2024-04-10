@@ -8,6 +8,7 @@ export default function TabSelect<T extends string | number>({
   tabs,
   wrapperClassName,
   className,
+  titleClassName,
 }: {
   selected?: T;
   initialSelectedIndex?: number;
@@ -19,6 +20,7 @@ export default function TabSelect<T extends string | number>({
   onClick: (title: T, index: number) => void;
   className?: string;
   wrapperClassName?: string;
+  titleClassName?: string;
 }) {
   const [activeTab, setActiveTab] = useState<null | number>(
     selected !== undefined ? initialSelectedIndex ?? 0 : null,
@@ -63,7 +65,9 @@ export default function TabSelect<T extends string | number>({
             }
           }
         >
-          <h4 className="text-center uppercase text-sm">{title}</h4>
+          <h5 className={twMerge('text-center uppercase', titleClassName)}>
+            {title}
+          </h5>
         </div>
       ))}
     </div>

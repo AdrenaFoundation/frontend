@@ -170,14 +170,8 @@ export default function GlobalHealthOverview({
 }) {
   return (
     <StyledContainer
-      title={
-        <div className="flex items-center">
-          <div className="flex flex-col justify-start ml-2">
-            <h1>Global Health</h1>
-            <span className="opacity-50">Visualize the project sanity</span>
-          </div>
-        </div>
-      }
+      title="Global Health"
+      subTitle="Visualize the project sanity."
       className={className}
     >
       <StyledSubContainer>
