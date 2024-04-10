@@ -105,7 +105,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
         }}
       />
 
-      <div className="gap-y-4 pb-4 flex-col">
+      <div className="gap-y-4 pb-4 pt-2 pl-4 pr-4 flex-col">
         {selectedTab === 'Accounts' ? (
           <>
             <AccountsView

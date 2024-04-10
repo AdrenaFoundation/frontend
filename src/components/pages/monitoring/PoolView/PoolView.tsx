@@ -131,7 +131,7 @@ export default function PoolView({
 
       <StyledContainer
         title="AUM Breakdown"
-        className="min-w-[20em] w-[20em] grow"
+        className="min-w-[22em] w-[22em] grow"
       >
         <Table
           rowTitleWidth="50%"
@@ -174,7 +174,7 @@ export default function PoolView({
 
       <StyledContainer
         title="Pool Ratios"
-        className="min-w-[20em] w-[20em] max-w-[30em] grow"
+        className="min-w-[24em] w-[24em] max-w-[30em] grow"
       >
         {composition &&
         composition.every(
