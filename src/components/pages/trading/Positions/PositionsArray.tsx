@@ -151,6 +151,7 @@ export default function PositionsArray({
                     position.pnl > 0 ? 'green' : 'red'
                   } font-mono`}
                 >
+                  {position.pnl > 0 ? `+` : ``}
                   {formatPriceInfo(position.pnl)}
                 </span>
               ) : (

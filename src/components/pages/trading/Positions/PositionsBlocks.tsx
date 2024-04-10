@@ -154,6 +154,7 @@ export default function PositionsBlocks({
                         position.pnl > 0 ? 'green' : 'red'
                       }-400`}
                     >
+                      {position.pnl > 0 ? `+` : ``}
                       {formatPriceInfo(position.pnl)}
                     </span>
                   ) : (

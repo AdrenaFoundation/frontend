@@ -404,7 +404,8 @@ export default function EditPositionCollateral({
                     position.pnl > 0 ? 'green' : 'red'
                   }-500`}
                 >
-                  {formatPriceInfo(position.pnl, true)}
+                  {position.pnl > 0 ? `+` : ``}
+                  {formatPriceInfo(position.pnl)}
                 </span>
               ) : (
                 '-'
