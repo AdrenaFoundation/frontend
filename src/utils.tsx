@@ -67,57 +67,33 @@ export function findATAAddressSync(
   )[0];
 }
 
-export function formatNumber(
-  nb: number,
-  precision: number,
-  displayPlusSymbol = false,
-): string {
-  const str = Number(nb.toFixed(precision)).toLocaleString(undefined, {
+export function formatNumber(nb: number, precision: number): string {
+  // If price is below decimals precision, display up to 6 decimals
+  if (nb < 10 ** -precision) precision = 6;
+
+  return Number(nb.toFixed(precision)).toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: precision,
   });
-
-  if (displayPlusSymbol && nb > 0) {
-    return `+${str}`;
-  }
-
-  return str;
 }
 
 export function formatPriceInfo(
   price: number | null | undefined,
-  displayPlusSymbol = false,
   decimals = 2,
-  displayAsIs = false,
 ) {
   if (price === null || typeof price === 'undefined') {
     return '-';
   }
 
   if (price == 0) {
-    return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+    return `$${formatNumber(price, decimals)}`;
   }
 
   if (price < 0) {
     return `-$${formatNumber(price * -1, decimals)}`;
   }
 
-  let display = '';
-
-  // If the price is very low, display it as it is, to not display $0
-  if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
-    // Never go more than 6 decimals
-    display = `$${formatNumber(price, 6, displayPlusSymbol)}`;
-  } else {
-    display = `$${formatNumber(price, decimals, displayPlusSymbol)}`;
-  }
-
-  // Put the + in front of the $ if needed
-  if (displayPlusSymbol) {
-    display = `+${display.replace('+', '')}`;
-  }
-
-  return display;
+  return `$${formatNumber(price, decimals)}`;
 }
 
 export function formatPercentage(
@@ -132,6 +108,7 @@ export function formatPercentage(
 }
 
 export function nativeToUi(nb: BN, decimals: number): number {
+  // stop displaying at hundred thousandth
   return new BigNumber(nb.toString()).shiftedBy(-decimals).toNumber();
 }
 

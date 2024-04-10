@@ -217,7 +217,7 @@ export default function TradingChart({ token }: { token: Token }) {
                 } Liquidation Price`,
               )
               .setLineLength(3)
-              .setQuantity(formatPriceInfo(position.liquidationPrice, false, 3))
+              .setQuantity(formatPriceInfo(position.liquidationPrice, 3))
               .setPrice(position.liquidationPrice)
               .setLineColor(position.side === 'long' ? '#1A2431' : '#1A2431')
               .setQuantityBackgroundColor('#1A2431A0')

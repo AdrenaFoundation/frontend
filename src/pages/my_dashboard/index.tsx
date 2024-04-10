@@ -251,7 +251,6 @@ export default function MyDashboard({
                   {formatPriceInfo(
                     userProfile.longStats.openingSizeUsd +
                       userProfile.shortStats.openingSizeUsd,
-                    false,
                     3,
                   )}
                 </span>
@@ -264,7 +263,6 @@ export default function MyDashboard({
                   {formatPriceInfo(
                     userProfile.longStats.profitsUsd +
                       userProfile.shortStats.profitsUsd,
-                    false,
                     3,
                   )}
                 </span>
@@ -277,7 +275,6 @@ export default function MyDashboard({
                   {formatPriceInfo(
                     userProfile.longStats.lossesUsd +
                       userProfile.shortStats.lossesUsd,
-                    false,
                     3,
                   )}
                 </span>
@@ -290,7 +287,6 @@ export default function MyDashboard({
                   {formatPriceInfo(
                     userProfile.longStats.feePaidUsd +
                       userProfile.shortStats.feePaidUsd,
-                    false,
                     3,
                   )}
                 </span>
@@ -312,17 +308,13 @@ export default function MyDashboard({
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Swap Volume</div>
 
-                <span>
-                  {formatPriceInfo(userProfile.swapVolumeUsd, false, 3)}
-                </span>
+                <span>{formatPriceInfo(userProfile.swapVolumeUsd, 3)}</span>
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Fees Paid</div>
 
-                <span>
-                  {formatPriceInfo(userProfile.swapFeePaidUsd, false, 3)}
-                </span>
+                <span>{formatPriceInfo(userProfile.swapFeePaidUsd, 3)}</span>
               </div>
             </StyledSubSubContainer>
           </StyledContainer>

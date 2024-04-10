@@ -480,7 +480,7 @@ export default function LongShortTradingInputs({
                       </div>
 
                       <div className="text-txtfade text-xs">
-                        {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
+                        {formatPriceInfo(openedPosition.sizeUsd, 2)}
                       </div>
                     </div>
 
@@ -507,7 +507,7 @@ export default function LongShortTradingInputs({
                         : '-'}
                     </div>
                     <div className="text-sm text-txtfade">
-                      {formatPriceInfo(priceB, false, 2)}
+                      {formatPriceInfo(priceB, 2)}
                     </div>
                   </div>
                 </div>
