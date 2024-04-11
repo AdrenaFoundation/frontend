@@ -61,7 +61,7 @@ function generateLine(
 ): AnnotationOptions<keyof AnnotationTypeRegistry> {
   return {
     type: 'line',
-    borderColor: '#666666',
+    borderColor: '#ffffff',
     borderWidth: 1,
     xMax: indexToMax(index) + 0.05,
     xMin: indexToMin(index) - 0.05,
@@ -197,7 +197,7 @@ export default function GlobalHealthOverview({
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
           {compositionChartData ? (
             <>
-              <div className="text-xs w-full flex justify-center text-[#666666]">
+              <div className="text-xs w-full flex justify-center text-[#ffffff]">
                 ── target ratio
               </div>
               {generateCompositionChart(compositionChartData, composition)}
