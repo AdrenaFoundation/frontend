@@ -33,7 +33,6 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
     'Trading',
     'Vesting',
     'ADX tokenomics',
-    'Automation',
   ] as const;
   const tabsFormatted = tabs.map((x) => ({ title: x }));
 
