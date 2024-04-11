@@ -1,17 +1,30 @@
+import Image from 'next/image';
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { ImageRef } from '@/types';
+
 export default function StyledContainer({
   children,
+  icon,
   title,
+  subTitle,
   className,
   titleClassName,
+  headerClassName,
+  subTitleClassName,
+  iconClassName,
   bodyClassName,
 }: {
   children: ReactNode;
+  icon?: ImageRef;
   title?: ReactNode;
+  subTitle?: ReactNode;
   className?: string;
+  headerClassName?: string;
   titleClassName?: string;
+  subTitleClassName?: string;
+  iconClassName?: string;
   bodyClassName?: string;
 }) {
   return (
@@ -21,8 +34,29 @@ export default function StyledContainer({
         className,
       )}
     >
-      <div className={twMerge(title ? 'pb-4' : '', titleClassName)}>
-        {title}
+      <div
+        className={twMerge(
+          'flex items-center',
+          title || subTitle || icon ? 'pb-4' : '',
+          headerClassName,
+        )}
+      >
+        {icon ? (
+          <Image
+            className={twMerge('h-14 w-14 mr-3', iconClassName)}
+            src={icon}
+            alt="icon"
+            width={60}
+            height={60}
+          />
+        ) : null}
+
+        <div className="flex flex-col">
+          <h1 className={titleClassName}>{title}</h1>
+          <h5 className={twMerge('opacity-50', subTitleClassName)}>
+            {subTitle}
+          </h5>
+        </div>
       </div>
 
       <div className={twMerge('gap-4 flex flex-col', bodyClassName)}>

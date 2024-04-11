@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React from 'react';
 
 import Button from '@/components/common/Button/Button';
@@ -27,21 +26,9 @@ export default function ALPStakeOverview({
   return (
     <StyledContainer
       className={className}
-      title={
-        <div className="flex items-center">
-          <Image
-            src={window.adrena.client.alpToken.image}
-            width={32}
-            height={32}
-            alt="ALP icon"
-          />
-
-          <div className="flex flex-col justify-start ml-2">
-            <h1>ALP</h1>
-            <span className="opacity-50">The Pool Token</span>
-          </div>
-        </div>
-      }
+      title="ALP"
+      subTitle="The Pool Token"
+      icon={window.adrena.client.alpToken.image}
     >
       <StyledSubContainer>
         <h3>Duration-Locked Staking</h3>

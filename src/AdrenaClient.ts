@@ -466,13 +466,27 @@ export class AdrenaClient {
           ),
         0,
       ),
+      profitsUsd: custodies.reduce(
+        (total, custody) =>
+          total +
+          nativeToUi(custody.nativeObject.tradeStats.profitUsd, USD_DECIMALS),
+        0,
+      ),
+      lossUsd: custodies.reduce(
+        (total, custody) =>
+          total +
+          nativeToUi(custody.nativeObject.tradeStats.lossUsd, USD_DECIMALS),
+        0,
+      ),
       longPositions: custodies.reduce(
+        // Now
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.longPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
       shortPositions: custodies.reduce(
+        // Now
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.shortPositions.sizeUsd, USD_DECIMALS),
@@ -488,12 +502,14 @@ export class AdrenaClient {
         0,
       ),
       oiLongUsd: custodies.reduce(
+        // All times
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.tradeStats.oiLongUsd, USD_DECIMALS),
         0,
       ),
       oiShortUsd: custodies.reduce(
+        // All times
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.tradeStats.oiShortUsd, USD_DECIMALS),

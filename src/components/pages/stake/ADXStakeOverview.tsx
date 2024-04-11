@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import React from 'react';
 
 import Button from '@/components/common/Button/Button';
@@ -31,21 +30,9 @@ export default function ADXStakeOverview({
   return (
     <StyledContainer
       className={className}
-      title={
-        <div className="flex items-center">
-          <Image
-            src={window.adrena.client.adxToken.image}
-            width={32}
-            height={32}
-            alt="ADX icon"
-          />
-
-          <div className="flex flex-col justify-start ml-2">
-            <h1>ADX</h1>
-            <span className="opacity-50">The Governance Token</span>
-          </div>
-        </div>
-      }
+      title="ADX"
+      subTitle="The Governance Token"
+      icon={window.adrena.client.adxToken.image}
     >
       <StyledSubContainer>
         <h3>Liquid Staking</h3>

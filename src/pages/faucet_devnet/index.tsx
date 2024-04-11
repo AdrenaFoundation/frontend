@@ -158,11 +158,7 @@ export default function FaucetDevnet({
       <StyledContainer
         className="ml-auto mr-auto"
         bodyClassName="flex-row max-w-full flex-wrap gap-4 items-center justify-center"
-        title={
-          <h1 className="w-full flex items-center justify-center">
-            GET DEVNET TOKENS
-          </h1>
-        }
+        title="GET DEVNET TOKENS"
       >
         {allTokens.map((token) => (
           <StyledSubContainer
