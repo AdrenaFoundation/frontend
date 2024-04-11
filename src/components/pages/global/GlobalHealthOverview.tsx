@@ -121,10 +121,11 @@ function generateCompositionChart(
             displayColors: false,
             callbacks: {
               label: (context: TooltipItem<'bar'>) => [
-                `${context.chart.data.labels?.[context.dataIndex]} amount:
-                            ${formatOwnedAssets(
-                              composition[context.dataIndex].ownedAssets,
-                            )}`,
+                `${
+                  context.chart.data.labels?.[context.dataIndex]
+                } amount: ${formatOwnedAssets(
+                  composition[context.dataIndex].ownedAssets,
+                )}`,
                 `value: ${formatPriceInfo(
                   composition[context.dataIndex].custodyUsdValue,
                 )}`,
