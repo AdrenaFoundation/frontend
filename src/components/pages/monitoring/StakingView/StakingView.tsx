@@ -87,7 +87,7 @@ export default function StakingView({
       <StyledContainer
         title="STAKING REWARD VAULTS"
         subTitle="Rewards accruing to be redistributed to stakers at the end of the staking round."
-        className="min-w-[20em] w-[20em] grow"
+        className="min-w-[22em] w-[22em] grow"
       >
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING</h2>
@@ -117,7 +117,7 @@ export default function StakingView({
       <StyledContainer
         title="STAKING REWARD WAITING TO BE CLAIMED"
         subTitle="Rewards from past rounds attributed to users waiting to be claimed."
-        className="min-w-[20em] w-[20em] grow"
+        className="min-w-[22em] w-[22em] grow"
       >
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING</h2>
@@ -186,7 +186,7 @@ export default function StakingView({
 
       <StyledContainer
         title="CURRENT STAKING ROUND TIME"
-        className="min-w-[20em] w-[20em] grow"
+        className="min-w-[24em] w-[24em] grow"
       >
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING ROUND ENDS IN</h2>

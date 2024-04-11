@@ -131,122 +131,128 @@ export default function ADXTokenomicsView({
         title="BUCKETS"
         headerClassName="ml-auto mr-auto"
         className="min-w-[30em] w-[30em] grow"
+        bodyClassName=""
       >
-        <StyledSubSubContainer className="flex-col">
-          <div className="flex w-full justify-evenly">
-            <h3 className="flex flex-col">
-              <div className="h-[3px] w-full bg-white"></div>
-              <h3 className="text-sm">minted</h3>
-            </h3>
+        <StyledSubSubContainer className="flex-col items-center">
+          <div className="max-w-[34em]">
+            <div className="flex w-full justify-evenly">
+              <h3 className="flex flex-col">
+                <div className="h-[3px] w-full bg-white"></div>
+                <h3 className="text-sm">minted</h3>
+              </h3>
 
-            <h3 className="flex flex-col">
-              <div className="h-[3px] w-full bg-blue-500"></div>
-              <h3 className="text-sm text-blue-500">allocated</h3>
-            </h3>
-          </div>
+              <h3 className="flex flex-col">
+                <div className="h-[3px] w-full bg-blue-500"></div>
+                <h3 className="text-sm text-blue-500">allocated</h3>
+              </h3>
+            </div>
 
-          <Bar
-            data={{
-              labels: bucketsLabels,
-              datasets: [
-                {
-                  label: 'Minted',
-                  data: bucketNames.map((name) =>
-                    nativeToUi(
-                      (cortex as any)[`${name}BucketMintedAmount`],
-                      window.adrena.client.adxToken.decimals,
-                    ),
-                  ),
-                  backgroundColor: '#fffffff0',
-                  borderColor: [],
-                  borderWidth: 1,
-                },
-              ],
-            }}
-            options={{
-              onHover: (event: ChartEvent, activeElements: ActiveElement[]) => {
-                (event?.native?.target as HTMLElement).style.cursor =
-                  activeElements?.length > 0 ? 'pointer' : 'auto';
-              },
-              plugins: {
-                datalabels: {
-                  align: 'end',
-                  anchor: 'end',
-                  color: () => '#ffffff',
-                  font: (context: Context) => getFontSizeWeight(context),
-                  formatter: (_, context: Context) => [
-                    `${context.chart.data.labels?.[context.dataIndex]}`,
-                  ],
-                },
-                annotation: {
-                  annotations: bucketNames.reduce((lines, name, index) => {
-                    return {
-                      [`line${index + 1}`]: generateLine(
-                        index,
-                        nativeToUi(
-                          (cortex as any)[`${name}BucketAllocation`],
-                          window.adrena.client.adxToken.decimals,
-                        ),
-                        '#3b82f6',
+            <Bar
+              data={{
+                labels: bucketsLabels,
+                datasets: [
+                  {
+                    label: 'Minted',
+                    data: bucketNames.map((name) =>
+                      nativeToUi(
+                        (cortex as any)[`${name}BucketMintedAmount`],
+                        window.adrena.client.adxToken.decimals,
                       ),
-                      ...lines,
-                    };
-                  }, {}),
+                    ),
+                    backgroundColor: '#fffffff0',
+                    borderColor: [],
+                    borderWidth: 1,
+                  },
+                ],
+              }}
+              options={{
+                onHover: (
+                  event: ChartEvent,
+                  activeElements: ActiveElement[],
+                ) => {
+                  (event?.native?.target as HTMLElement).style.cursor =
+                    activeElements?.length > 0 ? 'pointer' : 'auto';
                 },
-                legend: {
-                  display: false,
-                },
-                tooltip: {
-                  displayColors: false,
-                  callbacks: {
-                    label: (context: TooltipItem<'bar'>) =>
-                      (() => {
-                        const name = bucketNames[context.dataIndex];
+                plugins: {
+                  datalabels: {
+                    align: 'end',
+                    anchor: 'end',
+                    color: () => '#ffffff',
+                    font: (context: Context) => getFontSizeWeight(context),
+                    formatter: (_, context: Context) => [
+                      `${context.chart.data.labels?.[context.dataIndex]}`,
+                    ],
+                  },
+                  annotation: {
+                    annotations: bucketNames.reduce((lines, name, index) => {
+                      return {
+                        [`line${index + 1}`]: generateLine(
+                          index,
+                          nativeToUi(
+                            (cortex as any)[`${name}BucketAllocation`],
+                            window.adrena.client.adxToken.decimals,
+                          ),
+                          '#3b82f6',
+                        ),
+                        ...lines,
+                      };
+                    }, {}),
+                  },
+                  legend: {
+                    display: false,
+                  },
+                  tooltip: {
+                    displayColors: false,
+                    callbacks: {
+                      label: (context: TooltipItem<'bar'>) =>
+                        (() => {
+                          const name = bucketNames[context.dataIndex];
 
-                        return [
-                          `allocation: ${formatNumber(
-                            nativeToUi(
-                              (cortex as any)[`${name}BucketAllocation`],
-                              window.adrena.client.adxToken.decimals,
-                            ),
-                            3,
-                          )} ADX`,
+                          return [
+                            `allocation: ${formatNumber(
+                              nativeToUi(
+                                (cortex as any)[`${name}BucketAllocation`],
+                                window.adrena.client.adxToken.decimals,
+                              ),
+                              3,
+                            )} ADX`,
 
-                          `minted: ${formatNumber(
-                            nativeToUi(
-                              (cortex as any)[`${name}BucketMintedAmount`],
-                              window.adrena.client.adxToken.decimals,
-                            ),
-                            3,
-                          )} ADX`,
-                        ];
-                      })(),
+                            `minted: ${formatNumber(
+                              nativeToUi(
+                                (cortex as any)[`${name}BucketMintedAmount`],
+                                window.adrena.client.adxToken.decimals,
+                              ),
+                              3,
+                            )} ADX`,
+                          ];
+                        })(),
 
-                    //remove title from tooltip because it is not needed and looks
-                    title: () => '',
+                      //remove title from tooltip because it is not needed and looks
+                      title: () => '',
+                    },
                   },
                 },
-              },
-              //needed so the labels don't get hidden if bar is 100%
-              layout: {
-                padding: {
-                  top: 20,
-                },
-              },
-              scales: {
-                x: {
-                  display: false,
-                  offset: true,
-                },
-                y: {
-                  ticks: {
-                    callback: (value: string | number) => value + ' ADX',
+                //needed so the labels don't get hidden if bar is 100%
+                layout: {
+                  padding: {
+                    top: 20,
                   },
-                  beginAtZero: true,
                 },
-              },
-            }}
-          />
+                scales: {
+                  x: {
+                    display: false,
+                    offset: true,
+                  },
+                  y: {
+                    ticks: {
+                      callback: (value: string | number) => value + ' ADX',
+                    },
+                    beginAtZero: true,
+                  },
+                },
+              }}
+            />
+          </div>
         </StyledSubSubContainer>
       </StyledContainer>
 
@@ -266,7 +272,7 @@ export default function ADXTokenomicsView({
             ))}
           </div>
 
-          <div className="w-[25em] h-[25em]">
+          <div className="w-[25em] max-w-[25em] h-[25em]">
             <Pie
               color="#ffffff"
               options={{
