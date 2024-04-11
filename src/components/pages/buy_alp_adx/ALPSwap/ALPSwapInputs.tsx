@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import { alpLiquidityCap } from '@/constant';
 import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -31,6 +32,7 @@ export default function ALPSwapInputs({
   onCollateralTokenChange,
   setFeesUsd,
   feesAndAmounts,
+  aumUsd,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
@@ -48,10 +50,10 @@ export default function ALPSwapInputs({
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   feesAndAmounts: FeesAndAmountsType | null;
+  aumUsd: number | undefined;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
   const [isLoading, setLoading] = useState<boolean>(false);
 
   // When price change or input change, recalculate inputs and displayed price
@@ -371,6 +373,27 @@ export default function ALPSwapInputs({
       <div className="text-sm text-white mt-2 mb-3">Receive</div>
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
+
+      {aumUsd ? (
+        /* Display AUM / liquidity cap of ALP */
+        <div className="ml-auto mt-3">
+          <div className="w-full">
+            <div className="flex items-center justify-between gap-4 mb-2">
+              <h6 className="text-txtfade text-sm ml-1">
+                Assets Under Management / Liquidity Cap
+              </h6>
+            </div>
+            <div className="flex-start flex h-2.5 w-full overflow-hidden rounded-full bg-third font-sans text-xs font-medium">
+              <div
+                className={twMerge(
+                  'flex items-center justify-center h-full overflow-hidden text-white break-all bg-white rounded-full',
+                  'w-[' + Math.round((aumUsd * 100) / alpLiquidityCap) + '%]',
+                )}
+              ></div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <h5 className="text-white mt-6">Verify</h5>
 
