@@ -5,6 +5,8 @@ import TabSelect from '@/components/common/TabSelect/TabSelect';
 import AccountsView from '@/components/pages/monitoring/AccountsView/AccountsView';
 import FeesView from '@/components/pages/monitoring/FeesView/FeesView';
 import PoolView from '@/components/pages/monitoring/PoolView/PoolView';
+import StakingView from '@/components/pages/monitoring/StakingView/StakingView';
+import TradingView from '@/components/pages/monitoring/TradingView/TradingView';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
@@ -107,40 +109,43 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
 
       <div className="gap-y-4 pb-4 pt-2 pl-4 pr-4 flex-col">
         {selectedTab === 'Accounts' ? (
-          <>
-            <AccountsView
-              perpetuals={perpetuals}
-              cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
-            />
-          </>
+          <AccountsView
+            perpetuals={perpetuals}
+            cortex={cortex}
+            mainPool={mainPool}
+            custodies={custodies}
+          />
         ) : null}
 
         {selectedTab === 'Pool' ? (
-          <>
-            <PoolView
-              perpetuals={perpetuals}
-              cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
-            />
-          </>
+          <PoolView mainPool={mainPool} custodies={custodies} />
         ) : null}
 
         {selectedTab === 'Fees' ? (
-          <>
-            <FeesView
-              perpetuals={perpetuals}
-              cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
-              alpStakingAccount={alpStakingAccount}
-              adxStakingAccount={alpStakingAccount}
-              alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-              adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
-            />
-          </>
+          <FeesView
+            mainPool={mainPool}
+            custodies={custodies}
+            alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
+            adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+          />
+        ) : null}
+
+        {selectedTab === 'Staking' ? (
+          <StakingView
+            alpStakingAccount={alpStakingAccount}
+            adxStakingAccount={adxStakingAccount}
+            alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
+            adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+          />
+        ) : null}
+
+        {selectedTab === 'Trading' ? (
+          <TradingView
+            perpetuals={perpetuals}
+            cortex={cortex}
+            mainPool={mainPool}
+            custodies={custodies}
+          />
         ) : null}
       </div>
 

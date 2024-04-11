@@ -1,44 +1,26 @@
+import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
-import {
-  Cortex,
-  CustodyExtended,
-  Perpetuals,
-  PoolExtended,
-  Staking,
-} from '@/types';
+import { CustodyExtended, PoolExtended } from '@/types';
 import { formatPriceInfo, nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
-import InfoAnnotation from '../InfoAnnotation';
 import NumberInfo from '../NumberInfo';
-import OnchainAccountInfo from '../OnchainAccountInfo';
 import Table from '../Table';
-import TitleAnnotation from '../TitleAnnotation';
 
 export default function FeesView({
   className,
-  perpetuals,
-  cortex,
   mainPool,
   custodies,
-  alpStakingAccount,
-  adxStakingAccount,
   alpStakingCurrentRoundRewards,
   adxStakingCurrentRoundRewards,
 }: {
   className?: string;
-  perpetuals: Perpetuals;
-  cortex: Cortex;
   mainPool: PoolExtended;
   custodies: CustodyExtended[];
-  alpStakingAccount: Staking;
-  adxStakingAccount: Staking;
   alpStakingCurrentRoundRewards: number | null;
   adxStakingCurrentRoundRewards: number | null;
 }) {
@@ -57,7 +39,7 @@ export default function FeesView({
         className="min-w-[24em] w-[24em] grow"
       >
         <StyledSubSubContainer className="mt-2 justify-center">
-          <h1>{formatPriceInfo(mainPool.totalFeeCollected)}</h1>
+          <h2>{formatPriceInfo(mainPool.totalFeeCollected)}</h2>
         </StyledSubSubContainer>
       </StyledContainer>
 
@@ -68,14 +50,14 @@ export default function FeesView({
         className="min-w-[30em] w-[30em] grow"
       >
         <StyledSubSubContainer className="mt-2 justify-center">
-          <h1>
+          <h2>
             {alpStakingCurrentRoundRewards !== null &&
             adxStakingCurrentRoundRewards !== null
               ? formatPriceInfo(
                   alpStakingCurrentRoundRewards + adxStakingCurrentRoundRewards,
                 )
               : '-'}
-          </h1>
+          </h2>
         </StyledSubSubContainer>
       </StyledContainer>
 
@@ -89,7 +71,20 @@ export default function FeesView({
           columnsTitles={attributes.map(abbreviateWords)}
           data={[
             ...custodies.map((custody) => ({
-              rowTitle: custody.tokenInfo.name,
+              rowTitle: (
+                <div className="flex items-center">
+                  <Image
+                    src={custody.tokenInfo.image}
+                    alt="token icon"
+                    width="16"
+                    height="16"
+                  />
+                  <span className="ml-1 text-base">
+                    {custody.tokenInfo.name}
+                  </span>
+                </div>
+              ),
+
               values: attributes.map((attribute) => (
                 <NumberInfo
                   key={attribute}

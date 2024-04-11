@@ -102,6 +102,8 @@ export type PoolExtended = {
 
   // Formatted data
   totalFeeCollected: number;
+  profitsUsd: number;
+  lossUsd: number;
   longPositions: number;
   shortPositions: number;
   aumUsd: number;

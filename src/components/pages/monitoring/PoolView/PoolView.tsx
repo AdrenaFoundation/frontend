@@ -27,7 +27,7 @@ import useALPIndexComposition, {
   TokenInfo,
 } from '@/hooks/useALPIndexComposition';
 import { useSelector } from '@/store/store';
-import { Cortex, CustodyExtended, Perpetuals, PoolExtended } from '@/types';
+import { CustodyExtended, PoolExtended } from '@/types';
 import { formatNumber, formatPriceInfo, getFontSizeWeight } from '@/utils';
 
 import NumberInfo from '../NumberInfo';
@@ -77,14 +77,10 @@ function generateLine(
 
 export default function PoolView({
   className,
-  perpetuals,
-  cortex,
   mainPool,
   custodies,
 }: {
   className?: string;
-  perpetuals: Perpetuals;
-  cortex: Cortex;
   mainPool: PoolExtended;
   custodies: CustodyExtended[];
 }) {
@@ -116,7 +112,7 @@ export default function PoolView({
           <h2>AUM Value</h2>
 
           <StyledSubSubContainer className="mt-2">
-            <h1>{formatPriceInfo(mainPool.aumUsd)}</h1>
+            <h2>{formatPriceInfo(mainPool.aumUsd)}</h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
 
@@ -124,7 +120,7 @@ export default function PoolView({
           <h2>Raw AUM Value</h2>
 
           <StyledSubSubContainer className="mt-2">
-            <h1>{formatPriceInfo(totalPoolAssetHardValue)}</h1>
+            <h2>{formatPriceInfo(totalPoolAssetHardValue)}</h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
       </StyledContainer>

@@ -114,6 +114,8 @@ export const ADX_STAKE_MULTIPLIERS: {
 
 export const ADX_LOCK_PERIODS: AdxLockPeriod[] = [0, 180, 360, 540, 720];
 
+export const ROUND_MIN_DURATION_SECONDS = 3_600 * 6;
+
 export const SUPPORTED_RESOLUTIONS = [
   '1',
   '3',
