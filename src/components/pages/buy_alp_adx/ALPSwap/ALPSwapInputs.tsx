@@ -374,7 +374,7 @@ export default function ALPSwapInputs({
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
 
-      {aumUsd ? (
+      {actionType === 'buy' && aumUsd ? (
         /* Display AUM / liquidity cap of ALP */
         <div className="ml-auto mt-3">
           <div className="w-full">
