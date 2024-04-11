@@ -24,7 +24,8 @@ const RootLayout = ({
     { name: 'My Dashboard', link: '/my_dashboard' },
     { name: 'Global', link: '/global' },
     { name: 'Stake', link: '/stake' },
-    { name: 'Buy ALP/ADX', link: '/buy_alp_adx' },
+    { name: 'Buy ALP', link: '/buy_alp' },
+    { name: 'Buy ADX', link: '/buy_adx' },
     { name: 'Monitoring', link: '/monitoring' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
