@@ -1,5 +1,3 @@
-import { twMerge } from 'tailwind-merge';
-
 import { AdrenaClient } from '@/AdrenaClient';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Cortex, CustodyExtended, Perpetuals, PoolExtended } from '@/types';
@@ -10,29 +8,22 @@ import Table from '../Table';
 import TitleAnnotation from '../TitleAnnotation';
 
 export default function AccountsView({
-  className,
   perpetuals,
   cortex,
   mainPool,
   custodies,
 }: {
-  className?: string;
   perpetuals: Perpetuals;
   cortex: Cortex;
   mainPool: PoolExtended;
   custodies: CustodyExtended[];
 }) {
   return (
-    <div
-      className={twMerge(
-        'flex flex-col gap-4 max-w-[40em] ml-auto mr-auto justify-center',
-        className,
-      )}
-    >
+    <>
       <StyledContainer
         title="Adrena Accounts"
         subTitle="List on-chain accounts related to Adrena."
-        className="w-full"
+        className="w-[40em] grow"
       >
         <Table
           rowTitleWidth="30%"
@@ -187,7 +178,7 @@ export default function AccountsView({
         />
       </StyledContainer>
 
-      <StyledContainer title="Mints" className="w-full">
+      <StyledContainer title="Mints" className="w-[40em] grow">
         <Table
           rowTitleWidth="30%"
           data={[
@@ -289,6 +280,6 @@ export default function AccountsView({
           ]}
         />
       </StyledContainer>
-    </div>
+    </>
   );
 }

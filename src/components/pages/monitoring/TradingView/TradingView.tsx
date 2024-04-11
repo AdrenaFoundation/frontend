@@ -1,50 +1,26 @@
 import Image from 'next/image';
-import { twMerge } from 'tailwind-merge';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
-import {
-  Cortex,
-  CustodyExtended,
-  Perpetuals,
-  PoolExtended,
-  Staking,
-} from '@/types';
+import { CustodyExtended, PoolExtended } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
 
-import abbreviateWords from '../abbreviateWords';
-import InfoAnnotation from '../InfoAnnotation';
 import NumberInfo from '../NumberInfo';
-import OnchainAccountInfo from '../OnchainAccountInfo';
 import Table from '../Table';
-import TitleAnnotation from '../TitleAnnotation';
 
 export default function TradingView({
-  className,
-  perpetuals,
-  cortex,
   mainPool,
   custodies,
 }: {
-  className?: string;
-  perpetuals: Perpetuals;
-  cortex: Cortex;
   mainPool: PoolExtended;
   custodies: CustodyExtended[];
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-wrap gap-4 justify-center max-w-[60em] ml-auto mr-auto',
-        className,
-      )}
-    >
+    <>
       <StyledContainer
         headerClassName="text-center justify-center"
         title="POSITIONS NOW"
@@ -193,6 +169,6 @@ export default function TradingView({
           ]}
         />
       </StyledContainer>
-    </div>
+    </>
   );
 }

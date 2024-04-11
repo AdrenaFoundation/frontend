@@ -18,18 +18,24 @@ import ChartPluginAnnotation, {
 import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import Image from 'next/image';
 import { Bar } from 'react-chartjs-2';
-import { twMerge } from 'tailwind-merge';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import { USD_DECIMALS } from '@/constant';
 import useALPIndexComposition, {
   TokenInfo,
 } from '@/hooks/useALPIndexComposition';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, PoolExtended } from '@/types';
-import { formatNumber, formatPriceInfo, getFontSizeWeight } from '@/utils';
+import {
+  formatNumber,
+  formatPriceInfo,
+  getFontSizeWeight,
+  nativeToUi,
+} from '@/utils';
 
+import abbreviateWords from '../abbreviateWords';
 import NumberInfo from '../NumberInfo';
 import Table from '../Table';
 
@@ -87,6 +93,8 @@ export default function PoolView({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const composition = useALPIndexComposition(custodies);
 
+  const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
+
   // Value of all assets owned by the pool
   // Which doesn't take into account opened positions and stuff
   const totalPoolAssetHardValue = custodies.reduce((acc, custody) => {
@@ -97,12 +105,7 @@ export default function PoolView({
   }, 0);
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-wrap gap-4 max-w-[80em] ml-auto mr-auto justify-center',
-        className,
-      )}
-    >
+    <>
       <StyledContainer
         title="POOL VALUE"
         subTitle="Pool worth in US dollars"
@@ -170,7 +173,9 @@ export default function PoolView({
 
       <StyledContainer
         title="Pool Ratios"
-        className="min-w-[24em] w-[24em] max-w-[30em] grow"
+        headerClassName="ml-auto mr-auto"
+        className="min-w-[24em] w-[24em] grow"
+        bodyClassName="items-center"
       >
         {composition &&
         composition.every(
@@ -180,7 +185,7 @@ export default function PoolView({
             comp.minRatio !== null &&
             comp.maxRatio !== null,
         ) ? (
-          <>
+          <StyledSubSubContainer className="flex-col max-w-[30em]">
             <div className="flex w-full justify-evenly">
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-green"></div>
@@ -252,7 +257,7 @@ export default function PoolView({
                           i,
                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                           composition[i].minRatio!, // checked above
-                          '#501fda',
+                          '#3b82f6',
                         ),
 
                         // Max ratio line
@@ -324,9 +329,63 @@ export default function PoolView({
                 },
               }}
             />
-          </>
+          </StyledSubSubContainer>
         ) : null}
       </StyledContainer>
-    </div>
+
+      <StyledContainer title={<h1>Volume Breakdown</h1>} className={className}>
+        <Table
+          rowTitleWidth="90px"
+          columnsTitles={attributes.map(abbreviateWords)}
+          data={[
+            ...custodies.map((custody) => ({
+              rowTitle: (
+                <div className="flex items-center">
+                  <Image
+                    src={custody.tokenInfo.image}
+                    alt="token icon"
+                    width="16"
+                    height="16"
+                  />
+                  <span className="ml-1 text-base">
+                    {custody.tokenInfo.name}
+                  </span>
+                </div>
+              ),
+              values: attributes.map((attribute) => (
+                <NumberInfo
+                  key={attribute}
+                  value={nativeToUi(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (custody.nativeObject.volumeStats as any)[attribute],
+                    USD_DECIMALS,
+                  )}
+                />
+              )),
+            })),
+
+            {
+              rowTitle: <div className="font-semibold">Total</div>,
+              values: attributes.map((param, i) => (
+                <NumberInfo
+                  key={i}
+                  value={custodies.reduce(
+                    (total, custody) =>
+                      total +
+                      nativeToUi(
+                        // Force typing as we know the keys are matching the collectedFees field
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (custody.nativeObject.volumeStats as any)[param],
+                        USD_DECIMALS,
+                      ),
+                    0,
+                  )}
+                />
+              )),
+            },
+          ]}
+        />
+      </StyledContainer>
+    </>
   );
 }

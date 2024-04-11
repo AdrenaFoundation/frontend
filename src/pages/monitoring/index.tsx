@@ -3,10 +3,12 @@ import { useState } from 'react';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import AccountsView from '@/components/pages/monitoring/AccountsView/AccountsView';
+import ADXTokenomicsView from '@/components/pages/monitoring/ADXTokenomicsView/ADXTokenomicsView';
 import FeesView from '@/components/pages/monitoring/FeesView/FeesView';
 import PoolView from '@/components/pages/monitoring/PoolView/PoolView';
 import StakingView from '@/components/pages/monitoring/StakingView/StakingView';
 import TradingView from '@/components/pages/monitoring/TradingView/TradingView';
+import VestingView from '@/components/pages/monitoring/VestingView/VestingView';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
@@ -23,6 +25,7 @@ import { PageProps } from '@/types';
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring({ mainPool, custodies }: PageProps) {
   const tabs = [
+    'All',
     'Accounts',
     'Pool',
     'Fees',
@@ -34,8 +37,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
   ] as const;
   const tabsFormatted = tabs.map((x) => ({ title: x }));
 
-  const [selectedTab, setSelectedTab] =
-    useState<(typeof tabs)[number]>('Accounts');
+  const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const cortex = useCortex();
   const perpetuals = usePerpetuals();
@@ -67,8 +69,6 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
   )
     return <></>;
 
-  console.log('Cortex', cortex);
-
   return (
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
@@ -96,7 +96,8 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
       </div>
 
       <TabSelect
-        wrapperClassName="w-full bg-secondary ml-auto mr-auto pt-2"
+        wrapperClassName="w-full bg-secondary ml-auto mr-auto pt-2 flex-col md:flex-row"
+        titleClassName="whitespace-nowrap"
         selected={selectedTab}
         initialSelectedIndex={tabsFormatted.findIndex(
           (tab) => tab.title === selectedTab,
@@ -107,8 +108,14 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
         }}
       />
 
-      <div className="gap-y-4 pb-4 pt-2 pl-4 pr-4 flex-col">
-        {selectedTab === 'Accounts' ? (
+      <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap min-w-[40em] overflow-x-auto">
+        {selectedTab === 'All' ? (
+          <div className="w-full border-b-4 z-10 border-white">
+            <h1 className="text-white">ACCOUNT</h1>
+          </div>
+        ) : null}
+
+        {selectedTab === 'Accounts' || selectedTab === 'All' ? (
           <AccountsView
             perpetuals={perpetuals}
             cortex={cortex}
@@ -117,11 +124,23 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
           />
         ) : null}
 
-        {selectedTab === 'Pool' ? (
+        {selectedTab === 'All' ? (
+          <div className="w-full border-b-4 z-10 border-white">
+            <h1 className="text-white">POOL</h1>
+          </div>
+        ) : null}
+
+        {selectedTab === 'Pool' || selectedTab === 'All' ? (
           <PoolView mainPool={mainPool} custodies={custodies} />
         ) : null}
 
-        {selectedTab === 'Fees' ? (
+        {selectedTab === 'All' ? (
+          <div className="w-full border-b-4 z-10 border-white">
+            <h1 className="text-white">FEES</h1>
+          </div>
+        ) : null}
+
+        {selectedTab === 'Fees' || selectedTab === 'All' ? (
           <FeesView
             mainPool={mainPool}
             custodies={custodies}
@@ -130,7 +149,13 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
           />
         ) : null}
 
-        {selectedTab === 'Staking' ? (
+        {selectedTab === 'All' ? (
+          <div className="w-full border-b-4 z-10 border-white">
+            <h1 className="text-white">STAKING</h1>
+          </div>
+        ) : null}
+
+        {selectedTab === 'Staking' || selectedTab === 'All' ? (
           <StakingView
             alpStakingAccount={alpStakingAccount}
             adxStakingAccount={adxStakingAccount}
@@ -139,85 +164,40 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
           />
         ) : null}
 
-        {selectedTab === 'Trading' ? (
-          <TradingView
-            perpetuals={perpetuals}
+        {selectedTab === 'All' ? (
+          <div className="w-full border-b-4 z-10 border-white">
+            <h1 className="text-white">TRADING</h1>
+          </div>
+        ) : null}
+
+        {selectedTab === 'Trading' || selectedTab === 'All' ? (
+          <TradingView mainPool={mainPool} custodies={custodies} />
+        ) : null}
+
+        {selectedTab === 'All' ? (
+          <div className="w-full border-b-4 z-10 border-white">
+            <h1 className="text-white">VESTING</h1>
+          </div>
+        ) : null}
+
+        {selectedTab === 'Vesting' || selectedTab === 'All' ? (
+          <VestingView cortex={cortex} vests={vests} />
+        ) : null}
+
+        {selectedTab === 'All' ? (
+          <div className="w-full border-b-4 z-10 border-white">
+            <h1 className="text-white">ADX TOKENOMICS</h1>
+          </div>
+        ) : null}
+
+        {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
+          <ADXTokenomicsView
             cortex={cortex}
-            mainPool={mainPool}
-            custodies={custodies}
+            adxTotalSupply={adxTotalSupply}
+            adxStakingAccount={adxStakingAccount}
           />
         ) : null}
       </div>
-
-      {/* <div className="flex flex-wrap z-10 min-w-40 gap-4 overflow-auto p-4 justify-center">
-        <AccountsBloc
-          className="min-w-[25em] max-w-[40em]"
-          perpetuals={perpetuals}
-          cortex={cortex}
-          mainPool={mainPool}
-          custodies={custodies}
-        />
-
-        <GlobalOverviewBloc
-          className="min-w-[25em] max-w-[40em]"
-          cortex={cortex}
-          mainPool={mainPool}
-          custodies={custodies}
-          adxTotalSupply={adxTotalSupply}
-          alpTotalSupply={alpTotalSupply}
-        />
-
-        <StakingBloc
-          className="min-w-[25em] max-w-[40em]"
-          stakedTokenName={'ADX'}
-          stakedTokenDecimals={window.adrena.client.adxToken.decimals}
-          staking={adxStakingAccount}
-        />
-
-        <StakingBloc
-          className="min-w-[25em] max-w-[40em]"
-          stakedTokenName={'ALP'}
-          stakedTokenDecimals={window.adrena.client.alpToken.decimals}
-          staking={alpStakingAccount}
-        />
-
-        <AssetsUnderManagementBloc
-          className="min-w-[25em] max-w-[40em]"
-          mainPool={mainPool}
-          custodies={custodies}
-        />
-
-        <PositionsBloc
-          className="min-w-[30em] max-w-[40em]"
-          mainPool={mainPool}
-          custodies={custodies}
-        />
-
-        <VestingBloc
-          className="min-w-[40em] max-w-[80em]"
-          cortex={cortex}
-          vests={vests}
-        />
-
-        <PoolBloc
-          className="min-w-[40em] max-w-[80em]"
-          mainPool={mainPool}
-          custodies={custodies}
-          alpComposition={composition}
-        />
-
-        <BucketsBloc className="min-w-[40em] max-w-[80em]" cortex={cortex} />
-
-        <FeeCustodyBreakdownBloc
-          className="min-w-[40em] max-w-[80em]"
-          custodies={custodies}
-        />
-
-        <VolumeCustodyBreakdownBloc
-          className="min-w-[40em] max-w-[80em]"
-          custodies={custodies}
-        />
-      </div> */}
     </>
   );
 }

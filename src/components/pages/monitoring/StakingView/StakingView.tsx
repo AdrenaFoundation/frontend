@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
@@ -14,13 +13,11 @@ import {
 } from '@/utils';
 
 export default function StakingView({
-  className,
   alpStakingAccount,
   adxStakingAccount,
   alpStakingCurrentRoundRewards,
   adxStakingCurrentRoundRewards,
 }: {
-  className?: string;
   alpStakingAccount: Staking;
   adxStakingAccount: Staking;
   alpStakingCurrentRoundRewards: number | null;
@@ -48,12 +45,7 @@ export default function StakingView({
   }, [adxStakingAccount.currentStakingRound.startTime]);
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-wrap gap-4 justify-center max-w-[60em] ml-auto mr-auto',
-        className,
-      )}
-    >
+    <>
       <StyledContainer
         title="LOCKED TOKENS"
         subTitle="Tokens locked in the staking program."
@@ -220,6 +212,6 @@ export default function StakingView({
           </StyledSubSubContainer>
         </StyledSubContainer>
       </StyledContainer>
-    </div>
+    </>
   );
 }

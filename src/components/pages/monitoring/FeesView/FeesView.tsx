@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { twMerge } from 'tailwind-merge';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
@@ -12,13 +11,11 @@ import NumberInfo from '../NumberInfo';
 import Table from '../Table';
 
 export default function FeesView({
-  className,
   mainPool,
   custodies,
   alpStakingCurrentRoundRewards,
   adxStakingCurrentRoundRewards,
 }: {
-  className?: string;
   mainPool: PoolExtended;
   custodies: CustodyExtended[];
   alpStakingCurrentRoundRewards: number | null;
@@ -27,12 +24,7 @@ export default function FeesView({
   const attributes = Object.keys(custodies[0].nativeObject.collectedFees);
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-wrap gap-4 justify-center max-w-[60em] ml-auto mr-auto',
-        className,
-      )}
-    >
+    <>
       <StyledContainer
         headerClassName="text-center justify-center"
         title="ALL TIME FEES"
@@ -119,6 +111,6 @@ export default function FeesView({
           ]}
         />
       </StyledContainer>
-    </div>
+    </>
   );
 }
