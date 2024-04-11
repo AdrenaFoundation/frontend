@@ -380,7 +380,8 @@ export default function ALPSwapInputs({
           <div className="w-full">
             <div className="flex items-center justify-between gap-4 mb-2">
               <h6 className="text-txtfade text-sm ml-1">
-                Assets Under Management / Liquidity Cap
+                Assets Under Management ({Math.round(aumUsd)}) / Liquidity Cap (
+                {alpLiquidityCap})
               </h6>
             </div>
             <div className="flex-start flex h-2.5 w-full overflow-hidden rounded-full bg-third font-sans text-xs font-medium">

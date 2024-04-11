@@ -163,7 +163,7 @@ export default function ALPSwap({
       const walletAlpTokenBalance =
         walletTokenBalances?.[window.adrena.client.alpToken.symbol];
 
-      // Loading, should happens quickly
+      //TODO: disable everytime
       if (typeof walletCollateralTokenBalance === 'undefined') {
         return '...';
       }
