@@ -130,11 +130,11 @@ export default function ADXTokenomicsView({
       <StyledContainer
         title="BUCKETS"
         headerClassName="ml-auto mr-auto"
-        className="min-w-[30em] w-[30em] grow"
+        className="min-w-[40em] w-[40em] grow"
         bodyClassName=""
       >
         <StyledSubSubContainer className="flex-col items-center">
-          <div className="max-w-[34em]">
+          <div className="max-w-[30em] w-[30em]">
             <div className="flex w-full justify-evenly">
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-white"></div>

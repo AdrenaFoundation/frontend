@@ -70,7 +70,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0">
         <RiveAnimation
           animation="btm-monster"
           layout={
@@ -107,95 +107,97 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
         }}
       />
 
-      <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap min-w-[40em] overflow-x-auto">
-        {selectedTab === 'All' ? (
-          <div className="w-full border-b-4 z-10 border-white">
-            <h1 className="text-white">ACCOUNT</h1>
-          </div>
-        ) : null}
+      <div className="w-full max-w-full overflow-x-auto flex z-10">
+        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap min-w-[40em] w-[60em] max-w-full ml-auto mr-auto justify-center">
+          {selectedTab === 'All' ? (
+            <div className="w-full border-b-4 z-10 border-white">
+              <h1 className="text-white">ACCOUNT</h1>
+            </div>
+          ) : null}
 
-        {selectedTab === 'Accounts' || selectedTab === 'All' ? (
-          <AccountsView
-            perpetuals={perpetuals}
-            cortex={cortex}
-            mainPool={mainPool}
-            custodies={custodies}
-          />
-        ) : null}
+          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
+            <AccountsView
+              perpetuals={perpetuals}
+              cortex={cortex}
+              mainPool={mainPool}
+              custodies={custodies}
+            />
+          ) : null}
 
-        {selectedTab === 'All' ? (
-          <div className="w-full border-b-4 z-10 border-white">
-            <h1 className="text-white">POOL</h1>
-          </div>
-        ) : null}
+          {selectedTab === 'All' ? (
+            <div className="w-full border-b-4 z-10 border-white">
+              <h1 className="text-white">POOL</h1>
+            </div>
+          ) : null}
 
-        {selectedTab === 'Pool' || selectedTab === 'All' ? (
-          <PoolView mainPool={mainPool} custodies={custodies} />
-        ) : null}
+          {selectedTab === 'Pool' || selectedTab === 'All' ? (
+            <PoolView mainPool={mainPool} custodies={custodies} />
+          ) : null}
 
-        {selectedTab === 'All' ? (
-          <div className="w-full border-b-4 z-10 border-white">
-            <h1 className="text-white">FEES</h1>
-          </div>
-        ) : null}
+          {selectedTab === 'All' ? (
+            <div className="w-full border-b-4 z-10 border-white">
+              <h1 className="text-white">FEES</h1>
+            </div>
+          ) : null}
 
-        {selectedTab === 'Fees' || selectedTab === 'All' ? (
-          <FeesView
-            mainPool={mainPool}
-            custodies={custodies}
-            alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-            adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
-          />
-        ) : null}
+          {selectedTab === 'Fees' || selectedTab === 'All' ? (
+            <FeesView
+              mainPool={mainPool}
+              custodies={custodies}
+              alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
+              adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+            />
+          ) : null}
 
-        {selectedTab === 'All' ? (
-          <div className="w-full border-b-4 z-10 border-white">
-            <h1 className="text-white">STAKING</h1>
-          </div>
-        ) : null}
+          {selectedTab === 'All' ? (
+            <div className="w-full border-b-4 z-10 border-white">
+              <h1 className="text-white">STAKING</h1>
+            </div>
+          ) : null}
 
-        {selectedTab === 'Staking' || selectedTab === 'All' ? (
-          <StakingView
-            alpStakingAccount={alpStakingAccount}
-            adxStakingAccount={adxStakingAccount}
-            alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-            adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
-          />
-        ) : null}
+          {selectedTab === 'Staking' || selectedTab === 'All' ? (
+            <StakingView
+              alpStakingAccount={alpStakingAccount}
+              adxStakingAccount={adxStakingAccount}
+              alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
+              adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+            />
+          ) : null}
 
-        {selectedTab === 'All' ? (
-          <div className="w-full border-b-4 z-10 border-white">
-            <h1 className="text-white">TRADING</h1>
-          </div>
-        ) : null}
+          {selectedTab === 'All' ? (
+            <div className="w-full border-b-4 z-10 border-white">
+              <h1 className="text-white">TRADING</h1>
+            </div>
+          ) : null}
 
-        {selectedTab === 'Trading' || selectedTab === 'All' ? (
-          <TradingView mainPool={mainPool} custodies={custodies} />
-        ) : null}
+          {selectedTab === 'Trading' || selectedTab === 'All' ? (
+            <TradingView mainPool={mainPool} custodies={custodies} />
+          ) : null}
 
-        {selectedTab === 'All' ? (
-          <div className="w-full border-b-4 z-10 border-white">
-            <h1 className="text-white">VESTING</h1>
-          </div>
-        ) : null}
+          {selectedTab === 'All' ? (
+            <div className="w-full border-b-4 z-10 border-white">
+              <h1 className="text-white">VESTING</h1>
+            </div>
+          ) : null}
 
-        {selectedTab === 'Vesting' || selectedTab === 'All' ? (
-          <VestingView cortex={cortex} vests={vests} />
-        ) : null}
+          {selectedTab === 'Vesting' || selectedTab === 'All' ? (
+            <VestingView cortex={cortex} vests={vests} />
+          ) : null}
 
-        {selectedTab === 'All' ? (
-          <div className="w-full border-b-4 z-10 border-white">
-            <h1 className="text-white">ADX TOKENOMICS</h1>
-          </div>
-        ) : null}
+          {selectedTab === 'All' ? (
+            <div className="w-full border-b-4 z-10 border-white">
+              <h1 className="text-white">ADX TOKENOMICS</h1>
+            </div>
+          ) : null}
 
-        {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
-          <ADXTokenomicsView
-            cortex={cortex}
-            adxTotalSupply={adxTotalSupply}
-            adxStakingAccount={adxStakingAccount}
-          />
-        ) : null}
+          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
+            <ADXTokenomicsView
+              cortex={cortex}
+              adxTotalSupply={adxTotalSupply}
+              adxStakingAccount={adxStakingAccount}
+            />
+          ) : null}
+        </div>
       </div>
     </>
   );

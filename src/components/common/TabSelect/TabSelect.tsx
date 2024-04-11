@@ -50,20 +50,6 @@ export default function TabSelect<T extends string | number>({
             onClick(title, index);
             setActiveTab(index);
           }}
-          style={
-            {
-              // color:
-              //   (activeTab !== null && index === activeTab
-              //     ? activeColor
-              //     : 'white') ?? 'white',
-              // borderBottom:
-              //   activeTab !== null && index === activeTab
-              //     ? '0.3em solid'
-              //     : '1px solid',
-              // borderBottomColor:
-              //   activeTab !== null && index === activeTab ? activeColor : '',
-            }
-          }
         >
           <h5 className={twMerge('text-center uppercase', titleClassName)}>
             {title}
