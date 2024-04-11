@@ -125,3 +125,5 @@ export const SUPPORTED_RESOLUTIONS = [
   '240',
   '1D',
 ] as ResolutionString[];
+
+export const alpLiquidityCap = 10000000;
