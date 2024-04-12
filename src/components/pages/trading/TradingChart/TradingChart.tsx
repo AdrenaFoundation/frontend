@@ -326,7 +326,7 @@ export default function TradingChart({
   return (
     <div className="flex flex-col w-full overflow-hidden backdrop-blur-md">
       <div id="chart-area" className="h-full rounded-b-lg" />
-      <div className="copyright text-[0.6em] bg-secondary flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
+      <div className="copyright text-[0.5em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
         The chart is provided by TradingView, an advanced platform that provides
         unparalleled access to live data e.g.
         <Link
@@ -336,7 +336,6 @@ export default function TradingChart({
         >
           {token.symbol} USD chart
         </Link>
-        .
       </div>
     </div>
   );

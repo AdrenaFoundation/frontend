@@ -59,7 +59,7 @@ export default function PositionsBlocks({
   }
 
   return (
-    <div className={twMerge('w-full', 'flex', 'flex-wrap gap-5', className)}>
+    <div className={twMerge('w-full', 'flex', 'flex-wrap', className)}>
       {positions === null && connected ? (
         <div className="mt-5 mb-5 ml-auto mr-auto">Loading ...</div>
       ) : null}
@@ -73,9 +73,9 @@ export default function PositionsBlocks({
           className="flex gap-1 flex-col w-full"
           key={position.pubkey.toBase58()}
         >
-          <div className="flex flex-col bg-secondary border rounded-lg w-full">
+          <div className="flex flex-col bg-secondary border rounded-lg w-full mt-3 mb-3">
             <div className="flex flex-row justify-between items-center border-b">
-              <div className="flex flex-row h-10 pl-2 items-center relative overflow-hidden">
+              <div className="flex flex-row h-10 items-center relative overflow-hidden">
                 <Image
                   className="absolute left-[-0.7em] top-auto grayscale opacity-40"
                   src={position.token.image}

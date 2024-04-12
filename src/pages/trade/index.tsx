@@ -224,11 +224,13 @@ export default function Trade({
           </div>
         </div>
 
-        <div className="min-h-[15em] z-30 overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
-          <Positions
-            positions={positions}
-            triggerPositionsReload={triggerPositionsReload}
-          />
+        <div className="flex flex-col w-full h-full">
+          <div className="min-h-[15em] z-30 overflow-hidden bg-main/90 pl-3 pr-3 border rounded-lg mt-4">
+            <Positions
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+            />
+          </div>
         </div>
       </div>
 
@@ -241,7 +243,7 @@ export default function Trade({
           setTokenA={setTokenA}
           setTokenB={setTokenB}
           openedPosition={openedPosition}
-          className="hidden sm:flex ml-4"
+          className="hidden sm:flex sm:ml-0 lg:ml-4"
           wallet={wallet}
           triggerPositionsReload={triggerPositionsReload}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
