@@ -7,8 +7,9 @@ import Loader from '@/components/Loader/Loader';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
 
+import arrowUpLogo from '../../../../../public/images/arrow-up.png';
 import phantomLogo from '../../../../../public/images/phantom.png';
 
 export default function PositionsArray({
@@ -77,6 +78,22 @@ export default function PositionsArray({
   const columnHeadStyle = 'text-sm text-center opacity-50 font-boldy p-3';
   const columnStyle = 'text-sm text-center h-10';
   const border = 'border-b border-bcolor pt-2';
+  const arrowElementUpRight = getArrowElement('up', 'right-[0.5em] opacity-70');
+  const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
+
+  function generateLiquidationBlock() {
+    return (
+      <div className="flex justify-center items-center text-center align-middle relative">
+        {arrowElementUpLeft}
+        Liquideable
+        {arrowElementUpRight}
+      </div>
+    );
+  }
+
+  if (positions && positions.length > 0) {
+    positions[0].liquidationPrice = 80000;
+  }
 
   return (
     <table className="w-full">
@@ -208,14 +225,14 @@ export default function PositionsArray({
             <tr className={twMerge(i !== positions.length - 1 && border)}>
               <td
                 colSpan={9}
-                className="flex-col bg-red justify-center items-center text-center align-middle"
+                className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
               >
-                {position.side === 'long'
-                  ? position.price < (position.liquidationPrice ?? 0)
-                    ? 'Liquideable'
-                    : ''
-                  : position.price > (position.liquidationPrice ?? 0)
-                  ? 'Liquideable'
+                {position.side === 'long' &&
+                position.price < (position.liquidationPrice ?? 0)
+                  ? generateLiquidationBlock()
+                  : position.side === 'short' &&
+                    position.price > (position.liquidationPrice ?? 0)
+                  ? generateLiquidationBlock()
                   : ''}
               </td>
             </tr>
