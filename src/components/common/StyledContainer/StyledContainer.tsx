@@ -43,7 +43,7 @@ export default function StyledContainer({
       >
         {icon ? (
           <Image
-            className={twMerge('h-14 w-14 mr-3', iconClassName)}
+            className={twMerge('h-12 w-12 mr-3', iconClassName)}
             src={icon}
             alt="icon"
             width={60}
