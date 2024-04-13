@@ -29,9 +29,9 @@ export default interface IConfiguration {
 
   readonly RPCOptions: {
     name: string;
-    url: string;
-    connection: Connection;
-    latency: number | null;
+    url: string | null;
+    connection?: Connection | null;
+    latency?: number | null;
   }[];
 
   readonly mainPool: PublicKey;

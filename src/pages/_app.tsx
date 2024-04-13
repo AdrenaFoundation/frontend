@@ -22,6 +22,7 @@ import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
+import { verifyRPCConnection } from '@/utils';
 
 import logo from '../../public/images/logo.png';
 import devnetConfiguration from '../config/devnet';
@@ -49,16 +50,22 @@ export default function App(props: AppProps) {
   const [cluster, setCluster] = useState<SupportedCluster | null>(null);
   const [config, setConfig] = useState<IConfiguration | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [cookies] = useCookies(['activeRPC', 'isCustomRPC', 'customRPC']);
+  const [cookies] = useCookies(['activeRPC', 'customRPC']);
   const [activeRPC, setActiveRPC] = useState<string>(
-    cookies?.activeRPC ?? 'Solana RPC',
+    cookies?.activeRPC ?? 'Helius RPC',
   );
   const [customRPCUrl, setCustomRPCUrl] = useState<string>(
     cookies?.customRPC ?? '',
   );
-  const [isCustomRPC, setIsCustomRPC] = useState<boolean>(
-    cookies?.isCustomRPC === 'true',
-  );
+
+  const verifyCustomRPC = async () => {
+    if (customRPCUrl === '') {
+      return false;
+    }
+
+    const isVerified = await verifyRPCConnection(customRPCUrl);
+    return isVerified;
+  };
 
   // Load cluster from router
   useEffect(() => {
@@ -80,31 +87,30 @@ export default function App(props: AppProps) {
     setCluster(cluster as SupportedCluster);
   }, [router]);
 
+  useEffect(() => {
+    verifyCustomRPC();
+  }, [customRPCUrl]);
+
   // Load config from cluster
   useEffect(() => {
     if (!cluster) return;
-    const copiedConfig =
+    const config =
       cluster === 'devnet'
         ? { ...devnetConfiguration }
         : { ...mainnetConfiguration };
 
-    if (activeRPC) {
-      const activeRPCOption = copiedConfig.RPCOptions.find(
+    if (activeRPC === 'Custom RPC' && customRPCUrl !== '') {
+      config.mainRPC = customRPCUrl;
+      config.pythRPC = customRPCUrl;
+    } else {
+      const activeRPCOption = config.RPCOptions.find(
         (rpcOption) => rpcOption.name === activeRPC,
       );
-
-      copiedConfig.mainRPC = activeRPCOption?.url ?? copiedConfig.mainRPC;
-
-      copiedConfig.pythRPC = activeRPCOption?.url ?? copiedConfig.pythRPC;
+      config.mainRPC = activeRPCOption?.url ?? config.mainRPC;
+      config.pythRPC = activeRPCOption?.url ?? config.pythRPC;
     }
 
-    if (isCustomRPC && customRPCUrl !== '') {
-      // check if customRPCUrl is valid
-      copiedConfig.mainRPC = customRPCUrl ?? copiedConfig.mainRPC;
-      copiedConfig.pythRPC = customRPCUrl ?? copiedConfig.pythRPC;
-    }
-
-    setConfig(copiedConfig);
+    setConfig(config);
   }, [cluster, activeRPC, customRPCUrl]);
 
   useEffect(() => {
@@ -124,8 +130,6 @@ export default function App(props: AppProps) {
           activeRPC={activeRPC}
           setCustomRPCUrl={setCustomRPCUrl}
           customRPCUrl={customRPCUrl}
-          setIsCustomRPC={setIsCustomRPC}
-          isCustomRPC={isCustomRPC}
           {...props}
         />
       </CookiesProvider>
@@ -146,15 +150,11 @@ function AppComponent({
   activeRPC,
   setCustomRPCUrl,
   customRPCUrl,
-  setIsCustomRPC,
-  isCustomRPC,
 }: AppProps & {
   setActiveRPC: (rpc: string) => void;
   activeRPC: string;
   setCustomRPCUrl: (rpc: string) => void;
   customRPCUrl: string;
-  setIsCustomRPC: (isCustomRPC: boolean) => void;
-  isCustomRPC: boolean;
 }) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
@@ -210,8 +210,6 @@ function AppComponent({
       activeRPC={activeRPC}
       setCustomRPCUrl={setCustomRPCUrl}
       customRPCUrl={customRPCUrl}
-      setIsCustomRPC={setIsCustomRPC}
-      isCustomRPC={isCustomRPC}
     >
       {
         <TermsAndConditionsModal

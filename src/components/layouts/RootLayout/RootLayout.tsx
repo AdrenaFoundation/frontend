@@ -19,8 +19,6 @@ const RootLayout = ({
   activeRPC,
   setCustomRPCUrl,
   customRPCUrl,
-  setIsCustomRPC,
-  isCustomRPC,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
@@ -28,8 +26,6 @@ const RootLayout = ({
   activeRPC: string;
   setCustomRPCUrl: (rpc: string) => void;
   customRPCUrl: string;
-  setIsCustomRPC: (isCustomRPC: boolean) => void;
-  isCustomRPC: boolean;
 }) => {
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
@@ -69,8 +65,6 @@ const RootLayout = ({
           activeRPC={activeRPC}
           setCustomRPCUrl={setCustomRPCUrl}
           customRPCUrl={customRPCUrl}
-          setIsCustomRPC={setIsCustomRPC}
-          isCustomRPC={isCustomRPC}
         />
       ) : (
         <BurgerMenu userProfile={userProfile} PAGES={pages} />

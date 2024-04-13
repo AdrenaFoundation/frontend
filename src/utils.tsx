@@ -548,3 +548,16 @@ export function getFontSizeWeight(context: Context): Font {
     weight: 'bold',
   };
 }
+
+export const verifyRPCConnection = async (rpc: string) => {
+  if (!rpc) return false;
+  try {
+    const connection = await new Connection(rpc)?.getVersion();
+
+    console.log('RPC connection verified', connection);
+    return !!connection;
+  } catch {
+    console.log('RPC connection failed');
+    return false;
+  }
+};

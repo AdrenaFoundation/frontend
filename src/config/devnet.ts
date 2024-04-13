@@ -1,5 +1,5 @@
 import { NATIVE_MINT } from '@solana/spl-token';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
@@ -94,23 +94,18 @@ class DevnetConfiguration implements IConfiguration {
     {
       name: 'Solana RPC',
       url: 'https://api.devnet.solana.com',
-      connection: new Connection('https://api.devnet.solana.com', 'confirmed'),
-      latency: null,
     },
     {
-      name: 'Helius RPC 1',
+      name: 'Helius RPC',
       url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
-      connection: new Connection(
-        'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
-        'confirmed',
-      ),
-      latency: null,
     },
     {
       name: 'Triton RPC Pool 2',
       url: 'https://api.devnet.solana.com',
-      connection: new Connection('https://api.devnet.solana.com', 'confirmed'),
-      latency: null,
+    },
+    {
+      name: 'Custom RPC',
+      url: null,
     },
   ];
 
