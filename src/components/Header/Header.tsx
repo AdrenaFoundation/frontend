@@ -85,12 +85,6 @@ export default function Header({
     setActiveRPC(rpc);
     setCookies('activeRPC', rpc);
     setIsEditCustomRPCMode(false);
-
-    addNotification({
-      title: 'RPC endpoint changed',
-      duration: 'fast',
-      position: 'bottom-right',
-    });
   };
 
   const saveCustomRPCUrl = async () => {
@@ -238,7 +232,14 @@ export default function Header({
             {rpcOptions?.map((rpcOption) => (
               <li
                 className="flex flex-row justify-between items-center cursor-pointer opacity-100 hover:opacity-75 transition-opacity duration-300"
-                onClick={() => handleRPCOption(rpcOption.name)}
+                onClick={() => {
+                  handleRPCOption(rpcOption.name);
+                  addNotification({
+                    title: 'RPC endpoint changed',
+                    duration: 'fast',
+                    position: 'bottom-right',
+                  });
+                }}
                 key={rpcOption.name}
               >
                 <div className="flex flex-row gap-2 items-center">
