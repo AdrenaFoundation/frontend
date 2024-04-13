@@ -3,14 +3,13 @@ import React from 'react';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import { STAKE_MULTIPLIERS } from '@/constant';
-import { LockPeriod } from '@/types';
+import { ADX_LOCK_PERIODS, ADX_STAKE_MULTIPLIERS } from '@/constant';
+import { AdxLockPeriod } from '@/types';
 import { formatNumber } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
 
-export default function StakeToken({
-  tokenSymbol,
+export default function ADXStakeToken({
   balance,
   amount,
   setAmount,
@@ -20,33 +19,18 @@ export default function StakeToken({
   stakeAmount,
   errorMessage,
 }: {
-  tokenSymbol: 'ADX' | 'ALP';
   balance: number | null;
   amount: number | null;
   setAmount: (amount: number | null) => void;
-  lockPeriod: LockPeriod;
-  setLockPeriod: (lockPeriod: LockPeriod) => void;
+  lockPeriod: AdxLockPeriod;
+  setLockPeriod: (lockPeriod: AdxLockPeriod) => void;
   onStakeAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   stakeAmount: () => void;
   errorMessage: string;
 }) {
-  const LOCK_PERIODS = (
-    [
-      { title: 0 },
-      { title: 30 },
-      { title: 60 },
-      { title: 90 },
-      { title: 180 },
-      { title: 360 },
-      { title: 720 },
-    ] as { title: LockPeriod }[]
-  ).filter((period) => {
-    if (tokenSymbol === 'ALP') {
-      return period.title > 0;
-    }
-
-    return true;
-  });
+  const lockPeriods = ADX_LOCK_PERIODS.map((lockPeriod) => ({
+    title: lockPeriod,
+  }));
 
   return (
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
@@ -57,15 +41,13 @@ export default function StakeToken({
 
             <p className="text-sm font-medium">
               <span className="opacity-50"> Balance · </span>
-              {balance !== null
-                ? `${formatNumber(balance, 2)} ${tokenSymbol}`
-                : '–'}
+              {balance !== null ? `${formatNumber(balance, 2)} ADX` : '–'}
             </p>
           </div>
 
           <div className="relative flex flex-row w-full mt-2">
-            <div className="flex items-center bg-bcolor border rounded-l-xl px-3 border-r-none">
-              <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
+            <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r-none">
+              <p className="opacity-50 font-mono text-sm">ADX</p>
             </div>
             <input
               className="w-full bg-third border border-bcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
@@ -102,10 +84,10 @@ export default function StakeToken({
           <TabSelect
             className="font-mono"
             selected={lockPeriod}
-            initialSelectedIndex={LOCK_PERIODS.findIndex(
+            initialSelectedIndex={lockPeriods.findIndex(
               (x) => x.title === lockPeriod,
             )}
-            tabs={LOCK_PERIODS}
+            tabs={lockPeriods}
             onClick={(title) => {
               setLockPeriod(title);
             }}
@@ -120,24 +102,35 @@ export default function StakeToken({
             <p className="text-sm opacity-50"> Days </p>
             <p className="text-sm font-mono"> {lockPeriod} </p>
           </li>
-          <li className="flex flex-row justify-between">
-            <p className="text-sm opacity-50"> USDC yield</p>
-            <p className="text-sm font-mono">
-              {STAKE_MULTIPLIERS[lockPeriod].usdc}x
-            </p>
-          </li>
-          <li className="flex flex-row justify-between">
-            <p className="text-sm opacity-50"> ADX token yield </p>
-            <p className="text-sm font-mono">
-              {STAKE_MULTIPLIERS[lockPeriod].adx}x
-            </p>
-          </li>
-          <li className="flex flex-row justify-between">
-            <p className="text-sm opacity-50"> Votes </p>
-            <p className="text-sm font-mono">
-              {STAKE_MULTIPLIERS[lockPeriod].votes}x
-            </p>
-          </li>
+
+          {ADX_STAKE_MULTIPLIERS[lockPeriod].usdc ? (
+            <li className="flex flex-row justify-between">
+              <p className="text-sm opacity-50">USDC yield</p>
+              <p className="text-sm font-mono">
+                {ADX_STAKE_MULTIPLIERS[lockPeriod].usdc}x
+              </p>
+            </li>
+          ) : null}
+
+          {ADX_STAKE_MULTIPLIERS[lockPeriod].adx ? (
+            <li className="flex flex-row justify-between">
+              <p className="text-sm opacity-50">ADX token yield </p>
+              <p className="text-sm font-mono">
+                {ADX_STAKE_MULTIPLIERS[lockPeriod].adx}x
+              </p>
+            </li>
+          ) : null}
+
+          {ADX_STAKE_MULTIPLIERS[lockPeriod].votes ? (
+            <li className="flex flex-row justify-between">
+              <p className="text-sm opacity-50">
+                Base voting power multiplier{' '}
+              </p>
+              <p className="text-sm font-mono">
+                {ADX_STAKE_MULTIPLIERS[lockPeriod].votes}x
+              </p>
+            </li>
+          ) : null}
         </ul>
 
         <Button

@@ -66,8 +66,8 @@ export default function PositionsArray({
 
   if (positions && !positions.length) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <span className="text-sm opacity-50 font-normal h-[5em] flex items-center justify-center font-boldy">
+      <div className="flex h-full min-h-[5em] grow items-center justify-center">
+        <span className="text-sm opacity-50 font-normal h-full flex items-center justify-center font-boldy">
           No opened position
         </span>
       </div>

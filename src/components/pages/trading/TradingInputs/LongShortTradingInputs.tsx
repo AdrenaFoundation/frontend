@@ -367,10 +367,10 @@ export default function LongShortTradingInputs({
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col border rounded-lg mt-2 overflow-hidden bg-third">
+        <div className="flex flex-col border rounded-lg mt-2 bg-third">
           <TradingInput
             className="text-sm border-b"
-            inputClassName="border-0"
+            inputClassName="border-0 tr-rounded-lg"
             maxClassName={
               side === 'short' ? 'bg-red text-white' : 'bg-green text-white'
             }

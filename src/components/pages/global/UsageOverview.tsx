@@ -66,7 +66,7 @@ function generateUtilizationChart(utilizationChartData: ChartData<'bar'>) {
                 type: 'line',
                 yMin: 100,
                 yMax: 100,
-                borderColor: '#666666',
+                borderColor: '#ffffff',
                 borderWidth: 2,
               },
             },
@@ -109,14 +109,8 @@ export default function UsageOverview({
 }) {
   return (
     <StyledContainer
-      title={
-        <div className="flex items-center">
-          <div className="flex flex-col justify-start ml-2">
-            <h1>Economic usage</h1>
-            <span className="opacity-50">Visualize the project usage</span>
-          </div>
-        </div>
-      }
+      title="Economic usage"
+      subTitle="Visualize the project usage."
       className={className}
     >
       <StyledSubContainer>
@@ -160,7 +154,7 @@ export default function UsageOverview({
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
           {utilizationChartData ? (
             <>
-              <div className="text-xs w-full flex justify-end text-[#666666]">
+              <div className="text-xs w-full flex justify-end text-[#ffffff]">
                 max utilization
               </div>
               {generateUtilizationChart(utilizationChartData)}
