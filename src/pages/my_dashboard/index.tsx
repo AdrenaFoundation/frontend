@@ -93,9 +93,9 @@ export default function MyDashboard({
 
     const adxLockedStakes: LockedStakeExtended[] =
       (
-        stakingAccounts.ADX?.lockedStakes.sort(
+        (stakingAccounts.ADX?.lockedStakes.sort(
           (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-        ) as LockedStakeExtended[]
+        ) as LockedStakeExtended[]) ?? []
       ).map((stake, index) => ({
         ...stake,
         index,
@@ -104,9 +104,9 @@ export default function MyDashboard({
 
     const alpLockedStakes: LockedStakeExtended[] =
       (
-        stakingAccounts.ALP?.lockedStakes.sort(
+        (stakingAccounts.ALP?.lockedStakes.sort(
           (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-        ) as LockedStakeExtended[]
+        ) as LockedStakeExtended[]) ?? []
       ).map((stake, index) => ({
         ...stake,
         index,

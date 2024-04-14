@@ -22,8 +22,8 @@ import {
 import { Adrena } from '@/target/adrena';
 import AdrenaJson from '@/target/adrena.json';
 
-import adxIcon from '../public/images/adx.png';
-import alpIcon from '../public/images/alp.png';
+import adxIcon from '../public/images/adx.svg';
+import alpIcon from '../public/images/alp.svg';
 import config from './config/devnet';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
