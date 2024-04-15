@@ -7,6 +7,7 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
 import { AdxLockPeriod, LockedStakeExtended } from '@/types';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function ADXStakeOverview({
   totalLiquidStaked,
@@ -47,7 +48,7 @@ export default function ADXStakeOverview({
           <h5 className="flex items-center">Balance</h5>
 
           <div>
-            <span className="font-mono">{totalLiquidStaked ?? '-'}</span>
+            <FormatNumber nb={totalLiquidStaked} />
             <span className="ml-1">ADX</span>
           </div>
         </StyledSubSubContainer>
@@ -99,7 +100,7 @@ export default function ADXStakeOverview({
           <h5 className="flex items-center">Locked</h5>
 
           <div>
-            <span className="font-mono">{totalLockedStake ?? '-'}</span>
+            <FormatNumber nb={totalLockedStake} />
             <span className="ml-1">ADX</span>
           </div>
         </StyledSubSubContainer>

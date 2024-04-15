@@ -9,6 +9,7 @@ import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
 
 import phantomLogo from '../../../../../public/images/phantom.png';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function PositionsBlocks({
   className,
@@ -149,60 +150,71 @@ export default function PositionsBlocks({
               <li className={columnStyle}>
                 <p className="opacity-50">Leverage</p>
                 <div className="flex-row gap-3">
-                  <p className="font-mono text-right">
-                    {formatNumber(position.leverage, 2)}x
-                  </p>
+                  <FormatNumber
+                    nb={position.leverage}
+                    format="number"
+                    className="text-right"
+                    suffix="x"
+                  />
                 </div>
               </li>
 
               <li className={columnStyle}>
                 <p className="opacity-50">Size</p>
-                <p className="font-mono text-right">
-                  {formatPriceInfo(position.sizeUsd)}
-                </p>
+
+                <FormatNumber
+                  nb={position.sizeUsd}
+                  format="currency"
+                  className="text-right"
+                />
               </li>
               <li className={columnStyle}>
                 <p className="opacity-50">Collateral</p>
-                <p className="font-mono text-right">
-                  {formatPriceInfo(position.collateralUsd)}
-                </p>
+
+                <FormatNumber
+                  nb={position.collateralUsd}
+                  format="currency"
+                  className="text-right"
+                />
               </li>
               <li className={columnStyle}>
                 <p className="opacity-50">Net value</p>
-                <p className="font-mono text-right">
-                  {position.pnl ? (
-                    <span
-                      className={`text-${
-                        position.pnl > 0 ? 'green' : 'red'
-                      }-400`}
-                    >
-                      {formatPriceInfo(position.pnl)}
-                    </span>
-                  ) : (
-                    '-'
-                  )}
-                </p>
+                <FormatNumber
+                  nb={position.pnl}
+                  format="currency"
+                  className={`text-${
+                    position.pnl && position.pnl > 0 ? 'green' : 'red'
+                  } text-right`}
+                />
               </li>
 
               <li className={columnStyle}>
                 <p className="opacity-50">Entry Price</p>
-                <p className="font-mono text-right">
-                  {formatPriceInfo(position.price)}
-                </p>
+                <FormatNumber
+                  nb={position.price}
+                  format="currency"
+                  className="text-right"
+                />
               </li>
 
               <li className={columnStyle}>
                 <p className="opacity-50">Mark Price</p>
-                <p className="font-mono text-right">
-                  {formatPriceInfo(tokenPrices[position.token.symbol])}
-                </p>
+
+                <FormatNumber
+                  nb={tokenPrices[position.token.symbol]}
+                  format="currency"
+                  className="text-right"
+                />
               </li>
 
               <li className={columnStyle}>
                 <p className="opacity-50">Liquidation Price</p>
-                <p className="font-mono text-right">
-                  {formatPriceInfo(position.liquidationPrice ?? null)}
-                </p>
+
+                <FormatNumber
+                  nb={position.liquidationPrice}
+                  format="currency"
+                  className="text-right"
+                />
               </li>
             </ul>
           </div>

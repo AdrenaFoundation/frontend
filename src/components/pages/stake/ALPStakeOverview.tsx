@@ -7,6 +7,7 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
 import { AlpLockPeriod, LockedStakeExtended } from '@/types';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function ALPStakeOverview({
   totalLockedStake,
@@ -53,7 +54,7 @@ export default function ALPStakeOverview({
           <h5 className="flex items-center">Locked</h5>
 
           <div>
-            <span className="font-mono">{totalLockedStake ?? '-'}</span>
+            <FormatNumber nb={totalLockedStake} />
             <span className="ml-1">ALP</span>
           </div>
         </StyledSubSubContainer>

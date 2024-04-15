@@ -30,6 +30,7 @@ import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -470,18 +471,17 @@ export default function LongShortTradingInputs({
                   <>
                     {/* Opened position */}
                     <div className="flex flex-col self-center items-end">
-                      <div className="text-txtfade">
-                        {inputB !== null && tokenPriceB
-                          ? formatNumber(
-                              openedPosition.sizeUsd / tokenPriceB,
-                              tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
-                            )
-                          : ''}
-                      </div>
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd / tokenPriceB}
+                        precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                        className="text-txtfade"
+                      />
 
-                      <div className="text-txtfade text-xs">
-                        {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
-                      </div>
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd}
+                        format="currency"
+                        className="text-txtfade text-xs"
+                      />
                     </div>
 
                     <div className="ml-2 mr-2 flex items-center">
@@ -498,17 +498,17 @@ export default function LongShortTradingInputs({
 
                 <div className="relative flex flex-col">
                   <div className="flex flex-col items-end font-mono">
-                    <div className="text-base">
-                      {inputB !== null
-                        ? formatNumber(
-                            inputB,
-                            tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
-                          )
-                        : '-'}
-                    </div>
-                    <div className="text-sm text-txtfade">
-                      {formatPriceInfo(priceB, false, 2)}
-                    </div>
+                    <FormatNumber
+                      nb={inputB}
+                      precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                      className="text-base"
+                    />
+
+                    <FormatNumber
+                      nb={priceB}
+                      format="currency"
+                      className="text-txtfade text-xs"
+                    />
                   </div>
                 </div>
               </div>

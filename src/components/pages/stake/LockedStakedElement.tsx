@@ -11,6 +11,7 @@ import {
 } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function LockedStakedElement({
   token,
@@ -48,9 +49,10 @@ export default function LockedStakedElement({
     <div className="flex flex-col sm:flex-row border pt-2 pb-2 pl-4 pr-4 justify-between bg-third rounded-lg">
       <div className="flex flex-row sm:flex-col justify-between">
         <div>
-          <span className="text-lg font-mono">
-            {formatNumber(nativeToUi(lockedStake.amount, token.decimals), 2)}
-          </span>
+          <FormatNumber
+            nb={nativeToUi(lockedStake.amount, token.decimals)}
+            className="text-lg inline-block"
+          />{' '}
           <span className="text-lg ml-1">{token.symbol}</span>
         </div>
 

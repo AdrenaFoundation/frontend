@@ -5,6 +5,7 @@ import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function TradingChartHeader({
   className,
@@ -56,14 +57,11 @@ export default function TradingChartHeader({
       </div>
 
       <div className="flex flex-row gap-3 p-3 items-center">
-        <div className="font-mono mr-3 text-base">
-          {tokenPrices && tokenPrices[selected.symbol]
-            ? // Force linting, we check it just bellow
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              formatPriceInfo(tokenPrices[selected.symbol]!)
-            : null}
-        </div>
-
+        <FormatNumber
+          nb={tokenPrices?.[selected.symbol]}
+          format="currency"
+          className="mr-3 text-base"
+        />
         <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
           <span
             className={twMerge(
@@ -84,7 +82,10 @@ export default function TradingChartHeader({
 
         <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
           <span className="font-mono text-sm">
-            {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
+            <FormatNumber
+              nb={stats?.[selected.symbol].dailyVolume}
+              format="currency"
+            />
           </span>
           <span className="text-sm text-txtfade ml-2 relative top-[0.1em]">
             24h Volume

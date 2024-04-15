@@ -23,6 +23,7 @@ import {
   formatPriceInfo,
   nativeToUi,
 } from '@/utils';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function MyDashboard({
   positions,
@@ -206,31 +207,31 @@ export default function MyDashboard({
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Opened Position Count</div>
 
-                <span>
-                  {formatNumber(
+                <FormatNumber
+                  nb={
                     userProfile.longStats.openedPositionCount +
-                      userProfile.shortStats.openedPositionCount,
-                    1,
-                  )}
-                </span>
+                    userProfile.shortStats.openedPositionCount
+                  }
+                  precision={1}
+                />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Liquidated Position Count</div>
 
-                <span>
-                  {formatNumber(
+                <FormatNumber
+                  nb={
                     userProfile.longStats.liquidatedPositionCount +
-                      userProfile.shortStats.liquidatedPositionCount,
-                    1,
-                  )}
-                </span>
+                    userProfile.shortStats.liquidatedPositionCount
+                  }
+                  precision={1}
+                />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Opening Average Leverage</div>
 
-                <span>
+                {/* <span>
                   x
                   {formatNumber(
                     (userProfile.longStats.openingAverageLeverage *
@@ -241,59 +242,72 @@ export default function MyDashboard({
                         userProfile.shortStats.openedPositionCount),
                     3,
                   )}
-                </span>
+                </span> */}
+
+                <FormatNumber
+                  nb={
+                    (userProfile.longStats.openingAverageLeverage *
+                      userProfile.longStats.openedPositionCount +
+                      userProfile.shortStats.openingAverageLeverage *
+                        userProfile.shortStats.openedPositionCount) /
+                    (userProfile.longStats.openedPositionCount +
+                      userProfile.shortStats.openedPositionCount)
+                  }
+                  precision={3}
+                  prefix="x"
+                />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Opening Size</div>
 
-                <span>
-                  {formatPriceInfo(
+                <FormatNumber
+                  nb={
                     userProfile.longStats.openingSizeUsd +
-                      userProfile.shortStats.openingSizeUsd,
-                    false,
-                    3,
-                  )}
-                </span>
+                    userProfile.shortStats.openingSizeUsd
+                  }
+                  format="currency"
+                  precision={3}
+                />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Profits</div>
 
-                <span>
-                  {formatPriceInfo(
+                <FormatNumber
+                  nb={
                     userProfile.longStats.profitsUsd +
-                      userProfile.shortStats.profitsUsd,
-                    false,
-                    3,
-                  )}
-                </span>
+                    userProfile.shortStats.profitsUsd
+                  }
+                  format="currency"
+                  precision={3}
+                />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Losses</div>
 
-                <span>
-                  {formatPriceInfo(
+                <FormatNumber
+                  nb={
                     userProfile.longStats.lossesUsd +
-                      userProfile.shortStats.lossesUsd,
-                    false,
-                    3,
-                  )}
-                </span>
+                    userProfile.shortStats.lossesUsd
+                  }
+                  format="currency"
+                  precision={3}
+                />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Fees Paid</div>
 
-                <span>
-                  {formatPriceInfo(
+                <FormatNumber
+                  nb={
                     userProfile.longStats.feePaidUsd +
-                      userProfile.shortStats.feePaidUsd,
-                    false,
-                    3,
-                  )}
-                </span>
+                    userProfile.shortStats.feePaidUsd
+                  }
+                  format="currency"
+                  precision={3}
+                />
               </div>
             </StyledSubSubContainer>
           </StyledContainer>
@@ -306,23 +320,27 @@ export default function MyDashboard({
               <div className="flex w-full items-start justify-between">
                 <div className="text-sm">Swap Count</div>
 
-                <span>{formatNumber(userProfile.swapCount, 1)}</span>
+                <FormatNumber nb={userProfile.swapCount} precision={1} />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Swap Volume</div>
 
-                <span>
-                  {formatPriceInfo(userProfile.swapVolumeUsd, false, 3)}
-                </span>
+                <FormatNumber
+                  nb={userProfile.swapVolumeUsd}
+                  format="currency"
+                  precision={3}
+                />
               </div>
 
               <div className="flex w-full items-center justify-between">
                 <div className="text-sm">Fees Paid</div>
 
-                <span>
-                  {formatPriceInfo(userProfile.swapFeePaidUsd, false, 3)}
-                </span>
+                <FormatNumber
+                  nb={userProfile.swapFeePaidUsd}
+                  format="currency"
+                  precision={3}
+                />
               </div>
             </StyledSubSubContainer>
           </StyledContainer>
@@ -344,12 +362,12 @@ export default function MyDashboard({
             <div className="text-sm">Liquid Staked ADX</div>
 
             <span>
-              {liquidStakedADX !== null
-                ? formatNumber(
-                    liquidStakedADX,
-                    window.adrena.client.adxToken.decimals,
-                  )
-                : '0'}{' '}
+              <FormatNumber
+                nb={liquidStakedADX}
+                precision={window.adrena.client.adxToken.decimals}
+                placeholder="0"
+                className="inline"
+              />{' '}
               ADX
             </span>
           </div>
@@ -358,12 +376,12 @@ export default function MyDashboard({
             <div className="text-sm">Locked Staked ADX</div>
 
             <span>
-              {lockedStakedADX !== null
-                ? formatNumber(
-                    lockedStakedADX,
-                    window.adrena.client.adxToken.decimals,
-                  )
-                : '0'}{' '}
+              <FormatNumber
+                nb={lockedStakedADX}
+                precision={window.adrena.client.adxToken.decimals}
+                placeholder="0"
+                className="inline"
+              />{' '}
               ADX
             </span>
           </div>

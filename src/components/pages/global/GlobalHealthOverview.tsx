@@ -32,6 +32,7 @@ import {
 } from '@/utils';
 
 import InfoAnnotation from '../monitoring/InfoAnnotation';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 ChartJS.register(
   ArcElement,
@@ -181,7 +182,7 @@ export default function GlobalHealthOverview({
         <StyledSubSubContainer className="mt-4">
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Value</div>
-            <span>{aumUsd === null ? '-' : formatPriceInfo(aumUsd)}</span>
+            <FormatNumber nb={aumUsd} format="currency" />
           </div>
         </StyledSubSubContainer>
       </StyledSubContainer>

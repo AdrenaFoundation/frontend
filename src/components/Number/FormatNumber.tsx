@@ -7,15 +7,19 @@ export default function FormatNumber({
   nb,
   format = 'number',
   precision = 2,
-  unit = '',
+  prefix = '',
+  suffix = '',
+  displayPlusSign = false,
   placeholder = '-',
   className,
   placeholderClassName,
 }: {
-  nb: number | null;
+  nb?: number | null;
   format?: 'number' | 'currency' | 'percentage';
   precision?: number;
-  unit?: string;
+  prefix?: string;
+  suffix?: string;
+  displayPlusSign?: boolean;
   placeholder?: string;
   className?: string;
   placeholderClassName?: string;
@@ -28,10 +32,10 @@ export default function FormatNumber({
     );
   }
 
-  let num = formatNumber(nb, precision);
+  let num = formatNumber(nb, precision, displayPlusSign);
 
   if (format === 'currency') {
-    num = formatPriceInfo(nb);
+    num = formatPriceInfo(nb, displayPlusSign, precision);
   }
 
   if (format === 'percentage') {
@@ -42,13 +46,16 @@ export default function FormatNumber({
   const decimal = num.split('.')[1];
 
   return (
-    <p className={twMerge(className, 'font-mono')}>
+    <p className={twMerge(className, 'font-mono inline-block')}>
+      {prefix}
       {integer}
       {decimal && (
-        <span className={twMerge(className, 'opacity-50')}>.{decimal}</span>
+        <span className={twMerge(className, 'font-mono opacity-50')}>
+          .{decimal}
+        </span>
       )}
       {format === 'percentage' && '%'}
-      {unit}
+      {suffix}
     </p>
   );
 }

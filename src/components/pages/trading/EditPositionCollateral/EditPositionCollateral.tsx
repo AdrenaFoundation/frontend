@@ -20,6 +20,7 @@ import {
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import TradingInput from '../TradingInput/TradingInput';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 const LEVERAGE_OVERFLOW = 999;
 
@@ -310,9 +311,11 @@ export default function EditPositionCollateral({
 
               return (
                 <div className="ml-auto mr-4">
-                  <span className="text-sm text-txtfade font-mono">
-                    {formatNumber(balance, position.collateralToken.decimals)}
-                  </span>
+                  <FormatNumber
+                    nb={balance}
+                    precision={position.collateralToken.decimals}
+                    className="text-txtfade"
+                  />
                   <span className="text-sm text-txtfade ml-1">
                     {position.collateralToken.symbol} in wallet
                   </span>
@@ -339,8 +342,12 @@ export default function EditPositionCollateral({
           />
 
           <div className="text-sm ml-auto mr-4">
-            {formatPriceInfo(position.collateralUsd)} of collateral in the
-            position
+            <FormatNumber
+              nb={position.collateralUsd}
+              format="currency"
+              className="inline"
+            />{' '}
+            of collateral in the position
           </div>
         </>
       )}
@@ -373,43 +380,32 @@ export default function EditPositionCollateral({
           <div className={rowStyle}>
             <div className="text-sm">Size</div>
 
-            <div className="flex text-sm font-mono">
-              {formatPriceInfo(position.sizeUsd)}
-            </div>
+            <FormatNumber nb={position.sizeUsd} format="currency" />
           </div>
 
           <div className={rowStyle}>
             <div className="text-sm">Entry Price</div>
 
-            <div className="text-sm font-mono">
-              {formatPriceInfo(position.price)}
-            </div>
+            <FormatNumber nb={position.price} format="currency" />
           </div>
 
           <div className={rowStyle}>
             <div className="text-sm">Mark Price</div>
 
-            <div className="text-sm font-mono">
-              {formatPriceInfo(markPrice)}
-            </div>
+            <FormatNumber nb={markPrice} format="currency" />
           </div>
 
           <div className={rowStyle}>
             <div className="text-sm">PnL</div>
 
-            <div className="text-sm font-mono">
-              {position.pnl && markPrice ? (
-                <span
-                  className={`text-sm font-mono text-${
-                    position.pnl > 0 ? 'green' : 'red'
-                  }-500`}
-                >
-                  {formatPriceInfo(position.pnl, true)}
-                </span>
-              ) : (
-                '-'
-              )}
-            </div>
+            <FormatNumber
+              nb={position.pnl && markPrice ? position.pnl : null}
+              displayPlusSign={true}
+              format="currency"
+              className={`text-${
+                position.pnl && position.pnl > 0 ? 'green' : 'red'
+              }`}
+            />
           </div>
 
           <div className={rowStyle}>
@@ -417,14 +413,11 @@ export default function EditPositionCollateral({
 
             <div className="flex">
               <div className="flex flex-col items-end justify-center">
-                <div
-                  className={twMerge(
-                    'flex  font-mono',
-                    input ? 'text-xs' : 'text-sm',
-                  )}
-                >
-                  {formatPriceInfo(position.collateralUsd)}
-                </div>
+                <FormatNumber
+                  nb={position.collateralUsd}
+                  format="currency"
+                  className={input ? 'text-xs' : 'text-sm'}
+                />
               </div>
 
               {input ? (
@@ -433,11 +426,7 @@ export default function EditPositionCollateral({
 
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end">
-                      <div className="text-sm font-mono">
-                        {updatedInfos
-                          ? formatPriceInfo(updatedInfos.collateralUsd)
-                          : '-'}
-                      </div>
+                      <FormatNumber nb={updatedInfos?.collateralUsd} />
                     </div>
                   </div>
                 </>
@@ -448,14 +437,11 @@ export default function EditPositionCollateral({
           <div className={rowStyle}>
             <div className="text-sm">Leverage</div>
             <div className="flex items-center">
-              <div
-                className={twMerge(
-                  'flex font-mono',
-                  input ? ' text-xs' : 'text-sm',
-                )}
-              >
-                {formatNumber(position.leverage, 2)}x
-              </div>
+              <FormatNumber
+                nb={position.leverage}
+                suffix="x"
+                className={input ? ' text-xs' : 'text-sm'}
+              />
 
               {input ? (
                 <>
@@ -465,9 +451,7 @@ export default function EditPositionCollateral({
                     updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
                       <span className="text-sm ">Overflow</span>
                     ) : (
-                      <span className="text-sm font-mono">
-                        {formatNumber(updatedInfos.leverage, 2)}x
-                      </span>
+                      <FormatNumber nb={updatedInfos?.leverage} suffix="x" />
                     )
                   ) : (
                     '-'
@@ -480,21 +464,17 @@ export default function EditPositionCollateral({
           <div className={rowStyle}>
             <div className="text-sm">Liquidation Price</div>
             <div className="flex items-center">
-              <div
-                className={twMerge('font-mono', input ? ' text-xs' : 'text-sm')}
-              >
-                {formatPriceInfo(position.liquidationPrice)}
-              </div>
+              <FormatNumber
+                nb={position.liquidationPrice}
+                format="currency"
+                className={input ? ' text-xs' : 'text-sm'}
+              />
 
               {input ? (
                 <>
                   {rightArrowElement}
 
-                  <div className="text-sm font-mono">
-                    {liquidationPrice !== null
-                      ? formatPriceInfo(liquidationPrice)
-                      : '-'}
-                  </div>
+                  <FormatNumber nb={liquidationPrice} format="currency" />
                 </>
               ) : null}
             </div>
