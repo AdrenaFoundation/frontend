@@ -18,8 +18,8 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
-import WalletAdapter from '../WalletAdapter/WalletAdapter';
 import Settings from '../Settings/Settings';
+import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
   userProfile,

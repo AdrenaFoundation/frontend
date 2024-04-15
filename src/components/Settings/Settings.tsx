@@ -1,8 +1,10 @@
-import useRPC from '@/hooks/useRPC';
-import { addNotification, verifyRPCConnection } from '@/utils';
 import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
+
+import useRPC from '@/hooks/useRPC';
+import { addNotification, verifyRPCConnection } from '@/utils';
+
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Switch from '../common/Switch/Switch';

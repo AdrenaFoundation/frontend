@@ -19,8 +19,8 @@ import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import Switch from '../common/Switch/Switch';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
-import WalletAdapter from '../WalletAdapter/WalletAdapter';
 import Settings from '../Settings/Settings';
+import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
   userProfile,
