@@ -5,6 +5,8 @@ import {
 } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Connection } from '@solana/web3.js';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
@@ -19,6 +21,7 @@ import {
   addSuccessTxNotification,
   AdrenaTransactionError,
   findATAAddressSync,
+  getAccountExplorer,
   uiToNative,
 } from '@/utils';
 
@@ -155,11 +158,7 @@ export default function FaucetDevnet({
       <StyledContainer
         className="ml-auto mr-auto"
         bodyClassName="flex-row max-w-full flex-wrap gap-4 items-center justify-center"
-        title={
-          <h1 className="w-full flex items-center justify-center">
-            GET DEVNET TOKENS
-          </h1>
-        }
+        title="GET DEVNET TOKENS"
       >
         {allTokens.map((token) => (
           <StyledSubContainer
@@ -169,7 +168,7 @@ export default function FaucetDevnet({
             <Button
               disabled={pendingTx}
               className="w-full md:w-[30em]"
-              title={`Get ${token.symbol}`}
+              title={token.symbol}
               onClick={() =>
                 token.mint.equals(NATIVE_MINT)
                   ? airdropDevnetSol()
@@ -186,9 +185,20 @@ export default function FaucetDevnet({
               token at a time
             </div>
 
-            <div className="text-sm mt-2 text-txtfade">
+            <Link
+              className="text-sm mt-2 text-txtfade cursor-pointer opacity-50 hover:opacity-100 flex items-center"
+              href={getAccountExplorer(token.mint)}
+            >
               {token.mint.toBase58()}
-            </div>
+
+              <Image
+                className="ml-1 h-3 w-3"
+                src="/images/external-link-logo.png"
+                alt="external link icon"
+                width="12"
+                height="10"
+              />
+            </Link>
           </StyledSubContainer>
         ))}
       </StyledContainer>

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
+import discourseLogo from '../../../public/images/discourse.svg';
 import githubLogo from '../../../public/images/github.svg';
 import twitterLogo from '../../../public/images/x.svg';
 
@@ -19,7 +20,7 @@ export default function Footer({ className }: { className?: string }) {
           target="_blank"
         >
           <Image
-            className="hover:opacity-90 cursor-pointer h-5 w-auto"
+            className="hover:opacity-100 opacity-50 cursor-pointer h-5 w-auto"
             src={githubLogo}
             alt="github icon"
             width="25"
@@ -29,9 +30,19 @@ export default function Footer({ className }: { className?: string }) {
 
         <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
           <Image
-            className="hover:opacity-90 cursor-pointer ml-8 h-4 w-auto"
+            className="hover:opacity-100 opacity-50 cursor-pointer ml-8 h-4 w-auto"
             src={twitterLogo}
             alt="twitter icon"
+            width="20"
+            height="20"
+          />
+        </Link>
+
+        <Link href="https://adrena.discourse.group/" target="_blank">
+          <Image
+            className="hover:opacity-100 opacity-50 cursor-pointer ml-8 h-5 w-auto"
+            src={discourseLogo}
+            alt="discourse icon"
             width="20"
             height="20"
           />

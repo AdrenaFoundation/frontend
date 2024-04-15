@@ -61,7 +61,7 @@ function generateLine(
 ): AnnotationOptions<keyof AnnotationTypeRegistry> {
   return {
     type: 'line',
-    borderColor: '#666666',
+    borderColor: '#ffffff',
     borderWidth: 1,
     xMax: indexToMax(index) + 0.05,
     xMin: indexToMin(index) - 0.05,
@@ -121,10 +121,11 @@ function generateCompositionChart(
             displayColors: false,
             callbacks: {
               label: (context: TooltipItem<'bar'>) => [
-                `${context.chart.data.labels?.[context.dataIndex]} amount:
-                            ${formatOwnedAssets(
-                              composition[context.dataIndex].ownedAssets,
-                            )}`,
+                `${
+                  context.chart.data.labels?.[context.dataIndex]
+                } amount: ${formatOwnedAssets(
+                  composition[context.dataIndex].ownedAssets,
+                )}`,
                 `value: ${formatPriceInfo(
                   composition[context.dataIndex].custodyUsdValue,
                 )}`,
@@ -170,14 +171,8 @@ export default function GlobalHealthOverview({
 }) {
   return (
     <StyledContainer
-      title={
-        <div className="flex items-center">
-          <div className="flex flex-col justify-start ml-2">
-            <h1>Global Health</h1>
-            <span className="opacity-50">Visualize the project sanity</span>
-          </div>
-        </div>
-      }
+      title="Global Health"
+      subTitle="Visualize the project sanity."
       className={className}
     >
       <StyledSubContainer>
@@ -203,7 +198,7 @@ export default function GlobalHealthOverview({
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
           {compositionChartData ? (
             <>
-              <div className="text-xs w-full flex justify-center text-[#666666]">
+              <div className="text-xs w-full flex justify-center text-[#ffffff]">
                 ── target ratio
               </div>
               {generateCompositionChart(compositionChartData, composition)}

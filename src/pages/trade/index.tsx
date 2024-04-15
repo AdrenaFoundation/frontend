@@ -2,6 +2,7 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -217,23 +218,26 @@ export default function Trade({
                       ? tokenB
                       : tokenA
                   }
+                  positions={positions}
                 />
               </>
             ) : null}
           </div>
         </div>
 
-        <div className="min-h-[15em] z-30 grow overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4">
-          <Positions
-            positions={positions}
-            triggerPositionsReload={triggerPositionsReload}
-          />
+        <div className="flex flex-col w-full h-full">
+          <div className="min-h-[15em] z-30 overflow-hidden bg-main/90 pl-3 pr-3 border rounded-lg mt-4">
+            <Positions
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+            />
+          </div>
         </div>
       </div>
 
       <>
         <TradeComp
-          className="lg:max-h-[48em] hidden sm:flex ml-4"
+          className="lg:max-h-[50em] hidden sm:flex ml-4"
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
           tokenA={tokenA}

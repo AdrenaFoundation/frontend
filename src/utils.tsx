@@ -27,6 +27,7 @@ import { Adrena } from '@/target/adrena';
 import arrowDown from '../public/images/arrow-down.png';
 import arrowRightIcon from '../public/images/arrow-right.svg';
 import arrowUp from '../public/images/arrow-up.png';
+import { ROUND_MIN_DURATION_SECONDS } from './constant';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
   const pxSize = 9;
@@ -149,6 +150,14 @@ export function getTokenNameByMint(mint: PublicKey): string {
   return window.adrena.config.tokensInfo[mint.toBase58()]?.symbol ?? 'Unknown';
 }
 
+export function getNextStakingRoundStartTime(timestamp: BN): Date {
+  const d = new Date();
+
+  d.setTime((timestamp.toNumber() + ROUND_MIN_DURATION_SECONDS) * 1000);
+
+  return d;
+}
+
 export function addNotification({
   title,
   message,
@@ -180,7 +189,6 @@ export function addNotification({
     closeOnClick: true,
     pauseOnHover: true,
     draggable: false,
-    progress: undefined,
     theme: 'colored',
     icon: false,
     style: {
