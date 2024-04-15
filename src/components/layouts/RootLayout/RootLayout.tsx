@@ -67,7 +67,14 @@ const RootLayout = ({
           customRPCUrl={customRPCUrl}
         />
       ) : (
-        <BurgerMenu userProfile={userProfile} PAGES={pages} />
+        <BurgerMenu
+          userProfile={userProfile}
+          PAGES={pages}
+          setActiveRPC={setActiveRPC}
+          activeRPC={activeRPC}
+          setCustomRPCUrl={setCustomRPCUrl}
+          customRPCUrl={customRPCUrl}
+        />
       )}
 
       <div className="w-full grow flex justify-center">
