@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended, Token } from '@/types';
 import {
   formatMilliseconds,
@@ -11,7 +12,6 @@ import {
 } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function LockedStakedElement({
   token,

@@ -23,6 +23,7 @@ import { Bar } from 'react-chartjs-2';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { ALPIndexComposition, TokenInfo } from '@/hooks/useALPIndexComposition';
 import {
   formatNumber,
@@ -32,7 +33,6 @@ import {
 } from '@/utils';
 
 import InfoAnnotation from '../monitoring/InfoAnnotation';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 ChartJS.register(
   ArcElement,

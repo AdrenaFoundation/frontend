@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
+import FormatNumber from '@/components/Number/FormatNumber';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
@@ -30,7 +31,6 @@ import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information

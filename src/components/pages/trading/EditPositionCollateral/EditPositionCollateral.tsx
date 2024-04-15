@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
@@ -20,7 +21,6 @@ import {
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import TradingInput from '../TradingInput/TradingInput';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 const LEVERAGE_OVERFLOW = 999;
 

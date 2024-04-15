@@ -4,13 +4,13 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
+import FormatNumber from '@/components/Number/FormatNumber';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
 
 import phantomLogo from '../../../../../public/images/phantom.png';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function PositionsArray({
   positions,

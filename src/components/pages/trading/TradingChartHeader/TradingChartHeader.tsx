@@ -1,11 +1,11 @@
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
+import FormatNumber from '@/components/Number/FormatNumber';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function TradingChartHeader({
   className,

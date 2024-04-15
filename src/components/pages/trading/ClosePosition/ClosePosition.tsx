@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, PositionExtended } from '@/types';
@@ -14,7 +15,6 @@ import {
   formatPriceInfo,
   nativeToUi,
 } from '@/utils';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations

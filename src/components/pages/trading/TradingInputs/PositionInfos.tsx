@@ -2,13 +2,13 @@ import Tippy from '@tippyjs/react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
 import { getArrowElement, getRightArrowElement } from '@/utils';
 
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function PositionInfos({
   className,
