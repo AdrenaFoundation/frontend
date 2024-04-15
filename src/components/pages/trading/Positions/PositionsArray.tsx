@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
 
-import arrowUpLogo from '../../../../../public/images/arrow-up.png';
 import phantomLogo from '../../../../../public/images/phantom.png';
 
 export default function PositionsArray({
@@ -89,10 +88,6 @@ export default function PositionsArray({
         {arrowElementUpRight}
       </div>
     );
-  }
-
-  if (positions && positions.length > 0) {
-    positions[0].liquidationPrice = 80000;
   }
 
   return (
@@ -231,7 +226,7 @@ export default function PositionsArray({
                 position.price < (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : position.side === 'short' &&
-                    position.price > (position.liquidationPrice ?? 0)
+                    position.price < (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : ''}
               </td>

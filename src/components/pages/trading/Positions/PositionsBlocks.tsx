@@ -6,7 +6,7 @@ import Button from '@/components/common/Button/Button';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
 
 import phantomLogo from '../../../../../public/images/phantom.png';
 
@@ -24,6 +24,8 @@ export default function PositionsBlocks({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const connected = !!useSelector((s) => s.walletState.wallet);
   const dispatch = useDispatch();
+  const arrowElementUpRight = getArrowElement('up', 'right-[0.5em] opacity-70');
+  const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
 
   const columnStyle = 'flex w-full justify-between';
 
@@ -33,6 +35,18 @@ export default function PositionsBlocks({
       return;
     }
   };
+
+  function generateLiquidationBlock() {
+    return (
+      <div className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70">
+        <div className="flex justify-center items-center text-center align-middle relative">
+          {arrowElementUpLeft}
+          Liquideable
+          {arrowElementUpRight}
+        </div>
+      </div>
+    );
+  }
 
   if (positions === null && !connected) {
     return (
@@ -122,6 +136,14 @@ export default function PositionsBlocks({
                 />
               </div>
             </div>
+
+            {position.side === 'long' &&
+            position.price < (position.liquidationPrice ?? 0)
+              ? generateLiquidationBlock()
+              : position.side === 'short' &&
+                position.price < (position.liquidationPrice ?? 0)
+              ? generateLiquidationBlock()
+              : ''}
 
             <ul className="flex flex-col gap-2 p-4">
               <li className={columnStyle}>
