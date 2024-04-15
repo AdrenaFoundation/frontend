@@ -162,6 +162,8 @@ export default function Settings({
           <li
             className="flex flex-row justify-between items-center cursor-pointer opacity-100 hover:opacity-75 transition-opacity duration-300"
             onClick={() => {
+              if (rpcOption.name === 'Custom RPC' && customRPCUrl === '')
+                return;
               handleRPCOption(rpcOption.name);
               addNotification({
                 title: 'RPC endpoint changed',
