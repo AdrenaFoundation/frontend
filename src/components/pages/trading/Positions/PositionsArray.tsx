@@ -226,7 +226,7 @@ export default function PositionsArray({
                 position.price < (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : position.side === 'short' &&
-                    position.price < (position.liquidationPrice ?? 0)
+                    position.price > (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : ''}
               </td>

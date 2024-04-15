@@ -141,7 +141,7 @@ export default function PositionsBlocks({
             position.price < (position.liquidationPrice ?? 0)
               ? generateLiquidationBlock()
               : position.side === 'short' &&
-                position.price < (position.liquidationPrice ?? 0)
+                position.price > (position.liquidationPrice ?? 0)
               ? generateLiquidationBlock()
               : ''}
 
