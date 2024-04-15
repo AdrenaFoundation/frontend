@@ -218,24 +218,20 @@ export default function Trade({
                       ? tokenB
                       : tokenA
                   }
+                  positions={positions}
                 />
               </>
             ) : null}
           </div>
         </div>
 
-        <div
-          className={twMerge(
-            'flex z-30 grow overflow-hidden bg-main/90 pr-2 border rounded-lg mt-4',
-            !positions?.length
-              ? 'min-h-[15em] items-center justify-center'
-              : null,
-          )}
-        >
-          <Positions
-            positions={positions}
-            triggerPositionsReload={triggerPositionsReload}
-          />
+        <div className="flex flex-col w-full h-full">
+          <div className="min-h-[15em] z-30 overflow-hidden bg-main/90 pl-3 pr-3 border rounded-lg mt-4">
+            <Positions
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+            />
+          </div>
         </div>
       </div>
 
