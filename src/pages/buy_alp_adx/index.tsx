@@ -1,5 +1,4 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -209,21 +208,9 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
 
       <StyledContainer
         className="max-w-[35em]"
-        title={
-          <div className="flex items-center">
-            <Image
-              src={window.adrena.client.alpToken.image}
-              width={32}
-              height={32}
-              alt="ALP icon"
-            />
-
-            <div className="flex flex-col justify-start ml-2">
-              <h1>ALP</h1>
-              <span className="opacity-50">The Pool Token</span>
-            </div>
-          </div>
-        }
+        title="ALP"
+        subTitle="The Pool Token"
+        icon={window.adrena.client.alpToken.image}
       >
         <StyledSubContainer className="lg:max-w-[25em] self-center">
           <ALPSwap
@@ -250,23 +237,11 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
 
       <StyledContainer
         className="p-0 max-w-[35em]"
-        titleClassName="p-0"
+        headerClassName="absolute z-20 top-4 left-4"
         bodyClassName="h-full"
-        title={
-          <div className="flex items-center absolute z-20 top-4 left-4">
-            <Image
-              src={window.adrena.client.adxToken.image}
-              width={32}
-              height={32}
-              alt="ADX icon"
-            />
-
-            <div className="flex flex-col justify-start ml-2">
-              <h1>ADX</h1>
-              <span className="opacity-50">The Governance Token</span>
-            </div>
-          </div>
-        }
+        title="ADX"
+        subTitle="The Governance Token"
+        icon={window.adrena.client.adxToken.image}
       >
         <OrcaLink />
       </StyledContainer>

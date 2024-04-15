@@ -2,6 +2,7 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -188,8 +189,8 @@ export default function Trade({
         />
       </div>
 
-      <div className="flex flex-col w-full h-full">
-        <div className="flex flex-col w-full h-full border rounded-lg overflow-hidden">
+      <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full border rounded-lg overflow-hidden">
           {/* Trading chart header */}
           {tokenB ? (
             <TradingChartHeader
@@ -205,7 +206,7 @@ export default function Trade({
             />
           ) : null}
 
-          <div className="min-h-[20em] grow shrink-1 flex max-w-full">
+          <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
             {/* Display trading chart for appropriate token */}
             {tokenA && tokenB ? (
               <>
@@ -236,6 +237,7 @@ export default function Trade({
 
       <>
         <TradeComp
+          className="lg:max-h-[50em] hidden sm:flex ml-4"
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
           tokenA={tokenA}
@@ -243,7 +245,6 @@ export default function Trade({
           setTokenA={setTokenA}
           setTokenB={setTokenB}
           openedPosition={openedPosition}
-          className="lg:max-h-[50em] hidden sm:flex ml-4"
           wallet={wallet}
           triggerPositionsReload={triggerPositionsReload}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}

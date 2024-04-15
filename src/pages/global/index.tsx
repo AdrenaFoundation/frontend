@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import GlobalHealthOverview from '@/components/pages/global/GlobalHealthOverview';
 import TokenStakingOverview from '@/components/pages/global/TokenStakingOverview';
 import UsageOverview from '@/components/pages/global/UsageOverview';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';

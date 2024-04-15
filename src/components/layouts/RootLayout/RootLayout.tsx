@@ -61,7 +61,7 @@ const RootLayout = ({
         </div>
       </div>
 
-      <ToastContainer newestOnTop />
+      <ToastContainer newestOnTop className="relative top-16" />
 
       <Footer className="z-10" />
 

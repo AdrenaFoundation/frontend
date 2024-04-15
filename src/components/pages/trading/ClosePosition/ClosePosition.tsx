@@ -169,17 +169,10 @@ export default function ClosePosition({
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm">Collateral</div>
+          <div className="text-sm">Initial Collateral</div>
 
-          <div className="flex text-sm font-mono">
-            {collateralMarkPrice != null
-              ? formatNumber(
-                  position.collateralUsd / collateralMarkPrice,
-                  USD_DECIMALS,
-                )
-              : '-'}
-
-            <span className="ml-1">{position.collateralToken.symbol}</span>
+          <div className="flex font-mono text-sm">
+            {formatPriceInfo(position.collateralUsd)}
           </div>
         </div>
 
@@ -187,13 +180,15 @@ export default function ClosePosition({
           <div className="text-sm">Leverage</div>
 
           <div className="flex text-sm font-mono">
-            <div>{formatNumber(position.leverage, 2)}x</div>
+            {formatNumber(position.leverage, 2)}x
           </div>
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm">Entry Price</div>
-          <div className="text-sm">{formatPriceInfo(position.price)}</div>
+          <div className="text-sm font-mono">
+            {formatPriceInfo(position.price)}
+          </div>
         </div>
 
         <div className={rowStyle}>
@@ -202,7 +197,7 @@ export default function ClosePosition({
           <div className="text-sm font-mono">
             {position.pnl && markPrice ? (
               <span
-                className={`text-sm text-${
+                className={`text-sm font-mono text-${
                   position.pnl > 0 ? 'green' : 'red'
                 }-500`}
               >

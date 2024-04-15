@@ -24,7 +24,7 @@ import TradingInput from '../TradingInput/TradingInput';
 const LEVERAGE_OVERFLOW = 999;
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 export default function EditPositionCollateral({
@@ -400,7 +400,7 @@ export default function EditPositionCollateral({
             <div className="text-sm font-mono">
               {position.pnl && markPrice ? (
                 <span
-                  className={`text-sm text-${
+                  className={`text-sm font-mono text-${
                     position.pnl > 0 ? 'green' : 'red'
                   }-500`}
                 >
@@ -413,33 +413,10 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Collateral</div>
+            <div className="text-sm">Initial Collateral</div>
 
             <div className="flex">
               <div className="flex flex-col items-end justify-center">
-                <div className="flex">
-                  <span
-                    className={twMerge(
-                      'font-mono',
-                      input ? ' text-xs' : 'text-sm',
-                    )}
-                  >
-                    {formatNumber(
-                      position.collateralAmount,
-                      position.collateralToken.decimals,
-                    )}{' '}
-                  </span>
-
-                  <span
-                    className={twMerge(
-                      'font-mono ml-1',
-                      input ? ' text-xs' : 'text-sm',
-                    )}
-                  >
-                    {position.collateralToken.symbol}
-                  </span>
-                </div>
-
                 <div
                   className={twMerge(
                     'flex  font-mono',
@@ -456,21 +433,7 @@ export default function EditPositionCollateral({
 
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end">
-                      <div>
-                        <span className="text-sm font-mono">
-                          {updatedInfos
-                            ? formatNumber(
-                                updatedInfos.collateral,
-                                position.collateralToken.decimals,
-                              )
-                            : '-'}{' '}
-                        </span>
-                        <span className="text-sm">
-                          {position.collateralToken.symbol}
-                        </span>
-                      </div>
-
-                      <div className="text-sm  font-mono">
+                      <div className="text-sm font-mono">
                         {updatedInfos
                           ? formatPriceInfo(updatedInfos.collateralUsd)
                           : '-'}
