@@ -1,13 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
-import useRPC from '@/hooks/useRPC';
 import { UserProfileExtended } from '@/types';
-import { addNotification, verifyRPCConnection } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import settingsIcon from '../../../public/images/Icons/settings.svg';
@@ -17,8 +13,6 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
-import Switch from '../common/Switch/Switch';
-import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
