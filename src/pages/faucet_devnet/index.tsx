@@ -5,9 +5,13 @@ import {
 } from '@solana/spl-token';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { Connection } from '@solana/web3.js';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { devnetFaucetBankWallet } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
@@ -17,6 +21,7 @@ import {
   addSuccessTxNotification,
   AdrenaTransactionError,
   findATAAddressSync,
+  getAccountExplorer,
   uiToNative,
 } from '@/utils';
 
@@ -149,34 +154,54 @@ export default function FaucetDevnet({
   ];
 
   return (
-    <>
-      {allTokens.map((token) => (
-        <div key={token.symbol} className="mt-8 flex flex-col items-center">
-          <Button
-            disabled={pendingTx}
-            className="bg-secondary w-full md:w-[30em]"
-            title={`Get ${token.symbol}`}
-            onClick={() =>
-              token.mint.equals(NATIVE_MINT)
-                ? airdropDevnetSol()
-                : sendDevnetTokens(token)
-            }
-          />
+    <div className="flex p-4">
+      <StyledContainer
+        className="ml-auto mr-auto"
+        bodyClassName="flex-row max-w-full flex-wrap gap-4 items-center justify-center"
+        title="GET DEVNET TOKENS"
+      >
+        {allTokens.map((token) => (
+          <StyledSubContainer
+            key={token.symbol}
+            className="w-[25em] h-[10em] items-center justify-center"
+          >
+            <Button
+              disabled={pendingTx}
+              className="w-full md:w-[30em]"
+              title={token.symbol}
+              onClick={() =>
+                token.mint.equals(NATIVE_MINT)
+                  ? airdropDevnetSol()
+                  : sendDevnetTokens(token)
+              }
+            />
 
-          <div className="text-sm mt-4 text-txtfade">
-            {(() => {
-              if (token.mint.equals(NATIVE_MINT) || token.symbol === 'ADX')
-                return 'Aidropped 1 ';
-              return '$10k worth of ';
-            })()}
-            token at a time
-          </div>
+            <div className="text-sm mt-4 text-txtfade">
+              {(() => {
+                if (token.mint.equals(NATIVE_MINT) || token.symbol === 'ADX')
+                  return 'Aidropped 1 ';
+                return '$10k worth of ';
+              })()}
+              token at a time
+            </div>
 
-          <div className="text-sm mt-2 text-txtfade">
-            {token.mint.toBase58()}
-          </div>
-        </div>
-      ))}
-    </>
+            <Link
+              className="text-sm mt-2 text-txtfade cursor-pointer opacity-50 hover:opacity-100 flex items-center"
+              href={getAccountExplorer(token.mint)}
+            >
+              {token.mint.toBase58()}
+
+              <Image
+                className="ml-1 h-3 w-3"
+                src="/images/external-link-logo.png"
+                alt="external link icon"
+                width="12"
+                height="10"
+              />
+            </Link>
+          </StyledSubContainer>
+        ))}
+      </StyledContainer>
+    </div>
   );
 }

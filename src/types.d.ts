@@ -102,6 +102,8 @@ export type PoolExtended = {
 
   // Formatted data
   totalFeeCollected: number;
+  profitsUsd: number;
+  lossUsd: number;
   longPositions: number;
   shortPositions: number;
   aumUsd: number;
@@ -129,6 +131,7 @@ export type TokenSymbol = string;
 export interface Token {
   mint: PublicKey;
   symbol: TokenSymbol;
+  color: string;
   name: TokenName;
   decimals: number;
   isStable: boolean;
@@ -290,4 +293,6 @@ export type AdrenaProgram = Program<Adrena>;
 //
 // Constants
 //
-export type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;
+
+export type AdxLockPeriod = 0 | 180 | 360 | 540 | 720;
+export type AlpLockPeriod = 180 | 360 | 540 | 720;

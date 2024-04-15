@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+
 export default function Table({
   className,
   columnsTitles,
@@ -22,7 +24,7 @@ export default function Table({
   rowTitleWidth?: string;
 }) {
   return (
-    <div className={twMerge('flex flex-col p-4', className)}>
+    <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
       <div className="flex">
         <div
           className="flex shrink-0 ml-2"
@@ -34,7 +36,7 @@ export default function Table({
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className="text-lg font-specialmonster overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
+            className="text-lg font-special overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
           >
             {title}
           </div>
@@ -42,10 +44,7 @@ export default function Table({
       </div>
 
       {data.map(({ rowTitle, ...v }, i) => (
-        <div
-          key={i}
-          className="flex w-full border-b last:border-b-0 border-gray-400 text-sm"
-        >
+        <div key={i} className="flex w-full border-b last:border-b-0 text-base">
           <div
             className="flex shrink-0 items-center"
             style={{
@@ -75,6 +74,6 @@ export default function Table({
           })()}
         </div>
       ))}
-    </div>
+    </StyledSubSubContainer>
   );
 }

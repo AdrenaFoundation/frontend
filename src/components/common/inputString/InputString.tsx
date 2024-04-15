@@ -34,7 +34,7 @@ export default function InputString({
       }}
       placeholder={placeholder}
       className={twMerge(
-        'bg-secondary border-0 outline-none w-full text-xl',
+        'bg-third border-0 border-bcolor outline-none w-full text-xl',
         className,
       )}
       style={{

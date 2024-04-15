@@ -22,8 +22,8 @@ import {
 import { Adrena } from '@/target/adrena';
 import AdrenaJson from '@/target/adrena.json';
 
-import adxIcon from '../public/images/adx.png';
-import alpIcon from '../public/images/alp.png';
+import adxIcon from '../public/images/adx.svg';
+import alpIcon from '../public/images/alp.svg';
 import config from './config/devnet';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
@@ -33,6 +33,8 @@ import {
   AddLiquidityAccounts,
   AddLiquidStakeAccounts,
   AddLockedStakeAccounts,
+  AdxLockPeriod,
+  AlpLockPeriod,
   AmountAndFee,
   ClaimStakesAccounts,
   ClosePositionAccounts,
@@ -111,6 +113,7 @@ export class AdrenaClient {
 
   public alpToken: Token = {
     mint: this.lpTokenMint,
+    color: '',
     name: 'The Pool Token',
     symbol: 'ALP',
     decimals: 6,
@@ -120,6 +123,7 @@ export class AdrenaClient {
 
   public adxToken: Token = {
     mint: this.lmTokenMint,
+    color: '',
     name: 'The Governance Token',
     symbol: 'ADX',
     decimals: 6,
@@ -137,6 +141,13 @@ export class AdrenaClient {
   public getUserStakingPda = (owner: PublicKey, stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
       [Buffer.from('user_staking'), owner.toBuffer(), stakingPda.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+  };
+
+  public getUserVestPda = (owner: PublicKey) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('vest'), owner.toBuffer()],
       AdrenaClient.programId,
     )[0];
   };
@@ -416,6 +427,7 @@ export class AdrenaClient {
         const infos:
           | {
               name: string;
+              color: string;
               symbol: string;
               image: ImageRef;
               coingeckoId: string;
@@ -429,6 +441,7 @@ export class AdrenaClient {
 
         return {
           mint: custody.mint,
+          color: infos.color,
           name: infos.name,
           symbol: infos.symbol,
           decimals: infos.decimals,
@@ -453,13 +466,27 @@ export class AdrenaClient {
           ),
         0,
       ),
+      profitsUsd: custodies.reduce(
+        (total, custody) =>
+          total +
+          nativeToUi(custody.nativeObject.tradeStats.profitUsd, USD_DECIMALS),
+        0,
+      ),
+      lossUsd: custodies.reduce(
+        (total, custody) =>
+          total +
+          nativeToUi(custody.nativeObject.tradeStats.lossUsd, USD_DECIMALS),
+        0,
+      ),
       longPositions: custodies.reduce(
+        // Now
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.longPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
       shortPositions: custodies.reduce(
+        // Now
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.shortPositions.sizeUsd, USD_DECIMALS),
@@ -475,12 +502,14 @@ export class AdrenaClient {
         0,
       ),
       oiLongUsd: custodies.reduce(
+        // All times
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.tradeStats.oiLongUsd, USD_DECIMALS),
         0,
       ),
       oiShortUsd: custodies.reduce(
+        // All times
         (total, custody) =>
           total +
           nativeToUi(custody.nativeObject.tradeStats.oiShortUsd, USD_DECIMALS),
@@ -2124,6 +2153,26 @@ export class AdrenaClient {
     );
   }
 
+  // null = not ready
+  // false = no vest
+  public async loadUserVest(): Promise<Vest | false | null> {
+    if (!this.adrenaProgram || !this.connection) {
+      return null;
+    }
+
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    const userVestPda = this.getUserVestPda(wallet.publicKey);
+
+    const vest = await this.adrenaProgram.account.vest.fetchNullable(
+      userVestPda,
+    );
+
+    if (!vest) return null;
+
+    return vest;
+  }
+
   public async getAllVestingAccounts(): Promise<Vest[]> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2314,7 +2363,7 @@ export class AdrenaClient {
   }: {
     owner: PublicKey;
     amount: number;
-    lockedDays: 0 | 30 | 60 | 90 | 180 | 360 | 720;
+    lockedDays: AlpLockPeriod | AdxLockPeriod;
     stakedTokenMint: PublicKey;
   }) {
     if (!this.adrenaProgram || !this.connection) {
@@ -3551,6 +3600,19 @@ export class AdrenaClient {
     ).blockhash;
 
     transaction.feePayer = wallet.publicKey;
+
+    // Check the user SOL balance, and reject if not enough
+    const [userSolBalance, estimatedFee] = await Promise.all([
+      this.connection.getBalance(wallet.publicKey),
+      transaction.getEstimatedFee(this.connection),
+    ]);
+
+    if (estimatedFee !== null && userSolBalance < estimatedFee) {
+      throw new AdrenaTransactionError(
+        null,
+        'Insufficient SOL to pay for fees',
+      );
+    }
 
     let signedTransaction: Transaction;
 

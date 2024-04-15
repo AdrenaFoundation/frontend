@@ -1,10 +1,9 @@
+import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 
-import usePositions from '@/hooks/usePositions';
-import { useSelector } from '@/store/store';
-import { Token } from '@/types';
-import { formatPriceInfo } from '@/utils';
+import { PositionExtended, Token } from '@/types';
+import { formatNumber } from '@/utils';
 
 import {
   IChartingLibraryWidget,
@@ -18,18 +17,100 @@ import datafeed from './datafeed';
 let tvScriptLoadingPromise: Promise<unknown>;
 
 type Widget = IChartingLibraryWidget;
+const greenColor = '#07956be6';
+const redColor = '#c9243ae6';
+const greyColor = '#1A2431A0';
+const whiteColor = '#ffffff';
 
-export default function TradingChart({ token }: { token: Token }) {
+function createEntryPositionLine(
+  chart: IChartWidgetApi,
+  position: PositionExtended,
+): IPositionLineAdapter {
+  const color = position.side === 'long' ? greenColor : redColor;
+  return chart
+    .createPositionLine({})
+    .setText(`${position.side === 'long' ? 'Long' : 'Short'} Open`)
+    .setLineLength(3)
+    .setQuantity(formatNumber(position.sizeUsd, 2))
+    .setPrice(position.price)
+    .setLineColor(color)
+    .setQuantityBackgroundColor(color)
+    .setBodyBackgroundColor(color)
+    .setBodyBorderColor(color)
+    .setQuantityBorderColor(color)
+    .setBodyTextColor(whiteColor)
+    .setQuantityTextColor(whiteColor);
+}
+
+function createLiquidationPositionLine(
+  chart: IChartWidgetApi,
+  position: PositionExtended,
+): IPositionLineAdapter {
+  return (
+    chart
+      .createPositionLine({})
+      .setText(`${position.side === 'long' ? 'Long' : 'Short'} Liq.`)
+      .setLineLength(3)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .setQuantity(formatNumber(position.liquidationPrice!, 2)) // Price is checked before calling function
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .setPrice(position.liquidationPrice!) // Price is checked before calling function
+      .setLineColor(greyColor)
+      .setLineStyle(2)
+      .setQuantityBackgroundColor(greyColor)
+      .setQuantityBorderColor(greyColor)
+      .setBodyBorderColor(greyColor)
+      .setBodyBackgroundColor(greyColor)
+      .setBodyTextColor(whiteColor)
+  );
+}
+
+export default function TradingChart({
+  token,
+  positions,
+}: {
+  token: Token;
+  positions: PositionExtended[] | null;
+}) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
+  const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
 
-  const [positionLines, setPositionLines] = useState<IPositionLineAdapter[]>(
-    [],
-  );
+  type PositionLine = {
+    position: PublicKey;
+    liquidation?: IPositionLineAdapter;
+    entry: IPositionLineAdapter;
+  };
 
-  const tokenPrice = useSelector((s) => s.tokenPrices[token.symbol]) ?? null;
+  const [positionLines, setPositionLines] = useState<{
+    short: PositionLine | null;
+    long: PositionLine | null;
+  } | null>(null);
 
-  const { positions } = usePositions();
+  function modifyPositionLine(
+    chart: IChartWidgetApi,
+    position: PositionExtended | null,
+    positionLine: PositionLine | null,
+  ) {
+    if (!position || !positionLine) return;
+
+    positionLine.entry.setPrice(position.price);
+    positionLine.entry.setQuantity(formatNumber(position.sizeUsd, 2));
+
+    // if liquidationPrice is not set, remove liquidation directly
+    if (!position.liquidationPrice) {
+      if (positionLine.liquidation) positionLine.liquidation.remove();
+      return;
+    }
+
+    // if liquidation is set, update it
+    if (positionLine.liquidation) {
+      positionLine.liquidation.setPrice(position.liquidationPrice);
+      positionLine.liquidation.setQuantity(
+        formatNumber(position.liquidationPrice, 2),
+      );
+    } else createLiquidationPositionLine(chart, position);
+  }
 
   useEffect(() => {
     function createWidget() {
@@ -45,11 +126,11 @@ export default function TradingChart({ token }: { token: Token }) {
           symbol: `Crypto.${token.symbol}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#0a0e13',
+          toolbar_bg: '#061018',
           datafeed,
           loading_screen: {
-            backgroundColor: '#101419',
-            foregroundColor: '#101419',
+            backgroundColor: '#061018',
+            foregroundColor: '#061018',
           },
           favorites: {
             intervals: [
@@ -91,7 +172,7 @@ export default function TradingChart({ token }: { token: Token }) {
           custom_css_url: '/tradingview.css',
           overrides: {
             // Adapt colors
-            'paneProperties.background': '#0a0e13',
+            'paneProperties.background': '#061018',
             'paneProperties.backgroundType': 'solid',
             // Hides the legend
             'paneProperties.legendProperties.showStudyArguments': false,
@@ -110,15 +191,16 @@ export default function TradingChart({ token }: { token: Token }) {
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
                 format: (price: number): string => {
-                  return `${formatPriceInfo(price)}`;
+                  return formatNumber(price, 2);
                 },
               };
             },
           },
         });
 
-        console.log('widget', widget);
-        console.log('window.TradingView', window.TradingView);
+        widget.onChartReady(() => {
+          setWidgetReady(true);
+        });
 
         setWidget(widget);
       }
@@ -141,103 +223,110 @@ export default function TradingChart({ token }: { token: Token }) {
     tvScriptLoadingPromise.then(() => onLoadScriptRef.current?.());
 
     return () => {
-      // Reset charts positions
-      setPositionLines([]);
       onLoadScriptRef.current = null;
     };
 
     // Only trigger it onces when the chart load
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, []);
+
+  // When the token changes, we need to change the symbol of the widget so we only reload the chart
+  useEffect(() => {
+    setWidgetReady(false);
+
+    widget?.setSymbol(
+      `Crypto.${token.symbol}/USD`,
+      'D' as ResolutionString,
+      () => {
+        setWidgetReady(true);
+      },
+    );
+
+    // delete all positions on chart
+    positionLines?.long?.entry.remove();
+    positionLines?.short?.entry.remove();
+    positionLines?.long?.liquidation?.remove();
+    positionLines?.short?.liquidation?.remove();
+
+    setPositionLines(null);
+  }, [token.symbol]);
 
   useEffect(() => {
-    // tricks to make sure the widget is ready, otherwise it crashed when calling .chart());
-    if (!widget || !(widget as unknown as { _ready: boolean })._ready) return;
+    try {
+      if (!widget || !widgetReady) return;
 
-    const chart: IChartWidgetApi = widget.chart();
+      const chart: IChartWidgetApi = widget.activeChart();
 
-    // Remove everything
-    positionLines.forEach((positionLine) => {
-      positionLine.remove();
-    });
+      const newPositionLines = positionLines ?? {
+        short: null,
+        long: null,
+      };
 
-    const newPositionLines: IPositionLineAdapter[] = [];
+      if (positions) {
+        const longPosition =
+          positions.find(
+            (position) =>
+              position.token.symbol === token.symbol &&
+              position.side === 'long',
+          ) ?? null;
+        const shortPosition =
+          positions.find(
+            (position) =>
+              position.token.symbol === token.symbol &&
+              position.side === 'short',
+          ) ?? null;
 
-    if (positions) {
-      positions.forEach((position) => {
-        // Ignore positions about different pairs
-        if (position.token.symbol !== token.symbol) {
-          return;
+        // handle creation / modification / deletion for long positions
+        if (longPosition) {
+          if (newPositionLines && newPositionLines?.long) {
+            modifyPositionLine(chart, longPosition, newPositionLines.long);
+          } else {
+            newPositionLines.long = {
+              entry: createEntryPositionLine(chart, longPosition),
+              liquidation: longPosition.liquidationPrice
+                ? createLiquidationPositionLine(chart, longPosition)
+                : undefined,
+              position: longPosition.pubkey,
+            };
+          }
+        } else if (newPositionLines.long) {
+          newPositionLines.long.entry.remove();
+          if (newPositionLines.long.liquidation)
+            newPositionLines.long.liquidation.remove();
+          newPositionLines.long = null;
         }
 
-        const liquidationToken =
-          position.liquidationPrice !== null &&
-          typeof position.liquidationPrice !== 'undefined' &&
-          tokenPrice !== null
-            ? position.liquidationPrice / tokenPrice
-            : null;
+        // handle creation / modification / deletion for short positions
+        if (shortPosition) {
+          if (newPositionLines && newPositionLines?.short) {
+            modifyPositionLine(chart, shortPosition, newPositionLines.short);
+          } else {
+            newPositionLines.short = {
+              entry: createEntryPositionLine(chart, shortPosition),
+              liquidation: shortPosition.liquidationPrice
+                ? createLiquidationPositionLine(chart, shortPosition)
+                : undefined,
+              position: shortPosition.pubkey,
+            };
+          }
+        } else if (newPositionLines.short) {
+          newPositionLines.short.entry.remove();
+          if (newPositionLines.short.liquidation)
+            newPositionLines.short.liquidation.remove();
+          newPositionLines.short = null;
+        }
+      }
 
-        newPositionLines.push(
-          chart
-            .createPositionLine({})
-            .setText(
-              `${token.symbol} ${
-                position.side === 'long' ? 'Long' : 'Short'
-              } Entry Price`,
-            )
-            .setLineLength(3)
-            .setQuantity(formatPriceInfo(position.sizeUsd))
-            .setPrice(position.price)
-            .setLineColor(position.side === 'long' ? '#1d8c46' : '#ac302f')
-            .setQuantityBackgroundColor(
-              position.side === 'long' ? '#1d8c46a0' : '#ac302fa0',
-            )
-            .setQuantityBorderColor(
-              position.side === 'long' ? '#22c55e' : '#c83a38',
-            )
-            .setBodyBorderColor(
-              position.side === 'long' ? '#22c55e' : '#c83a38',
-            )
-            .setBodyBackgroundColor(
-              position.side === 'long' ? '#1d8c46a0' : '#ac302fa0',
-            )
-            .setBodyTextColor('#ffffff'),
-        );
-
-        if (
-          liquidationToken !== null &&
-          typeof position.liquidationPrice !== 'undefined'
-        )
-          newPositionLines.push(
-            chart
-              .createPositionLine({})
-              .setText(
-                `${token.symbol} ${
-                  position.side === 'long' ? 'Long' : 'Short'
-                } Liquidation Price`,
-              )
-              .setLineLength(3)
-              .setQuantity(formatPriceInfo(position.liquidationPrice, false, 3))
-              .setPrice(position.liquidationPrice)
-              .setLineColor(position.side === 'long' ? '#656565' : '#656565')
-              .setQuantityBackgroundColor('#656565a0')
-              .setQuantityBorderColor('#939393')
-              .setBodyBorderColor('#939393')
-              .setBodyBackgroundColor('#656565a0')
-              .setBodyTextColor('#ffffff'),
-          );
-      });
+      setPositionLines(newPositionLines);
+    } catch {
+      // ignore error due to conflicts with charts and react effects
     }
-
-    setPositionLines(newPositionLines);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [positions, token.symbol, tokenPrice, widget]);
+  }, [positions, token.symbol, !!widget, widgetReady]);
 
   return (
-    <div className="flex flex-col w-full mb-5 border border-gray-200 rounded-2xl rounded-t-none overflow-hidden bg-gray-200/85 backdrop-blur-md">
+    <div className="flex flex-col w-full overflow-hidden backdrop-blur-md">
       <div id="chart-area" className="h-full rounded-b-lg" />
-      <div className="copyright text-[0.6em] bg-[#0a0e13] flex items-center justify-end italic pt-2 pb-2 pr-4 text-[#ffffffA0]">
+      <div className="copyright text-[0.5em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
         The chart is provided by TradingView, an advanced platform that provides
         unparalleled access to live data e.g.
         <Link
@@ -247,7 +336,6 @@ export default function TradingChart({ token }: { token: Token }) {
         >
           {token.symbol} USD chart
         </Link>
-        .
       </div>
     </div>
   );

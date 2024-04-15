@@ -6,7 +6,7 @@ import Button from '@/components/common/Button/Button';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
 
 import phantomLogo from '../../../../../public/images/phantom.png';
 
@@ -24,6 +24,8 @@ export default function PositionsBlocks({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const connected = !!useSelector((s) => s.walletState.wallet);
   const dispatch = useDispatch();
+  const arrowElementUpRight = getArrowElement('up', 'right-[0.5em] opacity-70');
+  const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
 
   const columnStyle = 'flex w-full justify-between';
 
@@ -33,6 +35,18 @@ export default function PositionsBlocks({
       return;
     }
   };
+
+  function generateLiquidationBlock() {
+    return (
+      <div className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70">
+        <div className="flex justify-center items-center text-center align-middle relative">
+          {arrowElementUpLeft}
+          Liquideable
+          {arrowElementUpRight}
+        </div>
+      </div>
+    );
+  }
 
   if (positions === null && !connected) {
     return (
@@ -59,7 +73,7 @@ export default function PositionsBlocks({
   }
 
   return (
-    <div className={twMerge('w-full', 'flex', 'flex-wrap gap-5', className)}>
+    <div className={twMerge('w-full', 'flex', 'flex-wrap', className)}>
       {positions === null && connected ? (
         <div className="mt-5 mb-5 ml-auto mr-auto">Loading ...</div>
       ) : null}
@@ -73,9 +87,9 @@ export default function PositionsBlocks({
           className="flex gap-1 flex-col w-full"
           key={position.pubkey.toBase58()}
         >
-          <div className="flex flex-col bg-secondary border border-gray-200 rounded-lg w-full">
-            <div className="flex flex-row justify-between items-center border-b border-gray-200">
-              <div className="flex flex-row h-10 pl-2 items-center relative overflow-hidden">
+          <div className="flex flex-col bg-secondary border rounded-lg w-full mt-3 mb-3">
+            <div className="flex flex-row justify-between items-center border-b">
+              <div className="flex flex-row h-10 items-center relative overflow-hidden">
                 <Image
                   className="absolute left-[-0.7em] top-auto grayscale opacity-40"
                   src={position.token.image}
@@ -88,9 +102,7 @@ export default function PositionsBlocks({
                   <span
                     className={twMerge(
                       'ml-16 capitalize font-mono',
-                      position.side === 'long'
-                        ? 'text-green-500'
-                        : 'text-red-500',
+                      position.side === 'long' ? 'text-green' : 'text-red',
                     )}
                   >
                     {position.side}
@@ -124,6 +136,14 @@ export default function PositionsBlocks({
                 />
               </div>
             </div>
+
+            {position.side === 'long' &&
+            position.price < (position.liquidationPrice ?? 0)
+              ? generateLiquidationBlock()
+              : position.side === 'short' &&
+                position.price > (position.liquidationPrice ?? 0)
+              ? generateLiquidationBlock()
+              : ''}
 
             <ul className="flex flex-col gap-2 p-4">
               <li className={columnStyle}>

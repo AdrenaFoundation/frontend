@@ -44,7 +44,7 @@ export default function InputNumber({
       }}
       placeholder={placeholder}
       className={twMerge(
-        'bg-secondary border-0 outline-none w-full text-xl text-ellipsis placeholder-txtfade',
+        'bg-black border-0 outline-none w-full text-xl text-ellipsis placeholder-txtfade',
         className,
       )}
       style={{
