@@ -243,7 +243,7 @@ export default function Trade({
           setTokenA={setTokenA}
           setTokenB={setTokenB}
           openedPosition={openedPosition}
-          className="hidden sm:flex sm:ml-0 lg:ml-4"
+          className="lg:max-h-[50em] hidden sm:flex ml-4"
           wallet={wallet}
           triggerPositionsReload={triggerPositionsReload}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
