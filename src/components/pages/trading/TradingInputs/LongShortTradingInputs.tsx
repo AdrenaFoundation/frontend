@@ -367,7 +367,7 @@ export default function LongShortTradingInputs({
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col border rounded-lg mt-2 bg-third">
+        <div className="flex flex-col border rounded-lg mt-2 w-full overflow-hidden bg-third">
           <TradingInput
             className="text-sm border-b"
             inputClassName="border-0 tr-rounded-lg"

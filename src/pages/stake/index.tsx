@@ -424,9 +424,9 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
   const adxLockedStakes: LockedStakeExtended[] | null =
     (
-      stakingAccounts?.ADX?.lockedStakes.sort(
+      (stakingAccounts?.ADX?.lockedStakes.sort(
         (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-      ) as LockedStakeExtended[]
+      ) as LockedStakeExtended[]) ?? []
     ).map((stake, index) => ({
       ...stake,
       index,
@@ -435,9 +435,9 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
   const alpLockedStakes: LockedStakeExtended[] | null =
     (
-      stakingAccounts?.ALP?.lockedStakes.sort(
+      (stakingAccounts?.ALP?.lockedStakes.sort(
         (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-      ) as LockedStakeExtended[]
+      ) as LockedStakeExtended[]) ?? []
     ).map((stake, index) => ({
       ...stake,
       index,
