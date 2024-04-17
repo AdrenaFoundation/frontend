@@ -557,15 +557,19 @@ export function getFontSizeWeight(context: Context): Font {
   };
 }
 
-export const verifyRPCConnection = async (rpc: string) => {
+export const verifyRpcConnection = async (rpc: string) => {
   if (!rpc) return false;
   try {
     const connection = await new Connection(rpc)?.getVersion();
 
-    console.log('RPC connection verified', connection);
     return !!connection;
   } catch {
-    console.log('RPC connection failed');
     return false;
   }
+};
+
+export const verifyIfValidUrl = (url: string) => {
+  const regExUrl = new RegExp(/^(http|https):\/\/[^ "]+$/);
+
+  return regExUrl.test(url);
 };

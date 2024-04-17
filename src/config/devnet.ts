@@ -90,7 +90,7 @@ class DevnetConfiguration implements IConfiguration {
     // 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
     'https://api.devnet.solana.com';
 
-  public readonly RPCOptions: IConfiguration['RPCOptions'] = [
+  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
     {
       name: 'Solana RPC',
       url: 'https://api.devnet.solana.com',

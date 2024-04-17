@@ -27,7 +27,7 @@ export default interface IConfiguration {
   readonly mainRPC: string;
   readonly pythRPC: string;
 
-  readonly RPCOptions: {
+  readonly RpcOptions: {
     name: string;
     url: string | null;
     connection?: Connection | null;

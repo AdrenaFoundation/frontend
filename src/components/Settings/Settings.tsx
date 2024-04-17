@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
-import useRPC from '@/hooks/useRPC';
-import { addNotification, verifyRPCConnection } from '@/utils';
+import useRpc from '@/hooks/useRPC';
+import {
+  addNotification,
+  verifyIfValidUrl,
+  verifyRpcConnection,
+} from '@/utils';
 
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -11,23 +15,23 @@ import Switch from '../common/Switch/Switch';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function Settings({
-  activeRPC,
-  setActiveRPC,
-  setCustomRPCUrl,
-  customRPCUrl,
+  activeRpc,
+  setActiveRpc,
+  setCustomRpcUrl,
+  customRpcUrl,
 }: {
-  activeRPC: string;
-  setActiveRPC: (rpc: string) => void;
-  setCustomRPCUrl: (rpc: string) => void;
-  customRPCUrl: string;
+  activeRpc: string;
+  setActiveRpc: (rpc: string) => void;
+  setCustomRpcUrl: (rpc: string | null) => void;
+  customRpcUrl: string | null;
 }) {
   const [cookies, setCookies] = useCookies([
-    'activeRPC',
+    'activeRpc',
     'isAutoRPC',
-    'customRPC',
+    'customRpc',
   ]);
 
-  const [customRPC, setCustomRPC] = useState<string>(customRPCUrl ?? '');
+  const [customRpc, setCustomRPC] = useState<string>(customRpcUrl ?? '');
   const [isAutoRPC, setIsAutoRPC] = useState<boolean>(
     cookies?.isAutoRPC === 'true',
   );
@@ -35,71 +39,70 @@ export default function Settings({
   const [isEditCustomRPCMode, setIsEditCustomRPCMode] =
     useState<boolean>(false);
 
-  const [rpcOptions] = useRPC({
-    customRPCUrl,
+  const [rpcOptions] = useRpc({
+    customRpcUrl,
   });
 
   useEffect(() => {
-    const activeRPCLatency = rpcOptions?.find(
-      (rpcOption) => rpcOption.name === activeRPC,
-    )?.latency;
-
-    if (!activeRPCLatency) return;
-
-    const isBetterRPCOption = rpcOptions?.some(
-      (rpcOption) => rpcOption.latency && activeRPCLatency > rpcOption.latency,
+    if (!isAutoRPC) return;
+    const activeRpcLatency = rpcOptions?.find(
+      (rpcOption) => rpcOption.name === activeRpc,
     );
 
-    if (isBetterRPCOption && isAutoRPC) {
-      const betterOption = rpcOptions?.find(
-        (rpcOption) =>
-          rpcOption.latency && activeRPCLatency > rpcOption.latency,
-      )?.name;
+    if (!activeRpcLatency) return;
 
-      if (!betterOption) return;
+    const bestRpc = rpcOptions?.reduce((acc, curr) => {
+      return curr.latency &&
+        acc.latency &&
+        curr.latency < acc.latency &&
+        curr.latency - acc.latency >= 100
+        ? curr
+        : acc;
+    });
 
-      handleRPCOption(betterOption);
-    }
-  }, [rpcOptions]);
+    if (bestRpc?.name === activeRpc || !bestRpc) return;
+
+    handleRPCOption(bestRpc.name);
+  }, [isAutoRPC, rpcOptions]);
 
   const handleRPCOption = (rpc: string) => {
-    setActiveRPC(rpc);
-    setCookies('activeRPC', rpc);
+    setActiveRpc(rpc);
+    setCookies('activeRpc', rpc);
     setIsEditCustomRPCMode(false);
   };
 
   const saveCustomRPCUrl = async () => {
-    const regExUrl = new RegExp(
-      // eslint-disable-next-line no-useless-escape
-      /^(http|https):\/\/[^ "]+$/,
-    );
-
-    if (customRPC !== '') {
-      if (!regExUrl.test(customRPC)) {
-        addNotification({
-          title: 'Invalid URL',
-          type: 'error',
-          duration: 'fast',
-          position: 'bottom-right',
-        });
-        return;
-      }
-
-      const isVerified = await verifyRPCConnection(customRPC);
-
-      if (!isVerified) {
-        addNotification({
-          title: 'Invalid RPC endpoint',
-          type: 'error',
-          duration: 'fast',
-          position: 'bottom-right',
-        });
-        return;
-      }
+    if (customRpc === '') {
+      setCustomRpcUrl(null);
+      setCookies('customRpc', null);
+      setIsEditCustomRPCMode(false);
+      return;
     }
 
-    setCustomRPCUrl(customRPC);
-    setCookies('customRPC', customRPC);
+    if (!verifyIfValidUrl(customRpc)) {
+      addNotification({
+        title: 'Invalid URL',
+        type: 'error',
+        duration: 'fast',
+        position: 'bottom-right',
+      });
+      return;
+    }
+
+    const isVerified = await verifyRpcConnection(customRpc);
+
+    if (!isVerified) {
+      addNotification({
+        title: 'Invalid RPC endpoint',
+        type: 'error',
+        duration: 'fast',
+        position: 'bottom-right',
+      });
+      return;
+    }
+
+    setCustomRpcUrl(customRpc);
+    setCookies('customRpc', customRpc);
     setIsEditCustomRPCMode(false);
 
     addNotification({
@@ -158,48 +161,50 @@ export default function Settings({
           isAutoRPC && 'opacity-30 pointer-events-none',
         )}
       >
-        {rpcOptions?.map((rpcOption) => (
+        {rpcOptions?.map((rpc) => (
           <li
-            className="flex flex-row justify-between items-center cursor-pointer opacity-100 hover:opacity-75 transition-opacity duration-300"
+            className="flex flex-row justify-between items-center cursor-pointer"
             onClick={() => {
-              if (rpcOption.name === 'Custom RPC' && customRPCUrl === '')
-                return;
-              handleRPCOption(rpcOption.name);
+              if (rpc.name === 'Custom RPC' && customRpcUrl === null) return;
+              handleRPCOption(rpc.name);
               addNotification({
                 title: 'RPC endpoint changed',
                 duration: 'fast',
                 position: 'bottom-right',
               });
             }}
-            key={rpcOption.name}
+            key={rpc.name}
           >
             <div className="flex flex-row gap-2 items-center">
               <input
                 type="radio"
-                checked={rpcOption.name === activeRPC}
+                checked={rpc.name === activeRpc}
                 onChange={() => false}
               />
-              <p className="text-sm font-medium">{rpcOption.name}</p>
+              <p
+                className={twMerge(
+                  'text-sm font-medium opacity-50 hover:opacity-100 transition-opacity duration-300',
+                  rpc.name === activeRpc && 'opacity-100',
+                )}
+              >
+                {rpc.name}
+              </p>
             </div>
-            {rpcOption.latency && (
+            {rpc.latency !== null ? (
               <div className="flex flex-row gap-1 items-center">
                 <div
                   className={twMerge(
                     'w-[5px] h-[5px] rounded-full ',
                     (() => {
-                      if (rpcOption.latency && rpcOption.latency < 100)
-                        return 'bg-green';
-                      if (rpcOption.latency && rpcOption.latency < 500)
-                        return 'bg-orange';
+                      if (rpc.latency && rpc.latency < 100) return 'bg-green';
+                      if (rpc.latency && rpc.latency < 500) return 'bg-orange';
                       return 'bg-red';
                     })(),
                   )}
                 />
-                <p className="text-xs opacity-50 font-mono">
-                  {rpcOption.latency}ms
-                </p>
+                <p className="text-xs opacity-50 font-mono">{rpc.latency}ms</p>
               </div>
-            )}
+            ) : null}
           </li>
         ))}
         <li className="flex flex-row justify-between items-center cursor-pointer">
@@ -213,7 +218,7 @@ export default function Settings({
             >
               <input
                 type="text"
-                value={!isEditCustomRPCMode ? customRPCUrl : customRPC}
+                value={!isEditCustomRPCMode ? customRpcUrl ?? '' : customRpc}
                 onChange={(e) => {
                   setCustomRPC(e.target.value);
                   setIsEditCustomRPCMode(true);
@@ -233,7 +238,7 @@ export default function Settings({
                   'text-xs absolute right-2 top-[8px] p-1 px-2 rounded-md',
                   !isEditCustomRPCMode && 'opacity-100',
                 )}
-                disabled={customRPC === customRPCUrl}
+                disabled={customRpc === customRpcUrl}
               />
             </div>
           </div>

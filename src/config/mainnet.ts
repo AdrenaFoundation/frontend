@@ -78,7 +78,7 @@ class MainnetConfiguration implements IConfiguration {
   public readonly mainRPC: string = 'https://api.mainnet-beta.solana.com';
   public readonly pythRPC: string = 'https://api.mainnet-beta.solana.com';
 
-  public readonly RPCOptions: IConfiguration['RPCOptions'] = [
+  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
     {
       name: 'Solana RPC',
       url: 'https://api.devnet.solana.com',

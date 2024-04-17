@@ -58,7 +58,7 @@ export default function Menu({
             {trigger}
           </div>
 
-          {isMenuOpen && (
+          {isMenuOpen ? (
             <motion.div
               ref={ref}
               onClick={() => !disableOnClickInside && toggleMenu()}
@@ -74,7 +74,7 @@ export default function Menu({
             >
               {children}
             </motion.div>
-          )}
+          ) : null}
         </div>
       </AnimatePresence>
       {isDim && isMenuOpen && (

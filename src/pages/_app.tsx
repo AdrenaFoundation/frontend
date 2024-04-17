@@ -22,7 +22,7 @@ import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
-import { verifyRPCConnection } from '@/utils';
+import { verifyRpcConnection } from '@/utils';
 
 import logo from '../../public/images/logo.png';
 import devnetConfiguration from '../config/devnet';
@@ -50,21 +50,18 @@ export default function App(props: AppProps) {
   const [cluster, setCluster] = useState<SupportedCluster | null>(null);
   const [config, setConfig] = useState<IConfiguration | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [cookies] = useCookies(['activeRPC', 'customRPC']);
-  const [activeRPC, setActiveRPC] = useState<string>(
-    cookies?.activeRPC ?? 'Helius RPC',
+  const [cookies] = useCookies(['activeRpc', 'customRpc']);
+  const [activeRpc, setActiveRpc] = useState<string>(
+    cookies?.activeRpc ?? 'Helius RPC',
   );
-  const [customRPCUrl, setCustomRPCUrl] = useState<string>(
-    cookies?.customRPC ?? '',
+  const [customRpcUrl, setCustomRpcUrl] = useState<string | null>(
+    cookies?.customRpc !== 'null' ? cookies?.customRpc : null,
   );
 
   const verifyCustomRPC = async () => {
-    if (customRPCUrl === '') {
-      return false;
-    }
+    if (customRpcUrl === null) return false;
 
-    const isVerified = await verifyRPCConnection(customRPCUrl);
-    return isVerified;
+    return await verifyRpcConnection(customRpcUrl);
   };
 
   // Load cluster from router
@@ -89,7 +86,7 @@ export default function App(props: AppProps) {
 
   useEffect(() => {
     verifyCustomRPC();
-  }, [customRPCUrl]);
+  }, [customRpcUrl]);
 
   // Load config from cluster
   useEffect(() => {
@@ -99,19 +96,19 @@ export default function App(props: AppProps) {
         ? { ...devnetConfiguration }
         : { ...mainnetConfiguration };
 
-    if (activeRPC === 'Custom RPC' && customRPCUrl !== '') {
-      config.mainRPC = customRPCUrl;
-      config.pythRPC = customRPCUrl;
+    if (activeRpc === 'Custom RPC' && customRpcUrl !== null) {
+      config.mainRPC = customRpcUrl;
+      config.pythRPC = customRpcUrl;
     } else {
-      const activeRPCOption = config.RPCOptions.find(
-        (rpcOption) => rpcOption.name === activeRPC,
+      const activeRpcOption = config.RpcOptions.find(
+        (rpcOption) => rpcOption.name === activeRpc,
       );
-      config.mainRPC = activeRPCOption?.url ?? config.mainRPC;
-      config.pythRPC = activeRPCOption?.url ?? config.pythRPC;
+      config.mainRPC = activeRpcOption?.url ?? config.mainRPC;
+      config.pythRPC = activeRpcOption?.url ?? config.pythRPC;
     }
 
     setConfig(config);
-  }, [cluster, activeRPC, customRPCUrl]);
+  }, [cluster, activeRpc, customRpcUrl]);
 
   useEffect(() => {
     if (!config) return;
@@ -126,10 +123,10 @@ export default function App(props: AppProps) {
     <Provider store={store}>
       <CookiesProvider>
         <AppComponent
-          setActiveRPC={setActiveRPC}
-          activeRPC={activeRPC}
-          setCustomRPCUrl={setCustomRPCUrl}
-          customRPCUrl={customRPCUrl}
+          setActiveRpc={setActiveRpc}
+          activeRpc={activeRpc}
+          setCustomRpcUrl={setCustomRpcUrl}
+          customRpcUrl={customRpcUrl}
           {...props}
         />
       </CookiesProvider>
@@ -146,15 +143,15 @@ export default function App(props: AppProps) {
 function AppComponent({
   Component,
   pageProps,
-  setActiveRPC,
-  activeRPC,
-  setCustomRPCUrl,
-  customRPCUrl,
+  setActiveRpc,
+  activeRpc,
+  setCustomRpcUrl,
+  customRpcUrl,
 }: AppProps & {
-  setActiveRPC: (rpc: string) => void;
-  activeRPC: string;
-  setCustomRPCUrl: (rpc: string) => void;
-  customRPCUrl: string;
+  setActiveRpc: (rpc: string) => void;
+  activeRpc: string;
+  setCustomRpcUrl: (rpc: string | null) => void;
+  customRpcUrl: string | null;
 }) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
@@ -206,10 +203,10 @@ function AppComponent({
   return (
     <RootLayout
       userProfile={userProfile}
-      setActiveRPC={setActiveRPC}
-      activeRPC={activeRPC}
-      setCustomRPCUrl={setCustomRPCUrl}
-      customRPCUrl={customRPCUrl}
+      setActiveRpc={setActiveRpc}
+      activeRpc={activeRpc}
+      setCustomRpcUrl={setCustomRpcUrl}
+      customRpcUrl={customRpcUrl}
     >
       {
         <TermsAndConditionsModal

@@ -19,17 +19,17 @@ import WalletAdapter from '../WalletAdapter/WalletAdapter';
 export default function Header({
   userProfile,
   PAGES,
-  activeRPC,
-  setActiveRPC,
-  customRPCUrl,
-  setCustomRPCUrl,
+  activeRpc,
+  setActiveRpc,
+  customRpcUrl,
+  setCustomRpcUrl,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
-  activeRPC: string;
-  setActiveRPC: (rpc: string) => void;
-  setCustomRPCUrl: (rpc: string) => void;
-  customRPCUrl: string;
+  activeRpc: string;
+  setActiveRpc: (rpc: string) => void;
+  setCustomRpcUrl: (rpc: string | null) => void;
+  customRpcUrl: string | null;
 }) {
   const { pathname } = useRouter();
   const router = useRouter();
@@ -88,10 +88,10 @@ export default function Header({
         <WalletAdapter userProfile={userProfile} />
 
         <Settings
-          activeRPC={activeRPC}
-          setActiveRPC={setActiveRPC}
-          setCustomRPCUrl={setCustomRPCUrl}
-          customRPCUrl={customRPCUrl}
+          activeRpc={activeRpc}
+          setActiveRpc={setActiveRpc}
+          setCustomRpcUrl={setCustomRpcUrl}
+          customRpcUrl={customRpcUrl}
         />
 
         {clusterSwitchEnabled ? (

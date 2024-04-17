@@ -15,17 +15,17 @@ import Header from '../../Header/Header';
 const RootLayout = ({
   children,
   userProfile,
-  setActiveRPC,
-  activeRPC,
-  setCustomRPCUrl,
-  customRPCUrl,
+  setActiveRpc,
+  activeRpc,
+  setCustomRpcUrl,
+  customRpcUrl,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
-  setActiveRPC: (rpc: string) => void;
-  activeRPC: string;
-  setCustomRPCUrl: (rpc: string) => void;
-  customRPCUrl: string;
+  setActiveRpc: (rpc: string) => void;
+  activeRpc: string;
+  setCustomRpcUrl: (rpc: string | null) => void;
+  customRpcUrl: string | null;
 }) => {
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
@@ -61,19 +61,19 @@ const RootLayout = ({
         <Header
           userProfile={userProfile}
           PAGES={pages}
-          setActiveRPC={setActiveRPC}
-          activeRPC={activeRPC}
-          setCustomRPCUrl={setCustomRPCUrl}
-          customRPCUrl={customRPCUrl}
+          setActiveRpc={setActiveRpc}
+          activeRpc={activeRpc}
+          setCustomRpcUrl={setCustomRpcUrl}
+          customRpcUrl={customRpcUrl}
         />
       ) : (
         <BurgerMenu
           userProfile={userProfile}
           PAGES={pages}
-          setActiveRPC={setActiveRPC}
-          activeRPC={activeRPC}
-          setCustomRPCUrl={setCustomRPCUrl}
-          customRPCUrl={customRPCUrl}
+          setActiveRpc={setActiveRpc}
+          activeRpc={activeRpc}
+          setCustomRpcUrl={setCustomRpcUrl}
+          customRpcUrl={customRpcUrl}
         />
       )}
 

@@ -3,57 +3,58 @@ import { useEffect, useState } from 'react';
 
 import config from '@/config/devnet';
 import IConfiguration from '@/config/IConfiguration';
-import { verifyRPCConnection } from '@/utils';
+import { verifyRpcConnection } from '@/utils';
 
-const useRPC = ({ customRPCUrl }: { customRPCUrl: string }) => {
-  const [RPCOptions, setRPCOptions] = useState<IConfiguration['RPCOptions']>(
-    config.RPCOptions,
+const useRpc = ({ customRpcUrl }: { customRpcUrl: string | null }) => {
+  const [RpcOptions, setRpcOptions] = useState<IConfiguration['RpcOptions']>(
+    config.RpcOptions,
   );
 
-  const [RPCLatency, setRPCLatency] = useState<
-    IConfiguration['RPCOptions'] | null
+  const [RpcLatency, setRpcLatency] = useState<
+    IConfiguration['RpcOptions'] | null
   >(null);
 
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
-  const initlializeRPC = async () => {
-    const options = config.RPCOptions.map((rpc) => ({
+  const initializeRpc = async () => {
+    const options = config.RpcOptions.map((rpc) => ({
       ...rpc,
       connection: rpc.url ? new Connection(rpc.url, 'confirmed') : null,
       latency: null,
     }));
 
-    const isVerified = await verifyRPCConnection(customRPCUrl);
+    if (customRpcUrl !== null) {
+      const isVerified = await verifyRpcConnection(customRpcUrl);
 
-    if (isVerified) {
-      const customRPCConfig = options.findIndex(
-        (rpc) => rpc.name === 'Custom RPC',
-      );
+      if (isVerified) {
+        const customRPCConfig = options.findIndex(
+          (rpc) => rpc.name === 'Custom RPC',
+        );
 
-      if (customRPCConfig !== -1) {
-        options[customRPCConfig] = {
-          name: 'Custom RPC',
-          url: customRPCUrl,
-          connection: new Connection(customRPCUrl, 'confirmed'),
-          latency: null,
-        };
+        if (customRPCConfig !== -1) {
+          options[customRPCConfig] = {
+            name: 'Custom RPC',
+            url: customRpcUrl,
+            connection: new Connection(customRpcUrl, 'confirmed'),
+            latency: null,
+          };
+        }
       }
     }
-
+    setRpcOptions(options);
     setIsInitialized(true);
-    setRPCOptions(options);
   };
 
   const getLatency = async () => {
-    const options = [...RPCOptions];
+    const options = [...RpcOptions];
 
     const latency = await Promise.all(
       options.map(async (rpc) => {
         const start = Date.now();
         try {
-          const connection = await rpc?.connection?.getVersion();
+          if (!(await rpc?.connection?.getVersion())) return null;
 
-          return connection ? Date.now() - start : null;
+          return Date.now() - start;
         } catch (error) {
           console.error('Error measuring latency:', error);
 
@@ -62,7 +63,7 @@ const useRPC = ({ customRPCUrl }: { customRPCUrl: string }) => {
       }),
     );
 
-    setRPCLatency(() =>
+    setRpcLatency(() =>
       options.map((rpc, index) => ({
         ...rpc,
         latency: latency[index],
@@ -71,8 +72,9 @@ const useRPC = ({ customRPCUrl }: { customRPCUrl: string }) => {
   };
 
   useEffect(() => {
-    initlializeRPC();
-  }, [customRPCUrl, config, isInitialized]);
+    initializeRpc();
+    // TODO: update custom rpc url another place
+  }, [customRpcUrl, config, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -80,9 +82,9 @@ const useRPC = ({ customRPCUrl }: { customRPCUrl: string }) => {
 
     const interval = setInterval(getLatency, 5000);
     return () => clearInterval(interval);
-  }, [isInitialized, customRPCUrl, RPCOptions]);
+  }, [isInitialized, customRpcUrl, RpcOptions]);
 
-  return [RPCLatency];
+  return [RpcLatency];
 };
 
-export default useRPC;
+export default useRpc;
