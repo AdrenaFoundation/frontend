@@ -13,6 +13,7 @@ export default function FormatNumber({
   placeholder = '-',
   className,
   placeholderClassName,
+  isDecimalDimmed = true,
 }: {
   nb?: number | null;
   format?: 'number' | 'currency' | 'percentage';
@@ -23,10 +24,11 @@ export default function FormatNumber({
   placeholder?: string;
   className?: string;
   placeholderClassName?: string;
+  isDecimalDimmed?: boolean;
 }) {
   if (nb === null || typeof nb === 'undefined') {
     return (
-      <p className={twMerge(className, placeholderClassName, 'font-mono')}>
+      <p className={twMerge('font-mono', className, placeholderClassName)}>
         {placeholder}
       </p>
     );
@@ -46,11 +48,17 @@ export default function FormatNumber({
   const decimal = num.split('.')[1];
 
   return (
-    <p className={twMerge(className, 'font-mono inline-block')}>
+    <p className={twMerge('font-mono inline-block', className)}>
       {prefix}
       {integer}
       {decimal && (
-        <span className={twMerge(className, 'font-mono opacity-50')}>
+        <span
+          className={twMerge(
+            'font-mono',
+            isDecimalDimmed && 'opacity-50',
+            className,
+          )}
+        >
           .{decimal}
         </span>
       )}

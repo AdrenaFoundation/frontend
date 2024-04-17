@@ -255,6 +255,7 @@ export default function MyDashboard({
                   }
                   precision={3}
                   prefix="x"
+                  isDecimalDimmed={false}
                 />
               </div>
 

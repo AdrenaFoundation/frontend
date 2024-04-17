@@ -155,6 +155,7 @@ export default function PositionsBlocks({
                     format="number"
                     className="text-right"
                     suffix="x"
+                    isDecimalDimmed={false}
                   />
                 </div>
               </li>

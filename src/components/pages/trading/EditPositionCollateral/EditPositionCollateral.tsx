@@ -441,6 +441,7 @@ export default function EditPositionCollateral({
                 nb={position.leverage}
                 suffix="x"
                 className={input ? ' text-xs' : 'text-sm'}
+                isDecimalDimmed={false}
               />
 
               {input ? (

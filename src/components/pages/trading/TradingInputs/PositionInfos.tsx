@@ -81,6 +81,7 @@ export default function PositionInfos({
                           nb={openedPosition.collateralUsd}
                           format="currency"
                           className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
                         />
 
                         {rightArrowElement}
@@ -135,12 +136,17 @@ export default function PositionInfos({
                           nb={openedPosition.leverage}
                           suffix="x"
                           className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
                         />
 
                         {rightArrowElement}
 
                         {/* New position */}
-                        <FormatNumber nb={newLeverage} suffix="x" />
+                        <FormatNumber
+                          nb={newLeverage}
+                          suffix="x"
+                          isDecimalDimmed={false}
+                        />
 
                         {newLeverage > openedPosition.leverage
                           ? arrowElementUp
@@ -185,6 +191,7 @@ export default function PositionInfos({
                           nb={openedPosition.price}
                           format="currency"
                           className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
                         />
 
                         {rightArrowElement}
@@ -245,6 +252,7 @@ export default function PositionInfos({
                           nb={openedPosition.liquidationPrice}
                           format="currency"
                           className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
                         />
 
                         {rightArrowElement}
@@ -376,6 +384,7 @@ export default function PositionInfos({
                           nb={openedPosition.exitFeeUsd}
                           format="currency"
                           className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
                         />
 
                         {rightArrowElement}
@@ -437,6 +446,7 @@ export default function PositionInfos({
                           nb={openedPosition.liquidationFeeUsd}
                           format="currency"
                           className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
                         />
 
                         {rightArrowElement}
@@ -482,6 +492,7 @@ export default function PositionInfos({
                 nb={custody && tokenB && custody.borrowFee}
                 precision={RATE_DECIMALS}
                 suffix="%/hr"
+                isDecimalDimmed={false}
               />
             ) : (
               <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
