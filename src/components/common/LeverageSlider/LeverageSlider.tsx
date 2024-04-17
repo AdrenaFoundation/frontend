@@ -22,6 +22,7 @@ export default function LeverageSlider({
   // overwise the user is stuck with one number, which is bad ux
   const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
     useState<boolean>(false);
+  const marks = ['x1', 'x2', 'x3', 'x5', 'x10', 'x25', 'x50', 'x100'];
 
   return (
     <div className={twMerge('flex overflow-hidden h-16', className)}>
@@ -30,9 +31,9 @@ export default function LeverageSlider({
           <span className="shrink-0 w-2">x</span>
 
           <InputNumber
-            className="w-full max-w-full overflow-hidden text-center bg-third"
+            className="flex flex-col w-full max-w-full overflow-hidden text-center bg-third"
             value={isLeverageInputEmpty ? undefined : value}
-            max={50}
+            max={100}
             onChange={function (value: number | null): void {
               // throw new Error('Function not implemented.');
               if (value === null) {
@@ -48,22 +49,14 @@ export default function LeverageSlider({
         </div>
       </div>
 
-      <div className="flex h-full w-full bg-transparent pr-4 pl-2 ml-2">
+      <div className="flex flex-col h-full w-full bg-transparent pr-4 pl-2 ml-2">
         <Slider
           className="relative top-4"
           min={1}
-          max={50}
+          max={100}
           value={value}
           defaultValue={1}
           step={0.1}
-          marks={[2, 5, 10, 15, 20, 30, 40, 50].reduce((acc, mark) => {
-            acc[mark] = (
-              <span className="text-white text-sm opacity-30 hover:opacity-100">
-                x{mark}
-              </span>
-            );
-            return acc;
-          }, {} as Record<number, ReactNode>)}
           railStyle={{
             backgroundColor: colorA,
             height: 2,
@@ -93,6 +86,23 @@ export default function LeverageSlider({
           // Use as number because we don't use the slider as a range
           onChange={(v) => onChange(v as number)}
         />
+        <div className="grid grid-cols-11 gap-4 mt-4">
+          {marks.map((mark, index) => (
+            <div
+              key={index}
+              className={twMerge(
+                'text-white cursor-pointer text-sm opacity-30 hover:opacity-100',
+                `${index < 5 ? 'col-span-1' : 'col-span-2  text-right'}`,
+              )}
+              onClick={() => {
+                onChange(Number(mark.slice(1)));
+                setIsLeverageInputEmpty(false);
+              }}
+            >
+              {mark}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
