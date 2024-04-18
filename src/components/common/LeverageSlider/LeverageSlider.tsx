@@ -5,6 +5,7 @@ import { ReactNode, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import InputNumber from '../InputNumber/InputNumber';
+import Button from '../Button/Button';
 
 // ADRENA Style
 const colorA = '#ffffff20';
@@ -22,7 +23,7 @@ export default function LeverageSlider({
   // overwise the user is stuck with one number, which is bad ux
   const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
     useState<boolean>(false);
-  const marks = ['x1', 'x2', 'x3', 'x5', 'x10', 'x25', 'x50', 'x100'];
+  const marks = ['x3', 'x5', 'x10', 'x25', 'x50', 'x100'];
 
   return (
     <div className={twMerge('flex overflow-hidden h-16', className)}>
@@ -86,21 +87,23 @@ export default function LeverageSlider({
           // Use as number because we don't use the slider as a range
           onChange={(v) => onChange(v as number)}
         />
-        <div className="grid grid-cols-11 gap-4 mt-4">
+        {/*         <div className="grid grid-cols-11 gap-4 mt-4"> */}
+        <div className="flex bg-secondary rounded-full mt-5">
           {marks.map((mark, index) => (
-            <div
+            <Button
               key={index}
+              title={mark}
+              variant="secondary"
               className={twMerge(
-                'text-white cursor-pointer text-sm opacity-30 hover:opacity-100',
-                `${index < 5 ? 'col-span-1' : 'col-span-2  text-right'}`,
+                'w-[2.5em] h-[2em] opacity-50 hover:opacity-100 flex-grow rounded-none text-xs border border-bcolor',
+                `${index === 0 ? 'rounded-l-full' : ''}`,
+                `${index === marks.length - 1 ? 'rounded-r-full' : ''}`,
               )}
               onClick={() => {
                 onChange(Number(mark.slice(1)));
                 setIsLeverageInputEmpty(false);
               }}
-            >
-              {mark}
-            </div>
+            ></Button>
           ))}
         </div>
       </div>
