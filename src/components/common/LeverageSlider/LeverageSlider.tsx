@@ -96,8 +96,8 @@ export default function LeverageSlider({
               variant="secondary"
               className={twMerge(
                 'w-[2.5em] h-[2em] opacity-50 hover:opacity-100 flex-grow rounded-none text-xs border border-bcolor',
-                `${index === 0 ? 'rounded-l-full' : ''}`,
-                `${index === marks.length - 1 ? 'rounded-r-full' : ''}`,
+                index === 0 ? 'rounded-l-full' : '',
+                index === marks.length - 1 ? 'rounded-r-full' : '',
               )}
               onClick={() => {
                 onChange(Number(mark.slice(1)));
