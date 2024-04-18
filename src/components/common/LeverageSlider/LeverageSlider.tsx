@@ -1,11 +1,11 @@
 import 'rc-slider/assets/index.css';
 
 import Slider from 'rc-slider';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import InputNumber from '../InputNumber/InputNumber';
 import Button from '../Button/Button';
+import InputNumber from '../InputNumber/InputNumber';
 
 // ADRENA Style
 const colorA = '#ffffff20';
