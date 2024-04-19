@@ -23,6 +23,7 @@ import { Bar } from 'react-chartjs-2';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { ALPIndexComposition, TokenInfo } from '@/hooks/useALPIndexComposition';
 import {
   formatNumber,
@@ -181,7 +182,7 @@ export default function GlobalHealthOverview({
         <StyledSubSubContainer className="mt-4">
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Value</div>
-            <span>{aumUsd === null ? '-' : formatPriceInfo(aumUsd)}</span>
+            <FormatNumber nb={aumUsd} format="currency" />
           </div>
         </StyledSubSubContainer>
       </StyledSubContainer>

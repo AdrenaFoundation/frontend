@@ -2,15 +2,11 @@ import Tippy from '@tippyjs/react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { RATE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import {
-  formatNumber,
-  formatPriceInfo,
-  getArrowElement,
-  getRightArrowElement,
-} from '@/utils';
+import { getArrowElement, getRightArrowElement } from '@/utils';
 
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 
@@ -80,14 +76,18 @@ export default function PositionInfos({
                     return (
                       <>
                         {/* Opened position */}
-                        <div className="text-txtfade text-xs self-center">
-                          {formatPriceInfo(openedPosition.collateralUsd)}
-                        </div>
+
+                        <FormatNumber
+                          nb={openedPosition.collateralUsd}
+                          format="currency"
+                          className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
+                        />
 
                         {rightArrowElement}
 
                         {/* New position */}
-                        <div>{formatPriceInfo(newCollateralUsd)}</div>
+                        <FormatNumber nb={newCollateralUsd} format="currency" />
 
                         {newCollateralUsd > positionInfos.collateralUsd
                           ? arrowElementUp
@@ -96,7 +96,12 @@ export default function PositionInfos({
                     );
                   }
 
-                  return formatPriceInfo(positionInfos.collateralUsd);
+                  return (
+                    <FormatNumber
+                      nb={positionInfos.collateralUsd}
+                      format="currency"
+                    />
+                  );
                 })()}
               </span>
             ) : (
@@ -127,14 +132,21 @@ export default function PositionInfos({
                     return (
                       <>
                         {/* Opened position */}
-                        <div className="text-txtfade text-xs self-center">
-                          {formatNumber(openedPosition.leverage, 2)}x
-                        </div>
+                        <FormatNumber
+                          nb={openedPosition.leverage}
+                          suffix="x"
+                          className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
+                        />
 
                         {rightArrowElement}
 
                         {/* New position */}
-                        <div>{formatNumber(newLeverage, 2)}x</div>
+                        <FormatNumber
+                          nb={newLeverage}
+                          suffix="x"
+                          isDecimalDimmed={false}
+                        />
 
                         {newLeverage > openedPosition.leverage
                           ? arrowElementUp
@@ -143,7 +155,7 @@ export default function PositionInfos({
                     );
                   }
 
-                  return <div>{formatNumber(leverage, 2)}x</div>;
+                  return <FormatNumber nb={leverage} suffix="x" />;
                 })()}
               </span>
             ) : (
@@ -174,14 +186,19 @@ export default function PositionInfos({
                     return (
                       <>
                         {/* Opened position */}
-                        <div className="text-txtfade text-xs self-center">
-                          {formatPriceInfo(openedPosition.price)}
-                        </div>
+
+                        <FormatNumber
+                          nb={openedPosition.price}
+                          format="currency"
+                          className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
+                        />
 
                         {rightArrowElement}
 
                         {/* New position */}
-                        <div>{formatPriceInfo(newEntryPrice)}</div>
+
+                        <FormatNumber nb={newEntryPrice} format="currency" />
 
                         {newEntryPrice > openedPosition.price
                           ? arrowElementUp
@@ -190,7 +207,12 @@ export default function PositionInfos({
                     );
                   }
 
-                  return formatPriceInfo(positionInfos.entryPrice);
+                  return (
+                    <FormatNumber
+                      nb={positionInfos.entryPrice}
+                      format="currency"
+                    />
+                  );
                 })()}
               </span>
             ) : (
@@ -225,14 +247,21 @@ export default function PositionInfos({
                     return (
                       <>
                         {/* Opened position */}
-                        <div className="text-txtfade text-xs self-center">
-                          {formatPriceInfo(openedPosition.liquidationPrice)}
-                        </div>
+
+                        <FormatNumber
+                          nb={openedPosition.liquidationPrice}
+                          format="currency"
+                          className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
+                        />
 
                         {rightArrowElement}
 
                         {/* New position */}
-                        <div>{formatPriceInfo(newLiquidationPrice)}</div>
+                        <FormatNumber
+                          nb={newLiquidationPrice}
+                          format="currency"
+                        />
 
                         {newLiquidationPrice > openedPosition.price
                           ? arrowElementUp
@@ -241,7 +270,12 @@ export default function PositionInfos({
                     );
                   }
 
-                  return formatPriceInfo(positionInfos.liquidationPrice);
+                  return (
+                    <FormatNumber
+                      nb={positionInfos.liquidationPrice}
+                      format="currency"
+                    />
+                  );
                 })()}
               </span>
             ) : (
@@ -270,44 +304,51 @@ export default function PositionInfos({
                       <ul className="flex flex-col gap-2">
                         <li className="flex flex-row gap-2 justify-between">
                           <p className="text-sm text-txtfade">Swap fees:</p>
-                          <p className="text-sm font-mono">
-                            {`${formatPriceInfo(positionInfos.swapFeeUsd)}`}
-                          </p>
+
+                          <FormatNumber
+                            nb={positionInfos.swapFeeUsd}
+                            format="currency"
+                          />
                         </li>
 
                         <li className="flex flex-row gap-2 justify-between">
                           <p className="text-sm text-txtfade">
                             Open position fees:
                           </p>
-                          <p className="text-sm font-mono">
-                            {`${formatPriceInfo(
-                              positionInfos.openPositionFeeUsd,
-                            )}`}
-                          </p>
+
+                          <FormatNumber
+                            nb={positionInfos.openPositionFeeUsd}
+                            format="currency"
+                          />
                         </li>
 
                         <div className="w-full h-[1px] bg-bcolor" />
 
                         <li className="flex flex-row gap-2 justify-between">
                           <p className="text-sm text-txtfade">Total fees:</p>
-                          <p className="text-sm font-mono">
-                            {`${formatPriceInfo(
-                              positionInfos.totalOpenPositionFeeUsd,
-                            )}`}
-                          </p>
+
+                          <FormatNumber
+                            nb={positionInfos.totalOpenPositionFeeUsd}
+                            format="currency"
+                          />
                         </li>
                       </ul>
                     }
                     placement="bottom"
                   >
                     <div className="tooltip-target">
-                      {formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)}
+                      {/* {formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)} */}
+                      <FormatNumber
+                        nb={positionInfos.totalOpenPositionFeeUsd}
+                        format="currency"
+                      />
                     </div>
                   </Tippy>
-                ) : positionInfos ? (
-                  formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)
                 ) : (
-                  '-'
+                  <FormatNumber
+                    nb={positionInfos?.totalOpenPositionFeeUsd}
+                    format="currency"
+                  />
                 )}
               </span>
             ) : (
@@ -338,14 +379,22 @@ export default function PositionInfos({
                     return (
                       <>
                         {/* Opened position */}
-                        <div className="text-txtfade text-xs self-center">
-                          {formatPriceInfo(openedPosition.exitFeeUsd)}
-                        </div>
+
+                        <FormatNumber
+                          nb={openedPosition.exitFeeUsd}
+                          format="currency"
+                          className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
+                        />
 
                         {rightArrowElement}
 
                         {/* New position */}
-                        <div>{formatPriceInfo(newExitPositionFeeUsd)}</div>
+
+                        <FormatNumber
+                          nb={newExitPositionFeeUsd}
+                          format="currency"
+                        />
 
                         {newExitPositionFeeUsd > openedPosition.exitFeeUsd
                           ? arrowElementUp
@@ -354,7 +403,12 @@ export default function PositionInfos({
                     );
                   }
 
-                  return formatPriceInfo(positionInfos.exitFeeUsd);
+                  return (
+                    <FormatNumber
+                      nb={positionInfos.exitFeeUsd}
+                      format="currency"
+                    />
+                  );
                 })()}
               </span>
             ) : (
@@ -387,14 +441,22 @@ export default function PositionInfos({
                     return (
                       <>
                         {/* Opened position */}
-                        <div className="text-txtfade text-xs self-center">
-                          {formatPriceInfo(openedPosition.liquidationFeeUsd)}
-                        </div>
+
+                        <FormatNumber
+                          nb={openedPosition.liquidationFeeUsd}
+                          format="currency"
+                          className="text-txtfade text-xs self-center"
+                          isDecimalDimmed={false}
+                        />
 
                         {rightArrowElement}
 
                         {/* New position */}
-                        <div>{formatPriceInfo(newLiquidationFeeUsd)}</div>
+
+                        <FormatNumber
+                          nb={newLiquidationFeeUsd}
+                          format="currency"
+                        />
 
                         {newLiquidationFeeUsd > openedPosition.liquidationFeeUsd
                           ? arrowElementUp
@@ -403,7 +465,12 @@ export default function PositionInfos({
                     );
                   }
 
-                  return formatPriceInfo(positionInfos.liquidationFeeUsd);
+                  return (
+                    <FormatNumber
+                      nb={positionInfos.liquidationFeeUsd}
+                      format="currency"
+                    />
+                  );
                 })()}
               </span>
             ) : (
@@ -421,11 +488,12 @@ export default function PositionInfos({
             </span>
 
             {!isInfoLoading ? (
-              <span className="font-mono text-sm">
-                {custody && tokenB
-                  ? `${formatNumber(custody.borrowFee, RATE_DECIMALS)}%/hr`
-                  : '-'}
-              </span>
+              <FormatNumber
+                nb={custody && tokenB && custody.borrowFee}
+                precision={RATE_DECIMALS}
+                suffix="%/hr"
+                isDecimalDimmed={false}
+              />
             ) : (
               <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}
@@ -443,11 +511,10 @@ export default function PositionInfos({
             </span>
 
             {!isInfoLoading ? (
-              <span className="font-mono text-sm">
-                {custody && tokenPriceB
-                  ? formatPriceInfo(custody.liquidity * tokenPriceB)
-                  : '-'}
-              </span>
+              <FormatNumber
+                nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
+                format="currency"
+              />
             ) : (
               <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
             )}

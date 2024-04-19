@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
+import FormatNumber from '@/components/Number/FormatNumber';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -150,44 +151,43 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                {formatNumber(position.leverage, 2)}x
+                <FormatNumber nb={position.leverage} suffix="x" />
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                {position.pnl ? (
-                  <span
-                    className={`text-${
-                      position.pnl > 0 ? 'green' : 'red'
-                    } font-mono`}
-                  >
-                    {formatPriceInfo(position.pnl)}
-                  </span>
-                ) : (
-                  '-'
-                )}
+                <FormatNumber
+                  nb={position.pnl}
+                  format="currency"
+                  className={`text-${
+                    position.pnl && position.pnl > 0 ? 'green' : 'red'
+                  }`}
+                />
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                {formatPriceInfo(position.sizeUsd)}
+                <FormatNumber nb={position.sizeUsd} format="currency" />
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                {formatPriceInfo(position.collateralUsd)}
+                <FormatNumber nb={position.collateralUsd} format="currency" />
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                {formatPriceInfo(position.price)}
+                <FormatNumber nb={position.price} format="currency" />
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                {tokenPrices[position.token.symbol]
-                  ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    formatPriceInfo(tokenPrices[position.token.symbol]!)
-                  : '-'}
+                <FormatNumber
+                  nb={tokenPrices[position.token.symbol]}
+                  format="currency"
+                />
               </td>
 
               <td className={columnStyle}>
-                {formatPriceInfo(position.liquidationPrice ?? null)}
+                <FormatNumber
+                  nb={position.liquidationPrice}
+                  format="currency"
+                />
               </td>
 
               <td

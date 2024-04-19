@@ -17,6 +17,7 @@ import { Bar } from 'react-chartjs-2';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import FormatNumber from '@/components/Number/FormatNumber';
 import {
   formatNumber,
   formatPriceInfo,
@@ -125,20 +126,13 @@ export default function UsageOverview({
         <StyledSubSubContainer className="flex-col mt-4">
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Active Positions</div>
-            <span>
-              {numberOpenedPositions === 0
-                ? '-'
-                : formatNumber(numberOpenedPositions, 1)}
-            </span>
+            <FormatNumber nb={numberOpenedPositions} precision={1} />
           </div>
 
           <div className="flex w-full items-center justify-between">
             <div className="text-sm">Total Value</div>
-            <span>
-              {totalPositionsValue === 0
-                ? '-'
-                : formatPriceInfo(totalPositionsValue)}
-            </span>
+
+            <FormatNumber nb={totalPositionsValue} format="currency" />
           </div>
         </StyledSubSubContainer>
       </StyledSubContainer>
