@@ -50,7 +50,7 @@ export default function ADXStakeToken({
               <p className="opacity-50 font-mono text-sm">ADX</p>
             </div>
             <input
-              className="w-full bg-third border border-bcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+              className="w-full bg-inputcolor border border-bcolor rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
               type="number"
               onWheel={(e) => {
                 // Disable the scroll changing input value
@@ -61,7 +61,7 @@ export default function ADXStakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%] text-main"
+              className="absolute right-2 bottom-[20%] text-main text-white"
               title="MAX"
               variant="text"
               onClick={() => {
@@ -74,7 +74,7 @@ export default function ADXStakeToken({
         </div>
 
         <div>
-          <div className="flex flex-row gap-1  mb-2">
+          <div className="flex flex-row gap-1 mb-2">
             <Image src={lockIcon} width={14} height={14} alt="lock icon" />
             <p className="text-sm opacity-50 font-medium ">
               Choose a lock period (days)

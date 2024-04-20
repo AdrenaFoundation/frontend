@@ -23,17 +23,17 @@ export default function LeverageSlider({
   // overwise the user is stuck with one number, which is bad ux
   const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
     useState<boolean>(false);
-  const marks = ['x3', 'x5', 'x10', 'x25', 'x50', 'x100'];
+  const marks = [3, 5, 10, 25, 50, 100];
 
   return (
     <div className={twMerge('flex flex-col overflow-hidden', className)}>
       <div className="flex">
-        <div className="flex flex-col pl-1 pt-1 pr-2 pb-1 bg-third w-[4.5em] h-14">
+        <div className="flex flex-col pl-1 pt-1 pr-2 pb-1 w-[4.5em] h-14">
           <div className="flex w-full h-full items-center ml-1 shrink-0">
             <span className="shrink-0 w-2">x</span>
 
             <InputNumber
-              className="flex w-full max-w-full overflow-hidden text-center bg-third text-txtfade"
+              className="flex w-full max-w-full overflow-hidden text-center bg-inputcolor"
               value={isLeverageInputEmpty ? undefined : value}
               max={100}
               onChange={function (value: number | null): void {
@@ -42,7 +42,6 @@ export default function LeverageSlider({
                   setIsLeverageInputEmpty(true);
                   return;
                 }
-
                 onChange(value);
                 setIsLeverageInputEmpty(false);
               }}
@@ -51,16 +50,17 @@ export default function LeverageSlider({
           </div>
         </div>
 
-        <div className="flex h-full w-full bg-transparent pr-4 pl-4 border-r">
+        <div className="flex h-full w-full pr-4 pl-4 border-r">
           <Slider
             className="relative top-6"
-            min={1}
+            min={1.1}
             max={100}
             value={value}
-            defaultValue={1}
+            defaultValue={5}
             step={0.1}
             railStyle={{
               backgroundColor: colorA,
+              borderColor: 'white',
               height: 2,
             }}
             trackStyle={{
@@ -94,13 +94,15 @@ export default function LeverageSlider({
         {marks.map((mark, index) => (
           <Button
             key={index}
-            title={mark}
+            title={`x${mark}`.toString()}
             variant="secondary"
             className={twMerge(
-              'w-[6em] opacity-50 hover:opacity-100 flex-grow rounded-none text-xs border border-bcolor',
+              'w-[6em] opacity-50 hover:opacity-100 flex-grow rounded-none text-xs border-r border-t border-bcolor',
+              index === 0 ? 'rounded-bl-[0.7em]' : '',
+              index === marks.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',
             )}
             onClick={() => {
-              onChange(Number(mark.slice(1)));
+              onChange(mark);
               setIsLeverageInputEmpty(false);
             }}
           ></Button>

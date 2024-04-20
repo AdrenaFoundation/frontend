@@ -76,7 +76,7 @@ export default function LongShortTradingInputs({
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
 
-  const [leverage, setLeverage] = useState<number>(5);
+  const [leverage, setLeverage] = useState<number>(10);
 
   const [buttonTitle, setButtonTitle] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -367,10 +367,13 @@ export default function LongShortTradingInputs({
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col border rounded-lg mt-2 w-full overflow-hidden bg-third">
+        <div className="flex flex-col border rounded-lg mt-2 w-full bg-inputcolor">
           <TradingInput
-            className="text-sm border-b"
-            inputClassName="border-0 tr-rounded-lg"
+            className="text-sm rounded-full"
+            inputClassName="border-0 tr-rounded-lg bg-inputcolor"
+            tokenListClassName="border-none bg-inputcolor"
+            menuClassName="shadow-none"
+            menuOpenBorderClassName="rounded-tr-lg"
             maxClassName={
               side === 'short' ? 'bg-red text-white' : 'bg-green text-white'
             }
@@ -400,7 +403,7 @@ export default function LongShortTradingInputs({
 
           <LeverageSlider
             value={leverage}
-            className="w-full font-mono bg-third"
+            className="w-full font-mono border-t"
             onChange={(v: number) => setLeverage(v)}
           />
         </div>
