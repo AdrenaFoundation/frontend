@@ -6,6 +6,7 @@ export default function InputNumber({
   onChange,
   placeholder,
   className,
+  min,
   max,
   inputFontSize,
   decimalConstraint,
@@ -15,6 +16,7 @@ export default function InputNumber({
   onChange: (value: number | null) => void;
   placeholder?: string;
   className?: string;
+  min?: number;
   max?: number;
   inputFontSize?: string;
   decimalConstraint?: number;
@@ -40,7 +42,7 @@ export default function InputNumber({
         if (Number(decimals) >= Number(decimalConstraint)) return;
 
         // Set max input value to 500m
-        onChange(Math.min(nb, max ?? 500_000_000));
+        onChange(Math.min(Math.max(nb, min ?? 0), max ?? 500_000_000));
       }}
       placeholder={placeholder}
       className={twMerge(

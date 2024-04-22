@@ -222,7 +222,7 @@ input[type='radio']:checked {
 }
 
 .rc-slider-handle:active {
-  box-shadow: 0 0 5px 10px rgba(#fdfdff, 0.2) !important;
+  box-shadow: 0 0 5px 10px #fdfdff33 !important;
 }
 
 /* Works on Firefox */

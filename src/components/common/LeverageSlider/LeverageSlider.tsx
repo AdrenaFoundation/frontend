@@ -35,9 +35,9 @@ export default function LeverageSlider({
             <InputNumber
               className="flex w-full max-w-full overflow-hidden text-center bg-inputcolor"
               value={isLeverageInputEmpty ? undefined : value}
+              min={1.1}
               max={100}
               onChange={function (value: number | null): void {
-                // throw new Error('Function not implemented.');
                 if (value === null) {
                   setIsLeverageInputEmpty(true);
                   return;
@@ -56,7 +56,6 @@ export default function LeverageSlider({
             min={1.1}
             max={100}
             value={value}
-            defaultValue={5}
             step={0.1}
             railStyle={{
               backgroundColor: colorA,
@@ -94,10 +93,12 @@ export default function LeverageSlider({
         {marks.map((mark, index) => (
           <Button
             key={index}
-            title={`x${mark}`.toString()}
+            title={`x${mark.toString()}`}
             variant="secondary"
+            rounded={false}
             className={twMerge(
-              'w-[6em] opacity-50 hover:opacity-100 flex-grow rounded-none text-xs border-r border-t border-bcolor',
+              'w-[6em] opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor',
+              // Put 0.7 e.m instead of lg because conflicts in the border handling by browser
               index === 0 ? 'rounded-bl-[0.7em]' : '',
               index === marks.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',
             )}

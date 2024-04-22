@@ -61,7 +61,7 @@ export default function ALPStakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%] text-main text-white"
+              className="absolute right-2 bottom-[20%] text-white"
               title="MAX"
               variant="text"
               onClick={() => {
