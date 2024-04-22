@@ -15,6 +15,7 @@ export default function Select<T extends string>({
   selected,
   selectedClassName,
   menuClassName,
+  menuOpenBorderClassName,
   options,
   onSelect,
   reversed,
@@ -22,6 +23,7 @@ export default function Select<T extends string>({
   className?: string;
   selectedClassName?: string;
   menuClassName?: string;
+  menuOpenBorderClassName?: string;
   selected: T;
   options: { title: T; img?: ImageRef }[];
   onSelect: (opt: T) => void;
@@ -81,6 +83,7 @@ export default function Select<T extends string>({
           </div>
         }
         className="h-full w-full"
+        menuOpenBorderClassName={menuOpenBorderClassName}
         openMenuClassName="w-full"
       >
         {options.length > 1 && (

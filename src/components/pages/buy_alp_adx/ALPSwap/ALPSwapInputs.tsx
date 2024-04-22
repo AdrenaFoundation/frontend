@@ -252,11 +252,19 @@ export default function ALPSwapInputs({
 
   const alpInputComponent = (
     <TradingInput
-      className="text-sm"
+      className="text-sm rounded-full"
+      inputClassName={actionType === 'sell' ? 'bg-inputcolor' : 'bg-third'}
+      tokenListClassName={twMerge(
+        'rounded-tr-lg rounded-br-lg',
+        actionType === 'sell' ? 'bg-inputcolor' : 'bg-third',
+      )}
+      menuClassName="shadow-none justify-end mr-2"
+      menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       value={alpInput}
       maxButton={actionType === 'sell'}
+      maxClassName="relative left-6"
       selectedToken={alpToken}
       tokenList={[alpToken]}
       onMaxButtonClick={() => {
@@ -271,7 +279,14 @@ export default function ALPSwapInputs({
 
   const collateralComponent = (
     <TradingInput
-      className="text-sm"
+      className="text-sm rounded-full"
+      inputClassName={actionType === 'buy' ? 'bg-inputcolor' : 'bg-third'}
+      tokenListClassName={twMerge(
+        'rounded-tr-lg rounded-br-lg',
+        actionType === 'buy' ? 'bg-inputcolor' : 'bg-third',
+      )}
+      menuClassName="shadow-none"
+      menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
       value={collateralInput}

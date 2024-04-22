@@ -64,7 +64,7 @@ export default function ADXStakeOverview({
           />
 
           <Button
-            className="w-full mt-2"
+            className="w-full mt-4"
             disabled={
               !window.adrena.geoBlockingData.allowed || totalLiquidStaked === 0
             }
