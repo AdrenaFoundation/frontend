@@ -9,8 +9,10 @@ import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { UserProfileExtended } from '@/types';
 
+import { UsersnapProvider } from '../../../UsersnapContext';
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
+import CustomButton from '../../Usersnap/button';
 
 const RootLayout = ({
   children,
@@ -48,23 +50,22 @@ const RootLayout = ({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       {isBigScreen ? (
         <Header userProfile={userProfile} PAGES={pages} />
       ) : (
         <BurgerMenu userProfile={userProfile} PAGES={pages} />
       )}
-
       <div className="w-full grow flex justify-center">
         <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
           {children}
         </div>
       </div>
-
       <ToastContainer newestOnTop className="relative top-16" />
-
+      // TODO: Display on the right, style it and make it work
+      <UsersnapProvider>
+        <CustomButton />
+      </UsersnapProvider>
       <Footer className="z-10" />
-
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>
       </div>

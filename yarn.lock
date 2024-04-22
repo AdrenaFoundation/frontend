@@ -1564,6 +1564,11 @@
     "@typescript-eslint/types" "5.62.0"
     eslint-visitor-keys "^3.3.0"
 
+"@usersnap/browser@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@usersnap/browser/-/browser-0.0.5.tgz#95e7ce2ede41448fdee252304922d37467a1bfde"
+  integrity sha512-EG6SOy63lKqqwgS03Olj7iQkptuCIYd2T/o9dM5KYa518F+jycWxlNFVY0Yd5uvzyIRoEAs9TN0goaBHXPBJ3w==
+
 "@wallet-standard/base@^1.0.1":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@wallet-standard/base/-/base-1.0.1.tgz"
