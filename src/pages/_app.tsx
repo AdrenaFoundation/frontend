@@ -16,6 +16,7 @@ import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
 import useUserProfile from '@/hooks/useUserProfile';
+import useUsersnap from '@/hooks/useUsersnap';
 import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
@@ -114,6 +115,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
   useWatchTokenPrices();
+  useUsersnap();
 
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 

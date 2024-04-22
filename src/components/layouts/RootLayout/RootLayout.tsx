@@ -9,10 +9,8 @@ import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { UserProfileExtended } from '@/types';
 
-import { UsersnapProvider } from '../../../UsersnapContext';
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
-import CustomButton from '../../Usersnap/button';
 
 const RootLayout = ({
   children,
@@ -61,10 +59,6 @@ const RootLayout = ({
         </div>
       </div>
       <ToastContainer newestOnTop className="relative top-16" />
-      // TODO: Display on the right, style it and make it work
-      <UsersnapProvider>
-        <CustomButton />
-      </UsersnapProvider>
       <Footer className="z-10" />
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

@@ -131,4 +131,3 @@ export const SUPPORTED_RESOLUTIONS = [
 // Usersnap constants for widget integration
 export const USERSNAP_GLOBAL_API_KEY = '1cd9b60a-eb05-451c-b1e3-b74c2c512f74';
 export const USERSNAP_PROJECT_API_KEY = 'ec05e2c0-d23d-45e5-8052-995963537a81';
-export const USERSNAP_PROJECT_API_EVENT_NAME = 'Issue reporting';
