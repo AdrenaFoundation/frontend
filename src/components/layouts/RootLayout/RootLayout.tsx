@@ -6,6 +6,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
+import Featurebase from '@/components/Featurebase/Featurebase';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { UserProfileExtended } from '@/types';
 
@@ -62,7 +63,7 @@ const RootLayout = ({
       </div>
 
       <ToastContainer newestOnTop className="relative top-16" />
-
+      <Featurebase />
       <Footer className="z-10" />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
