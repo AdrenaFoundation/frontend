@@ -17,30 +17,29 @@ const useRpc = ({ customRpcUrl }: { customRpcUrl: string | null }) => {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   const initializeRpc = async () => {
-    const options = config.RpcOptions.map((rpc) => ({
-      ...rpc,
-      connection: rpc.url ? new Connection(rpc.url, 'confirmed') : null,
-      latency: null,
-    }));
+    const options = await Promise.all(
+      config.RpcOptions.map(async (rpc) => {
+        if (rpc.name === 'Custom RPC') {
+          if (customRpcUrl !== null) {
+            const isVerified = await verifyRpcConnection(customRpcUrl);
 
-    if (customRpcUrl !== null) {
-      const isVerified = await verifyRpcConnection(customRpcUrl);
-
-      if (isVerified) {
-        const customRPCConfig = options.findIndex(
-          (rpc) => rpc.name === 'Custom RPC',
-        );
-
-        if (customRPCConfig !== -1) {
-          options[customRPCConfig] = {
-            name: 'Custom RPC',
-            url: customRpcUrl,
-            connection: new Connection(customRpcUrl, 'confirmed'),
-            latency: null,
-          };
+            if (isVerified) {
+              return {
+                ...rpc,
+                connection: new Connection(customRpcUrl, 'confirmed'),
+                latency: null,
+              };
+            }
+          }
         }
-      }
-    }
+        return {
+          ...rpc,
+          connection: rpc.url ? new Connection(rpc.url, 'confirmed') : null,
+          latency: null,
+        };
+      }),
+    );
+
     setRpcOptions(options);
     setIsInitialized(true);
   };
@@ -71,10 +70,36 @@ const useRpc = ({ customRpcUrl }: { customRpcUrl: string | null }) => {
     );
   };
 
+  const handleCustomRPC = async () => {
+    const options = await Promise.all(
+      [...RpcOptions].map(async (rpc) => {
+        if (rpc.name === 'Custom RPC') {
+          if (customRpcUrl !== null) {
+            const isVerified = await verifyRpcConnection(customRpcUrl);
+
+            return {
+              ...rpc,
+              connection: isVerified
+                ? new Connection(customRpcUrl, 'confirmed')
+                : null,
+            };
+          }
+        }
+        return rpc;
+      }),
+    );
+
+    setRpcOptions(options);
+  };
+
   useEffect(() => {
     initializeRpc();
-    // TODO: update custom rpc url another place
-  }, [customRpcUrl, config, isInitialized]);
+  }, [config, isInitialized]);
+
+  useEffect(() => {
+    if (!isInitialized) return;
+    handleCustomRPC();
+  }, [customRpcUrl, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;

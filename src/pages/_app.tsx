@@ -52,7 +52,7 @@ export default function App(props: AppProps) {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [cookies] = useCookies(['activeRpc', 'customRpc']);
   const [activeRpc, setActiveRpc] = useState<string>(
-    cookies?.activeRpc ?? 'Helius RPC',
+    cookies?.activeRpc ?? 'Solana RPC',
   );
   const [customRpcUrl, setCustomRpcUrl] = useState<string | null>(
     cookies?.customRpc !== 'null' ? cookies?.customRpc : null,

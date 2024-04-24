@@ -100,10 +100,6 @@ class DevnetConfiguration implements IConfiguration {
       url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
     },
     {
-      name: 'Triton RPC Pool 2',
-      url: 'https://api.devnet.solana.com',
-    },
-    {
       name: 'Custom RPC',
       url: null,
     },
