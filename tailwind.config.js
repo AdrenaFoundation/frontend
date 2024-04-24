@@ -18,6 +18,7 @@ module.exports = {
 
         green: '#07956B',
         red: '#C9243A',
+        orange: '#F0892B',
       },
       fontSize: {
         xs: '0.65rem', // Extra Small

@@ -80,6 +80,7 @@ class DevnetConfiguration implements IConfiguration {
   public readonly governanceRealmName = 'AdrenaRealm5';
 
   // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
+
   public readonly mainRPC: string =
     //  'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
     'https://api.devnet.solana.com';
@@ -88,6 +89,21 @@ class DevnetConfiguration implements IConfiguration {
   public readonly pythRPC: string =
     // 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
     'https://api.devnet.solana.com';
+
+  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
+    {
+      name: 'Solana RPC',
+      url: 'https://api.devnet.solana.com',
+    },
+    {
+      name: 'Helius RPC',
+      url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+    },
+    {
+      name: 'Custom RPC',
+      url: null,
+    },
+  ];
 
   public readonly mainPool: PublicKey = new PublicKey(
     '8Hgu4wTyMvdQk9gfXxoEtujfumMMWuPVdMWVrs73qgsa',

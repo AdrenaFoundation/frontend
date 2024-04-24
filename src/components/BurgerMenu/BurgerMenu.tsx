@@ -18,14 +18,23 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
   userProfile,
   PAGES,
+  activeRpc,
+  setActiveRpc,
+  setCustomRpcUrl,
+  customRpcUrl,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
+  activeRpc: string;
+  setActiveRpc: (rpc: string) => void;
+  setCustomRpcUrl: (rpc: string | null) => void;
+  customRpcUrl: string | null;
 }) {
   const { pathname } = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -65,6 +74,12 @@ export default function BurgerMenu({
           />
 
           <WalletAdapter className="w-full" userProfile={userProfile} />
+          <Settings
+            activeRpc={activeRpc}
+            setActiveRpc={setActiveRpc}
+            setCustomRpcUrl={setCustomRpcUrl}
+            customRpcUrl={customRpcUrl}
+          />
         </div>
       </div>
 

@@ -76,8 +76,22 @@ class MainnetConfiguration implements IConfiguration {
   public readonly governanceRealmName = 'AdrenaRealm5';
 
   public readonly mainRPC: string = 'https://api.mainnet-beta.solana.com';
-
   public readonly pythRPC: string = 'https://api.mainnet-beta.solana.com';
+
+  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
+    {
+      name: 'Solana RPC',
+      url: 'https://api.devnet.solana.com',
+    },
+    {
+      name: 'Helius RPC',
+      url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+    },
+    {
+      name: 'Custom RPC',
+      url: null,
+    },
+  ];
 
   public readonly mainPool: PublicKey = new PublicKey(
     'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',

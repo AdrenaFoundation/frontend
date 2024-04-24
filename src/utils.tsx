@@ -533,3 +533,20 @@ export function getFontSizeWeight(context: Context): Font {
     weight: 'bold',
   };
 }
+
+export const verifyRpcConnection = async (rpc: string) => {
+  if (!rpc) return false;
+  try {
+    const connection = await new Connection(rpc)?.getVersion();
+
+    return !!connection;
+  } catch {
+    return false;
+  }
+};
+
+export const verifyIfValidUrl = (url: string) => {
+  const regExUrl = new RegExp(/^(http|https):\/\/[^ "]+$/);
+
+  return regExUrl.test(url);
+};
