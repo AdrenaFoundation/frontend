@@ -1,5 +1,7 @@
+import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
+import { useEffect, useState } from 'react';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
@@ -33,6 +35,7 @@ export default function ALPSwap({
   setCollateralPrice,
   feesAndAmounts,
   className,
+  aumUsd,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
@@ -52,11 +55,19 @@ export default function ALPSwap({
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
   feesAndAmounts: FeesAndAmountsType | null;
+  aumUsd: number | undefined;
 }) {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
-  const connected = !!wallet;
+  const [connected, setConnected] = useState<boolean>(false);
+
+  useEffect(() => {
+    setConnected(!!wallet);
+  }, [wallet]);
+
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [buttonTitle, setButtonTitle] = useState<string | null>(null);
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
 
   const handleExecuteButton = async () => {
     if (!connected) {
@@ -133,61 +144,81 @@ export default function ALPSwap({
     }
   };
 
-  const buttonTitle = (() => {
-    if (!connected && !window.adrena.geoBlockingData.allowed) {
-      return 'Geo-Restricted Access';
-    }
+  useEffect(() => {
+    const newButtonTitle = () => {
+      if (!connected && !window.adrena.geoBlockingData.allowed) {
+        setIsDisabledButton(true);
+        return 'Geo-Restricted Access';
+      }
 
-    // If wallet not connected, then user need to connect wallet
-    if (!connected) {
-      return 'Connect wallet';
-    }
+      // If wallet not connected, then user need to connect wallet
+      if (!connected) {
+        setIsDisabledButton(false);
+        return 'Connect wallet';
+      }
 
-    if (alpInput === null || collateralInput === null) {
-      return 'Enter an amount';
-    }
+      if (alpInput === null || collateralInput === null) {
+        setIsDisabledButton(true);
+        return 'Enter an amount';
+      }
 
-    // Loading, should happens quickly
-    if (!collateralToken) {
-      return '...';
-    }
+      // Loading, should happens quickly
+      if (!collateralToken) {
+        setIsDisabledButton(true);
+        return '...';
+      }
 
-    const walletCollateralTokenBalance =
-      walletTokenBalances?.[collateralToken.symbol];
+      const walletCollateralTokenBalance =
+        walletTokenBalances?.[collateralToken.symbol];
 
-    const walletAlpTokenBalance =
-      walletTokenBalances?.[window.adrena.client.alpToken.symbol];
+      const walletAlpTokenBalance =
+        walletTokenBalances?.[window.adrena.client.alpToken.symbol];
 
-    // Loading, should happens quickly
-    if (typeof walletCollateralTokenBalance === 'undefined') {
-      return '...';
-    }
+      if (typeof walletCollateralTokenBalance === 'undefined') {
+        setIsDisabledButton(true);
+        return '...';
+      }
 
-    // If user wallet balance doesn't have enough tokens, tell user
-    if (
-      selectedAction === 'buy' &&
-      ((walletCollateralTokenBalance != null &&
-        collateralInput > walletCollateralTokenBalance) ||
-        walletCollateralTokenBalance === null)
-    ) {
-      return `Insufficient ${collateralToken.symbol} balance`;
-    }
+      // If user wallet balance doesn't have enough tokens, tell user
+      if (
+        selectedAction === 'buy' &&
+        ((walletCollateralTokenBalance != null &&
+          collateralInput > walletCollateralTokenBalance) ||
+          walletCollateralTokenBalance === null)
+      ) {
+        setIsDisabledButton(true);
+        return `Insufficient ${collateralToken.symbol} balance`;
+      }
 
-    // If user wallet balance doesn't have enough tokens, tell user
-    if (
-      selectedAction === 'sell' &&
-      ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
-        walletAlpTokenBalance === null)
-    ) {
-      return `Insufficient ${window.adrena.client.alpToken.symbol} balance`;
-    }
+      // If user wallet balance doesn't have enough tokens, tell user
+      if (
+        selectedAction === 'sell' &&
+        ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
+          walletAlpTokenBalance === null)
+      ) {
+        setIsDisabledButton(true);
+        return `Insufficient ${window.adrena.client.alpToken.symbol} balance`;
+      }
 
-    if (selectedAction === 'buy') {
-      return `Buy ${window.adrena.client.alpToken.symbol}`;
-    }
+      if (selectedAction === 'buy') {
+        setIsDisabledButton(false);
+        return `Buy ${window.adrena.client.alpToken.symbol}`;
+      }
 
-    return `Sell ${window.adrena.client.alpToken.symbol}`;
-  })();
+      setIsDisabledButton(false);
+      return `Sell ${window.adrena.client.alpToken.symbol}`;
+    };
+
+    setButtonTitle(newButtonTitle);
+  }, [
+    alpInput,
+    buttonTitle,
+    collateralInput,
+    collateralToken,
+    connected,
+    selectedAction,
+    walletTokenBalances,
+  ]);
 
   return (
     <div className={className}>
@@ -221,13 +252,14 @@ export default function ALPSwap({
             collateralPrice={collateralPrice}
             setCollateralPrice={setCollateralPrice}
             feesAndAmounts={feesAndAmounts}
+            aumUsd={aumUsd}
           />
 
           {/* Button to execute action */}
           <Button
             title={buttonTitle}
             size="lg"
-            disabled={buttonTitle.includes('Insufficient')}
+            disabled={isDisabledButton}
             className="justify-center w-full mt-5"
             onClick={handleExecuteButton}
           />

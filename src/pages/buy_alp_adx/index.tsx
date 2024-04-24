@@ -25,7 +25,10 @@ export type FeesAndAmountsType = {
   };
 };
 
-export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
+export default function Buy({
+  triggerWalletTokenBalancesReload,
+  mainPool,
+}: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
@@ -117,7 +120,7 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
             equivalentAmount,
           };
         } catch (e) {
-          console.log(e);
+          console.log(e as Error);
           return {
             token,
             fees: null,
@@ -231,6 +234,7 @@ export default function Buy({ triggerWalletTokenBalancesReload }: PageProps) {
             alpPrice={alpPrice}
             collateralPrice={collateralPrice}
             feesAndAmounts={feesAndAmounts}
+            aumUsd={mainPool?.aumUsd}
           />
         </StyledSubContainer>
       </StyledContainer>

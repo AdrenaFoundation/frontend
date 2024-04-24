@@ -2,7 +2,6 @@ import { BN } from '@coral-xyz/anchor';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
@@ -21,7 +20,6 @@ import {
   addNotification,
   addSuccessTxNotification,
   formatNumber,
-  formatPriceInfo,
   nativeToUi,
 } from '@/utils';
 

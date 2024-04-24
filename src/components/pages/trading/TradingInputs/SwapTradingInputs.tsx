@@ -302,7 +302,7 @@ export default function SwapTradingInputs({
             </div>
           ) : null
         }
-        maxButton={!connected}
+        maxButton={connected}
         selectedToken={tokenA}
         tokenList={allowedTokenA}
         onTokenSelect={setTokenA}
