@@ -395,8 +395,9 @@ export default function ALPSwapInputs({
               <div
                 className={twMerge(
                   'flex items-center justify-center h-full overflow-hidden text-white break-all bg-white rounded-full',
-                  'w-[' + aumLiquidityRatio + '%]',
+                  // `w-[${aumLiquidityRatio}%]`, Have to use style because it was not working properly with tailwind
                 )}
+                style={{ width: `${aumLiquidityRatio}%` }}
               ></div>
             </div>
           </div>
