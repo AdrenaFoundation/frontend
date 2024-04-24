@@ -54,6 +54,7 @@ export default function ALPSwapInputs({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   // When price change or input change, recalculate inputs and displayed price
@@ -329,6 +330,7 @@ export default function ALPSwapInputs({
     }
 
     setSaveUpFees(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(feesAndAmounts).filter(([_, value]) => {
         if (value.fees === null) return false;
 
@@ -378,8 +380,8 @@ export default function ALPSwapInputs({
         /* Display AUM / liquidity cap of ALP */
         <div className="mt-4">
           <div className="w-full">
-            <div className="flex items-center justify-between gap-4 mb-2">
-              <h6 className="text-txtfade text-sm">
+            <div className="flex items-center justify-center mb-2">
+              <h6 className="text-txtfade text-xs">
                 Assets Under Management ({Math.round(aumUsd)}) / Liquidity Cap (
                 {alpLiquidityCap})
               </h6>
@@ -388,7 +390,7 @@ export default function ALPSwapInputs({
               <div
                 className={twMerge(
                   'flex items-center justify-center h-full overflow-hidden text-white break-all bg-white rounded-full',
-                  'w-[' + Math.round((aumUsd * 100) / alpLiquidityCap) + '%]',
+                  'w-[' + aumLiquidityRatio + '%]',
                 )}
               ></div>
             </div>
