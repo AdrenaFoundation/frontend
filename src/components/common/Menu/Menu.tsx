@@ -30,7 +30,6 @@ export default function Menu({
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   // Note 1: Clicks outside of parent trigger onClose
-  // Note 2: Parent require 'relative' class
   useOnClickOutside(ref, () => {
     setIsMenuOpen(!isMenuOpen);
   });
