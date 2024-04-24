@@ -1,3 +1,4 @@
+import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
@@ -58,7 +59,12 @@ export default function ALPSwap({
 }) {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
-  const connected = !!wallet;
+  const [connected, setConnected] = useState<boolean>(false);
+
+  useEffect(() => {
+    setConnected(!!wallet);
+  }, [wallet]);
+
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [buttonTitle, setButtonTitle] = useState<string | null>(null);
   const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);

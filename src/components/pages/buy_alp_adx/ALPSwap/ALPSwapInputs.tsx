@@ -1,3 +1,4 @@
+import { Wallet } from '@coral-xyz/anchor';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -54,9 +55,14 @@ export default function ALPSwapInputs({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const wallet = useSelector((s) => s.walletState.wallet);
+  const [connected, setConnected] = useState<boolean>(false);
   const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
   const [isLoading, setLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    setConnected(!!wallet);
+  }, [wallet]);
   // When price change or input change, recalculate inputs and displayed price
   {
     // Adapt displayed prices when token prices change
@@ -268,7 +274,7 @@ export default function ALPSwapInputs({
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       value={alpInput}
-      maxButton={actionType === 'sell'}
+      maxButton={connected && actionType === 'sell'}
       maxClassName="relative left-6"
       selectedToken={alpToken}
       tokenList={[alpToken]}
@@ -295,7 +301,7 @@ export default function ALPSwapInputs({
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
       value={collateralInput}
-      maxButton={actionType === 'buy'}
+      maxButton={connected && actionType === 'buy'}
       selectedToken={collateralToken}
       tokenList={allowedCollateralTokens || []}
       subText={
