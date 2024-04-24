@@ -19,6 +19,7 @@ function Button({
   onClick,
   href,
   disabled,
+  rounded = true,
   // isLoading,
   ...rest
 }: {
@@ -32,6 +33,7 @@ function Button({
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
+  rounded?: boolean;
   href?: Url;
   // isLoading?: boolean;
 }) {
@@ -46,12 +48,11 @@ function Button({
   };
 
   const variants = {
-    primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium rounded-full`,
-    secondary:
-      'bg-secondary text-white opacity-90 hover:opacity-100 rounded-full',
-    danger: 'bg-red text-white hover:bg-red font-medium rounded-full',
-    text: 'opacity-50 text-white hover:opacity-100 rounded-full',
-    outline: 'border text-white hover:bg-bcolor rounded-full',
+    primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium`,
+    secondary: 'bg-secondary text-white opacity-90 hover:opacity-100',
+    danger: 'bg-red text-white hover:bg-red font-medium',
+    text: 'opacity-50 text-white hover:opacity-100',
+    outline: 'border text-white hover:bg-bcolor',
   };
 
   const sizes = {
@@ -66,6 +67,7 @@ function Button({
         'flex flex-row items-center justify-center gap-3 font-mono',
         sizes[size],
         variants[variant],
+        rounded ? 'rounded-full' : '',
         className,
         disabled || onClickInProgress
           ? ' text-white cursor-not-allowed pointer-events-none'

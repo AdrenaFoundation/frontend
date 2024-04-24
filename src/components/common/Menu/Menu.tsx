@@ -8,6 +8,7 @@ export default function Menu({
   trigger,
   className,
   openMenuClassName,
+  menuOpenBorderClassName,
   children,
   withBorder,
   disabled,
@@ -17,6 +18,7 @@ export default function Menu({
   trigger: ReactNode;
   className?: string;
   openMenuClassName?: string;
+  menuOpenBorderClassName?: string;
   children: ReactNode;
   withBorder?: boolean;
   disabled?: boolean;
@@ -47,13 +49,17 @@ export default function Menu({
   return (
     <>
       <AnimatePresence>
-        <div className={twMerge('relative', className)}>
+        <div
+          className={twMerge('relative', className)}
+          onClick={() => !disabled && setIsMenuOpen(!isMenuOpen)}
+        >
           <div
             className={twMerge(
               'flex h-full w-full border border-transparent',
-              isMenuOpen && withBorder ? 'bg-secondary shadow-lg' : '',
+              isMenuOpen && withBorder
+                ? twMerge('bg-secondary', menuOpenBorderClassName)
+                : '',
             )}
-            onClick={() => toggleMenu()}
           >
             {trigger}
           </div>

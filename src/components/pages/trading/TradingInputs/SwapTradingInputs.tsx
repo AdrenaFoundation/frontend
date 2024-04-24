@@ -289,8 +289,11 @@ export default function SwapTradingInputs({
       </h5>
 
       <TradingInput
-        className="mt-2 text-sm"
-        inputClassName="overflow-hidden"
+        className="mt-2 text-sm rounded-full"
+        inputClassName="tr-rounded-lg bg-inputcolor"
+        tokenListClassName="border-none bg-inputcolor rounded-tr-lg rounded-br-lg"
+        menuClassName="shadow-none"
+        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
         value={inputA}
         subText={
           priceA ? (
@@ -299,7 +302,7 @@ export default function SwapTradingInputs({
             </div>
           ) : null
         }
-        maxButton={!connected}
+        maxButton={connected}
         selectedToken={tokenA}
         tokenList={allowedTokenA}
         onTokenSelect={setTokenA}
@@ -375,8 +378,11 @@ export default function SwapTradingInputs({
 
       <TradingInput
         disabled={true}
-        className="mt-3 text-sm"
-        inputClassName="overflow-hidden"
+        className="mt-3 text-sm rounded-full"
+        inputClassName="tr-rounded-lg bg-third"
+        tokenListClassName="border-none bg-third rounded-tr-lg rounded-br-lg"
+        menuClassName="shadow-none"
+        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
         value={inputB}
         subText={
           priceB ? (

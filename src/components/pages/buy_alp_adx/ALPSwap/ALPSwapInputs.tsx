@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
-import { USD_DECIMALS } from '@/constant';
+import { alpLiquidityCap } from '@/constant';
 import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -32,6 +32,7 @@ export default function ALPSwapInputs({
   onCollateralTokenChange,
   setFeesUsd,
   feesAndAmounts,
+  aumUsd,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
@@ -49,12 +50,18 @@ export default function ALPSwapInputs({
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   feesAndAmounts: FeesAndAmountsType | null;
+  aumUsd: number | undefined;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
+  const wallet = useSelector((s) => s.walletState.wallet);
+  const [connected, setConnected] = useState<boolean>(false);
+  const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
   const [isLoading, setLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    setConnected(!!wallet);
+  }, [wallet]);
   // When price change or input change, recalculate inputs and displayed price
   {
     // Adapt displayed prices when token prices change
@@ -83,9 +90,12 @@ export default function ALPSwapInputs({
       if (actionType === 'buy') return;
 
       const collateralTokenPrice = tokenPrices[collateralToken.symbol] ?? null;
-
       // missing informations or empty input
-      if (alpInput === null || collateralTokenPrice === null) {
+      if (
+        alpInput === 0 ||
+        alpInput === null ||
+        collateralTokenPrice === null
+      ) {
         // deprecate current loading
         setLoading(false);
         loadingCounter += 1;
@@ -252,11 +262,19 @@ export default function ALPSwapInputs({
 
   const alpInputComponent = (
     <TradingInput
-      className="text-sm"
+      className="text-sm rounded-full"
+      inputClassName={actionType === 'sell' ? 'bg-inputcolor' : 'bg-third'}
+      tokenListClassName={twMerge(
+        'rounded-tr-lg rounded-br-lg',
+        actionType === 'sell' ? 'bg-inputcolor' : 'bg-third',
+      )}
+      menuClassName="shadow-none justify-end mr-2"
+      menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       value={alpInput}
-      maxButton={actionType === 'sell'}
+      maxButton={connected && actionType === 'sell'}
+      maxClassName="relative left-6"
       selectedToken={alpToken}
       tokenList={[alpToken]}
       onMaxButtonClick={() => {
@@ -271,17 +289,24 @@ export default function ALPSwapInputs({
 
   const collateralComponent = (
     <TradingInput
-      className="text-sm"
+      className="text-sm rounded-full"
+      inputClassName={actionType === 'buy' ? 'bg-inputcolor' : 'bg-third'}
+      tokenListClassName={twMerge(
+        'rounded-tr-lg rounded-br-lg',
+        actionType === 'buy' ? 'bg-inputcolor' : 'bg-third',
+      )}
+      menuClassName="shadow-none"
+      menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
       value={collateralInput}
-      maxButton={actionType === 'buy'}
+      maxButton={connected && actionType === 'buy'}
       selectedToken={collateralToken}
       tokenList={allowedCollateralTokens || []}
       subText={
         collateralPrice !== null ? (
           <span className="text-txtfade">
-            {formatPriceInfo(collateralPrice, false, 3)}
+            {formatPriceInfo(collateralPrice, 3)}
           </span>
         ) : null
       }
@@ -310,6 +335,7 @@ export default function ALPSwapInputs({
     }
 
     setSaveUpFees(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(feesAndAmounts).filter(([_, value]) => {
         if (value.fees === null) return false;
 
@@ -341,7 +367,7 @@ export default function ALPSwapInputs({
           return (
             <div className="ml-auto mt-3">
               <span className="text-txtfade text-sm font-mono">
-                {formatNumber(balance, token.decimals)}
+                {formatNumber(balance, 4)}
               </span>
               <span className="text-txtfade text-sm ml-1">
                 {token.symbol} in wallet
@@ -354,6 +380,29 @@ export default function ALPSwapInputs({
       <div className="text-sm text-white mt-2 mb-3">Receive</div>
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
+
+      {actionType === 'buy' && aumUsd ? (
+        /* Display AUM / liquidity cap of ALP */
+        <div className="mt-4">
+          <div className="w-full">
+            <div className="flex items-center justify-center mb-2">
+              <h6 className="text-txtfade text-xs">
+                Assets Under Management ({Math.round(aumUsd)}) / Liquidity Cap (
+                {alpLiquidityCap})
+              </h6>
+            </div>
+            <div className="flex-start flex h-2.5 w-full overflow-hidden rounded-full bg-third font-sans text-xs font-medium">
+              <div
+                className={twMerge(
+                  'flex items-center justify-center h-full overflow-hidden text-white break-all bg-white rounded-full',
+                  // `w-[${aumLiquidityRatio}%]`, Have to use style because it was not working properly with tailwind
+                )}
+                style={{ width: `${aumLiquidityRatio}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <h5 className="text-white mt-6">Verify</h5>
 
@@ -374,7 +423,7 @@ export default function ALPSwapInputs({
           </div>
 
           <div className="relative flex flex-col text-sm font-mono">
-            {formatPriceInfo(feesUsd, false, USD_DECIMALS)}
+            {formatPriceInfo(feesUsd, 4)}
           </div>
         </div>
       </div>
@@ -407,7 +456,7 @@ export default function ALPSwapInputs({
                           <div className="flex">
                             <span className="">use {key} and pay</span>
                             <span className="font-mono ml-1">
-                              {formatPriceInfo(value.fees)}
+                              {formatPriceInfo(value.fees, 4)}
                             </span>
                             <span className="ml-1">of fees</span>
                           </div>

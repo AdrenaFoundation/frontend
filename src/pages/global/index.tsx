@@ -1,4 +1,3 @@
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { ChartData } from 'chart.js';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -113,7 +112,9 @@ export default function Global({ mainPool, custodies }: PageProps) {
         {
           label: 'ALP Pool Current Composition',
           data: composition.map((comp) => comp.currentRatio),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           backgroundColor: composition.map((comp) => comp.color!) || [],
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           borderColor: composition.map((comp) => comp.color!) || [],
           borderWidth: 1,
         },
@@ -126,7 +127,9 @@ export default function Global({ mainPool, custodies }: PageProps) {
         {
           label: 'ALP Pool Utilization',
           data: composition.map((comp) => comp.utilization),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           backgroundColor: composition.map((comp) => comp.color!) || [],
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           borderColor: composition.map((comp) => comp.color!) || [],
           borderWidth: 1,
         },

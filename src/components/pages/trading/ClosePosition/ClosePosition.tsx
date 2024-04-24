@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, PositionExtended } from '@/types';
@@ -10,8 +11,6 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
-  formatNumber,
-  formatPriceInfo,
   nativeToUi,
 } from '@/utils';
 
@@ -128,29 +127,35 @@ export default function ClosePosition({
 
           <div className="flex flex-col items-end mr-4">
             <div>
-              <span className="font-mono text-lg">
-                {exitPriceAndFee
-                  ? nativeToUi(
-                      exitPriceAndFee.amountOut,
-                      position.collateralToken.decimals,
-                    )
-                  : '-'}
-              </span>
+              <FormatNumber
+                nb={
+                  exitPriceAndFee &&
+                  nativeToUi(
+                    exitPriceAndFee.amountOut,
+                    position.collateralToken.decimals,
+                  )
+                }
+                precision={position.collateralToken.decimals}
+                className="text-lg inline-block"
+              />
+
               <span className="text-lg ml-1">
                 {position.collateralToken.symbol}
               </span>
             </div>
 
-            <div className="font-mono text-sm text-txtfade">
-              {exitPriceAndFee && collateralMarkPrice
-                ? formatPriceInfo(
-                    nativeToUi(
-                      exitPriceAndFee.amountOut,
-                      position.collateralToken.decimals,
-                    ) * collateralMarkPrice,
-                  )
-                : '-'}
-            </div>
+            <FormatNumber
+              nb={
+                exitPriceAndFee &&
+                collateralMarkPrice &&
+                nativeToUi(
+                  exitPriceAndFee.amountOut,
+                  position.collateralToken.decimals,
+                ) * collateralMarkPrice
+              }
+              format="currency"
+              className="text-txtfade text-sm"
+            />
           </div>
         </div>
       </div>
@@ -163,49 +168,39 @@ export default function ClosePosition({
         <div className={rowStyle}>
           <div className="text-sm">Size</div>
 
-          <div className="flex text-sm font-mono">
-            {formatPriceInfo(position.sizeUsd)}
-          </div>
+          <FormatNumber nb={position.sizeUsd} format="currency" />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm">Initial Collateral</div>
 
-          <div className="flex font-mono text-sm">
-            {formatPriceInfo(position.collateralUsd)}
-          </div>
+          <FormatNumber nb={position.collateralUsd} format="currency" />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm">Leverage</div>
 
-          <div className="flex text-sm font-mono">
-            {formatNumber(position.leverage, 2)}x
-          </div>
+          <FormatNumber nb={position.leverage} prefix="x" />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm">Entry Price</div>
-          <div className="text-sm font-mono">
-            {formatPriceInfo(position.price)}
-          </div>
+
+          <FormatNumber nb={position.price} format="currency" />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm">PnL</div>
 
           <div className="text-sm font-mono">
-            {position.pnl && markPrice ? (
-              <span
-                className={`text-sm font-mono text-${
-                  position.pnl > 0 ? 'green' : 'red'
-                }-500`}
-              >
-                {formatPriceInfo(position.pnl, true)}
-              </span>
-            ) : (
-              '-'
-            )}
+            <FormatNumber
+              nb={position.pnl && markPrice ? position.pnl : null}
+              prefix={position.pnl && position.pnl > 0 ? '+' : ''}
+              format="currency"
+              className={`text-${
+                position.pnl && position.pnl > 0 ? 'green' : 'red'
+              }`}
+            />
           </div>
         </div>
       </div>
@@ -218,17 +213,18 @@ export default function ClosePosition({
         <div className={rowStyle}>
           <div className="text-sm">Exit Price</div>
 
-          <div className="text-sm font-mono">{formatPriceInfo(markPrice)}</div>
+          <FormatNumber nb={markPrice} format="currency" />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm">Exit Fees</div>
 
-          <div className="text-sm font-mono">
-            {exitPriceAndFee
-              ? formatPriceInfo(nativeToUi(exitPriceAndFee.fee, USD_DECIMALS))
-              : '-'}
-          </div>
+          <FormatNumber
+            nb={
+              exitPriceAndFee && nativeToUi(exitPriceAndFee.fee, USD_DECIMALS)
+            }
+            format="currency"
+          />
         </div>
       </div>
 

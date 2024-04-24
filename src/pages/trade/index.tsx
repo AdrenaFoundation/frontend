@@ -225,7 +225,7 @@ export default function Trade({
           </div>
         </div>
 
-        <div className="flex flex-col w-full h-full">
+        <div className="flex flex-col w-full">
           <div
             className={twMerge(
               'flex z-30 overflow-hidden bg-main/90 pl-3 pr-3 border rounded-lg mt-4',

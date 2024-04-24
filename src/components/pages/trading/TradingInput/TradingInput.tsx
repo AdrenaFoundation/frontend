@@ -1,3 +1,4 @@
+import { m } from 'framer-motion';
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -10,6 +11,9 @@ import Select from '../../../common/Select/Select';
 export default function TradingInput({
   className,
   inputClassName,
+  tokenListClassName,
+  menuClassName,
+  menuOpenBorderClassName,
   maxClassName,
   disabled,
   loading,
@@ -26,6 +30,9 @@ export default function TradingInput({
 }: {
   className?: string;
   inputClassName?: string;
+  tokenListClassName?: string;
+  menuClassName?: string;
+  menuOpenBorderClassName?: string;
   disabled?: boolean;
   loading?: boolean;
   subText?: ReactNode;
@@ -46,7 +53,7 @@ export default function TradingInput({
     <div className={twMerge('relative flex flex-col', className)}>
       <div
         className={twMerge(
-          'rounded-lg flex w-full border h-16 bg-third',
+          'rounded-lg flex w-full border h-16',
           inputClassName,
         )}
         style={
@@ -78,7 +85,8 @@ export default function TradingInput({
                     placeholder={placeholder}
                     className={twMerge(
                       'font-mono border-0 text-lg outline-none w-full',
-                      disabled ? 'bg-transparent' : 'bg-third',
+                      inputClassName,
+                      disabled ? 'bg-transparent' : '',
                     )}
                     onChange={onChange}
                     decimalConstraint={decimalConstraint}
@@ -105,7 +113,10 @@ export default function TradingInput({
             className={twMerge(
               'shrink-0 bg-third h-full flex items-center w-24 rounded-tr-lg',
               tokenList.length > 1 ? 'justify-end' : 'justify-center',
+              tokenListClassName,
             )}
+            menuClassName={menuClassName}
+            menuOpenBorderClassName={menuOpenBorderClassName}
             selected={selectedToken?.symbol ?? ''}
             options={tokenList.map((token) => ({
               title: token.symbol,

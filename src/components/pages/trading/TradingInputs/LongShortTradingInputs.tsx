@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
+import FormatNumber from '@/components/Number/FormatNumber';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
@@ -76,7 +77,7 @@ export default function LongShortTradingInputs({
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
 
-  const [leverage, setLeverage] = useState<number>(5);
+  const [leverage, setLeverage] = useState<number>(10);
 
   const [buttonTitle, setButtonTitle] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -367,10 +368,13 @@ export default function LongShortTradingInputs({
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col border rounded-lg mt-2 w-full overflow-hidden bg-third">
+        <div className="flex flex-col border rounded-lg mt-2 w-full bg-inputcolor">
           <TradingInput
-            className="text-sm border-b"
-            inputClassName="border-0 tr-rounded-lg"
+            className="text-sm rounded-full"
+            inputClassName="border-0 tr-rounded-lg bg-inputcolor"
+            tokenListClassName="border-none bg-inputcolor"
+            menuClassName="shadow-none"
+            menuOpenBorderClassName="rounded-tr-lg"
             maxClassName={
               side === 'short' ? 'bg-red text-white' : 'bg-green text-white'
             }
@@ -400,7 +404,7 @@ export default function LongShortTradingInputs({
 
           <LeverageSlider
             value={leverage}
-            className="w-full font-mono bg-third"
+            className="w-full font-mono border-t"
             onChange={(v: number) => setLeverage(v)}
           />
         </div>
@@ -470,18 +474,17 @@ export default function LongShortTradingInputs({
                   <>
                     {/* Opened position */}
                     <div className="flex flex-col self-center items-end">
-                      <div className="text-txtfade">
-                        {inputB !== null && tokenPriceB
-                          ? formatNumber(
-                              openedPosition.sizeUsd / tokenPriceB,
-                              tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
-                            )
-                          : ''}
-                      </div>
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd / tokenPriceB}
+                        precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                        className="text-txtfade"
+                      />
 
-                      <div className="text-txtfade text-xs">
-                        {formatPriceInfo(openedPosition.sizeUsd, false, 2)}
-                      </div>
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd}
+                        format="currency"
+                        className="text-txtfade text-xs"
+                      />
                     </div>
 
                     <div className="ml-2 mr-2 flex items-center">
@@ -498,17 +501,17 @@ export default function LongShortTradingInputs({
 
                 <div className="relative flex flex-col">
                   <div className="flex flex-col items-end font-mono">
-                    <div className="text-base">
-                      {inputB !== null
-                        ? formatNumber(
-                            inputB,
-                            tokenB.decimals <= 6 ? tokenB.decimals : 6, // Max 6 for UI
-                          )
-                        : '-'}
-                    </div>
-                    <div className="text-sm text-txtfade">
-                      {formatPriceInfo(priceB, false, 2)}
-                    </div>
+                    <FormatNumber
+                      nb={inputB}
+                      precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                      className="text-base"
+                    />
+
+                    <FormatNumber
+                      nb={priceB}
+                      format="currency"
+                      className="text-txtfade text-xs"
+                    />
                   </div>
                 </div>
               </div>
