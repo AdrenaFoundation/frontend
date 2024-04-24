@@ -1,4 +1,3 @@
-import { Wallet } from '@coral-xyz/anchor';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
