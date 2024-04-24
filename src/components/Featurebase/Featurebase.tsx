@@ -20,14 +20,7 @@ const Featurebase = () => {
   }, []);
 
   return (
-    <>
-      <Script src="https://do.featurebase.app/js/sdk.js" id="featurebase-sdk" />
-      <div>
-        {/*If you wish to open the widget using your own button you can do so here.
-           To get rid of our floating button, remove 'placement' from the Featurebase('initialize_feedback_widget') call above.
-          */}
-      </div>
-    </>
+    <Script src="https://do.featurebase.app/js/sdk.js" id="featurebase-sdk" />
   );
 };
 
