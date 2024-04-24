@@ -11,8 +11,6 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
-  formatNumber,
-  formatPriceInfo,
   nativeToUi,
 } from '@/utils';
 
@@ -197,7 +195,7 @@ export default function ClosePosition({
           <div className="text-sm font-mono">
             <FormatNumber
               nb={position.pnl && markPrice ? position.pnl : null}
-              displayPlusSign={true}
+              prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
               className={`text-${
                 position.pnl && position.pnl > 0 ? 'green' : 'red'

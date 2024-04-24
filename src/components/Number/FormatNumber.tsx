@@ -9,7 +9,6 @@ export default function FormatNumber({
   precision = 2,
   prefix = '',
   suffix = '',
-  displayPlusSign = false,
   placeholder = '-',
   className,
   placeholderClassName,
@@ -20,7 +19,6 @@ export default function FormatNumber({
   precision?: number;
   prefix?: string;
   suffix?: string;
-  displayPlusSign?: boolean;
   placeholder?: string;
   className?: string;
   placeholderClassName?: string;
@@ -34,10 +32,10 @@ export default function FormatNumber({
     );
   }
 
-  let num = formatNumber(nb, precision, displayPlusSign);
+  let num = formatNumber(nb, precision);
 
   if (format === 'currency') {
-    num = formatPriceInfo(nb, displayPlusSign, precision);
+    num = formatPriceInfo(nb, precision);
   }
 
   if (format === 'percentage') {

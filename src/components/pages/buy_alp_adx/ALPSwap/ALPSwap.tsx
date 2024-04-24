@@ -61,6 +61,7 @@ export default function ALPSwap({
   const connected = !!wallet;
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [buttonTitle, setButtonTitle] = useState<string | null>(null);
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
 
   const handleExecuteButton = async () => {
     if (!connected) {
@@ -140,20 +141,24 @@ export default function ALPSwap({
   useEffect(() => {
     const newButtonTitle = () => {
       if (!connected && !window.adrena.geoBlockingData.allowed) {
+        setIsDisabledButton(true);
         return 'Geo-Restricted Access';
       }
 
       // If wallet not connected, then user need to connect wallet
       if (!connected) {
+        setIsDisabledButton(true);
         return 'Connect wallet';
       }
 
       if (alpInput === null || collateralInput === null) {
+        setIsDisabledButton(true);
         return 'Enter an amount';
       }
 
       // Loading, should happens quickly
       if (!collateralToken) {
+        setIsDisabledButton(true);
         return '...';
       }
 
@@ -163,8 +168,8 @@ export default function ALPSwap({
       const walletAlpTokenBalance =
         walletTokenBalances?.[window.adrena.client.alpToken.symbol];
 
-      //TODO: disable everytime
       if (typeof walletCollateralTokenBalance === 'undefined') {
+        setIsDisabledButton(true);
         return '...';
       }
 
@@ -175,6 +180,7 @@ export default function ALPSwap({
           collateralInput > walletCollateralTokenBalance) ||
           walletCollateralTokenBalance === null)
       ) {
+        setIsDisabledButton(true);
         return `Insufficient ${collateralToken.symbol} balance`;
       }
 
@@ -184,13 +190,16 @@ export default function ALPSwap({
         ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
           walletAlpTokenBalance === null)
       ) {
+        setIsDisabledButton(true);
         return `Insufficient ${window.adrena.client.alpToken.symbol} balance`;
       }
 
       if (selectedAction === 'buy') {
+        setIsDisabledButton(false);
         return `Buy ${window.adrena.client.alpToken.symbol}`;
       }
 
+      setIsDisabledButton(false);
       return `Sell ${window.adrena.client.alpToken.symbol}`;
     };
 
@@ -244,7 +253,7 @@ export default function ALPSwap({
           <Button
             title={buttonTitle}
             size="lg"
-            disabled={buttonTitle?.includes('Insufficient')}
+            disabled={isDisabledButton}
             className="justify-center w-full mt-5"
             onClick={handleExecuteButton}
           />

@@ -25,7 +25,7 @@ export type FeesAndAmountsType = {
   };
 };
 
-export default function BuyAlp({
+export default function Buy({
   triggerWalletTokenBalancesReload,
   mainPool,
 }: PageProps) {

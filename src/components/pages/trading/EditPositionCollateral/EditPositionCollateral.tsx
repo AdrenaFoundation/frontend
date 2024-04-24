@@ -13,8 +13,6 @@ import { PositionExtended, Token } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
-  formatNumber,
-  formatPriceInfo,
   nativeToUi,
   uiToNative,
 } from '@/utils';
@@ -397,10 +395,10 @@ export default function EditPositionCollateral({
 
           <div className={rowStyle}>
             <div className="text-sm">PnL</div>
-
+            +
             <FormatNumber
               nb={position.pnl && markPrice ? position.pnl : null}
-              displayPlusSign={true}
+              prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
               className={`text-${
                 position.pnl && position.pnl > 0 ? 'green' : 'red'
