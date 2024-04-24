@@ -376,10 +376,10 @@ export default function ALPSwapInputs({
 
       {actionType === 'buy' && aumUsd ? (
         /* Display AUM / liquidity cap of ALP */
-        <div className="ml-auto mt-3">
+        <div className="mt-4">
           <div className="w-full">
             <div className="flex items-center justify-between gap-4 mb-2">
-              <h6 className="text-txtfade text-sm ml-1">
+              <h6 className="text-txtfade text-sm">
                 Assets Under Management ({Math.round(aumUsd)}) / Liquidity Cap (
                 {alpLiquidityCap})
               </h6>
