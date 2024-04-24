@@ -153,7 +153,7 @@ export default function ALPSwap({
 
       // If wallet not connected, then user need to connect wallet
       if (!connected) {
-        setIsDisabledButton(true);
+        setIsDisabledButton(false);
         return 'Connect wallet';
       }
 
