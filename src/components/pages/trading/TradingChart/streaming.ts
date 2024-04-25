@@ -1,10 +1,12 @@
+import { setTokenPriceAction } from '@/actions/tokenPricesActions';
+import store from '@/store/store';
+
 import {
   Bar,
   LibrarySymbolInfo,
   ResolutionString,
   SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library';
-
 const streamingUrl =
   'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
 
@@ -28,6 +30,10 @@ const channelToSubscription = new Map<
     }[];
   }
 >();
+
+function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
+  return pythStreamingFormat.split('/')[0].split('.')[1];
+}
 
 function handleStreamingData(data: PythStreamingData) {
   const { id, p, t } = data;
@@ -56,7 +62,12 @@ function handleStreamingData(data: PythStreamingData) {
       close: tradePrice,
     };
 
-    // console.log('[stream] Generate new bar', bar);
+    store.dispatch(
+      setTokenPriceAction(
+        getTokenSymbolFromPythStreamingFormat(channelString),
+        tradePrice,
+      ),
+    );
   } else {
     bar = {
       ...lastDailyBar,

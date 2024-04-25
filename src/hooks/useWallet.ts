@@ -5,12 +5,18 @@ import { walletAdapters } from '@/constant';
 import { useSelector } from '@/store/store';
 
 const useWallet = () => {
+  console.log('useWallet called');
   const walletState = useSelector((s) => s.walletState.wallet);
 
   const [wallet, setWallet] = useState<Wallet | null>(null);
 
+  console.log('wallet', wallet);
+
   useEffect(() => {
-    if (!walletState) return;
+    if (!walletState) {
+      setWallet(null);
+      return;
+    }
 
     const adapter = walletAdapters[walletState.adapterName];
 

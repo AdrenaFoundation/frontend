@@ -18,6 +18,7 @@ export type Action = 'long' | 'short' | 'swap';
 export default function Trade({
   positions,
   wallet,
+  connected,
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
 }: PageProps) {
@@ -253,6 +254,7 @@ export default function Trade({
           setTokenB={setTokenB}
           openedPosition={openedPosition}
           wallet={wallet}
+          connected={connected}
           triggerPositionsReload={triggerPositionsReload}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
         />
@@ -317,6 +319,7 @@ export default function Trade({
                   openedPosition={openedPosition}
                   className="p-0 m-0"
                   wallet={wallet}
+                  connected={connected}
                   triggerPositionsReload={triggerPositionsReload}
                   triggerWalletTokenBalancesReload={
                     triggerWalletTokenBalancesReload

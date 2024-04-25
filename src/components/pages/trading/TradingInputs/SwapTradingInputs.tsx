@@ -35,6 +35,7 @@ export default function SwapTradingInputs({
   allowedTokenA,
   allowedTokenB,
   wallet,
+  connected,
   setTokenA,
   setTokenB,
   triggerWalletTokenBalancesReload,
@@ -45,6 +46,7 @@ export default function SwapTradingInputs({
   allowedTokenA: Token[];
   allowedTokenB: Token[];
   wallet: Wallet | null;
+  connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   triggerWalletTokenBalancesReload: () => void;
@@ -53,7 +55,6 @@ export default function SwapTradingInputs({
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [connected, setConnected] = useState<boolean>(false);
 
   // Keep track of the last input modified by the user
   // We consider it as the reference value
@@ -73,10 +74,6 @@ export default function SwapTradingInputs({
 
   const [swapFeesAndAmount, setSwapFeesAndAmount] =
     useState<SwapAmountAndFees | null>(null);
-
-  useEffect(() => {
-    setConnected(!!wallet);
-  }, [wallet]);
 
   // Switch inputs values and tokens
   const switchAB = () => {
@@ -246,12 +243,12 @@ export default function SwapTradingInputs({
   };
 
   useEffect(() => {
-    if (!wallet && !window.adrena.geoBlockingData.allowed) {
+    if (!connected && !wallet && !window.adrena.geoBlockingData.allowed) {
       return setButtonTitle('Geo-Restricted Access');
     }
 
     // If wallet not connected, then user need to connect wallet
-    if (!wallet) {
+    if (!connected || !wallet) {
       return setButtonTitle('Connect wallet');
     }
 

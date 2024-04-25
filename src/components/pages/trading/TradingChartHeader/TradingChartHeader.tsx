@@ -5,7 +5,11 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatNumber } from '@/utils';
+
+export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
+  return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
+}
 
 export default function TradingChartHeader({
   className,
@@ -39,10 +43,7 @@ export default function TradingChartHeader({
               return { title: `${token.symbol} / USD` };
             })}
           onSelect={(opt: string) => {
-            const selectedTokenSymbol = opt.slice(
-              0,
-              opt.length - ' / USD'.length,
-            );
+            const selectedTokenSymbol = getTokenSymbolFromChartFormat(opt);
             // Force linting, you cannot not find the token in the list
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const token = tokenList.find(
