@@ -162,7 +162,6 @@ export default function LongShortTradingInputs({
             leverage: uiLeverageToNative(leverage),
           }));
 
-      console.log('wallet on long', wallet);
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
 
@@ -181,14 +180,11 @@ export default function LongShortTradingInputs({
   };
 
   useEffect(() => {
-    if (!connected && !wallet && !window.adrena.geoBlockingData.allowed) {
+    if (!window.adrena.geoBlockingData.allowed)
       return setButtonTitle('Geo-Restricted Access');
-    }
 
     // If wallet not connected, then user need to connect wallet
-    if (!connected || !wallet) {
-      return setButtonTitle('Connect wallet');
-    }
+    if (!connected) return setButtonTitle('Connect wallet');
 
     if (openedPosition) {
       if (side === 'short') {
@@ -242,9 +238,7 @@ export default function LongShortTradingInputs({
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means
         // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) {
-          return;
-        }
+        if (localLoadingCounter !== loadingCounter) return;
 
         setPositionInfos(infos);
 
@@ -330,16 +324,13 @@ export default function LongShortTradingInputs({
       return;
     }
 
-    if (!tokenB || !inputB) {
-      return setErrorMessage(null);
-    }
+    if (!tokenB || !inputB) return setErrorMessage(null);
 
     const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
     // If user wallet balance doesn't have enough tokens, tell user
-    if (inputB > custody.liquidity) {
+    if (inputB > custody.liquidity)
       return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
-    }
 
     return setErrorMessage(null);
   }, [inputA, inputB, tokenA.symbol, tokenB, walletTokenBalances]);

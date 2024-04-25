@@ -243,35 +243,27 @@ export default function SwapTradingInputs({
   };
 
   useEffect(() => {
-    if (!connected && !wallet && !window.adrena.geoBlockingData.allowed) {
+    if (!window.adrena.geoBlockingData.allowed)
       return setButtonTitle('Geo-Restricted Access');
-    }
 
     // If wallet not connected, then user need to connect wallet
-    if (!connected || !wallet) {
-      return setButtonTitle('Connect wallet');
-    }
+    if (!connected) return setButtonTitle('Connect wallet');
 
-    if (inputA === null || inputB === null) {
+    if (inputA === null || inputB === null)
       return setButtonTitle('Enter an amount');
-    }
 
     // Loading, should happens quickly
-    if (!tokenA) {
-      return setButtonTitle('...');
-    }
+    if (!tokenA) return setButtonTitle('...');
 
     const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     // Loading, should happens quickly
-    if (typeof walletTokenABalance === 'undefined') {
+    if (typeof walletTokenABalance === 'undefined')
       return setButtonTitle('...');
-    }
 
     // If user wallet balance doesn't have enough tokens, tell user
-    if (!walletTokenABalance || inputA > walletTokenABalance) {
+    if (!walletTokenABalance || inputA > walletTokenABalance)
       return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
-    }
   }, [inputA, inputB, tokenA, wallet, walletTokenBalances]);
 
   return (
