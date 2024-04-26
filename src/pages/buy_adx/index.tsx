@@ -99,7 +99,7 @@ export default function BuyADX() {
         <Image
           src={jellyfishIllustration}
           alt="jellyfish"
-          className="absolute top-[0px] right-[100px] md:right-[600px] w-[100px] rotate-45"
+          className="absolute top-[0px] right-[100px] md:right-[600px] w-[100px] rotate-45 -z-10"
         />
       </div>
 
@@ -127,7 +127,7 @@ export default function BuyADX() {
         <Image
           src={jellyfishIllustration}
           alt="jellyfish"
-          className="absolute -top-[150px] left-[100px] w-[100px]"
+          className="absolute -top-[150px] left-[100px] w-[100px] -z-10"
         />
       </div>
 

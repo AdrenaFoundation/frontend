@@ -13,6 +13,8 @@ import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Switch from '../common/Switch/Switch';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
+import settingsIcon from '../../../public/images/Icons/settings.svg';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 export default function Settings({
   activeRpc,
@@ -30,6 +32,7 @@ export default function Settings({
     'isAutoRPC',
     'customRpc',
   ]);
+  const isBigScreen = useBetterMediaQuery('(min-width: 500px)');
 
   const [customRpc, setCustomRPC] = useState<string>(customRpcUrl ?? '');
   const [isAutoRPC, setIsAutoRPC] = useState<boolean>(
@@ -115,7 +118,13 @@ export default function Settings({
   return (
     <Menu
       trigger={
-        <Button title="Settings" variant="outline" iconClassName="w-4 h-4" />
+        <Button
+          title={isBigScreen ? 'Settings' : null}
+          variant="outline"
+          leftIcon={isBigScreen ? null : settingsIcon}
+          className={isBigScreen ? '' : 'w-6 h-6 p-0'}
+          iconClassName="w-4 h-4"
+        />
       }
       openMenuClassName="right-0 rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg"
       disableOnClickInside={true}
