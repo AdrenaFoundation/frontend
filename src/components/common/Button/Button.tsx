@@ -15,7 +15,7 @@ function Button({
   rightIcon,
   leftIcon,
   className,
-  leftIconClassName,
+  iconClassName,
   onClick,
   href,
   disabled,
@@ -29,7 +29,7 @@ function Button({
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
-  leftIconClassName?: string;
+  iconClassName?: string;
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
@@ -94,14 +94,20 @@ function Button({
           alt={alt}
           width="12"
           height="12"
-          className={leftIconClassName}
+          className={iconClassName}
         />
       ) : null}
 
       {title && !onClickInProgress ? title : null}
 
       {rightIcon && !onClickInProgress ? (
-        <Image src={rightIcon} alt={alt} width="12" height="12" />
+        <Image
+          src={rightIcon}
+          alt={alt}
+          width="12"
+          height="12"
+          className={iconClassName}
+        />
       ) : null}
 
       {onClickInProgress ? <Loader height={23} width={50} /> : null}
