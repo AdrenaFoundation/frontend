@@ -115,11 +115,7 @@ export default function Settings({
   return (
     <Menu
       trigger={
-        <Button
-          title="Settings"
-          variant="outline"
-          leftIconClassName="w-4 h-4"
-        />
+        <Button title="Settings" variant="outline" iconClassName="w-4 h-4" />
       }
       openMenuClassName="right-0 rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg"
       disableOnClickInside={true}
