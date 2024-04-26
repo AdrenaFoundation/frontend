@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useRpc from '@/hooks/useRPC';
 import {
   addNotification,
@@ -9,12 +10,11 @@ import {
   verifyRpcConnection,
 } from '@/utils';
 
+import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Switch from '../common/Switch/Switch';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
-import settingsIcon from '../../../public/images/Icons/settings.svg';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 export default function Settings({
   activeRpc,
