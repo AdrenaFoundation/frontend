@@ -179,9 +179,7 @@ export default function Buy({
     setCollateralToken(t);
   };
 
-  if (allowedCollateralTokens === null) {
-    return <Loader />;
-  }
+  if (allowedCollateralTokens === null) return <Loader />;
 
   return (
     <div className="flex flex-col md:flex-row items-evenly justify-center gap-x-4 p-4">
