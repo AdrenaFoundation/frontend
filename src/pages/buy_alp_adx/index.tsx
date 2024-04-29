@@ -1,5 +1,4 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import { error } from 'console';
 import { useCallback, useEffect, useState } from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
