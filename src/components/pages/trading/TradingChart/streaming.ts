@@ -61,13 +61,6 @@ function handleStreamingData(data: PythStreamingData) {
       low: tradePrice,
       close: tradePrice,
     };
-
-    store.dispatch(
-      setStreamingTokenPriceAction(
-        getTokenSymbolFromPythStreamingFormat(channelString),
-        tradePrice,
-      ),
-    );
   } else {
     bar = {
       ...lastDailyBar,
@@ -78,6 +71,13 @@ function handleStreamingData(data: PythStreamingData) {
 
     console.log('[stream] Update the latest bar by price', tradePrice);
   }
+
+  store.dispatch(
+    setStreamingTokenPriceAction(
+      getTokenSymbolFromPythStreamingFormat(channelString),
+      tradePrice,
+    ),
+  );
 
   subscriptionItem.lastDailyBar = bar;
 
