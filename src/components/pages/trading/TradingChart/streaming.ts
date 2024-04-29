@@ -1,4 +1,4 @@
-import { setTokenPriceAction } from '@/actions/tokenPricesActions';
+import { setStreamingTokenPriceAction } from '@/actions/streamingTokenPricesActions';
 import store from '@/store/store';
 
 import {
@@ -63,7 +63,7 @@ function handleStreamingData(data: PythStreamingData) {
     };
 
     store.dispatch(
-      setTokenPriceAction(
+      setStreamingTokenPriceAction(
         getTokenSymbolFromPythStreamingFormat(channelString),
         tradePrice,
       ),
@@ -91,7 +91,7 @@ function startStreaming(retries = 3, delay = 3000) {
   fetch(streamingUrl)
     .then((response) => {
       if (response.body == null) {
-        throw new Error('rrror starting streaming');
+        throw new Error('Error starting streaming');
       }
 
       const reader = response.body.getReader();

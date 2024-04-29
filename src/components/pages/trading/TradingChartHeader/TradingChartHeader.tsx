@@ -22,7 +22,7 @@ export default function TradingChartHeader({
   selected: Token;
   onChange: (t: Token) => void;
 }) {
-  const tokenPrices = useSelector((s) => s.tokenPrices);
+  const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
 
   return (
@@ -59,7 +59,7 @@ export default function TradingChartHeader({
 
       <div className="flex flex-row gap-3 p-3 items-center">
         <FormatNumber
-          nb={tokenPrices?.[selected.symbol]}
+          nb={streamingTokenPrices?.[selected.symbol]}
           format="currency"
           className="mr-3 text-base"
         />
