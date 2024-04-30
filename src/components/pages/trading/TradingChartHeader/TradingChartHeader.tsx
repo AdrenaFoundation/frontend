@@ -61,7 +61,7 @@ export default function TradingChartHeader({
         <FormatNumber
           nb={streamingTokenPrices?.[selected.symbol]}
           format="currency"
-          className="mr-3 text-base"
+          className="mr-3 text-base w-[8em]"
         />
         <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
           <span
