@@ -5,7 +5,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatNumber } from '@/utils';
 
 export default function TradingChartHeader({
   className,
