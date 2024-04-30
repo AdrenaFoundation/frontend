@@ -295,9 +295,7 @@ export default function ADXTokenomicsView({
                 labels: [
                   // Core contributors
                   'Launch Team',
-                  'Pre-seed',
-                  'Seed',
-                  'Strategic',
+                  'Investors',
 
                   // DAO Treasury Reserves
                   'DAO Treasury Reserves',
@@ -316,12 +314,10 @@ export default function ADXTokenomicsView({
                 datasets: [
                   {
                     label: '%',
-                    data: [21.33, 4, 8.67, 2, 10, 8, 10, 10, 15, 5, 2, 4],
+                    data: [21.33, 14.67, 10, 8, 10, 10, 15, 5, 2, 4],
                     borderWidth: 2,
                     backgroundColor: [
                       // Core contributors
-                      bucketColors[0],
-                      bucketColors[0],
                       bucketColors[0],
                       bucketColors[0],
 
