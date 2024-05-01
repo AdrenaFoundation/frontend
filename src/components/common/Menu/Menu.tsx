@@ -45,6 +45,14 @@ export default function Menu({
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const closeMenu = (el: any) => {
+    el.stopPropagation();
+    if (ref.current?.contains(el.target) && disableOnClickInside) {
+      return;
+    }
+    setIsMenuOpen(false);
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -66,9 +74,9 @@ export default function Menu({
           {isMenuOpen ? (
             <motion.div
               ref={ref}
-              onClick={() => !disableOnClickInside && toggleMenu()}
               initial="hidden"
               animate="visible"
+              onClick={(e) => closeMenu(e)}
               variants={variants}
               transition={{ duration: 0.3 }}
               className={twMerge(

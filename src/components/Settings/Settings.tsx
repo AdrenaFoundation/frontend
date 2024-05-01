@@ -66,6 +66,7 @@ export default function Settings({
   }, [isAutoRPC, rpcOptions]);
 
   const handleRPCOption = (rpc: string) => {
+    if (rpc === 'Custom RPC' && customRpcUrl === null) return;
     setActiveRpc(rpc);
     setCookies('activeRpc', rpc);
     setIsEditCustomRPCMode(false);
