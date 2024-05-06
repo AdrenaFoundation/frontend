@@ -15,7 +15,6 @@ import {
 } from '@/utils';
 
 import editIcon from '../.../../../../../public/images/edit-icon.png';
-import monsterImage from '../../../../public/images/monster-1.png';
 import EmphasizedTitle from './EmphasizedTitle';
 
 export default function OwnerBloc({
@@ -97,14 +96,6 @@ export default function OwnerBloc({
       )}
     >
       <div className="flex flex-col items-center z-20">
-        <Image
-          className="rounded-full bg-white overflow-hidden shadow-lg shadow-[#ffffff50]"
-          src={monsterImage}
-          alt="profile picture"
-          width={250}
-          height={250}
-        />
-
         <div className="flex flex-col mt-6">
           <div className="flex flex-col m-auto w-full items-center">
             <EmphasizedTitle title="Nickname" />
