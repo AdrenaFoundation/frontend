@@ -74,7 +74,12 @@ export default function ADXTokenomicsView({
   adxTotalSupply: number;
   adxStakingAccount: Staking;
 }) {
-  const bucketNames = ['coreContributor', 'daoTreasury', 'pol', 'ecosystem'];
+  const bucketNames = [
+    'coreContributor',
+    'daoTreasury',
+    'pol',
+    'ecosystem',
+  ] as const;
   const bucketsLabels = ['Core Contrib.', 'DAO Treasury', 'POL', 'Ecosystem'];
   const bucketColors = ['#ff4069f0', '#f9df65f0', '#3b82f6f0', '#07956bf0'];
 
@@ -157,7 +162,7 @@ export default function ADXTokenomicsView({
                     label: 'Minted',
                     data: bucketNames.map((name) =>
                       nativeToUi(
-                        (cortex as any)[`${name}BucketMintedAmount`],
+                        cortex[`${name}BucketMintedAmount`],
                         window.adrena.client.adxToken.decimals,
                       ),
                     ),
@@ -191,7 +196,7 @@ export default function ADXTokenomicsView({
                         [`line${index + 1}`]: generateLine(
                           index,
                           nativeToUi(
-                            (cortex as any)[`${name}BucketAllocation`],
+                            cortex[`${name}BucketAllocation`],
                             window.adrena.client.adxToken.decimals,
                           ),
                           '#3b82f6',
@@ -213,7 +218,7 @@ export default function ADXTokenomicsView({
                           return [
                             `allocation: ${formatNumber(
                               nativeToUi(
-                                (cortex as any)[`${name}BucketAllocation`],
+                                cortex[`${name}BucketAllocation`],
                                 window.adrena.client.adxToken.decimals,
                               ),
                               3,
@@ -221,7 +226,7 @@ export default function ADXTokenomicsView({
 
                             `minted: ${formatNumber(
                               nativeToUi(
-                                (cortex as any)[`${name}BucketMintedAmount`],
+                                cortex[`${name}BucketMintedAmount`],
                                 window.adrena.client.adxToken.decimals,
                               ),
                               3,

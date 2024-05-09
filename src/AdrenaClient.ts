@@ -1592,7 +1592,7 @@ export class AdrenaClient {
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
     console.log(
-      'CALL GET INFO',
+      'Call get info',
       JSON.stringify(
         {
           mint: tokenB.mint.toBase58(),
@@ -1627,20 +1627,20 @@ export class AdrenaClient {
       liquidationFee,
     } = info;
 
-    const { swapedTokenDecimals, swapedTokenPrice } =
+    const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-            swapedTokenDecimals: tokenB.decimals,
-            swapedTokenPrice: tokenBPrice,
+            swappedTokenDecimals: tokenB.decimals,
+            swappedTokenPrice: tokenBPrice,
           }
         : {
-            swapedTokenDecimals: usdcToken.decimals,
-            swapedTokenPrice: usdcTokenPrice,
+            swappedTokenDecimals: usdcToken.decimals,
+            swappedTokenPrice: usdcTokenPrice,
           };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
-      nativeToUi(swapFeeOut, swapedTokenDecimals) * swapedTokenPrice;
+      nativeToUi(swapFeeOut, swappedTokenDecimals) * swappedTokenPrice;
 
     const openPositionFeeUsd =
       nativeToUi(openPositionFee, tokenB.decimals) * tokenBPrice;
