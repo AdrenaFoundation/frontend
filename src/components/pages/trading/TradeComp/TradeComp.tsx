@@ -15,6 +15,7 @@ export const TradeComp = ({
   tokenA,
   tokenB,
   wallet,
+  connected,
   setTokenA,
   setTokenB,
   openedPosition,
@@ -27,6 +28,7 @@ export const TradeComp = ({
   tokenA: Token | null;
   tokenB: Token | null;
   wallet: Wallet | null;
+  connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   openedPosition: PositionExtended | null;
@@ -70,6 +72,7 @@ export const TradeComp = ({
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 wallet={wallet}
+                connected={connected}
                 triggerPositionsReload={triggerPositionsReload}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
@@ -84,6 +87,7 @@ export const TradeComp = ({
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 wallet={wallet}
+                connected={connected}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
                 }

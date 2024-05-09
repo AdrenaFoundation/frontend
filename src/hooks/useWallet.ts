@@ -10,7 +10,10 @@ const useWallet = () => {
   const [wallet, setWallet] = useState<Wallet | null>(null);
 
   useEffect(() => {
-    if (!walletState) return;
+    if (!walletState) {
+      setWallet(null);
+      return;
+    }
 
     const adapter = walletAdapters[walletState.adapterName];
 

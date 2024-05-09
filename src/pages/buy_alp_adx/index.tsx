@@ -26,8 +26,9 @@ export type FeesAndAmountsType = {
 };
 
 export default function Buy({
-  triggerWalletTokenBalancesReload,
+  connected,
   mainPool,
+  triggerWalletTokenBalancesReload,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
@@ -233,6 +234,7 @@ export default function Buy({
             collateralPrice={collateralPrice}
             feesAndAmounts={feesAndAmounts}
             aumUsd={mainPool?.aumUsd}
+            connected={connected}
           />
         </StyledSubContainer>
       </StyledContainer>
