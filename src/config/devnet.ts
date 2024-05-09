@@ -69,7 +69,7 @@ class DevnetConfiguration implements IConfiguration {
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   );
 
-  public readonly clockworkProgram: PublicKey = new PublicKey(
+  public readonly sablierThreadProgram: PublicKey = new PublicKey(
     'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
   );
 

@@ -28,6 +28,7 @@ import arrowDown from '../public/images/arrow-down.png';
 import arrowRightIcon from '../public/images/arrow-right.svg';
 import arrowUp from '../public/images/arrow-up.png';
 import { ROUND_MIN_DURATION_SECONDS } from './constant';
+import { LimitedString, U128Split } from './types';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
   const pxSize = 9;
@@ -108,6 +109,25 @@ export function formatPercentage(
   return `${Number(nb).toFixed(precision)}%`;
 }
 
+export function stringToLimitedString(str: string): LimitedString {
+  return {
+    value: Array.from(str).map((char) => char.charCodeAt(0)),
+    length: str.length,
+  };
+}
+
+export function limitedStringToString(str: LimitedString): string {
+  return String.fromCharCode(...str.value);
+}
+
+export function u128SplitToBN(u128: U128Split): BN {
+  // Shift the high part 64 bits to the left
+  const highShifted = u128.high.shln(64);
+
+  // Combine the shifted high part with the low part
+  return highShifted.add(u128.low);
+}
+
 export function nativeToUi(nb: BN, decimals: number): number {
   // stop displaying at hundred thousandth
   return new BigNumber(nb.toString()).shiftedBy(-decimals).toNumber();
@@ -115,8 +135,8 @@ export function nativeToUi(nb: BN, decimals: number): number {
 
 // 10_000 = x1 leverage
 // 500_000 = x50 leverage
-export function uiLeverageToNative(leverage: number): BN {
-  return new BN(Math.floor(leverage * 10_000));
+export function uiLeverageToNative(leverage: number): number {
+  return Math.floor(leverage * 10_000);
 }
 
 export function uiToNative(nb: number, decimals: number): BN {

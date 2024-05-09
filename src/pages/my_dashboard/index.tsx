@@ -64,7 +64,7 @@ export default function MyDashboard({
     try {
       const txHash = await window.adrena.client.removeLockedStake({
         owner,
-        resolved: lockedStake.resolved,
+        resolved: !!lockedStake.resolved,
         threadId: lockedStake.stakeResolutionThreadId,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),

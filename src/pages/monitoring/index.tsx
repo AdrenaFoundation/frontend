@@ -14,9 +14,9 @@ import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
-import usePerpetuals from '@/hooks/usePerpetuals';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
+import useVestRegistry from '@/hooks/useVestRegistry';
 import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
@@ -39,7 +39,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
   const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const cortex = useCortex();
-  const perpetuals = usePerpetuals();
+  const vestRegistry = useVestRegistry();
   const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
   const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
   const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
@@ -58,9 +58,9 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
     !custodies ||
     !tokenPrices ||
     !cortex ||
+    !vestRegistry ||
     !adxTotalSupply ||
     !alpTotalSupply ||
-    !perpetuals ||
     !alpStakingAccount ||
     !adxStakingAccount ||
     !composition ||
@@ -117,7 +117,6 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
 
           {selectedTab === 'Accounts' || selectedTab === 'All' ? (
             <AccountsView
-              perpetuals={perpetuals}
               cortex={cortex}
               mainPool={mainPool}
               custodies={custodies}
@@ -181,7 +180,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
           ) : null}
 
           {selectedTab === 'Vesting' || selectedTab === 'All' ? (
-            <VestingView cortex={cortex} vests={vests} />
+            <VestingView vestRegistry={vestRegistry} vests={vests} />
           ) : null}
 
           {selectedTab === 'All' ? (
@@ -193,6 +192,7 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
           {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
             <ADXTokenomicsView
               cortex={cortex}
+              vestRegistry={vestRegistry}
               adxTotalSupply={adxTotalSupply}
               adxStakingAccount={adxStakingAccount}
             />

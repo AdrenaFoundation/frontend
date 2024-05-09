@@ -104,7 +104,9 @@ export default function EditPositionCollateral({
     if (!input) return;
 
     try {
-      const txHash = await window.adrena.client.removeCollateral({
+      const txHash = await (position.side === 'long'
+        ? window.adrena.client.removeCollateralLong
+        : window.adrena.client.removeCollateralShort)({
         position,
         collateralUsd: uiToNative(input, USD_DECIMALS),
       });

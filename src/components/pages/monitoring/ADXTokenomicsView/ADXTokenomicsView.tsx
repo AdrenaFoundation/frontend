@@ -20,7 +20,7 @@ import { Bar, Pie } from 'react-chartjs-2';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import { Cortex, Staking } from '@/types';
+import { Cortex, Staking, VestRegistry } from '@/types';
 import { formatNumber, getFontSizeWeight, nativeToUi } from '@/utils';
 
 ChartJS.register(
@@ -65,10 +65,12 @@ function generateLine(
 
 export default function ADXTokenomicsView({
   cortex,
+  vestRegistry,
   adxTotalSupply,
   adxStakingAccount,
 }: {
   cortex: Cortex;
+  vestRegistry: VestRegistry;
   adxTotalSupply: number;
   adxStakingAccount: Staking;
 }) {
@@ -117,7 +119,7 @@ export default function ADXTokenomicsView({
           <h2>
             {formatNumber(
               nativeToUi(
-                cortex.vestedTokenAmount,
+                vestRegistry.vestedTokenAmount,
                 window.adrena.client.adxToken.decimals,
               ),
               2,
