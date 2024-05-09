@@ -34,6 +34,8 @@ export default function ALPSwapInputs({
   onCollateralTokenChange,
   setFeesUsd,
   feesAndAmounts,
+  aumUsd,
+  connected,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
@@ -51,17 +53,14 @@ export default function ALPSwapInputs({
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   feesAndAmounts: FeesAndAmountsType | null;
+  aumUsd: number | undefined;
+  connected: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const wallet = useSelector((s) => s.walletState.wallet);
-  const [connected, setConnected] = useState<boolean>(false);
-
+  const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    setConnected(!!wallet);
-  }, [wallet]);
   // When price change or input change, recalculate inputs and displayed price
   {
     // Adapt displayed prices when token prices change

@@ -1,10 +1,12 @@
+import { setStreamingTokenPriceAction } from '@/actions/streamingTokenPricesActions';
+import store from '@/store/store';
+
 import {
   Bar,
   LibrarySymbolInfo,
   ResolutionString,
   SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library';
-
 const streamingUrl =
   'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
 
@@ -28,6 +30,10 @@ const channelToSubscription = new Map<
     }[];
   }
 >();
+
+function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
+  return pythStreamingFormat.split('/')[0].split('.')[1];
+}
 
 function handleStreamingData(data: PythStreamingData) {
   const { id, p, t } = data;
@@ -55,8 +61,6 @@ function handleStreamingData(data: PythStreamingData) {
       low: tradePrice,
       close: tradePrice,
     };
-
-    // console.log('[stream] Generate new bar', bar);
   } else {
     bar = {
       ...lastDailyBar,
@@ -67,6 +71,13 @@ function handleStreamingData(data: PythStreamingData) {
 
     console.log('[stream] Update the latest bar by price', tradePrice);
   }
+
+  store.dispatch(
+    setStreamingTokenPriceAction(
+      getTokenSymbolFromPythStreamingFormat(channelString),
+      tradePrice,
+    ),
+  );
 
   subscriptionItem.lastDailyBar = bar;
 
@@ -80,7 +91,7 @@ function startStreaming(retries = 3, delay = 3000) {
   fetch(streamingUrl)
     .then((response) => {
       if (response.body == null) {
-        throw new Error('rrror starting streaming');
+        throw new Error('Error starting streaming');
       }
 
       const reader = response.body.getReader();
