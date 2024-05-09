@@ -51,8 +51,10 @@ export default function StakeTimerAnimation({
     const interval = setInterval(() => {
       if (cooldown) return;
 
+      //@ts-ignore
       setCountdown((prevSeconds) => {
         if (prevSeconds === 0) {
+          //@ts-ignore
           setUsdcBalance((prev) => prev + 20);
           setCooldown(true);
           setTimeout(() => {
