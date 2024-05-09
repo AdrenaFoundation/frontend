@@ -47,29 +47,27 @@ export default function StakeTimerAnimation({
     },
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (cooldown) return;
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (cooldown) return;
 
-      //@ts-ignore
-      setCountdown((prevSeconds) => {
-        if (prevSeconds === 0) {
-          //@ts-ignore
-          setUsdcBalance((prev) => prev + 20);
-          setCooldown(true);
-          setTimeout(() => {
-            setCooldown(false);
-            setCountdown(initial.countdown);
-          }, 5000);
-          return 0;
-        } else {
-          return prevSeconds - 1;
-        }
-      });
-    }, 1000);
+  //     setCountdown((prevSeconds) => {
+  //       if (prevSeconds === 0) {
+  //         setUsdcBalance((prev) => prev + 20);
+  //         setCooldown(true);
+  //         setTimeout(() => {
+  //           setCooldown(false);
+  //           setCountdown(initial.countdown);
+  //         }, 5000);
+  //         return 0;
+  //       } else {
+  //         return prevSeconds - 1;
+  //       }
+  //     });
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, [cooldown]);
+  //   return () => clearInterval(interval);
+  // }, [cooldown]);
 
   console.log('countdown', countdown);
   return (
