@@ -22,6 +22,7 @@ import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
+import { verifyRpcConnection } from '@/utils';
 
 import logo from '../../public/images/logo.png';
 import devnetConfiguration from '../config/devnet';
@@ -49,6 +50,19 @@ export default function App(props: AppProps) {
   const [cluster, setCluster] = useState<SupportedCluster | null>(null);
   const [config, setConfig] = useState<IConfiguration | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [cookies] = useCookies(['activeRpc', 'customRpc']);
+  const [activeRpc, setActiveRpc] = useState<string>(
+    cookies?.activeRpc ?? 'Solana RPC',
+  );
+  const [customRpcUrl, setCustomRpcUrl] = useState<string | null>(
+    cookies?.customRpc !== 'null' ? cookies?.customRpc : null,
+  );
+
+  const verifyCustomRPC = async () => {
+    if (customRpcUrl === null) return false;
+
+    return await verifyRpcConnection(customRpcUrl);
+  };
 
   // Load cluster from router
   useEffect(() => {
@@ -70,18 +84,34 @@ export default function App(props: AppProps) {
     setCluster(cluster as SupportedCluster);
   }, [router]);
 
+  useEffect(() => {
+    verifyCustomRPC();
+  }, [customRpcUrl]);
+
   // Load config from cluster
   useEffect(() => {
     if (!cluster) return;
+    const config =
+      cluster === 'devnet'
+        ? { ...devnetConfiguration }
+        : { ...mainnetConfiguration };
 
-    setConfig(
-      cluster === 'devnet' ? devnetConfiguration : mainnetConfiguration,
-    );
-  }, [cluster]);
+    if (activeRpc === 'Custom RPC' && customRpcUrl !== null) {
+      config.mainRPC = customRpcUrl;
+      config.pythRPC = customRpcUrl;
+    } else {
+      const activeRpcOption = config.RpcOptions.find(
+        (rpcOption) => rpcOption.name === activeRpc,
+      );
+      config.mainRPC = activeRpcOption?.url ?? config.mainRPC;
+      config.pythRPC = activeRpcOption?.url ?? config.pythRPC;
+    }
+
+    setConfig(config);
+  }, [cluster, activeRpc, customRpcUrl]);
 
   useEffect(() => {
     if (!config) return;
-
     initializeApp(config).then(() => {
       setIsInitialized(true);
     });
@@ -92,7 +122,13 @@ export default function App(props: AppProps) {
   return (
     <Provider store={store}>
       <CookiesProvider>
-        <AppComponent {...props} />
+        <AppComponent
+          setActiveRpc={setActiveRpc}
+          activeRpc={activeRpc}
+          setCustomRpcUrl={setCustomRpcUrl}
+          customRpcUrl={customRpcUrl}
+          {...props}
+        />
       </CookiesProvider>
     </Provider>
   );
@@ -104,7 +140,19 @@ export default function App(props: AppProps) {
 //
 // Tricks: wrap RootLayout + component here to be able to use hooks
 // without getting error being out of Provider
-function AppComponent({ Component, pageProps }: AppProps) {
+function AppComponent({
+  Component,
+  pageProps,
+  setActiveRpc,
+  activeRpc,
+  setCustomRpcUrl,
+  customRpcUrl,
+}: AppProps & {
+  setActiveRpc: (rpc: string) => void;
+  activeRpc: string;
+  setCustomRpcUrl: (rpc: string | null) => void;
+  customRpcUrl: string | null;
+}) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
@@ -155,7 +203,13 @@ function AppComponent({ Component, pageProps }: AppProps) {
   }, [wallet]);
 
   return (
-    <RootLayout userProfile={userProfile}>
+    <RootLayout
+      userProfile={userProfile}
+      setActiveRpc={setActiveRpc}
+      activeRpc={activeRpc}
+      setCustomRpcUrl={setCustomRpcUrl}
+      customRpcUrl={customRpcUrl}
+    >
       {
         <TermsAndConditionsModal
           isOpen={isTermsAndConditionModalOpen}

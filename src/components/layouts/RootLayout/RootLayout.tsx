@@ -16,9 +16,17 @@ import Header from '../../Header/Header';
 const RootLayout = ({
   children,
   userProfile,
+  setActiveRpc,
+  activeRpc,
+  setCustomRpcUrl,
+  customRpcUrl,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
+  setActiveRpc: (rpc: string) => void;
+  activeRpc: string;
+  setCustomRpcUrl: (rpc: string | null) => void;
+  customRpcUrl: string | null;
 }) => {
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
@@ -51,9 +59,23 @@ const RootLayout = ({
       </Head>
 
       {isBigScreen ? (
-        <Header userProfile={userProfile} PAGES={pages} />
+        <Header
+          userProfile={userProfile}
+          PAGES={pages}
+          setActiveRpc={setActiveRpc}
+          activeRpc={activeRpc}
+          setCustomRpcUrl={setCustomRpcUrl}
+          customRpcUrl={customRpcUrl}
+        />
       ) : (
-        <BurgerMenu userProfile={userProfile} PAGES={pages} />
+        <BurgerMenu
+          userProfile={userProfile}
+          PAGES={pages}
+          setActiveRpc={setActiveRpc}
+          activeRpc={activeRpc}
+          setCustomRpcUrl={setCustomRpcUrl}
+          customRpcUrl={customRpcUrl}
+        />
       )}
 
       <div className="w-full grow flex justify-center">

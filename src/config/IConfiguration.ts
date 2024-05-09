@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
@@ -26,6 +26,13 @@ export default interface IConfiguration {
 
   readonly mainRPC: string;
   readonly pythRPC: string;
+
+  readonly RpcOptions: {
+    name: string;
+    url: string | null;
+    connection?: Connection | null;
+    latency?: number | null;
+  }[];
 
   readonly mainPool: PublicKey;
 }
