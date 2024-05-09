@@ -35,7 +35,6 @@ export default function ALPSwap({
   setCollateralPrice,
   feesAndAmounts,
   className,
-  aumUsd,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
@@ -55,7 +54,6 @@ export default function ALPSwap({
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
   feesAndAmounts: FeesAndAmountsType | null;
-  aumUsd: number | undefined;
 }) {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -224,10 +222,7 @@ export default function ALPSwap({
     <div className={className}>
       <TabSelect
         selected={selectedAction}
-        tabs={[
-          { title: 'buy', activeColor: '#22c55e' },
-          { title: 'sell', activeColor: '#c13332' },
-        ]}
+        tabs={[{ title: 'buy' }, { title: 'sell' }]}
         onClick={(title) => {
           setSelectedAction(title);
         }}
@@ -252,7 +247,6 @@ export default function ALPSwap({
             collateralPrice={collateralPrice}
             setCollateralPrice={setCollateralPrice}
             feesAndAmounts={feesAndAmounts}
-            aumUsd={aumUsd}
           />
 
           {/* Button to execute action */}

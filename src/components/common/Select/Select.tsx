@@ -91,38 +91,37 @@ export default function Select<T extends string>({
             {options
               .filter((option) => option.title !== selected)
               .map((option, i) => (
-                <>
-                  {!!i && <MenuSeparator key={'sep' + option.title} />}
+                <MenuItem
+                  className={twMerge(
+                    'flex flex-row items-center justify-end text-center relative overflow-hidden h-14',
+                    !!i ? 'border-t border-bcolor' : '',
+                  )}
+                  onMouseEnter={() => setOptionHover(i)}
+                  onMouseLeave={() => setOptionHover(null)}
+                  onClick={() => {
+                    onSelect(option.title);
+                  }}
+                  key={option.title + i}
+                >
+                  {option?.img ? (
+                    <Image
+                      src={option.img}
+                      className={twMerge(
+                        'absolute top-auto left-[-32px] z-10 grayscale',
+                        optionHover === i
+                          ? 'opacity-60 grayscale-0'
+                          : 'opacity-20',
+                      )}
+                      alt="logo"
+                      width="80"
+                      height="80"
+                    />
+                  ) : null}
 
-                  <MenuItem
-                    className="flex flex-row items-center justify-end text-center relative overflow-hidden h-14"
-                    onMouseEnter={() => setOptionHover(i)}
-                    onMouseLeave={() => setOptionHover(null)}
-                    onClick={() => {
-                      onSelect(option.title);
-                    }}
-                    key={option.title + i}
-                  >
-                    {option?.img ? (
-                      <Image
-                        src={option.img}
-                        className={twMerge(
-                          'absolute top-auto left-[-32px] z-10 grayscale',
-                          optionHover === i
-                            ? 'opacity-60 grayscale-0'
-                            : 'opacity-20',
-                        )}
-                        alt="logo"
-                        width="80"
-                        height="80"
-                      />
-                    ) : null}
-
-                    <span className="font-special text-lg z-20 m-auto">
-                      {option.title}
-                    </span>
-                  </MenuItem>
-                </>
+                  <span className="font-special text-lg z-20 m-auto">
+                    {option.title}
+                  </span>
+                </MenuItem>
               ))}
           </MenuItems>
         )}

@@ -10,7 +10,7 @@ module.exports = {
         inputcolor: '#1e2c3c',
         black: '#000000',
         highlight: '#fffffff5',
-        bcolor: '#2a2a2a',
+        bcolor: '#15202C',
 
         // text
         txtfade: '#858789',

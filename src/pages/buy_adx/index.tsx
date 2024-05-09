@@ -1,15 +1,17 @@
+import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Image from 'next/image';
 import React from 'react';
 
 import ADXFeeStreamAnimation from '@/components/buy_adx/ADXFeeStreamAnimation';
 import ADXVoteAnimation from '@/components/buy_adx/ADXVoteAnimation';
 import Button from '@/components/common/Button/Button';
+import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 
 import communityIllustration from '../../../public/images/community-illustration.png';
-import coralIllustration from '../../../public/images/coral.svg';
-import fishIllustration from '../../../public/images/fish.svg';
+// import coralIllustration from '../../../public/images/coral.svg';
+// import fishIllustration from '../../../public/images/fish.svg';
 import jellyfishIllustration from '../../../public/images/jellyfish.svg';
-import orcaIllustration from '../../../public/images/orca.svg';
+// import orcaIllustration from '../../../public/images/orca.svg';
 import orcaIcon from '../../../public/images/orca-icon.png';
 
 export default function BuyADX() {
@@ -48,30 +50,23 @@ export default function BuyADX() {
           className="mt-4 px-14 py-3 text-base"
         />
       </div>
-      <>
-        <Image
-          src={orcaIllustration}
-          alt="orca illustration"
-          className="absolute top-[900px] lg:top-[100px] right-28 opacity-50 w-[200px] lg:w-[400px]"
+      <div className="absolute w-full h-full left-0 top-0 opacity-50">
+        <RiveAnimation
+          animation="mid-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[120vh] -z-10"
         />
-
-        <Image
-          src={fishIllustration}
-          alt="fish illustration"
-          className="absolute left-0 opacity-50 w-96"
-        />
-
-        <Image
-          src={fishIllustration}
-          alt="fish illustration"
-          className="absolute left-[0px] md:left-[500px] top-[600px] opacity-50 w-96"
-        />
-      </>
+      </div>
 
       <div className="relative flex flex-col lg:flex-row gap-12 justify-between items-center w-full ">
         <div className="relative">
-          <h1 className="text-[1.2rem] opacity-75">Rewarding Ownership</h1>
-          <p className="text-[2rem] max-w-[800px] mb-6">
+          <h1 className="text-[36px] mb-1">Rewarding Ownership</h1>
+          <p className="text-[24px] max-w-[800px]">
             By holding the token, they receive a share of the platform&apos;s
             fees in USDC, providing a consistent passive income stream.
             Secondly, when the token is held in liquid form, holders gain voting
@@ -80,13 +75,13 @@ export default function BuyADX() {
           </p>
         </div>
 
-        <ADXFeeStreamAnimation />
+        <ADXFeeStreamAnimation token="ADX" />
       </div>
 
       <div className="relative flex flex-col lg:flex-row gap-12 justify-between items-center w-full ">
         <div className="relative">
-          <h1 className="text-[1.2rem] opacity-75">Empowered Voting Rights</h1>
-          <p className="text-[2rem] max-w-[800px] mb-6">
+          <h1 className="text-[36px] mb-1">Empowered Voting Rights</h1>
+          <p className="text-[24px] max-w-[800px]">
             The token grants its holders a powerful voice within the Adrena
             ecosystem&apos;s governance structure. Through their ownership,
             holders can participate directly in decision-making processes that
@@ -103,12 +98,10 @@ export default function BuyADX() {
         />
       </div>
 
-      <div className="relative flex flex-col lg:flex-row gap-12 justify-between items-center w-full ">
+      <div className="relative flex flex-col lg:flex-row gap-12 justify-between items-center w-full mb-[100px]">
         <div className="relative">
-          <h1 className="text-[1.2rem] opacity-75">
-            Thriving Community Engagement
-          </h1>
-          <p className="text-[2rem] max-w-[800px] mb-6">
+          <h1 className="text-[36px] mb-1">Thriving Community Engagement</h1>
+          <p className="text-[24px]">
             United by a shared vision of innovation and progress, community
             members actively collaborate, share insights, and drive forward
             initiatives that benefit the entire ecosystem. Whether through
@@ -130,7 +123,7 @@ export default function BuyADX() {
           className="absolute -top-[150px] left-[100px] w-[100px] -z-10"
         />
       </div>
-
+      {/* 
       <div>
         <div className="relative">
           <Image
@@ -154,7 +147,7 @@ export default function BuyADX() {
             iconClassName="w-4 h-4"
           />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

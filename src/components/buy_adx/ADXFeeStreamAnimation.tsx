@@ -1,10 +1,16 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
+import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
 
-export default function ADXFeeStreamAnimation() {
+export default function ADXFeeStreamAnimation({
+  token,
+}: {
+  token: 'ALP' | 'ADX';
+}) {
   const usdc = window.adrena.client.tokens.find(
     (token) => token.symbol === 'USDC',
   );
@@ -28,7 +34,7 @@ export default function ADXFeeStreamAnimation() {
       end: 'translatex(250px)',
       duration: 3,
       className:
-        'from-[#1A243100] to-[#1A2431] right-[0px] top-[50px] rotate-90',
+        'from-[#1A243100] to-[#1A2431] right-[0px] top-[100px] rotate-90',
     },
     {
       start: 'translatex(300px)',
@@ -67,11 +73,16 @@ export default function ADXFeeStreamAnimation() {
   ];
 
   return (
-    <div className="relative w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] flex items-center justify-center overflow-hidden">
-      <div className="w-[150px] h-[150px] bg-[#ED0026] rounded-full flex flex-col gap-3 items-center justify-center z-10">
-        <Image src={adxLogo} className="w-9 h-9" alt="adx logo" />
-        <h3>27% Of Fees</h3>
-      </div>
+    <div className="relative w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] flex items-center justify-center overflow-hidden m-auto">
+      <Image
+        src={
+          token === 'ADX'
+            ? window.adrena.client.adxToken.image
+            : window.adrena.client.alpToken.image
+        }
+        className="w-[150px] h-[150px] z-10"
+        alt="adx logo"
+      />
       {lines.map(({ start, end, duration, className }, i) => (
         <motion.div
           className={`absolute flex items-center w-full h-[1px] bg-gradient-to-r ${className}`}
