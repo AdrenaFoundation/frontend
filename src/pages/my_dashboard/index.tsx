@@ -11,6 +11,9 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import FormatNumber from '@/components/Number/FormatNumber';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import Positions from '@/components/pages/trading/Positions/Positions';
+import PositionsStats from '@/components/pages/user_profile/PositionsStats';
+import SwapStats from '@/components/pages/user_profile/SwapStats';
+import TradingStats from '@/components/pages/user_profile/TradingStats';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
@@ -197,163 +200,15 @@ export default function MyDashboard({
 
       {userProfile ? (
         <div className="flex flex-wrap gap-4">
-          <StyledContainer
-            title={<h2>Trading Stats</h2>}
-            className="md:max-w-[23.5em]"
-          >
-            <StyledSubSubContainer className="flex-col">
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Opened Position Count</div>
-
-                <FormatNumber
-                  nb={
-                    userProfile.longStats.openedPositionCount +
-                    userProfile.shortStats.openedPositionCount
-                  }
-                  precision={1}
-                />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Liquidated Position Count</div>
-
-                <FormatNumber
-                  nb={
-                    userProfile.longStats.liquidatedPositionCount +
-                    userProfile.shortStats.liquidatedPositionCount
-                  }
-                  precision={1}
-                />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Opening Average Leverage</div>
-
-                {/* <span>
-                  x
-                  {formatNumber(
-                    (userProfile.longStats.openingAverageLeverage *
-                      userProfile.longStats.openedPositionCount +
-                      userProfile.shortStats.openingAverageLeverage *
-                        userProfile.shortStats.openedPositionCount) /
-                      (userProfile.longStats.openedPositionCount +
-                        userProfile.shortStats.openedPositionCount),
-                    3,
-                  )}
-                </span> */}
-
-                <FormatNumber
-                  nb={
-                    (userProfile.longStats.openingAverageLeverage *
-                      userProfile.longStats.openedPositionCount +
-                      userProfile.shortStats.openingAverageLeverage *
-                        userProfile.shortStats.openedPositionCount) /
-                    (userProfile.longStats.openedPositionCount +
-                      userProfile.shortStats.openedPositionCount)
-                  }
-                  precision={3}
-                  prefix="x"
-                  isDecimalDimmed={false}
-                />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Opening Size</div>
-
-                <FormatNumber
-                  nb={
-                    userProfile.longStats.openingSizeUsd +
-                    userProfile.shortStats.openingSizeUsd
-                  }
-                  format="currency"
-                  precision={3}
-                />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Profits</div>
-
-                <FormatNumber
-                  nb={
-                    userProfile.longStats.profitsUsd +
-                    userProfile.shortStats.profitsUsd
-                  }
-                  format="currency"
-                  precision={3}
-                />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Losses</div>
-
-                <FormatNumber
-                  nb={
-                    userProfile.longStats.lossesUsd +
-                    userProfile.shortStats.lossesUsd
-                  }
-                  format="currency"
-                  precision={3}
-                />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Fees Paid</div>
-
-                <FormatNumber
-                  nb={
-                    userProfile.longStats.feePaidUsd +
-                    userProfile.shortStats.feePaidUsd
-                  }
-                  format="currency"
-                  precision={3}
-                />
-              </div>
-            </StyledSubSubContainer>
-          </StyledContainer>
-
-          <StyledContainer
-            title={<h2>Swap Stats</h2>}
-            className="md:max-w-[23.5em]"
-          >
-            <StyledSubSubContainer className="flex-col">
-              <div className="flex w-full items-start justify-between">
-                <div className="text-sm">Swap Count</div>
-
-                <FormatNumber nb={userProfile.swapCount} precision={1} />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Swap Volume</div>
-
-                <FormatNumber
-                  nb={userProfile.swapVolumeUsd}
-                  format="currency"
-                  precision={3}
-                />
-              </div>
-
-              <div className="flex w-full items-center justify-between">
-                <div className="text-sm">Fees Paid</div>
-
-                <FormatNumber
-                  nb={userProfile.swapFeePaidUsd}
-                  format="currency"
-                  precision={3}
-                />
-              </div>
-            </StyledSubSubContainer>
-          </StyledContainer>
+          <TradingStats userProfile={userProfile}></TradingStats>
+          <SwapStats userProfile={userProfile}></SwapStats>
         </div>
       ) : null}
 
-      <StyledContainer title={<h2>My Opened Positions</h2>}>
-        <StyledSubContainer className="pt-0 pl-0 pb-0 pr-1 bg-third min-h-[5em]">
-          <Positions
-            positions={positions}
-            triggerPositionsReload={triggerPositionsReload}
-          />
-        </StyledSubContainer>
-      </StyledContainer>
+      <PositionsStats
+        positions={positions}
+        triggerPositionsReload={triggerPositionsReload}
+      ></PositionsStats>
 
       <StyledContainer title={<h2>My Stakes</h2>}>
         <StyledSubSubContainer className="flex-col">

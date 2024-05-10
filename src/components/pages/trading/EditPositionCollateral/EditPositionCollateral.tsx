@@ -284,9 +284,10 @@ export default function EditPositionCollateral({
       />
 
       {selectedAction === 'deposit' ? (
-        <>
+        <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
           <TradingInput
-            className="ml-4 mr-4"
+            className="text-md"
+            inputClassName="border-0 bg-inputcolor"
             value={input}
             maxButton={true}
             selectedToken={position.token}
@@ -321,11 +322,12 @@ export default function EditPositionCollateral({
               );
             })()
           }
-        </>
+        </div>
       ) : (
-        <>
+        <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
           <TradingInput
-            className="ml-4 mr-4"
+            className="text-md"
+            inputClassName="border-0 bg-inputcolor"
             value={input}
             selectedToken={
               {
@@ -347,7 +349,7 @@ export default function EditPositionCollateral({
             />{' '}
             of collateral in the position
           </div>
-        </>
+        </div>
       )}
 
       <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">
