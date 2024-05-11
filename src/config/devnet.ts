@@ -23,7 +23,7 @@ class DevnetConfiguration implements IConfiguration {
       decimals: number;
     };
   } = {
-    '4ZY3ZH8bStniqdCZdR14xsWW6vrMsCJrusobTdy4JipC': {
+    '3jdYcGYZaQVvcvMQGqVpt37JegEoDDnX7k4gSGAeGRqG': {
       name: 'USD Coin',
       color: '#2775ca',
       symbol: 'USDC',
@@ -31,7 +31,7 @@ class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'usd-coin',
       decimals: 6,
     },
-    CXFBW6kuWfCUKbD2CZN2nz3B4YQywJFozzMBkryM4rA: {
+    BkT3jz4yZaYwiPMSWUBTVpZjCwmhw4KXN9SKVuBkGz8L: {
       name: 'Theter',
       color: '#26a17b',
       symbol: 'USDT',
@@ -39,7 +39,7 @@ class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'tether',
       decimals: 6,
     },
-    '3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr': {
+    HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
       name: 'Ethereum',
       color: '#3D3E3F',
       symbol: 'ETH',
@@ -47,12 +47,20 @@ class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'ethereum',
       decimals: 6,
     },
-    HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM: {
+    '7MoYkgWVCEDtNR6i2WUH9LTUSFXkQCsD9tBHriHQvuP5': {
       name: 'Bitcoin',
       color: '#f7931a',
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
+      decimals: 6,
+    },
+    '4kUrHxiMfeKPGDi6yFV7kte8JjN3NG3aqG7bui4pfMqz': {
+      name: 'Bonk',
+      color: '#f7931a',
+      symbol: 'BONK',
+      image: btcLogo,
+      coingeckoId: 'bonk',
       decimals: 6,
     },
     [NATIVE_MINT.toBase58()]: {
@@ -70,11 +78,11 @@ class DevnetConfiguration implements IConfiguration {
   );
 
   public readonly sablierThreadProgram: PublicKey = new PublicKey(
-    'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
+    'sabGLGXfBiUCkwtprPMtatG6tCNxhcWWs1hjQAvDqEE',
   );
 
   public readonly stakesClaimPayer: PublicKey = new PublicKey(
-    'C1ockworkPayer11111111111111111111111111111',
+    'Sab1ierPayer1111111111111111111111111111111',
   );
 
   public readonly governanceRealmName = 'AdrenaRealm5';
@@ -106,7 +114,7 @@ class DevnetConfiguration implements IConfiguration {
   ];
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '8Hgu4wTyMvdQk9gfXxoEtujfumMMWuPVdMWVrs73qgsa',
+    'Hf2vTYj2DELzjcF1YasyQhmudMNLA33M3Cj9p7ujAihT',
   );
 }
 

@@ -59,8 +59,8 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
     !tokenPrices ||
     !cortex ||
     !vestRegistry ||
-    !adxTotalSupply ||
-    !alpTotalSupply ||
+    adxTotalSupply === null ||
+    alpTotalSupply === null ||
     !alpStakingAccount ||
     !adxStakingAccount ||
     !composition ||

@@ -213,7 +213,7 @@ export class AdrenaClient {
   )[0];
 
   public static vestRegistryPda = PublicKey.findProgramAddressSync(
-    [Buffer.from('cortex')],
+    [Buffer.from('vest_registry')],
     AdrenaClient.programId,
   )[0];
 
@@ -358,6 +358,10 @@ export class AdrenaClient {
       mainPool,
     );
 
+    const custodiesAddresses = mainPool.custodies.filter(
+      (custody) => !custody.equals(PublicKey.default),
+    );
+
     const tokens: Token[] = custodies
       .map((custody, i) => {
         const infos:
@@ -384,7 +388,7 @@ export class AdrenaClient {
           isStable: custody.isStable,
           image: infos.image,
           // loadCustodies gets the custodies on the same order as in the main pool
-          custody: mainPool.custodies[i],
+          custody: custodiesAddresses[i],
           coingeckoId: infos.coingeckoId,
         };
       })
@@ -461,7 +465,7 @@ export class AdrenaClient {
           total + custody.nativeObject.shortPositions.openPositions.toNumber(),
         0,
       ),
-      custodies: mainPool.custodies,
+      custodies: custodiesAddresses,
       //
       nativeObject: mainPool,
     };
@@ -490,8 +494,12 @@ export class AdrenaClient {
     adrenaProgram: Program<Adrena>,
     mainPool: Pool,
   ): Promise<CustodyExtended[]> {
+    const custodiesAddresses = mainPool.custodies.filter(
+      (custody) => !custody.equals(PublicKey.default),
+    );
+
     const result = await adrenaProgram.account.custody.fetchMultiple(
-      mainPool.custodies,
+      custodiesAddresses,
     );
 
     // No custodies should be null
@@ -507,7 +515,7 @@ export class AdrenaClient {
         isStable: !!custody.isStable,
         mint: custody.mint,
         decimals: custody.decimals,
-        pubkey: mainPool.custodies[i],
+        pubkey: custodiesAddresses[i],
         minRatio: ratios.min,
         maxRatio: ratios.max,
         targetRatio: ratios.target,
@@ -552,10 +560,14 @@ export class AdrenaClient {
     const custodyAddress = this.findCustodyAddress(mint);
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(mint);
 
+    const custodiesAddresses = this.mainPool.custodies.filter(
+      (custody) => !custody.equals(PublicKey.default),
+    );
+
     // Load custodies in same order as declared in mainPool
     const untypedCustodies =
       await this.adrenaProgram.account.custody.fetchMultiple(
-        this.mainPool.custodies,
+        custodiesAddresses,
       );
 
     if (untypedCustodies.find((custodies) => !custodies)) {
@@ -3076,22 +3088,18 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    return this.readonlyAdrenaProgram.views.getExitPriceAndFee(
-      // The view takes no parameters
-      {} as never,
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          position: position.pubkey,
-          custody: position.custody,
-          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
-          collateralCustody: position.collateralCustody,
-          collateralCustodyOracleAccount:
-            collateralCustody.nativeObject.oracle.oracleAccount,
-        },
+    return this.readonlyAdrenaProgram.views.getExitPriceAndFee({
+      accounts: {
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        position: position.pubkey,
+        custody: position.custody,
+        custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+        collateralCustody: position.collateralCustody,
+        collateralCustodyOracleAccount:
+          collateralCustody.nativeObject.oracle.oracleAccount,
       },
-    );
+    });
   }
 
   public async getPnL({
@@ -3122,22 +3130,18 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    return this.readonlyAdrenaProgram.views.getPnl(
-      // The view takes no parameters
-      {} as never,
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          position: position.pubkey,
-          custody: custody.pubkey,
-          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
-          collateralCustodyOracleAccount:
-            collateralCustody.nativeObject.oracle.oracleAccount,
-          collateralCustody: collateralCustody.pubkey,
-        },
+    return this.readonlyAdrenaProgram.views.getPnl({
+      accounts: {
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        position: position.pubkey,
+        custody: custody.pubkey,
+        custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
+        collateralCustodyOracleAccount:
+          collateralCustody.nativeObject.oracle.oracleAccount,
+        collateralCustody: collateralCustody.pubkey,
       },
-    );
+    });
   }
 
   public async getPositionLiquidationPrice({
@@ -3327,17 +3331,13 @@ export class AdrenaClient {
       return null;
     }
 
-    return this.readonlyAdrenaProgram.views.getAssetsUnderManagement(
-      // The view takes no parameters
-      {} as never,
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+    return this.readonlyAdrenaProgram.views.getAssetsUnderManagement({
+      accounts: {
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
       },
-    );
+      remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+    });
   }
 
   // fees are expressed in collateral token
@@ -3441,18 +3441,14 @@ export class AdrenaClient {
       return null;
     }
 
-    return this.readonlyAdrenaProgram.views.getLpTokenPrice(
-      // The view takes no parameters
-      {} as never,
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          lpTokenMint: this.lpTokenMint,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+    return this.readonlyAdrenaProgram.views.getLpTokenPrice({
+      accounts: {
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        lpTokenMint: this.lpTokenMint,
       },
-    );
+      remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+    });
   }
 
   /*
@@ -3466,16 +3462,20 @@ export class AdrenaClient {
     isSigner: boolean;
     isWritable: boolean;
   }[] {
+    const custodiesAddresses = this.mainPool.custodies.filter(
+      (custody) => !custody.equals(PublicKey.default),
+    );
+
     return [
       // needs to provide all custodies and theirs oracles
       // in the same order as they appears in the main pool
-      ...this.mainPool.custodies.map((custody) => ({
+      ...custodiesAddresses.map((custody) => ({
         pubkey: custody,
         isSigner: false,
         isWritable: false,
       })),
 
-      ...this.mainPool.custodies.map((pubkey) => {
+      ...custodiesAddresses.map((pubkey) => {
         const custody = this.custodies.find((custody) =>
           custody.pubkey.equals(pubkey),
         );
