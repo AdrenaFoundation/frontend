@@ -194,7 +194,10 @@ export default function TradingChart({
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
                 format: (price: number): string => {
-                  return formatNumber(price, 2);
+                  return Number(price.toFixed(2)).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  });
                 },
               };
             },
