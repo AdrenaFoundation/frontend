@@ -5,8 +5,12 @@ import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import Loader from '@/components/Loader/Loader';
 import OwnerBloc from '@/components/pages/user_profile/OwnerBloc';
+import OwnerBlocReworked from '@/components/pages/user_profile/OwnerBlocReworked';
+import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import PositionsStatsBloc from '@/components/pages/user_profile/PositionsStatsBloc';
+import SwapStats from '@/components/pages/user_profile/SwapStats';
 import SwapStatsBloc from '@/components/pages/user_profile/SwapStatsBloc';
+import TradingStats from '@/components/pages/user_profile/TradingStats';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps } from '@/types';
 import {
@@ -16,7 +20,10 @@ import {
 } from '@/utils';
 
 export default function UserProfile({
+  connected,
+  positions,
   userProfile,
+  triggerPositionsReload,
   triggerUserProfileReload,
   readonly = false,
 }: PageProps & {
@@ -30,6 +37,14 @@ export default function UserProfile({
     triggerUserProfileReload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!connected) {
+    addNotification({
+      type: 'error',
+      title: 'Please connect your wallet',
+    });
+    return;
+  }
 
   if (userProfile === null) {
     return <Loader className="mt-[20%]" />;
@@ -128,22 +143,34 @@ export default function UserProfile({
   }
 
   return (
-    <div className="flex flex-wrap">
-      <div className="flex m-2 w-[26em] min-w-[26em] grow  bg-bcolor/85 border rounded-lg pt-8 pb-8 pl-2 pr-2 justify-center">
-        <OwnerBloc
-          userProfile={userProfile}
-          triggerUserProfileReload={triggerUserProfileReload}
-          canDeleteProfile={false}
-          canUpdateNickname={!readonly}
-          className="min-w-[24em] w-[24em] max-w-[24em] items-start"
-        />
-      </div>
+    <div className="flex flex-col lg:flex-row flex-wrap w-full items-stretch justify-between">
+      <OwnerBlocReworked
+        userProfile={userProfile}
+        triggerUserProfileReload={triggerUserProfileReload}
+        canDeleteProfile={false}
+        canUpdateNickname={!readonly}
+        className="flex flex-1 m-2 mt-2 w-min-[30em]"
+      />
 
-      <div className="flex flex-col w-[40em] min-w-[26em] grow m-2 bg-bcolor/85 border rounded-lg">
-        <SwapStatsBloc userProfile={userProfile} className="grow p-4" />
+      {userProfile ? (
+        <>
+          <TradingStats
+            userProfile={userProfile}
+            className="flex flex-1 m-2 mt-2"
+          ></TradingStats>
+          <SwapStats
+            userProfile={userProfile}
+            className="flex flex-1 m-2 mt-2"
+          ></SwapStats>
+        </>
+      ) : null}
 
-        <PositionsStatsBloc userProfile={userProfile} className="grow p-4" />
-      </div>
+      <PositionsStats
+        className="flex flex-2 m-2 mt-2"
+        positions={positions}
+        triggerPositionsReload={triggerPositionsReload}
+        title="Opened Positions"
+      ></PositionsStats>
     </div>
   );
 }

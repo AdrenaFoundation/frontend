@@ -6,12 +6,8 @@ import { useEffect, useState } from 'react';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import FormatNumber from '@/components/Number/FormatNumber';
-import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
-import Positions from '@/components/pages/trading/Positions/Positions';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
+import StakesStats from '@/components/pages/user_profile/StakesStats';
 import SwapStats from '@/components/pages/user_profile/SwapStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
@@ -22,7 +18,6 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
-  formatNumber,
   nativeToUi,
 } from '@/utils';
 
@@ -200,84 +195,30 @@ export default function MyDashboard({
 
       {userProfile ? (
         <div className="flex flex-wrap gap-4">
-          <TradingStats userProfile={userProfile}></TradingStats>
-          <SwapStats userProfile={userProfile}></SwapStats>
+          <TradingStats
+            userProfile={userProfile}
+            className="md:max-w-[23.5em]"
+          ></TradingStats>
+          <SwapStats
+            userProfile={userProfile}
+            className="md:max-w-[23.5em]"
+          ></SwapStats>
         </div>
       ) : null}
 
       <PositionsStats
         positions={positions}
         triggerPositionsReload={triggerPositionsReload}
+        title="My Opened Positions"
       ></PositionsStats>
 
-      <StyledContainer title={<h2>My Stakes</h2>}>
-        <StyledSubSubContainer className="flex-col">
-          <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Liquid Staked ADX</div>
-
-            <span>
-              <FormatNumber
-                nb={liquidStakedADX}
-                precision={window.adrena.client.adxToken.decimals}
-                placeholder="0"
-                className="inline"
-              />{' '}
-              ADX
-            </span>
-          </div>
-
-          <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Locked Staked ADX</div>
-
-            <span>
-              <FormatNumber
-                nb={lockedStakedADX}
-                precision={window.adrena.client.adxToken.decimals}
-                placeholder="0"
-                className="inline"
-              />{' '}
-              ADX
-            </span>
-          </div>
-
-          <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Locked Staked ALP</div>
-
-            <span>
-              {lockedStakedALP !== null
-                ? formatNumber(
-                    lockedStakedALP,
-                    window.adrena.client.alpToken.decimals,
-                  )
-                : '0'}{' '}
-              ALP
-            </span>
-          </div>
-        </StyledSubSubContainer>
-
-        {lockedStakes?.length ? (
-          <div className="mt-6">
-            <div className="text-sm">My Locked Stakes</div>
-
-            <div className="flex flex-col mt-2 gap-y-2">
-              {lockedStakes ? (
-                lockedStakes.map((lockedStake, i) => (
-                  <LockedStakedElement
-                    lockedStake={lockedStake}
-                    key={i}
-                    token={window.adrena.client.adxToken}
-                    handleRedeem={handleLockedStakeRedeem}
-                  />
-                ))
-              ) : (
-                <div className="text-sm m-auto mt-4 mb-4 text-txtfade">
-                  No Active Locked Stakes
-                </div>
-              )}
-            </div>
-          </div>
-        ) : null}
-      </StyledContainer>
+      <StakesStats
+        liquidStakedADX={liquidStakedADX}
+        lockedStakedADX={lockedStakedADX}
+        lockedStakedALP={lockedStakedALP}
+        lockedStakes={lockedStakes}
+        handleLockedStakeRedeem={handleLockedStakeRedeem}
+      ></StakesStats>
 
       {/* TODO: Add My Vestings */}
 

@@ -284,20 +284,22 @@ export default function EditPositionCollateral({
       />
 
       {selectedAction === 'deposit' ? (
-        <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
-          <TradingInput
-            className="text-md"
-            inputClassName="border-0 bg-inputcolor"
-            value={input}
-            maxButton={true}
-            selectedToken={position.token}
-            tokenList={[]}
-            onTokenSelect={() => {
-              // One token only
-            }}
-            onChange={setInput}
-            onMaxButtonClick={() => setInput(walletBalance)}
-          />
+        <>
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+            <TradingInput
+              className="text-md"
+              inputClassName="border-0 bg-inputcolor"
+              value={input}
+              maxButton={true}
+              selectedToken={position.token}
+              tokenList={[]}
+              onTokenSelect={() => {
+                // One token only
+              }}
+              onChange={setInput}
+              onMaxButtonClick={() => setInput(walletBalance)}
+            />
+          </div>
 
           {
             /* Display wallet balance */
@@ -322,24 +324,26 @@ export default function EditPositionCollateral({
               );
             })()
           }
-        </div>
+        </>
       ) : (
-        <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
-          <TradingInput
-            className="text-md"
-            inputClassName="border-0 bg-inputcolor"
-            value={input}
-            selectedToken={
-              {
-                symbol: 'USD',
-              } as Token
-            }
-            tokenList={[]}
-            onTokenSelect={() => {
-              // One token only
-            }}
-            onChange={setInput}
-          />
+        <>
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+            <TradingInput
+              className="text-md"
+              inputClassName="border-0 bg-inputcolor"
+              value={input}
+              selectedToken={
+                {
+                  symbol: 'USD',
+                } as Token
+              }
+              tokenList={[]}
+              onTokenSelect={() => {
+                // One token only
+              }}
+              onChange={setInput}
+            />
+          </div>
 
           <div className="text-sm ml-auto mr-4">
             <FormatNumber
@@ -349,7 +353,7 @@ export default function EditPositionCollateral({
             />{' '}
             of collateral in the position
           </div>
-        </div>
+        </>
       )}
 
       <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">

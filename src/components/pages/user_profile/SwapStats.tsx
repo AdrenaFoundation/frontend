@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -5,11 +7,13 @@ import { UserProfileExtended } from '@/types';
 
 export default function SwapStats({
   userProfile,
+  className,
 }: {
   userProfile: UserProfileExtended;
+  className?: string;
 }) {
   return (
-    <StyledContainer title={<h2>Swap Stats</h2>} className="md:max-w-[23.5em]">
+    <StyledContainer title={<h2>Swap Stats</h2>} className={twMerge(className)}>
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-start justify-between">
           <div className="text-sm">Swap Count</div>
