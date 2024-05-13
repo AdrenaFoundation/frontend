@@ -97,7 +97,7 @@ export default function PositionsBlocks({
               />
 
               <Button
-                className="text-xs ml-4"
+                className="text-xs ml-2"
                 title="edit"
                 variant="secondary"
                 onClick={() => {
