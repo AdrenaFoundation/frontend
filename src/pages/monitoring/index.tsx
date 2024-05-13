@@ -44,7 +44,10 @@ export default function Monitoring(pageProps: PageProps) {
     'Vesting',
     'ADX tokenomics',
   ] as const;
-  const tabsFormatted = tabs.map((x) => ({ title: x }));
+  const tabsFormatted = tabs.map((x) => ({
+    title: x,
+    activeColor: 'border-white',
+  }));
 
   return (
     <>
