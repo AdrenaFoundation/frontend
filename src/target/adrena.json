@@ -9,81 +9,61 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         }
       ],
       "args": [
@@ -102,81 +82,61 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "lmTokenMintMetadata",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "mplTokenMetadataProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         }
       ],
       "args": []
@@ -188,41 +148,31 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "governanceRealm",
@@ -237,33 +187,25 @@
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         }
       ],
       "args": []
@@ -275,65 +217,49 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "vestRegistry",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         }
       ],
       "args": []
@@ -345,73 +271,55 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "owner",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "vestRegistry",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "vest",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "governanceRealm",
@@ -426,9 +334,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -452,33 +358,25 @@
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         }
       ],
       "args": [
@@ -498,65 +396,49 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "vestRegistry",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "vest",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "governanceRealm",
@@ -571,9 +453,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -597,41 +477,31 @@
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         }
       ],
       "args": [],
@@ -644,97 +514,73 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "lpTokenMintMetadata",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "mplTokenMetadataProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         }
       ],
       "args": [
@@ -754,105 +600,79 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "genesisLock",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "finalizeGenesisLockCampaignThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         }
       ],
       "args": [
@@ -872,49 +692,37 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         }
       ],
       "args": [],
@@ -927,89 +735,67 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "custodyTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         }
       ],
       "args": [
@@ -1029,73 +815,55 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         }
       ],
       "args": [
@@ -1115,33 +883,25 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         }
       ],
       "args": [
@@ -1161,33 +921,25 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         }
       ],
       "args": [
@@ -1206,33 +958,25 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         }
       ],
       "args": [
@@ -1251,25 +995,19 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         }
       ],
       "args": [
@@ -1288,25 +1026,19 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         }
       ],
       "args": [
@@ -1325,25 +1057,19 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         }
       ],
       "args": [
@@ -1362,57 +1088,43 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "oracleAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         }
       ],
       "args": [
@@ -1432,113 +1144,85 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "owner",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         }
       ],
       "args": [
@@ -1557,194 +1241,146 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "receivingCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "receivingCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "receivingCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "dispensingCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "dispensingCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "dispensingCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         }
       ],
       "args": [
@@ -1763,169 +1399,127 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "lpTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         }
       ],
       "args": [
@@ -1944,121 +1538,91 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "lpTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lpUserStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "lpStakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "governanceRealm",
@@ -2073,9 +1637,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -2099,57 +1661,43 @@
           "name": "lpStakeResolutionThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "stakesClaimCronThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#25"
-          ]
+          "docs": ["#25"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#26"
-          ]
+          "docs": ["#26"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#27"
-          ]
+          "docs": ["#27"]
         },
         {
           "name": "genesisLock",
@@ -2173,161 +1721,121 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "lpTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         }
       ],
       "args": [
@@ -2346,186 +1854,140 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         }
       ],
       "args": [
@@ -2544,202 +2006,152 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#25"
-          ]
+          "docs": ["#25"]
         }
       ],
       "args": [
@@ -2758,218 +2170,164 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "collateralAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "receivingCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "receivingCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "receivingCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "principalCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "principalCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "principalCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#25"
-          ]
+          "docs": ["#25"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#26"
-          ]
+          "docs": ["#26"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#27"
-          ]
+          "docs": ["#27"]
         }
       ],
       "args": [
@@ -2988,242 +2346,182 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "collateralAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "receivingCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "receivingCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "receivingCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "principalCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "principalCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "principalCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#25"
-          ]
+          "docs": ["#25"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#26"
-          ]
+          "docs": ["#26"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#27"
-          ]
+          "docs": ["#27"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#28"
-          ]
+          "docs": ["#28"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#29"
-          ]
+          "docs": ["#29"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#30"
-          ]
+          "docs": ["#30"]
         }
       ],
       "args": [
@@ -3242,89 +2540,67 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         }
       ],
       "args": [
@@ -3343,105 +2619,79 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         }
       ],
       "args": [
@@ -3460,89 +2710,67 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         }
       ],
       "args": [
@@ -3561,105 +2789,79 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         }
       ],
       "args": [
@@ -3678,170 +2880,128 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         }
       ],
       "args": [
@@ -3860,186 +3020,140 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         }
       ],
       "args": [
@@ -4058,178 +3172,134 @@
           "name": "signer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "rewardsReceivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         }
       ],
       "args": [
@@ -4248,194 +3318,146 @@
           "name": "signer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "rewardsReceivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
           "isOptional": true,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         }
       ],
       "args": [
@@ -4454,25 +3476,19 @@
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         }
       ],
       "args": [],
@@ -4485,41 +3501,31 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lpTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         }
       ],
       "args": [
@@ -4541,41 +3547,31 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lpTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         }
       ],
       "args": [
@@ -4597,49 +3593,37 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "collateralCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         }
       ],
       "args": [
@@ -4661,73 +3645,55 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "receivingCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "receivingCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "collateralCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "principalCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "principalCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         }
       ],
       "args": [
@@ -4749,57 +3715,43 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "position",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "collateralCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         }
       ],
       "args": [],
@@ -4814,57 +3766,43 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "position",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "collateralCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         }
       ],
       "args": [],
@@ -4879,57 +3817,43 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "position",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "collateralCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         }
       ],
       "args": [
@@ -4949,57 +3873,43 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "position",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "collateralCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         }
       ],
       "args": [],
@@ -5012,33 +3922,25 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "custody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         }
       ],
       "args": [],
@@ -5051,49 +3953,37 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "receivingCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "receivingCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "dispensingCustody",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "dispensingCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         }
       ],
       "args": [
@@ -5115,17 +4005,13 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         }
       ],
       "args": [],
@@ -5138,137 +4024,103 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "rewardTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "lmTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "userStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "stakesClaimCronThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakesClaimPayer",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "staking",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "lmTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         }
       ],
       "args": [
@@ -5287,49 +4139,37 @@
           "name": "user",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         }
       ],
       "args": [
@@ -5348,41 +4188,31 @@
           "name": "user",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         }
       ],
       "args": [
@@ -5401,57 +4231,43 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "user",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "userProfile",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         }
       ],
       "args": []
@@ -5463,105 +4279,79 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingStakedTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         }
       ],
       "args": [
@@ -5581,81 +4371,61 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         }
       ],
       "args": [],
@@ -5668,81 +4438,61 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         }
       ],
       "args": [],
@@ -5755,145 +4505,109 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingStakedTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "resolveRoundCronThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "resolveRoundPayer",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "rent",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         }
       ],
       "args": [
@@ -5913,113 +4627,85 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "rewardTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "lmTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "stakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "userStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "governanceRealm",
@@ -6034,9 +4720,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -6060,49 +4744,37 @@
           "name": "stakesClaimCronThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         }
       ],
       "args": [
@@ -6121,97 +4793,73 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "rewardTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "stakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "userStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "governanceRealm",
@@ -6226,9 +4874,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -6252,57 +4898,43 @@
           "name": "stakeResolutionThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "stakesClaimCronThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         }
       ],
       "args": [
@@ -6321,113 +4953,85 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "stakedTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "lmTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "rewardTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "stakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "userStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "governanceRealm",
@@ -6442,9 +5046,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -6468,49 +5070,37 @@
           "name": "stakesClaimCronThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         }
       ],
       "args": [
@@ -6529,121 +5119,91 @@
           "name": "owner",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "lmTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "stakedTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "rewardTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "stakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "userStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "stakedTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "governanceRealm",
@@ -6658,9 +5218,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -6684,49 +5242,37 @@
           "name": "stakesClaimCronThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#25"
-          ]
+          "docs": ["#25"]
         }
       ],
       "args": [
@@ -6745,129 +5291,97 @@
           "name": "caller",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "owner",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "rewardTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "userStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         }
       ],
       "args": []
@@ -6879,57 +5393,43 @@
           "name": "caller",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "genesisLock",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         }
       ],
       "args": []
@@ -6941,25 +5441,19 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         }
       ],
       "args": [
@@ -6978,65 +5472,49 @@
           "name": "caller",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "owner",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "userStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "governanceTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "governanceRealm",
@@ -7051,9 +5529,7 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "governanceGoverningTokenHolding",
@@ -7077,49 +5553,37 @@
           "name": "stakeResolutionThread",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         }
       ],
       "args": [
@@ -7138,105 +5602,79 @@
           "name": "caller",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "stakingStakedTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "stakingLmRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         }
       ],
       "args": []
@@ -7248,25 +5686,19 @@
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "lpTokenMint",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         }
       ],
       "args": [],
@@ -7279,49 +5711,37 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "receivingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         }
       ],
       "args": [
@@ -7341,177 +5761,133 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         }
       ],
       "args": [
@@ -7530,193 +5906,145 @@
           "name": "owner",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         },
         {
           "name": "lmStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#5"
-          ]
+          "docs": ["#5"]
         },
         {
           "name": "lpStaking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#6"
-          ]
+          "docs": ["#6"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#7"
-          ]
+          "docs": ["#7"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#8"
-          ]
+          "docs": ["#8"]
         },
         {
           "name": "position",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#9"
-          ]
+          "docs": ["#9"]
         },
         {
           "name": "stakingRewardTokenCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#10"
-          ]
+          "docs": ["#10"]
         },
         {
           "name": "stakingRewardTokenCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#11"
-          ]
+          "docs": ["#11"]
         },
         {
           "name": "stakingRewardTokenCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#12"
-          ]
+          "docs": ["#12"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#13"
-          ]
+          "docs": ["#13"]
         },
         {
           "name": "custodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#14"
-          ]
+          "docs": ["#14"]
         },
         {
           "name": "collateralCustody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#15"
-          ]
+          "docs": ["#15"]
         },
         {
           "name": "collateralCustodyOracleAccount",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#16"
-          ]
+          "docs": ["#16"]
         },
         {
           "name": "collateralCustodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#17"
-          ]
+          "docs": ["#17"]
         },
         {
           "name": "lmStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#18"
-          ]
+          "docs": ["#18"]
         },
         {
           "name": "lpStakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#19"
-          ]
+          "docs": ["#19"]
         },
         {
           "name": "lpTokenMint",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#20"
-          ]
+          "docs": ["#20"]
         },
         {
           "name": "protocolFeeRecipient",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#21"
-          ]
+          "docs": ["#21"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#22"
-          ]
+          "docs": ["#22"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#23"
-          ]
+          "docs": ["#23"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#24"
-          ]
+          "docs": ["#24"]
         }
       ],
       "args": [
@@ -7735,25 +6063,19 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": false,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "staking",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         }
       ],
       "args": [
@@ -7772,17 +6094,13 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         }
       ],
       "args": [
@@ -7801,33 +6119,25 @@
           "name": "admin",
           "isMut": false,
           "isSigner": true,
-          "docs": [
-            "#1"
-          ]
+          "docs": ["#1"]
         },
         {
           "name": "cortex",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#2"
-          ]
+          "docs": ["#2"]
         },
         {
           "name": "pool",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#3"
-          ]
+          "docs": ["#3"]
         },
         {
           "name": "custody",
           "isMut": true,
           "isSigner": false,
-          "docs": [
-            "#4"
-          ]
+          "docs": ["#4"]
         }
       ],
       "args": [
@@ -7873,10 +6183,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                2
-              ]
+              "array": ["u8", 2]
             }
           },
           {
@@ -7898,10 +6205,7 @@
           {
             "name": "pools",
             "type": {
-              "array": [
-                "publicKey",
-                4
-              ]
+              "array": ["publicKey", 4]
             }
           },
           {
@@ -8003,10 +6307,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                2
-              ]
+              "array": ["u8", 2]
             }
           },
           {
@@ -8106,10 +6407,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                6
-              ]
+              "array": ["u8", 6]
             }
           },
           {
@@ -8143,19 +6441,13 @@
           {
             "name": "reservedGrantOwners",
             "type": {
-              "array": [
-                "publicKey",
-                17
-              ]
+              "array": ["publicKey", 17]
             }
           },
           {
             "name": "reservedGrantAmounts",
             "type": {
-              "array": [
-                "u64",
-                17
-              ]
+              "array": ["u64", 17]
             }
           },
           {
@@ -8235,10 +6527,7 @@
           {
             "name": "custodies",
             "type": {
-              "array": [
-                "publicKey",
-                10
-              ]
+              "array": ["publicKey", 10]
             }
           },
           {
@@ -8285,10 +6574,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                6
-              ]
+              "array": ["u8", 6]
             }
           },
           {
@@ -8459,10 +6745,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                3
-              ]
+              "array": ["u8", 3]
             }
           },
           {
@@ -8500,10 +6783,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                7
-              ]
+              "array": ["u8", 7]
             }
           },
           {
@@ -8563,10 +6843,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                6
-              ]
+              "array": ["u8", 6]
             }
           },
           {
@@ -8635,10 +6912,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                6
-              ]
+              "array": ["u8", 6]
             }
           },
           {
@@ -9760,10 +8034,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                2
-              ]
+              "array": ["u8", 2]
             }
           },
           {
@@ -9979,10 +8250,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                8
-              ]
+              "array": ["u8", 8]
             }
           },
           {
@@ -10029,10 +8297,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                8
-              ]
+              "array": ["u8", 8]
             }
           }
         ]
@@ -10074,10 +8339,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                15
-              ]
+              "array": ["u8", 15]
             }
           }
         ]
@@ -10103,10 +8365,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                2
-              ]
+              "array": ["u8", 2]
             }
           }
         ]
@@ -10248,10 +8507,7 @@
           {
             "name": "padding",
             "type": {
-              "array": [
-                "u8",
-                4
-              ]
+              "array": ["u8", 4]
             }
           },
           {
@@ -10269,10 +8525,7 @@
           {
             "name": "padding2",
             "type": {
-              "array": [
-                "u8",
-                7
-              ]
+              "array": ["u8", 7]
             }
           },
           {
@@ -10286,10 +8539,7 @@
           {
             "name": "padding3",
             "type": {
-              "array": [
-                "u8",
-                7
-              ]
+              "array": ["u8", 7]
             }
           },
           {
@@ -10303,10 +8553,7 @@
           {
             "name": "padding4",
             "type": {
-              "array": [
-                "u8",
-                7
-              ]
+              "array": ["u8", 7]
             }
           },
           {
@@ -10324,10 +8571,7 @@
           {
             "name": "value",
             "type": {
-              "array": [
-                "u8",
-                31
-              ]
+              "array": ["u8", 31]
             }
           },
           {
