@@ -229,13 +229,15 @@ export default function Trade({
         <div className="flex flex-col w-full">
           <div
             className={twMerge(
-              'flex z-30 overflow-hidden bg-main/90 pl-3 pr-3 border rounded-lg mt-4',
+              'flex z-30 overflow-hidden bg-main/90 xl:pl-3 xl:pr-3 border rounded-lg mt-4',
               !positions?.length
                 ? 'min-h-[15em] items-center justify-center'
                 : null,
             )}
           >
             <Positions
+              bodyClassName={'mt-3 mr-3'}
+              connected={connected}
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
             />
@@ -245,7 +247,7 @@ export default function Trade({
 
       <>
         <TradeComp
-          className="lg:max-h-[50em] hidden sm:flex ml-4"
+          className="lg:max-h-[50em] hidden sm:flex lg:ml-4"
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
           tokenA={tokenA}
