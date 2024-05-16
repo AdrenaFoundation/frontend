@@ -1,5 +1,6 @@
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
+
 import InfoAnnotation from '../monitoring/InfoAnnotation';
 
 export default function ProfileCreation({
