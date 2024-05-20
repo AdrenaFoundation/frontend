@@ -192,8 +192,8 @@ export default function Buy({
   if (allowedCollateralTokens === null) return <Loader />;
 
   return (
-    <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4">
+    <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10 mt-[50px]">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4 lg:h-[800px]">
         <div className="absolute w-full h-full left-0 top-0 opacity-20">
           <RiveAnimation
             animation="fred-bg"
@@ -218,18 +218,7 @@ export default function Buy({
           />
         </div>
 
-        <div className="flex flex-col justify-center items-start w-full z-10">
-          {/* <div className="flex flex-row gap-3 items-center">
-            <Image
-              src={window.adrena.client.alpToken.image}
-              className="w-6 h-6"
-              alt="adx logo"
-            />
-            <div>
-              <h3 className="inline-block">ALP</h3>{' '}
-              <h3 className="inline-block text-txtfade">– THE POOL TOKEN</h3>
-            </div>
-          </div> */}
+        <div className="flex flex-col justify-center items-start z-10">
           <h1 className="text-[2.6rem] lg:text-[5rem] uppercase max-w-[640px]">
             Buy ALP, receive 70% of all revenues
           </h1>
@@ -247,11 +236,11 @@ export default function Buy({
                 <Image src={infoIcon} width={16} height={16} alt="info icon" />
               </Tippy>
             </div>
-            <div className="flex flex-row gap-2 sm:gap-6 items-center mt-3">
+            <div className="flex flex-row gap-2 sm:gap-3 items-center mt-3">
               <FormatNumber
                 nb={aumUsd}
                 format="currency"
-                className="text-[1.2rem] sm:text-[3rem] font-bold"
+                className="text-[1.2rem] sm:text-[2.4rem] font-bold"
                 isDecimalDimmed={false}
               />{' '}
               <span className="text-[1.2rem] sm:text-[2rem] font-bold opacity-50">
@@ -274,36 +263,36 @@ export default function Buy({
           </div>
         </div>
 
-        <div className="w-full">
-          <StyledContainer className="lg:max-w-[25em] m-auto">
-            <ALPSwap
-              triggerWalletTokenBalancesReload={
-                triggerWalletTokenBalancesReload
-              }
-              collateralInput={collateralInput}
-              setCollateralInput={setCollateralInput}
-              alpInput={alpInput}
-              setAlpInput={setAlpInput}
-              collateralToken={collateralToken}
-              allowedCollateralTokens={allowedCollateralTokens}
-              feesUsd={feesUsd}
-              setFeesUsd={setFeesUsd}
-              onCollateralTokenChange={onCollateralTokenChange}
-              selectedAction={selectedAction}
-              setSelectedAction={setSelectedAction}
-              setAlpPrice={setAlpPrice}
-              setCollateralPrice={setCollateralPrice}
-              alpPrice={alpPrice}
-              collateralPrice={collateralPrice}
-              feesAndAmounts={feesAndAmounts}
-              connected={connected}
-              aumUsd={aumUsd}
-            />
-          </StyledContainer>
-        </div>
+        <StyledContainer className="max-w-[400px] lg:max-w-[25em] m-auto">
+          <ALPSwap
+            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+            collateralInput={collateralInput}
+            setCollateralInput={setCollateralInput}
+            alpInput={alpInput}
+            setAlpInput={setAlpInput}
+            collateralToken={collateralToken}
+            allowedCollateralTokens={allowedCollateralTokens}
+            feesUsd={feesUsd}
+            setFeesUsd={setFeesUsd}
+            onCollateralTokenChange={onCollateralTokenChange}
+            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
+            setAlpPrice={setAlpPrice}
+            setCollateralPrice={setCollateralPrice}
+            alpPrice={alpPrice}
+            collateralPrice={collateralPrice}
+            feesAndAmounts={feesAndAmounts}
+            connected={connected}
+            aumUsd={aumUsd}
+          />
+        </StyledContainer>
       </div>
       <RewardsAnimation />
-      <StakeAnimation />
+      <StakeAnimation
+        title="GET BONUS USDC + ADX"
+        subtitle="Duration lock ALP for bonus USDC yield and ADX token rewards. The
+          longer you lock, the higher the yield multipliers"
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -12,16 +12,28 @@ export default function StakeTimerAnimation({
   countdown,
   setCountdown,
   setUsdcBalance,
+  usdcBalance,
+  adxBalance,
+  setAdxBalance,
+  isADX,
 }: {
   initial: {
     daysLocked: number;
     countdown: number;
+    remaining: string;
+    isADX?: boolean;
   };
   countdown: number;
   setCountdown: (countdown: number) => void;
   setUsdcBalance: (balance: number) => void;
+  usdcBalance: number;
+  adxBalance: number;
+  setAdxBalance: (balance: number) => void;
+  isADX?: boolean;
 }) {
   const [cooldown, setCooldown] = useState(false);
+  const [randomCountdown, setRandomCountdown] = useState(0);
+
   const usdcToken = window.adrena.client.tokens.find(
     (token) => token.symbol === 'USDC',
   );
@@ -30,7 +42,7 @@ export default function StakeTimerAnimation({
     { x: [0, 10], y: [0, -10], token: usdcToken?.image },
     { x: [0, 50], y: [0, -30], token: usdcToken?.image },
     {
-      x: [0, 30],
+      x: [0, 60],
       y: [0, -50],
       token: window.adrena.client.adxToken.image,
     },
@@ -47,29 +59,37 @@ export default function StakeTimerAnimation({
     },
   ];
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (cooldown) return;
+  const reset = () => {
+    const random = Math.floor(Math.random() * 11) + 5;
 
-  //     setCountdown((prevSeconds) => {
-  //       if (prevSeconds === 0) {
-  //         setUsdcBalance((prev) => prev + 20);
-  //         setCooldown(true);
-  //         setTimeout(() => {
-  //           setCooldown(false);
-  //           setCountdown(initial.countdown);
-  //         }, 5000);
-  //         return 0;
-  //       } else {
-  //         return prevSeconds - 1;
-  //       }
-  //     });
-  //   }, 1000);
+    setCooldown(true);
+    setUsdcBalance(usdcBalance + 100 * random);
+    setAdxBalance(adxBalance + 50 * random);
 
-  //   return () => clearInterval(interval);
-  // }, [cooldown]);
+    setTimeout(() => {
+      setCooldown(false);
+    }, 1000);
 
-  console.log('countdown', countdown);
+    setTimeout(() => {
+      setCountdown(initial.countdown);
+      setRandomCountdown(random);
+    }, 5000);
+  };
+
+  useEffect(() => {
+    if (randomCountdown === 0) {
+      reset();
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setRandomCountdown(randomCountdown - 1);
+      setCountdown(countdown - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [randomCountdown]);
+
   return (
     <div className="flex flex-row gap-3 items-center">
       <div className="flex flex-row items-center">
@@ -78,28 +98,38 @@ export default function StakeTimerAnimation({
       </div>
       <div
         className={twMerge(
-          'relative flex flex-row items-center border border-bcolor bg-third justify-between  w-full p-4 rounded-lg transition duration-300',
+          'relative flex flex-row items-center border border-bcolor bg-third justify-between  w-full p-2 md:p-4 rounded-lg transition duration-300',
         )}
       >
         <div className="flex flex-row items-center gap-3">
           <Image
-            src={window.adrena.client.alpToken.image}
+            src={
+              isADX
+                ? window.adrena.client.adxToken.image
+                : window.adrena.client.alpToken.image
+            }
             className="w-6 h-6"
-            alt="alp logo"
+            alt={isADX ? 'adx logo' : 'alp logo'}
           />
-          <FormatNumber nb={1200} className="text-xl font-bold" suffix=" ALP" />
-          <div className="flex flex-row gap-1 items-center opacity-50">
-            <Image src={lockIcon} className="w-3 h-3" alt="lock icon" />
+          <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-3">
             <FormatNumber
-              nb={initial.daysLocked}
-              className="text-base"
-              suffix=" Days"
+              nb={1200}
+              className="text-sm lg:text-lg font-bold"
+              suffix={isADX ? ' ADX' : ' ALP'}
             />
+            <div className="flex flex-row gap-1 items-center opacity-50">
+              <Image src={lockIcon} className="w-3 h-3" alt="lock icon" />
+              <FormatNumber
+                nb={initial.daysLocked}
+                className="text-sm lg:text-base"
+                suffix=" Days"
+              />
+            </div>
           </div>
         </div>
 
-        <p className="font-mono text-lg">
-          {initial.daysLocked}d 22h 23m {countdown}s left
+        <p className="font-mono text-sm">
+          {initial.remaining} {countdown}s left
         </p>
 
         {USDC_PATHS.map(({ x, y, token }, index) => (
@@ -111,14 +141,17 @@ export default function StakeTimerAnimation({
                     translateX: x,
                     translateY: y,
                     opacity: 1,
-                    transitionEnd: { opacity: 0 },
                   }
-                : {}
+                : {
+                    translateX: x[1] + 10,
+                    translateY: y[1] - 100,
+                    opacity: 0,
+                  }
             }
             transition={{
-              duration: index * 0.5 + 1,
-              delay: index * 0.5,
-              times: [0, 0.5, 1],
+              duration: 0.5,
+              // delay: (index / 2) * 0.5,
+              type: 'tween',
             }}
             className="absolute flex-none"
             key={index}

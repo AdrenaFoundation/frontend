@@ -8,7 +8,6 @@ import chevronDownIcon from '../../../../public/images/Icons/chevron-down.svg';
 import Menu from '../Menu/Menu';
 import MenuItem from '../Menu/MenuItem';
 import MenuItems from '../Menu/MenuItems';
-import MenuSeparator from '../Menu/MenuSeparator';
 
 export default function Select<T extends string>({
   className,

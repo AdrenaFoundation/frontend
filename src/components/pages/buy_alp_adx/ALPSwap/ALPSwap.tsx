@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
+import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {

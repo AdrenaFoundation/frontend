@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { alpLiquidityCap } from '@/constant';
-import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
+import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
@@ -258,8 +258,6 @@ export default function ALPSwapInputs({
 
     onChangeCollateralInput(nb);
   };
-
-  console.log(isLoading);
 
   const alpInputComponent = (
     <TradingInput

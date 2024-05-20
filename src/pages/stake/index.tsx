@@ -3,7 +3,6 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
 import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';

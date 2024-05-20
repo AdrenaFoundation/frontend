@@ -6,7 +6,6 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
-import settingsIcon from '../../../public/images/Icons/settings.svg';
 import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';

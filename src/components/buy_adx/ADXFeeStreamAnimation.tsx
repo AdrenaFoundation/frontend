@@ -1,10 +1,6 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import React from 'react';
-import { twMerge } from 'tailwind-merge';
-
-import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
-import alpLogo from '../../../public/images/adrena_logo_alp_white.svg';
 
 export default function ADXFeeStreamAnimation({
   token,

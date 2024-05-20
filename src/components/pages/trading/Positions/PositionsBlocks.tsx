@@ -7,7 +7,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
 import { useDispatch, useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
+import { getArrowElement } from '@/utils';
 
 import phantomLogo from '../../../../../public/images/phantom.png';
 

@@ -3,7 +3,6 @@ import Image, { StaticImageData } from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import adxLogo from '../../../public/images/adrena_logo_adx_white.svg';
 import mons1 from '../../../public/images/adrena_pfp/monster-1.png';
 import mons2 from '../../../public/images/adrena_pfp/monster-2.png';
 import mons3 from '../../../public/images/adrena_pfp/monster-3.png';
@@ -91,7 +90,7 @@ export default function ADXVoteAnimation() {
       </div>
 
       <div
-        className=" grid gap-3 w-full h-[150px] overflow-hidden items-center bg-main p-5 border-t border-bcolor rounded-b-2xl"
+        className="grid gap-3 w-full h-[150px] overflow-hidden items-center bg-main p-5 border-t border-bcolor rounded-b-2xl"
         style={{
           gridTemplateColumns: `repeat(${
             participants.length < 8 ? participants.length : 8
