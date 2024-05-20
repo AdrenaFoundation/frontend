@@ -285,18 +285,21 @@ export default function EditPositionCollateral({
 
       {selectedAction === 'deposit' ? (
         <>
-          <TradingInput
-            className="ml-4 mr-4"
-            value={input}
-            maxButton={true}
-            selectedToken={position.token}
-            tokenList={[]}
-            onTokenSelect={() => {
-              // One token only
-            }}
-            onChange={setInput}
-            onMaxButtonClick={() => setInput(walletBalance)}
-          />
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+            <TradingInput
+              className="text-md"
+              inputClassName="border-0 bg-inputcolor"
+              value={input}
+              maxButton={true}
+              selectedToken={position.token}
+              tokenList={[]}
+              onTokenSelect={() => {
+                // One token only
+              }}
+              onChange={setInput}
+              onMaxButtonClick={() => setInput(walletBalance)}
+            />
+          </div>
 
           {
             /* Display wallet balance */
@@ -324,20 +327,23 @@ export default function EditPositionCollateral({
         </>
       ) : (
         <>
-          <TradingInput
-            className="ml-4 mr-4"
-            value={input}
-            selectedToken={
-              {
-                symbol: 'USD',
-              } as Token
-            }
-            tokenList={[]}
-            onTokenSelect={() => {
-              // One token only
-            }}
-            onChange={setInput}
-          />
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+            <TradingInput
+              className="text-md"
+              inputClassName="border-0 bg-inputcolor"
+              value={input}
+              selectedToken={
+                {
+                  symbol: 'USD',
+                } as Token
+              }
+              tokenList={[]}
+              onTokenSelect={() => {
+                // One token only
+              }}
+              onChange={setInput}
+            />
+          </div>
 
           <div className="text-sm ml-auto mr-4">
             <FormatNumber
