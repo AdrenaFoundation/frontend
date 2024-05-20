@@ -31,11 +31,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  Program
                   <InfoAnnotation
                     text="Account containing the source code of the Adrena smart contract."
                     className="mr-1"
                   />
-                  Program
                 </div>
               ),
               value: (
@@ -48,11 +48,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  Admin
                   <InfoAnnotation
                     text="The program's administrator account, authorized to modify settings and upgrade the program."
                     className="mr-1"
                   />
-                  Admin
                 </div>
               ),
               value: (
@@ -65,12 +65,12 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  Pool
+                  <TitleAnnotation text="PDA" />
                   <InfoAnnotation
                     text="Top-level account with information on custodies and their associated ratios."
                     className="mr-1"
                   />
-                  Pool
-                  <TitleAnnotation text="PDA" />
                 </div>
               ),
               value: (
@@ -84,12 +84,12 @@ export default function AccountsView({
               .map((custody) => ({
                 rowTitle: (
                   <div className="flex items-center">
+                    {custody.tokenInfo.symbol} Custody
+                    <TitleAnnotation text="PDA" />
                     <InfoAnnotation
                       text={`Manages ${custody.tokenInfo.symbol} assets within Adrena's ecosystem, tracking balances, fees, and transactions.`}
                       className="mr-1"
                     />
-                    {custody.tokenInfo.symbol} Custody
-                    <TitleAnnotation text="PDA" />
                   </div>
                 ),
                 value: (
@@ -103,12 +103,12 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  Perpetuals
+                  <TitleAnnotation text="PDA" />
                   <InfoAnnotation
                     text="Top-level account managing Adrena access, including admin and permissions."
                     className="mr-1"
                   />
-                  Perpetuals
-                  <TitleAnnotation text="PDA" />
                 </div>
               ),
               value: (
@@ -121,12 +121,12 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  Transfer Authority
+                  <TitleAnnotation text="PDA" />
                   <InfoAnnotation
                     text="Serves as the designated authority for managing custody token accounts, facilitating secure asset transfers."
                     className="mr-1"
                   />
-                  Transfer Authority
-                  <TitleAnnotation text="PDA" />
                 </div>
               ),
               value: (
@@ -139,11 +139,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  ADX Staking <TitleAnnotation text="PDA" />
                   <InfoAnnotation
                     text="Top-level account holding details on ADX token staking, tracking participation and rewards."
                     className="mr-1"
                   />
-                  ADX Staking <TitleAnnotation text="PDA" />
                 </div>
               ),
               value: (
@@ -158,11 +158,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  ALP Staking <TitleAnnotation text="PDA" />
                   <InfoAnnotation
                     text="Top-level account holding details on ALP token staking, tracking participation and rewards."
                     className="mr-1"
                   />
-                  ALP Staking <TitleAnnotation text="PDA" />
                 </div>
               ),
               value: (
@@ -185,11 +185,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  ADX <TitleAnnotation text="Mint" />
                   <InfoAnnotation
                     text="Governance token mint for Adrena, used to vote on proposals and collect protocol revenue shares."
                     className="mr-1"
                   />
-                  ADX <TitleAnnotation text="Mint" />
                 </div>
               ),
               value: (
@@ -202,11 +202,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  ALP <TitleAnnotation text="Mint" />
                   <InfoAnnotation
                     text="Liquidity pool token mint, representing a user's share in Adrena's pool."
                     className="mr-1"
                   />
-                  ALP <TitleAnnotation text="Mint" />
                 </div>
               ),
               value: (
@@ -246,11 +246,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  Governance Program
                   <InfoAnnotation
                     text="Manages the DAO's operations as the official Solana governance smart contract."
                     className="mr-1"
                   />
-                  Governance Program
                 </div>
               ),
               value: (
@@ -263,11 +263,11 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
+                  Governance Realm <TitleAnnotation text="PDA" />
                   <InfoAnnotation
                     text="Represents Adrena's DAO within the Solana DAO program."
                     className="mr-1"
                   />
-                  Governance Realm <TitleAnnotation text="PDA" />
                 </div>
               ),
               value: (
