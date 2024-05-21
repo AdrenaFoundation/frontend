@@ -290,7 +290,7 @@ export default function Trade({
                 title="Swap"
                 variant="outline"
                 size="lg"
-                className="border-purple-500 text-purple-500 bg-purple-700/10"
+                className="border-white text-white bg-white/10"
                 onClick={() => {
                   setActivePositionModal('swap');
                   setSelectedAction('swap');
