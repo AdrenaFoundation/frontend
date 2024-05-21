@@ -275,7 +275,10 @@ export default function EditPositionCollateral({
       <TabSelect
         wrapperClassName="h-12 flex items-center"
         selected={selectedAction}
-        tabs={[{ title: 'deposit' }, { title: 'withdraw' }]}
+        tabs={[
+          { title: 'deposit', activeColor: 'border-b-white' },
+          { title: 'withdraw', activeColor: 'border-b-white' },
+        ]}
         onClick={(title) => {
           // Reset input when changing selected action
           setInput(null);

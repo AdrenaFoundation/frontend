@@ -96,14 +96,14 @@ export default function OtherUserProfile(pageProps: PageProps) {
 
       <div className="mt-4"></div>
 
-      <UserProfile
+      {/* <UserProfile
         {...pageProps}
         readonly={true}
         userProfile={otherUserProfile}
         triggerUserProfileReload={() => {
           // nothing
         }}
-      />
+      /> */}
     </div>
   );
 }
