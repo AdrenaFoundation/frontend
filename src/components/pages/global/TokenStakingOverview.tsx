@@ -141,8 +141,8 @@ export default function TokenStakingOverview({
 }) {
   return (
     <StyledContainer
-      title="Token Staking"
-      subTitle="Visualize ADX/ALP staking."
+      title="Staking"
+      subTitle="How much of the token supply is staked?"
       className={className}
       bodyClassName="flex-row justify-evenly"
     >

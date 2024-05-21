@@ -28,18 +28,33 @@ export default function ALPStakeOverview({
     <StyledContainer
       className={className}
       title="ALP"
-      subTitle="The Pool Token"
+      subTitle="Shares of a Adrena Liquidity Pool"
       icon={window.adrena.client.alpToken.image}
     >
       <StyledSubContainer>
-        <h3>Duration-Locked Staking</h3>
+        <h3>Locked Staking</h3>
+
 
         <p className="mt-4 flex flex-col ">
           <span className="text-sm">
-            Stake and lock your ALP for a time to earn ADX and USDC rewards. The
-            longer the period, the bigger the rewards.
+            Provide liquidities long term: the longer the period, the higher the rewards.
           </span>
-          <span className="mt-2 text-sm">
+          <span className="text-sm">
+            70% of protocol fees are distributed to ALP holder and stakers.
+          </span>
+
+          <ul>
+            <li className="mt-4 text-sm">
+              - Earn USDC rewards
+            </li> 
+            <li className="mt-4 text-sm">
+              - Locked principal becomes available at the end of the period, with the possibility to unstake earlier for a fee
+            </li>
+          </ul>
+
+        </p>
+
+          {/* <span className="mt-2 text-sm">
             ADX and USDC rewards accrue automatically every ~6 hours and get
             auto-claimed every 18 days. You can manually claim rewards.
           </span>
@@ -47,8 +62,7 @@ export default function ALPStakeOverview({
           <span className="mt-2 text-sm">
             The locked ALP tokens can be redeemed once the locking period is
             over.
-          </span>
-        </p>
+          </span> */}
 
         <StyledSubSubContainer className="mt-4">
           <h5 className="flex items-center">Locked</h5>
@@ -92,7 +106,7 @@ export default function ALPStakeOverview({
             className="w-full mt-4"
             variant="primary"
             size="lg"
-            title="Stake More"
+            title="Stake"
             disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)

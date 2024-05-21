@@ -22,7 +22,7 @@ export default function AccountsView({
     <>
       <StyledContainer
         title="Adrena Accounts"
-        subTitle="List on-chain accounts related to Adrena."
+        subTitle="Adrena Program on-chain accounts (PDAs)."
         className="w-[40em] grow"
       >
         <Table
@@ -103,10 +103,10 @@ export default function AccountsView({
             {
               rowTitle: (
                 <div className="flex items-center">
-                  Perpetuals
+                  Cortex
                   <TitleAnnotation text="PDA" />
                   <InfoAnnotation
-                    text="Top-level account managing Adrena access, including admin and permissions."
+                    text="Top-level account managing Adrena access, owned by the governance."
                     className="mr-1"
                   />
                 </div>
@@ -124,7 +124,7 @@ export default function AccountsView({
                   Transfer Authority
                   <TitleAnnotation text="PDA" />
                   <InfoAnnotation
-                    text="Serves as the designated authority for managing custody token accounts, facilitating secure asset transfers."
+                    text="Serves as the designated authority for managing custodies' token accounts, facilitating secure asset transfers."
                     className="mr-1"
                   />
                 </div>
@@ -187,7 +187,7 @@ export default function AccountsView({
                 <div className="flex items-center">
                   ADX <TitleAnnotation text="Mint" />
                   <InfoAnnotation
-                    text="Governance token mint for Adrena, used to vote on proposals and collect protocol revenue shares."
+                    text="Adrena's Governance token mint, can be staked for governance and revenue share access."
                     className="mr-1"
                   />
                 </div>
@@ -204,7 +204,7 @@ export default function AccountsView({
                 <div className="flex items-center">
                   ALP <TitleAnnotation text="Mint" />
                   <InfoAnnotation
-                    text="Liquidity pool token mint, representing a user's share in Adrena's pool."
+                    text="Adrena's Liquidity Pool token mint, represents a share of the pool."
                     className="mr-1"
                   />
                 </div>

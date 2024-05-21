@@ -107,25 +107,18 @@ export default function PoolView({
   return (
     <>
       <StyledContainer
-        title="POOL VALUE"
-        subTitle="Pool worth in US dollars"
+        title="AUM"
+        subTitle=""
         className="min-w-[20em] w-[20em] grow"
       >
         <StyledSubContainer>
-          <h2>AUM Value</h2>
+          <h2>Total USD worth</h2>
 
           <StyledSubSubContainer className="mt-2">
             <h2>{formatPriceInfo(mainPool.aumUsd)}</h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
 
-        <StyledSubContainer>
-          <h2>Raw AUM Value</h2>
-
-          <StyledSubSubContainer className="mt-2">
-            <h2>{formatPriceInfo(totalPoolAssetHardValue)}</h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
       </StyledContainer>
 
       <StyledContainer
