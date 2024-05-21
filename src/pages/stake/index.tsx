@@ -3,7 +3,6 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 
 import Modal from '@/components/common/Modal/Modal';
 import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';
@@ -49,7 +48,10 @@ export type ALPTokenDetails = {
 
 export const DEFAULT_LOCKED_STAKE_DURATION = 180;
 
-export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
+export default function Stake({
+  connected,
+  triggerWalletTokenBalancesReload,
+}: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const adxPrice: number | null =
@@ -475,6 +477,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
       <div className="flex flex-col lg:flex-row items-evenly gap-x-4 p-4 justify-center">
         <ADXStakeOverview
           className="max-w-[40em]"
+          connected={connected}
           totalLockedStake={adxDetails.totalLockedStake}
           totalLiquidStaked={adxDetails.totalLiquidStaked}
           lockedStakes={adxLockedStakes}
@@ -489,6 +492,7 @@ export default function Stake({ triggerWalletTokenBalancesReload }: PageProps) {
 
         <ALPStakeOverview
           className="max-w-[40em]"
+          connected={connected}
           totalLockedStake={alpDetails.totalLockedStake}
           lockedStakes={alpLockedStakes}
           handleLockedStakeRedeem={handleLockedStakeRedeem}

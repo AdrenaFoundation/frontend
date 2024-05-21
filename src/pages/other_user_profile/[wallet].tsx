@@ -4,11 +4,9 @@ import { useEffect, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import EmphasizedTitle from '@/components/pages/user_profile/EmphasizedTitle';
-import { PageProps, UserProfileExtended } from '@/types';
+import { UserProfileExtended } from '@/types';
 
-import UserProfile from '../user_profile';
-
-export default function OtherUserProfile(pageProps: PageProps) {
+export default function OtherUserProfile() {
   const router = useRouter();
 
   // false = error loading user profile

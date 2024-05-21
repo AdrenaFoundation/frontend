@@ -6,7 +6,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended, Token } from '@/types';
 import {
   formatMilliseconds,
-  formatNumber,
   getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
