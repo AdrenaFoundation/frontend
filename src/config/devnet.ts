@@ -114,7 +114,7 @@ class DevnetConfiguration implements IConfiguration {
   ];
 
   public readonly mainPool: PublicKey = new PublicKey(
-    'Hf2vTYj2DELzjcF1YasyQhmudMNLA33M3Cj9p7ujAihT',
+    '4vc4LX4K86ptAvaiQcon79yhnKHbCs2hv5TFFmQr8F2L',
   );
 }
 

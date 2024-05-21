@@ -1,5 +1,6 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import { VEST_BUCKETS } from '@/constant';
 import { VestExtended, VestRegistry } from '@/types';
 import { formatNumber, nativeToUi } from '@/utils';
 
@@ -81,7 +82,7 @@ export default function VestingView({
 
                 <div key={`vest${i}-bucket`} className="text-md">
                   {abbreviateWords(
-                    Object.keys(vest.originBucket)[0],
+                    VEST_BUCKETS[vest.originBucket] ?? 'Unknown',
                   ).toUpperCase()}
                 </div>,
 

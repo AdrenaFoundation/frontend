@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "name": "adrena",
   "instructions": [
     {
@@ -3181,16 +3181,10 @@
           "docs": ["#2"]
         },
         {
-          "name": "rewardsReceivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": ["#3"]
-        },
-        {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#4"]
+          "docs": ["#3"]
         },
         {
           "name": "lmStaking",
@@ -3327,16 +3321,10 @@
           "docs": ["#2"]
         },
         {
-          "name": "rewardsReceivingAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": ["#3"]
-        },
-        {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#4"]
+          "docs": ["#3"]
         },
         {
           "name": "lmStaking",
@@ -6373,13 +6361,13 @@
           {
             "name": "longPositions",
             "type": {
-              "defined": "PositionStats"
+              "defined": "PositionsAccounting"
             }
           },
           {
             "name": "shortPositions",
             "type": {
-              "defined": "PositionStats"
+              "defined": "PositionsAccounting"
             }
           },
           {
@@ -7976,7 +7964,7 @@
             "type": "u64"
           },
           {
-            "name": "paidInterestUsd",
+            "name": "borrowFeeUsd",
             "type": "u64"
           }
         ]
@@ -8071,6 +8059,10 @@
           },
           {
             "name": "liquidationUsd",
+            "type": "u64"
+          },
+          {
+            "name": "borrowUsd",
             "type": "u64"
           }
         ]
@@ -8211,7 +8203,7 @@
       }
     },
     {
-      "name": "PositionStats",
+      "name": "PositionsAccounting",
       "type": {
         "kind": "struct",
         "fields": [
@@ -8261,10 +8253,6 @@
           },
           {
             "name": "exitFeeUsd",
-            "type": "u64"
-          },
-          {
-            "name": "liquidationFeeUsd",
             "type": "u64"
           },
           {
@@ -8879,7 +8867,12 @@
           "index": false
         },
         {
-          "name": "feeUsd",
+          "name": "borrowFeeUsd",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "exitFeeUsd",
           "type": "u64",
           "index": false
         }
@@ -9009,7 +9002,12 @@
           "index": false
         },
         {
-          "name": "feeUsd",
+          "name": "borrowFeeUsd",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "exitFeeUsd",
           "type": "u64",
           "index": false
         }
@@ -9109,221 +9107,226 @@
     },
     {
       "code": 6018,
+      "name": "PositionNotInLiquidationRange",
+      "msg": "The position is not in liquidation range"
+    },
+    {
+      "code": 6019,
       "name": "InvalidStakingRoundState",
       "msg": "Invalid staking round state"
     },
     {
-      "code": 6019,
+      "code": 6020,
       "name": "InvalidAdrenaConfig",
       "msg": "Invalid adrena config"
     },
     {
-      "code": 6020,
+      "code": 6021,
       "name": "InvalidPoolConfig",
       "msg": "Invalid pool config"
     },
     {
-      "code": 6021,
+      "code": 6022,
       "name": "InvalidCustodyConfig",
       "msg": "Invalid custody config"
     },
     {
-      "code": 6022,
+      "code": 6023,
       "name": "InsufficientAmountReturned",
       "msg": "Insufficient token amount returned"
     },
     {
-      "code": 6023,
+      "code": 6024,
       "name": "MaxPriceSlippage",
       "msg": "Price slippage limit exceeded"
     },
     {
-      "code": 6024,
+      "code": 6025,
       "name": "MaxLeverage",
       "msg": "Position leverage limit exceeded"
     },
     {
-      "code": 6025,
+      "code": 6026,
       "name": "MinLeverage",
       "msg": "Position leverage under minimum"
     },
     {
-      "code": 6026,
+      "code": 6027,
       "name": "CustodyAmountLimit",
       "msg": "Custody amount limit exceeded"
     },
     {
-      "code": 6027,
+      "code": 6028,
       "name": "PositionAmountLimit",
       "msg": "Position amount limit exceeded"
     },
     {
-      "code": 6028,
+      "code": 6029,
       "name": "TokenRatioOutOfRange",
       "msg": "Token ratio out of range"
     },
     {
-      "code": 6029,
+      "code": 6030,
       "name": "UnsupportedToken",
       "msg": "Token is not supported"
     },
     {
-      "code": 6030,
+      "code": 6031,
       "name": "InstructionNotAllowed",
       "msg": "Instruction is not allowed at this time"
     },
     {
-      "code": 6031,
+      "code": 6032,
       "name": "MaxUtilization",
       "msg": "Token utilization limit exceeded"
     },
     {
-      "code": 6032,
+      "code": 6033,
       "name": "MaxRegisteredResolvedStakingRoundReached",
       "msg": "Max registered resolved staking round reached"
     },
     {
-      "code": 6033,
+      "code": 6034,
       "name": "InvalidGovernanceProgram",
       "msg": "Governance program do not match Cortex's one"
     },
     {
-      "code": 6034,
+      "code": 6035,
       "name": "InvalidGovernanceRealm",
       "msg": "Governance realm do not match Cortex's one"
     },
     {
-      "code": 6035,
+      "code": 6036,
       "name": "InvalidVestingUnlockTime",
       "msg": "Vesting unlock time is too close or passed"
     },
     {
-      "code": 6036,
+      "code": 6037,
       "name": "InvalidStakingLockingTime",
       "msg": "Invalid staking locking time"
     },
     {
-      "code": 6037,
+      "code": 6038,
       "name": "UserStakeNotFound",
       "msg": "The user stake account specified could not be found"
     },
     {
-      "code": 6038,
+      "code": 6039,
       "name": "InvalidAccountData",
       "msg": "Invalid account data"
     },
     {
-      "code": 6039,
+      "code": 6040,
       "name": "UnresolvedStake",
       "msg": "Stake is not resolved"
     },
     {
-      "code": 6040,
+      "code": 6041,
       "name": "BucketMintLimit",
       "msg": "Reached bucket mint limit"
     },
     {
-      "code": 6041,
+      "code": 6042,
       "name": "GenesisAlpLimitReached",
       "msg": "Genesis ALP add liquidity limit reached"
     },
     {
-      "code": 6042,
+      "code": 6043,
       "name": "PermissionlessOracleMissingSignature",
       "msg": "Permissionless oracle update must be preceded by Ed25519 signature verification instruction"
     },
     {
-      "code": 6043,
+      "code": 6044,
       "name": "PermissionlessOracleMalformedEd25519Data",
       "msg": "Ed25519 signature verification data does not match expected format"
     },
     {
-      "code": 6044,
+      "code": 6045,
       "name": "PermissionlessOracleSignerMismatch",
       "msg": "Ed25519 signature was not signed by the oracle authority"
     },
     {
-      "code": 6045,
+      "code": 6046,
       "name": "PermissionlessOracleMessageMismatch",
       "msg": "Signed message does not match instruction params"
     },
     {
-      "code": 6046,
+      "code": 6047,
       "name": "CustodyStableLockedAmountNotFound",
       "msg": "Cannot find custody stable locked amount"
     },
     {
-      "code": 6047,
+      "code": 6048,
       "name": "CustodyNotFound",
       "msg": "Cannot find custody"
     },
     {
-      "code": 6048,
+      "code": 6049,
       "name": "InsufficientBucketReserve",
       "msg": "The bucket does not contain enough token for reserving this allocation"
     },
     {
-      "code": 6049,
+      "code": 6050,
       "name": "UserNicknameTooLong",
       "msg": "User nickname exceed 24 characters"
     },
     {
-      "code": 6050,
+      "code": 6051,
       "name": "UserNicknameTooShort",
       "msg": "User nickname is less than 3 characters"
     },
     {
-      "code": 6051,
+      "code": 6052,
       "name": "InvalidGenesisLockState",
       "msg": "Invalid genesis lock state"
     },
     {
-      "code": 6052,
+      "code": 6053,
       "name": "GenesisLockCampaignFullySubscribed",
       "msg": "The campaign is fully subscribed"
     },
     {
-      "code": 6053,
+      "code": 6054,
       "name": "PoolAumSoftCapUsdReached",
       "msg": "The pool is fully subscribed"
     },
     {
-      "code": 6054,
+      "code": 6055,
       "name": "MaxRegisteredPool",
       "msg": "The number of registered pool reached max amount"
     },
     {
-      "code": 6055,
+      "code": 6056,
       "name": "MaxRegisteredCustodies",
       "msg": "The number of registered custody reached max amount"
     },
     {
-      "code": 6056,
+      "code": 6057,
       "name": "MaxCumulativeShortPositionSizeLimit",
       "msg": "The short limit for this asset has been reached"
     },
     {
-      "code": 6057,
+      "code": 6058,
       "name": "LockedStakeArrayFull",
       "msg": "The max number of LockedStaking has been reached"
     },
     {
-      "code": 6058,
+      "code": 6059,
       "name": "IndexOutOfBounds",
       "msg": "Requested index is out of bounds"
     },
     {
-      "code": 6059,
+      "code": 6060,
       "name": "InvalidCaller",
       "msg": "The instruction must be call with a specific account as caller"
     },
     {
-      "code": 6060,
+      "code": 6061,
       "name": "InvalidBucketName",
       "msg": "Invalid bucket name"
     }
   ],
   "metadata": {
-    "address": "GmMdfHVSshiqKzzbPKmFfBuKYFFXghNNswbraxFQHRWy"
+    "address": "FxbX3Q4sntzNQ29zDmjuFBwdDLwWnfqwxqPo6qLHswRG"
   }
 }
