@@ -19,8 +19,6 @@ import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSub
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import {
-  formatNumber,
-  formatPriceInfo,
   getDatasetBackgroundColor,
   getFontSizeWeight,
 } from '@/utils';
@@ -110,14 +108,14 @@ export default function UsageOverview({
 }) {
   return (
     <StyledContainer
-      title="Economic usage"
-      subTitle="Visualize the project usage."
+      title="Pool utilization"
+      subTitle="Is the pool capital efficient?"
       className={className}
     >
       <StyledSubContainer>
         <div className="flex items-center">
           <InfoAnnotation
-            text="The active positions held by Adrena project."
+            text="Positions currently openned using the pool's capital."
             className="mr-1"
             title="Positions"
           />
@@ -125,7 +123,7 @@ export default function UsageOverview({
 
         <StyledSubSubContainer className="flex-col mt-4">
           <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Active Positions</div>
+            <div className="text-sm">count</div>
             <FormatNumber nb={numberOpenedPositions} precision={1} />
           </div>
 
@@ -140,7 +138,7 @@ export default function UsageOverview({
       <StyledSubContainer className="h-auto">
         <div className="flex items-center">
           <InfoAnnotation
-            text="The current utilization of the pool by custody."
+            text="How much of the pool's capital is utilized?"
             className="mr-1"
             title="Utilization"
           />

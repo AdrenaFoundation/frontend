@@ -211,7 +211,7 @@ export default function Buy({
       <StyledContainer
         className="max-w-[35em]"
         title="ALP"
-        subTitle="The Pool Token"
+        subTitle="Shares of a Adrena Liquidity Pool"
         icon={window.adrena.client.alpToken.image}
       >
         <StyledSubContainer className="lg:max-w-[25em] self-center">

@@ -49,7 +49,7 @@ export default function PositionsArray({
         />
 
         <p className="text-sm opacity-50 font-normal">
-          Waiting for wallet connection
+          You need to connect a Solana Wallet
         </p>
 
         <WalletSelectionModal />

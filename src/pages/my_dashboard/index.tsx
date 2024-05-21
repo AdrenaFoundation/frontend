@@ -346,7 +346,7 @@ export default function MyDashboard({
         </div>
       ) : null}
 
-      <StyledContainer title={<h2>My Opened Positions</h2>}>
+      <StyledContainer title={<h2>Positions</h2>}>
         <StyledSubContainer className="pt-0 pl-0 pb-0 pr-1 bg-third min-h-[5em]">
           <Positions
             positions={positions}
@@ -355,10 +355,10 @@ export default function MyDashboard({
         </StyledSubContainer>
       </StyledContainer>
 
-      <StyledContainer title={<h2>My Stakes</h2>}>
+      <StyledContainer title={<h2>Stakes</h2>}>
         <StyledSubSubContainer className="flex-col">
           <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Liquid Staked ADX</div>
+            <div className="text-sm">Staked ADX (liquid)</div>
 
             <span>
               <FormatNumber
@@ -372,7 +372,7 @@ export default function MyDashboard({
           </div>
 
           <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Locked Staked ADX</div>
+            <div className="text-sm">Staked ADX (locked)</div>
 
             <span>
               <FormatNumber
@@ -386,7 +386,7 @@ export default function MyDashboard({
           </div>
 
           <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Locked Staked ALP</div>
+            <div className="text-sm">Staked ALP (locked)</div>
 
             <span>
               {lockedStakedALP !== null
