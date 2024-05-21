@@ -7,6 +7,10 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber } from '@/utils';
 
+export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
+  return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
+}
+
 export default function TradingChartHeader({
   className,
   tokenList,
@@ -18,7 +22,7 @@ export default function TradingChartHeader({
   selected: Token;
   onChange: (t: Token) => void;
 }) {
-  const tokenPrices = useSelector((s) => s.tokenPrices);
+  const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
 
   return (
@@ -39,10 +43,7 @@ export default function TradingChartHeader({
               return { title: `${token.symbol} / USD` };
             })}
           onSelect={(opt: string) => {
-            const selectedTokenSymbol = opt.slice(
-              0,
-              opt.length - ' / USD'.length,
-            );
+            const selectedTokenSymbol = getTokenSymbolFromChartFormat(opt);
             // Force linting, you cannot not find the token in the list
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const token = tokenList.find(
@@ -58,9 +59,9 @@ export default function TradingChartHeader({
 
       <div className="flex flex-row gap-3 p-3 items-center">
         <FormatNumber
-          nb={tokenPrices?.[selected.symbol]}
+          nb={streamingTokenPrices?.[selected.symbol]}
           format="currency"
-          className="mr-3 text-base"
+          className="mr-3 text-base w-[8em]"
         />
         <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
           <span

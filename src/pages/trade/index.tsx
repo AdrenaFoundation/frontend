@@ -18,6 +18,7 @@ export type Action = 'long' | 'short' | 'swap';
 export default function Trade({
   positions,
   wallet,
+  connected,
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
 }: PageProps) {
@@ -228,13 +229,15 @@ export default function Trade({
         <div className="flex flex-col w-full">
           <div
             className={twMerge(
-              'flex z-30 overflow-hidden bg-main/90 pl-3 pr-3 border rounded-lg mt-4',
+              'flex z-30 overflow-hidden bg-main/90 xl:pl-3 xl:pr-3 border rounded-lg mt-4',
               !positions?.length
                 ? 'min-h-[15em] items-center justify-center'
                 : null,
             )}
           >
             <Positions
+              bodyClassName={'mt-3 mr-3'}
+              connected={connected}
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
             />
@@ -244,7 +247,7 @@ export default function Trade({
 
       <>
         <TradeComp
-          className="lg:max-h-[50em] hidden sm:flex ml-4"
+          className="lg:max-h-[50em] hidden sm:flex lg:ml-4"
           selectedAction={selectedAction}
           setSelectedAction={setSelectedAction}
           tokenA={tokenA}
@@ -253,6 +256,7 @@ export default function Trade({
           setTokenB={setTokenB}
           openedPosition={openedPosition}
           wallet={wallet}
+          connected={connected}
           triggerPositionsReload={triggerPositionsReload}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
         />
@@ -288,7 +292,7 @@ export default function Trade({
                 title="Swap"
                 variant="outline"
                 size="lg"
-                className="border-purple-500 text-purple-500 bg-purple-700/10"
+                className="border-white text-white bg-white/10"
                 onClick={() => {
                   setActivePositionModal('swap');
                   setSelectedAction('swap');
@@ -317,6 +321,7 @@ export default function Trade({
                   openedPosition={openedPosition}
                   className="p-0 m-0"
                   wallet={wallet}
+                  connected={connected}
                   triggerPositionsReload={triggerPositionsReload}
                   triggerWalletTokenBalancesReload={
                     triggerWalletTokenBalancesReload

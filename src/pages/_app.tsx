@@ -169,6 +169,7 @@ function AppComponent({
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
+  const [connected, setConnected] = useState<boolean>(false);
 
   // Open the terms and conditions modal if cookies isn't set to true
   useEffect(() => {
@@ -179,13 +180,16 @@ function AppComponent({
 
   // When the wallet connect/disconnect load/unload informations
   // 1) load the program so we can execute txs with its wallet
-  // 2) load the user profile so we can display nickname
+  // 2) Set connected variable variable to true/false
+  // 3) load the user profile so we can display nickname
   useEffect(() => {
     if (!wallet) {
+      setConnected(false);
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
 
+    setConnected(true);
     window.adrena.client.setAdrenaProgram(
       new Program(
         ADRENA_IDL,
@@ -197,8 +201,6 @@ function AppComponent({
       ),
     );
   }, [wallet]);
-
-  const connected = !!wallet;
 
   return (
     <RootLayout

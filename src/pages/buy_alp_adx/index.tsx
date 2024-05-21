@@ -26,8 +26,9 @@ export type FeesAndAmountsType = {
 };
 
 export default function Buy({
-  triggerWalletTokenBalancesReload,
+  connected,
   mainPool,
+  triggerWalletTokenBalancesReload,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
@@ -179,9 +180,7 @@ export default function Buy({
     setCollateralToken(t);
   };
 
-  if (allowedCollateralTokens === null) {
-    return <Loader />;
-  }
+  if (allowedCollateralTokens === null) return <Loader />;
 
   return (
     <div className="flex flex-col md:flex-row items-evenly justify-center gap-x-4 p-4">
@@ -235,6 +234,7 @@ export default function Buy({
             collateralPrice={collateralPrice}
             feesAndAmounts={feesAndAmounts}
             aumUsd={mainPool?.aumUsd}
+            connected={connected}
           />
         </StyledSubContainer>
       </StyledContainer>

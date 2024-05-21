@@ -1,6 +1,8 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
+import Switch from '@/components/common/Switch/Switch';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import AccountsView from '@/components/pages/monitoring/AccountsView/AccountsView';
 import ADXTokenomicsView from '@/components/pages/monitoring/ADXTokenomicsView/ADXTokenomicsView';
@@ -21,9 +23,17 @@ import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
+import BasicMonitoring from './basic';
+import DetailedMonitoring from './detailed';
+
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
-export default function Monitoring({ mainPool, custodies }: PageProps) {
+export default function Monitoring(pageProps: PageProps) {
+  const [detailedDisplay, setDetailedDisplay] = useState<boolean>(false);
+
+  const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
+    useState<(typeof tabs)[number]>('All');
+
   const tabs = [
     'All',
     'Accounts',
@@ -34,39 +44,10 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
     'Vesting',
     'ADX tokenomics',
   ] as const;
-  const tabsFormatted = tabs.map((x) => ({ title: x }));
-
-  const [selectedTab, setSelectedTab] = useState<(typeof tabs)[number]>('All');
-  const tokenPrices = useSelector((s) => s.tokenPrices);
-  const cortex = useCortex();
-  const vestRegistry = useVestRegistry();
-  const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
-  const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
-  const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
-    window.adrena.client.lpTokenMint,
-  );
-  const adxStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
-    window.adrena.client.lmTokenMint,
-  );
-  const adxTotalSupply = useADXTotalSupply();
-  const alpTotalSupply = useALPTotalSupply();
-  const vests = useVests();
-  const composition = useALPIndexComposition(custodies);
-
-  if (
-    !mainPool ||
-    !custodies ||
-    !tokenPrices ||
-    !cortex ||
-    !vestRegistry ||
-    adxTotalSupply === null ||
-    alpTotalSupply === null ||
-    !alpStakingAccount ||
-    !adxStakingAccount ||
-    !composition ||
-    composition.some((c) => c === null)
-  )
-    return <></>;
+  const tabsFormatted = tabs.map((x) => ({
+    title: x,
+    activeColor: 'border-white',
+  }));
 
   return (
     <>
@@ -94,110 +75,61 @@ export default function Monitoring({ mainPool, custodies }: PageProps) {
         />
       </div>
 
-      <TabSelect
-        wrapperClassName="w-full bg-secondary ml-auto mr-auto pt-2 flex-col md:flex-row"
-        titleClassName="whitespace-nowrap"
-        selected={selectedTab}
-        initialSelectedIndex={tabsFormatted.findIndex(
-          (tab) => tab.title === selectedTab,
-        )}
-        tabs={tabsFormatted}
-        onClick={(tab) => {
-          setSelectedTab(tab);
-        }}
-      />
+      <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10">
+        <div
+          className={twMerge(
+            'flex items-center justify-evenly w-[14em] ml-auto mr-auto',
+            detailedDisplay ? 'pt-2 pb-2' : '',
+          )}
+        >
+          <span
+            className={twMerge(
+              'font-special uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              !detailedDisplay ? 'opacity-100' : '',
+            )}
+            onClick={() => setDetailedDisplay(false)}
+          >
+            Lite View
+          </span>
 
-      <div className="w-full max-w-full overflow-x-auto flex z-10">
-        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap min-w-[40em] w-[60em] max-w-full ml-auto mr-auto justify-center">
-          {selectedTab === 'All' ? (
-            <div className="w-full border-b-4 z-10 border-white">
-              <h1 className="text-white">ACCOUNT</h1>
-            </div>
-          ) : null}
+          <span className="opacity-20 text-2xl">/</span>
 
-          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
-            <AccountsView
-              cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
-            />
-          ) : null}
-
-          {selectedTab === 'All' ? (
-            <div className="w-full border-b-4 z-10 border-white">
-              <h1 className="text-white">POOL</h1>
-            </div>
-          ) : null}
-
-          {selectedTab === 'Pool' || selectedTab === 'All' ? (
-            <PoolView mainPool={mainPool} custodies={custodies} />
-          ) : null}
-
-          {selectedTab === 'All' ? (
-            <div className="w-full border-b-4 z-10 border-white">
-              <h1 className="text-white">FEES</h1>
-            </div>
-          ) : null}
-
-          {selectedTab === 'Fees' || selectedTab === 'All' ? (
-            <FeesView
-              mainPool={mainPool}
-              custodies={custodies}
-              alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-              adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
-            />
-          ) : null}
-
-          {selectedTab === 'All' ? (
-            <div className="w-full border-b-4 z-10 border-white">
-              <h1 className="text-white">STAKING</h1>
-            </div>
-          ) : null}
-
-          {selectedTab === 'Staking' || selectedTab === 'All' ? (
-            <StakingView
-              alpStakingAccount={alpStakingAccount}
-              adxStakingAccount={adxStakingAccount}
-              alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-              adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
-            />
-          ) : null}
-
-          {selectedTab === 'All' ? (
-            <div className="w-full border-b-4 z-10 border-white">
-              <h1 className="text-white">TRADING</h1>
-            </div>
-          ) : null}
-
-          {selectedTab === 'Trading' || selectedTab === 'All' ? (
-            <TradingView mainPool={mainPool} custodies={custodies} />
-          ) : null}
-
-          {selectedTab === 'All' ? (
-            <div className="w-full border-b-4 z-10 border-white">
-              <h1 className="text-white">VESTING</h1>
-            </div>
-          ) : null}
-
-          {selectedTab === 'Vesting' || selectedTab === 'All' ? (
-            <VestingView vestRegistry={vestRegistry} vests={vests} />
-          ) : null}
-
-          {selectedTab === 'All' ? (
-            <div className="w-full border-b-4 z-10 border-white">
-              <h1 className="text-white">ADX TOKENOMICS</h1>
-            </div>
-          ) : null}
-
-          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
-            <ADXTokenomicsView
-              cortex={cortex}
-              vestRegistry={vestRegistry}
-              adxTotalSupply={adxTotalSupply}
-              adxStakingAccount={adxStakingAccount}
-            />
-          ) : null}
+          <span
+            className={twMerge(
+              'font-special uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              detailedDisplay ? 'opacity-100' : '',
+            )}
+            onClick={() => setDetailedDisplay(true)}
+          >
+            Detailed View
+          </span>
         </div>
+
+        {detailedDisplay ? (
+          <TabSelect
+            wrapperClassName="w-full w-[40em] pl-4 pr-4 bg-secondary flex-col md:flex-row"
+            titleClassName="whitespace-nowrap text-xs"
+            selected={detailedDisplaySelectedTab}
+            initialSelectedIndex={tabsFormatted.findIndex(
+              (tab) => tab.title === detailedDisplaySelectedTab,
+            )}
+            tabs={tabsFormatted}
+            onClick={(tab) => {
+              setDetailedDisplaySelectedTab(tab);
+            }}
+          />
+        ) : null}
+      </div>
+
+      <div className={twMerge('hidden', detailedDisplay ? 'block' : '')}>
+        <DetailedMonitoring
+          {...pageProps}
+          selectedTab={detailedDisplaySelectedTab}
+        />
+      </div>
+
+      <div className={twMerge('hidden', !detailedDisplay ? 'block' : '')}>
+        <BasicMonitoring {...pageProps} />
       </div>
     </>
   );

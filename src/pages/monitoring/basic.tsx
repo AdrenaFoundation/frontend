@@ -1,5 +1,4 @@
 import { ChartData } from 'chart.js';
-import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
 import GlobalHealthOverview from '@/components/pages/global/GlobalHealthOverview';
@@ -13,12 +12,9 @@ import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import monsterFace from '../../../public/images/monster-1.png';
-import monsterFace2 from '../../../public/images/monster-2.png';
-
 export const DEFAULT_LOCKED_STAKE_DURATION = 90;
 
-export default function Global({ mainPool, custodies }: PageProps) {
+export default function BasicMonitoring({ mainPool, custodies }: PageProps) {
   const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
   const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
   const alpPrice =
@@ -144,20 +140,6 @@ export default function Global({ mainPool, custodies }: PageProps) {
 
   return (
     <div className="flex flex-row flex-wrap justify-center gap-4 p-4">
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-10">
-        <Image
-          src={monsterFace2}
-          alt="monster"
-          className="absolute hidden md:block bottom-0 left-[-30em] h-[100vh] w-[100vh] -z-10"
-        />
-
-        <Image
-          src={monsterFace}
-          alt="monster"
-          className="absolute hidden md:block bottom-0 right-[-30em] h-[110vh] w-[110vh] scale-x-[-1] -z-10"
-        />
-      </div>
-
       {alpChartData ? (
         <GlobalHealthOverview
           compositionChartData={alpChartData}

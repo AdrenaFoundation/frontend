@@ -33,6 +33,7 @@ export default function ALPSwapInputs({
   setFeesUsd,
   feesAndAmounts,
   aumUsd,
+  connected,
 }: {
   actionType: 'buy' | 'sell';
   className?: string;
@@ -51,17 +52,13 @@ export default function ALPSwapInputs({
   setFeesUsd: (f: number | null) => void;
   feesAndAmounts: FeesAndAmountsType | null;
   aumUsd: number | undefined;
+  connected: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const wallet = useSelector((s) => s.walletState.wallet);
-  const [connected, setConnected] = useState<boolean>(false);
   const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    setConnected(!!wallet);
-  }, [wallet]);
   // When price change or input change, recalculate inputs and displayed price
   {
     // Adapt displayed prices when token prices change
@@ -414,12 +411,11 @@ export default function ALPSwapInputs({
       >
         <div className="flex justify-between items-center">
           <div className="flex items-center">
+            <div className="text-sm text-txtfade">Fees</div>
             <InfoAnnotation
               text="Amount of tokens being traded."
               className="w-3 grow-0 mr-1"
             />
-
-            <div className="text-sm text-txtfade">Fees</div>
           </div>
 
           <div className="relative flex flex-col text-sm font-mono">

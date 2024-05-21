@@ -291,7 +291,11 @@ export class AdrenaClient {
 
     return {
       pubkey: userProfilePda,
-      nickname: p.nickname.toString(),
+      // Transform the buffer of bytes to a string
+      nickname: p.nickname.value
+        .map((byte) => String.fromCharCode(byte))
+        .join('')
+        .replace(/\0/g, ''),
       createdAt: p.createdAt.toNumber(),
       owner: p.owner,
       swapCount: p.swapCount.toNumber(),

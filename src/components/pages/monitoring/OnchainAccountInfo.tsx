@@ -6,12 +6,16 @@ import { twMerge } from 'tailwind-merge';
 import { getAccountExplorer } from '@/utils';
 
 export default function OnchainAccountInfo({
-  className,
   address,
+  className,
+  iconClassName,
+  noAddress = false,
   shorten = false,
 }: {
-  className?: string;
   address: PublicKey;
+  className?: string;
+  iconClassName?: string;
+  noAddress?: boolean;
   shorten?: boolean;
 }) {
   return (
@@ -23,18 +27,22 @@ export default function OnchainAccountInfo({
         className,
       )}
     >
-      <span className="text-[0.9em]">
-        {shorten
-          ? `${address.toBase58().slice(0, 4)}..${address.toBase58().slice(-4)}`
-          : address.toBase58()}
-      </span>
+      {noAddress ? null : (
+        <span className="text-[0.9em]">
+          {shorten
+            ? `${address.toBase58().slice(0, 4)}..${address
+                .toBase58()
+                .slice(-4)}`
+            : address.toBase58()}
+        </span>
+      )}
 
       <Image
-        className="ml-1"
+        className={twMerge('ml-1 w-3 h-3', iconClassName)}
         src="/images/external-link-logo.png"
         alt="external link icon"
-        width="12"
-        height="12"
+        width="36"
+        height="36"
       />
     </Link>
   );
