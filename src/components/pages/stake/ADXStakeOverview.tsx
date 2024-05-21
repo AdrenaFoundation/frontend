@@ -40,7 +40,7 @@ export default function ADXStakeOverview({
 
         <ul>
           <li className="mt-4 text-sm">
-            - Get 1:1 voting power to participate in the protocol's governance
+            - Get 1:1 voting power to participate in the protocol&apos;s governance
           </li>
           <li className="mt-4 text-sm">
             - Unstake at any time, if not participating in an active vote
@@ -92,7 +92,7 @@ export default function ADXStakeOverview({
 
           <ul>
             <li className="mt-4 text-sm">
-              - Get amplified voting power to participate in the protocol's governance
+              - Get amplified voting power to participate in the protocol&apos;s governance
             </li>
             <li className="mt-4 text-sm">
               - Earn USDC rewards (20% of protocol fees distributed to stakers)
