@@ -77,7 +77,7 @@ function generateBarChat(
             font: (context: Context) => getFontSizeWeight(context),
             // display title and labels (custodies name) on graph
             formatter: (_, context: Context) => [
-              `${title} ${context.chart.data.labels?.[context.dataIndex]}`,
+              `${title} (${context.chart.data.labels?.[context.dataIndex]})`,
             ],
           },
           legend: {
