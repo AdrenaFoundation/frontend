@@ -176,17 +176,9 @@ export default function MyDashboard({
     }
   };
 
-  if (userProfile === null) {
-    return (
-      <div className="flex h-[10em] mt-2 w-full border items-center justify-center">
-        <WalletConnection connected={connected} />
-      </div>
-    );
-  }
-
   return (
     <>
-      <div className="absolute w-full h-full left-0 top-0 bottom-0 overflow-hidden">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
         <RiveAnimation
           animation="blob-bg"
           layout={
@@ -209,44 +201,53 @@ export default function MyDashboard({
           className={'absolute right-0 w-[1500px] h-full'}
         />
       </div>
-      <div className="flex flex-col gap-4 p-4 w-full max-w-[50em] self-center">
-        <div className="flex flex-wrap w-full gap-4">
-          {userProfile === false ? (
-            <div className="flex w-full justify-center items-center">
-              <ProfileCreation
-                initUserProfile={initUserProfile}
-                nickname={nickname}
-                setNickname={setNickname}
-              />
+
+      <div className="flex flex-col gap-4 p-4 w-full self-center">
+        {userProfile !== null ? (
+          <>
+            <div className="flex flex-wrap w-full gap-4">
+              {userProfile === false ? (
+                <div className="flex w-full justify-center items-center">
+                  <ProfileCreation
+                    initUserProfile={initUserProfile}
+                    nickname={nickname}
+                    setNickname={setNickname}
+                  />
+                </div>
+              ) : (
+                <>
+                  <OwnerBloc
+                    userProfile={userProfile}
+                    triggerUserProfileReload={triggerUserProfileReload}
+                    canUpdateNickname={!readonly}
+                    className="flex w-full w-min-[30em]"
+                  />
+                  <div className="flex flex-1 flex-col md:flex-row gap-4">
+                    <TradingStats userProfile={userProfile} className="flex" />
+                    <SwapStats userProfile={userProfile} className="flex" />
+                  </div>
+                </>
+              )}
             </div>
-          ) : (
-            <>
-              <OwnerBloc
-                userProfile={userProfile}
-                triggerUserProfileReload={triggerUserProfileReload}
-                canUpdateNickname={!readonly}
-                className="flex w-full w-min-[30em]"
-              />
-              <div className="flex flex-1 flex-col md:flex-row gap-4">
-                <TradingStats userProfile={userProfile} className="flex" />
-                <SwapStats userProfile={userProfile} className="flex" />
-              </div>
-            </>
-          )}
-        </div>
-        <PositionsStats
-          connected={connected}
-          positions={positions}
-          triggerPositionsReload={triggerPositionsReload}
-          title="Opened Positions"
-        />
-        <StakesStats
-          liquidStakedADX={liquidStakedADX}
-          lockedStakedADX={lockedStakedADX}
-          lockedStakedALP={lockedStakedALP}
-          lockedStakes={lockedStakes}
-          handleLockedStakeRedeem={handleLockedStakeRedeem}
-        ></StakesStats>
+            <PositionsStats
+              connected={connected}
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+              title="Opened Positions"
+            />
+            <StakesStats
+              liquidStakedADX={liquidStakedADX}
+              lockedStakedADX={lockedStakedADX}
+              lockedStakedALP={lockedStakedALP}
+              lockedStakes={lockedStakes}
+              handleLockedStakeRedeem={handleLockedStakeRedeem}
+            ></StakesStats>
+          </>
+        ) : (
+          <div className="flex h-[10em] bg-secondary w-full border items-center justify-center rounded-xl z-30">
+            <WalletConnection connected={connected} />
+          </div>
+        )}
       </div>
     </>
   );

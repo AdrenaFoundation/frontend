@@ -11,6 +11,7 @@ import ALPStakeOverview from '@/components/pages/stake/ALPStakeOverview';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import {
@@ -446,11 +447,9 @@ export default function Stake({
       tokenSymbol: 'ALP',
     })) ?? null;
 
-  console.log('alpLockedStakes', alpLockedStakes);
-
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0">
         <RiveAnimation
           animation="mid-monster"
           layout={
@@ -473,89 +472,94 @@ export default function Stake({
           className="absolute hidden md:block bottom-0 right-[-20vh] h-[50vh] w-[80vh] scale-y-[-1] -z-10"
         />
       </div>
-
-      <div className="flex flex-col lg:flex-row items-evenly gap-x-4 p-4 justify-center">
-        <ADXStakeOverview
-          className="max-w-[40em]"
-          connected={connected}
-          totalLockedStake={adxDetails.totalLockedStake}
-          totalLiquidStaked={adxDetails.totalLiquidStaked}
-          lockedStakes={adxLockedStakes}
-          handleLockedStakeRedeem={handleLockedStakeRedeem}
-          handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
-            setLockPeriod(initialLockPeriod);
-            setActiveStakingToken('ADX');
-          }}
-          handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
-          handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
-        />
-
-        <ALPStakeOverview
-          className="max-w-[40em]"
-          connected={connected}
-          totalLockedStake={alpDetails.totalLockedStake}
-          lockedStakes={alpLockedStakes}
-          handleLockedStakeRedeem={handleLockedStakeRedeem}
-          handleClickOnStakeMore={(initialLockPeriod: AlpLockPeriod) => {
-            setLockPeriod(initialLockPeriod);
-            setActiveStakingToken('ALP');
-          }}
-          handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
-        />
-
-        <AnimatePresence>
-          {activeStakingToken && (
-            <Modal
-              title={`Stake ${activeStakingToken}`}
-              close={() => {
-                setAmount(null);
-                setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
-                setActiveStakingToken(null);
+      <div className="flex flex-col lg:flex-row items-evenly gap-4 p-4 justify-center z-30">
+        {!connected ? (
+          <div className="flex flex-col bg-secondary w-full h-[10em] border items-center justify-center border rounded-xl">
+            <WalletConnection connected={connected} />
+          </div>
+        ) : (
+          <>
+            <ALPStakeOverview
+              totalLockedStake={alpDetails.totalLockedStake}
+              totalRedeemableLockedStake={getTotalRedeemableLockedStake('ALP')}
+              lockedStakes={alpLockedStakes}
+              handleLockedStakeRedeem={handleLockedStakeRedeem}
+              handleClickOnStakeMore={(initialLockPeriod: AlpLockPeriod) => {
+                setLockPeriod(initialLockPeriod);
+                setActiveStakingToken('ALP');
               }}
-            >
-              {activeStakingToken === 'ADX' ? (
-                <ADXStakeToken
-                  amount={amount}
-                  setAmount={setAmount}
-                  onStakeAmountChange={onStakeAmountChange}
-                  errorMessage={errorMessage}
-                  stakeAmount={stakeAmount}
-                  lockPeriod={lockPeriod as AdxLockPeriod}
-                  setLockPeriod={(lockPeriod: AdxLockPeriod) =>
-                    setLockPeriod(lockPeriod)
-                  }
-                  balance={adxBalance}
-                />
-              ) : (
-                <ALPStakeToken
-                  amount={amount}
-                  setAmount={setAmount}
-                  onStakeAmountChange={onStakeAmountChange}
-                  errorMessage={errorMessage}
-                  stakeAmount={stakeAmount}
-                  lockPeriod={lockPeriod as AlpLockPeriod}
-                  setLockPeriod={(lockPeriod: AlpLockPeriod) =>
-                    setLockPeriod(lockPeriod)
-                  }
-                  balance={alpBalance}
-                />
-              )}
-            </Modal>
-          )}
+              handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
+            />
 
-          {activeRedeemLiquidADX && (
-            <Modal
-              title="Redeem Liquid ADX"
-              close={() => setActiveRedeemLiquidADX(false)}
-            >
-              <StakeRedeem
-                tokenSymbol="ADX"
-                totalLiquidStaked={getTotalADXLiquidStaked()}
-                handleRemoveLiquidStake={handleRemoveADXLiquidStake}
-              />
-            </Modal>
-          )}
-        </AnimatePresence>
+            <ADXStakeOverview
+              totalLockedStake={adxDetails.totalLockedStake}
+              totalLiquidStaked={adxDetails.totalLiquidStaked}
+              totalRedeemableLockedStake={getTotalRedeemableLockedStake('ADX')}
+              lockedStakes={adxLockedStakes}
+              handleLockedStakeRedeem={handleLockedStakeRedeem}
+              handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
+                setLockPeriod(initialLockPeriod);
+                setActiveStakingToken('ADX');
+              }}
+              handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
+              handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
+            />
+
+            <AnimatePresence>
+              {activeStakingToken && (
+                <Modal
+                  title={`Stake ${activeStakingToken}`}
+                  close={() => {
+                    setAmount(null);
+                    setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
+                    setActiveStakingToken(null);
+                  }}
+                >
+                  {activeStakingToken === 'ADX' ? (
+                    <ADXStakeToken
+                      amount={amount}
+                      setAmount={setAmount}
+                      onStakeAmountChange={onStakeAmountChange}
+                      errorMessage={errorMessage}
+                      stakeAmount={stakeAmount}
+                      lockPeriod={lockPeriod as AdxLockPeriod}
+                      setLockPeriod={(lockPeriod: AdxLockPeriod) =>
+                        setLockPeriod(lockPeriod)
+                      }
+                      balance={adxBalance}
+                    />
+                  ) : (
+                    <ALPStakeToken
+                      amount={amount}
+                      setAmount={setAmount}
+                      onStakeAmountChange={onStakeAmountChange}
+                      errorMessage={errorMessage}
+                      stakeAmount={stakeAmount}
+                      lockPeriod={lockPeriod as AlpLockPeriod}
+                      setLockPeriod={(lockPeriod: AlpLockPeriod) =>
+                        setLockPeriod(lockPeriod)
+                      }
+                      balance={alpBalance}
+                    />
+                  )}
+                </Modal>
+              )}
+
+              {activeRedeemLiquidADX && (
+                <Modal
+                  title="Redeem Liquid ADX"
+                  close={() => setActiveRedeemLiquidADX(false)}
+                >
+                  <StakeRedeem
+                    tokenSymbol="ADX"
+                    totalLiquidStaked={getTotalADXLiquidStaked()}
+                    handleRemoveLiquidStake={handleRemoveADXLiquidStake}
+                  />
+                </Modal>
+              )}
+            </AnimatePresence>
+          </>
+        )}
       </div>
     </>
   );
