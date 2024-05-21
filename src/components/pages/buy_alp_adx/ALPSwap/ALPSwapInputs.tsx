@@ -411,12 +411,11 @@ export default function ALPSwapInputs({
       >
         <div className="flex justify-between items-center">
           <div className="flex items-center">
+            <div className="text-sm text-txtfade">Fees</div>
             <InfoAnnotation
               text="Amount of tokens being traded."
               className="w-3 grow-0 mr-1"
             />
-
-            <div className="text-sm text-txtfade">Fees</div>
           </div>
 
           <div className="relative flex flex-col text-sm font-mono">
