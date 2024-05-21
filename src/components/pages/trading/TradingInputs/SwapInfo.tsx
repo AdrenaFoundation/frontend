@@ -29,12 +29,11 @@ export default function SwapInfo({
     <StyledSubSubContainer className={twMerge('flex-col pr-4', className)}>
       <div className="w-full flex justify-between items-start">
         <div className="flex">
+          <span className="text-sm text-txtfade flex">Total Fees</span>
           <InfoAnnotation
             text="Swap fees are deducted from both the input token (token IN) and the output token (token OUT). For example, in a BTC to USDC swap, there are fees to be paid in BTC and in USDC."
             className="w-3 grow-0 mr-1"
           />
-
-          <span className="text-sm text-txtfade flex">Total Fees</span>
         </div>
 
         <span className="text-sm font-mono">

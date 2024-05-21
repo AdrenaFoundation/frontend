@@ -56,11 +56,11 @@ export default function PositionInfos({
         <div className="flex flex-col pt-2 pb-2">
           <div className={infoRowStyle}>
             <span className="text-sm flex">
+              Collateral
               <InfoAnnotation
                 text="Collateral backing the position. Position can be liquidated if this drop below xx% of position value"
                 className="mr-1 w-3"
               />
-              Collateral
             </span>
 
             {!isInfoLoading ? (
@@ -111,11 +111,11 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm flex">
+              Leverage
               <InfoAnnotation
                 text="Multiplier applied to the collateral to determine the size of the position."
                 className="mr-1 w-3"
               />
-              Leverage
             </span>
 
             {!isInfoLoading ? (
@@ -165,11 +165,11 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm flex">
+              Entry Price
               <InfoAnnotation
                 text="Token price at which the position is opened."
                 className="mr-1 w-3"
               />
-              Entry Price
             </span>
 
             {!isInfoLoading ? (
@@ -222,11 +222,11 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm flex">
+              Liquidation Price
               <InfoAnnotation
                 text="If the token's price hits this point, the position is automatically closed to prevent further losses."
                 className="mr-1 w-3"
               />
-              Liquidation Price
             </span>
 
             {!isInfoLoading ? (
@@ -287,13 +287,13 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm flex">
+              {openedPosition ? 'Increase' : 'Open'} Position Fees
               <InfoAnnotation
                 text={`Fees paid when ${
                   openedPosition ? 'increasing' : 'opening'
                 } the position.`}
                 className="mr-1 w-3"
               />
-              {openedPosition ? 'Increase' : 'Open'} Position Fees
             </span>
 
             {!isInfoLoading ? (
@@ -358,11 +358,11 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm relative flex">
+              Exit Position Fees
               <InfoAnnotation
                 text="Fees paid when closing the position."
                 className="mr-1 w-3"
               />
-              Exit Position Fees
             </span>
 
             {!isInfoLoading ? (
@@ -418,11 +418,11 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm relative flex">
+              Liquidation Fees
               <InfoAnnotation
                 text="Fees paid when the position is liquidated."
                 className="mr-1 w-3"
               />
-              Liquidation Fees
             </span>
 
             {!isInfoLoading ? (
@@ -480,11 +480,11 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm relative flex">
+              Current Borrow Fees
               <InfoAnnotation
                 text="Fees charged for borrowing funds for the position. Greater leverage means borrowing more tokens, resulting in higher fees."
                 className="mr-1 w-3"
               />
-              Current Borrow Fees
             </span>
 
             {!isInfoLoading ? (
@@ -503,11 +503,11 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm flex mb-1">
+              Available Liquidity
               <InfoAnnotation
                 text="Amount of funds available to enter new trades."
                 className="mr-1 w-3"
               />
-              Available Liquidity
             </span>
 
             {!isInfoLoading ? (

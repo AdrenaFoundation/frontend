@@ -117,10 +117,11 @@ function startStreaming(retries = 3, delay = 3000) {
 
                   handleStreamingData(jsonData);
                 } catch (e: unknown) {
-                  console.error(
+                  // streaming data is not always clean, we don't need to catch this error
+                  /* console.error(
                     'Error parsing JSON:',
                     e instanceof Error ? e.message : String(e),
-                  );
+                  ); */
                 }
               }
             });

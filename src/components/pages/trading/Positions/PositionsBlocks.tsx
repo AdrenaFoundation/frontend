@@ -1,41 +1,35 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
-import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
-import { useDispatch, useSelector } from '@/store/store';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
-
-import phantomLogo from '../../../../../public/images/phantom.png';
+import { getArrowElement } from '@/utils';
 
 export default function PositionsBlocks({
+  bodyClassName,
+  connected,
   className,
   positions,
   triggerClosePosition,
   triggerEditPositionCollateral,
+  wrapped = true,
 }: {
+  bodyClassName?: string;
+  connected: boolean;
   className?: string;
   positions: PositionExtended[] | null;
   triggerClosePosition: (p: PositionExtended) => void;
   triggerEditPositionCollateral: (p: PositionExtended) => void;
+  wrapped?: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const connected = !!useSelector((s) => s.walletState.wallet);
-  const dispatch = useDispatch();
   const arrowElementUpRight = getArrowElement('up', 'right-[0.5em] opacity-70');
   const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
 
   const columnStyle = 'flex w-full justify-between';
-
-  const handleClick = () => {
-    if (!connected) {
-      dispatch(openCloseConnectionModalAction(true));
-      return;
-    }
-  };
 
   function generateLiquidationBlock() {
     return (
@@ -50,177 +44,185 @@ export default function PositionsBlocks({
   }
 
   if (positions === null && !connected) {
-    return (
-      <div className="flex flex-col h-full items-center justify-center">
-        <Button
-          title={
-            !window.adrena.geoBlockingData.allowed
-              ? 'Geo-Restricted Access'
-              : 'Connect wallet'
-          }
-          variant="secondary"
-          rightIcon={phantomLogo}
-          className="mb-2"
-          onClick={handleClick}
-        />
-
-        <p className="text-sm opacity-50 font-normal">
-          You need to connect a Solana Wallet
-        </p>
-
-        <WalletSelectionModal />
-      </div>
-    );
+    return <WalletConnection connected={connected} />;
   }
 
-  return (
-    <div className={twMerge('w-full', 'flex', 'flex-wrap', className)}>
-      {positions === null && connected ? (
-        <div className="mt-5 mb-5 ml-auto mr-auto">Loading ...</div>
-      ) : null}
-
-      {positions && !positions.length ? (
-        <div className="mt-5 mb-5 ml-auto mr-auto">No opened position</div>
-      ) : null}
-
-      {positions?.map((position) => (
+  function generatePositionBlocs(positions: PositionExtended[] | null) {
+    return positions?.map((position) => (
+      <div className="flex flex-col w-full" key={position.pubkey.toBase58()}>
         <div
-          className="flex gap-1 flex-col w-full"
-          key={position.pubkey.toBase58()}
+          className={twMerge(
+            'flex flex-col border rounded-lg w-full',
+            position === positions[0] ? '' : 'mt-3',
+            position === positions[positions.length - 1] ? 'mb-3' : '',
+            bodyClassName,
+          )}
         >
-          <div className="flex flex-col bg-secondary border rounded-lg w-full mt-3 mb-3">
-            <div className="flex flex-row justify-between items-center border-b">
-              <div className="flex flex-row h-10 items-center relative overflow-hidden">
-                <Image
-                  className="absolute left-[-0.7em] top-auto grayscale opacity-40"
-                  src={position.token.image}
-                  width={70}
-                  height={70}
-                  alt={`${position.token.symbol} logo`}
-                />
+          <div className="flex flex-row justify-between items-center border-b">
+            <div className="flex flex-row h-10 items-center relative overflow-hidden rounded-tl-lg">
+              <Image
+                className="absolute left-[-0.7em] top-auto grayscale opacity-40"
+                src={position.token.image}
+                width={70}
+                height={70}
+                alt={`${position.token.symbol} logo`}
+              />
 
-                <div className="flex">
-                  <span
-                    className={twMerge(
-                      'ml-16 capitalize font-mono',
-                      position.side === 'long' ? 'text-green' : 'text-red',
-                    )}
-                  >
-                    {position.side}
-                  </span>
+              <div className="flex">
+                <span
+                  className={twMerge(
+                    'ml-16 capitalize font-mono',
+                    position.side === 'long' ? 'text-green' : 'text-red',
+                  )}
+                >
+                  {position.side}
+                </span>
 
-                  <h3 className="text-sm capitalize font-mono ml-2">
-                    {position.token.name}
-                  </h3>
-                </div>
-              </div>
-
-              <div></div>
-
-              <div className="flex ml-auto mr-3">
-                <Button
-                  className="text-xs"
-                  title="close"
-                  variant="secondary"
-                  onClick={() => {
-                    triggerClosePosition(position);
-                  }}
-                />
-
-                <Button
-                  className="text-xs ml-4"
-                  title="edit"
-                  variant="secondary"
-                  onClick={() => {
-                    triggerEditPositionCollateral(position);
-                  }}
-                />
+                <h3 className="text-sm capitalize font-mono ml-2">
+                  {position.token.name}
+                </h3>
               </div>
             </div>
 
-            {position.side === 'long' &&
-            position.price < (position.liquidationPrice ?? 0)
-              ? generateLiquidationBlock()
-              : position.side === 'short' &&
-                position.price > (position.liquidationPrice ?? 0)
-              ? generateLiquidationBlock()
-              : ''}
+            <div></div>
 
-            <ul className="flex flex-col gap-2 p-4">
-              <li className={columnStyle}>
-                <p className="opacity-50">Leverage</p>
-                <div className="flex-row gap-3">
-                  <FormatNumber
-                    nb={position.leverage}
-                    format="number"
-                    className="text-right"
-                    suffix="x"
-                    isDecimalDimmed={false}
-                  />
-                </div>
-              </li>
+            <div className="flex ml-auto mr-3">
+              <Button
+                className="text-xs"
+                title="close"
+                variant="secondary"
+                onClick={() => {
+                  triggerClosePosition(position);
+                }}
+              />
 
-              <li className={columnStyle}>
-                <p className="opacity-50">Size</p>
-
-                <FormatNumber
-                  nb={position.sizeUsd}
-                  format="currency"
-                  className="text-right"
-                />
-              </li>
-              <li className={columnStyle}>
-                <p className="opacity-50">Collateral</p>
-
-                <FormatNumber
-                  nb={position.collateralUsd}
-                  format="currency"
-                  className="text-right"
-                />
-              </li>
-              <li className={columnStyle}>
-                <p className="opacity-50">Net value</p>
-                <FormatNumber
-                  nb={position.pnl}
-                  format="currency"
-                  className={`text-${
-                    position.pnl && position.pnl > 0 ? 'green' : 'red'
-                  } text-right`}
-                />
-              </li>
-
-              <li className={columnStyle}>
-                <p className="opacity-50">Entry Price</p>
-                <FormatNumber
-                  nb={position.price}
-                  format="currency"
-                  className="text-right"
-                />
-              </li>
-
-              <li className={columnStyle}>
-                <p className="opacity-50">Mark Price</p>
-
-                <FormatNumber
-                  nb={tokenPrices[position.token.symbol]}
-                  format="currency"
-                  className="text-right"
-                />
-              </li>
-
-              <li className={columnStyle}>
-                <p className="opacity-50">Liquidation Price</p>
-
-                <FormatNumber
-                  nb={position.liquidationPrice}
-                  format="currency"
-                  className="text-right"
-                />
-              </li>
-            </ul>
+              <Button
+                className="text-xs ml-2"
+                title="edit"
+                variant="secondary"
+                onClick={() => {
+                  triggerEditPositionCollateral(position);
+                }}
+              />
+            </div>
           </div>
+
+          {position.side === 'long' &&
+          position.price < (position.liquidationPrice ?? 0)
+            ? generateLiquidationBlock()
+            : position.side === 'short' &&
+              position.price > (position.liquidationPrice ?? 0)
+            ? generateLiquidationBlock()
+            : ''}
+
+          <ul className="flex flex-col gap-2 p-4">
+            <li className={columnStyle}>
+              <p className="opacity-50">Leverage</p>
+              <div className="flex-row gap-3">
+                <FormatNumber
+                  nb={position.leverage}
+                  format="number"
+                  className="text-right"
+                  suffix="x"
+                  isDecimalDimmed={false}
+                />
+              </div>
+            </li>
+
+            <li className={columnStyle}>
+              <p className="opacity-50">Size</p>
+
+              <FormatNumber
+                nb={position.sizeUsd}
+                format="currency"
+                className="text-right"
+              />
+            </li>
+            <li className={columnStyle}>
+              <p className="opacity-50">Collateral</p>
+
+              <FormatNumber
+                nb={position.collateralUsd}
+                format="currency"
+                className="text-right"
+              />
+            </li>
+            <li className={columnStyle}>
+              <p className="opacity-50">Net value</p>
+              <FormatNumber
+                nb={position.pnl}
+                format="currency"
+                className={`text-${
+                  position.pnl && position.pnl > 0 ? 'green' : 'red'
+                } text-right`}
+              />
+            </li>
+
+            <li className={columnStyle}>
+              <p className="opacity-50">Entry Price</p>
+              <FormatNumber
+                nb={position.price}
+                format="currency"
+                className="text-right"
+              />
+            </li>
+
+            <li className={columnStyle}>
+              <p className="opacity-50">Mark Price</p>
+
+              <FormatNumber
+                nb={tokenPrices[position.token.symbol]}
+                format="currency"
+                className="text-right"
+              />
+            </li>
+
+            <li className={columnStyle}>
+              <p className="opacity-50">Liquidation Price</p>
+
+              <FormatNumber
+                nb={position.liquidationPrice}
+                format="currency"
+                className="text-right"
+              />
+            </li>
+          </ul>
         </div>
-      ))}
-    </div>
+      </div>
+    ));
+  }
+
+  return (
+    <>
+      {positions === null && connected ? (
+        <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-boldy">
+          Loading ...
+        </div>
+      ) : null}
+
+      {positions && !positions.length ? (
+        <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-boldy">
+          No opened position
+        </div>
+      ) : null}
+
+      {positions && positions.length ? (
+        wrapped ? (
+          <div
+            className={twMerge(
+              'w-full',
+              'flex',
+              'flex-wrap',
+              'ml-3 mr-3',
+              className,
+            )}
+          >
+            {generatePositionBlocs(positions)}
+          </div>
+        ) : (
+          generatePositionBlocs(positions)
+        )
+      ) : null}
+    </>
   );
 }
