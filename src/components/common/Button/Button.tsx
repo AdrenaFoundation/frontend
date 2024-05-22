@@ -20,6 +20,7 @@ function Button({
   href,
   disabled,
   rounded = true,
+  isOpenLinkInNewTab = false,
   // isLoading,
   ...rest
 }: {
@@ -35,6 +36,7 @@ function Button({
   disabled?: boolean;
   rounded?: boolean;
   href?: Url;
+  isOpenLinkInNewTab?: boolean;
   // isLoading?: boolean;
 }) {
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
@@ -115,7 +117,15 @@ function Button({
   );
 
   if (href) {
-    return <Link href={href}>{styledButton}</Link>;
+    return (
+      <Link
+        href={href}
+        target={isOpenLinkInNewTab ? '_blank' : ''}
+        rel={isOpenLinkInNewTab ? 'noopener noreferrer' : ''}
+      >
+        {styledButton}
+      </Link>
+    );
   }
 
   return styledButton;

@@ -219,7 +219,7 @@ export default function Buy({
         </div>
 
         <div className="flex flex-col justify-center items-start z-10">
-          <h1 className="text-[2.6rem] lg:text-[5rem] uppercase max-w-[640px]">
+          <h1 className="text-[2.6rem] lg:text-[4rem] uppercase max-w-[640px]">
             Buy ALP, receive 70% of all revenues
           </h1>
           <div className="w-full max-w-[640px] h-[1px] bg-bcolor my-8" />
@@ -263,7 +263,7 @@ export default function Buy({
           </div>
         </div>
 
-        <StyledContainer className="max-w-[400px] lg:max-w-[25em] m-auto">
+        <StyledContainer className="max-w-[400px] lg:max-w-[25em] mb-auto">
           <ALPSwap
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             collateralInput={collateralInput}
