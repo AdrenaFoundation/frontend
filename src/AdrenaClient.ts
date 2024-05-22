@@ -2883,6 +2883,18 @@ export class AdrenaClient {
       );
     }
 
+    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+      console.log('init user adx token account');
+
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: lmTokenAccount,
+          mint: this.lmTokenMint,
+          owner,
+        }),
+      );
+    }
+
     const stakesClaimCronThread = this.getThreadAddressPda(threadId);
 
     const instruction = await this.adrenaProgram.methods
