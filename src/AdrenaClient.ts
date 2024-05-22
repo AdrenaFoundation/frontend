@@ -2995,9 +2995,7 @@ export class AdrenaClient {
       .getOpenPositionWithSwapAmountAndFees({
         collateralAmount,
         leverage,
-        // use any to force typing to be accepted - anchor typing is broken
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        side: { [side]: {} } as any,
+        side: side === 'long' ? 1 : 2,
       })
       .accountsStrict({
         cortex: AdrenaClient.cortexPda,
@@ -3248,7 +3246,7 @@ export class AdrenaClient {
             pubkey: possiblePositionAddresses[index],
             token,
             collateralToken,
-            side: Object.keys(position.side)[0] as 'long' | 'short',
+            side: (position.side === 1 ? 'long' : 'short') as 'long' | 'short',
             sizeUsd: nativeToUi(position.sizeUsd, USD_DECIMALS),
             collateralUsd: nativeToUi(position.collateralUsd, USD_DECIMALS),
             price: nativeToUi(position.price, USD_DECIMALS),
