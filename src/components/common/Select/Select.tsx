@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageRef } from '@/types';
@@ -8,6 +9,7 @@ import chevronDownIcon from '../../../../public/images/Icons/chevron-down.svg';
 import Menu from '../Menu/Menu';
 import MenuItem from '../Menu/MenuItem';
 import MenuItems from '../Menu/MenuItems';
+import MenuSeparator from '../Menu/MenuSeparator';
 
 export default function Select<T extends string>({
   className,
@@ -90,37 +92,39 @@ export default function Select<T extends string>({
             {options
               .filter((option) => option.title !== selected)
               .map((option, i) => (
-                <MenuItem
-                  className={twMerge(
-                    'flex flex-row items-center justify-end text-center relative overflow-hidden h-14',
-                    !!i ? 'border-t border-bcolor' : '',
-                  )}
-                  onMouseEnter={() => setOptionHover(i)}
-                  onMouseLeave={() => setOptionHover(null)}
-                  onClick={() => {
-                    onSelect(option.title);
-                  }}
-                  key={option.title + i}
-                >
-                  {option?.img ? (
-                    <Image
-                      src={option.img}
-                      className={twMerge(
-                        'absolute top-auto left-[-32px] z-10 grayscale',
-                        optionHover === i
-                          ? 'opacity-60 grayscale-0'
-                          : 'opacity-20',
-                      )}
-                      alt="logo"
-                      width="80"
-                      height="80"
-                    />
-                  ) : null}
+                // Use Fragment to avoid key error
+                <React.Fragment key={'container' + option.title}>
+                  {!!i && <MenuSeparator key={'sep' + option.title} />}
 
-                  <span className="font-special text-lg z-20 m-auto">
-                    {option.title}
-                  </span>
-                </MenuItem>
+                  <MenuItem
+                    className="flex flex-row items-center justify-end text-center relative overflow-hidden h-14"
+                    onMouseEnter={() => setOptionHover(i)}
+                    onMouseLeave={() => setOptionHover(null)}
+                    onClick={() => {
+                      onSelect(option.title);
+                    }}
+                    key={option.title + i}
+                  >
+                    {option?.img ? (
+                      <Image
+                        src={option.img}
+                        className={twMerge(
+                          'absolute top-auto left-[-32px] z-10 grayscale',
+                          optionHover === i
+                            ? 'opacity-60 grayscale-0'
+                            : 'opacity-20',
+                        )}
+                        alt="logo"
+                        width="80"
+                        height="80"
+                      />
+                    ) : null}
+
+                    <span className="font-special text-lg z-20 m-auto">
+                      {option.title}
+                    </span>
+                  </MenuItem>
+                </React.Fragment>
               ))}
           </MenuItems>
         )}

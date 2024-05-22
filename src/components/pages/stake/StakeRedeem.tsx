@@ -27,11 +27,12 @@ export default function StakeRedeem({
           </p>
         </div>
         <div className="relative flex flex-row w-full">
-          <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r-none">
+          <div className="flex items-center bg-bcolor border border-bcolor rounded-l-xl px-3 border-r-none">
             <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
           </div>
           <input
-            className="w-full bg-third border rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+            className="w-full bg-inputcolor border rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+            style={{ borderColor: '#2a2a2a' }}
             type="number"
             onWheel={(e) => {
               // Disable the scroll changing input value
@@ -39,19 +40,23 @@ export default function StakeRedeem({
             }}
             value={amount ?? ''}
             onChange={(e) => {
-              if (!e.target.value) {
+              if (
+                !e.target.value ||
+                Number(e.target.value) > totalLiquidStaked
+              ) {
                 setAmount(null);
                 return;
               }
               setAmount(Number(e.target.value));
             }}
             placeholder="0.00"
+            max={totalLiquidStaked}
           />
 
           <Button
             className="absolute right-2 bottom-[20%]"
             title="MAX"
-            variant="outline"
+            variant="primary"
             onClick={() => {
               if (!totalLiquidStaked) {
                 return;

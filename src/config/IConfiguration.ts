@@ -19,7 +19,7 @@ export default interface IConfiguration {
   };
 
   readonly governanceProgram: PublicKey;
-  readonly clockworkProgram: PublicKey;
+  readonly sablierThreadProgram: PublicKey;
   readonly stakesClaimPayer: PublicKey;
 
   readonly governanceRealmName: string;

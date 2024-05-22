@@ -145,7 +145,7 @@ export default function LongShortTradingInputs({
 
     try {
       const txHash = await (side === 'long'
-        ? window.adrena.client.openLongPositionWithConditionalSwap({
+        ? window.adrena.client.openOrIncreasePositionWithSwapLong({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
             mint: tokenB.mint,
@@ -153,7 +153,7 @@ export default function LongShortTradingInputs({
             collateralAmount,
             leverage: uiLeverageToNative(leverage),
           })
-        : window.adrena.client.openShortPositionWithConditionalSwap({
+        : window.adrena.client.openOrIncreasePositionWithSwapShort({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
             mint: tokenB.mint,

@@ -65,7 +65,7 @@ class MainnetConfiguration implements IConfiguration {
   );
 
   // devnet address
-  public readonly clockworkProgram: PublicKey = new PublicKey(
+  public readonly sablierThreadProgram: PublicKey = new PublicKey(
     'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
   );
 

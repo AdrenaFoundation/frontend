@@ -31,11 +31,10 @@ const RootLayout = ({
   const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
     { name: 'My Dashboard', link: '/my_dashboard' },
-    { name: 'Global', link: '/global' },
+    { name: 'Monitoring', link: '/monitoring' },
     { name: 'Stake', link: '/stake' },
     { name: 'ALP', link: '/buy_alp' },
     { name: 'ADX', link: '/buy_adx' },
-    { name: 'Monitoring', link: '/monitoring' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
 

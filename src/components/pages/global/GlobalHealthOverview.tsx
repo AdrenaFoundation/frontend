@@ -172,8 +172,8 @@ export default function GlobalHealthOverview({
 }) {
   return (
     <StyledContainer
-      title="Global Health"
-      subTitle="Visualize the project sanity."
+      title="Pool Composition"
+      subTitle="Are the pool ratios on target?"
       className={className}
     >
       <StyledSubContainer>
@@ -190,9 +190,9 @@ export default function GlobalHealthOverview({
       <StyledSubContainer className="h-auto">
         <div className="flex items-center">
           <InfoAnnotation
-            text="Visualize the current and target composition of the pool."
+            text="White lines indicates target ratios."
             className="mr-1"
-            title="Pool composition"
+            title="Composition"
           />
         </div>
 

@@ -49,7 +49,7 @@ export const TradeComp = ({
           tabs={[
             { title: 'long', activeColor: 'border-b-green text-green' },
             { title: 'short', activeColor: 'border-b-red text-red' },
-            { title: 'swap' },
+            { title: 'swap', activeColor: 'border-white' },
           ]}
           onClick={(title) => {
             setSelectedAction(title);

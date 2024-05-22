@@ -30,6 +30,7 @@ export default function ALPStakeToken({
 }) {
   const lockPeriods = ALP_LOCK_PERIODS.map((lockPeriod) => ({
     title: lockPeriod,
+    activeColor: 'border-white',
   }));
 
   return (
@@ -61,9 +62,9 @@ export default function ALPStakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%] text-white"
+              className="absolute right-2 bottom-[20%]"
               title="MAX"
-              variant="text"
+              variant="primary"
               onClick={() => {
                 if (balance === null) return;
 

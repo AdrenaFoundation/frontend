@@ -95,35 +95,18 @@ export default function PoolView({
 
   const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
 
-  // Value of all assets owned by the pool
-  // Which doesn't take into account opened positions and stuff
-  const totalPoolAssetHardValue = custodies.reduce((acc, custody) => {
-    const price = tokenPrices[custody.tokenInfo.symbol];
-
-    if (!price) return CANNOT_CALCULATE;
-    return acc + custody.owned * price;
-  }, 0);
-
   return (
     <>
       <StyledContainer
-        title="POOL VALUE"
-        subTitle="Pool worth in US dollars"
+        title="AUM"
+        subTitle=""
         className="min-w-[20em] w-[20em] grow"
       >
         <StyledSubContainer>
-          <h2>AUM Value</h2>
+          <h2>Total USD worth</h2>
 
           <StyledSubSubContainer className="mt-2">
             <h2>{formatPriceInfo(mainPool.aumUsd)}</h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
-
-        <StyledSubContainer>
-          <h2>Raw AUM Value</h2>
-
-          <StyledSubSubContainer className="mt-2">
-            <h2>{formatPriceInfo(totalPoolAssetHardValue)}</h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
       </StyledContainer>
@@ -211,6 +194,7 @@ export default function PoolView({
                     label: 'Ratio',
                     data: composition.map((comp) => comp.currentRatio),
                     backgroundColor: '#fffffff0',
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     borderColor: composition.map((comp) => comp.color!) || [],
                     borderWidth: 1,
                   },

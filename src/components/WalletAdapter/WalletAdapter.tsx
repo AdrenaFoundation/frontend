@@ -100,17 +100,6 @@ function WalletAdapter({
         >
           <MenuItems>
             <MenuItem
-              href={'/user_profile'}
-              onClick={() => {
-                setMenuIsOpen(false);
-              }}
-            >
-              Profile
-            </MenuItem>
-
-            <MenuSeparator />
-
-            <MenuItem
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
 

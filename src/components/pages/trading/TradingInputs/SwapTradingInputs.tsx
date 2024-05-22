@@ -264,7 +264,7 @@ export default function SwapTradingInputs({
     // If user wallet balance doesn't have enough tokens, tell user
     if (!walletTokenABalance || inputA > walletTokenABalance)
       return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
-  }, [inputA, inputB, tokenA, wallet, walletTokenBalances]);
+  }, [inputA, inputB, connected, tokenA, wallet, walletTokenBalances]);
 
   return (
     <div className={twMerge('relative flex flex-col h-full mt-2', className)}>

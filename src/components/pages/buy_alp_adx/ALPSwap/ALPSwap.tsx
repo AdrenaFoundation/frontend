@@ -220,7 +220,10 @@ export default function ALPSwap({
     <div className={className}>
       <TabSelect
         selected={selectedAction}
-        tabs={[{ title: 'buy' }, { title: 'sell' }]}
+        tabs={[
+          { title: 'buy', activeColor: 'border-white' },
+          { title: 'sell', activeColor: 'border-white' },
+        ]}
         onClick={(title) => {
           setSelectedAction(title);
         }}

@@ -104,7 +104,9 @@ export default function EditPositionCollateral({
     if (!input) return;
 
     try {
-      const txHash = await window.adrena.client.removeCollateral({
+      const txHash = await (position.side === 'long'
+        ? window.adrena.client.removeCollateralLong
+        : window.adrena.client.removeCollateralShort)({
         position,
         collateralUsd: uiToNative(input, USD_DECIMALS),
       });
@@ -275,7 +277,10 @@ export default function EditPositionCollateral({
       <TabSelect
         wrapperClassName="h-12 flex items-center"
         selected={selectedAction}
-        tabs={[{ title: 'deposit' }, { title: 'withdraw' }]}
+        tabs={[
+          { title: 'deposit', activeColor: 'border-b-white' },
+          { title: 'withdraw', activeColor: 'border-b-white' },
+        ]}
         onClick={(title) => {
           // Reset input when changing selected action
           setInput(null);
