@@ -34,7 +34,6 @@ export default function ALPSwap({
   setCollateralPrice,
   feesAndAmounts,
   className,
-  aumUsd,
   connected,
 }: {
   className?: string;
@@ -55,7 +54,6 @@ export default function ALPSwap({
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
   feesAndAmounts: FeesAndAmountsType | null;
-  aumUsd: number | undefined;
   connected: boolean;
 }) {
   const dispatch = useDispatch();
@@ -248,7 +246,6 @@ export default function ALPSwap({
             collateralPrice={collateralPrice}
             setCollateralPrice={setCollateralPrice}
             feesAndAmounts={feesAndAmounts}
-            aumUsd={aumUsd}
             connected={connected}
           />
 

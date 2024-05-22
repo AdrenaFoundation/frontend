@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import { alpLiquidityCap } from '@/constant';
 import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -33,7 +32,6 @@ export default function ALPSwapInputs({
   onCollateralTokenChange,
   setFeesUsd,
   feesAndAmounts,
-  aumUsd,
   connected,
 }: {
   actionType: 'buy' | 'sell';
@@ -52,12 +50,10 @@ export default function ALPSwapInputs({
   onCollateralTokenChange: (t: Token) => void;
   setFeesUsd: (f: number | null) => void;
   feesAndAmounts: FeesAndAmountsType | null;
-  aumUsd: number | undefined;
   connected: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   // When price change or input change, recalculate inputs and displayed price
@@ -429,7 +425,7 @@ export default function ALPSwapInputs({
 
                   <div className="flex flex-row items-center gap-3">
                     <FormatNumber
-                      nb={feesAndAmounts?.[token.symbol].amount}
+                      nb={feesAndAmounts?.[token.symbol].fees}
                       format="currency"
                       className="text-sm"
                       placeholder=""
