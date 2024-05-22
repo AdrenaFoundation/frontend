@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -92,8 +93,9 @@ export default function PositionsArray({
       {/* Content */}
       <tbody>
         {positions?.map((position, i) => (
-          <>
-            <tr key={position.pubkey.toBase58()}>
+          // Use Fragment to avoid key error
+          <React.Fragment key={position.pubkey.toBase58()}>
+            <tr key={position.pubkey.toBase58() + '-0'}>
               <td
                 className={twMerge(
                   'flex-col justify-center items-center',
@@ -190,7 +192,11 @@ export default function PositionsArray({
                 />
               </td>
             </tr>
-            <tr className={twMerge(i !== positions.length - 1 && border)}>
+
+            <tr
+              key={position.pubkey.toBase58() + '-1'}
+              className={twMerge(i !== positions.length - 1 && border)}
+            >
               <td
                 colSpan={9}
                 className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
@@ -204,7 +210,7 @@ export default function PositionsArray({
                   : ''}
               </td>
             </tr>
-          </>
+          </React.Fragment>
         ))}
       </tbody>
     </table>
