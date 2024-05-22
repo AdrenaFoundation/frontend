@@ -43,37 +43,6 @@ export default function TradingStatsBloc({
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Opening Average Leverage</div>
-
-          {/* <span>
-                  x
-                  {formatNumber(
-                    (userProfile.longStats.openingAverageLeverage *
-                      userProfile.longStats.openedPositionCount +
-                      userProfile.shortStats.openingAverageLeverage *
-                        userProfile.shortStats.openedPositionCount) /
-                      (userProfile.longStats.openedPositionCount +
-                        userProfile.shortStats.openedPositionCount),
-                    3,
-                  )}
-                </span> */}
-
-          <FormatNumber
-            nb={
-              (userProfile.longStats.openingAverageLeverage *
-                userProfile.longStats.openedPositionCount +
-                userProfile.shortStats.openingAverageLeverage *
-                  userProfile.shortStats.openedPositionCount) /
-              (userProfile.longStats.openedPositionCount +
-                userProfile.shortStats.openedPositionCount)
-            }
-            precision={3}
-            prefix="x"
-            isDecimalDimmed={false}
-          />
-        </div>
-
-        <div className="flex w-full items-center justify-between">
           <div className="text-sm">Opening Size</div>
 
           <FormatNumber

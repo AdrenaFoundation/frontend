@@ -112,8 +112,6 @@ export type PoolExtended = {
   oiShortUsd: number;
   nbOpenLongPositions: number;
   nbOpenShortPositions: number;
-  averageLongLeverage: number;
-  averageShortLeverage: number;
   custodies: PublicKey[];
 
   // Onchain data
@@ -175,6 +173,7 @@ export type UserProfileExtended = {
 type Accounts = IdlAccounts<Adrena>;
 
 export type Cortex = Accounts['cortex'];
+export type VestRegistry = Accounts['vestRegistry'];
 export type Custody = Accounts['custody'];
 export type Multisig = Accounts['multisig'];
 export type Perpetuals = Accounts['perpetuals'];
@@ -198,6 +197,8 @@ export type LockedStakeExtended = UserStaking['lockedStakes'][0] & {
 
 type Params = IdlTypes<Adrena>;
 
+export type U128Split = Params['U128Split'];
+export type LimitedString = Params['LimitedString'];
 export type AddCollateralParams = Params['AddCollateralParams'];
 export type AddCustodyParams = Params['AddCustodyParams'];
 export type AddLiquidityParams = Params['AddLiquidityParams'];

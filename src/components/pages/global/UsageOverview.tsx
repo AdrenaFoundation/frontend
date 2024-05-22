@@ -18,10 +18,7 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
-import {
-  getDatasetBackgroundColor,
-  getFontSizeWeight,
-} from '@/utils';
+import { getDatasetBackgroundColor, getFontSizeWeight } from '@/utils';
 
 import InfoAnnotation from '../monitoring/InfoAnnotation';
 
