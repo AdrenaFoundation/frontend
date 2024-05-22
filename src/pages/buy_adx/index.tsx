@@ -13,7 +13,7 @@ export default function BuyADX() {
   return (
     <div className="relative flex flex-col gap-[200px] lg:gap-[250px] px-7">
       <div className="flex flex-col justify-center items-start w-full h-[800px] z-10">
-        <h1 className="text-[2.6rem] lg:text-[3.3rem] uppercase max-w-[840px]">
+        <h1 className="text-[2.6rem] sm:text-[3.3rem] uppercase max-w-[840px]">
           DIRECTLY CAPTURE REVENUE AND INFLUENCE THE PROTOCOL WITH THE ADRENA
           TOKEN
         </h1>
@@ -23,7 +23,7 @@ export default function BuyADX() {
           value capture.
         </p>
         <Button
-          title="Buy ADX on Jupiter DEX"
+          title="Buy ADX on Jupiter"
           href="https://jup.ag/swap/USDC-ADX"
           rightIcon={jupIcon}
           iconClassName="w-5 h-5"
