@@ -12,7 +12,7 @@ import jupIcon from '../../../public/images/jup-logo.png';
 
 export default function BuyADX() {
   return (
-    <div className="flex flex-col gap-[200px] lg:gap-[250px] px-7">
+    <div className="relative flex flex-col gap-[200px] lg:gap-[250px] px-7">
       <div className="flex flex-col justify-center items-start w-full h-[800px] z-10">
         <h1 className="text-[2.6rem] lg:text-[3.3rem] uppercase max-w-[840px]">
           DIRECTLY CAPTURE REVENUE AND INFLUENCE THE PROTOCOL WITH THE ADRENA
@@ -41,8 +41,9 @@ export default function BuyADX() {
               alignment: Alignment.TopRight,
             })
           }
-          className="absolute w-full h-full top-0 right-0 -z-10"
+          className="absolute w-full h-full top-0 right-0 -z-10 max-w-[1200px]"
         />
+        <div className="absolute w-[50px] h-full top-0 right-0 bg-gradient-to-r from-[#050f1900] to-[#050f19] z-10"></div>
       </div>
 
       <div className="relative flex flex-col lg:flex-row gap-12 justify-between items-center w-full ">
