@@ -283,7 +283,6 @@ export default function Buy({
             collateralPrice={collateralPrice}
             feesAndAmounts={feesAndAmounts}
             connected={connected}
-            aumUsd={aumUsd}
           />
         </StyledContainer>
       </div>
