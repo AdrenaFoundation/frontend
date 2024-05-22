@@ -1,5 +1,4 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import Image from 'next/image';
 import React from 'react';
 
 import ADXFeeStreamAnimation from '@/components/buy_adx/ADXFeeStreamAnimation';

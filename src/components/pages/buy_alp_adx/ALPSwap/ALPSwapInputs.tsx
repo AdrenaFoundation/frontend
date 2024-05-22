@@ -2,7 +2,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { alpLiquidityCap } from '@/constant';
 import { FeesAndAmountsType } from '@/pages/buy_alp';
