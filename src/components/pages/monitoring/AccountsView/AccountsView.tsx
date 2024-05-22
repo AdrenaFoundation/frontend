@@ -1,6 +1,6 @@
 import { AdrenaClient } from '@/AdrenaClient';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import { Cortex, CustodyExtended, Perpetuals, PoolExtended } from '@/types';
+import { Cortex, CustodyExtended, PoolExtended } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
 import OnchainAccountInfo from '../OnchainAccountInfo';
@@ -8,12 +8,10 @@ import Table from '../Table';
 import TitleAnnotation from '../TitleAnnotation';
 
 export default function AccountsView({
-  perpetuals,
   cortex,
   mainPool,
   custodies,
 }: {
-  perpetuals: Perpetuals;
   cortex: Cortex;
   mainPool: PoolExtended;
   custodies: CustodyExtended[];
@@ -58,7 +56,25 @@ export default function AccountsView({
               value: (
                 <OnchainAccountInfo
                   className="ml-auto"
-                  address={perpetuals.admin}
+                  address={cortex.admin}
+                />
+              ),
+            },
+            {
+              rowTitle: (
+                <div className="flex items-center">
+                  Cortex
+                  <TitleAnnotation text="PDA" />
+                  <InfoAnnotation
+                    text="Top-level account managing Adrena access, owned by the governance."
+                    className="mr-1"
+                  />
+                </div>
+              ),
+              value: (
+                <OnchainAccountInfo
+                  className="ml-auto"
+                  address={AdrenaClient.cortexPda}
                 />
               ),
             },
@@ -100,24 +116,6 @@ export default function AccountsView({
                 ),
               }))
               .flat(),
-            {
-              rowTitle: (
-                <div className="flex items-center">
-                  Cortex
-                  <TitleAnnotation text="PDA" />
-                  <InfoAnnotation
-                    text="Top-level account managing Adrena access, owned by the governance."
-                    className="mr-1"
-                  />
-                </div>
-              ),
-              value: (
-                <OnchainAccountInfo
-                  className="ml-auto"
-                  address={AdrenaClient.perpetualsAddress}
-                />
-              ),
-            },
             {
               rowTitle: (
                 <div className="flex items-center">

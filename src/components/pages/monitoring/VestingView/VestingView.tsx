@@ -1,6 +1,7 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import { Cortex, VestExtended } from '@/types';
+import { VEST_BUCKETS } from '@/constant';
+import { VestExtended, VestRegistry } from '@/types';
 import { formatNumber, nativeToUi } from '@/utils';
 
 import abbreviateWords from '../abbreviateWords';
@@ -10,10 +11,10 @@ import OnchainAccountInfo from '../OnchainAccountInfo';
 import Table from '../Table';
 
 export default function VestingView({
-  cortex,
+  vestRegistry,
   vests,
 }: {
-  cortex: Cortex;
+  vestRegistry: VestRegistry;
   vests: VestExtended[] | null;
 }) {
   return (
@@ -27,7 +28,7 @@ export default function VestingView({
           <h2>
             {formatNumber(
               nativeToUi(
-                cortex.vestedTokenAmount,
+                vestRegistry.vestedTokenAmount,
                 window.adrena.client.adxToken.decimals,
               ),
               2,
@@ -43,7 +44,7 @@ export default function VestingView({
         className="min-w-[20em] w-[20em] grow"
       >
         <StyledSubSubContainer className="mt-2 justify-center items-center">
-          <h2>{formatNumber(cortex.vests.length, 2)}</h2>
+          <h2>{formatNumber(vestRegistry.vests.length, 2)}</h2>
         </StyledSubSubContainer>
       </StyledContainer>
 
@@ -81,7 +82,7 @@ export default function VestingView({
 
                 <div key={`vest${i}-bucket`} className="text-md">
                   {abbreviateWords(
-                    Object.keys(vest.originBucket)[0],
+                    VEST_BUCKETS[vest.originBucket] ?? 'Unknown',
                   ).toUpperCase()}
                 </div>,
 
