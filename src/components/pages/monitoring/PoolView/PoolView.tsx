@@ -118,7 +118,6 @@ export default function PoolView({
             <h2>{formatPriceInfo(mainPool.aumUsd)}</h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
-
       </StyledContainer>
 
       <StyledContainer

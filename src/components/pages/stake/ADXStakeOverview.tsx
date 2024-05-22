@@ -40,7 +40,8 @@ export default function ADXStakeOverview({
 
         <ul>
           <li className="mt-4 text-sm">
-            - Get 1:1 voting power to participate in the protocol&apos;s governance
+            - Get 1:1 voting power to participate in the protocol&apos;s
+            governance
           </li>
           <li className="mt-4 text-sm">
             - Unstake at any time, if not participating in an active vote
@@ -84,7 +85,8 @@ export default function ADXStakeOverview({
 
         <p className="mt-4 flex flex-col ">
           <span className="text-sm">
-              Align with the protocol long term success: the longer the period, the higher the rewards.
+            Align with the protocol long term success: the longer the period,
+            the higher the rewards.
           </span>
           <span className="text-sm">
             20% of protocol fees are distributed to ADX stakers.
@@ -92,18 +94,17 @@ export default function ADXStakeOverview({
 
           <ul>
             <li className="mt-4 text-sm">
-              - Get amplified voting power to participate in the protocol&apos;s governance
+              - Get amplified voting power to participate in the protocol&apos;s
+              governance
             </li>
             <li className="mt-4 text-sm">
               - Earn USDC rewards (20% of protocol fees distributed to stakers)
             </li>
+            <li className="mt-4 text-sm">- Earn extra ADX rewards</li>
             <li className="mt-4 text-sm">
-              - Earn extra ADX rewards
+              - Locked principal becomes available at the end of the period,
+              with the possibility to unstake earlier for a fee
             </li>
-            <li className="mt-4 text-sm">
-              - Locked principal becomes available at the end of the period, with the possibility to unstake earlier for a fee
-            </li>
-
           </ul>
         </p>
         {/* 

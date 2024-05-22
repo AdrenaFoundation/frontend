@@ -2,25 +2,8 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Switch from '@/components/common/Switch/Switch';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import AccountsView from '@/components/pages/monitoring/AccountsView/AccountsView';
-import ADXTokenomicsView from '@/components/pages/monitoring/ADXTokenomicsView/ADXTokenomicsView';
-import FeesView from '@/components/pages/monitoring/FeesView/FeesView';
-import PoolView from '@/components/pages/monitoring/PoolView/PoolView';
-import StakingView from '@/components/pages/monitoring/StakingView/StakingView';
-import TradingView from '@/components/pages/monitoring/TradingView/TradingView';
-import VestingView from '@/components/pages/monitoring/VestingView/VestingView';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import useALPIndexComposition from '@/hooks/useALPIndexComposition';
-import useALPTotalSupply from '@/hooks/useALPTotalSupply';
-import useCortex from '@/hooks/useCortex';
-import useStakingAccount from '@/hooks/useStakingAccount';
-import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
-import useVestRegistry from '@/hooks/useVestRegistry';
-import useVests from '@/hooks/useVests';
-import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 
 import BasicMonitoring from './basic';

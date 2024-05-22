@@ -34,27 +34,25 @@ export default function ALPStakeOverview({
       <StyledSubContainer>
         <h3>Locked Staking</h3>
 
-
         <p className="mt-4 flex flex-col ">
           <span className="text-sm">
-            Provide liquidities long term: the longer the period, the higher the rewards.
+            Provide liquidities long term: the longer the period, the higher the
+            rewards.
           </span>
           <span className="text-sm">
             70% of protocol fees are distributed to ALP holder and stakers.
           </span>
 
           <ul>
+            <li className="mt-4 text-sm">- Earn USDC rewards</li>
             <li className="mt-4 text-sm">
-              - Earn USDC rewards
-            </li> 
-            <li className="mt-4 text-sm">
-              - Locked principal becomes available at the end of the period, with the possibility to unstake earlier for a fee
+              - Locked principal becomes available at the end of the period,
+              with the possibility to unstake earlier for a fee
             </li>
           </ul>
-
         </p>
 
-          {/* <span className="mt-2 text-sm">
+        {/* <span className="mt-2 text-sm">
             ADX and USDC rewards accrue automatically every ~6 hours and get
             auto-claimed every 18 days. You can manually claim rewards.
           </span>
