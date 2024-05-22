@@ -15,11 +15,12 @@ function Button({
   rightIcon,
   leftIcon,
   className,
-  leftIconClassName,
+  iconClassName,
   onClick,
   href,
   disabled,
   rounded = true,
+  isOpenLinkInNewTab = false,
   // isLoading,
   ...rest
 }: {
@@ -29,12 +30,13 @@ function Button({
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
-  leftIconClassName?: string;
+  iconClassName?: string;
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
   rounded?: boolean;
   href?: Url;
+  isOpenLinkInNewTab?: boolean;
   // isLoading?: boolean;
 }) {
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
@@ -94,14 +96,20 @@ function Button({
           alt={alt}
           width="12"
           height="12"
-          className={leftIconClassName}
+          className={iconClassName}
         />
       ) : null}
 
       {title && !onClickInProgress ? title : null}
 
       {rightIcon && !onClickInProgress ? (
-        <Image src={rightIcon} alt={alt} width="12" height="12" />
+        <Image
+          src={rightIcon}
+          alt={alt}
+          width="12"
+          height="12"
+          className={iconClassName}
+        />
       ) : null}
 
       {onClickInProgress ? <Loader height={23} width={50} /> : null}
@@ -109,7 +117,15 @@ function Button({
   );
 
   if (href) {
-    return <Link href={href}>{styledButton}</Link>;
+    return (
+      <Link
+        href={href}
+        target={isOpenLinkInNewTab ? '_blank' : ''}
+        rel={isOpenLinkInNewTab ? 'noopener noreferrer' : ''}
+      >
+        {styledButton}
+      </Link>
+    );
   }
 
   return styledButton;

@@ -1,9 +1,10 @@
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/common/Button/Button';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { alpLiquidityCap } from '@/constant';
-import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
+import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
@@ -378,29 +379,6 @@ export default function ALPSwapInputs({
 
       {actionType === 'buy' ? alpInputComponent : collateralComponent}
 
-      {actionType === 'buy' && aumUsd ? (
-        /* Display AUM / liquidity cap of ALP */
-        <div className="mt-4">
-          <div className="w-full">
-            <div className="flex items-center justify-center mb-2">
-              <h6 className="text-txtfade text-xs">
-                Assets Under Management ({Math.round(aumUsd)}) / Liquidity Cap (
-                {alpLiquidityCap})
-              </h6>
-            </div>
-            <div className="flex-start flex h-2.5 w-full overflow-hidden rounded-full bg-third font-sans text-xs font-medium">
-              <div
-                className={twMerge(
-                  'flex items-center justify-center h-full overflow-hidden text-white break-all bg-white rounded-full',
-                  // `w-[${aumLiquidityRatio}%]`, Have to use style because it was not working properly with tailwind
-                )}
-                style={{ width: `${aumLiquidityRatio}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
       <h5 className="text-white mt-6">Verify</h5>
 
       <div
@@ -422,68 +400,50 @@ export default function ALPSwapInputs({
 
       {actionType === 'buy' ? (
         <div className="flex flex-col mt-4">
-          <div className="text-sm">
+          <div className="text-sm mb-3">
             Alternative Routes <span className="text-xs">(Fee Reduction)</span>
           </div>
+          <div className="w-full bg-black rounded-lg p-3">
+            <ul className="flex flex-col gap-0">
+              {window.adrena.client.tokens.map((token) => (
+                <li
+                  className={twMerge(
+                    'flex flex-row items-center justify-between p-2 rounded-lg cursor-pointer border border-transparent',
+                    token.symbol === collateralToken.symbol
+                      ? 'bg-third border-bcolor'
+                      : '',
+                  )}
+                  onClick={() => {
+                    onCollateralTokenChange(token);
+                  }}
+                  key={token.symbol}
+                >
+                  <div className="flex flex-row items-center gap-3">
+                    <Image
+                      src={token.image}
+                      className="w-4 h-4"
+                      alt="token logo"
+                    />
+                    <p>{token.symbol}</p>
+                  </div>
 
-          {saveUpFees !== null && saveUpFees.length ? (
-            <div className="flex flex-col gap-y-4 mt-2">
-              {(() => {
-                const sortedSaveUpFees = saveUpFees
-                  // Highest saving first
-                  .sort(([, a], [, b]) => (a.fees ?? 0) - (b.fees ?? 0));
-
-                return sortedSaveUpFees.map(([key, value], i) => {
-                  return feesUsd ? (
-                    <div className="flex flex-col">
-                      {i === 0 ? (
-                        <div className="text-xs ml-auto mr-auto mt-2 mb-2">
-                          Recommended
-                        </div>
-                      ) : null}
-
-                      <Button
-                        key={key}
-                        title={
-                          <div className="flex">
-                            <span className="">use {key} and pay</span>
-                            <span className="font-mono ml-1">
-                              {formatPriceInfo(value.fees, 4)}
-                            </span>
-                            <span className="ml-1">of fees</span>
-                          </div>
-                        }
-                        size="lg"
-                        variant="secondary"
-                        className={twMerge(
-                          'justify-center w-full border-2',
-                          i === 0 ||
-                            sortedSaveUpFees[i - 1][1].fees === value.fees
-                            ? 'border-white'
-                            : '',
-                        )}
-                        onClick={() => {
-                          onCollateralTokenChange(value.token);
-
-                          // Wait for the input to be updated, then change the input
-                          setTimeout(() => {
-                            onChangeCollateralInput(
-                              Number(
-                                value.equivalentAmount?.toFixed(
-                                  value.token.decimals,
-                                ),
-                              ),
-                            );
-                          }, 0);
-                        }}
-                      />
-                    </div>
-                  ) : null;
-                });
-              })()}
-            </div>
-          ) : null}
-
+                  <div className="flex flex-row items-center gap-3">
+                    <FormatNumber
+                      nb={feesAndAmounts?.[token.symbol].amount}
+                      format="currency"
+                      className="text-sm"
+                      placeholder=""
+                    />
+                    <input
+                      type="radio"
+                      checked={token.symbol === collateralToken.symbol}
+                      onChange={() => false}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
           {saveUpFees !== null && !saveUpFees.length ? (
             <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-lg mt-4 flex justify-center flex-col">
               <span className="text-txtfade">You are using the best route</span>

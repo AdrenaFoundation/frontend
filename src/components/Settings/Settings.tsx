@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useRpc from '@/hooks/useRPC';
 import {
   addNotification,
@@ -9,6 +10,7 @@ import {
   verifyRpcConnection,
 } from '@/utils';
 
+import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Switch from '../common/Switch/Switch';
@@ -30,6 +32,7 @@ export default function Settings({
     'isAutoRPC',
     'customRpc',
   ]);
+  const isBigScreen = useBetterMediaQuery('(min-width: 500px)');
 
   const [customRpc, setCustomRPC] = useState<string>(customRpcUrl ?? '');
   const [isAutoRPC, setIsAutoRPC] = useState<boolean>(
@@ -137,9 +140,11 @@ export default function Settings({
     <Menu
       trigger={
         <Button
-          title="Settings"
+          title={isBigScreen ? 'Settings' : null}
           variant="outline"
-          leftIconClassName="w-4 h-4"
+          leftIcon={isBigScreen ? null : settingsIcon}
+          className={isBigScreen ? '' : 'w-6 h-6 p-0'}
+          iconClassName="w-4 h-4"
         />
       }
       openMenuClassName="right-0 rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg"

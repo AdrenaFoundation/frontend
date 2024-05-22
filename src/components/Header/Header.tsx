@@ -6,7 +6,6 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
-import settingsIcon from '../../../public/images/Icons/settings.svg';
 import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -80,7 +79,7 @@ export default function Header({
         })}
       </div>
 
-      <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-row items-center gap-2 sm:gap-3">
         <Link href="/trade">
           <Button title="Trade now" disabled={pathname === '/trade'} />
         </Link>

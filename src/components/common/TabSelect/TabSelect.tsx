@@ -41,7 +41,9 @@ export default function TabSelect<T extends string | number>({
             'ext-center p-1 w-full cursor-pointer z-10',
             className,
             activeTab !== null && index === activeTab
-              ? `opacity-100 border-b-[0.3em] ${activeColor}`
+              ? activeColor
+                ? `opacity-100 border-b-[0.3em] ${activeColor}`
+                : 'opacity-100 border-b-[0.3em] border-highlight'
               : 'opacity-50 border-b-[1px]',
           )}
           ref={refs[index]}
