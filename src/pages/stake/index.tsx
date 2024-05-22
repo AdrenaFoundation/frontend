@@ -430,22 +430,26 @@ export default function Stake({
       (stakingAccounts?.ADX?.lockedStakes.sort(
         (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
       ) as LockedStakeExtended[]) ?? []
-    ).map((stake, index) => ({
-      ...stake,
-      index,
-      tokenSymbol: 'ADX',
-    })) ?? null;
+    )
+      .filter((x) => !x.stakeTime.isZero())
+      .map((stake, index) => ({
+        ...stake,
+        index,
+        tokenSymbol: 'ADX',
+      })) ?? null;
 
   const alpLockedStakes: LockedStakeExtended[] | null =
     (
       (stakingAccounts?.ALP?.lockedStakes.sort(
         (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
       ) as LockedStakeExtended[]) ?? []
-    ).map((stake, index) => ({
-      ...stake,
-      index,
-      tokenSymbol: 'ALP',
-    })) ?? null;
+    )
+      .filter((x) => !x.stakeTime.isZero())
+      .map((stake, index) => ({
+        ...stake,
+        index,
+        tokenSymbol: 'ALP',
+      })) ?? null;
 
   return (
     <>
