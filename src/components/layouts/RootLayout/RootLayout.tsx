@@ -28,7 +28,7 @@ const RootLayout = ({
   setCustomRpcUrl: (rpc: string | null) => void;
   customRpcUrl: string | null;
 }) => {
-  const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
     { name: 'My Dashboard', link: '/my_dashboard' },
     { name: 'Monitoring', link: '/monitoring' },
