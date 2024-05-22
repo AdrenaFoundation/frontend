@@ -331,7 +331,7 @@ export default function TradingChart({
   }, [positions, token.symbol, !!widget, widgetReady]);
 
   return (
-    <div className="flex flex-col w-full overflow-hidden backdrop-blur-md">
+    <div className="flex flex-col w-full overflow-hidden bg-secondary backdrop-blur-md">
       <Loader className={twMerge('mt-[20%]', isLoading ? '' : 'hidden')} />
       <div
         id="wrapper-trading-chart"
