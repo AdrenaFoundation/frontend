@@ -94,7 +94,7 @@ export class AdrenaClient {
   public alpToken: Token = {
     mint: this.lpTokenMint,
     color: '',
-    name: 'The Pool Token',
+    name: 'Shares of a Adrena Liquidity Pool',
     symbol: 'ALP',
     decimals: 6,
     isStable: false,

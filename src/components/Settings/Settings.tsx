@@ -228,7 +228,7 @@ export default function Settings({
                   'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm bg-black transition duration-300',
                   !isEditCustomRPCMode && 'bg-transparent',
                 )}
-                placeholder="Custom RPC URLs"
+                placeholder="Custom RPC URL"
               />
               <Button
                 title="Save"
