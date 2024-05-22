@@ -289,9 +289,9 @@ export default function Buy({
       </div>
       <RewardsAnimation />
       <StakeAnimation
-        title="GET BONUS USDC + ADX"
+        title="GET BONUS REWARDS"
         subtitle="Duration lock ALP for bonus USDC yield and ADX token rewards. The
-          longer you lock, the higher the yield multipliers"
+          longer you lock, the higher the yield multipliers."
       />
     </div>
   );

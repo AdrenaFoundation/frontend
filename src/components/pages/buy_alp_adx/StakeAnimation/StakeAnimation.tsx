@@ -16,15 +16,22 @@ export default function StakeAnimation({
   title: string;
   subtitle: string;
 }) {
-  const c1Initial = { daysLocked: 90, remaining: '90d 22h 02m', countdown: 45 };
+  const c1Initial = {
+    amount: 1200,
+    daysLocked: 90,
+    remaining: '12d 22h 02m',
+    countdown: 45,
+  };
   const c2Initial = {
+    amount: 600,
     daysLocked: 720,
-    remaining: '720d 09h 23m',
+    remaining: '702d 09h 23m',
     countdown: 55,
   };
   const c3Initial = {
+    amount: 500,
     daysLocked: 360,
-    remaining: '360d 12h 41m',
+    remaining: '122d 12h 41m',
     countdown: 25,
   };
 
@@ -60,7 +67,12 @@ export default function StakeAnimation({
       <div className="w-full">
         <h1 className="text-[36px] mb-1">{title}</h1>
         <p className="text-[24px]">{subtitle}</p>
-        <Button size="lg" title="Stake ALP" href={'/stake'} className="mt-3" />
+        <Button
+          size="lg"
+          title={isADX ? ' Stake ADX' : 'Stake ALP'}
+          href={'/stake'}
+          className="mt-3"
+        />
       </div>
 
       <div className="w-full">
@@ -84,7 +96,9 @@ export default function StakeAnimation({
                 />
               )}
               <div className="font-mono text-sm md:text-base">
-                <motion.div className="inline-block">{roundedUsdc}</motion.div>{' '}
+                <motion.div className="inline-block font-mono">
+                  {roundedUsdc}
+                </motion.div>{' '}
                 USDC
               </div>
             </div>
@@ -97,7 +111,9 @@ export default function StakeAnimation({
               />
 
               <div className="font-mono text-sm md:text-base">
-                <motion.div className="inline-block">{roundedAdx}</motion.div>{' '}
+                <motion.div className="inline-block font-mono">
+                  {roundedAdx}
+                </motion.div>{' '}
                 ADX
               </div>
             </div>

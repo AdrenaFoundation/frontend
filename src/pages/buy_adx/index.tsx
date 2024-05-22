@@ -8,38 +8,25 @@ import Button from '@/components/common/Button/Button';
 import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 
-import orcaIcon from '../../../public/images/orca-icon.png';
+import jupIcon from '../../../public/images/jup-logo.png';
 
 export default function BuyADX() {
   return (
-    <div className="flex flex-col gap-[200px] lg:gap-[300px] px-7">
+    <div className="flex flex-col gap-[200px] lg:gap-[250px] px-7">
       <div className="flex flex-col justify-center items-start w-full h-[800px] z-10">
-        <div className="flex flex-row gap-3 items-center">
-          <Image
-            src={window.adrena.client.adxToken.image}
-            className="w-6 h-6"
-            alt="adx logo"
-          />
-          <div>
-            <h3 className="inline-block">ADX</h3>{' '}
-            <h3 className="inline-block text-txtfade">
-              – The Governance Token
-            </h3>
-          </div>
-        </div>
-        <h1 className="text-[2.6rem] lg:text-[3rem] uppercase max-w-[840px]">
+        <h1 className="text-[2.6rem] lg:text-[3.3rem] uppercase max-w-[840px]">
           DIRECTLY CAPTURE REVENUE AND INFLUENCE THE PROTOCOL WITH THE ADRENA
           TOKEN
         </h1>
 
-        <p className="text-[1.2rem] max-w-[640px] text-txtfade mb-6">
+        <p className="text-[1.4rem] max-w-[640px] text-txtfade mb-6">
           Accumulate and stake ADX to get proportional control and economic
-          value capture
+          value capture.
         </p>
         <Button
-          title="Buy ADX on Orca"
-          href="https://www.orca.so/"
-          rightIcon={orcaIcon}
+          title="Buy ADX on Jupiter DEX"
+          href="https://jup.ag/swap/USDC-ADX"
+          rightIcon={jupIcon}
           iconClassName="w-5 h-5"
           size="lg"
           className="mt-4 px-14 py-3 text-base"
@@ -62,7 +49,7 @@ export default function BuyADX() {
         <div className="relative">
           <h1 className="text-[36px] mb-1">GET PASSIVE INCOME</h1>
           <p className="text-[24px] max-w-[600px]">
-            Staked ADX receives 20% of protocol revenue in direct USDC airdrops
+            Staked ADX receives 20% of protocol revenue in direct USDC airdrops.
           </p>
           <Button
             size="lg"
@@ -88,8 +75,8 @@ export default function BuyADX() {
 
       <StakeAnimation
         isADX
-        title="GET BONUS ADX"
-        subtitle="Duration lock ALP for bonus USDC yield and ADX token rewards. The longer you lock, the higher the multipliers"
+        title="GET BONUS REWARDS"
+        subtitle="Duration lock ADX for bonus USDC yield and ADX token rewards. The longer you lock, the higher the multipliers."
       />
     </div>
   );

@@ -10,7 +10,7 @@ export default function RewardsAnimation() {
         <h1 className="text-[36px] mb-1">GET PASSIVE INCOME</h1>
         <p className="text-[24px] max-w-[600px]">
           The value of each share of ALP naturally appreciates as fee revenue
-          grows
+          grows.
         </p>
         <Button size="lg" title="Stake ALP" href={'/stake'} className="mt-3" />
       </div>

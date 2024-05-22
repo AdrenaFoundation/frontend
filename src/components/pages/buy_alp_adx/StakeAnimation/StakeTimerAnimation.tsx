@@ -18,6 +18,7 @@ export default function StakeTimerAnimation({
   isADX,
 }: {
   initial: {
+    amount: number;
     daysLocked: number;
     countdown: number;
     remaining: string;
@@ -113,7 +114,7 @@ export default function StakeTimerAnimation({
           />
           <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-3">
             <FormatNumber
-              nb={1200}
+              nb={initial.amount}
               className="text-sm lg:text-lg font-bold"
               suffix={isADX ? ' ADX' : ' ALP'}
             />
