@@ -85,7 +85,7 @@ class DevnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly governanceRealmName = 'AdrenaRealm5';
+  public readonly governanceRealmName = 'Adrenao';
 
   // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
 

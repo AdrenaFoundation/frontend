@@ -2321,6 +2321,11 @@ export class AdrenaClient {
         : threadId,
     );
 
+    console.log(
+      'stakesClaimCronThread debug in AdrenaClient',
+      stakesClaimCronThread.toBase58(),
+    );
+
     const transaction = await this.adrenaProgram.methods
       .addLiquidStake({
         amount: uiToNative(amount, this.adxToken.decimals),
@@ -2350,10 +2355,12 @@ export class AdrenaClient {
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-        feeRedistributionMint: '',
+        feeRedistributionMint: this.cortex.feeRedistributionMint,
       })
       .preInstructions(preInstructions)
       .transaction();
+
+    console.log('transaction debug in AdrenaClient', transaction);
 
     return this.signAndExecuteTx(transaction);
   }
@@ -2832,7 +2839,6 @@ export class AdrenaClient {
     }
 
     const preInstructions: TransactionInstruction[] = [];
-
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
 
     if (!stakingRewardTokenMint) {

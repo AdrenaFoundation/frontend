@@ -41,7 +41,6 @@ export default function ADXStakeOverview({
         <h3>Liquid Staking</h3>
 
         <ul>
-
           <li className="mt-4 text-sm opacity-50 font-boldy">
             - Get 1:1 voting power to participate in the protocol&apos;s
             governance
