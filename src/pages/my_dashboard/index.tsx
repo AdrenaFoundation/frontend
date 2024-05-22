@@ -64,22 +64,26 @@ export default function MyDashboard({
         (stakingAccounts.ADX?.lockedStakes.sort(
           (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
         ) as LockedStakeExtended[]) ?? []
-      ).map((stake, index) => ({
-        ...stake,
-        index,
-        tokenSymbol: 'ADX',
-      })) ?? [];
+      )
+        .filter((x) => !x.stakeTime.isZero())
+        .map((stake, index) => ({
+          ...stake,
+          index,
+          tokenSymbol: 'ADX',
+        })) ?? [];
 
     const alpLockedStakes: LockedStakeExtended[] =
       (
         (stakingAccounts.ALP?.lockedStakes.sort(
           (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
         ) as LockedStakeExtended[]) ?? []
-      ).map((stake, index) => ({
-        ...stake,
-        index,
-        tokenSymbol: 'ALP',
-      })) ?? [];
+      )
+        .filter((x) => !x.stakeTime.isZero())
+        .map((stake, index) => ({
+          ...stake,
+          index,
+          tokenSymbol: 'ALP',
+        })) ?? [];
 
     const liquidStakedADX =
       typeof stakingAccounts.ADX?.liquidStake.amount !== 'undefined'
@@ -202,7 +206,7 @@ export default function MyDashboard({
         />
       </div>
 
-      <div className="flex flex-col gap-4 p-4 w-full self-center">
+      <div className="flex flex-col max-w-[55em] gap-4 p-4 w-full self-center">
         {userProfile !== null ? (
           <>
             <div className="flex flex-wrap w-full gap-4">
@@ -244,7 +248,7 @@ export default function MyDashboard({
             ></StakesStats>
           </>
         ) : (
-          <div className="flex h-[10em] bg-secondary w-full border items-center justify-center rounded-xl z-30">
+          <div className="flex h-[10em] bg-main w-full border items-center justify-center rounded-xl z-30">
             <WalletConnection connected={connected} />
           </div>
         )}

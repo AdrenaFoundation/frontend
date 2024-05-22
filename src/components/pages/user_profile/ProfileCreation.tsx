@@ -32,7 +32,7 @@ export default function ProfileCreation({
               onChange={setNickname}
               placeholder="The Great Trader"
               className="text-center w-[80%] bg-inputcolor border rounded-xl"
-              inputFontSize="1.5em"
+              inputFontSize="1em"
               maxLength={24}
             />
 
