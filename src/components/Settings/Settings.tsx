@@ -66,10 +66,27 @@ export default function Settings({
   }, [isAutoRPC, rpcOptions]);
 
   const handleRPCOption = (rpc: string) => {
-    if (rpc === 'Custom RPC' && customRpcUrl === null) return;
+    if (
+      rpc === 'Custom RPC' &&
+      (customRpcUrl === null || customRpcUrl === undefined)
+    ) {
+      addNotification({
+        title: 'Please use a valid custom RPC URL',
+        type: 'error',
+        duration: 'fast',
+        position: 'bottom-right',
+      });
+      return;
+    }
+
     setActiveRpc(rpc);
     setCookies('activeRpc', rpc);
     setIsEditCustomRPCMode(false);
+    addNotification({
+      title: 'RPC endpoint changed',
+      duration: 'fast',
+      position: 'bottom-right',
+    });
   };
 
   const saveCustomRPCUrl = async () => {
@@ -99,6 +116,9 @@ export default function Settings({
         duration: 'fast',
         position: 'bottom-right',
       });
+      setCustomRpcUrl(null);
+      setCookies('customRpc', null);
+      setIsEditCustomRPCMode(false);
       return;
     }
 
@@ -166,13 +186,7 @@ export default function Settings({
           <li
             className="flex flex-row justify-between items-center cursor-pointer"
             onClick={() => {
-              if (rpc.name === 'Custom RPC' && customRpcUrl === null) return;
               handleRPCOption(rpc.name);
-              addNotification({
-                title: 'RPC endpoint changed',
-                duration: 'fast',
-                position: 'bottom-right',
-              });
             }}
             key={rpc.name}
           >

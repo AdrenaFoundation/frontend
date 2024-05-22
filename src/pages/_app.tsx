@@ -22,7 +22,7 @@ import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
-import { verifyRpcConnection } from '@/utils';
+import { verifyIfValidUrl, verifyRpcConnection } from '@/utils';
 
 import logo from '../../public/images/logo.png';
 import devnetConfiguration from '../config/devnet';
@@ -59,7 +59,7 @@ export default function App(props: AppProps) {
   );
 
   const verifyCustomRPC = async () => {
-    if (customRpcUrl === null) return false;
+    if (customRpcUrl === null || !verifyIfValidUrl(customRpcUrl)) return false;
 
     return await verifyRpcConnection(customRpcUrl);
   };
