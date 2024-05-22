@@ -64,14 +64,16 @@ export default function ALPStakeOverview({
             over.
           </span> */}
 
-        <StyledSubSubContainer className="mt-4">
-          <h5 className="flex items-center">Locked</h5>
+        {totalLockedStake !== 0 ? (
+          <StyledSubSubContainer className="mt-4">
+            <h5 className="flex items-center">Locked</h5>
 
-          <div>
-            <FormatNumber nb={totalLockedStake} />
-            <span className="ml-1">ALP</span>
-          </div>
-        </StyledSubSubContainer>
+            <div>
+              <FormatNumber nb={totalLockedStake} />
+              <span className="ml-1">ALP</span>
+            </div>
+          </StyledSubSubContainer>
+        ) : null}
 
         {totalLockedStake !== null && totalLockedStake > 0 ? (
           <>
@@ -106,7 +108,7 @@ export default function ALPStakeOverview({
             className="w-full mt-4"
             variant="primary"
             size="lg"
-            title={totalLockedStake ? 'Stake More' : 'Stake'}
+            title={totalLockedStake !== 0 ? 'Stake More' : 'Stake'}
             disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)

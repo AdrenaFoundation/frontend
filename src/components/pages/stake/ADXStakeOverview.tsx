@@ -49,15 +49,16 @@ export default function ADXStakeOverview({
             - Unstake at any time, if not participating in an active vote
           </li>
         </ul>
+        {totalLiquidStaked !== 0 ? (
+          <StyledSubSubContainer className="mt-4">
+            <h5 className="flex items-center">Total stake</h5>
 
-        <StyledSubSubContainer className="mt-4">
-          <h5 className="flex items-center">Balance</h5>
-
-          <div>
-            <FormatNumber nb={totalLiquidStaked} />
-            <span className="ml-1">ADX</span>
-          </div>
-        </StyledSubSubContainer>
+            <div>
+              <FormatNumber nb={totalLiquidStaked} />
+              <span className="ml-1">ADX</span>
+            </div>
+          </StyledSubSubContainer>
+        ) : null}
         <div className="flex gap-x-4">
           <Button
             className="w-full mt-4 ml-auto"
@@ -121,14 +122,16 @@ export default function ADXStakeOverview({
           </span>
         </p> */}
 
-        <StyledSubSubContainer className="mt-4">
-          <h5 className="flex items-center">Locked</h5>
+        {totalLockedStake !== 0 ? (
+          <StyledSubSubContainer className="mt-4">
+            <h5 className="flex items-center">Locked</h5>
 
-          <div>
-            <FormatNumber nb={totalLockedStake} />
-            <span className="ml-1">ADX</span>
-          </div>
-        </StyledSubSubContainer>
+            <div>
+              <FormatNumber nb={totalLockedStake} />
+              <span className="ml-1">ADX</span>
+            </div>
+          </StyledSubSubContainer>
+        ) : null}
 
         {totalLockedStake !== null && totalLockedStake > 0 ? (
           <>
@@ -163,7 +166,7 @@ export default function ADXStakeOverview({
             className="w-full mt-4"
             variant="primary"
             size="lg"
-            title={lockedStakes ? 'Stake More' : 'Stake'}
+            title={totalLockedStake !== 0 ? 'Stake More' : 'Stake'}
             disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
