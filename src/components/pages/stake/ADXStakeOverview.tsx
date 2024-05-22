@@ -12,6 +12,7 @@ import { AdxLockPeriod, LockedStakeExtended } from '@/types';
 export default function ADXStakeOverview({
   totalLiquidStaked,
   totalLockedStake,
+  totalRedeemableLockedStake,
   lockedStakes,
   handleLockedStakeRedeem,
   handleClickOnStakeMore,
@@ -21,6 +22,7 @@ export default function ADXStakeOverview({
 }: {
   totalLiquidStaked: number | null;
   totalLockedStake: number | null;
+  totalRedeemableLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnStakeMore: (initialLockPeriod: AdxLockPeriod) => void;
@@ -39,51 +41,52 @@ export default function ADXStakeOverview({
         <h3>Liquid Staking</h3>
 
         <ul>
-          <li className="mt-4 text-sm">
+
+          <li className="mt-4 text-sm opacity-50 font-boldy">
             - Get 1:1 voting power to participate in the protocol&apos;s
             governance
           </li>
-          <li className="mt-4 text-sm">
+          <li className="mt-4 text-sm opacity-50 font-boldy">
             - Unstake at any time, if not participating in an active vote
           </li>
         </ul>
+        {totalLiquidStaked !== 0 ? (
+          <StyledSubSubContainer className="mt-4">
+            <h5 className="flex items-center">Total stake</h5>
 
-        <StyledSubSubContainer className="mt-4">
-          <h5 className="flex items-center">Balance</h5>
-
-          <div>
-            <FormatNumber nb={totalLiquidStaked} />
-            <span className="ml-1">ADX</span>
-          </div>
-        </StyledSubSubContainer>
-
+            <div>
+              <FormatNumber nb={totalLiquidStaked} />
+              <span className="ml-1">ADX</span>
+            </div>
+          </StyledSubSubContainer>
+        ) : null}
         <div className="flex gap-x-4">
           <Button
-            className="w-full mt-4"
+            className="w-full mt-4 ml-auto"
             variant="primary"
             size="lg"
-            title="Stake"
+            title={totalLiquidStaked !== 0 ? 'Stake More' : 'Stake'}
             disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() => handleClickOnStakeMore(0)}
           />
 
-          <Button
-            className="w-full mt-4"
-            disabled={
-              !window.adrena.geoBlockingData.allowed || totalLiquidStaked === 0
-            }
-            variant="outline"
-            size="lg"
-            title="Redeem"
-            onClick={() => handleClickOnRedeem()}
-          />
+          {totalLiquidStaked !== 0 ? (
+            <Button
+              className="w-full mt-4"
+              variant="outline"
+              size="lg"
+              title="Redeem"
+              disabled={!window.adrena.geoBlockingData.allowed}
+              onClick={() => handleClickOnRedeem()}
+            />
+          ) : null}
         </div>
       </StyledSubContainer>
 
       <StyledSubContainer>
         <h3>Locked Staking</h3>
 
-        <p className="mt-4 flex flex-col ">
+        <p className="mt-4 flex flex-col opacity-50 font-boldy">
           <span className="text-sm">
             Align with the protocol long term success: the longer the period,
             the higher the rewards.
@@ -107,7 +110,7 @@ export default function ADXStakeOverview({
             </li>
           </ul>
         </p>
-        {/* 
+        {/*
 
           <span className="mt-2 text-sm">
             ADX and USDC rewards accrue automatically every ~6 hours and get
@@ -120,14 +123,16 @@ export default function ADXStakeOverview({
           </span>
         </p> */}
 
-        <StyledSubSubContainer className="mt-4">
-          <h5 className="flex items-center">Locked</h5>
+        {totalLockedStake !== 0 ? (
+          <StyledSubSubContainer className="mt-4">
+            <h5 className="flex items-center">Locked</h5>
 
-          <div>
-            <FormatNumber nb={totalLockedStake} />
-            <span className="ml-1">ADX</span>
-          </div>
-        </StyledSubSubContainer>
+            <div>
+              <FormatNumber nb={totalLockedStake} />
+              <span className="ml-1">ADX</span>
+            </div>
+          </StyledSubSubContainer>
+        ) : null}
 
         {totalLockedStake !== null && totalLockedStake > 0 ? (
           <>
@@ -162,23 +167,25 @@ export default function ADXStakeOverview({
             className="w-full mt-4"
             variant="primary"
             size="lg"
-            title="Stake"
+            title={totalLockedStake !== 0 ? 'Stake More' : 'Stake'}
             disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
             }
           />
 
-          <Button
-            className="w-full mt-4"
-            disabled={
-              !window.adrena.geoBlockingData.allowed || totalLockedStake === 0
-            }
-            variant="outline"
-            size="lg"
-            title="Claim Rewards"
-            onClick={() => handleClickOnClaimRewards()}
-          />
+          {totalRedeemableLockedStake !== 0 ? (
+            <Button
+              className="w-full mt-4"
+              disabled={!window.adrena.geoBlockingData.allowed}
+              variant="outline"
+              size="lg"
+              title="Claim Rewards"
+              onClick={() => handleClickOnClaimRewards()}
+            />
+          ) : (
+            <></>
+          )}
         </div>
       </StyledSubContainer>
     </StyledContainer>

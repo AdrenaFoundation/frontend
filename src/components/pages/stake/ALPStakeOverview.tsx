@@ -11,6 +11,7 @@ import { AlpLockPeriod, LockedStakeExtended } from '@/types';
 
 export default function ALPStakeOverview({
   totalLockedStake,
+  totalRedeemableLockedStake,
   lockedStakes,
   handleLockedStakeRedeem,
   handleClickOnStakeMore,
@@ -18,6 +19,7 @@ export default function ALPStakeOverview({
   className,
 }: {
   totalLockedStake: number | null;
+  totalRedeemableLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod) => void;
@@ -34,7 +36,7 @@ export default function ALPStakeOverview({
       <StyledSubContainer>
         <h3>Locked Staking</h3>
 
-        <p className="mt-4 flex flex-col ">
+        <p className="mt-4 flex flex-col opacity-50 font-boldy">
           <span className="text-sm">
             Provide liquidities long term: the longer the period, the higher the
             rewards.
@@ -62,14 +64,16 @@ export default function ALPStakeOverview({
             over.
           </span> */}
 
-        <StyledSubSubContainer className="mt-4">
-          <h5 className="flex items-center">Locked</h5>
+        {totalLockedStake !== 0 ? (
+          <StyledSubSubContainer className="mt-4">
+            <h5 className="flex items-center">Locked</h5>
 
-          <div>
-            <FormatNumber nb={totalLockedStake} />
-            <span className="ml-1">ALP</span>
-          </div>
-        </StyledSubSubContainer>
+            <div>
+              <FormatNumber nb={totalLockedStake} />
+              <span className="ml-1">ALP</span>
+            </div>
+          </StyledSubSubContainer>
+        ) : null}
 
         {totalLockedStake !== null && totalLockedStake > 0 ? (
           <>
@@ -104,23 +108,22 @@ export default function ALPStakeOverview({
             className="w-full mt-4"
             variant="primary"
             size="lg"
-            title="Stake"
+            title={totalLockedStake !== 0 ? 'Stake More' : 'Stake'}
             disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
             }
           />
-
-          <Button
-            className="w-full mt-4"
-            disabled={
-              !window.adrena.geoBlockingData.allowed || totalLockedStake === 0
-            }
-            variant="outline"
-            size="lg"
-            title="Claim Rewards"
-            onClick={() => handleClickOnClaimRewards()}
-          />
+          {totalRedeemableLockedStake !== 0 ? (
+            <Button
+              className="w-full mt-4"
+              disabled={!window.adrena.geoBlockingData.allowed}
+              variant="outline"
+              size="lg"
+              title="Claim Rewards"
+              onClick={() => handleClickOnClaimRewards()}
+            />
+          ) : null}
         </div>
       </StyledSubContainer>
     </StyledContainer>
