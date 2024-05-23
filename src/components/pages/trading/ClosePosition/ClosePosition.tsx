@@ -90,8 +90,8 @@ export default function ClosePosition({
               .div(new BN(10_000));
 
       const txHash = await (position.side === 'long'
-        ? window.adrena.client.closePositionLong
-        : window.adrena.client.closePositionShort)({
+        ? window.adrena.client.closePositionLong.bind(window.adrena.client)
+        : window.adrena.client.closePositionShort.bind(window.adrena.client))({
         position,
         price: priceWithSlippage,
       });
