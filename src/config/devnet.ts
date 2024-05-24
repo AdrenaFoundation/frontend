@@ -33,7 +33,7 @@ class DevnetConfiguration implements IConfiguration {
       decimals: 6,
     },
     BkT3jz4yZaYwiPMSWUBTVpZjCwmhw4KXN9SKVuBkGz8L: {
-      name: 'Theter',
+      name: 'Tether',
       color: '#26a17b',
       symbol: 'USDT',
       image: usdtLogo,
