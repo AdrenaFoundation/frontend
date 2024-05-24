@@ -13,7 +13,11 @@ export default function SwapStats({
   className?: string;
 }) {
   return (
-    <StyledContainer title={<h2>Swap Stats</h2>} className={twMerge(className)}>
+    <StyledContainer
+      title="Swap Stats"
+      titleClassName="text-2xl"
+      className={twMerge(className)}
+    >
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-start justify-between">
           <div className="text-sm">Swap Count</div>

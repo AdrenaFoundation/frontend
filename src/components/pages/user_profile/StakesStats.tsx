@@ -20,7 +20,7 @@ export default function StakesStats({
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
 }) {
   return (
-    <StyledContainer title={<h2>Ongoing Stakes</h2>}>
+    <StyledContainer title="Ongoing Stakes" titleClassName="text-2xl">
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Liquid Staked ADX</div>

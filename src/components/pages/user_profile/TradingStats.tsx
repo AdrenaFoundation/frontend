@@ -14,7 +14,8 @@ export default function TradingStatsBloc({
 }) {
   return (
     <StyledContainer
-      title={<h2>Trading Stats</h2>}
+      title="rading Stats"
+      titleClassName="text-2xl"
       className={twMerge(className)}
     >
       <StyledSubSubContainer className="flex-col">

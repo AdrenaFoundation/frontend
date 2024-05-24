@@ -3,7 +3,7 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
-import OwnerBloc from '@/components/pages/user_profile/OwnerBloc';
+import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
 import StakesStats from '@/components/pages/user_profile/StakesStats';
@@ -13,7 +13,7 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockedStakeExtended, PageProps } from '@/types';
+import { LockedStakeExtended, PageProps, Vest } from '@/types';
 import {
   addFailedTxNotification,
   addNotification,
@@ -47,6 +47,7 @@ export default function MyDashboard({
   const [liquidStakedADX, setLiquidStakedADX] = useState<number | null>(null);
   const [lockedStakedADX, setLockedStakedADX] = useState<number | null>(null);
   const [lockedStakedALP, setLockedStakedALP] = useState<number | null>(null);
+  const [userVest, setUserVest] = useState<Vest | null>(null);
 
   // When the profile page loads, update the profile so it's up to date with latests
   // user actions
@@ -54,6 +55,11 @@ export default function MyDashboard({
     triggerUserProfileReload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    getUserVesting();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [owner]);
 
   useEffect(() => {
     if (!stakingAccounts) {
@@ -181,6 +187,15 @@ export default function MyDashboard({
     }
   };
 
+  const getUserVesting = async () => {
+    try {
+      const vest = (await window.adrena.client.loadUserVest()) as Vest;
+      setUserVest(vest);
+    } catch (error) {
+      console.log('failed to load vesting', error);
+    }
+  };
+
   return (
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50">
@@ -221,7 +236,7 @@ export default function MyDashboard({
                 </div>
               ) : (
                 <>
-                  <OwnerBloc
+                  <OwnerBlock
                     userProfile={userProfile}
                     triggerUserProfileReload={triggerUserProfileReload}
                     canUpdateNickname={!readonly}
@@ -230,7 +245,7 @@ export default function MyDashboard({
                   <div className="flex flex-1 flex-col md:flex-row gap-4">
                     <TradingStats userProfile={userProfile} className="flex" />
                     <SwapStats userProfile={userProfile} className="flex" />
-                    <VestStats userProfile={userProfile} className="flex" />
+                    <VestStats userVest={userVest} className="flex" />
                   </div>
                 </>
               )}
