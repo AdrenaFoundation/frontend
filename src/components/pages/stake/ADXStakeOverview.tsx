@@ -183,7 +183,13 @@ export default function ADXStakeOverview({
               onClick={() => handleClickOnClaimRewards()}
             />
           ) : (
-            <></>
+            <Button
+              className="w-full mt-4 opacity-70 text-opacity-70"
+              disabled={true}
+              variant="outline"
+              size="lg"
+              title="Claim Rewards"
+            />
           )}
         </div>
       </StyledSubContainer>

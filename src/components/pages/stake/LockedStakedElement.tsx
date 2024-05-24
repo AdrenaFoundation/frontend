@@ -67,22 +67,22 @@ export default function LockedStakedElement({
 
       <div className="flex flex-col mt-4 mb-4 sm:mt-0 sm:mb-0 justify-center">
         <span className="text-xs text-txtfade">
-          +{Math.floor((lockedStake.lmRewardMultiplier / 10_000) * 100)}% bonus
+          {Math.floor((lockedStake.lmRewardMultiplier / 10_000) * 100)}% bonus
           ADX
         </span>
         <span className="text-xs text-txtfade">
-          +{Math.floor((lockedStake.rewardMultiplier / 10_000) * 100)}% bonus
+          {Math.floor((lockedStake.rewardMultiplier / 10_000) * 100)}% bonus
           USDC yield
         </span>
         {lockedStake.voteMultiplier > 0 ? (
           <span className="text-xs text-txtfade">
-            +{Math.floor((lockedStake.voteMultiplier / 10_000) * 100)}% bonus
+            {Math.floor((lockedStake.voteMultiplier / 10_000) * 100)}% bonus
             voting power
           </span>
         ) : null}
       </div>
 
-      <div className="flex items-center">
+      <>
         {(() => {
           if (timeRemaining === null) return null;
 
@@ -98,8 +98,6 @@ export default function LockedStakedElement({
                 />
               );
             }
-
-            return null;
           }
 
           // Display a specific date if it's more than in 30 days
@@ -108,29 +106,47 @@ export default function LockedStakedElement({
             const endDate = new Date(today.getTime() + timeRemaining);
 
             return (
-              <div className="flex sm:flex-col items-center w-full sm:w-[8em] h-full sm:justify-center">
-                <span className="text-xs">Ends the</span>
-                <span className="text-xs ml-1 sm:ml-0">
-                  {endDate.toLocaleString('en', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </span>
-              </div>
+              <>
+                <div className="flex items-center w-full sm:w-[8em] md:w-[7em] h-full sm:justify-center">
+                  <span className="text-xs">Ends the</span>
+                  <span className="text-xs ml-1 sm:ml-0">
+                    {endDate.toLocaleString('en', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </span>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  title="Redeem"
+                  className="opacity-70 text-opacity-70 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
+                  disabled={true}
+                />
+              </>
             );
           }
 
           return (
-            <div className="flex sm:flex-col items-center w-full sm:w-[8em] h-full sm:justify-center">
-              <span className="text-xs">Ends in</span>
-              <span className="text-xs ml-1 sm:ml-0">
-                {formatMilliseconds(timeRemaining)}
-              </span>
-            </div>
+            <>
+              <div className="flex sm:flex-col items-center w-full sm:w-[8em] md:w-[7em] h-full sm:justify-center">
+                <span className="text-xs">Ends in</span>
+                <span className="text-xs ml-1 sm:ml-0">
+                  {formatMilliseconds(timeRemaining)}
+                </span>
+              </div>
+              <Button
+                variant="secondary"
+                size="md"
+                title="Redeem"
+                className="opacity-70 text-opacity-70 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
+                disabled={true}
+              />
+            </>
           );
         })()}
-      </div>
+      </>
     </div>
   );
 }

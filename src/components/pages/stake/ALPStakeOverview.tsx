@@ -123,7 +123,15 @@ export default function ALPStakeOverview({
               title="Claim Rewards"
               onClick={() => handleClickOnClaimRewards()}
             />
-          ) : null}
+          ) : (
+            <Button
+              className="w-full mt-4 opacity-70 text-opacity-70"
+              disabled={true}
+              variant="outline"
+              size="lg"
+              title="Claim Rewards"
+            />
+          )}
         </div>
       </StyledSubContainer>
     </StyledContainer>
