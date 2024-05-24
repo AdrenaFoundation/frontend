@@ -53,12 +53,12 @@ export default function StakesStats({
           <div className="text-sm">Locked Staked ALP</div>
 
           <span>
-            {lockedStakedALP !== null
-              ? formatNumber(
-                  lockedStakedALP,
-                  window.adrena.client.alpToken.decimals,
-                )
-              : '0'}{' '}
+            <FormatNumber
+              nb={lockedStakedALP}
+              precision={window.adrena.client.alpToken.decimals}
+              placeholder="0"
+              className="inline"
+            />{' '}
             ALP
           </span>
         </div>
