@@ -77,22 +77,29 @@ const RiveAnimation = ({
   }, [assetsLoaded, totalAssets]);
 
   const getImages = async (asset: ImageAsset) => {
-    const img =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require(`../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`).default;
+    let image =
+      window.riveImageCaching[
+        `../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`
+      ];
 
-    const arrayBuffer = await fetch(img.src).then((response) =>
-      response.arrayBuffer(),
-    );
+    if (!image) {
+      const img =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require(`../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`).default;
 
-    const image = await decodeImage(new Uint8Array(arrayBuffer));
+      const arrayBuffer = await fetch(img.src).then((response) =>
+        response.arrayBuffer(),
+      );
+
+      image = await decodeImage(new Uint8Array(arrayBuffer));
+
+      window.riveImageCaching[
+        `../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`
+      ] = image;
+    }
 
     asset.setRenderImage(image);
-
     setAssetsLoaded((prev) => prev + 1);
-
-    // call unref to release any references when no longer needed.
-    image.unref();
   };
 
   const { RiveComponent } = useRive({
@@ -106,9 +113,9 @@ const RiveAnimation = ({
       if (asset.isImage) {
         getImages(asset as ImageAsset);
         return true;
-      } else {
-        return false;
       }
+
+      return false;
     },
   });
 
