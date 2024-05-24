@@ -41,10 +41,13 @@ export default function PositionsArray({
 
   if (positions && !positions.length) {
     return (
-      <div className="flex h-full min-h-[5em] grow items-center justify-center">
-        <span className="text-sm opacity-50 font-normal h-full flex items-center justify-center font-boldy">
+      <div className="flex flex-col gap-2 h-full min-h-[5em] grow items-center justify-center">
+        <span className="text-sm opacity-50 font-normal flex items-center justify-center font-boldy">
           No opened position
         </span>
+        {window.location.pathname === '/trade' ? null : (
+          <Button title="Open a position" href={'/trade'} size="lg" />
+        )}
       </div>
     );
   }

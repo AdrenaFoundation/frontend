@@ -41,11 +41,11 @@ export default function ADXStakeOverview({
         <h3>Liquid Staking</h3>
 
         <ul>
-          <li className="mt-4 text-sm opacity-50 font-boldy">
+          <li className="mt-4 text-lg">
             - Get 1:1 voting power to participate in the protocol&apos;s
             governance
           </li>
-          <li className="mt-4 text-sm opacity-50 font-boldy">
+          <li className="mt-4 text-lg">
             - Unstake at any time, if not participating in an active vote
           </li>
         </ul>
@@ -85,25 +85,25 @@ export default function ADXStakeOverview({
       <StyledSubContainer>
         <h3>Locked Staking</h3>
 
-        <p className="mt-4 flex flex-col opacity-50 font-boldy">
-          <span className="text-sm">
+        <p className="mt-4 flex flex-col">
+          <span className="text-lg">
             Align with the protocol long term success: the longer the period,
             the higher the rewards.
           </span>
-          <span className="text-sm">
+          <span className="text-lg">
             20% of protocol fees are distributed to ADX stakers.
           </span>
 
           <ul>
-            <li className="mt-4 text-sm">
+            <li className="mt-4 text-lg">
               - Get amplified voting power to participate in the protocol&apos;s
               governance
             </li>
-            <li className="mt-4 text-sm">
+            <li className="mt-4 text-lg">
               - Earn USDC rewards (20% of protocol fees distributed to stakers)
             </li>
-            <li className="mt-4 text-sm">- Earn extra ADX rewards</li>
-            <li className="mt-4 text-sm">
+            <li className="mt-4 text-lg">- Earn extra ADX rewards</li>
+            <li className="mt-4 text-lg">
               - Locked principal becomes available at the end of the period,
               with the possibility to unstake earlier for a fee
             </li>
@@ -111,12 +111,12 @@ export default function ADXStakeOverview({
         </p>
         {/*
 
-          <span className="mt-2 text-sm">
+          <span className="mt-2 text-lg">
             ADX and USDC rewards accrue automatically every ~6 hours and get
             auto-claimed every 18 days. You can manually claim rewards.
           </span>
 
-          <span className="mt-2 text-sm">
+          <span className="mt-2 text-lg">
             The locked ADX tokens can be redeemed once the locking period is
             over.
           </span>

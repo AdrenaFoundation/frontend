@@ -201,8 +201,13 @@ export default function PositionsBlocks({
       ) : null}
 
       {positions && !positions.length ? (
-        <div className="text-sm opacity-50 font-normal mt-5 mb-5 ml-auto mr-auto font-boldy">
-          No opened position
+        <div className="flex flex-col gap-3 items-center justify-center mb-5">
+          <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
+            No opened position
+          </div>
+          {window.location.pathname === '/trade' ? null : (
+            <Button title="Open a position" href={'/trade'} size="lg" />
+          )}
         </div>
       ) : null}
 

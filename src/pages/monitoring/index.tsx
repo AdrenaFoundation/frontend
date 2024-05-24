@@ -34,7 +34,7 @@ export default function Monitoring(pageProps: PageProps) {
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0 mx-5">
         <RiveAnimation
           animation="btm-monster"
           layout={
@@ -58,7 +58,7 @@ export default function Monitoring(pageProps: PageProps) {
         />
       </div>
 
-      <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10">
+      <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10 w-full">
         <div
           className={twMerge(
             'flex items-center justify-evenly w-[14em] ml-auto mr-auto',
@@ -90,7 +90,7 @@ export default function Monitoring(pageProps: PageProps) {
 
         {detailedDisplay ? (
           <TabSelect
-            wrapperClassName="w-full w-[40em] pl-4 pr-4 bg-secondary flex-col md:flex-row"
+            wrapperClassName="w-full md:w-[40em] pl-4 pr-4 bg-secondary flex-col md:flex-row"
             titleClassName="whitespace-nowrap text-xs"
             selected={detailedDisplaySelectedTab}
             initialSelectedIndex={tabsFormatted.findIndex(

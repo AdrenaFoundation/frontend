@@ -20,6 +20,7 @@ import {
   addSuccessTxNotification,
   nativeToUi,
 } from '@/utils';
+import VestStats from '@/components/pages/user_profile/Veststats';
 
 export default function MyDashboard({
   connected,
@@ -229,6 +230,7 @@ export default function MyDashboard({
                   <div className="flex flex-1 flex-col md:flex-row gap-4">
                     <TradingStats userProfile={userProfile} className="flex" />
                     <SwapStats userProfile={userProfile} className="flex" />
+                    <VestStats userProfile={userProfile} className="flex" />
                   </div>
                 </>
               )}
@@ -239,6 +241,7 @@ export default function MyDashboard({
               triggerPositionsReload={triggerPositionsReload}
               title="Opened Positions"
             />
+
             <StakesStats
               liquidStakedADX={liquidStakedADX}
               lockedStakedADX={lockedStakedADX}
