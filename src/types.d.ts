@@ -30,8 +30,13 @@ export type AdrenaGlobal = {
   geoBlockingData: GeoBlockingData;
 };
 
+// Rive doesn't expose the type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RiveImage = any;
+
 declare global {
   interface Window {
+    riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;
   }
 }
