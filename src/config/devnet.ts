@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
+import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
 import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
@@ -59,7 +60,7 @@ class DevnetConfiguration implements IConfiguration {
       name: 'Bonk',
       color: '#f7931a',
       symbol: 'BONK',
-      image: btcLogo,
+      image: bonkLogo,
       coingeckoId: 'bonk',
       decimals: 6,
     },
