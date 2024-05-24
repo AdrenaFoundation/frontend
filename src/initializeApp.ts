@@ -65,6 +65,8 @@ export default async function initializeApp(config: IConfiguration) {
     fetchGeoBlockingData(),
   ]);
 
+  window.riveImageCaching = {};
+
   window.adrena = {
     config,
     client,
