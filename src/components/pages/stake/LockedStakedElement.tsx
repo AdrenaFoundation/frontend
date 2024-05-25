@@ -45,7 +45,7 @@ export default function LockedStakedElement({
   }, [calculateTimeRemaining]);
 
   return (
-    <div className="flex flex-col sm:flex-row border pt-2 pb-2 pl-4 pr-4 justify-between bg-third rounded-lg">
+    <div className="flex flex-col sm:flex-row border pt-2 pb-2 pl-3 pr-2 sm:pr-1 justify-between bg-third rounded-lg">
       <div className="flex flex-row sm:flex-col justify-between">
         <div>
           <FormatNumber
@@ -107,7 +107,7 @@ export default function LockedStakedElement({
 
             return (
               <>
-                <div className="flex items-center w-full sm:w-[8em] md:w-[7em] h-full sm:justify-center">
+                <div className="flex items-center w-full sm:w-[8em] md:w-[7em] lg:w-[8em] h-full sm:justify-center">
                   <span className="text-xs">Ends the</span>
                   <span className="text-xs ml-1 sm:ml-0">
                     {endDate.toLocaleString('en', {

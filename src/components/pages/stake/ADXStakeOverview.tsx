@@ -109,18 +109,7 @@ export default function ADXStakeOverview({
             </li>
           </ul>
         </p>
-        {/*
-
-          <span className="mt-2 text-sm">
-            ADX and USDC rewards accrue automatically every ~6 hours and get
-            auto-claimed every 18 days. You can manually claim rewards.
-          </span>
-
-          <span className="mt-2 text-sm">
-            The locked ADX tokens can be redeemed once the locking period is
-            over.
-          </span>
-        </p> */}
+        {<></>}
 
         {totalLockedStake !== 0 ? (
           <StyledSubSubContainer className="mt-4">
@@ -179,7 +168,7 @@ export default function ADXStakeOverview({
               disabled={!window.adrena.geoBlockingData.allowed}
               variant="outline"
               size="lg"
-              title="Claim Rewards"
+              title="Claim Rewards *"
               onClick={() => handleClickOnClaimRewards()}
             />
           ) : (
@@ -188,10 +177,16 @@ export default function ADXStakeOverview({
               disabled={true}
               variant="outline"
               size="lg"
-              title="Claim Rewards"
+              title="Claim Rewards *"
             />
           )}
         </div>
+        <span className="mt-4 text-sm opacity-50">
+          * ADX and USDC rewards accrue automatically every ~6 hours and get
+          <span className="underline"> auto-claimed</span> every 18 days. You
+          can manually claim rewards. The locked ADX tokens can be redeemed once
+          the locking period is over.
+        </span>
       </StyledSubContainer>
     </StyledContainer>
   );
