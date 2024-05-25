@@ -7,7 +7,7 @@ import btcLogo from '../../public/images/btc.svg';
 import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
-import IConfiguration from './IConfiguration';
+import IConfiguration, { RpcOption } from './IConfiguration';
 
 class MainnetConfiguration implements IConfiguration {
   public readonly cluster = 'mainnet';
@@ -75,17 +75,18 @@ class MainnetConfiguration implements IConfiguration {
 
   public readonly governanceRealmName = 'AdrenaRealm5';
 
-  public readonly mainRPC: string = 'https://api.mainnet-beta.solana.com';
-  public readonly pythRPC: string = 'https://api.mainnet-beta.solana.com';
-
-  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
+  public readonly rpcOptions: RpcOption[] = [
     {
-      name: 'Solana RPC',
-      url: 'https://api.devnet.solana.com',
+      name: 'Triton RPC',
+      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com',
     },
     {
       name: 'Helius RPC',
       url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+    },
+    {
+      name: 'Solana RPC',
+      url: 'https://api.devnet.solana.com',
     },
     {
       name: 'Custom RPC',

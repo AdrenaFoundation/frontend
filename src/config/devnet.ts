@@ -9,7 +9,7 @@ import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
 import usdtLogo from '../../public/images/usdt.svg';
-import IConfiguration from './IConfiguration';
+import IConfiguration, { RpcOption } from './IConfiguration';
 
 class DevnetConfiguration implements IConfiguration {
   public readonly cluster = 'devnet';
@@ -88,25 +88,18 @@ class DevnetConfiguration implements IConfiguration {
 
   public readonly governanceRealmName = 'Adrenao';
 
-  // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
-
-  public readonly mainRPC: string =
-    //  'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
-    'https://api.devnet.solana.com';
-
-  // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
-  public readonly pythRPC: string =
-    // 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
-    'https://api.devnet.solana.com';
-
-  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
+  public readonly rpcOptions: RpcOption[] = [
     {
-      name: 'Solana RPC',
-      url: 'https://api.devnet.solana.com',
+      name: 'Triton RPC',
+      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com',
     },
     {
       name: 'Helius RPC',
       url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+    },
+    {
+      name: 'Solana RPC',
+      url: 'https://api.devnet.solana.com',
     },
     {
       name: 'Custom RPC',

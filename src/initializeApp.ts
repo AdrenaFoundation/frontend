@@ -55,8 +55,18 @@ async function fetchGeoBlockingData(): Promise<GeoBlockingData> {
 // theses objects doesn't change on the way
 // for changing objects, use hooks like useCustodies/usePositions etc.
 export default async function initializeApp(config: IConfiguration) {
-  const mainConnection = new Connection(config.mainRPC, 'confirmed');
-  const pythConnection = new Connection(config.pythRPC, 'confirmed');
+  // Take the first rpc option
+  const rpc = config.rpcOptions.find((x) => x.url !== null);
+
+  if (!rpc || !rpc.url) throw new Error('No available RPC');
+
+  const mainConnection = new Connection(rpc.url, {
+    commitment: 'confirmed',
+  });
+
+  const pythConnection = new Connection(rpc.url, {
+    commitment: 'confirmed',
+  });
 
   const readOnlyAdrenaProgram = createReadOnlyAdrenaProgram(mainConnection);
 

@@ -11,6 +11,13 @@ export type TokenInfo = {
   decimals: number;
 };
 
+export type RpcOption = {
+  name: string;
+  url: string | null;
+  connection?: Connection | null;
+  latency?: number | null;
+};
+
 export default interface IConfiguration {
   readonly cluster: 'mainnet' | 'devnet';
 
@@ -24,15 +31,7 @@ export default interface IConfiguration {
 
   readonly governanceRealmName: string;
 
-  readonly mainRPC: string;
-  readonly pythRPC: string;
-
-  readonly RpcOptions: {
-    name: string;
-    url: string | null;
-    connection?: Connection | null;
-    latency?: number | null;
-  }[];
+  readonly rpcOptions: RpcOption[];
 
   readonly mainPool: PublicKey;
 }

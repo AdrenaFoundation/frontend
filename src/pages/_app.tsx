@@ -96,22 +96,24 @@ export default function App(props: AppProps) {
         ? { ...devnetConfiguration }
         : { ...mainnetConfiguration };
 
-    if (activeRpc === 'Custom RPC' && customRpcUrl !== null) {
-      config.mainRPC = customRpcUrl;
-      config.pythRPC = customRpcUrl;
-    } else {
-      const activeRpcOption = config.RpcOptions.find(
-        (rpcOption) => rpcOption.name === activeRpc,
-      );
-      config.mainRPC = activeRpcOption?.url ?? config.mainRPC;
-      config.pythRPC = activeRpcOption?.url ?? config.pythRPC;
-    }
+    // if (activeRpc === 'Custom RPC' && customRpcUrl !== null) {
+    //   config.mainRPC = customRpcUrl;
+    //   config.pythRPC = customRpcUrl;
+    // } else {
+    //   const activeRpcOption = config.rpcOptions.find(
+    //     (rpcOption) => rpcOption.name === activeRpc,
+    //   );
+
+    //   config.mainRPC = activeRpcOption?.url ?? config.mainRPC;
+    //   config.pythRPC = activeRpcOption?.url ?? config.pythRPC;
+    // }
 
     setConfig(config);
   }, [cluster, activeRpc, customRpcUrl]);
 
   useEffect(() => {
     if (!config) return;
+
     initializeApp(config).then(() => {
       setIsInitialized(true);
     });

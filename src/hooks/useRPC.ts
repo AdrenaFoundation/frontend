@@ -2,23 +2,19 @@ import { Connection } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import config from '@/config/devnet';
-import IConfiguration from '@/config/IConfiguration';
+import IConfiguration, { RpcOption } from '@/config/IConfiguration';
 import { verifyRpcConnection } from '@/utils';
 
 const useRpc = ({ customRpcUrl }: { customRpcUrl: string | null }) => {
-  const [RpcOptions, setRpcOptions] = useState<IConfiguration['RpcOptions']>(
-    config.RpcOptions,
-  );
+  const [rpcOptions, setRpcOptions] = useState<RpcOption[]>(config.rpcOptions);
 
-  const [RpcLatency, setRpcLatency] = useState<
-    IConfiguration['RpcOptions'] | null
-  >(null);
+  const [RpcLatency, setRpcLatency] = useState<RpcOption[] | null>(null);
 
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   const initializeRpc = async () => {
     const options = await Promise.all(
-      config.RpcOptions.map(async (rpc) => {
+      config.rpcOptions.map(async (rpc) => {
         if (rpc.name === 'Custom RPC') {
           if (customRpcUrl !== null) {
             const isVerified = await verifyRpcConnection(customRpcUrl);
@@ -45,7 +41,7 @@ const useRpc = ({ customRpcUrl }: { customRpcUrl: string | null }) => {
   };
 
   const getLatency = async () => {
-    const options = [...RpcOptions];
+    const options = [...rpcOptions];
 
     const latency = await Promise.all(
       options.map(async (rpc) => {
@@ -72,7 +68,7 @@ const useRpc = ({ customRpcUrl }: { customRpcUrl: string | null }) => {
 
   const handleCustomRPC = async () => {
     const options = await Promise.all(
-      [...RpcOptions].map(async (rpc) => {
+      [...rpcOptions].map(async (rpc) => {
         if (rpc.name === 'Custom RPC') {
           if (customRpcUrl !== null) {
             const isVerified = await verifyRpcConnection(customRpcUrl);
@@ -107,7 +103,7 @@ const useRpc = ({ customRpcUrl }: { customRpcUrl: string | null }) => {
 
     const interval = setInterval(getLatency, 5000);
     return () => clearInterval(interval);
-  }, [isInitialized, customRpcUrl, RpcOptions]);
+  }, [isInitialized, customRpcUrl, rpcOptions]);
 
   return [RpcLatency];
 };
