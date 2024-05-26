@@ -11,12 +11,14 @@ export default function StakesStats({
   lockedStakedALP,
   lockedStakes,
   handleLockedStakeRedeem,
+  handleClickOnFinalizeLockedRedeem,
 }: {
   liquidStakedADX: number | null;
   lockedStakedADX: number | null;
   lockedStakedALP: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
 }) {
   return (
     <StyledContainer title={<h2>Ongoing Stakes</h2>}>
@@ -76,6 +78,9 @@ export default function StakesStats({
                   key={i}
                   token={window.adrena.client.adxToken}
                   handleRedeem={handleLockedStakeRedeem}
+                  handleClickOnFinalizeLockedRedeem={
+                    handleClickOnFinalizeLockedRedeem
+                  }
                 />
               ))
             ) : (

@@ -18,6 +18,7 @@ export default function ADXStakeOverview({
   handleClickOnStakeMore,
   handleClickOnRedeem,
   handleClickOnClaimRewards,
+  handleClickOnFinalizeLockedRedeem,
   className,
 }: {
   totalLiquidStaked: number | null;
@@ -28,6 +29,7 @@ export default function ADXStakeOverview({
   handleClickOnStakeMore: (initialLockPeriod: AdxLockPeriod) => void;
   handleClickOnRedeem: () => void;
   handleClickOnClaimRewards: () => void;
+  handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   className?: string;
 }) {
   return (
@@ -139,6 +141,9 @@ export default function ADXStakeOverview({
                     key={i}
                     token={window.adrena.client.adxToken}
                     handleRedeem={handleLockedStakeRedeem}
+                    handleClickOnFinalizeLockedRedeem={
+                      handleClickOnFinalizeLockedRedeem
+                    }
                   />
                 ))
               ) : (
@@ -162,31 +167,39 @@ export default function ADXStakeOverview({
             }
           />
 
-          {totalRedeemableLockedStake !== 0 ? (
-            <Button
-              className="w-full mt-4"
-              disabled={!window.adrena.geoBlockingData.allowed}
-              variant="outline"
-              size="lg"
-              title="Claim Rewards *"
-              onClick={() => handleClickOnClaimRewards()}
-            />
-          ) : (
-            <Button
-              className="w-full mt-4 opacity-70 text-opacity-70"
-              disabled={true}
-              variant="outline"
-              size="lg"
-              title="Claim Rewards *"
-            />
-          )}
+          {(() => {
+            if (totalRedeemableLockedStake !== 0)
+              return (
+                <Button
+                  className="w-full mt-4"
+                  disabled={!window.adrena.geoBlockingData.allowed}
+                  variant="outline"
+                  size="lg"
+                  title="Claim Rewards *"
+                  onClick={() => handleClickOnClaimRewards()}
+                />
+              );
+
+            if (lockedStakes?.length)
+              return (
+                <Button
+                  className="w-full mt-4 opacity-70 text-opacity-70"
+                  disabled={true}
+                  variant="outline"
+                  size="lg"
+                  title="Claim Rewards *"
+                />
+              );
+          })()}
         </div>
-        <span className="mt-4 text-sm opacity-50">
-          * ADX and USDC rewards accrue automatically every ~6 hours and get
-          <span className="underline"> auto-claimed</span> every 18 days. You
-          can manually claim rewards. The locked ADX tokens can be redeemed once
-          the locking period is over.
-        </span>
+        {lockedStakes?.length ? (
+          <span className="mt-4 text-sm opacity-50">
+            * ADX and USDC rewards accrue automatically every ~6 hours and get
+            <span className="underline"> auto-claimed</span> every 18 days. You
+            can manually claim rewards. The locked ADX tokens can be redeemed
+            once the locking period is over.
+          </span>
+        ) : null}
       </StyledSubContainer>
     </StyledContainer>
   );

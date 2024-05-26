@@ -1,8 +1,11 @@
 import { BN } from '@coral-xyz/anchor';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
+import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
+import Modal from '@/components/common/Modal/Modal';
+import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import OwnerBloc from '@/components/pages/user_profile/OwnerBloc';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
@@ -40,6 +43,11 @@ export default function MyDashboard({
     ? new PublicKey(wallet.walletAddress)
     : null;
 
+  const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
+    useState<boolean>(false);
+  const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
+    null,
+  );
   const [lockedStakes, setLockedStakes] = useState<
     LockedStakeExtended[] | null
   >(null);
@@ -142,7 +150,10 @@ export default function MyDashboard({
     }
   };
 
-  const handleLockedStakeRedeem = async (lockedStake: LockedStakeExtended) => {
+  const handleLockedStakeRedeem = async (
+    lockedStake: LockedStakeExtended,
+    earlyExit = false,
+  ) => {
     if (!owner) {
       addNotification({
         type: 'error',
@@ -150,6 +161,8 @@ export default function MyDashboard({
       });
       return;
     }
+
+    if (earlyExit && !finalizeLockedStakeRedeem) return;
 
     const stakedTokenMint =
       lockedStake.tokenSymbol === 'ADX'
@@ -163,6 +176,7 @@ export default function MyDashboard({
         threadId: lockedStake.stakeResolutionThreadId,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
+        earlyExit,
       });
 
       addSuccessTxNotification({
@@ -172,6 +186,10 @@ export default function MyDashboard({
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
+      if (earlyExit) {
+        setLockedStake(null);
+        setFinalizeLockedStakeRedeem(false);
+      }
     } catch (error) {
       return addFailedTxNotification({
         title: 'Error Removing Locked Stake',
@@ -245,7 +263,44 @@ export default function MyDashboard({
               lockedStakedALP={lockedStakedALP}
               lockedStakes={lockedStakes}
               handleLockedStakeRedeem={handleLockedStakeRedeem}
+              handleClickOnFinalizeLockedRedeem={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setFinalizeLockedStakeRedeem(true);
+              }}
             ></StakesStats>
+            <AnimatePresence>
+              {finalizeLockedStakeRedeem && (
+                <Modal
+                  title={`Finalize Locked Stake ${
+                    lockedStake &&
+                    nativeToUi(
+                      lockedStake.amount,
+                      lockedStake?.tokenSymbol === 'ADX'
+                        ? window.adrena.client.adxToken.decimals
+                        : window.adrena.client.alpToken.decimals,
+                    )
+                  } ${lockedStake?.tokenSymbol}`}
+                  close={() => {
+                    setLockedStake(null);
+                    setFinalizeLockedStakeRedeem(false);
+                  }}
+                >
+                  {lockedStake ? (
+                    <FinalizeLockedStakeRedeem
+                      lockedStake={lockedStake}
+                      stakeTokenMintDecimals={
+                        lockedStake.tokenSymbol === 'ADX'
+                          ? window.adrena.client.adxToken.decimals
+                          : window.adrena.client.alpToken.decimals
+                      }
+                      handleLockedStakeRedeem={handleLockedStakeRedeem}
+                    />
+                  ) : null}
+                </Modal>
+              )}
+            </AnimatePresence>
           </>
         ) : (
           <div className="flex h-[10em] bg-main w-full border items-center justify-center rounded-xl z-30">

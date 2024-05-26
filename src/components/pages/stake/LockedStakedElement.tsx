@@ -16,10 +16,15 @@ export default function LockedStakedElement({
   token,
   lockedStake,
   handleRedeem,
+  handleClickOnFinalizeLockedRedeem,
 }: {
   token: Token;
   lockedStake: LockedStakeExtended;
-  handleRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleRedeem: (lockedStake: LockedStakeExtended, earlyExit: boolean) => void;
+  handleClickOnFinalizeLockedRedeem: (
+    lockedStake: LockedStakeExtended,
+    earlyExit: boolean,
+  ) => void;
 }) {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
@@ -94,7 +99,7 @@ export default function LockedStakedElement({
                   variant="secondary"
                   size="lg"
                   title="Redeem"
-                  onClick={() => handleRedeem(lockedStake)}
+                  onClick={() => handleRedeem(lockedStake, false)}
                 />
               );
             }
@@ -108,7 +113,7 @@ export default function LockedStakedElement({
             return (
               <>
                 <div className="flex items-center w-full sm:w-[8em] md:w-[7em] lg:w-[8em] h-full sm:justify-center">
-                  <span className="text-xs">Ends the</span>
+                  <span className="text-xs">Ends the</span>&nbsp;
                   <span className="text-xs ml-1 sm:ml-0">
                     {endDate.toLocaleString('en', {
                       day: '2-digit',
@@ -118,11 +123,13 @@ export default function LockedStakedElement({
                   </span>
                 </div>
                 <Button
-                  variant="secondary"
+                  variant="outline"
                   size="md"
-                  title="Redeem"
-                  className="opacity-70 text-opacity-70 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
-                  disabled={true}
+                  title="Finalize locked Stake"
+                  className="text-red border-red text-opacity-90 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
+                  onClick={() =>
+                    handleClickOnFinalizeLockedRedeem(lockedStake, true)
+                  }
                 />
               </>
             );
@@ -131,17 +138,19 @@ export default function LockedStakedElement({
           return (
             <>
               <div className="flex sm:flex-col items-center w-full sm:w-[8em] md:w-[7em] h-full sm:justify-center">
-                <span className="text-xs">Ends in</span>
+                <span className="text-xs">Ends in</span>&nbsp;
                 <span className="text-xs ml-1 sm:ml-0">
                   {formatMilliseconds(timeRemaining)}
                 </span>
               </div>
               <Button
-                variant="secondary"
+                variant="outline"
                 size="md"
-                title="Redeem"
-                className="opacity-70 text-opacity-70 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
-                disabled={true}
+                title="Finalize locked Stake"
+                className="text-opacity-90 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
+                onClick={() =>
+                  handleClickOnFinalizeLockedRedeem(lockedStake, true)
+                }
               />
             </>
           );
