@@ -101,7 +101,7 @@ export default function ADXStakeToken({
           <li className="text-sm opacity-25">Benefits</li>
           <li className="flex flex-row justify-between">
             <p className="text-sm opacity-50"> Days </p>
-            <p className="text-sm font-mono"> {lockPeriod} </p>
+            <p className="text-sm font-mono"> {lockPeriod}</p>
           </li>
 
           {ADX_STAKE_MULTIPLIERS[lockPeriod].usdc ? (

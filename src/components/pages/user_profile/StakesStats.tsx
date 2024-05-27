@@ -11,15 +11,17 @@ export default function StakesStats({
   lockedStakedALP,
   lockedStakes,
   handleLockedStakeRedeem,
+  handleClickOnFinalizeLockedRedeem,
 }: {
   liquidStakedADX: number | null;
   lockedStakedADX: number | null;
   lockedStakedALP: number | null;
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
 }) {
   return (
-    <StyledContainer title={<h2>Ongoing Stakes</h2>}>
+    <StyledContainer title="Ongoing Stakes">
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Liquid Staked ADX</div>
@@ -65,8 +67,11 @@ export default function StakesStats({
       </StyledSubSubContainer>
 
       {lockedStakes?.length ? (
-        <div className="mt-6">
-          <div className="text-sm">My Locked Stakes</div>
+        <div className="mt-2">
+          <span className="font-bold opacity-50">
+            My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked
+            Stakes
+          </span>
 
           <div className="flex flex-col mt-2 gap-y-2">
             {lockedStakes ? (
@@ -76,6 +81,9 @@ export default function StakesStats({
                   key={i}
                   token={window.adrena.client.adxToken}
                   handleRedeem={handleLockedStakeRedeem}
+                  handleClickOnFinalizeLockedRedeem={
+                    handleClickOnFinalizeLockedRedeem
+                  }
                 />
               ))
             ) : (

@@ -9,6 +9,7 @@ import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeOverview from '@/components/pages/stake/ALPStakeOverview';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
+import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
@@ -88,6 +89,12 @@ export default function Stake({
   const [activeStakingToken, setActiveStakingToken] = useState<
     'ADX' | 'ALP' | null
   >(null);
+
+  const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
+    useState<boolean>(false);
+  const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
+    null,
+  );
 
   const [activeRedeemLiquidADX, setActiveRedeemLiquidADX] =
     useState<boolean>(false);
@@ -203,7 +210,10 @@ export default function Stake({
     }
   };
 
-  const handleLockedStakeRedeem = async (lockedStake: LockedStakeExtended) => {
+  const handleLockedStakeRedeem = async (
+    lockedStake: LockedStakeExtended,
+    earlyExit = false,
+  ) => {
     if (!owner) {
       addNotification({
         type: 'error',
@@ -211,6 +221,8 @@ export default function Stake({
       });
       return;
     }
+
+    if (earlyExit && !finalizeLockedStakeRedeem) return;
 
     const stakedTokenMint =
       lockedStake.tokenSymbol === 'ADX'
@@ -224,6 +236,7 @@ export default function Stake({
         threadId: lockedStake.stakeResolutionThreadId,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
+        earlyExit,
       });
 
       addSuccessTxNotification({
@@ -233,7 +246,10 @@ export default function Stake({
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
-      setActiveRedeemLiquidADX(false);
+      if (earlyExit) {
+        setLockedStake(null);
+        setFinalizeLockedStakeRedeem(false);
+      }
     } catch (error) {
       return addFailedTxNotification({
         title: 'Error Removing Locked Stake',
@@ -492,6 +508,12 @@ export default function Stake({
                 setLockPeriod(initialLockPeriod);
                 setActiveStakingToken('ALP');
               }}
+              handleClickOnFinalizeLockedRedeem={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setFinalizeLockedStakeRedeem(true);
+              }}
               handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
             />
 
@@ -506,6 +528,12 @@ export default function Stake({
                 setActiveStakingToken('ADX');
               }}
               handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
+              handleClickOnFinalizeLockedRedeem={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setFinalizeLockedStakeRedeem(true);
+              }}
               handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
             />
 
@@ -546,6 +574,28 @@ export default function Stake({
                       balance={alpBalance}
                     />
                   )}
+                </Modal>
+              )}
+
+              {finalizeLockedStakeRedeem && (
+                <Modal
+                  title="Early Exit"
+                  close={() => {
+                    setLockedStake(null);
+                    setFinalizeLockedStakeRedeem(false);
+                  }}
+                >
+                  {lockedStake ? (
+                    <FinalizeLockedStakeRedeem
+                      lockedStake={lockedStake}
+                      stakeTokenMintDecimals={
+                        lockedStake.tokenSymbol === 'ADX'
+                          ? window.adrena.client.adxToken.decimals
+                          : window.adrena.client.alpToken.decimals
+                      }
+                      handleLockedStakeRedeem={handleLockedStakeRedeem}
+                    />
+                  ) : null}
                 </Modal>
               )}
 

@@ -112,7 +112,9 @@ function Button({
         />
       ) : null}
 
-      {onClickInProgress ? <Loader height={23} width={50} /> : null}
+      {onClickInProgress ? (
+        <Loader height={23} width={50} className="text-white" />
+      ) : null}
     </button>
   );
 

@@ -2582,7 +2582,7 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction);
   }
 
-  public async resolveLockedStake({
+  public async buildFinalizeLockedStakeTx({
     owner,
     threadId,
     stakedTokenMint,
@@ -2614,9 +2614,7 @@ export class AdrenaClient {
       throw new Error('user staking account not found');
     }
 
-    const stakeResolutionThread = this.getThreadAddressPda(
-      userStakingAccount.stakesClaimCronThreadId,
-    );
+    const stakeResolutionThread = this.getThreadAddressPda(threadId);
 
     return this.adrenaProgram.methods
       .finalizeLockedStake({
@@ -2624,7 +2622,7 @@ export class AdrenaClient {
         earlyExit,
       })
       .accountsStrict({
-        caller: stakeResolutionThread,
+        caller: owner,
         owner,
         userStaking,
         staking,
@@ -2642,7 +2640,7 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         sablierProgram: config.sablierThreadProgram,
-        stakeResolutionThread: '',
+        stakeResolutionThread,
       })
       .instruction();
   }
@@ -2750,7 +2748,7 @@ export class AdrenaClient {
     }
 
     if (!resolved) {
-      const instruction = await this.resolveLockedStake({
+      const instruction = await this.buildFinalizeLockedStakeTx({
         owner,
         threadId,
         stakedTokenMint,

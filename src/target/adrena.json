@@ -5177,7 +5177,7 @@
         },
         {
           "name": "stakedTokenMint",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false,
           "docs": ["#13"]
         },
