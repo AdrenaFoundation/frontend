@@ -87,7 +87,7 @@ export default function ADXStakeOverview({
       <StyledSubContainer>
         <h1>Locked Staking</h1>
 
-        <p className="mt-4 flex flex-col opacity-50 font-boldy">
+        <span className="mt-4 flex flex-col opacity-50 font-boldy">
           <span className="text-sm">
             Align with the protocol long term success: the longer the period,
             the higher the rewards.
@@ -110,7 +110,7 @@ export default function ADXStakeOverview({
               with the possibility to unstake earlier for a fee
             </li>
           </ul>
-        </p>
+        </span>
         {<></>}
 
         {totalLockedStake !== 0 ? (

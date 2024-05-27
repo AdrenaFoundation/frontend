@@ -20,7 +20,7 @@ export default function FinalizeLockedStakeRedeem({
     <div className="p-5">
       <div>
         <div className="flex flex-row justify-between mb-4">
-          <p className="text-sm opacity-50 font-mono text-md">
+          <p className="text-red font-mono text-md">
             {' '}
             Estimated Fee for Early Exiting Stake :{' '}
             <span className="text-red font-bold text-2xl">
@@ -33,7 +33,7 @@ export default function FinalizeLockedStakeRedeem({
           </p>
         </div>
         <div className="flex mb-6">
-          <p className="text-sm opacity-50 font-mono text-md">
+          <p className="text-red font-mono text-md">
             Are you sure you wish to proceed ?
           </p>
         </div>

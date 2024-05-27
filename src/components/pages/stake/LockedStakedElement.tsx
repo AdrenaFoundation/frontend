@@ -112,7 +112,7 @@ export default function LockedStakedElement({
 
             return (
               <>
-                <div className="flex items-center w-full sm:w-[8em] md:w-[7em] lg:w-[8em] h-full sm:justify-center">
+                <div className="flex items-center w-full sm:w-[8em] md:w-[7em] lg:w-[8em] sm:justify-center">
                   <span className="text-xs">Ends the</span>&nbsp;
                   <span className="text-xs ml-1 sm:ml-0">
                     {endDate.toLocaleString('en', {
@@ -137,7 +137,7 @@ export default function LockedStakedElement({
 
           return (
             <>
-              <div className="flex sm:flex-col items-center w-full sm:w-[8em] md:w-[7em] h-full sm:justify-center">
+              <div className="flex sm:flex-col items-center w-full sm:w-[8em] md:w-[7em] sm:justify-center">
                 <span className="text-xs">Ends in</span>&nbsp;
                 <span className="text-xs ml-1 sm:ml-0">
                   {formatMilliseconds(timeRemaining)}
@@ -147,7 +147,7 @@ export default function LockedStakedElement({
                 variant="outline"
                 size="md"
                 title="Early Exit"
-                className="mt-4 sm:mt-0 sm:ml-4 md:ml-2"
+                className="opacity-80 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
                 onClick={() =>
                   handleClickOnFinalizeLockedRedeem(lockedStake, true)
                 }

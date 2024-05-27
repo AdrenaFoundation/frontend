@@ -41,7 +41,7 @@ export default function ALPStakeOverview({
       <StyledSubContainer>
         <h1>Locked Staking</h1>
 
-        <p className="mt-4 flex flex-col opacity-50 font-boldy">
+        <span className="mt-4 flex flex-col opacity-50 font-boldy">
           <span className="text-sm">
             Provide liquidities long term: the longer the period, the higher the
             rewards.
@@ -57,7 +57,7 @@ export default function ALPStakeOverview({
               with the possibility to unstake earlier for a fee
             </li>
           </ul>
-        </p>
+        </span>
 
         {totalLockedStake !== 0 ? (
           <StyledSubSubContainer className="mt-4">
