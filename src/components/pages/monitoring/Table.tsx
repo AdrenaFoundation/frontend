@@ -80,10 +80,6 @@ export default function Table({
       ))}
     </StyledSubSubContainer>
   ) : (
-    <Block
-      data={data}
-      columnsTitles={columnsTitles}
-      rowTitleWidth={rowTitleWidth}
-    />
+    <Block data={data} columnsTitles={columnsTitles} />
   );
 }
