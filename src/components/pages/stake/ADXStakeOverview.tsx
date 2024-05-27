@@ -128,7 +128,7 @@ export default function ADXStakeOverview({
           <>
             <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
-            <span className="font-bold">
+            <span className="font-bold opacity-50">
               My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked
               Stakes
             </span>

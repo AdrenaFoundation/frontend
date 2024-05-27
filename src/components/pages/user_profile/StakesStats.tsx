@@ -67,8 +67,11 @@ export default function StakesStats({
       </StyledSubSubContainer>
 
       {lockedStakes?.length ? (
-        <div className="mt-6">
-          <div className="text-sm">My Locked Stakes</div>
+        <div className="mt-2">
+          <span className="font-bold opacity-50">
+            My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked
+            Stakes
+          </span>
 
           <div className="flex flex-col mt-2 gap-y-2">
             {lockedStakes ? (
