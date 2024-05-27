@@ -45,7 +45,7 @@ export default function FinalizeLockedStakeRedeem({
         variant="danger"
         className="w-full mt-3"
         size="lg"
-        title="Early Exit"
+        title="I agree to exit early and pay the fee"
         onClick={() => {
           handleLockedStakeRedeem(lockedStake, true);
         }}
