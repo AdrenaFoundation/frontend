@@ -9,6 +9,7 @@ import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
 import StakesStats from '@/components/pages/user_profile/StakesStats';
 import SwapStats from '@/components/pages/user_profile/SwapStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
+import VestStats from '@/components/pages/user_profile/Veststats';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
@@ -20,7 +21,6 @@ import {
   addSuccessTxNotification,
   nativeToUi,
 } from '@/utils';
-import VestStats from '@/components/pages/user_profile/Veststats';
 
 export default function MyDashboard({
   connected,

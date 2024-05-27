@@ -1,6 +1,7 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { VEST_BUCKETS } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { VestExtended, VestRegistry } from '@/types';
 import { formatNumber, nativeToUi } from '@/utils';
 
@@ -17,6 +18,7 @@ export default function VestingView({
   vestRegistry: VestRegistry;
   vests: VestExtended[] | null;
 }) {
+  const isBreakpoint = useBetterMediaQuery('(min-width: 800px)');
   return (
     <>
       <StyledContainer
@@ -49,8 +51,9 @@ export default function VestingView({
       </StyledContainer>
 
       {vests?.length ? (
-        <StyledContainer title="VESTS BREAKDOWN" className="min-w-[50em]">
+        <StyledContainer title="VESTS BREAKDOWN" className="w-full">
           <Table
+            isBreakpoint={isBreakpoint}
             rowTitleWidth="0px"
             columnsTitles={[
               'vest',

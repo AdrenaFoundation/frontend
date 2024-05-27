@@ -45,11 +45,10 @@ export default function StakingView({
   }, [adxStakingAccount.currentStakingRound.startTime]);
 
   return (
-    <>
+    <div className="grid sm:grid-cols-2 gap-6 w-full">
       <StyledContainer
         title="LOCKED TOKENS"
         subTitle="Tokens locked in the staking program."
-        className="min-w-[20em] w-[20em] grow"
       >
         <StyledSubContainer>
           <h2>LOCKED ALP</h2>
@@ -87,7 +86,6 @@ export default function StakingView({
       <StyledContainer
         title="STAKING REWARD VAULTS"
         subTitle="Rewards accruing to be redistributed to stakers at the end of the staking round."
-        className="min-w-[22em] w-[22em] grow"
       >
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING</h2>
@@ -117,7 +115,6 @@ export default function StakingView({
       <StyledContainer
         title="STAKING REWARD WAITING TO BE CLAIMED"
         subTitle="Rewards from past rounds attributed to users waiting to be claimed."
-        className="min-w-[22em] w-[22em] grow"
       >
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING</h2>
@@ -184,10 +181,7 @@ export default function StakingView({
         </StyledSubContainer>
       </StyledContainer>
 
-      <StyledContainer
-        title="CURRENT STAKING ROUND TIME"
-        className="min-w-[24em] w-[24em] grow"
-      >
+      <StyledContainer title="CURRENT STAKING ROUND TIME">
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING ROUND ENDS IN</h2>
 
@@ -212,6 +206,6 @@ export default function StakingView({
           </StyledSubSubContainer>
         </StyledSubContainer>
       </StyledContainer>
-    </>
+    </div>
   );
 }

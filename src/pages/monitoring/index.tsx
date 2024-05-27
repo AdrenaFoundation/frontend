@@ -58,7 +58,7 @@ export default function Monitoring(pageProps: PageProps) {
         />
       </div>
 
-      <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10 w-full">
+      <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10">
         <div
           className={twMerge(
             'flex items-center justify-evenly w-[14em] ml-auto mr-auto',
@@ -90,8 +90,8 @@ export default function Monitoring(pageProps: PageProps) {
 
         {detailedDisplay ? (
           <TabSelect
-            wrapperClassName="w-full md:w-[40em] pl-4 pr-4 bg-secondary flex-col md:flex-row"
-            titleClassName="whitespace-nowrap text-xs"
+            wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
+            titleClassName="whitespace-nowrap text-sm"
             selected={detailedDisplaySelectedTab}
             initialSelectedIndex={tabsFormatted.findIndex(
               (tab) => tab.title === detailedDisplaySelectedTab,

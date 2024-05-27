@@ -3,12 +3,16 @@ import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 
+import Block from './Block';
+
 export default function Table({
+  isBreakpoint,
   className,
   columnsTitles,
   data,
   rowTitleWidth,
 }: {
+  isBreakpoint: boolean | null;
   className?: string;
   columnsTitles?: ReactNode[];
   data: (
@@ -23,7 +27,7 @@ export default function Table({
   )[];
   rowTitleWidth?: string;
 }) {
-  return (
+  return isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
       <div className="flex">
         <div
@@ -75,5 +79,11 @@ export default function Table({
         </div>
       ))}
     </StyledSubSubContainer>
+  ) : (
+    <Block
+      data={data}
+      columnsTitles={columnsTitles}
+      rowTitleWidth={rowTitleWidth}
+    />
   );
 }

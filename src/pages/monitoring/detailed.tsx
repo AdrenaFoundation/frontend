@@ -59,7 +59,7 @@ export default function DetailedMonitoring({
   return (
     <>
       <div className="w-full max-w-full overflow-x-auto flex z-10">
-        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap min-w-[40em] w-[60em] max-w-full ml-auto mr-auto justify-center">
+        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap w-full max-w-[60em] ml-auto mr-auto justify-center">
           {selectedTab === 'All' ? (
             <div className="w-full z-10 text-center">
               <h1 className="text-white">ACCOUNTS</h1>

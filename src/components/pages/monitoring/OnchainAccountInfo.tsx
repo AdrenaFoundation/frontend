@@ -28,7 +28,7 @@ export default function OnchainAccountInfo({
       )}
     >
       {noAddress ? null : (
-        <span className="text-[0.9em]">
+        <span className="text-xs sm:text-[0.9em]">
           {shorten
             ? `${address.toBase58().slice(0, 4)}..${address
                 .toBase58()
