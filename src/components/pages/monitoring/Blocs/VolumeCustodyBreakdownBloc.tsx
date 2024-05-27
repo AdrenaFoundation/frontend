@@ -1,5 +1,6 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { USD_DECIMALS } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
@@ -15,6 +16,7 @@ export default function VolumeCustodyBreakdownBloc({
   custodies: CustodyExtended[];
 }) {
   const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
+  const isBigScreen = useBetterMediaQuery('(min-width: 800px)');
 
   return (
     <StyledContainer
@@ -22,6 +24,7 @@ export default function VolumeCustodyBreakdownBloc({
       className={className}
     >
       <Table
+        isBreakpoint={isBigScreen}
         rowTitleWidth="90px"
         columnsTitles={attributes.map(abbreviateWords)}
         data={[
