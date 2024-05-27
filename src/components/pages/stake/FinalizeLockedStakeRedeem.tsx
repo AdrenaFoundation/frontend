@@ -17,25 +17,27 @@ export default function FinalizeLockedStakeRedeem({
   ) => void;
 }) {
   return (
-    <div className="p-5">
+    <div className="p-5 w-[30em]">
       <div>
         <div className="flex flex-row justify-between mb-4">
-          <p className="text-red font-mono text-md">
-            {' '}
-            Estimated Fee for Early Exiting Stake :{' '}
+          <span className="font-mono text-md opacity-50">
+            The early exit feature allow the user to break the initial Locked
+            Staking agreement by paying a penalty based on the time elapsed and
+            the initial commitment duration.
+          </span>
+        </div>
+        <div className="flex flex-row mb-6">
+          <span className="text-red font-mono text-md">
+            In order to early exit this staking position, the penalty will be{' '}
             <span className="text-red font-bold text-2xl">
               {estimateLockedStakeEarlyExitFee(
                 lockedStake,
                 stakeTokenMintDecimals,
               )}
             </span>{' '}
-            {lockedStake.tokenSymbol}
-          </p>
-        </div>
-        <div className="flex mb-6">
-          <p className="text-red font-mono text-md">
-            Are you sure you wish to proceed ?
-          </p>
+            {lockedStake.tokenSymbol} that you&apos;ll forfeit to the pool
+            (other users).
+          </span>
         </div>
       </div>
 
