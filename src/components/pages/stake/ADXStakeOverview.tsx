@@ -111,7 +111,6 @@ export default function ADXStakeOverview({
             </li>
           </ul>
         </span>
-        {<></>}
 
         {totalLockedStake !== 0 ? (
           <StyledSubSubContainer className="mt-4">
