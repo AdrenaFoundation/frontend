@@ -96,10 +96,7 @@ export default function TradingView({
         </StyledContainer>
       </div>
 
-      <StyledContainer
-        title={<h1>POSITIONS NOW BREAKDOWN</h1>}
-        className="w-full grow"
-      >
+      <StyledContainer title="POSITIONS NOW BREAKDOWN" className="w-full grow">
         <Table
           isBreakpoint={isBreakpoint}
           rowTitleWidth="20%"

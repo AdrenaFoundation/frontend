@@ -146,12 +146,12 @@ export default function ADXTokenomicsView({
             <div className="flex w-full justify-evenly">
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-white"></div>
-                <h3 className="text-sm">minted</h3>
+                <span className="text-sm">minted</span>
               </h3>
 
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-blue-500"></div>
-                <h3 className="text-sm text-blue-500">allocated</h3>
+                <span className="text-sm text-blue-500">allocated</span>
               </h3>
             </div>
 
@@ -275,7 +275,7 @@ export default function ADXTokenomicsView({
                     backgroundColor: bucketColors[i],
                   }}
                 ></div>
-                <h3 className="text-sm">{name}</h3>
+                <span className="text-sm">{name}</span>
               </h3>
             ))}
           </div>

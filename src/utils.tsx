@@ -1,4 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
+import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
@@ -28,7 +29,7 @@ import arrowDown from '../public/images/arrow-down.png';
 import arrowRightIcon from '../public/images/arrow-right.svg';
 import arrowUp from '../public/images/arrow-up.png';
 import { ROUND_MIN_DURATION_SECONDS } from './constant';
-import { LimitedString, U128Split } from './types';
+import { LimitedString, LockedStakeExtended, U128Split } from './types';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
   const pxSize = 9;
@@ -342,6 +343,7 @@ export function parseTransactionError(
       return match?.length ? match[1] : null;
     })();
 
+    Sentry.captureException(err);
     console.debug('Error parsing: error:', safeJSONStringify(err));
     console.debug('Error parsing: errCodeHex: ', errCodeHex);
     console.debug('Error parsing: errCodeDecimals', errCodeDecimals);
@@ -570,3 +572,17 @@ export const verifyIfValidUrl = (url: string) => {
 
   return regExUrl.test(url);
 };
+
+export function estimateLockedStakeEarlyExitFee(
+  lockedStake: LockedStakeExtended,
+  stakeTokenMintDecimals: number,
+): number {
+  const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber();
+  const timeRemaining = lockedStake.lockDuration.toNumber() - timeElapsed;
+  const feeRate = timeRemaining / lockedStake.lockDuration.toNumber();
+
+  // Cap the fee rate between the lower and upper caps
+  const cappedFeeRate = Math.min(Math.max(feeRate, 0.15), 0.4);
+
+  return nativeToUi(lockedStake.amount, stakeTokenMintDecimals) * cappedFeeRate;
+}

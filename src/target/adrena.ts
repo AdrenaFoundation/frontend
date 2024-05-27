@@ -5159,7 +5159,7 @@ export type Adrena = {
         },
         {
           name: 'stakedTokenMint';
-          isMut: false;
+          isMut: true;
           isSigner: false;
           docs: ['#13'];
         },
@@ -14465,7 +14465,7 @@ export const IDL: Adrena = {
         },
         {
           name: 'stakedTokenMint',
-          isMut: false,
+          isMut: true,
           isSigner: false,
           docs: ['#13'],
         },

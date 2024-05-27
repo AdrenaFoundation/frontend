@@ -14,7 +14,7 @@ export default function TradingStatsBloc({
 }) {
   return (
     <StyledContainer
-      title="rading Stats"
+      title="Trading Stats"
       titleClassName="text-2xl"
       className={twMerge(className)}
     >

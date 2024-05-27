@@ -18,6 +18,7 @@ export default function ADXStakeOverview({
   handleClickOnStakeMore,
   handleClickOnRedeem,
   handleClickOnClaimRewards,
+  handleClickOnFinalizeLockedRedeem,
   className,
 }: {
   totalLiquidStaked: number | null;
@@ -28,6 +29,7 @@ export default function ADXStakeOverview({
   handleClickOnStakeMore: (initialLockPeriod: AdxLockPeriod) => void;
   handleClickOnRedeem: () => void;
   handleClickOnClaimRewards: () => void;
+  handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   className?: string;
 }) {
   return (
@@ -38,7 +40,7 @@ export default function ADXStakeOverview({
       icon={window.adrena.client.adxToken.image}
     >
       <StyledSubContainer>
-        <h3>Liquid Staking</h3>
+        <h1>Liquid Staking</h1>
 
         <ul>
           <li className="mt-4 text-lg">
@@ -83,9 +85,9 @@ export default function ADXStakeOverview({
       </StyledSubContainer>
 
       <StyledSubContainer>
-        <h3>Locked Staking</h3>
+        <h1>Locked Staking</h1>
 
-        <p className="mt-4 flex flex-col">
+        <div className="mt-4 flex flex-col">
           <span className="text-lg">
             Align with the protocol long term success: the longer the period,
             the higher the rewards.
@@ -108,19 +110,7 @@ export default function ADXStakeOverview({
               with the possibility to unstake earlier for a fee
             </li>
           </ul>
-        </p>
-        {/*
-
-          <span className="mt-2 text-lg">
-            ADX and USDC rewards accrue automatically every ~6 hours and get
-            auto-claimed every 18 days. You can manually claim rewards.
-          </span>
-
-          <span className="mt-2 text-lg">
-            The locked ADX tokens can be redeemed once the locking period is
-            over.
-          </span>
-        </p> */}
+        </div>
 
         {totalLockedStake !== 0 ? (
           <StyledSubSubContainer className="mt-4">
@@ -137,7 +127,7 @@ export default function ADXStakeOverview({
           <>
             <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
-            <span className="font-bold">
+            <span className="font-bold opacity-50">
               My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked
               Stakes
             </span>
@@ -150,6 +140,9 @@ export default function ADXStakeOverview({
                     key={i}
                     token={window.adrena.client.adxToken}
                     handleRedeem={handleLockedStakeRedeem}
+                    handleClickOnFinalizeLockedRedeem={
+                      handleClickOnFinalizeLockedRedeem
+                    }
                   />
                 ))
               ) : (
@@ -173,19 +166,39 @@ export default function ADXStakeOverview({
             }
           />
 
-          {totalRedeemableLockedStake !== 0 ? (
-            <Button
-              className="w-full mt-4"
-              disabled={!window.adrena.geoBlockingData.allowed}
-              variant="outline"
-              size="lg"
-              title="Claim Rewards"
-              onClick={() => handleClickOnClaimRewards()}
-            />
-          ) : (
-            <></>
-          )}
+          {(() => {
+            if (totalRedeemableLockedStake !== 0)
+              return (
+                <Button
+                  className="w-full mt-4"
+                  disabled={!window.adrena.geoBlockingData.allowed}
+                  variant="outline"
+                  size="lg"
+                  title="Claim Rewards *"
+                  onClick={() => handleClickOnClaimRewards()}
+                />
+              );
+
+            if (lockedStakes?.length)
+              return (
+                <Button
+                  className="w-full mt-4 opacity-70 text-opacity-70"
+                  disabled={true}
+                  variant="outline"
+                  size="lg"
+                  title="Claim Rewards *"
+                />
+              );
+          })()}
         </div>
+        {lockedStakes?.length ? (
+          <span className="mt-4 text-sm opacity-50">
+            * ADX and USDC rewards accrue automatically every ~6 hours and get
+            <span className="underline"> auto-claimed</span> every 18 days. You
+            can manually claim rewards. The locked ADX tokens can be redeemed
+            once the locking period is over.
+          </span>
+        ) : null}
       </StyledSubContainer>
     </StyledContainer>
   );

@@ -16,14 +16,19 @@ export default function ALPStakeOverview({
   handleLockedStakeRedeem,
   handleClickOnStakeMore,
   handleClickOnClaimRewards,
+  handleClickOnFinalizeLockedRedeem,
   className,
 }: {
   totalLockedStake: number | null;
   totalRedeemableLockedStake: number | null;
   lockedStakes: LockedStakeExtended[] | null;
-  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleLockedStakeRedeem: (
+    lockedStake: LockedStakeExtended,
+    earlyExit: boolean,
+  ) => void;
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod) => void;
   handleClickOnClaimRewards: () => void;
+  handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   className?: string;
 }) {
   return (
@@ -34,9 +39,9 @@ export default function ALPStakeOverview({
       icon={window.adrena.client.alpToken.image}
     >
       <StyledSubContainer>
-        <h3>Locked Staking</h3>
+        <h1>Locked Staking</h1>
 
-        <p className="mt-4 flex flex-col">
+        <div className="mt-4 flex flex-col">
           <span className="text-lg">
             Provide liquidities long term: the longer the period, the higher the
             rewards.
@@ -52,17 +57,7 @@ export default function ALPStakeOverview({
               with the possibility to unstake earlier for a fee
             </li>
           </ul>
-        </p>
-
-        {/* <span className="mt-2 text-lg">
-            ADX and USDC rewards accrue automatically every ~6 hours and get
-            auto-claimed every 18 days. You can manually claim rewards.
-          </span>
-
-          <span className="mt-2 text-lg">
-            The locked ALP tokens can be redeemed once the locking period is
-            over.
-          </span> */}
+        </div>
 
         {totalLockedStake !== 0 ? (
           <StyledSubSubContainer className="mt-4">
@@ -79,10 +74,10 @@ export default function ALPStakeOverview({
           <>
             <div className="h-[1px] bg-bcolor w-full mt-4 mb-2" />
 
-            <h5>
+            <span className="font-bold opacity-50">
               My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked
               Stakes
-            </h5>
+            </span>
 
             <div className="flex flex-col mt-2 gap-y-2">
               {lockedStakes ? (
@@ -92,6 +87,9 @@ export default function ALPStakeOverview({
                     key={i}
                     token={window.adrena.client.alpToken}
                     handleRedeem={handleLockedStakeRedeem}
+                    handleClickOnFinalizeLockedRedeem={
+                      handleClickOnFinalizeLockedRedeem
+                    }
                   />
                 ))
               ) : (
@@ -114,17 +112,40 @@ export default function ALPStakeOverview({
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
             }
           />
-          {totalRedeemableLockedStake !== 0 ? (
-            <Button
-              className="w-full mt-4"
-              disabled={!window.adrena.geoBlockingData.allowed}
-              variant="outline"
-              size="lg"
-              title="Claim Rewards"
-              onClick={() => handleClickOnClaimRewards()}
-            />
-          ) : null}
+
+          {(() => {
+            if (totalRedeemableLockedStake !== 0)
+              return (
+                <Button
+                  className="w-full mt-4"
+                  disabled={!window.adrena.geoBlockingData.allowed}
+                  variant="outline"
+                  size="lg"
+                  title="Claim Rewards *"
+                  onClick={() => handleClickOnClaimRewards()}
+                />
+              );
+
+            if (lockedStakes?.length)
+              return (
+                <Button
+                  className="w-full mt-4 opacity-70 text-opacity-70"
+                  disabled={true}
+                  variant="outline"
+                  size="lg"
+                  title="Claim Rewards *"
+                />
+              );
+          })()}
         </div>
+        {lockedStakes?.length ? (
+          <span className="mt-4 text-sm opacity-50">
+            * ADX and USDC rewards accrue automatically every ~6 hours and get
+            <span className="underline"> auto-claimed</span> every 18 days. You
+            can manually claim rewards. The locked ALP tokens can be redeemed
+            once the locking period is over.
+          </span>
+        ) : null}
       </StyledSubContainer>
     </StyledContainer>
   );

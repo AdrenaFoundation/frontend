@@ -54,8 +54,6 @@ ChartJS.register(
   Legend,
 );
 
-const CANNOT_CALCULATE = -1;
-
 function indexToMin(index: number) {
   return index - 0.36;
 }
@@ -175,17 +173,17 @@ export default function PoolView({
             <div className="flex w-full justify-evenly">
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-green"></div>
-                <h3 className="text-sm text-green">target ratio</h3>
+                <span className="text-sm text-green">target ratio</span>
               </h3>
 
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-blue-500"></div>
-                <h3 className="text-sm text-blue-500">min ratio</h3>
+                <span className="text-sm text-blue-500">min ratio</span>
               </h3>
 
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-red"></div>
-                <h3 className="text-sm text-red">max ratio</h3>
+                <span className="text-sm text-red">max ratio</span>
               </h3>
             </div>
 
@@ -320,7 +318,7 @@ export default function PoolView({
         ) : null}
       </StyledContainer>
 
-      <StyledContainer title={<h1>Volume Breakdown</h1>} className={className}>
+      <StyledContainer title={'Volume Breakdown'} className={className}>
         <Table
           isBreakpoint={isBreakpoint}
           rowTitleWidth="90px"
