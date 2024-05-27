@@ -22,7 +22,7 @@ export default function FinalizeLockedStakeRedeem({
         <div className="flex flex-row justify-between mb-4">
           <p className="text-sm opacity-50 font-mono text-md">
             {' '}
-            Estimated Fee for finalizing locked Stake :{' '}
+            Estimated Fee for Early Exiting Stake :{' '}
             <span className="text-red font-bold text-2xl">
               {estimateLockedStakeEarlyExitFee(
                 lockedStake,
@@ -43,7 +43,7 @@ export default function FinalizeLockedStakeRedeem({
         variant="danger"
         className="w-full mt-3"
         size="lg"
-        title="Finalize locked Stake Redeem"
+        title="Early Exit"
         onClick={() => {
           handleLockedStakeRedeem(lockedStake, true);
         }}

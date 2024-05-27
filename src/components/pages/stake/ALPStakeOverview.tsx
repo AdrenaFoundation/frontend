@@ -39,7 +39,7 @@ export default function ALPStakeOverview({
       icon={window.adrena.client.alpToken.image}
     >
       <StyledSubContainer>
-        <h3>Locked Staking</h3>
+        <h1>Locked Staking</h1>
 
         <p className="mt-4 flex flex-col opacity-50 font-boldy">
           <span className="text-sm">

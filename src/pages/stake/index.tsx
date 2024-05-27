@@ -579,7 +579,7 @@ export default function Stake({
 
               {finalizeLockedStakeRedeem && (
                 <Modal
-                  title={`Finalize Locked Stake ${
+                  title={`Early exit ${
                     lockedStake &&
                     nativeToUi(
                       lockedStake.amount,
@@ -587,7 +587,7 @@ export default function Stake({
                         ? window.adrena.client.adxToken.decimals
                         : window.adrena.client.alpToken.decimals,
                     )
-                  } ${lockedStake?.tokenSymbol}`}
+                  } ${lockedStake?.tokenSymbol} Stake`}
                   close={() => {
                     setLockedStake(null);
                     setFinalizeLockedStakeRedeem(false);

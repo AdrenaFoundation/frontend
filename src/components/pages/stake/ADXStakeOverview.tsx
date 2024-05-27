@@ -40,7 +40,7 @@ export default function ADXStakeOverview({
       icon={window.adrena.client.adxToken.image}
     >
       <StyledSubContainer>
-        <h3>Liquid Staking</h3>
+        <h1>Liquid Staking</h1>
 
         <ul>
           <li className="mt-4 text-sm opacity-50 font-boldy">
@@ -85,7 +85,7 @@ export default function ADXStakeOverview({
       </StyledSubContainer>
 
       <StyledSubContainer>
-        <h3>Locked Staking</h3>
+        <h1>Locked Staking</h1>
 
         <p className="mt-4 flex flex-col opacity-50 font-boldy">
           <span className="text-sm">

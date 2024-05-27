@@ -273,7 +273,7 @@ export default function MyDashboard({
             <AnimatePresence>
               {finalizeLockedStakeRedeem && (
                 <Modal
-                  title={`Finalize Locked Stake ${
+                  title={`Early Exit ${
                     lockedStake &&
                     nativeToUi(
                       lockedStake.amount,
@@ -281,7 +281,7 @@ export default function MyDashboard({
                         ? window.adrena.client.adxToken.decimals
                         : window.adrena.client.alpToken.decimals,
                     )
-                  } ${lockedStake?.tokenSymbol}`}
+                  } ${lockedStake?.tokenSymbol} Stake`}
                   close={() => {
                     setLockedStake(null);
                     setFinalizeLockedStakeRedeem(false);

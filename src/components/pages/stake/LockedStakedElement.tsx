@@ -125,8 +125,8 @@ export default function LockedStakedElement({
                 <Button
                   variant="outline"
                   size="md"
-                  title="Finalize locked Stake"
-                  className="text-red border-red text-opacity-90 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
+                  title="Early Exit"
+                  className="opacity-80 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
                   onClick={() =>
                     handleClickOnFinalizeLockedRedeem(lockedStake, true)
                   }
@@ -146,8 +146,8 @@ export default function LockedStakedElement({
               <Button
                 variant="outline"
                 size="md"
-                title="Finalize locked Stake"
-                className="text-opacity-90 mt-4 sm:mt-0 sm:ml-4 md:ml-2"
+                title="Early Exit"
+                className="mt-4 sm:mt-0 sm:ml-4 md:ml-2"
                 onClick={() =>
                   handleClickOnFinalizeLockedRedeem(lockedStake, true)
                 }
