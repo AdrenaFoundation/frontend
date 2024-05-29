@@ -60,7 +60,10 @@ export default function Settings({
       disableOnClickInside={true}
       isDim={true}
     >
-      <h2 className="mb-3">RPC endpoints</h2>
+      <div className="flex mb-3">
+        <h2 className="text-blue-500">Devnet</h2>
+        <h2 className="flex ml-1">RPC endpoints</h2>
+      </div>
 
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-row gap-1 items-center">
