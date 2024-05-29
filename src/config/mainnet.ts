@@ -78,7 +78,7 @@ class MainnetConfiguration implements IConfiguration {
   public readonly rpcOptions: RpcOption[] = [
     {
       name: 'Triton RPC',
-      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com',
+      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com/eb24df90-f9aa-45f2-9a9c-fe20cd0f35fd',
     },
     {
       name: 'Helius RPC',
@@ -89,6 +89,11 @@ class MainnetConfiguration implements IConfiguration {
       url: 'https://api.devnet.solana.com',
     },
   ];
+
+  public readonly pythnetRpc: RpcOption = {
+    name: 'Triton Pythnet',
+    url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com/ad1705c9-2ec3-4a48-87c0-086a554cbff1',
+  };
 
   public readonly mainPool: PublicKey = new PublicKey(
     'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',

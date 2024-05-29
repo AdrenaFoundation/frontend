@@ -31,5 +31,7 @@ export default interface IConfiguration {
 
   readonly rpcOptions: RpcOption[];
 
+  readonly pythnetRpc: RpcOption;
+
   readonly mainPool: PublicKey;
 }

@@ -105,6 +105,8 @@ export default function App(props: AppProps) {
 
     setInitializationInProgress(true);
 
+    // const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+
     initializeApp(config, activeRpc.connection, activeRpc.connection).then(
       () => {
         setIsInitialized(true);

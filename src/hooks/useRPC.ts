@@ -274,7 +274,7 @@ const useRpc = (
 
     const interval = setInterval(() => {
       pickRpc();
-    }, 20_000);
+    }, 30_000);
 
     return () => {
       clearInterval(interval);

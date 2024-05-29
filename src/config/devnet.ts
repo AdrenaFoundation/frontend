@@ -103,6 +103,11 @@ class DevnetConfiguration implements IConfiguration {
     },
   ];
 
+  public readonly pythnetRpc: RpcOption = {
+    name: 'Triton Pythnet',
+    url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com/ad1705c9-2ec3-4a48-87c0-086a554cbff1',
+  };
+
   public readonly mainPool: PublicKey = new PublicKey(
     '4vc4LX4K86ptAvaiQcon79yhnKHbCs2hv5TFFmQr8F2L',
   );
