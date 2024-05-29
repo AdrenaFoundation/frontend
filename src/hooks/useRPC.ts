@@ -147,7 +147,10 @@ const useRpc = (
 
           return Date.now() - start;
         } catch (error) {
-          return null;
+          // TODO: remove
+          // Force latency to force the triton RPC to be used
+          return 400;
+          // return null;
         }
       }),
     );
