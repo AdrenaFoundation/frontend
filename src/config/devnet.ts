@@ -91,7 +91,7 @@ class DevnetConfiguration implements IConfiguration {
   public readonly rpcOptions: RpcOption[] = [
     {
       name: 'Triton RPC',
-      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com',
+      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com/eb24df90-f9aa-45f2-9a9c-fe20cd0f35fd',
     },
     {
       name: 'Helius RPC',
