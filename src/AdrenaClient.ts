@@ -2273,7 +2273,6 @@ export class AdrenaClient {
 
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
     const tokenAccount = findATAAddressSync(owner, stakedTokenMint);
-    console.log('sss', tokenAccount.toBase58());
 
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);

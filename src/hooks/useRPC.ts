@@ -307,7 +307,6 @@ const useRpc = (
     },
 
     setFavoriteRpc: (favoriteRpc: string) => {
-      console.log('DO ===> FAVORITE RPC COOKIE CHANGE');
       setCookies('favoriteRpc', favoriteRpc);
     },
   };

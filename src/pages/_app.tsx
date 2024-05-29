@@ -105,12 +105,15 @@ export default function App(props: AppProps) {
 
     setInitializationInProgress(true);
 
-    const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+    // TODO: use Pyth connection
+    // const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
 
-    initializeApp(config, activeRpc.connection, pythConnection).then(() => {
-      setIsInitialized(true);
-      setInitializationInProgress(false);
-    });
+    initializeApp(config, activeRpc.connection, activeRpc.connection).then(
+      () => {
+        setIsInitialized(true);
+        setInitializationInProgress(false);
+      },
+    );
   }, [activeRpc, config, initializationInProgress, isInitialized]);
 
   if (!isInitialized || !activeRpc) return <Loader />;
@@ -223,20 +226,14 @@ function AppComponent({
   // When the RPC change, change the connection in the adrena client
   //
   useEffect(() => {
-    console.log('APP :: SWITCH RPC');
-
     window.adrena.mainConnection = activeRpc.connection;
-    // window.adrena.pythConnection = activeRpc.connection;
-
-    console.log('APP :: SWITCH SET READONLY ADRENA PROGRAM');
+    window.adrena.pythConnection = activeRpc.connection;
 
     window.adrena.client.setReadonlyAdrenaProgram(
       createReadOnlyAdrenaProgram(activeRpc.connection),
     );
 
     if (wallet) {
-      console.log('APP :: SWITCH SET ADRENA PROGRAM');
-
       window.adrena.client.setAdrenaProgram(
         new Program(
           ADRENA_IDL,
