@@ -143,15 +143,11 @@ const useRpc = (
         if (!connection) return null;
 
         try {
-          //  if (!(await connection.getVersion())) return null;
-          throw new Error('Fail on purpose');
+          if (!(await connection.getVersion())) return null;
 
           return Date.now() - start;
         } catch (error) {
-          // TODO: remove
-          // Force latency to force the triton RPC to be used
-          return 400;
-          // return null;
+          return null;
         }
       }),
     );
