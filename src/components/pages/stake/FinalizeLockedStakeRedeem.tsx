@@ -1,8 +1,12 @@
 import React from 'react';
 
 import Button from '@/components/common/Button/Button';
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended } from '@/types';
-import { estimateLockedStakeEarlyExitFee } from '@/utils';
+import { estimateLockedStakeEarlyExitFee, formatNumber } from '@/utils';
+
+import { nativeToUi } from '../../../utils';
 
 export default function FinalizeLockedStakeRedeem({
   lockedStake,
@@ -16,24 +20,72 @@ export default function FinalizeLockedStakeRedeem({
     earlyExit: boolean,
   ) => void;
 }) {
+  const estimatedFee = estimateLockedStakeEarlyExitFee(
+    lockedStake,
+    stakeTokenMintDecimals,
+  );
+
+  const numberOfStakedTokens = nativeToUi(
+    lockedStake.amount,
+    stakeTokenMintDecimals,
+  );
+
   return (
     <div className="p-5 w-[30em]">
       <div>
-        <div className="flex flex-row justify-between mb-4">
+        <StyledSubSubContainer className="flex-col">
+          <div className="flex w-full items-center justify-between">
+            <div className="text-sm">Staked tokens</div>
+
+            <span>
+              <FormatNumber
+                nb={numberOfStakedTokens}
+                precision={4}
+                placeholder="0"
+                className="inline"
+              />{' '}
+              <span className="ml-1">{lockedStake.tokenSymbol}</span>
+            </span>
+          </div>
+          <div className="flex w-full items-center justify-between">
+            <div className="text-sm">Fee</div>
+
+            <span>
+              <FormatNumber
+                nb={estimatedFee}
+                precision={4}
+                placeholder="0"
+                className="inline"
+              />
+              <span className="ml-1">{lockedStake.tokenSymbol}</span>
+            </span>
+          </div>
+          <div className="flex w-full items-center justify-between">
+            <div className="text-sm">Remaining</div>
+
+            <span>
+              <FormatNumber
+                nb={numberOfStakedTokens - estimatedFee}
+                precision={4}
+                placeholder="0"
+                className="inline"
+              />
+              <span className="ml-1">{lockedStake.tokenSymbol}</span>
+            </span>
+          </div>
+        </StyledSubSubContainer>
+        <div className="flex flex-row justify-between mt-4 mb-4">
           <span className="font-mono text-md opacity-50">
-            The early exit feature allow the user to break the initial Locked
+            The early exit feature allows the user to break the initial Locked
             Staking agreement by paying a penalty based on the time elapsed and
             the initial commitment duration.
           </span>
         </div>
         <div className="flex flex-row mb-6">
-          <span className="text-red font-mono text-md">
+          <span className="text-redbright font-mono text-md">
             In order to early exit this staking position, the penalty will be{' '}
-            <span className="text-red font-bold text-2xl">
-              {estimateLockedStakeEarlyExitFee(
-                lockedStake,
-                stakeTokenMintDecimals,
-              )}
+            <span className="text-redbright font-bold text-2xl">
+              {formatNumber(estimatedFee, 4)}
             </span>{' '}
             {lockedStake.tokenSymbol} that you&apos;ll forfeit to the pool
             (other users).

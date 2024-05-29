@@ -25,6 +25,8 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
+  getAdxLockedStakes,
+  getAlpLockedStakes,
   getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
@@ -115,6 +117,12 @@ export default function Stake({
   const owner: PublicKey | null = wallet
     ? new PublicKey(wallet.walletAddress)
     : null;
+
+  const adxLockedStakes: LockedStakeExtended[] | null =
+    getAdxLockedStakes(stakingAccounts);
+
+  const alpLockedStakes: LockedStakeExtended[] | null =
+    getAlpLockedStakes(stakingAccounts);
 
   const stakeAmount = async () => {
     if (!owner) {
@@ -441,32 +449,6 @@ export default function Stake({
     wallet,
   ]);
 
-  const adxLockedStakes: LockedStakeExtended[] | null =
-    (
-      (stakingAccounts?.ADX?.lockedStakes.sort(
-        (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-      ) as LockedStakeExtended[]) ?? []
-    )
-      .filter((x) => !x.stakeTime.isZero())
-      .map((stake, index) => ({
-        ...stake,
-        index,
-        tokenSymbol: 'ADX',
-      })) ?? null;
-
-  const alpLockedStakes: LockedStakeExtended[] | null =
-    (
-      (stakingAccounts?.ALP?.lockedStakes.sort(
-        (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-      ) as LockedStakeExtended[]) ?? []
-    )
-      .filter((x) => !x.stakeTime.isZero())
-      .map((stake, index) => ({
-        ...stake,
-        index,
-        tokenSymbol: 'ALP',
-      })) ?? null;
-
   return (
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0">
@@ -603,6 +585,7 @@ export default function Stake({
                 <Modal
                   title="Redeem Liquid ADX"
                   close={() => setActiveRedeemLiquidADX(false)}
+                  className="w-[25em]"
                 >
                   <StakeRedeem
                     tokenSymbol="ADX"

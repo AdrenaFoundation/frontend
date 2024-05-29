@@ -17,7 +17,7 @@ export default function StakeRedeem({
   return (
     <div className="p-5">
       <div>
-        <div className="flex flex-row justify-between mb-2">
+        <div className="flex flex-row justify-between">
           <p className="text-sm opacity-50 font-medium"> Enter Amount</p>
           <p className="text-sm font-medium">
             <span className="opacity-50"> Total reedemable · </span>
@@ -26,7 +26,7 @@ export default function StakeRedeem({
               : '–'}
           </p>
         </div>
-        <div className="relative flex flex-row w-full">
+        <div className="relative flex flex-row w-full mt-4">
           <div className="flex items-center bg-bcolor border border-bcolor rounded-l-xl px-3 border-r-none">
             <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
           </div>
@@ -67,9 +67,25 @@ export default function StakeRedeem({
         </div>
       </div>
 
+      {amount ? (
+        <div className="flex mt-4">
+          <span className="font-mono text-md opacity-50">
+            By redeeming your {amount} liquid {tokenSymbol}, you will stop
+            getting 1x USDC yield applied to {amount} {tokenSymbol}.
+          </span>
+        </div>
+      ) : (
+        <div className="flex mt-4">
+          <span className="font-mono text-md opacity-50">
+            By redeeming your liquid stake, you stop getting the 1x USDC yield
+            applied per liquid ADX.
+          </span>
+        </div>
+      )}
+
       <Button
         variant="danger"
-        className="w-full mt-3"
+        className="w-full mt-4"
         size="lg"
         title="Remove stake"
         disabled={!amount}

@@ -8,7 +8,6 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
-import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 // use the counter to handle asynchronous multiple loading
@@ -29,6 +28,7 @@ export default function ALPSwapInputs({
   onChangeCollateralInput,
   collateralPrice,
   setCollateralPrice,
+  setErrorMessage,
   onCollateralTokenChange,
   setFeesUsd,
   feesAndAmounts,
@@ -43,6 +43,7 @@ export default function ALPSwapInputs({
   allowedCollateralTokens: Token[] | null;
   collateralPrice: number | null;
   setCollateralPrice: (v: number | null) => void;
+  setErrorMessage: (v: string | null) => void;
   alpInput: number | null;
   onChangeAlpInput: (v: number | null) => void;
   onChangeCollateralInput: (v: number | null) => void;
@@ -97,6 +98,7 @@ export default function ALPSwapInputs({
         setSaveUpFees(null);
         onChangeCollateralInput(null);
         setCollateralPrice(null);
+        setErrorMessage(null);
         setAlpPrice(null);
         setFeesUsd(null);
         return;
@@ -126,6 +128,7 @@ export default function ALPSwapInputs({
             setSaveUpFees(null);
             onChangeCollateralInput(null);
             setCollateralPrice(null);
+            setErrorMessage(null);
             setFeesUsd(null);
             return;
           }
@@ -145,11 +148,11 @@ export default function ALPSwapInputs({
           );
           setLoading(false);
         })
-        .catch((e) => {
-          console.log('e', e);
+        .catch(() => {
           setSaveUpFees(null);
           onChangeCollateralInput(null);
           setCollateralPrice(null);
+          setErrorMessage(`Not enough liquidity in the pool for this token`);
           setLoading(false);
         });
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -174,12 +177,12 @@ export default function ALPSwapInputs({
 
         onChangeAlpInput(null);
         setSaveUpFees(null);
-        setAlpPrice(null);
         setCollateralPrice(null);
         setFeesUsd(null);
         return;
       }
 
+      setErrorMessage(null);
       setLoading(true);
 
       const localLoadingCounter = ++loadingCounter;
@@ -201,6 +204,7 @@ export default function ALPSwapInputs({
 
           if (!amountAndFee) {
             setLoading(false);
+            setErrorMessage('Liquidity amount and fee not found');
             setSaveUpFees(null);
             onChangeAlpInput(null);
             setAlpPrice(null);
@@ -219,8 +223,8 @@ export default function ALPSwapInputs({
           );
           setLoading(false);
         })
-        .catch((e) => {
-          console.log('e', e);
+        .catch(() => {
+          setErrorMessage('Pool ratio reached for this token');
           setSaveUpFees(null);
           setAlpPrice(null);
           setLoading(false);
@@ -235,6 +239,7 @@ export default function ALPSwapInputs({
 
     if (v === null || isNaN(nb)) {
       onChangeAlpInput(null);
+      setErrorMessage(null);
       return;
     }
 
@@ -248,6 +253,7 @@ export default function ALPSwapInputs({
 
     if (v === null || isNaN(nb)) {
       onChangeCollateralInput(null);
+      setErrorMessage(null);
       return;
     }
 
