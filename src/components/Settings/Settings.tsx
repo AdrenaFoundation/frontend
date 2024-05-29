@@ -109,7 +109,7 @@ export default function Settings({
             latency: customRpcLatency,
           },
         ]?.map((rpc) => (
-          <li className={twMerge('flex flex-row flex-wrap')} key={rpc.name}>
+          <li className="flex flex-row flex-wrap" key={rpc.name}>
             <div
               className="w-full flex justify-between items-center cursor-pointer"
               onClick={() => {
@@ -146,7 +146,7 @@ export default function Settings({
                 <div className="flex flex-row gap-1 items-center">
                   <div
                     className={twMerge(
-                      'w-[5px] h-[5px] rounded-full ',
+                      'w-[5px] h-[5px] rounded-full',
                       (() => {
                         if (rpc.latency && rpc.latency < 100) return 'bg-green';
                         if (rpc.latency && rpc.latency < 500)
