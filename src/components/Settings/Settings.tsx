@@ -6,7 +6,6 @@ import { twMerge } from 'tailwind-merge';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { addNotification } from '@/utils';
 
-import crossIcon from '../../../public/images/Icons/cross.svg';
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -141,7 +140,7 @@ export default function Settings({
                 </p>
 
                 {activeRpc.name === rpc.name ? (
-                  <p className="opacity-30">active</p>
+                  <p className="opacity-50">active</p>
                 ) : null}
               </div>
 
@@ -163,15 +162,7 @@ export default function Settings({
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-row gap-1 items-center">
-                  <Image
-                    className="opacity-50"
-                    src={crossIcon}
-                    alt="Cross menu icon"
-                    width={16}
-                    height={16}
-                  />
-                </div>
+                <div className="text-gray-600 mr-4 text-sm">-</div>
               )}
             </div>
 
