@@ -96,8 +96,6 @@ const useRpc = (
       return setFavoriteRpc(null);
     }
 
-    console.log('FAVORITE RPC COOKIE CHANGE');
-
     setFavoriteRpc(cookies.favoriteRpc);
   }, [cookies.favoriteRpc]);
 
@@ -154,8 +152,6 @@ const useRpc = (
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (customRpcConnection) setCustomRpcLatency(latencies.pop()!);
-
-    console.log('Latencies', latencies);
 
     setRpcLatencies(latencies);
   }, [customRpcConnection, rpcConnections]);
@@ -287,24 +283,29 @@ const useRpc = (
         name: rpc.name,
         latency: rpcLatencies ? rpcLatencies[index] : null,
       })) ?? [],
-    customRpcLatency,
+
     activeRpc: activeRpc
       ? {
           name: activeRpc.name,
           connection: activeRpc.connection,
         }
       : null,
+
+    customRpcLatency,
     autoRpcMode,
     customRpcUrl,
     favoriteRpc,
+
     setAutoRpcMode: (autoRpcMode: boolean) => {
       setCookies('autoRpc', autoRpcMode);
     },
+
     setCustomRpcUrl: (customRpcUrl: string | null) => {
       setCustomRpcConnection(null);
       setCustomRpcLatency(null);
       setCookies('customRpc', customRpcUrl);
     },
+
     setFavoriteRpc: (favoriteRpc: string) => {
       console.log('DO ===> FAVORITE RPC COOKIE CHANGE');
       setCookies('favoriteRpc', favoriteRpc);

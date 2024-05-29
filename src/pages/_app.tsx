@@ -105,14 +105,12 @@ export default function App(props: AppProps) {
 
     setInitializationInProgress(true);
 
-    // const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+    const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
 
-    initializeApp(config, activeRpc.connection, activeRpc.connection).then(
-      () => {
-        setIsInitialized(true);
-        setInitializationInProgress(false);
-      },
-    );
+    initializeApp(config, activeRpc.connection, pythConnection).then(() => {
+      setIsInitialized(true);
+      setInitializationInProgress(false);
+    });
   }, [activeRpc, config, initializationInProgress, isInitialized]);
 
   if (!isInitialized || !activeRpc) return <Loader />;
@@ -228,7 +226,7 @@ function AppComponent({
     console.log('APP :: SWITCH RPC');
 
     window.adrena.mainConnection = activeRpc.connection;
-    window.adrena.pythConnection = activeRpc.connection;
+    // window.adrena.pythConnection = activeRpc.connection;
 
     console.log('APP :: SWITCH SET READONLY ADRENA PROGRAM');
 
