@@ -143,7 +143,8 @@ const useRpc = (
         if (!connection) return null;
 
         try {
-          if (!(await connection.getVersion())) return null;
+          //  if (!(await connection.getVersion())) return null;
+          throw new Error('Fail on purpose');
 
           return Date.now() - start;
         } catch (error) {
