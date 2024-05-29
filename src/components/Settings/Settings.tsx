@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import { Connection } from '@solana/web3.js';
+import Image from 'next/image';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import useRpc from '@/hooks/useRPC';
-import {
-  addNotification,
-  verifyIfValidUrl,
-  verifyRpcConnection,
-} from '@/utils';
+import { addNotification } from '@/utils';
 
+import crossIcon from '../../../public/images/Icons/cross.svg';
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -18,123 +15,35 @@ import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function Settings({
   activeRpc,
-  setActiveRpc,
-  setCustomRpcUrl,
+  rpcInfos,
+  autoRpcMode,
   customRpcUrl,
+  customRpcLatency,
+  favoriteRpc,
+  setAutoRpcMode,
+  setCustomRpcUrl,
+  setFavoriteRpc,
 }: {
-  activeRpc: string;
-  setActiveRpc: (rpc: string) => void;
-  setCustomRpcUrl: (rpc: string | null) => void;
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
+  rpcInfos: {
+    name: string;
+    latency: number | null;
+  }[];
+  customRpcLatency: number | null;
+  autoRpcMode: boolean;
   customRpcUrl: string | null;
+  favoriteRpc: string | null;
+  setAutoRpcMode: (autoRpcMode: boolean) => void;
+  setCustomRpcUrl: (customRpcUrl: string | null) => void;
+  setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
-  const [cookies, setCookies] = useCookies([
-    'activeRpc',
-    'isAutoRPC',
-    'customRpc',
-  ]);
   const isBigScreen = useBetterMediaQuery('(min-width: 500px)');
-
-  const [customRpc, setCustomRPC] = useState<string>(customRpcUrl ?? '');
-  const [isAutoRPC, setIsAutoRPC] = useState<boolean>(
-    cookies?.isAutoRPC === 'true',
-  );
-
-  const [isEditCustomRPCMode, setIsEditCustomRPCMode] =
-    useState<boolean>(false);
-
-  const [rpcOptions] = useRpc({
+  const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
-  });
-
-  useEffect(() => {
-    if (!isAutoRPC) return;
-    const activeRpcLatency = rpcOptions?.find(
-      (rpcOption) => rpcOption.name === activeRpc,
-    );
-
-    if (!activeRpcLatency) return;
-
-    const bestRpc = rpcOptions?.reduce((acc, curr) => {
-      return curr.latency &&
-        acc.latency &&
-        curr.latency < acc.latency &&
-        curr.latency - acc.latency >= 100
-        ? curr
-        : acc;
-    });
-
-    if (bestRpc?.name === activeRpc || !bestRpc) return;
-
-    handleRPCOption(bestRpc.name);
-  }, [isAutoRPC, rpcOptions]);
-
-  const handleRPCOption = (rpc: string) => {
-    if (
-      rpc === 'Custom RPC' &&
-      (customRpcUrl === null || customRpcUrl === undefined)
-    ) {
-      addNotification({
-        title: 'Please use a valid custom RPC URL',
-        type: 'error',
-        duration: 'fast',
-        position: 'bottom-right',
-      });
-      return;
-    }
-
-    setActiveRpc(rpc);
-    setCookies('activeRpc', rpc);
-    setIsEditCustomRPCMode(false);
-    addNotification({
-      title: 'RPC endpoint changed',
-      duration: 'fast',
-      position: 'bottom-right',
-    });
-  };
-
-  const saveCustomRPCUrl = async () => {
-    if (customRpc === '') {
-      setCustomRpcUrl(null);
-      setCookies('customRpc', null);
-      setIsEditCustomRPCMode(false);
-      return;
-    }
-
-    if (!verifyIfValidUrl(customRpc)) {
-      addNotification({
-        title: 'Invalid URL',
-        type: 'error',
-        duration: 'fast',
-        position: 'bottom-right',
-      });
-      return;
-    }
-
-    const isVerified = await verifyRpcConnection(customRpc);
-
-    if (!isVerified) {
-      addNotification({
-        title: 'Invalid RPC endpoint',
-        type: 'error',
-        duration: 'fast',
-        position: 'bottom-right',
-      });
-      setCustomRpcUrl(null);
-      setCookies('customRpc', null);
-      setIsEditCustomRPCMode(false);
-      return;
-    }
-
-    setCustomRpcUrl(customRpc);
-    setCookies('customRpc', customRpc);
-    setIsEditCustomRPCMode(false);
-
-    addNotification({
-      title: 'Custom RPC endpoint saved',
-      duration: 'fast',
-      position: 'bottom-right',
-    });
-  };
+  );
 
   return (
     <Menu
@@ -165,13 +74,14 @@ export default function Settings({
             className="w-3"
           />
         </div>
+
         <Switch
-          checked={isAutoRPC}
+          checked={autoRpcMode}
           onChange={() => {
-            setIsAutoRPC(!isAutoRPC);
-            setCookies('isAutoRPC', !isAutoRPC);
+            setAutoRpcMode(!autoRpcMode);
+
             addNotification({
-              title: `Automatic switch ${isAutoRPC ? 'disabled' : 'enabled'}`,
+              title: `Automatic switch ${autoRpcMode ? 'disabled' : 'enabled'}`,
               duration: 'fast',
               position: 'bottom-right',
             });
@@ -181,88 +91,123 @@ export default function Settings({
 
       <div className="w-full h-[1px] bg-bcolor my-3" />
 
+      <div className="w-full flex mb-2">
+        <div className="text-xs text-gray-500">Preferred</div>
+        <div className="text-xs text-gray-500 ml-auto">Latency</div>
+      </div>
+
       <ul
         className={twMerge(
           'flex flex-col gap-2 opacity-100 transition-opacity duration-300',
-          isAutoRPC && 'opacity-30 pointer-events-none',
+          autoRpcMode && 'opacity-30 pointer-events-none',
         )}
       >
-        {rpcOptions?.map((rpc) => (
-          <li
-            className="flex flex-row justify-between items-center cursor-pointer"
-            onClick={() => {
-              handleRPCOption(rpc.name);
-            }}
-            key={rpc.name}
-          >
-            <div className="flex flex-row gap-2 items-center">
-              <input
-                type="radio"
-                checked={rpc.name === activeRpc}
-                onChange={() => false}
-              />
-              <p
-                className={twMerge(
-                  'text-sm font-medium opacity-50 hover:opacity-100 transition-opacity duration-300',
-                  rpc.name === activeRpc && 'opacity-100',
-                )}
-              >
-                {rpc.name}
-              </p>
+        {[
+          ...rpcInfos,
+          {
+            name: 'Custom RPC',
+            latency: customRpcLatency,
+          },
+        ]?.map((rpc) => (
+          <li className={twMerge('flex flex-row flex-wrap')} key={rpc.name}>
+            <div
+              className="w-full flex justify-between items-center cursor-pointer"
+              onClick={() => {
+                setFavoriteRpc(rpc.name);
+              }}
+            >
+              <div className="flex flex-row gap-2 items-center">
+                <div className="w-10 flex items-center justify-center">
+                  <input
+                    type="radio"
+                    checked={rpc.name === favoriteRpc}
+                    onChange={() => {
+                      // Handle the click on the level above
+                    }}
+                    className="cursor-pointer"
+                  />
+                </div>
+
+                <p
+                  className={twMerge(
+                    'text-sm font-medium opacity-50 transition-opacity duration-300 hover:opacity-100',
+                    rpc.name === favoriteRpc && 'opacity-100',
+                  )}
+                >
+                  {rpc.name}
+                </p>
+
+                {activeRpc.name === rpc.name ? (
+                  <p className="opacity-30">active</p>
+                ) : null}
+              </div>
+
+              {rpc.latency !== null ? (
+                <div className="flex flex-row gap-1 items-center">
+                  <div
+                    className={twMerge(
+                      'w-[5px] h-[5px] rounded-full ',
+                      (() => {
+                        if (rpc.latency && rpc.latency < 100) return 'bg-green';
+                        if (rpc.latency && rpc.latency < 500)
+                          return 'bg-orange';
+                        return 'bg-red';
+                      })(),
+                    )}
+                  />
+                  <p className="text-xs opacity-50 font-mono">
+                    {rpc.latency}ms
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-row gap-1 items-center">
+                  <Image
+                    className="opacity-50"
+                    src={crossIcon}
+                    alt="Cross menu icon"
+                    width={16}
+                    height={16}
+                  />
+                </div>
+              )}
             </div>
-            {rpc.latency !== null ? (
-              <div className="flex flex-row gap-1 items-center">
+
+            {rpc.name === 'Custom RPC' ? (
+              <div className="flex flex-row gap-2 items-center w-full mt-2">
                 <div
                   className={twMerge(
-                    'w-[5px] h-[5px] rounded-full ',
-                    (() => {
-                      if (rpc.latency && rpc.latency < 100) return 'bg-green';
-                      if (rpc.latency && rpc.latency < 500) return 'bg-orange';
-                      return 'bg-red';
-                    })(),
+                    'relative w-full  bg-black border border-bcolor rounded-lg overflow-hidden transition duration-300',
                   )}
-                />
-                <p className="text-xs opacity-50 font-mono">{rpc.latency}ms</p>
+                >
+                  <input
+                    type="text"
+                    value={editCustomRpcUrl ?? ''}
+                    onChange={(e) => {
+                      setEditCustomRpcUrl(e.target.value);
+                    }}
+                    className={twMerge(
+                      'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm bg-black transition duration-300',
+                    )}
+                    placeholder="Custom RPC URL"
+                  />
+
+                  <Button
+                    title="Save"
+                    disabled={customRpcUrl === editCustomRpcUrl}
+                    size="sm"
+                    variant="primary"
+                    onClick={() => {
+                      setCustomRpcUrl(editCustomRpcUrl);
+                    }}
+                    className={twMerge(
+                      'text-xs absolute right-2 top-[8px] p-1 px-2 rounded-md',
+                    )}
+                  />
+                </div>
               </div>
             ) : null}
           </li>
         ))}
-        <li className="flex flex-row justify-between items-center cursor-pointer">
-          <div className="flex flex-row gap-2 items-center w-full">
-            <div
-              className={twMerge(
-                'relative w-full  bg-black border border-bcolor rounded-lg overflow-hidden transition duration-300',
-                !isEditCustomRPCMode &&
-                  'bg-transparent font-regular font-medium',
-              )}
-            >
-              <input
-                type="text"
-                value={!isEditCustomRPCMode ? customRpcUrl ?? '' : customRpc}
-                onChange={(e) => {
-                  setCustomRPC(e.target.value);
-                  setIsEditCustomRPCMode(true);
-                }}
-                className={twMerge(
-                  'w-full h-[40px] p-1 px-3 max-w-[195px] text-ellipsis text-sm bg-black transition duration-300',
-                  !isEditCustomRPCMode && 'bg-transparent',
-                )}
-                placeholder="Custom RPC URL"
-              />
-              <Button
-                title="Save"
-                size="sm"
-                variant="primary"
-                onClick={saveCustomRPCUrl}
-                className={twMerge(
-                  'text-xs absolute right-2 top-[8px] p-1 px-2 rounded-md',
-                  !isEditCustomRPCMode && 'opacity-100',
-                )}
-                disabled={customRpc === customRpcUrl}
-              />
-            </div>
-          </div>
-        </li>
       </ul>
     </Menu>
   );

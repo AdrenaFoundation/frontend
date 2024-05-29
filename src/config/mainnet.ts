@@ -88,10 +88,6 @@ class MainnetConfiguration implements IConfiguration {
       name: 'Solana RPC',
       url: 'https://api.devnet.solana.com',
     },
-    {
-      name: 'Custom RPC',
-      url: null,
-    },
   ];
 
   public readonly mainPool: PublicKey = new PublicKey(

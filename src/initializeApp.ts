@@ -9,7 +9,7 @@ import { IDL as ADRENA_IDL } from '@/target/adrena';
 
 import { GeoBlockingData } from './types';
 
-function createReadOnlyAdrenaProgram(connection: Connection) {
+export function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
     connection,
     new NodeWallet(DEFAULT_PERPS_USER),
@@ -54,20 +54,11 @@ async function fetchGeoBlockingData(): Promise<GeoBlockingData> {
 // Initialize all objects that are required to launch the app
 // theses objects doesn't change on the way
 // for changing objects, use hooks like useCustodies/usePositions etc.
-export default async function initializeApp(config: IConfiguration) {
-  // Take the first rpc option
-  const rpc = config.rpcOptions.find((x) => x.url !== null);
-
-  if (!rpc || !rpc.url) throw new Error('No available RPC');
-
-  const mainConnection = new Connection(rpc.url, {
-    commitment: 'confirmed',
-  });
-
-  const pythConnection = new Connection(rpc.url, {
-    commitment: 'confirmed',
-  });
-
+export default async function initializeApp(
+  config: IConfiguration,
+  mainConnection: Connection,
+  pythConnection: Connection,
+) {
   const readOnlyAdrenaProgram = createReadOnlyAdrenaProgram(mainConnection);
 
   const [client, geoBlockingData] = await Promise.all([

@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
@@ -13,9 +13,7 @@ export type TokenInfo = {
 
 export type RpcOption = {
   name: string;
-  url: string | null;
-  connection?: Connection | null;
-  latency?: number | null;
+  url: string;
 };
 
 export default interface IConfiguration {
