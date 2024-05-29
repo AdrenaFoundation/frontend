@@ -69,7 +69,8 @@ const useRpc = (
     useState<Connection | null>(null);
   const [customRpcLatency, setCustomRpcLatency] = useState<number | null>(null);
 
-  const [autoRpcMode, setAutoRpcMode] = useState<boolean>(false);
+  // true by default
+  const [autoRpcMode, setAutoRpcMode] = useState<boolean>(true);
 
   const [activeRpc, setActiveRpc] = useState<{
     name: string;
