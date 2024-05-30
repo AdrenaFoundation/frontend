@@ -1,4 +1,4 @@
-import { createRef, useState } from 'react';
+import { createRef, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export default function TabSelect<T extends string | number>({
@@ -27,6 +27,12 @@ export default function TabSelect<T extends string | number>({
   );
 
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
+
+  useEffect(() => {
+    if (selected !== undefined) {
+      setActiveTab(tabs.findIndex((tab) => tab.title === selected));
+    }
+  }, [selected]);
 
   return (
     <div
