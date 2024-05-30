@@ -19,6 +19,7 @@ export default function Monitoring(pageProps: PageProps) {
 
   const tabs = [
     'All',
+    'Automation',
     'Accounts',
     'Pool',
     'Fees',

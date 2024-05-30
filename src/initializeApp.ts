@@ -47,7 +47,7 @@ export function createReadOnlyAdrenaProgram(connection: Connection) {
   return new Program(ADRENA_IDL, AdrenaClient.programId, readOnlyProvider);
 }
 
-function createReadOnlySablierThreadProgram(connection: Connection) {
+export function createReadOnlySablierThreadProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
     connection,
     new NodeWallet(DEFAULT_PERPS_USER),

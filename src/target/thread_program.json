@@ -461,6 +461,185 @@
   ],
   "types": [
     {
+      "name": "SerializableAccount",
+      "docs": ["Serialization of a Solana account."],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pubkey",
+            "docs": ["."],
+            "type": "publicKey"
+          },
+          {
+            "name": "isSigner",
+            "docs": ["."],
+            "type": "bool"
+          },
+          {
+            "name": "isWritable",
+            "docs": ["."],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SerializableInstruction",
+      "docs": ["Serialization of a Solana instruction."],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "programId",
+            "docs": ["The program."],
+            "type": "publicKey"
+          },
+          {
+            "name": "accounts",
+            "docs": ["The accounts."],
+            "type": {
+              "vec": {
+                "defined": "SerializableAccount"
+              }
+            }
+          },
+          {
+            "name": "data",
+            "docs": ["The data."],
+            "type": {
+              "vec": "u8"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClockData",
+      "docs": ["Clock data."],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "slot",
+            "docs": ["."],
+            "type": "u64"
+          },
+          {
+            "name": "epoch",
+            "docs": ["."],
+            "type": "u64"
+          },
+          {
+            "name": "unixTimestamp",
+            "docs": ["."],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Equality",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "GreaterThanOrEqual"
+          },
+          {
+            "name": "LessThanOrEqual"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Trigger",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Account",
+            "fields": [
+              {
+                "name": "address",
+                "type": "publicKey"
+              },
+              {
+                "name": "offset",
+                "type": "u64"
+              },
+              {
+                "name": "size",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "Cron",
+            "fields": [
+              {
+                "name": "schedule",
+                "type": "string"
+              },
+              {
+                "name": "skippable",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "name": "Now"
+          },
+          {
+            "name": "Slot",
+            "fields": [
+              {
+                "name": "slot",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "Epoch",
+            "fields": [
+              {
+                "name": "epoch",
+                "type": "u64"
+              }
+            ]
+          },
+          {
+            "name": "Timestamp",
+            "fields": [
+              {
+                "name": "unixTs",
+                "type": "i64"
+              }
+            ]
+          },
+          {
+            "name": "Pyth",
+            "fields": [
+              {
+                "name": "priceFeed",
+                "type": "publicKey"
+              },
+              {
+                "name": "equality",
+                "type": {
+                  "defined": "Equality"
+                }
+              },
+              {
+                "name": "limit",
+                "type": "i64"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "name": "ExecContext",
       "docs": ["The execution context of a particular transaction thread."],
       "type": {
@@ -611,22 +790,6 @@
               {
                 "name": "price",
                 "type": "i64"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "name": "VersionedThread",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "V1",
-            "fields": [
-              {
-                "defined": "Thread"
               }
             ]
           }
