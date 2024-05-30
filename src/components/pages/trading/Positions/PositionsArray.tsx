@@ -1,60 +1,34 @@
 import Image from 'next/image';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
-import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
-import { useDispatch, useSelector } from '@/store/store';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo, getArrowElement } from '@/utils';
-
-import phantomLogo from '../../../../../public/images/phantom.png';
+import { getArrowElement } from '@/utils';
 
 export default function PositionsArray({
+  bodyClassName,
+  connected,
+  className,
   positions,
   triggerClosePosition,
   triggerEditPositionCollateral,
 }: {
+  bodyClassName?: string;
+  connected: boolean;
+  className?: string;
   positions: PositionExtended[] | null;
   triggerClosePosition: (p: PositionExtended) => void;
   triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
-  const dispatch = useDispatch();
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const connected = !!useSelector((s) => s.walletState.wallet);
-
-  const handleClick = () => {
-    if (!connected) {
-      dispatch(openCloseConnectionModalAction(true));
-      return;
-    }
-  };
 
   if (positions === null && !connected) {
-    return (
-      <div className="flex flex-col h-full items-center justify-center">
-        <Button
-          title={
-            !window.adrena.geoBlockingData.allowed
-              ? 'Geo-Restricted Access'
-              : 'Connect wallet'
-          }
-          variant="secondary"
-          rightIcon={phantomLogo}
-          className="mb-2"
-          onClick={handleClick}
-        />
-
-        <p className="text-sm opacity-50 font-normal">
-          Waiting for wallet connection
-        </p>
-
-        <WalletSelectionModal />
-      </div>
-    );
+    return <WalletConnection connected={connected} />;
   }
 
   if (positions === null && connected) {
@@ -92,7 +66,7 @@ export default function PositionsArray({
   }
 
   return (
-    <table className="w-full">
+    <table className={twMerge('w-full', className, bodyClassName)}>
       {/* Header */}
 
       <thead className="border-b border-bcolor">
@@ -119,8 +93,9 @@ export default function PositionsArray({
       {/* Content */}
       <tbody>
         {positions?.map((position, i) => (
-          <>
-            <tr key={position.pubkey.toBase58()}>
+          // Use Fragment to avoid key error
+          <React.Fragment key={position.pubkey.toBase58()}>
+            <tr key={position.pubkey.toBase58() + '-0'}>
               <td
                 className={twMerge(
                   'flex-col justify-center items-center',
@@ -217,7 +192,11 @@ export default function PositionsArray({
                 />
               </td>
             </tr>
-            <tr className={twMerge(i !== positions.length - 1 && border)}>
+
+            <tr
+              key={position.pubkey.toBase58() + '-1'}
+              className={twMerge(i !== positions.length - 1 && border)}
+            >
               <td
                 colSpan={9}
                 className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
@@ -231,7 +210,7 @@ export default function PositionsArray({
                   : ''}
               </td>
             </tr>
-          </>
+          </React.Fragment>
         ))}
       </tbody>
     </table>

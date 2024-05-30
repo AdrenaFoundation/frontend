@@ -33,8 +33,13 @@ export type AdrenaGlobal = {
   geoBlockingData: GeoBlockingData;
 };
 
+// Rive doesn't expose the type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RiveImage = any;
+
 declare global {
   interface Window {
+    riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;
   }
 }
@@ -115,8 +120,6 @@ export type PoolExtended = {
   oiShortUsd: number;
   nbOpenLongPositions: number;
   nbOpenShortPositions: number;
-  averageLongLeverage: number;
-  averageShortLeverage: number;
   custodies: PublicKey[];
 
   // Onchain data
@@ -178,6 +181,7 @@ export type UserProfileExtended = {
 type Accounts = IdlAccounts<Adrena>;
 
 export type Cortex = Accounts['cortex'];
+export type VestRegistry = Accounts['vestRegistry'];
 export type Custody = Accounts['custody'];
 export type Multisig = Accounts['multisig'];
 export type Perpetuals = Accounts['perpetuals'];
@@ -207,81 +211,81 @@ export type SablierAccounts = IdlAccounts<SablierThreadProgram>;
 export type SablierThread = AccountsThreadProgram['thread'];
 
 export type SablierThreadExtended = {
-  authority: PublicKey;
-  createdAt: {
-    /// The current slot.
-    slot: number;
-    /// The bank epoch.
-    epoch: number;
-    /// The current unix timestamp.
-    unix_timestamp: bigint;
-  };
-  execContext: {
-    /// Index of the next instruction to be executed.
-    exec_index: number;
-    /// Number of execs since the last tx reimbursement.
-    /// To be deprecated in v3 since we now reimburse for every transaction.
-    execs_since_reimbursement: number;
-    /// Number of execs in this slot.
-    execs_since_slot: number;
-    /// Slot of the last exec
-    last_exec_at: number;
-    /// Context for the triggering condition
-    trigger_context: {
-      /// The account's data hash.
-      account_data_hash: number;
-      /// The threshold moment the schedule was waiting for.
-      cron_started_at: bigint;
-      /// The trigger context for threads with a "now" trigger.
-      now: number;
-      /// The threshold slot the schedule was waiting for.
-      slot_started_at: number;
-      /// The threshold epoch the schedule was waiting for.
-      epoch_started_at: number;
-      /// The threshold moment the schedule was waiting for.
-      timestamp_started_at: bigint;
-      /// The trigger context for threads with a "pyth" trigger.
-      pyth_price: bigint;
-    };
-  };
-  fee: number;
-  id: number[];
-  instructions: SerializableInstruction[];
-  name: string;
-  nextInstruction: Option<SerializableInstruction>;
-  paused: boolean;
-  rateLimit: number;
-  trigger: {
-    /// Allows a thread to be kicked off whenever the data of an account changes.
-    /// The address of the account to monitor.
-    account_address: Pubkey;
-    /// The byte offset of the account data to monitor.
-    account_offset: number;
-    /// The size of the byte slice to monitor (must be less than 1kb)
-    account_size: number;
-    /// Allows a thread to be kicked off according to a one-time or recurring schedule.
-    /// The schedule in cron syntax. Value must be parsable by the `sablier_cron` package.
-    cron_schedule: string;
-    /// Boolean value indicating whether triggering moments may be skipped if they are missed (e.g. due to network downtime).
-    /// If false, any "missed" triggering moments will simply be executed as soon as the network comes back online.
-    cron_skippable: boolean;
-    /// Allows a thread to be kicked off as soon as it's created.
-    now: number;
-    /// Allows a thread to be kicked off according to a slot.
-    slot: number;
-    /// Allows a thread to be kicked off according to an epoch number.
-    epoch: number;
-    /// Allows a thread to be kicked off according to a unix timestamp.
-    unix_ts: bigint;
-    /// Allows a thread to be kicked off according to a Pyth price feed movement.
-    /// The address of the price feed to monitor.
-    pyth_price_feed: Pubkey;
-    /// The equality operator (gte or lte) used to compare prices.
-    pyth_equality: Equality;
-    /// The limit price to compare the Pyth feed to.
-    pyth_limit: bigint;
-  };
-  pubKey: PublicKey;
+  // authority: PublicKey;
+  // createdAt: {
+  //   /// The current slot.
+  //   slot: number;
+  //   /// The bank epoch.
+  //   epoch: number;
+  //   /// The current unix timestamp.
+  //   unix_timestamp: bigint;
+  // };
+  // execContext: {
+  //   /// Index of the next instruction to be executed.
+  //   exec_index: BN;
+  //   /// Number of execs since the last tx reimbursement.
+  //   /// To be deprecated in v3 since we now reimburse for every transaction.
+  //   execs_since_reimbursement: number;
+  //   /// Number of execs in this slot.
+  //   execs_since_slot: number;
+  //   /// Slot of the last exec
+  //   last_exec_at: number;
+  //   /// Context for the triggering condition
+  //   trigger_context: {
+  //     /// The account's data hash.
+  //     account_data_hash: number;
+  //     /// The threshold moment the schedule was waiting for.
+  //     cron_started_at: bigint;
+  //     /// The trigger context for threads with a "now" trigger.
+  //     now: number;
+  //     /// The threshold slot the schedule was waiting for.
+  //     slot_started_at: number;
+  //     /// The threshold epoch the schedule was waiting for.
+  //     epoch_started_at: number;
+  //     /// The threshold moment the schedule was waiting for.
+  //     timestamp_started_at: bigint;
+  //     /// The trigger context for threads with a "pyth" trigger.
+  //     pyth_price: bigint;
+  //   };
+  // };
+  // fee: number;
+  // id: number[];
+  // instructions: SerializableInstruction[];
+  // name: string;
+  // nextInstruction: Option<SerializableInstruction>;
+  // paused: boolean;
+  // rateLimit: number;
+  // trigger: {
+  //   /// Allows a thread to be kicked off whenever the data of an account changes.
+  //   /// The address of the account to monitor.
+  //   account_address: Pubkey;
+  //   /// The byte offset of the account data to monitor.
+  //   account_offset: number;
+  //   /// The size of the byte slice to monitor (must be less than 1kb)
+  //   account_size: number;
+  //   /// Allows a thread to be kicked off according to a one-time or recurring schedule.
+  //   /// The schedule in cron syntax. Value must be parsable by the `sablier_cron` package.
+  //   cron_schedule: string;
+  //   /// Boolean value indicating whether triggering moments may be skipped if they are missed (e.g. due to network downtime).
+  //   /// If false, any "missed" triggering moments will simply be executed as soon as the network comes back online.
+  //   cron_skippable: boolean;
+  //   /// Allows a thread to be kicked off as soon as it's created.
+  //   now: number;
+  //   /// Allows a thread to be kicked off according to a slot.
+  //   slot: number;
+  //   /// Allows a thread to be kicked off according to an epoch number.
+  //   epoch: number;
+  //   /// Allows a thread to be kicked off according to a unix timestamp.
+  //   unix_ts: bigint;
+  //   /// Allows a thread to be kicked off according to a Pyth price feed movement.
+  //   /// The address of the price feed to monitor.
+  //   pyth_price_feed: Pubkey;
+  //   /// The equality operator (gte or lte) used to compare prices.
+  //   pyth_equality: Equality;
+  //   /// The limit price to compare the Pyth feed to.
+  //   pyth_limit: bigint;
+  // };
+  pubkey: PublicKey;
 
   nativeObject: SablierThread;
 };
@@ -292,6 +296,8 @@ export type SablierThreadExtended = {
 
 type Params = IdlTypes<Adrena>;
 
+export type U128Split = Params['U128Split'];
+export type LimitedString = Params['LimitedString'];
 export type AddCollateralParams = Params['AddCollateralParams'];
 export type AddCustodyParams = Params['AddCustodyParams'];
 export type AddLiquidityParams = Params['AddLiquidityParams'];

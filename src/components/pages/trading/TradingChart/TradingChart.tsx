@@ -1,7 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
 import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
+import Loader from '@/components/Loader/Loader';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber } from '@/utils';
 
@@ -75,6 +77,7 @@ export default function TradingChart({
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
   const [widget, setWidget] = useState<Widget | null>(null);
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   type PositionLine = {
     position: PublicKey;
@@ -191,7 +194,10 @@ export default function TradingChart({
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
                 format: (price: number): string => {
-                  return formatNumber(price, 2);
+                  return Number(price.toFixed(2)).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  });
                 },
               };
             },
@@ -200,6 +206,7 @@ export default function TradingChart({
 
         widget.onChartReady(() => {
           setWidgetReady(true);
+          setIsLoading(false);
         });
 
         setWidget(widget);
@@ -324,18 +331,27 @@ export default function TradingChart({
   }, [positions, token.symbol, !!widget, widgetReady]);
 
   return (
-    <div className="flex flex-col w-full overflow-hidden backdrop-blur-md">
-      <div id="chart-area" className="h-full rounded-b-lg" />
-      <div className="copyright text-[0.5em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
-        The chart is provided by TradingView, an advanced platform that provides
-        unparalleled access to live data e.g.
-        <Link
-          href={`https://www.tradingview.com/symbols/${token.symbol}USD/`}
-          target="__blank"
-          className="ml-1 underline"
-        >
-          {token.symbol} USD chart
-        </Link>
+    <div className="flex flex-col w-full overflow-hidden bg-secondary backdrop-blur-md">
+      <Loader className={twMerge('mt-[20%]', isLoading ? '' : 'hidden')} />
+      <div
+        id="wrapper-trading-chart"
+        className={twMerge(
+          'h-full w-full flex flex-col',
+          isLoading ? 'hidden' : '',
+        )}
+      >
+        <div id="chart-area" className="h-full flex flex-col rounded-b-lg" />
+        <div className="copyright text-[0.5em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
+          The chart is provided by TradingView, an advanced platform that
+          provides unparalleled access to live data e.g.
+          <Link
+            href={`https://www.tradingview.com/symbols/${token.symbol}USD/`}
+            target="__blank"
+            className="ml-1 underline"
+          >
+            {token.symbol} USD chart
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { Connection } from '@solana/web3.js';
 import type { AppProps } from 'next/app';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -15,14 +16,14 @@ import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
+import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
-import initializeApp from '@/initializeApp';
+import initializeApp, { createReadOnlyAdrenaProgram } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
-import { verifyRpcConnection } from '@/utils';
 
 import logo from '../../public/images/logo.png';
 import devnetConfiguration from '../config/devnet';
@@ -50,19 +51,20 @@ export default function App(props: AppProps) {
   const [cluster, setCluster] = useState<SupportedCluster | null>(null);
   const [config, setConfig] = useState<IConfiguration | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [cookies] = useCookies(['activeRpc', 'customRpc']);
-  const [activeRpc, setActiveRpc] = useState<string>(
-    cookies?.activeRpc ?? 'Solana RPC',
-  );
-  const [customRpcUrl, setCustomRpcUrl] = useState<string | null>(
-    cookies?.customRpc !== 'null' ? cookies?.customRpc : null,
-  );
+  const [initializationInProgress, setInitializationInProgress] =
+    useState<boolean>(false);
 
-  const verifyCustomRPC = async () => {
-    if (customRpcUrl === null) return false;
-
-    return await verifyRpcConnection(customRpcUrl);
-  };
+  const {
+    activeRpc,
+    rpcInfos,
+    customRpcLatency,
+    autoRpcMode,
+    customRpcUrl,
+    favoriteRpc,
+    setAutoRpcMode,
+    setCustomRpcUrl,
+    setFavoriteRpc,
+  } = useRpc(config);
 
   // Load cluster from router
   useEffect(() => {
@@ -84,49 +86,51 @@ export default function App(props: AppProps) {
     setCluster(cluster as SupportedCluster);
   }, [router]);
 
-  useEffect(() => {
-    verifyCustomRPC();
-  }, [customRpcUrl]);
-
   // Load config from cluster
   useEffect(() => {
     if (!cluster) return;
+
     const config =
       cluster === 'devnet'
         ? { ...devnetConfiguration }
         : { ...mainnetConfiguration };
 
-    if (activeRpc === 'Custom RPC' && customRpcUrl !== null) {
-      config.mainRPC = customRpcUrl;
-      config.pythRPC = customRpcUrl;
-    } else {
-      const activeRpcOption = config.RpcOptions.find(
-        (rpcOption) => rpcOption.name === activeRpc,
-      );
-      config.mainRPC = activeRpcOption?.url ?? config.mainRPC;
-      config.pythRPC = activeRpcOption?.url ?? config.pythRPC;
-    }
-
     setConfig(config);
-  }, [cluster, activeRpc, customRpcUrl]);
+  }, [cluster]);
 
+  // Initialize the app once the config and rpc are ready
   useEffect(() => {
-    if (!config) return;
-    initializeApp(config).then(() => {
-      setIsInitialized(true);
-    });
-  }, [config]);
+    if (!config || !activeRpc || isInitialized || initializationInProgress)
+      return;
 
-  if (!isInitialized) return <Loader />;
+    setInitializationInProgress(true);
+
+    // TODO: use Pyth connection
+    // const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+
+    initializeApp(config, activeRpc.connection, activeRpc.connection).then(
+      () => {
+        setIsInitialized(true);
+        setInitializationInProgress(false);
+      },
+    );
+  }, [activeRpc, config, initializationInProgress, isInitialized]);
+
+  if (!isInitialized || !activeRpc) return <Loader />;
 
   return (
     <Provider store={store}>
       <CookiesProvider>
         <AppComponent
-          setActiveRpc={setActiveRpc}
           activeRpc={activeRpc}
-          setCustomRpcUrl={setCustomRpcUrl}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
           customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
           {...props}
         />
       </CookiesProvider>
@@ -143,15 +147,31 @@ export default function App(props: AppProps) {
 function AppComponent({
   Component,
   pageProps,
-  setActiveRpc,
   activeRpc,
-  setCustomRpcUrl,
+  rpcInfos,
+  autoRpcMode,
   customRpcUrl,
+  customRpcLatency,
+  favoriteRpc,
+  setAutoRpcMode,
+  setCustomRpcUrl,
+  setFavoriteRpc,
 }: AppProps & {
-  setActiveRpc: (rpc: string) => void;
-  activeRpc: string;
-  setCustomRpcUrl: (rpc: string | null) => void;
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
+  rpcInfos: {
+    name: string;
+    latency: number | null;
+  }[];
+  customRpcLatency: number | null;
+  autoRpcMode: boolean;
   customRpcUrl: string | null;
+  favoriteRpc: string | null;
+  setAutoRpcMode: (autoRpcMode: boolean) => void;
+  setCustomRpcUrl: (customRpcUrl: string | null) => void;
+  setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
@@ -169,6 +189,7 @@ function AppComponent({
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
+  const [connected, setConnected] = useState<boolean>(false);
 
   // Open the terms and conditions modal if cookies isn't set to true
   useEffect(() => {
@@ -179,13 +200,16 @@ function AppComponent({
 
   // When the wallet connect/disconnect load/unload informations
   // 1) load the program so we can execute txs with its wallet
-  // 2) load the user profile so we can display nickname
+  // 2) Set connected variable variable to true/false
+  // 3) load the user profile so we can display nickname
   useEffect(() => {
     if (!wallet) {
+      setConnected(false);
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
 
+    setConnected(true);
     window.adrena.client.setAdrenaProgram(
       new Program(
         ADRENA_IDL,
@@ -198,15 +222,44 @@ function AppComponent({
     );
   }, [wallet]);
 
-  const connected = !!wallet;
+  //
+  // When the RPC change, change the connection in the adrena client
+  //
+  useEffect(() => {
+    window.adrena.mainConnection = activeRpc.connection;
+    window.adrena.pythConnection = activeRpc.connection;
+
+    window.adrena.client.setReadonlyAdrenaProgram(
+      createReadOnlyAdrenaProgram(activeRpc.connection),
+    );
+
+    if (wallet) {
+      window.adrena.client.setAdrenaProgram(
+        new Program(
+          ADRENA_IDL,
+          AdrenaClient.programId,
+          new AnchorProvider(window.adrena.mainConnection, wallet, {
+            commitment: 'processed',
+            skipPreflight: true,
+          }),
+        ),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRpc.name]);
 
   return (
     <RootLayout
       userProfile={userProfile}
-      setActiveRpc={setActiveRpc}
       activeRpc={activeRpc}
-      setCustomRpcUrl={setCustomRpcUrl}
+      rpcInfos={rpcInfos}
+      autoRpcMode={autoRpcMode}
       customRpcUrl={customRpcUrl}
+      customRpcLatency={customRpcLatency}
+      favoriteRpc={favoriteRpc}
+      setAutoRpcMode={setAutoRpcMode}
+      setCustomRpcUrl={setCustomRpcUrl}
+      setFavoriteRpc={setFavoriteRpc}
     >
       {
         <TermsAndConditionsModal

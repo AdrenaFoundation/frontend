@@ -77,7 +77,7 @@ function generateBarChat(
             font: (context: Context) => getFontSizeWeight(context),
             // display title and labels (custodies name) on graph
             formatter: (_, context: Context) => [
-              `${title} ${context.chart.data.labels?.[context.dataIndex]}`,
+              `${title} (${context.chart.data.labels?.[context.dataIndex]})`,
             ],
           },
           legend: {
@@ -141,8 +141,8 @@ export default function TokenStakingOverview({
 }) {
   return (
     <StyledContainer
-      title="Token Staking"
-      subTitle="Visualize ADX/ALP staking."
+      title="Staking"
+      subTitle="How much of the token supply is staked?"
       className={className}
       bodyClassName="flex-row justify-evenly"
     >

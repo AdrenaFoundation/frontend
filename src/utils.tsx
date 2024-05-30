@@ -1,5 +1,6 @@
 import { BN, Program } from '@coral-xyz/anchor';
 import { sha256 } from '@noble/hashes/sha256';
+import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
@@ -29,6 +30,7 @@ import arrowDown from '../public/images/arrow-down.png';
 import arrowRightIcon from '../public/images/arrow-right.svg';
 import arrowUp from '../public/images/arrow-up.png';
 import { ROUND_MIN_DURATION_SECONDS } from './constant';
+import { LimitedString, LockedStakeExtended, U128Split } from './types';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
   const pxSize = 9;
@@ -109,6 +111,25 @@ export function formatPercentage(
   return `${Number(nb).toFixed(precision)}%`;
 }
 
+export function stringToLimitedString(str: string): LimitedString {
+  return {
+    value: Array.from(str).map((char) => char.charCodeAt(0)),
+    length: str.length,
+  };
+}
+
+export function limitedStringToString(str: LimitedString): string {
+  return String.fromCharCode(...str.value);
+}
+
+export function u128SplitToBN(u128: U128Split): BN {
+  // Shift the high part 64 bits to the left
+  const highShifted = u128.high.shln(64);
+
+  // Combine the shifted high part with the low part
+  return highShifted.add(u128.low);
+}
+
 export function nativeToUi(nb: BN, decimals: number): number {
   // stop displaying at hundred thousandth
   return new BigNumber(nb.toString()).shiftedBy(-decimals).toNumber();
@@ -116,8 +137,8 @@ export function nativeToUi(nb: BN, decimals: number): number {
 
 // 10_000 = x1 leverage
 // 500_000 = x50 leverage
-export function uiLeverageToNative(leverage: number): BN {
-  return new BN(Math.floor(leverage * 10_000));
+export function uiLeverageToNative(leverage: number): number {
+  return Math.floor(leverage * 10_000);
 }
 
 export function uiToNative(nb: number, decimals: number): BN {
@@ -323,6 +344,7 @@ export function parseTransactionError(
       return match?.length ? match[1] : null;
     })();
 
+    Sentry.captureException(err);
     console.debug('Error parsing: error:', safeJSONStringify(err));
     console.debug('Error parsing: errCodeHex: ', errCodeHex);
     console.debug('Error parsing: errCodeDecimals', errCodeDecimals);
@@ -560,4 +582,18 @@ export function getAccountDiscriminator(name: string): Buffer {
 
 export function getMethodDiscriminator(name: string): Buffer {
   return Buffer.from(sha256(`global:${name}`).slice(0, 8));
+}
+
+export function estimateLockedStakeEarlyExitFee(
+  lockedStake: LockedStakeExtended,
+  stakeTokenMintDecimals: number,
+): number {
+  const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber();
+  const timeRemaining = lockedStake.lockDuration.toNumber() - timeElapsed;
+  const feeRate = timeRemaining / lockedStake.lockDuration.toNumber();
+
+  // Cap the fee rate between the lower and upper caps
+  const cappedFeeRate = Math.min(Math.max(feeRate, 0.15), 0.4);
+
+  return nativeToUi(lockedStake.amount, stakeTokenMintDecimals) * cappedFeeRate;
 }

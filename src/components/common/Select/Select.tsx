@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { ImageRef } from '@/types';
@@ -91,7 +92,8 @@ export default function Select<T extends string>({
             {options
               .filter((option) => option.title !== selected)
               .map((option, i) => (
-                <>
+                // Use Fragment to avoid key error
+                <React.Fragment key={'container' + option.title}>
                   {!!i && <MenuSeparator key={'sep' + option.title} />}
 
                   <MenuItem
@@ -122,7 +124,7 @@ export default function Select<T extends string>({
                       {option.title}
                     </span>
                   </MenuItem>
-                </>
+                </React.Fragment>
               ))}
           </MenuItems>
         )}

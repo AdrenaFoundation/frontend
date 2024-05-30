@@ -6,7 +6,6 @@ import SablierThreadProgramJson from '@/target/thread_program.json';
 
 import { AdrenaClient } from './AdrenaClient';
 import { SablierThreadExtended } from './types';
-import { nativeToUi } from './utils';
 
 export class SablierClient {
   public static sablierThreadProgramId = new PublicKey(
@@ -30,20 +29,7 @@ export class SablierClient {
     ]);
 
     return threads.map((thread) => ({
-      authority: thread.account.authority,
-      id: thread.account.id,
-      createdAt: thread.account.createdAt,
-      execContext: thread.account.execContext,
-      fee: thread.account.fee,
-      instructions: thread.account.instructions,
-      name: thread.account.name,
-      nextInstruction: thread.account.nextInstruction,
-      paused: thread.account.paused,
-      rateLimit: thread.account.rateLimit,
-      trigger: thread.account.trigger,
-
-      pubKey: thread.publicKey,
-
+      pubkey: thread.publicKey,
       nativeObject: thread.account,
     }));
   }
@@ -53,7 +39,4 @@ export class SablierClient {
 
     return this.readonlySablierThreadProgram.provider.connection;
   }
-
-  // TODO: Format necessary informations in types using helper methods
-  // display sablierThreadExtended in page monitoring
 }

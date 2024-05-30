@@ -89,13 +89,15 @@ export default function ClosePosition({
               .mul(new BN(10_000 - slippageInBps))
               .div(new BN(10_000));
 
-      const txHash = await window.adrena.client.closePosition({
+      const txHash = await (position.side === 'long'
+        ? window.adrena.client.closePositionLong.bind(window.adrena.client)
+        : window.adrena.client.closePositionShort.bind(window.adrena.client))({
         position,
         price: priceWithSlippage,
       });
 
       addSuccessTxNotification({
-        title: 'Successfull Position Close',
+        title: 'Successful Position Close',
         txHash,
       });
 

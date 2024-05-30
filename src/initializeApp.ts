@@ -11,7 +11,7 @@ import { IDL as SABLIER_THREAD_IDL } from '@/target/thread_program';
 import { SablierClient } from './SablierClient';
 import { GeoBlockingData } from './types';
 
-function createReadOnlyAdrenaProgram(connection: Connection) {
+export function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
     connection,
     new NodeWallet(DEFAULT_PERPS_USER),
@@ -96,10 +96,11 @@ async function fetchGeoBlockingData(): Promise<GeoBlockingData> {
 // Initialize all objects that are required to launch the app
 // theses objects doesn't change on the way
 // for changing objects, use hooks like useCustodies/usePositions etc.
-export default async function initializeApp(config: IConfiguration) {
-  const mainConnection = new Connection(config.mainRPC, 'confirmed');
-  const pythConnection = new Connection(config.pythRPC, 'confirmed');
-
+export default async function initializeApp(
+  config: IConfiguration,
+  mainConnection: Connection,
+  pythConnection: Connection,
+) {
   const readOnlyAdrenaProgram = createReadOnlyAdrenaProgram(mainConnection);
   const readOnlySablierThreadProgram =
     createReadOnlySablierThreadProgram(mainConnection);
@@ -110,6 +111,8 @@ export default async function initializeApp(config: IConfiguration) {
   ]);
 
   const sablierClient = new SablierClient(readOnlySablierThreadProgram);
+
+  window.riveImageCaching = {};
 
   window.adrena = {
     config,

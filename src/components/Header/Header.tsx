@@ -1,3 +1,4 @@
+import { Connection } from '@solana/web3.js';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -6,7 +7,6 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
-import settingsIcon from '../../../public/images/Icons/settings.svg';
 import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -20,16 +20,32 @@ export default function Header({
   userProfile,
   PAGES,
   activeRpc,
-  setActiveRpc,
+  rpcInfos,
+  autoRpcMode,
   customRpcUrl,
+  customRpcLatency,
+  favoriteRpc,
+  setAutoRpcMode,
   setCustomRpcUrl,
+  setFavoriteRpc,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
-  activeRpc: string;
-  setActiveRpc: (rpc: string) => void;
-  setCustomRpcUrl: (rpc: string | null) => void;
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
+  rpcInfos: {
+    name: string;
+    latency: number | null;
+  }[];
+  customRpcLatency: number | null;
+  autoRpcMode: boolean;
   customRpcUrl: string | null;
+  favoriteRpc: string | null;
+  setAutoRpcMode: (autoRpcMode: boolean) => void;
+  setCustomRpcUrl: (customRpcUrl: string | null) => void;
+  setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
   const { pathname } = useRouter();
   const router = useRouter();
@@ -80,7 +96,7 @@ export default function Header({
         })}
       </div>
 
-      <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-row items-center gap-2 sm:gap-3">
         <Link href="/trade">
           <Button title="Trade now" disabled={pathname === '/trade'} />
         </Link>
@@ -89,9 +105,14 @@ export default function Header({
 
         <Settings
           activeRpc={activeRpc}
-          setActiveRpc={setActiveRpc}
-          setCustomRpcUrl={setCustomRpcUrl}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
           customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
         />
 
         {clusterSwitchEnabled ? (

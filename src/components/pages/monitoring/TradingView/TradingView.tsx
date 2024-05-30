@@ -95,7 +95,7 @@ export default function TradingView({
       </StyledContainer>
 
       <StyledContainer
-        title={<h1>POSITIONS NOW BREAKDOWN</h1>}
+        title="POSITIONS NOW BREAKDOWN"
         className="min-w-[40em] w-[40em] grow"
       >
         <Table

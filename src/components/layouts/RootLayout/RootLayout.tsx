@@ -1,6 +1,7 @@
 import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 
+import { Connection } from '@solana/web3.js';
 import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
@@ -16,25 +17,41 @@ import Header from '../../Header/Header';
 const RootLayout = ({
   children,
   userProfile,
-  setActiveRpc,
   activeRpc,
-  setCustomRpcUrl,
+  rpcInfos,
+  autoRpcMode,
   customRpcUrl,
+  customRpcLatency,
+  favoriteRpc,
+  setAutoRpcMode,
+  setCustomRpcUrl,
+  setFavoriteRpc,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
-  setActiveRpc: (rpc: string) => void;
-  activeRpc: string;
-  setCustomRpcUrl: (rpc: string | null) => void;
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
+  rpcInfos: {
+    name: string;
+    latency: number | null;
+  }[];
+  customRpcLatency: number | null;
+  autoRpcMode: boolean;
   customRpcUrl: string | null;
+  favoriteRpc: string | null;
+  setAutoRpcMode: (autoRpcMode: boolean) => void;
+  setCustomRpcUrl: (customRpcUrl: string | null) => void;
+  setFavoriteRpc: (favoriteRpc: string) => void;
 }) => {
-  const isBigScreen = useBetterMediaQuery('(min-width: 919px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
     { name: 'My Dashboard', link: '/my_dashboard' },
-    { name: 'Global', link: '/global' },
-    { name: 'Stake', link: '/stake' },
-    { name: 'Buy ALP/ADX', link: '/buy_alp_adx' },
     { name: 'Monitoring', link: '/monitoring' },
+    { name: 'Stake', link: '/stake' },
+    { name: 'ALP', link: '/buy_alp' },
+    { name: 'ADX', link: '/buy_adx' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
 
@@ -62,19 +79,29 @@ const RootLayout = ({
         <Header
           userProfile={userProfile}
           PAGES={pages}
-          setActiveRpc={setActiveRpc}
           activeRpc={activeRpc}
-          setCustomRpcUrl={setCustomRpcUrl}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
           customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
         />
       ) : (
         <BurgerMenu
           userProfile={userProfile}
           PAGES={pages}
-          setActiveRpc={setActiveRpc}
           activeRpc={activeRpc}
-          setCustomRpcUrl={setCustomRpcUrl}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
           customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
         />
       )}
 

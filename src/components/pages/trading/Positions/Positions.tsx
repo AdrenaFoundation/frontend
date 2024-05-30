@@ -12,13 +12,19 @@ import PositionsArray from './PositionsArray';
 import PositionsBlocks from './PositionsBlocks';
 
 export default function Positions({
+  bodyClassName,
+  connected,
   className,
   positions,
   triggerPositionsReload,
+  wrapped = true,
 }: {
+  bodyClassName?: string;
+  connected: boolean;
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
+  wrapped?: boolean;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -71,16 +77,22 @@ export default function Positions({
 
       {isBigScreen ? (
         <PositionsArray
+          bodyClassName={bodyClassName}
+          connected={connected}
           positions={positions}
+          className={className}
           triggerClosePosition={setPositionToClose}
           triggerEditPositionCollateral={setPositionToEdit}
         />
       ) : (
         <PositionsBlocks
+          bodyClassName={bodyClassName}
+          connected={connected}
           positions={positions}
           className={className}
           triggerClosePosition={setPositionToClose}
           triggerEditPositionCollateral={setPositionToEdit}
+          wrapped={wrapped}
         />
       )}
     </>

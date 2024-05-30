@@ -32,10 +32,10 @@ export default function NumberInfo({
       ) : null}
 
       {/* Separate whole part and fractional part to display them with different colors*/}
-      <div>{wholePart}</div>
+      <div className="font-mono text-sm">{wholePart}</div>
 
       {Number(fractionalPart) ? (
-        <div className="text-txtfade text-sm">.{fractionalPart}</div>
+        <div className="text-txtfade text-xs font-mono">.{fractionalPart}</div>
       ) : null}
 
       {denominationPos === 'suffix' ? (

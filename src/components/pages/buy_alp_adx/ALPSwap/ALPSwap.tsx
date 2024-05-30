@@ -1,4 +1,3 @@
-import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
 import { useEffect, useState } from 'react';
@@ -6,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
+import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
 import {
@@ -35,7 +34,7 @@ export default function ALPSwap({
   setCollateralPrice,
   feesAndAmounts,
   className,
-  aumUsd,
+  connected,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
@@ -55,15 +54,10 @@ export default function ALPSwap({
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
   feesAndAmounts: FeesAndAmountsType | null;
-  aumUsd: number | undefined;
+  connected: boolean;
 }) {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
-  const [connected, setConnected] = useState<boolean>(false);
-
-  useEffect(() => {
-    setConnected(!!wallet);
-  }, [wallet]);
 
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [buttonTitle, setButtonTitle] = useState<string | null>(null);
@@ -225,8 +219,8 @@ export default function ALPSwap({
       <TabSelect
         selected={selectedAction}
         tabs={[
-          { title: 'buy', activeColor: '#22c55e' },
-          { title: 'sell', activeColor: '#c13332' },
+          { title: 'buy', activeColor: 'border-white' },
+          { title: 'sell', activeColor: 'border-white' },
         ]}
         onClick={(title) => {
           setSelectedAction(title);
@@ -252,7 +246,7 @@ export default function ALPSwap({
             collateralPrice={collateralPrice}
             setCollateralPrice={setCollateralPrice}
             feesAndAmounts={feesAndAmounts}
-            aumUsd={aumUsd}
+            connected={connected}
           />
 
           {/* Button to execute action */}

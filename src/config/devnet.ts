@@ -3,12 +3,13 @@ import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
+import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
 import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
 import usdtLogo from '../../public/images/usdt.svg';
-import IConfiguration from './IConfiguration';
+import IConfiguration, { RpcOption } from './IConfiguration';
 
 class DevnetConfiguration implements IConfiguration {
   public readonly cluster = 'devnet';
@@ -23,7 +24,7 @@ class DevnetConfiguration implements IConfiguration {
       decimals: number;
     };
   } = {
-    '4ZY3ZH8bStniqdCZdR14xsWW6vrMsCJrusobTdy4JipC': {
+    '3jdYcGYZaQVvcvMQGqVpt37JegEoDDnX7k4gSGAeGRqG': {
       name: 'USD Coin',
       color: '#2775ca',
       symbol: 'USDC',
@@ -31,15 +32,15 @@ class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'usd-coin',
       decimals: 6,
     },
-    CXFBW6kuWfCUKbD2CZN2nz3B4YQywJFozzMBkryM4rA: {
-      name: 'Theter',
+    BkT3jz4yZaYwiPMSWUBTVpZjCwmhw4KXN9SKVuBkGz8L: {
+      name: 'Tether',
       color: '#26a17b',
       symbol: 'USDT',
       image: usdtLogo,
       coingeckoId: 'tether',
       decimals: 6,
     },
-    '3AHAG1ZSUnPz43XBFKRqnLwhdyz29WhHvYQgVrcheCwr': {
+    HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
       name: 'Ethereum',
       color: '#3D3E3F',
       symbol: 'ETH',
@@ -47,12 +48,20 @@ class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'ethereum',
       decimals: 6,
     },
-    HRvpfs8bKiUbLzSgT4LmKKugafZ8ePi5Vq7icJBC9dnM: {
+    '7MoYkgWVCEDtNR6i2WUH9LTUSFXkQCsD9tBHriHQvuP5': {
       name: 'Bitcoin',
       color: '#f7931a',
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
+      decimals: 6,
+    },
+    '4kUrHxiMfeKPGDi6yFV7kte8JjN3NG3aqG7bui4pfMqz': {
+      name: 'Bonk',
+      color: '#f7931a',
+      symbol: 'BONK',
+      image: bonkLogo,
+      coingeckoId: 'bonk',
       decimals: 6,
     },
     [NATIVE_MINT.toBase58()]: {
@@ -69,44 +78,38 @@ class DevnetConfiguration implements IConfiguration {
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   );
 
-  public readonly clockworkProgram: PublicKey = new PublicKey(
-    'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
+  public readonly sablierThreadProgram: PublicKey = new PublicKey(
+    'sabGLGXfBiUCkwtprPMtatG6tCNxhcWWs1hjQAvDqEE',
   );
 
   public readonly stakesClaimPayer: PublicKey = new PublicKey(
-    'C1ockworkPayer11111111111111111111111111111',
+    'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly governanceRealmName = 'AdrenaRealm5';
+  public readonly governanceRealmName = 'Adrenao';
 
-  // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
-
-  public readonly mainRPC: string =
-    //  'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
-    'https://api.devnet.solana.com';
-
-  // Wallet: 6hqz24NfaMwEvUna95p7haPqrh2urVwyVo1gLHEqUVXY (Orex)
-  public readonly pythRPC: string =
-    // 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d';
-    'https://api.devnet.solana.com';
-
-  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
+  public readonly rpcOptions: RpcOption[] = [
     {
-      name: 'Solana RPC',
-      url: 'https://api.devnet.solana.com',
+      name: 'Triton RPC',
+      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com/eb24df90-f9aa-45f2-9a9c-fe20cd0f35fd',
     },
     {
       name: 'Helius RPC',
       url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
     },
     {
-      name: 'Custom RPC',
-      url: null,
+      name: 'Solana RPC',
+      url: 'https://api.devnet.solana.com',
     },
   ];
 
+  public readonly pythnetRpc: RpcOption = {
+    name: 'Triton Pythnet',
+    url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com/ad1705c9-2ec3-4a48-87c0-086a554cbff1',
+  };
+
   public readonly mainPool: PublicKey = new PublicKey(
-    '8Hgu4wTyMvdQk9gfXxoEtujfumMMWuPVdMWVrs73qgsa',
+    '4vc4LX4K86ptAvaiQcon79yhnKHbCs2hv5TFFmQr8F2L',
   );
 }
 

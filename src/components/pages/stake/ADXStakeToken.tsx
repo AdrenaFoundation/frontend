@@ -30,6 +30,7 @@ export default function ADXStakeToken({
 }) {
   const lockPeriods = ADX_LOCK_PERIODS.map((lockPeriod) => ({
     title: lockPeriod,
+    activeColor: 'border-white',
   }));
 
   return (
@@ -61,9 +62,9 @@ export default function ADXStakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%] text-main text-white"
+              className="absolute right-2 bottom-[20%] text-main"
               title="MAX"
-              variant="text"
+              variant="primary"
               onClick={() => {
                 if (balance === null) return;
 
@@ -100,7 +101,7 @@ export default function ADXStakeToken({
           <li className="text-sm opacity-25">Benefits</li>
           <li className="flex flex-row justify-between">
             <p className="text-sm opacity-50"> Days </p>
-            <p className="text-sm font-mono"> {lockPeriod} </p>
+            <p className="text-sm font-mono"> {lockPeriod}</p>
           </li>
 
           {ADX_STAKE_MULTIPLIERS[lockPeriod].usdc ? (

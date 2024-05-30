@@ -7,7 +7,7 @@ import btcLogo from '../../public/images/btc.svg';
 import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
-import IConfiguration from './IConfiguration';
+import IConfiguration, { RpcOption } from './IConfiguration';
 
 class MainnetConfiguration implements IConfiguration {
   public readonly cluster = 'mainnet';
@@ -65,7 +65,7 @@ class MainnetConfiguration implements IConfiguration {
   );
 
   // devnet address
-  public readonly clockworkProgram: PublicKey = new PublicKey(
+  public readonly sablierThreadProgram: PublicKey = new PublicKey(
     'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
   );
 
@@ -75,23 +75,25 @@ class MainnetConfiguration implements IConfiguration {
 
   public readonly governanceRealmName = 'AdrenaRealm5';
 
-  public readonly mainRPC: string = 'https://api.mainnet-beta.solana.com';
-  public readonly pythRPC: string = 'https://api.mainnet-beta.solana.com';
-
-  public readonly RpcOptions: IConfiguration['RpcOptions'] = [
+  public readonly rpcOptions: RpcOption[] = [
     {
-      name: 'Solana RPC',
-      url: 'https://api.devnet.solana.com',
+      name: 'Triton RPC',
+      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com/eb24df90-f9aa-45f2-9a9c-fe20cd0f35fd',
     },
     {
       name: 'Helius RPC',
       url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
     },
     {
-      name: 'Custom RPC',
-      url: null,
+      name: 'Solana RPC',
+      url: 'https://api.devnet.solana.com',
     },
   ];
+
+  public readonly pythnetRpc: RpcOption = {
+    name: 'Triton Pythnet',
+    url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com/ad1705c9-2ec3-4a48-87c0-086a554cbff1',
+  };
 
   public readonly mainPool: PublicKey = new PublicKey(
     'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',

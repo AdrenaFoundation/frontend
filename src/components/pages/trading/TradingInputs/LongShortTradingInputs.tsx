@@ -45,6 +45,7 @@ export default function LongShortTradingInputs({
   allowedTokenB,
   openedPosition,
   wallet,
+  connected,
   setTokenA,
   setTokenB,
   triggerPositionsReload,
@@ -58,14 +59,13 @@ export default function LongShortTradingInputs({
   allowedTokenB: Token[];
   openedPosition: PositionExtended | null;
   wallet: Wallet | null;
+  connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
 }) {
   const dispatch = useDispatch();
-  const [connected, setConnected] = useState<boolean>(false);
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
@@ -99,10 +99,6 @@ export default function LongShortTradingInputs({
     exitFeeUsd: number;
     liquidationFeeUsd: number;
   } | null>(null);
-
-  useEffect(() => {
-    setConnected(!!wallet);
-  }, [wallet]);
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
@@ -149,7 +145,7 @@ export default function LongShortTradingInputs({
 
     try {
       const txHash = await (side === 'long'
-        ? window.adrena.client.openLongPositionWithConditionalSwap({
+        ? window.adrena.client.openOrIncreasePositionWithSwapLong({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
             mint: tokenB.mint,
@@ -157,7 +153,7 @@ export default function LongShortTradingInputs({
             collateralAmount,
             leverage: uiLeverageToNative(leverage),
           })
-        : window.adrena.client.openShortPositionWithConditionalSwap({
+        : window.adrena.client.openOrIncreasePositionWithSwapShort({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
             mint: tokenB.mint,
@@ -184,14 +180,11 @@ export default function LongShortTradingInputs({
   };
 
   useEffect(() => {
-    if (!connected && !window.adrena.geoBlockingData.allowed) {
+    if (!window.adrena.geoBlockingData.allowed)
       return setButtonTitle('Geo-Restricted Access');
-    }
 
     // If wallet not connected, then user need to connect wallet
-    if (!connected) {
-      return setButtonTitle('Connect wallet');
-    }
+    if (!connected) return setButtonTitle('Connect wallet');
 
     if (openedPosition) {
       if (side === 'short') {
@@ -209,6 +202,7 @@ export default function LongShortTradingInputs({
     openedPosition,
     side,
     tokenA,
+    wallet,
     walletTokenBalances,
   ]);
 
@@ -244,9 +238,7 @@ export default function LongShortTradingInputs({
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means
         // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) {
-          return;
-        }
+        if (localLoadingCounter !== loadingCounter) return;
 
         setPositionInfos(infos);
 
@@ -332,16 +324,13 @@ export default function LongShortTradingInputs({
       return;
     }
 
-    if (!tokenB || !inputB) {
-      return setErrorMessage(null);
-    }
+    if (!tokenB || !inputB) return setErrorMessage(null);
 
     const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
     // If user wallet balance doesn't have enough tokens, tell user
-    if (inputB > custody.liquidity) {
+    if (inputB > custody.liquidity)
       return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
-    }
 
     return setErrorMessage(null);
   }, [inputA, inputB, tokenA.symbol, tokenB, walletTokenBalances]);
