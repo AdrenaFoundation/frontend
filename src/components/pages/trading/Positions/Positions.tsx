@@ -42,7 +42,7 @@ export default function Positions({
       <AnimatePresence>
         {positionToClose && (
           <Modal
-            title={`Close ${positionToClose.side} ${positionToClose.token.symbol} Position`}
+            title={`Close ${positionToClose.side} ${positionToClose.token.symbol}`}
             close={() => setPositionToClose(null)}
             className="flex flex-col items-center"
           >
@@ -60,7 +60,7 @@ export default function Positions({
           <Modal
             title={`Edit ${positionToEdit.side === 'long' ? 'Long' : 'Short'} ${
               positionToEdit.token.symbol
-            } Position`}
+            }`}
             close={() => setPositionToEdit(null)}
             className={twMerge('flex flex-col items-center')}
           >

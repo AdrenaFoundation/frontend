@@ -260,6 +260,7 @@ export default function MyDashboard({
                     setLockedStake(null);
                     setFinalizeLockedStakeRedeem(false);
                   }}
+                  className="max-w-[25em]"
                 >
                   {lockedStake ? (
                     <FinalizeLockedStakeRedeem

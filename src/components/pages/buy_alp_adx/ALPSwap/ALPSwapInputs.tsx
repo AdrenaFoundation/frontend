@@ -224,6 +224,7 @@ export default function ALPSwapInputs({
           setLoading(false);
         })
         .catch(() => {
+          //we set this error message because we do not get error message from anchor simulate
           setErrorMessage('Pool ratio reached for this token');
           setSaveUpFees(null);
           setAlpPrice(null);

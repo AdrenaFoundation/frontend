@@ -54,7 +54,7 @@ export default function StakeRedeem({
           />
 
           <Button
-            className="absolute right-2 bottom-[20%]"
+            className="absolute right-2 bottom-3.5"
             title="MAX"
             variant="primary"
             onClick={() => {
@@ -67,25 +67,9 @@ export default function StakeRedeem({
         </div>
       </div>
 
-      {amount ? (
-        <div className="flex mt-4">
-          <span className="font-mono text-md opacity-50">
-            By redeeming your {amount} liquid {tokenSymbol}, you will stop
-            getting 1x USDC yield applied to {amount} {tokenSymbol}.
-          </span>
-        </div>
-      ) : (
-        <div className="flex mt-4">
-          <span className="font-mono text-md opacity-50">
-            By redeeming your liquid stake, you stop getting the 1x USDC yield
-            applied per liquid ADX.
-          </span>
-        </div>
-      )}
-
       <Button
-        variant="danger"
-        className="w-full mt-4"
+        variant="primary"
+        className="w-full mt-6"
         size="lg"
         title="Remove stake"
         disabled={!amount}

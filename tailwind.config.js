@@ -18,7 +18,7 @@ module.exports = {
 
         green: '#07956B',
         red: '#C9243A',
-        redbright: '#ed0826',
+        redbright: '#ff344e',
         orange: '#F0892B',
       },
       fontSize: {

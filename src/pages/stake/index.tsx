@@ -566,6 +566,7 @@ export default function Stake({
                     setLockedStake(null);
                     setFinalizeLockedStakeRedeem(false);
                   }}
+                  className="max-w-[25em]"
                 >
                   {lockedStake ? (
                     <FinalizeLockedStakeRedeem
@@ -585,7 +586,7 @@ export default function Stake({
                 <Modal
                   title="Redeem Liquid ADX"
                   close={() => setActiveRedeemLiquidADX(false)}
-                  className="w-[25em]"
+                  className="max-w-[25em]"
                 >
                   <StakeRedeem
                     tokenSymbol="ADX"
