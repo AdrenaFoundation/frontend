@@ -149,10 +149,12 @@ export default function ALPSwapInputs({
           setLoading(false);
         })
         .catch(() => {
+          // we set this error message because we do not get error message from anchor simulate
+          setErrorMessage(`Not enough liquidity in the pool for this token`);
+
           setSaveUpFees(null);
           onChangeCollateralInput(null);
           setCollateralPrice(null);
-          setErrorMessage(`Not enough liquidity in the pool for this token`);
           setLoading(false);
         });
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -224,7 +226,7 @@ export default function ALPSwapInputs({
           setLoading(false);
         })
         .catch(() => {
-          //we set this error message because we do not get error message from anchor simulate
+          // we set this error message because we do not get error message from anchor simulate
           setErrorMessage('Pool ratio reached for this token');
           setSaveUpFees(null);
           setAlpPrice(null);

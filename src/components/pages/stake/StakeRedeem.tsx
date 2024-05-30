@@ -77,7 +77,7 @@ export default function StakeRedeem({
           if (!amount) {
             return;
           }
-          handleRemoveLiquidStake(amount);
+          return handleRemoveLiquidStake(amount);
         }}
       />
     </div>
