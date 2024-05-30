@@ -141,6 +141,7 @@ export default function EditPositionCollateral({
 
       triggerPositionsReload();
     } catch (error) {
+      console.log(error);
       return addFailedTxNotification({
         title: 'Deposit Error',
         error,
@@ -496,6 +497,7 @@ export default function EditPositionCollateral({
         className="mt-4 rounded-none font-boldy text-lg"
         size="lg"
         title={executeBtnText}
+        disabled={executeBtnText !== 'Deposit' && executeBtnText !== 'Withdraw'}
         onClick={() => handleExecute()}
       />
     </div>
