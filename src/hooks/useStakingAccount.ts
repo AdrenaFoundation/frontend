@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Staking } from '@/types';
 
-// TODO: Reload periodically?
 const useStakingAccount = (stakedTokenMint: PublicKey): Staking | null => {
   const [stakingAccount, setStakingAccount] = useState<Staking | null>(null);
 
@@ -16,6 +15,13 @@ const useStakingAccount = (stakedTokenMint: PublicKey): Staking | null => {
 
   useEffect(() => {
     fetchStakingAccount();
+
+    // Reload periodically every 30 seconds
+    const intervalId = setInterval(fetchStakingAccount, 30000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [fetchStakingAccount]);
 
   return stakingAccount;

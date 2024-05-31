@@ -32,9 +32,14 @@ const usePositions = (): {
   }, [wallet]);
 
   useEffect(() => {
-    loadPositions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadPositions, trickReload, window.adrena.client.readonlyConnection]);
+    const interval = setInterval(() => {
+      loadPositions();
+    }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [loadPositions]);
 
   return {
     positions,

@@ -10,9 +10,15 @@ const useVestRegistry = (): VestRegistry | null => {
     setVestRegistry(await window.adrena.client.loadVestRegistry());
   }, []);
 
+  const reloadVestRegistry = useCallback(async () => {
+    await fetchVestRegistry();
+  }, [fetchVestRegistry]);
+
   useEffect(() => {
     fetchVestRegistry();
-  }, [fetchVestRegistry]);
+    const interval = setInterval(reloadVestRegistry, 30000); // Reload every 30 seconds
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
+  }, [fetchVestRegistry, reloadVestRegistry]);
 
   return vestRegistry;
 };

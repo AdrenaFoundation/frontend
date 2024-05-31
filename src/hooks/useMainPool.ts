@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { PoolExtended } from '@/types';
 
-// TODO: Reload periodically?
 const useMainPool = (): PoolExtended | null => {
   const [mainPool, setMainPool] = useState<PoolExtended | null>(null);
 
@@ -12,6 +11,12 @@ const useMainPool = (): PoolExtended | null => {
 
   useEffect(() => {
     fetchMainPool();
+
+    const intervalId = setInterval(fetchMainPool, 30000); // Reload every 30 seconds
+
+    return () => {
+      clearInterval(intervalId); // Clean up the interval when the component unmounts
+    };
   }, [fetchMainPool]);
 
   return mainPool;

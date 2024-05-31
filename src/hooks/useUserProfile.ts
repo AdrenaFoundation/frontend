@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
-// TODO: Reload periodically?
 const useUserProfile = (): {
   userProfile: UserProfileExtended | false | null;
   triggerUserProfileReload: () => void;
@@ -28,6 +27,8 @@ const useUserProfile = (): {
 
   useEffect(() => {
     fetchUserProfile();
+    const interval = setInterval(fetchUserProfile, 30000); // Reload every 30 seconds
+    return () => clearInterval(interval); // Clean up the interval on component unmount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchUserProfile, trickReload, window.adrena.client.connection]);
 
