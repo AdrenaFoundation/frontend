@@ -144,15 +144,15 @@ export default function TokenStakingOverview({
       title="Staking"
       subTitle="How much of the token supply is staked?"
       className={className}
-      bodyClassName="flex-row justify-evenly"
+      bodyClassName="flex-col sm:flex-row justify-evenly"
     >
-      <StyledSubContainer className="w-[calc(50%-1em)]">
+      <StyledSubContainer className="w-full sm:w-[calc(50%-1em)]">
         {alpChart
           ? generateBarChat(alpChart, 'ALP', alpTotalSupply, alpPrice)
           : null}
       </StyledSubContainer>
 
-      <StyledSubContainer className="w-[calc(50%-1em)]">
+      <StyledSubContainer className="w-full sm:w-[calc(50%-1em)]">
         {adxChart
           ? generateBarChat(adxChart, 'ADX', adxTotalSupply, adxPrice)
           : null}
