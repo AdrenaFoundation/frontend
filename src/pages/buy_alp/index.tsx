@@ -41,6 +41,7 @@ export default function Buy({
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
   const [collateralToken, setCollateralToken] = useState<Token | null>(null);
   const [alpInput, setAlpInput] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [allowedCollateralTokens, setAllowedCollateralTokens] = useState<
     Token[] | null
   >(null);
@@ -130,7 +131,6 @@ export default function Buy({
             equivalentAmount,
           };
         } catch (e) {
-          console.log(e as Error);
           return {
             token,
             fees: null,
@@ -174,6 +174,17 @@ export default function Buy({
     setAllowedCollateralTokens(window.adrena.client.tokens);
   }, [collateralToken]);
 
+  useEffect(() => {
+    setAlpInput(null);
+    setAlpPrice(null);
+    setFeesUsd(null);
+    setErrorMessage(null);
+    setCollateralInput(null);
+    setCollateralPrice(null);
+    setFeesUsd(null);
+    setErrorMessage(null);
+  }, [selectedAction]);
+
   const onCollateralTokenChange = (t: Token) => {
     if (selectedAction === 'sell') {
       setAlpInput(null);
@@ -184,6 +195,8 @@ export default function Buy({
       setCollateralPrice(null);
       setFeesUsd(null);
     }
+
+    setErrorMessage(null);
     // Reset the loading counter to ignore outdated information
     loadingCounter += 1;
     setCollateralToken(t);
@@ -268,6 +281,8 @@ export default function Buy({
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             collateralInput={collateralInput}
             setCollateralInput={setCollateralInput}
+            errorMessage={errorMessage}
+            setErrorMessage={setErrorMessage}
             alpInput={alpInput}
             setAlpInput={setAlpInput}
             collateralToken={collateralToken}

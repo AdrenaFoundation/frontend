@@ -111,6 +111,7 @@ export default function Trade({
 
       setTokenA(tokenA);
       setTokenB(tokenB);
+
       return;
     }
 

@@ -21,7 +21,7 @@ let tvScriptLoadingPromise: Promise<unknown>;
 type Widget = IChartingLibraryWidget;
 const greenColor = '#07956be6';
 const redColor = '#c9243ae6';
-const greyColor = '#1A2431A0';
+const greyColor = '#78828e';
 const whiteColor = '#ffffff';
 
 function createEntryPositionLine(
@@ -194,10 +194,7 @@ export default function TradingChart({
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
                 format: (price: number): string => {
-                  return Number(price.toFixed(2)).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  });
+                  return formatNumber(price, 2, 2, 8);
                 },
               };
             },

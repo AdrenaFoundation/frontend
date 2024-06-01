@@ -33,7 +33,14 @@ const usePositions = (): {
 
   useEffect(() => {
     loadPositions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const interval = setInterval(() => {
+      loadPositions();
+    }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [loadPositions, trickReload, window.adrena.client.readonlyConnection]);
 
   return {

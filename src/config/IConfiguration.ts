@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
@@ -9,6 +9,11 @@ export type TokenInfo = {
   image: ImageRef;
   coingeckoId: string;
   decimals: number;
+};
+
+export type RpcOption = {
+  name: string;
+  url: string;
 };
 
 export default interface IConfiguration {
@@ -24,15 +29,9 @@ export default interface IConfiguration {
 
   readonly governanceRealmName: string;
 
-  readonly mainRPC: string;
-  readonly pythRPC: string;
+  readonly rpcOptions: RpcOption[];
 
-  readonly RpcOptions: {
-    name: string;
-    url: string | null;
-    connection?: Connection | null;
-    latency?: number | null;
-  }[];
+  readonly pythnetRpc: RpcOption;
 
   readonly mainPool: PublicKey;
 }

@@ -3,7 +3,8 @@ import Image from 'next/image';
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import closeBtnIcon from '../../../../public/images/Icons/cross-blue.svg';
+import adrenaLogo from '../../../../public/images/adrena_logo_adx_white.svg';
+import closeBtnIcon from '../../../../public/images/Icons/cross.svg';
 
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
@@ -56,9 +57,9 @@ const Modal = ({
   return (
     <PortalContainer>
       <motion.div
-        className="fixed w-full h-full flex justify-center items-center z-[100] overflow-y-auto"
+        className="fixed w-full h-full flex justify-center -mt-[8%] items-center z-[100] overflow-y-auto"
         initial={{ opacity: 0, transform: 'translateY(-20px)' }}
-        animate={{ opacity: 1, transform: 'translateY(0px)' }}
+        animate={{ opacity: 1, transform: 'translateY(-0px)' }}
         exit={{ opacity: 0, transform: 'translateY(-20px)' }}
       >
         <div
@@ -67,16 +68,22 @@ const Modal = ({
         />
 
         <div
-          className="min-w-20 min-h-10 z-[102] rounded-lg border bg-secondary mx-4 overflow-hidden"
+          className="min-w-20 min-h-20 z-[102] rounded-lg border bg-secondary mx-4 overflow-hidden"
           role="dialog"
         >
-          <div className="h-8 w-full flex items-center justify-start border-b border-grey pl-4 pr-4 relative overflow-hidden bg-highlight">
-            <div className="flex text-lg uppercase text-main font-special h-full items-center justify-center opacity-80">
-              <span className="text-main text-lg mr-1 opacity-50">{'>>>'}</span>{' '}
-              {title}
+          <div className="h-16 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary">
+            <div className="flex text-lg uppercase text-white/90 font-special h-full items-center justify-center opacity-80">
+              <Image
+                className="relative top-[0.1em]"
+                alt="adrena logo"
+                src={adrenaLogo}
+                width={30}
+                height={30}
+              />
+              <h2 className="ml-4 text-[1.50em]">{title}</h2>
             </div>
 
-            <div className="h-full absolute right-2 top-0 flex items-center justify-center pl-1 rounded-tr-lg">
+            <div className="h-full absolute right-2 flex items-center justify-center pl-1 rounded-tr-lg">
               <Image
                 className="cursor-pointer opacity-40 hover:opacity-100 transition-opacity duration-300"
                 src={closeBtnIcon}

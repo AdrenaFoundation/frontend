@@ -4,7 +4,6 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import FormatNumber from '@/components/Number/FormatNumber';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { LockedStakeExtended } from '@/types';
-import { formatNumber } from '@/utils';
 
 export default function StakesStats({
   liquidStakedADX,
@@ -72,9 +71,9 @@ export default function StakesStats({
                   lockedStake={lockedStake}
                   key={i}
                   token={
-                    lockedStake.tokenSymbol === 'ALP'
-                      ? window.adrena.client.alpToken
-                      : window.adrena.client.adxToken
+                    lockedStake.tokenSymbol === 'ADX'
+                      ? window.adrena.client.adxToken
+                      : window.adrena.client.alpToken
                   }
                   handleRedeem={handleLockedStakeRedeem}
                   handleClickOnFinalizeLockedRedeem={

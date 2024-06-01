@@ -62,7 +62,7 @@ export default function ALPStakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%]"
+              className="absolute right-2 bottom-3.5"
               title="MAX"
               variant="primary"
               onClick={() => {
@@ -75,7 +75,7 @@ export default function ALPStakeToken({
         </div>
 
         <div>
-          <div className="flex flex-row gap-1  mb-2">
+          <div className="flex flex-row gap-1 mb-2">
             <Image src={lockIcon} width={14} height={14} alt="lock icon" />
             <p className="text-sm opacity-50 font-medium ">
               Choose a lock period (days)
@@ -121,7 +121,7 @@ export default function ALPStakeToken({
           className="w-full"
           size="lg"
           title={errorMessage ? errorMessage : '[S]take'}
-          disabled={!!errorMessage}
+          disabled={!!errorMessage || !amount}
           onClick={stakeAmount}
         />
       </div>

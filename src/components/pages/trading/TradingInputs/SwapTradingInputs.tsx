@@ -95,8 +95,6 @@ export default function SwapTradingInputs({
   };
 
   useEffect(() => {
-    console.log('Trigger recalculation');
-
     if (!tokenA || !tokenB || !inputA) {
       setSwapFeesAndAmount(null);
       return;
@@ -129,6 +127,11 @@ export default function SwapTradingInputs({
         console.log('Swap infos', infos);
       } catch (err) {
         console.log('Ignored error:', err);
+        addNotification({
+          type: 'error',
+          title: 'Error during simulation',
+          message: `An error occurred while simulating the swap.`,
+        });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,6 +184,7 @@ export default function SwapTradingInputs({
 
       setPriceB(inputB * tokenPriceB);
       setInputB(inputB);
+      setButtonTitle('Swap');
     } else {
       setPriceB(null);
       setInputB(null);
@@ -302,8 +306,6 @@ export default function SwapTradingInputs({
           if (!walletTokenBalances || !tokenA) return;
 
           const amount = walletTokenBalances[tokenA.symbol];
-
-          console.log('max button triggered', amount);
 
           handleInputAChange(amount);
         }}
@@ -449,7 +451,8 @@ export default function SwapTradingInputs({
         title={buttonTitle}
         disabled={
           buttonTitle.includes('Insufficient') ||
-          buttonTitle.includes('not handled yet')
+          buttonTitle.includes('not handled yet') ||
+          buttonTitle.includes('Enter an amount')
         }
         onClick={handleExecuteButton}
       />

@@ -29,6 +29,7 @@ import arrowDown from '../public/images/arrow-down.png';
 import arrowRightIcon from '../public/images/arrow-right.svg';
 import arrowUp from '../public/images/arrow-up.png';
 import { ROUND_MIN_DURATION_SECONDS } from './constant';
+import { WalletStakingAccounts } from './hooks/useWalletStakingAccounts';
 import { LimitedString, LockedStakeExtended, U128Split } from './types';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
@@ -70,12 +71,17 @@ export function findATAAddressSync(
   )[0];
 }
 
-export function formatNumber(nb: number, precision: number): string {
+export function formatNumber(
+  nb: number,
+  precision: number,
+  minimumFractionDigits = 0,
+  precisionIfPriceDecimalsBelow = 6,
+): string {
   // If price is below decimals precision, display up to 6 decimals
-  if (nb < 10 ** -precision) precision = 6;
+  if (nb < 10 ** -precision) precision = precisionIfPriceDecimalsBelow;
 
   return Number(nb.toFixed(precision)).toLocaleString(undefined, {
-    minimumFractionDigits: 0,
+    minimumFractionDigits,
     maximumFractionDigits: precision,
   });
 }
@@ -506,6 +512,39 @@ export function getLockedStakeRemainingTime(
   return endDate - Date.now();
 }
 
+export function formatAndFilterLockedStakes(
+  lockedStakes: LockedStakeExtended[] | [],
+  lockedStakesTokenSymbol: string,
+): LockedStakeExtended[] | null {
+  return (
+    (lockedStakes
+      .map((stake, index) => ({
+        ...stake,
+        index,
+        tokenSymbol: lockedStakesTokenSymbol,
+      }))
+      .filter((x) => !x.stakeTime.isZero()) as LockedStakeExtended[]) ?? null
+  );
+}
+
+export function getAdxLockedStakes(
+  stakingAccounts: WalletStakingAccounts | null,
+): LockedStakeExtended[] | null {
+  return formatAndFilterLockedStakes(
+    (stakingAccounts?.ADX?.lockedStakes as LockedStakeExtended[]) ?? [],
+    'ADX',
+  );
+}
+
+export function getAlpLockedStakes(
+  stakingAccounts: WalletStakingAccounts | null,
+): LockedStakeExtended[] | null {
+  return formatAndFilterLockedStakes(
+    (stakingAccounts?.ALP?.lockedStakes as LockedStakeExtended[]) ?? [],
+    'ALP',
+  );
+}
+
 // i.e percentage = -2 (for -2%)
 // i.e percentage = 5 (for 5%)
 export function applySlippage(nb: BN, percentage: number): BN {
@@ -586,16 +625,24 @@ export const verifyIfValidUrl = (url: string) => {
   return regExUrl.test(url);
 };
 
-export function estimateLockedStakeEarlyExitFee(
+export function calculateCappedFeeForExitEarly(
   lockedStake: LockedStakeExtended,
-  stakeTokenMintDecimals: number,
 ): number {
   const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber();
   const timeRemaining = lockedStake.lockDuration.toNumber() - timeElapsed;
   const feeRate = timeRemaining / lockedStake.lockDuration.toNumber();
 
   // Cap the fee rate between the lower and upper caps
-  const cappedFeeRate = Math.min(Math.max(feeRate, 0.15), 0.4);
 
-  return nativeToUi(lockedStake.amount, stakeTokenMintDecimals) * cappedFeeRate;
+  return Math.min(Math.max(feeRate, 0.15), 0.4);
+}
+
+export function estimateLockedStakeEarlyExitFee(
+  lockedStake: LockedStakeExtended,
+  stakeTokenMintDecimals: number,
+): number {
+  return (
+    nativeToUi(lockedStake.amount, stakeTokenMintDecimals) *
+    calculateCappedFeeForExitEarly(lockedStake)
+  );
 }

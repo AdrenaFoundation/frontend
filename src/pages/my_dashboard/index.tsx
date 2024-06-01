@@ -22,6 +22,8 @@ import {
   addFailedTxNotification,
   addNotification,
   addSuccessTxNotification,
+  getAdxLockedStakes,
+  getAlpLockedStakes,
   nativeToUi,
 } from '@/utils';
 
@@ -75,30 +77,10 @@ export default function MyDashboard({
     }
 
     const adxLockedStakes: LockedStakeExtended[] =
-      (
-        (stakingAccounts.ADX?.lockedStakes.sort(
-          (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-        ) as LockedStakeExtended[]) ?? []
-      )
-        .filter((x) => !x.stakeTime.isZero())
-        .map((stake, index) => ({
-          ...stake,
-          index,
-          tokenSymbol: 'ADX',
-        })) ?? [];
+      getAdxLockedStakes(stakingAccounts) ?? [];
 
     const alpLockedStakes: LockedStakeExtended[] =
-      (
-        (stakingAccounts.ALP?.lockedStakes.sort(
-          (a, b) => Number(a.stakeTime) - Number(b.stakeTime),
-        ) as LockedStakeExtended[]) ?? []
-      )
-        .filter((x) => !x.stakeTime.isZero())
-        .map((stake, index) => ({
-          ...stake,
-          index,
-          tokenSymbol: 'ALP',
-        })) ?? [];
+      getAlpLockedStakes(stakingAccounts) ?? [];
 
     const liquidStakedADX =
       typeof stakingAccounts.ADX?.liquidStake.amount !== 'undefined'
@@ -296,6 +278,7 @@ export default function MyDashboard({
                     setLockedStake(null);
                     setFinalizeLockedStakeRedeem(false);
                   }}
+                  className="max-w-[25em]"
                 >
                   {lockedStake ? (
                     <FinalizeLockedStakeRedeem

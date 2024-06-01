@@ -228,6 +228,10 @@ export class AdrenaClient {
     public tokens: Token[],
   ) {}
 
+  public setReadonlyAdrenaProgram(program: Program<Adrena>) {
+    this.readonlyAdrenaProgram = program;
+  }
+
   public setAdrenaProgram(program: Program<Adrena> | null) {
     this.adrenaProgram = program;
   }
@@ -1829,8 +1833,8 @@ export class AdrenaClient {
     }
 
     const transaction = await (position.side === 'long'
-      ? this.buildAddCollateralLongTx
-      : this.buildAddCollateralShortTx)({
+      ? this.buildAddCollateralLongTx.bind(this)
+      : this.buildAddCollateralShortTx.bind(this))({
       position,
       collateralAmount: addedCollateral,
     })
@@ -1903,7 +1907,7 @@ export class AdrenaClient {
     position: PositionExtended;
     collateralAmount: BN;
   }) {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
 
@@ -2269,7 +2273,6 @@ export class AdrenaClient {
 
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
     const tokenAccount = findATAAddressSync(owner, stakedTokenMint);
-    console.log('sss', tokenAccount.toBase58());
 
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
@@ -3290,7 +3293,7 @@ export class AdrenaClient {
 
     // Get liquidation price + pnl
     const [liquidationPrices, pnls] = await Promise.all([
-      Promise.all(
+      Promise.allSettled(
         positionsExtended.map((positionExtended) =>
           this.getPositionLiquidationPrice({
             position: positionExtended,
@@ -3299,7 +3302,7 @@ export class AdrenaClient {
           }),
         ),
       ),
-      Promise.all(
+      Promise.allSettled(
         positionsExtended.map((positionExtended) =>
           this.getPnL({ position: positionExtended }),
         ),
@@ -3309,7 +3312,11 @@ export class AdrenaClient {
     // Insert them in positions extended
     return positionsExtended.map((positionExtended, index) => {
       const pnl = (() => {
-        const pnl = pnls[index];
+        if (pnls[index].status === 'rejected') return null;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const promisePnl = pnls[index] as any;
+        const pnl = promisePnl.value as ProfitAndLoss | null;
 
         if (!pnl) return null;
 
@@ -3328,10 +3335,14 @@ export class AdrenaClient {
         ...positionExtended,
         leverage,
         pnl,
-        liquidationPrice: ((): number | undefined => {
-          const liquidationPrice = liquidationPrices[index];
+        liquidationPrice: ((): number | null => {
+          if (liquidationPrices[index].status === 'rejected') return null;
 
-          if (!liquidationPrice) return undefined;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const promiseLiquidationPrice = liquidationPrices[index] as any;
+          const liquidationPrice = promiseLiquidationPrice.value as BN | null;
+
+          if (liquidationPrice === null) return null;
 
           return nativeToUi(liquidationPrice, PRICE_DECIMALS);
         })(),

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { VestRegistry } from '@/types';
 
-// TODO: Reload periodically?
 const useVestRegistry = (): VestRegistry | null => {
   const [vestRegistry, setVestRegistry] = useState<VestRegistry | null>(null);
 
@@ -10,9 +9,17 @@ const useVestRegistry = (): VestRegistry | null => {
     setVestRegistry(await window.adrena.client.loadVestRegistry());
   }, []);
 
+  const reloadVestRegistry = useCallback(async () => {
+    await fetchVestRegistry();
+  }, [fetchVestRegistry]);
+
   useEffect(() => {
     fetchVestRegistry();
-  }, [fetchVestRegistry]);
+    const interval = setInterval(() => {
+      fetchVestRegistry();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [fetchVestRegistry, reloadVestRegistry]);
 
   return vestRegistry;
 };
