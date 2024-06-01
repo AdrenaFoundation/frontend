@@ -2180,6 +2180,49 @@ export class AdrenaClient {
     return vest;
   }
 
+  public async claimUserVest() {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const receivingAccount = findATAAddressSync(owner, this.adxToken.mint);
+
+    const vestRegistry = await this.loadVestRegistry();
+
+    if (vestRegistry === null) {
+      throw new Error('vest registry not found');
+    }
+
+    const transaction = await this.adrenaProgram.methods
+      .claimVest()
+      .accountsStrict({
+        owner,
+        receivingAccount,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        vestRegistry: AdrenaClient.vestRegistryPda,
+        vest: this.getUserVestPda(owner),
+        lmTokenMint: this.lmTokenMint,
+        governanceTokenMint: this.governanceTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
+        adrenaProgram: this.adrenaProgram.programId,
+        governanceProgram: config.governanceProgram,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        rent: '', // TODO
+      })
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
+  }
+
   public async getAllVestingAccounts(): Promise<Vest[]> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
