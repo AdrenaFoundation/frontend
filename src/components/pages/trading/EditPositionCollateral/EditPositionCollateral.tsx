@@ -141,7 +141,6 @@ export default function EditPositionCollateral({
 
       triggerPositionsReload();
     } catch (error) {
-      console.log(error);
       return addFailedTxNotification({
         title: 'Deposit Error',
         error,
