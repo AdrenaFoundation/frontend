@@ -39,7 +39,7 @@ const usePositions = (): {
     return () => {
       clearInterval(interval);
     };
-  }, [loadPositions]);
+  }, [loadPositions, trickReload, window.adrena.client.readonlyConnection]);
 
   return {
     positions,

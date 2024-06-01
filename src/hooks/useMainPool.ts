@@ -15,7 +15,7 @@ const useMainPool = (): PoolExtended | null => {
     const intervalId = setInterval(fetchMainPool, 30000); // Reload every 30 seconds
 
     return () => {
-      clearInterval(intervalId); // Clean up the interval when the component unmounts
+      clearInterval(intervalId);
     };
   }, [fetchMainPool]);
 
