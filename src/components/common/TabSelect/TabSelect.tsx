@@ -29,7 +29,7 @@ export default function TabSelect<T extends string | number>({
   const refs: React.RefObject<HTMLDivElement>[] = tabs.map(() => createRef());
 
   useEffect(() => {
-    if (selected !== undefined) {
+    if (typeof selected !== 'undefined') {
       setActiveTab(tabs.findIndex((tab) => tab.title === selected));
     }
   }, [selected]);
