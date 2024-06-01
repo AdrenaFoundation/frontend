@@ -170,15 +170,15 @@ export default function StakingView({
           <h2>ALP TOKEN STAKING ROUND ENDS IN</h2>
 
           <StyledSubSubContainer className="mt-2">
-            <h2>
-              <RemainingTimeToDate
-                timestamp={
-                  getNextStakingRoundStartTime(
-                    alpStakingAccount.currentStakingRound.startTime,
-                  ).getTime() / 1000
-                }
-              />
-            </h2>
+            <RemainingTimeToDate
+              timestamp={
+                getNextStakingRoundStartTime(
+                  alpStakingAccount.currentStakingRound.startTime,
+                ).getTime() / 1000
+              }
+              classNameTime="text-xl"
+              tippyText="The call is overdue, please check the thread."
+            />
           </StyledSubSubContainer>
         </StyledSubContainer>
 
@@ -186,15 +186,15 @@ export default function StakingView({
           <h2>ADX TOKEN STAKING ROUND ENDS IN</h2>
 
           <StyledSubSubContainer className="mt-2">
-            <h2>
-              <RemainingTimeToDate
-                timestamp={
-                  getNextStakingRoundStartTime(
-                    adxStakingAccount.currentStakingRound.startTime,
-                  ).getTime() / 1000
-                }
-              />
-            </h2>
+            <RemainingTimeToDate
+              timestamp={
+                getNextStakingRoundStartTime(
+                  adxStakingAccount.currentStakingRound.startTime,
+                ).getTime() / 1000
+              }
+              classNameTime="text-xl"
+              tippyText="The call is overdue, please check the thread."
+            />
           </StyledSubSubContainer>
         </StyledSubContainer>
       </StyledContainer>

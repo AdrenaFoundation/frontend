@@ -12,6 +12,7 @@ import DateInfo from '../DateInfo';
 import InfoAnnotation from '../InfoAnnotation';
 import NumberInfo from '../NumberInfo';
 import OnchainAccountInfo from '../OnchainAccountInfo';
+import RemainingTimeToDate from '../RemainingTimeToDate';
 import Table from '../Table';
 import FinalizeLockedStakedThreads from './FinalizeLockedStakedThreads';
 
@@ -132,22 +133,12 @@ export default function AutomationView({
                 ),
                 value: (
                   <div className="ml-auto flex">
-                    {stakingResolveRoundCron.nextTheoreticalExecutionDate &&
-                    stakingResolveRoundCron.nextTheoreticalExecutionDate <
-                      Date.now() ? (
-                      <Image
-                        className="w-auto h-[1.5em] mr-1"
-                        src={warningImg}
-                        alt="Error icon"
-                      />
-                    ) : null}
-
                     {stakingResolveRoundCron.nextTheoreticalExecutionDate ? (
-                      <DateInfo
+                      <RemainingTimeToDate
                         timestamp={
                           stakingResolveRoundCron.nextTheoreticalExecutionDate
                         }
-                        shorten={false}
+                        tippyText="The call is overdue, please check the thread."
                       />
                     ) : (
                       'Cannot be calculated'

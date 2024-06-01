@@ -103,6 +103,7 @@ export default function FinalizeLockedStakedThreads() {
                   {thread.nextTheoreticalExecutionDate ? (
                     <RemainingTimeToDate
                       timestamp={thread.nextTheoreticalExecutionDate}
+                      tippyText="The call is overdue, please check the thread."
                     />
                   ) : (
                     'Cannot be calculated'
