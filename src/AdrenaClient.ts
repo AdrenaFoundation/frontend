@@ -1833,8 +1833,8 @@ export class AdrenaClient {
     }
 
     const transaction = await (position.side === 'long'
-      ? this.buildAddCollateralLongTx
-      : this.buildAddCollateralShortTx)({
+      ? this.buildAddCollateralLongTx.bind(this)
+      : this.buildAddCollateralShortTx.bind(this))({
       position,
       collateralAmount: addedCollateral,
     })
@@ -1907,7 +1907,7 @@ export class AdrenaClient {
     position: PositionExtended;
     collateralAmount: BN;
   }) {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
 
