@@ -66,11 +66,12 @@ export default function DetailedMonitoring({
             </div>
           ) : null}
 
-          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
-            <AccountsView
+          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
+            <ADXTokenomicsView
+              vestRegistry={vestRegistry}
               cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
+              adxTotalSupply={adxTotalSupply}
+              adxStakingAccount={adxStakingAccount}
             />
           ) : null}
 
@@ -140,12 +141,11 @@ export default function DetailedMonitoring({
             </div>
           ) : null}
 
-          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
-            <ADXTokenomicsView
-              vestRegistry={vestRegistry}
+          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
+            <AccountsView
               cortex={cortex}
-              adxTotalSupply={adxTotalSupply}
-              adxStakingAccount={adxStakingAccount}
+              mainPool={mainPool}
+              custodies={custodies}
             />
           ) : null}
         </div>

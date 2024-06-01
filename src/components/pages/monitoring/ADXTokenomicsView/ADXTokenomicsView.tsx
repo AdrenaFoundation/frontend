@@ -20,8 +20,14 @@ import { Bar, Pie } from 'react-chartjs-2';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Cortex, Staking, VestRegistry } from '@/types';
-import { formatNumber, getFontSizeWeight, nativeToUi } from '@/utils';
+import {
+  formatNumber,
+  formatNumberShort,
+  getFontSizeWeight,
+  nativeToUi,
+} from '@/utils';
 
 ChartJS.register(
   ArcElement,
@@ -82,6 +88,7 @@ export default function ADXTokenomicsView({
   ] as const;
   const bucketsLabels = ['Core Contrib.', 'DAO Treasury', 'POL', 'Ecosystem'];
   const bucketColors = ['#ff4069f0', '#f9df65f0', '#3b82f6f0', '#07956bf0'];
+  const isBrakingPoint = useBetterMediaQuery('(max-width: 500px)');
 
   return (
     <>
@@ -253,7 +260,12 @@ export default function ADXTokenomicsView({
                   },
                   y: {
                     ticks: {
-                      callback: (value: string | number) => value + ' ADX',
+                      callback: (value: string | number) =>
+                        formatNumberShort(value) + ' ADX',
+
+                      font: {
+                        size: isBrakingPoint ? 8 : 12,
+                      },
                     },
                     beginAtZero: true,
                   },

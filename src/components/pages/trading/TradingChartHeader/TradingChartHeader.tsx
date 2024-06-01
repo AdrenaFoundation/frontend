@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
@@ -24,6 +25,29 @@ export default function TradingChartHeader({
 }) {
   const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
+  const [previousTokenPrice, setPreviousTokenPrice] = useState<number>(0);
+  const [tokenColor, setTokenColor] = useState<string>('text-white');
+
+  useEffect(() => {
+    // if streamingTokenPrices is larger than previous value, set color to green
+    // if streamingTokenPrices is smaller than previous value, set color to red
+    if (!streamingTokenPrices) return;
+    console.log(
+      'streamingTokenPrices',
+      streamingTokenPrices,
+      previousTokenPrice,
+    );
+
+    if (streamingTokenPrices?.[selected.symbol]! > previousTokenPrice) {
+      setTokenColor('text-green');
+    } else if (streamingTokenPrices?.[selected.symbol]! < previousTokenPrice) {
+      setTokenColor('text-red');
+    }
+  }, [streamingTokenPrices]);
+
+  useEffect(() => {
+    setPreviousTokenPrice(streamingTokenPrices?.[selected.symbol] || 0);
+  }, [streamingTokenPrices]);
 
   return (
     <div
@@ -61,11 +85,11 @@ export default function TradingChartHeader({
         <FormatNumber
           nb={streamingTokenPrices?.[selected.symbol]}
           format="currency"
-          className="text-lg"
+          className={twMerge('text-lg font-bold', tokenColor)}
         />
         <div className="flex flex-row gap-3 sm:gap-6">
           <div className="flex flex-col p-1 rounded-full flex-wrap">
-            <span className="text-xs sm:text-sm text-txtfade top-[0.1em]">
+            <span className="text-xs sm:text-sm text-txtfade text-right">
               24h Change
             </span>
 
@@ -84,7 +108,7 @@ export default function TradingChartHeader({
           </div>
 
           <div className="flex flex-col p-1 rounded-full flex-wrap">
-            <span className="text-xs sm:text-sm text-txtfade top-[0.1em]">
+            <span className="text-xs sm:text-sm text-txtfade text-right">
               24h Volume
             </span>
 

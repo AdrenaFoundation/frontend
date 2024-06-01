@@ -19,13 +19,13 @@ export default function Monitoring(pageProps: PageProps) {
 
   const tabs = [
     'All',
-    'Accounts',
+    'ADX tokenomics',
     'Pool',
     'Fees',
     'Staking',
     'Trading',
     'Vesting',
-    'ADX tokenomics',
+    'Accounts',
   ] as const;
   const tabsFormatted = tabs.map((x) => ({
     title: x,
