@@ -32,15 +32,16 @@ export default function TradingChartHeader({
     // if streamingTokenPrices is larger than previous value, set color to green
     // if streamingTokenPrices is smaller than previous value, set color to red
     if (!streamingTokenPrices) return;
-    console.log(
-      'streamingTokenPrices',
-      streamingTokenPrices,
-      previousTokenPrice,
-    );
 
-    if (streamingTokenPrices?.[selected.symbol]! > previousTokenPrice) {
+    const price = streamingTokenPrices?.[selected.symbol];
+
+    if (!price && price !== 0) {
+      return;
+    }
+
+    if (price > previousTokenPrice) {
       setTokenColor('text-green');
-    } else if (streamingTokenPrices?.[selected.symbol]! < previousTokenPrice) {
+    } else if (price < previousTokenPrice) {
       setTokenColor('text-red');
     }
   }, [streamingTokenPrices]);
