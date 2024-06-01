@@ -58,7 +58,7 @@ export default function Positions({
 
         {positionToEdit && (
           <Modal
-            title={`Edit Collateral`}
+            title="Edit Collateral"
             close={() => setPositionToEdit(null)}
             className={twMerge('flex flex-col items-center')}
           >
