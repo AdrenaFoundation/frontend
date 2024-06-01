@@ -10,7 +10,11 @@ const useVests = (): VestExtended[] | null => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(fetchVests, 30000); // Reload every 30 seconds
+    fetchVests();
+
+    const interval = setInterval(() => {
+      fetchVests();
+    }, 30000);
 
     return () => {
       clearInterval(interval);

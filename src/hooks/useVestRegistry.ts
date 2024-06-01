@@ -15,7 +15,9 @@ const useVestRegistry = (): VestRegistry | null => {
 
   useEffect(() => {
     fetchVestRegistry();
-    const interval = setInterval(reloadVestRegistry, 30000); // Reload every 30 seconds
+    const interval = setInterval(() => {
+      fetchVestRegistry();
+    }, 30000);
     return () => clearInterval(interval);
   }, [fetchVestRegistry, reloadVestRegistry]);
 
