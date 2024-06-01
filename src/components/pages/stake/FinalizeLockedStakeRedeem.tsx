@@ -85,10 +85,10 @@ export default function FinalizeLockedStakeRedeem({
           </span>
         </div>
       </StyledSubSubContainer>
-      <div className="flex flex-row justify-between mt-4">
+      <div className="flex flex-row justify-between mt-6">
         <h2>How early exit works</h2>
       </div>
-      <div className="flex flex-row justify-between mt-4">
+      <div className="flex flex-row justify-between mt-2">
         <span className="text-txtfade text-sm">
           The early exit feature allows the user to break the initial Locked
           Staking agreement by paying a penalty based on the time elapsed and
@@ -98,7 +98,7 @@ export default function FinalizeLockedStakeRedeem({
       <div className="flex flex-row justify-between mt-4">
         <h2>Early exit fee</h2>
       </div>
-      <div className="flex flex-row mt-4">
+      <div className="flex flex-row mt-2">
         <span className="text-txtfade text-sm">
           In order to early exit this staking position, the penalty will be
           <span className="text-white ml-1 mr-1">
@@ -111,7 +111,7 @@ export default function FinalizeLockedStakeRedeem({
 
       <Button
         variant="danger"
-        className="w-full mt-6"
+        className="w-full mt-8"
         size="lg"
         title="I agree to exit early and pay the fee"
         onClick={() => {
