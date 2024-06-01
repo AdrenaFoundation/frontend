@@ -17,7 +17,9 @@ const useStakingAccount = (stakedTokenMint: PublicKey): Staking | null => {
     fetchStakingAccount();
 
     // Reload periodically every 30 seconds
-    const intervalId = setInterval(fetchStakingAccount, 30000);
+    const intervalId = setInterval(() => {
+      fetchStakingAccount();
+    }, 30000);
 
     return () => {
       clearInterval(intervalId);

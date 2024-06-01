@@ -28,7 +28,9 @@ const useStakingAccountCurrentRoundRewards = (
 
   useEffect(() => {
     fetchRewards();
-    const interval = setInterval(fetchRewards, 30000); // Reload every 30 seconds
+    const interval = setInterval(() => {
+      fetchRewards();
+    }, 30000);
 
     return () => {
       clearInterval(interval);

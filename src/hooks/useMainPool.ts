@@ -12,7 +12,9 @@ const useMainPool = (): PoolExtended | null => {
   useEffect(() => {
     fetchMainPool();
 
-    const intervalId = setInterval(fetchMainPool, 30000); // Reload every 30 seconds
+    const intervalId = setInterval(() => {
+      fetchMainPool();
+    }, 30000);
 
     return () => {
       clearInterval(intervalId);

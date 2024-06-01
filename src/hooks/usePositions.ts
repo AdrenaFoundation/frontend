@@ -32,6 +32,8 @@ const usePositions = (): {
   }, [wallet]);
 
   useEffect(() => {
+    loadPositions();
+
     const interval = setInterval(() => {
       loadPositions();
     }, 30000);
