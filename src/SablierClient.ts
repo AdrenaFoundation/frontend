@@ -7,7 +7,7 @@ import SablierThreadProgramJson from '@/target/thread_program.json';
 import { AdrenaClient } from './AdrenaClient';
 import { SOL_DECIMALS } from './constant';
 import { SablierThread, SablierThreadExtended, Staking } from './types';
-import { nativeToUi } from './utils';
+import { getMethodDiscriminator, nativeToUi } from './utils';
 
 // Threads types:
 //
@@ -129,28 +129,49 @@ export class SablierClient {
     };
   }
 
-  // public async loadSablierThreads(): Promise<SablierThreadExtended[] | null> {
-  //   if (!this.readonlySablierThreadProgram) return null;
+  public async loadSablierFinalizeLockedStakedThreads(): Promise<
+    SablierThreadExtended[] | null
+  > {
+    if (!this.readonlySablierThreadProgram) return null;
 
-  //   const threads = await this.readonlySablierThreadProgram.account.thread.all([
-  //     {
-  //       memcmp: {
-  //         offset: 8, // Skip the anchor discriminator
-  //         bytes: AdrenaClient.transferAuthorityAddress.toBase58(),
-  //       },
-  //     },
-  //   ]);
+    const connection = window.adrena.sablierClient.readonlyThreadConnection;
+    if (!connection) throw new Error('Connection not initialized');
 
-  //   return threads.map((thread) => ({
-  //     pubkey: thread.publicKey,
-  //     // Complex to calculate as is due to the different trigger types and all
-  //     nextTheoreticalExecutionDate: null,
-  //     paused: thread.account.paused,
-  //     lastExecutionDate:
-  //       thread.account.execContext?.lastExecAt.toNumber() ?? null,
-  //     nativeObject: thread.account,
-  //   }));
-  // }
+    const threads = await this.readonlySablierThreadProgram.account.thread.all([
+      {
+        dataSize: 2266, // Hardcoded size of the thread account containing the FinalizeLockedStaked ix
+      },
+    ]);
+
+    // Make sure we only load the threads that are related to our program, in the infortunate case
+    // there are threads of the same size that wouldn't belong to us
+    const filteredThreads = threads.filter((thread) =>
+      thread.account.authority.equals(AdrenaClient.transferAuthorityAddress),
+    );
+
+    const solBalances = await Promise.all(
+      filteredThreads.map((thread) => connection.getBalance(thread.publicKey)),
+    );
+
+    return filteredThreads.map((thread, index) => {
+      // Hardcoded as we know the trigger type
+      const nextTheoreticalExecutionDate =
+        thread.account.trigger.timestamp?.unixTs.toNumber() ?? null;
+
+      return {
+        pubkey: thread.publicKey,
+        lastExecutionDate:
+          thread.account.execContext?.lastExecAt.toNumber() ?? null,
+        // transform to seconds
+        nextTheoreticalExecutionDate: nextTheoreticalExecutionDate
+          ? nextTheoreticalExecutionDate
+          : null,
+        paused: thread.account.paused,
+        nativeObject: thread.account,
+        funding: nativeToUi(new BN(solBalances[index]), SOL_DECIMALS),
+      };
+    });
+  }
 
   public get readonlyThreadConnection(): Connection | null {
     if (!this.readonlySablierThreadProgram) return null;

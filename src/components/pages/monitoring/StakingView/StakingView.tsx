@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
-
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { Staking } from '@/types';
 import {
-  formatMilliseconds,
   formatNumber,
   formatPriceInfo,
   getNextStakingRoundStartTime,
   nativeToUi,
 } from '@/utils';
+
+import RemainingTimeToDate from '../RemainingTimeToDate';
 
 export default function StakingView({
   alpStakingAccount,
@@ -23,27 +22,6 @@ export default function StakingView({
   alpStakingCurrentRoundRewards: number | null;
   adxStakingCurrentRoundRewards: number | null;
 }) {
-  const [timeRemainingAlpStakingRound, setTimeRemainingAlpStakingRound] =
-    useState<number | null>(null);
-  const [timeRemainingAdxStakingRound, setTimeRemainingAdxStakingRound] =
-    useState<number | null>(null);
-
-  useEffect(() => {
-    setTimeRemainingAlpStakingRound(
-      getNextStakingRoundStartTime(
-        alpStakingAccount.currentStakingRound.startTime,
-      ).getTime() - Date.now(),
-    );
-  }, [alpStakingAccount.currentStakingRound.startTime]);
-
-  useEffect(() => {
-    setTimeRemainingAdxStakingRound(
-      getNextStakingRoundStartTime(
-        adxStakingAccount.currentStakingRound.startTime,
-      ).getTime() - Date.now(),
-    );
-  }, [adxStakingAccount.currentStakingRound.startTime]);
-
   return (
     <>
       <StyledContainer
@@ -156,7 +134,7 @@ export default function StakingView({
 
           <StyledSubSubContainer className="mt-2 flex-col">
             <h2>
-              {alpStakingAccount.resolvedRewardTokenAmount !== null
+              {adxStakingAccount.resolvedRewardTokenAmount !== null
                 ? formatNumber(
                     nativeToUi(
                       adxStakingAccount.resolvedRewardTokenAmount,
@@ -193,9 +171,13 @@ export default function StakingView({
 
           <StyledSubSubContainer className="mt-2">
             <h2>
-              {timeRemainingAlpStakingRound !== null
-                ? formatMilliseconds(timeRemainingAlpStakingRound)
-                : '-'}
+              <RemainingTimeToDate
+                timestamp={
+                  getNextStakingRoundStartTime(
+                    alpStakingAccount.currentStakingRound.startTime,
+                  ).getTime() / 1000
+                }
+              />
             </h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
@@ -205,9 +187,13 @@ export default function StakingView({
 
           <StyledSubSubContainer className="mt-2">
             <h2>
-              {timeRemainingAdxStakingRound !== null
-                ? formatMilliseconds(timeRemainingAdxStakingRound)
-                : '-'}
+              <RemainingTimeToDate
+                timestamp={
+                  getNextStakingRoundStartTime(
+                    adxStakingAccount.currentStakingRound.startTime,
+                  ).getTime() / 1000
+                }
+              />
             </h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
