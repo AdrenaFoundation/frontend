@@ -131,7 +131,6 @@ export default function Buy({
             equivalentAmount,
           };
         } catch (e) {
-          //setErrorMessage('An error happened during the calculation.');
           return {
             token,
             fees: null,
