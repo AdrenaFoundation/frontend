@@ -17,7 +17,7 @@ export default function StakeRedeem({
   return (
     <div className="p-5">
       <div>
-        <div className="flex flex-row justify-between mb-2">
+        <div className="flex flex-row justify-between">
           <p className="text-sm opacity-50 font-medium"> Enter Amount</p>
           <p className="text-sm font-medium">
             <span className="opacity-50"> Total reedemable · </span>
@@ -26,7 +26,7 @@ export default function StakeRedeem({
               : '–'}
           </p>
         </div>
-        <div className="relative flex flex-row w-full">
+        <div className="relative flex flex-row w-full mt-4">
           <div className="flex items-center bg-bcolor border border-bcolor rounded-l-xl px-3 border-r-none">
             <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
           </div>
@@ -54,7 +54,7 @@ export default function StakeRedeem({
           />
 
           <Button
-            className="absolute right-2 bottom-[20%]"
+            className="absolute right-2 bottom-3.5"
             title="MAX"
             variant="primary"
             onClick={() => {
@@ -68,8 +68,8 @@ export default function StakeRedeem({
       </div>
 
       <Button
-        variant="danger"
-        className="w-full mt-3"
+        variant="primary"
+        className="w-full mt-6"
         size="lg"
         title="Remove stake"
         disabled={!amount}
@@ -77,7 +77,7 @@ export default function StakeRedeem({
           if (!amount) {
             return;
           }
-          handleRemoveLiquidStake(amount);
+          return handleRemoveLiquidStake(amount);
         }}
       />
     </div>

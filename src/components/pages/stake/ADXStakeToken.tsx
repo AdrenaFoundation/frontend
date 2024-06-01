@@ -62,7 +62,7 @@ export default function ADXStakeToken({
               placeholder="0.00"
             />
             <Button
-              className="absolute right-2 bottom-[20%] text-main"
+              className="absolute right-2 bottom-3.5 text-main"
               title="MAX"
               variant="primary"
               onClick={() => {
@@ -138,7 +138,7 @@ export default function ADXStakeToken({
           className="w-full"
           size="lg"
           title={errorMessage ? errorMessage : '[S]take'}
-          disabled={!!errorMessage}
+          disabled={!!errorMessage || !amount}
           onClick={stakeAmount}
         />
       </div>

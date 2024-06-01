@@ -22,6 +22,8 @@ export default function ALPSwap({
   setCollateralInput,
   alpInput,
   setAlpInput,
+  errorMessage,
+  setErrorMessage,
   collateralToken,
   onCollateralTokenChange,
   feesUsd,
@@ -42,6 +44,8 @@ export default function ALPSwap({
   setCollateralInput: (v: number | null) => void;
   alpInput: number | null;
   setAlpInput: (v: number | null) => void;
+  errorMessage: string | null;
+  setErrorMessage: (v: string | null) => void;
   alpPrice: number | null;
   setAlpPrice: (v: number | null) => void;
   collateralToken: Token | null;
@@ -61,6 +65,7 @@ export default function ALPSwap({
 
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [buttonTitle, setButtonTitle] = useState<string | null>(null);
+  const [errorDescription, setErrorDescription] = useState<string | null>(null);
   const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
 
   const handleExecuteButton = async () => {
@@ -129,8 +134,6 @@ export default function ALPSwap({
         txHash,
       });
     } catch (error) {
-      console.log('error', error);
-
       return addFailedTxNotification({
         title: 'Error Selling ALP',
         error,
@@ -149,6 +152,14 @@ export default function ALPSwap({
       if (!connected) {
         setIsDisabledButton(false);
         return 'Connect wallet';
+      }
+
+      if (
+        errorMessage !== null &&
+        (alpInput !== null || collateralInput !== null)
+      ) {
+        setIsDisabledButton(true);
+        return errorMessage;
       }
 
       if (alpInput === null || collateralInput === null) {
@@ -210,9 +221,28 @@ export default function ALPSwap({
     collateralInput,
     collateralToken,
     connected,
+    errorMessage,
     selectedAction,
     walletTokenBalances,
   ]);
+
+  useEffect(() => {
+    if (errorMessage === null) setErrorDescription(null);
+    if (errorMessage === 'Pool ratio reached for this token')
+      setErrorDescription(
+        `The target ratio for the selected token has already been reached,
+        please use a different token.
+        If you want to see more details on the pool and the ratios,
+        please go to Monitoring page.`,
+      );
+    if (errorMessage === 'Not enough liquidity in the pool for this token')
+      setErrorDescription(
+        `Not enough liquidity in the pool for this token to perform this action,
+        please use a different token.
+        If you want to see more details on the pool and the ratios,
+        please go to Monitoring page.`,
+      );
+  }, [errorMessage]);
 
   return (
     <div className={className}>
@@ -245,6 +275,7 @@ export default function ALPSwap({
             setAlpPrice={setAlpPrice}
             collateralPrice={collateralPrice}
             setCollateralPrice={setCollateralPrice}
+            setErrorMessage={setErrorMessage}
             feesAndAmounts={feesAndAmounts}
             connected={connected}
           />
@@ -257,6 +288,12 @@ export default function ALPSwap({
             className="justify-center w-full mt-5"
             onClick={handleExecuteButton}
           />
+
+          {errorDescription ? (
+            <div className="flex mt-4 text-txtfade text-xs font-mono">
+              {errorDescription}
+            </div>
+          ) : null}
         </>
       ) : null}
     </div>
