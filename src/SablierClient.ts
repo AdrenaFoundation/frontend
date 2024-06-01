@@ -7,7 +7,7 @@ import SablierThreadProgramJson from '@/target/thread_program.json';
 import { AdrenaClient } from './AdrenaClient';
 import { SOL_DECIMALS } from './constant';
 import { SablierThread, SablierThreadExtended, Staking } from './types';
-import { getMethodDiscriminator, nativeToUi } from './utils';
+import { nativeToUi } from './utils';
 
 // Threads types:
 //
