@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -112,7 +113,21 @@ export default function PositionsArray({
                   />
 
                   <div className="grow flex h-full items-center justify-start pl-1 mt-[0.2em]">
-                    <span className="font-boldy">{position.token.symbol}</span>
+                    {window.location.pathname !== '/trade' ? (
+                      <Link
+                        href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
+                        target=""
+                      >
+                        <span className="font-boldy underline">
+                          {position.token.symbol}
+                        </span>
+                      </Link>
+                    ) : (
+                      <span className="font-boldy">
+                        {position.token.symbol}
+                      </span>
+                    )}
+
                     <h5
                       className={twMerge(
                         'text-sm uppercase ml-1',

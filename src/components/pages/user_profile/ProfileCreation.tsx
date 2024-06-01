@@ -14,7 +14,7 @@ export default function ProfileCreation({
 }) {
   return (
     <>
-      <div className="flex flex-col w-full z-20 border bg-bcolor/85 backdrop-blur-md p-7 self-center rounded-lg">
+      <div className="flex flex-col w-full z-20 border bg-secondary p-7 self-center rounded-lg">
         <div className="flex">
           <h2>Create my profile (optional)</h2>
           <InfoAnnotation

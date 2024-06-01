@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
 
-// TODO: Reload periodically?
 const useStakingAccountCurrentRoundRewards = (
   stakedTokenMint: PublicKey,
 ): number | null => {
@@ -29,6 +28,13 @@ const useStakingAccountCurrentRoundRewards = (
 
   useEffect(() => {
     fetchRewards();
+    const interval = setInterval(() => {
+      fetchRewards();
+    }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchRewards]);
 
   useEffect(() => {

@@ -12,6 +12,14 @@ const useCortex = (): Cortex | null => {
 
   useEffect(() => {
     fetchCortex();
+
+    const interval = setInterval(() => {
+      fetchCortex();
+    }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchCortex]);
 
   return cortex;

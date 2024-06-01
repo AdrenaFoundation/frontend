@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -78,9 +79,20 @@ export default function PositionsBlocks({
                   {position.side}
                 </span>
 
-                <h3 className="text-sm capitalize font-mono ml-2">
-                  {position.token.name}
-                </h3>
+                {window.location.pathname !== '/trade' ? (
+                  <Link
+                    href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
+                    target=""
+                  >
+                    <h3 className="text-sm capitalize font-mono ml-2 underline">
+                      {position.token.symbol}
+                    </h3>
+                  </Link>
+                ) : (
+                  <h3 className="text-sm capitalize font-mono ml-2">
+                    {position.token.symbol}
+                  </h3>
+                )}
               </div>
             </div>
 

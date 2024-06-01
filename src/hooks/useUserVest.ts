@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { Vest } from '@/types';
 
-// TODO: Reload periodically?
 const useUserVest = (): {
   userVest: Vest | false | null;
   triggerUserVestReload: () => void;
@@ -26,6 +25,10 @@ const useUserVest = (): {
 
   useEffect(() => {
     fetchUserVest();
+    const interval = setInterval(() => {
+      fetchUserVest();
+    }, 30000);
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchUserVest, trickReload, window.adrena.client.connection]);
 
