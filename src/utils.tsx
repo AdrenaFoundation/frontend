@@ -71,12 +71,17 @@ export function findATAAddressSync(
   )[0];
 }
 
-export function formatNumber(nb: number, precision: number): string {
+export function formatNumber(
+  nb: number,
+  precision: number,
+  minimumFractionDigits = 0,
+  precisionIfPriceDecimalsBelow = 6,
+): string {
   // If price is below decimals precision, display up to 6 decimals
-  if (nb < 10 ** -precision) precision = 6;
+  if (nb < 10 ** -precision) precision = precisionIfPriceDecimalsBelow;
 
   return Number(nb.toFixed(precision)).toLocaleString(undefined, {
-    minimumFractionDigits: 0,
+    minimumFractionDigits,
     maximumFractionDigits: precision,
   });
 }

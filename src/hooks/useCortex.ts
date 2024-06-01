@@ -11,7 +11,11 @@ const useCortex = (): Cortex | null => {
   }, []);
 
   useEffect(() => {
-    fetchCortex();
+    const interval = setInterval(fetchCortex, 30000); // Reload every 30 seconds
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchCortex]);
 
   return cortex;

@@ -385,8 +385,6 @@ export default function LongShortTradingInputs({
 
               const amount = walletTokenBalances[tokenA.symbol];
 
-              console.log('max button triggered', amount);
-
               handleInputAChange(amount);
             }}
           />

@@ -228,6 +228,10 @@ export class AdrenaClient {
     public tokens: Token[],
   ) {}
 
+  public setReadonlyAdrenaProgram(program: Program<Adrena>) {
+    this.readonlyAdrenaProgram = program;
+  }
+
   public setAdrenaProgram(program: Program<Adrena> | null) {
     this.adrenaProgram = program;
   }
@@ -1829,8 +1833,8 @@ export class AdrenaClient {
     }
 
     const transaction = await (position.side === 'long'
-      ? this.buildAddCollateralLongTx
-      : this.buildAddCollateralShortTx)({
+      ? this.buildAddCollateralLongTx.bind(this)
+      : this.buildAddCollateralShortTx.bind(this))({
       position,
       collateralAmount: addedCollateral,
     })
@@ -1903,7 +1907,7 @@ export class AdrenaClient {
     position: PositionExtended;
     collateralAmount: BN;
   }) {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
 
@@ -2269,7 +2273,6 @@ export class AdrenaClient {
 
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
     const tokenAccount = findATAAddressSync(owner, stakedTokenMint);
-    console.log('sss', tokenAccount.toBase58());
 
     const staking = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, staking);
