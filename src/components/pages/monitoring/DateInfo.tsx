@@ -7,10 +7,12 @@ export default function DateInfo({
   shorten = false,
 }: {
   className?: string;
-  timestamp: BN;
+  timestamp: BN | number;
   shorten?: boolean;
 }) {
-  const date = new Date(timestamp.toNumber() * 1_000);
+  const date = new Date(
+    (typeof timestamp === 'number' ? timestamp : timestamp.toNumber()) * 1_000,
+  );
 
   return (
     <div className={twMerge(className)}>

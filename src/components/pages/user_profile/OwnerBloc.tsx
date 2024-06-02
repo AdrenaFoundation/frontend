@@ -67,7 +67,7 @@ export default function OwnerBloc({
 
   return (
     <StyledContainer className={twMerge(className)}>
-      <div className="flex h-[3em] w-[20em] w-full h-full items-center justify-center pb-4">
+      <div className="flex w-full h-full items-center justify-center pb-4">
         {nicknameUpdating ? (
           <div className="flex flex-col items-center w-full justify-center">
             <InputString
