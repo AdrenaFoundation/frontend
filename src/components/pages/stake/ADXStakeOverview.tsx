@@ -43,14 +43,19 @@ export default function ADXStakeOverview({
         <h1>Liquid Staking</h1>
 
         <ul>
-          <li className="mt-4 text-lg">
-            - Get 1:1 voting power to participate in the protocol&apos;s
-            governance
+          <li className="mt-2">
+            <span className="text-base text-txtfade">
+              - Get 1:1 voting power to participate in the protocol&apos;s
+              governance
+            </span>
           </li>
-          <li className="mt-4 text-lg">
-            - Unstake at any time, if not participating in an active vote
+          <li>
+            <span className="text-base text-txtfade">
+              - Unstake at any time, if not participating in an active vote
+            </span>
           </li>
         </ul>
+
         {totalLiquidStaked !== 0 ? (
           <StyledSubSubContainer className="mt-4">
             <h5 className="flex items-center">Total stake</h5>
@@ -61,6 +66,7 @@ export default function ADXStakeOverview({
             </div>
           </StyledSubSubContainer>
         ) : null}
+
         <div className="flex gap-x-4">
           <Button
             className="w-full mt-4 ml-auto"
@@ -88,26 +94,37 @@ export default function ADXStakeOverview({
         <h1>Locked Staking</h1>
 
         <div className="mt-4 flex flex-col">
-          <span className="text-lg">
+          <span className="text-base text-txtfade">
             Align with the protocol long term success: the longer the period,
             the higher the rewards.
           </span>
-          <span className="text-lg">
+          <span className="text-base text-txtfade">
             20% of protocol fees are distributed to ADX stakers.
           </span>
 
-          <ul>
-            <li className="mt-4 text-lg">
-              - Get amplified voting power to participate in the protocol&apos;s
-              governance
+          <ul className="mt-2">
+            <li>
+              <span className="text-base text-txtfade">
+                - Get amplified voting power to participate in the
+                protocol&apos;s governance{' '}
+              </span>
             </li>
-            <li className="mt-4 text-lg">
-              - Earn USDC rewards (20% of protocol fees distributed to stakers)
+            <li>
+              <span className="text-base text-txtfade">
+                - Earn USDC rewards (20% of protocol fees distributed to
+                stakers)
+              </span>
             </li>
-            <li className="mt-4 text-lg">- Earn extra ADX rewards</li>
-            <li className="mt-4 text-lg">
-              - Locked principal becomes available at the end of the period,
-              with the possibility to unstake earlier for a fee
+            <li>
+              <span className="text-base text-txtfade">
+                - Earn extra ADX rewards
+              </span>
+            </li>
+            <li>
+              <span className="text-base text-txtfade">
+                - Locked principal becomes available at the end of the period,
+                with the possibility to unstake earlier for a fee
+              </span>
             </li>
           </ul>
         </div>

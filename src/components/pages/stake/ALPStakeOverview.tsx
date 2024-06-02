@@ -42,19 +42,25 @@ export default function ALPStakeOverview({
         <h1>Locked Staking</h1>
 
         <div className="mt-4 flex flex-col">
-          <span className="text-lg">
+          <span className="text-base text-txtfade">
             Provide liquidities long term: the longer the period, the higher the
             rewards.
           </span>
-          <span className="text-lg">
+          <span className="text-base text-txtfade">
             70% of protocol fees are distributed to ALP holder and stakers.
           </span>
 
-          <ul>
-            <li className="mt-4 text-lg">- Earn USDC rewards</li>
-            <li className="mt-4 text-lg">
-              - Locked principal becomes available at the end of the period,
-              with the possibility to unstake earlier for a fee
+          <ul className="mt-2">
+            <li>
+              <span className="text-base text-txtfade">
+                - Earn USDC rewards
+              </span>
+            </li>
+            <li>
+              <span className="text-base text-txtfade">
+                - Locked principal becomes available at the end of the period,
+                with the possibility to unstake earlier for a fee
+              </span>
             </li>
           </ul>
         </div>
