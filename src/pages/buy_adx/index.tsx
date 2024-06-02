@@ -40,7 +40,7 @@ export default function BuyADX() {
             alignment: Alignment.TopRight,
           })
         }
-        className="absolute w-full h-full top-0 right-0 max-w-[1200px] opacity-50"
+        className="absolute w-full h-full top-0 right-0 max-w-[1200px] opacity-20"
       />
       <div className="absolute w-[50px] h-full top-0 right-0 bg-gradient-to-r from-[#050f1900] to-[#050f19] z-10"></div>
 

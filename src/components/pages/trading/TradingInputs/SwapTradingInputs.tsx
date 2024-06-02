@@ -268,6 +268,8 @@ export default function SwapTradingInputs({
     // If user wallet balance doesn't have enough tokens, tell user
     if (!walletTokenABalance || inputA > walletTokenABalance)
       return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
+
+    return setButtonTitle('Swap');
   }, [inputA, inputB, connected, tokenA, wallet, walletTokenBalances]);
 
   return (

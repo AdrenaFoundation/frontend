@@ -88,7 +88,7 @@ export default function Select<T extends string>({
         openMenuClassName="w-full"
       >
         {options.length > 1 && (
-          <MenuItems className="w-[8em] justify-center">
+          <MenuItems className="w-full justify-center">
             {options
               .filter((option) => option.title !== selected)
               .map((option, i) => (

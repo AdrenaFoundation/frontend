@@ -20,8 +20,14 @@ import { Bar, Pie } from 'react-chartjs-2';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Cortex, Staking, VestRegistry } from '@/types';
-import { formatNumber, getFontSizeWeight, nativeToUi } from '@/utils';
+import {
+  formatNumber,
+  formatNumberShort,
+  getFontSizeWeight,
+  nativeToUi,
+} from '@/utils';
 
 ChartJS.register(
   ArcElement,
@@ -82,43 +88,45 @@ export default function ADXTokenomicsView({
   ] as const;
   const bucketsLabels = ['Core Contrib.', 'DAO Treasury', 'POL', 'Ecosystem'];
   const bucketColors = ['#ff4069f0', '#f9df65f0', '#3b82f6f0', '#07956bf0'];
+  const isBreakpoint = useBetterMediaQuery('(max-width: 500px)');
 
   return (
     <>
-      <StyledContainer
-        headerClassName="text-center justify-center"
-        title="ADX CIRCULATING SUPPLY"
-        className="min-w-[25em] w-[25em] grow"
-      >
-        <StyledSubSubContainer className="items-center justify-center">
-          <h2>{formatNumber(adxTotalSupply, 2)}</h2>
-          <h2 className="ml-1">ADX</h2>
-        </StyledSubSubContainer>
-      </StyledContainer>
+      <div className="flex flex-col sm:flex-row gap-6 w-full">
+        <StyledContainer
+          headerClassName="text-center justify-center"
+          title="ADX CIRCULATING SUPPLY"
+          className="w-full"
+        >
+          <StyledSubSubContainer className="items-center justify-center">
+            <h2>{formatNumber(adxTotalSupply, 2)}</h2>
+            <h2 className="ml-1">ADX</h2>
+          </StyledSubSubContainer>
+        </StyledContainer>
 
-      <StyledContainer
-        headerClassName="text-center justify-center"
-        title="LOCKED STAKED ADX"
-        className="min-w-[25em] w-[25em] grow"
-      >
-        <StyledSubSubContainer className="items-center justify-center">
-          <h2>
-            {formatNumber(
-              nativeToUi(
-                adxStakingAccount.nbLockedTokens,
-                adxStakingAccount.stakedTokenDecimals,
-              ),
-              2,
-            )}
-          </h2>
-          <h2 className="ml-1">ADX</h2>
-        </StyledSubSubContainer>
-      </StyledContainer>
-
+        <StyledContainer
+          headerClassName="text-center justify-center"
+          title="LOCKED STAKED ADX"
+          className="w-full"
+        >
+          <StyledSubSubContainer className="items-center justify-center">
+            <h2>
+              {formatNumber(
+                nativeToUi(
+                  adxStakingAccount.nbLockedTokens,
+                  adxStakingAccount.stakedTokenDecimals,
+                ),
+                2,
+              )}
+            </h2>
+            <h2 className="ml-1">ADX</h2>
+          </StyledSubSubContainer>
+        </StyledContainer>
+      </div>
       <StyledContainer
         headerClassName="text-center justify-center"
         title="VESTED ADX"
-        className="min-w-[25em] w-[25em] grow"
+        className="w-full grow"
       >
         <StyledSubSubContainer className="items-center justify-center">
           <h2>
@@ -137,11 +145,11 @@ export default function ADXTokenomicsView({
       <StyledContainer
         title="BUCKETS"
         headerClassName="ml-auto mr-auto"
-        className="min-w-[40em] w-[40em] grow"
+        className="w-full grow"
         bodyClassName=""
       >
         <StyledSubSubContainer className="flex-col items-center">
-          <div className="max-w-[30em] w-[30em]">
+          <div className="w-full max-w-[30em] ">
             <div className="flex w-full justify-evenly">
               <h3 className="flex flex-col">
                 <div className="h-[3px] w-full bg-white"></div>
@@ -252,7 +260,12 @@ export default function ADXTokenomicsView({
                   },
                   y: {
                     ticks: {
-                      callback: (value: string | number) => value + ' ADX',
+                      callback: (value: string | number) =>
+                        formatNumberShort(value) + ' ADX',
+
+                      font: {
+                        size: isBreakpoint ? 8 : 12,
+                      },
                     },
                     beginAtZero: true,
                   },
@@ -265,7 +278,7 @@ export default function ADXTokenomicsView({
 
       <StyledContainer title="TOKENOMIC" headerClassName="ml-auto mr-auto">
         <StyledSubSubContainer className="flex-col items-center">
-          <div className="flex justify-evenly mb-4 w-[30em]">
+          <div className="flex gap-6 justify-evenly mb-4">
             {bucketsLabels.map((name, i) => (
               <h3 key={name} className="flex flex-col">
                 <div
@@ -279,7 +292,7 @@ export default function ADXTokenomicsView({
             ))}
           </div>
 
-          <div className="w-[25em] max-w-[25em] h-[25em]">
+          <div className="w-full max-w-[25em] h-[25em]">
             <Pie
               color="#ffffff"
               options={{

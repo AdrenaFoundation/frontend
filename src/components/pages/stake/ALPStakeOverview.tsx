@@ -41,23 +41,23 @@ export default function ALPStakeOverview({
       <StyledSubContainer>
         <h1>Locked Staking</h1>
 
-        <span className="mt-4 flex flex-col opacity-50 font-boldy">
-          <span className="text-sm">
+        <div className="mt-4 flex flex-col">
+          <span className="text-lg">
             Provide liquidities long term: the longer the period, the higher the
             rewards.
           </span>
-          <span className="text-sm">
+          <span className="text-lg">
             70% of protocol fees are distributed to ALP holder and stakers.
           </span>
 
           <ul>
-            <li className="mt-4 text-sm">- Earn USDC rewards</li>
-            <li className="mt-4 text-sm">
+            <li className="mt-4 text-lg">- Earn USDC rewards</li>
+            <li className="mt-4 text-lg">
               - Locked principal becomes available at the end of the period,
               with the possibility to unstake earlier for a fee
             </li>
           </ul>
-        </span>
+        </div>
 
         {totalLockedStake !== 0 ? (
           <StyledSubSubContainer className="mt-4">
@@ -93,7 +93,7 @@ export default function ALPStakeOverview({
                   />
                 ))
               ) : (
-                <div className="text-sm m-auto mt-4 mb-4 text-txtfade">
+                <div className="text-lg m-auto mt-4 mb-4 text-txtfade">
                   No Active Locked Stakes
                 </div>
               )}

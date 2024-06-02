@@ -25,38 +25,38 @@ export default function FeesView({
 
   return (
     <>
-      <StyledContainer
-        headerClassName="text-center justify-center"
-        title="ALL TIME FEES"
-        className="min-w-[24em] w-[24em] grow"
-      >
-        <StyledSubSubContainer className="mt-2 justify-center">
-          <h2>{formatPriceInfo(mainPool.totalFeeCollected)}</h2>
-        </StyledSubSubContainer>
-      </StyledContainer>
+      <div className="flex flex-col sm:flex-row gap-4 w-full">
+        <StyledContainer
+          headerClassName="text-center justify-center"
+          title="ALL TIME FEES"
+        >
+          <StyledSubSubContainer className="mt-2 justify-center">
+            <h2>{formatPriceInfo(mainPool.totalFeeCollected)}</h2>
+          </StyledSubSubContainer>
+        </StyledContainer>
 
-      <StyledContainer
-        headerClassName="text-center justify-center"
-        title="CURRENT STAKING ROUND FEES"
-        subTitle="Accumulating fees to be redistributed to stakers at the end of the current staking round."
-        className="min-w-[30em] w-[30em] grow"
-      >
-        <StyledSubSubContainer className="mt-2 justify-center">
-          <h2>
-            {alpStakingCurrentRoundRewards !== null &&
-            adxStakingCurrentRoundRewards !== null
-              ? formatPriceInfo(
-                  alpStakingCurrentRoundRewards + adxStakingCurrentRoundRewards,
-                )
-              : '-'}
-          </h2>
-        </StyledSubSubContainer>
-      </StyledContainer>
-
+        <StyledContainer
+          headerClassName="text-center justify-center"
+          title="CURRENT STAKING ROUND FEES"
+          subTitle="Accumulating fees to be redistributed to stakers at the end of the current staking round."
+        >
+          <StyledSubSubContainer className="mt-2 justify-center">
+            <h2>
+              {alpStakingCurrentRoundRewards !== null &&
+              adxStakingCurrentRoundRewards !== null
+                ? formatPriceInfo(
+                    alpStakingCurrentRoundRewards +
+                      adxStakingCurrentRoundRewards,
+                  )
+                : '-'}
+            </h2>
+          </StyledSubSubContainer>
+        </StyledContainer>
+      </div>
       <StyledContainer
         title="All time Fees Breakdown"
         subTitle="Fees per custody per action."
-        className="min-w-[45em] w-[45em] grow"
+        className="w-full grow"
       >
         <Table
           rowTitleWidth="90px"

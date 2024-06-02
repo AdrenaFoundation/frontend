@@ -49,7 +49,7 @@ export default function VestingView({
       </StyledContainer>
 
       {vests?.length ? (
-        <StyledContainer title="VESTS BREAKDOWN" className="min-w-[50em]">
+        <StyledContainer title="VESTS BREAKDOWN" className="w-full">
           <Table
             rowTitleWidth="0px"
             columnsTitles={[

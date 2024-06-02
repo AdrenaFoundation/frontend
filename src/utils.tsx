@@ -106,6 +106,19 @@ export function formatPriceInfo(
   return `$${formatNumber(price, decimals)}`;
 }
 
+export function formatNumberShort(nb: number | string): string {
+  if (typeof nb === 'string') {
+    nb = Number(nb);
+  }
+  if (nb < 1_000) return nb.toString();
+
+  if (nb < 1_000_000) return `${(nb / 1_000).toFixed(1)}K`;
+
+  if (nb < 1_000_000_000) return `${(nb / 1_000_000).toFixed(1)}M`;
+
+  return `${(nb / 1_000_000_000).toFixed(1)}B`;
+}
+
 export function formatPercentage(
   nb: number | null | undefined,
   precision = 2,
@@ -591,7 +604,7 @@ export function getDatasetBackgroundColor(context: Context) {
 
 export function getFontSizeWeight(context: Context): Font {
   return {
-    size: context.chart.width < 512 ? 12 : 14,
+    size: context.chart.width < 512 ? 8 : 14,
     weight: 'bold',
   };
 }

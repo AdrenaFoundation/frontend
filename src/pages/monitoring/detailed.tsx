@@ -67,7 +67,7 @@ export default function DetailedMonitoring({
   return (
     <>
       <div className="w-full max-w-full overflow-x-auto flex z-10">
-        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap min-w-[40em] w-[60em] max-w-full ml-auto mr-auto justify-center">
+        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap w-full max-w-[60em] ml-auto mr-auto justify-center">
           {selectedTab === 'All' ? (
             <div className="w-full z-10 text-center">
               <h1 className="text-white">AUTOMATION</h1>
@@ -88,11 +88,12 @@ export default function DetailedMonitoring({
             </div>
           ) : null}
 
-          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
-            <AccountsView
+          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
+            <ADXTokenomicsView
+              vestRegistry={vestRegistry}
               cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
+              adxTotalSupply={adxTotalSupply}
+              adxStakingAccount={adxStakingAccount}
             />
           ) : null}
 
@@ -162,12 +163,11 @@ export default function DetailedMonitoring({
             </div>
           ) : null}
 
-          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
-            <ADXTokenomicsView
-              vestRegistry={vestRegistry}
+          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
+            <AccountsView
               cortex={cortex}
-              adxTotalSupply={adxTotalSupply}
-              adxStakingAccount={adxStakingAccount}
+              mainPool={mainPool}
+              custodies={custodies}
             />
           ) : null}
         </div>

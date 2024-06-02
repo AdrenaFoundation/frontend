@@ -20,6 +20,7 @@ export default function PositionsStats({
   return (
     <StyledContainer
       title={title}
+      titleClassName="text-2xl"
       bodyClassName={
         isBigScreen && positions && positions.length
           ? 'border rounded-lg'

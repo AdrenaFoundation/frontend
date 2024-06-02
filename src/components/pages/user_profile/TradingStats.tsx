@@ -13,7 +13,11 @@ export default function TradingStatsBloc({
   className?: string;
 }) {
   return (
-    <StyledContainer title="Trading Stats" className={twMerge(className)}>
+    <StyledContainer
+      title="Trading Stats"
+      titleClassName="text-2xl"
+      className={twMerge(className)}
+    >
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Opened Position Count</div>

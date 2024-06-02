@@ -21,9 +21,10 @@ export default function AccountsView({
       <StyledContainer
         title="Adrena Accounts"
         subTitle="Adrena Program on-chain accounts (PDAs)."
-        className="w-[40em] grow"
+        className="w-full grow"
       >
         <Table
+          breakpoint="767px"
           rowTitleWidth="30%"
           data={[
             {
@@ -38,7 +39,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={AdrenaClient.programId}
                 />
               ),
@@ -55,7 +56,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={cortex.admin}
                 />
               ),
@@ -73,7 +74,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={AdrenaClient.cortexPda}
                 />
               ),
@@ -91,7 +92,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={mainPool.pubkey}
                 />
               ),
@@ -110,7 +111,7 @@ export default function AccountsView({
                 ),
                 value: (
                   <OnchainAccountInfo
-                    className="ml-auto"
+                    className="md:ml-auto"
                     address={custody.pubkey}
                   />
                 ),
@@ -129,7 +130,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={AdrenaClient.transferAuthorityAddress}
                 />
               ),
@@ -146,7 +147,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={window.adrena.client.getStakingPda(
                     window.adrena.client.lmTokenMint,
                   )}
@@ -165,7 +166,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={window.adrena.client.getStakingPda(
                     window.adrena.client.lpTokenMint,
                   )}
@@ -178,6 +179,7 @@ export default function AccountsView({
 
       <StyledContainer title="Mints" className="w-[40em] grow">
         <Table
+          breakpoint="767px"
           rowTitleWidth="30%"
           data={[
             {
@@ -192,7 +194,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={window.adrena.client.lmTokenMint}
                 />
               ),
@@ -209,7 +211,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={window.adrena.client.lpTokenMint}
                 />
               ),
@@ -224,7 +226,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={custody.mint}
                 />
               ),
@@ -239,6 +241,7 @@ export default function AccountsView({
         className="w-full"
       >
         <Table
+          breakpoint="767px"
           rowTitleWidth="30%"
           data={[
             {
@@ -253,7 +256,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={cortex.governanceProgram}
                 />
               ),
@@ -270,7 +273,7 @@ export default function AccountsView({
               ),
               value: (
                 <OnchainAccountInfo
-                  className="ml-auto"
+                  className="md:ml-auto"
                   address={cortex.governanceRealm}
                 />
               ),

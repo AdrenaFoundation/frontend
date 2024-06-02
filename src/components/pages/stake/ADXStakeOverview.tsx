@@ -43,11 +43,11 @@ export default function ADXStakeOverview({
         <h1>Liquid Staking</h1>
 
         <ul>
-          <li className="mt-4 text-sm opacity-50 font-boldy">
+          <li className="mt-4 text-lg">
             - Get 1:1 voting power to participate in the protocol&apos;s
             governance
           </li>
-          <li className="mt-4 text-sm opacity-50 font-boldy">
+          <li className="mt-4 text-lg">
             - Unstake at any time, if not participating in an active vote
           </li>
         </ul>
@@ -87,30 +87,30 @@ export default function ADXStakeOverview({
       <StyledSubContainer>
         <h1>Locked Staking</h1>
 
-        <span className="mt-4 flex flex-col opacity-50 font-boldy">
-          <span className="text-sm">
+        <div className="mt-4 flex flex-col">
+          <span className="text-lg">
             Align with the protocol long term success: the longer the period,
             the higher the rewards.
           </span>
-          <span className="text-sm">
+          <span className="text-lg">
             20% of protocol fees are distributed to ADX stakers.
           </span>
 
           <ul>
-            <li className="mt-4 text-sm">
+            <li className="mt-4 text-lg">
               - Get amplified voting power to participate in the protocol&apos;s
               governance
             </li>
-            <li className="mt-4 text-sm">
+            <li className="mt-4 text-lg">
               - Earn USDC rewards (20% of protocol fees distributed to stakers)
             </li>
-            <li className="mt-4 text-sm">- Earn extra ADX rewards</li>
-            <li className="mt-4 text-sm">
+            <li className="mt-4 text-lg">- Earn extra ADX rewards</li>
+            <li className="mt-4 text-lg">
               - Locked principal becomes available at the end of the period,
               with the possibility to unstake earlier for a fee
             </li>
           </ul>
-        </span>
+        </div>
 
         {totalLockedStake !== 0 ? (
           <StyledSubSubContainer className="mt-4">
