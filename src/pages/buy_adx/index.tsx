@@ -11,8 +11,8 @@ import jupIcon from '../../../public/images/jup-logo.png';
 
 export default function BuyADX() {
   return (
-    <div className="relative px-7">
-      <div className="flex flex-col justify-center items-start w-full h-[800px]  mb-[150px] sm:mb-0">
+    <div className="px-7">
+      <div className="relative flex flex-col justify-center items-start w-full h-[800px]  mb-[150px] sm:mb-0">
         <h1 className="text-[2.6rem] sm:text-[4rem] uppercase max-w-[840px] z-10">
           DIRECTLY CAPTURE REVENUE AND INFLUENCE THE PROTOCOL WITH THE ADRENA
           TOKEN
@@ -31,18 +31,18 @@ export default function BuyADX() {
           size="lg"
           className="mt-4 px-14 py-3 text-base"
         />
+        <RiveAnimation
+          animation="mid-monster"
+          layout={
+            new Layout({
+              fit: Fit.Contain,
+              alignment: Alignment.TopRight,
+            })
+          }
+          className="absolute w-full h-full top-0 right-0 max-w-[1200px] opacity-20"
+        />
+        <div className="absolute w-[50px] h-full top-0 right-0 bg-gradient-to-r from-[#050f1900] to-[#050f19] z-10"></div>
       </div>
-      <RiveAnimation
-        animation="mid-monster"
-        layout={
-          new Layout({
-            fit: Fit.Contain,
-            alignment: Alignment.TopRight,
-          })
-        }
-        className="absolute w-full h-full top-0 right-0 max-w-[1200px] opacity-20"
-      />
-      <div className="absolute w-[50px] h-full top-0 right-0 bg-gradient-to-r from-[#050f1900] to-[#050f19] z-10"></div>
 
       <div className="relative flex flex-col lg:flex-row gap-12 justify-between items-center w-full mb-[150px] sm:mb-[250px]">
         <div className="relative">

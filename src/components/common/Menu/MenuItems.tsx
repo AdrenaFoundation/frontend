@@ -9,6 +9,8 @@ export default function MenuItems({
   children: ReactNode;
 }) {
   return (
-    <ul className={twMerge('w-full overflow-hidden', className)}>{children}</ul>
+    <ul className={twMerge('w-full overflow-hidden select-none', className)}>
+      {children}
+    </ul>
   );
 }
