@@ -1,6 +1,5 @@
 import { AdrenaClient } from '@/AdrenaClient';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Cortex, CustodyExtended, PoolExtended } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
@@ -17,7 +16,6 @@ export default function AccountsView({
   mainPool: PoolExtended;
   custodies: CustodyExtended[];
 }) {
-  const isBreakpoint = useBetterMediaQuery('(min-width: 767px)');
   return (
     <>
       <StyledContainer
@@ -26,7 +24,7 @@ export default function AccountsView({
         className="w-full grow"
       >
         <Table
-          isBreakpoint={isBreakpoint}
+          breakpoint="767px"
           rowTitleWidth="30%"
           data={[
             {
@@ -181,7 +179,7 @@ export default function AccountsView({
 
       <StyledContainer title="Mints" className="w-[40em] grow">
         <Table
-          isBreakpoint={isBreakpoint}
+          breakpoint="767px"
           rowTitleWidth="30%"
           data={[
             {
@@ -243,7 +241,7 @@ export default function AccountsView({
         className="w-full"
       >
         <Table
-          isBreakpoint={isBreakpoint}
+          breakpoint="767px"
           rowTitleWidth="30%"
           data={[
             {

@@ -3,7 +3,6 @@ import Image from 'next/image';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, PoolExtended } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi } from '@/utils';
@@ -19,7 +18,6 @@ export default function TradingView({
   custodies: CustodyExtended[];
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const isBreakpoint = useBetterMediaQuery('(min-width: 800px)');
 
   return (
     <>
@@ -98,7 +96,6 @@ export default function TradingView({
 
       <StyledContainer title="POSITIONS NOW BREAKDOWN" className="w-full grow">
         <Table
-          isBreakpoint={isBreakpoint}
           rowTitleWidth="20%"
           columnsTitles={['Long', 'Short']}
           data={[

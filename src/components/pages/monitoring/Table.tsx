@@ -2,17 +2,18 @@ import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 import Block from './Block';
 
 export default function Table({
-  isBreakpoint,
+  breakpoint,
   className,
   columnsTitles,
   data,
   rowTitleWidth,
 }: {
-  isBreakpoint: boolean | null;
+  breakpoint?: string | null;
   className?: string;
   columnsTitles?: ReactNode[];
   data: (
@@ -27,7 +28,11 @@ export default function Table({
   )[];
   rowTitleWidth?: string;
 }) {
-  return isBreakpoint ? (
+  const isBreakpoint = useBetterMediaQuery(
+    `(max-width: ${breakpoint ?? '800px'})`,
+  );
+
+  return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
       <div className="flex">
         <div

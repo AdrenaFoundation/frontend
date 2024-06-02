@@ -59,7 +59,6 @@ export default function AutomationView({
           )}
         >
           <Table
-            isBreakpoint={isBreakpoint}
             rowTitleWidth="30%"
             data={[
               {

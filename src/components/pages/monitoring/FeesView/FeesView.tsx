@@ -3,7 +3,6 @@ import Image from 'next/image';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { CustodyExtended, PoolExtended } from '@/types';
 import { formatPriceInfo, nativeToUi } from '@/utils';
 
@@ -23,7 +22,6 @@ export default function FeesView({
   adxStakingCurrentRoundRewards: number | null;
 }) {
   const attributes = Object.keys(custodies[0].nativeObject.collectedFees);
-  const isBigScreen = useBetterMediaQuery('(min-width: 800px)');
 
   return (
     <>
@@ -61,7 +59,6 @@ export default function FeesView({
         className="w-full grow"
       >
         <Table
-          isBreakpoint={isBigScreen}
           rowTitleWidth="90px"
           columnsTitles={attributes.map(abbreviateWords)}
           data={[

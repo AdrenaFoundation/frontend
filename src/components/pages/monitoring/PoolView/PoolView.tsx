@@ -26,7 +26,6 @@ import { USD_DECIMALS } from '@/constant';
 import useALPIndexComposition, {
   TokenInfo,
 } from '@/hooks/useALPIndexComposition';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { CustodyExtended, PoolExtended } from '@/types';
 import {
@@ -93,7 +92,6 @@ export default function PoolView({
   const composition = useALPIndexComposition(custodies);
 
   const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
-  const isBreakpoint = useBetterMediaQuery('(min-width: 800px)');
 
   return (
     <>
@@ -116,7 +114,6 @@ export default function PoolView({
         className="min-w-[22em] w-[22em] grow"
       >
         <Table
-          isBreakpoint={isBreakpoint}
           rowTitleWidth="50%"
           data={[
             ...custodies.map((custody) => ({
@@ -320,7 +317,6 @@ export default function PoolView({
 
       <StyledContainer title={'Volume Breakdown'} className={className}>
         <Table
-          isBreakpoint={isBreakpoint}
           rowTitleWidth="90px"
           columnsTitles={attributes.map(abbreviateWords)}
           data={[
