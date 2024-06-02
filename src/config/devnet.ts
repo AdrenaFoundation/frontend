@@ -3,12 +3,10 @@ import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
-import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
 import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
-import usdtLogo from '../../public/images/usdt.svg';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
 class DevnetConfiguration implements IConfiguration {
@@ -32,14 +30,6 @@ class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'usd-coin',
       decimals: 6,
     },
-    BkT3jz4yZaYwiPMSWUBTVpZjCwmhw4KXN9SKVuBkGz8L: {
-      name: 'Tether',
-      color: '#26a17b',
-      symbol: 'USDT',
-      image: usdtLogo,
-      coingeckoId: 'tether',
-      decimals: 6,
-    },
     HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
       name: 'Ethereum',
       color: '#3D3E3F',
@@ -54,14 +44,6 @@ class DevnetConfiguration implements IConfiguration {
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
-      decimals: 6,
-    },
-    '4kUrHxiMfeKPGDi6yFV7kte8JjN3NG3aqG7bui4pfMqz': {
-      name: 'Bonk',
-      color: '#f7931a',
-      symbol: 'BONK',
-      image: bonkLogo,
-      coingeckoId: 'bonk',
       decimals: 6,
     },
     [NATIVE_MINT.toBase58()]: {
@@ -97,10 +79,6 @@ class DevnetConfiguration implements IConfiguration {
       name: 'Helius RPC',
       url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
     },
-    {
-      name: 'Solana RPC',
-      url: 'https://api.devnet.solana.com',
-    },
   ];
 
   public readonly pythnetRpc: RpcOption = {
@@ -109,7 +87,7 @@ class DevnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '4vc4LX4K86ptAvaiQcon79yhnKHbCs2hv5TFFmQr8F2L',
+    '22h3wdapjk9e4TPEtEmFcXB1dCZZEShCtGptdBCvWNQr',
   );
 }
 
