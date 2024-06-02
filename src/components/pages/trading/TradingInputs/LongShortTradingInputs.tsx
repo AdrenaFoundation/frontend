@@ -417,7 +417,12 @@ export default function LongShortTradingInputs({
         <h5 className="flex items-center ml-4">
           Position Size
           <InfoAnnotation
-            text={<div className="flex flex-col">TODO</div>}
+            text={
+              <div className="flex flex-col">
+                The size is the leveraged value of the initial collateral after
+                accounting for entry fees proportional to the leveraged amount.
+              </div>
+            }
             className="w-3 ml-1"
           />
         </h5>
