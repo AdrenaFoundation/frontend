@@ -432,6 +432,7 @@ export default function LongShortTradingInputs({
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"
             menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
+            menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
             selected={tokenB.symbol}
             options={allowedTokenB.map((token) => ({
               title: token.symbol,

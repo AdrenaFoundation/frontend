@@ -55,7 +55,7 @@ export default function Select<T extends string>({
     ) : null;
 
   return (
-    <div className={className}>
+    <div className={twMerge('select-none', className)}>
       <Menu
         disabled={options.length <= 1}
         withBorder={true}
@@ -75,7 +75,7 @@ export default function Select<T extends string>({
             >
               {reversed ? img : chevron}
 
-              <span className="text-lg font-special z-20 m-auto">
+              <span className="text-lg font-special z-20 m-auto select-none">
                 {selected}
               </span>
 
