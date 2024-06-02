@@ -88,6 +88,8 @@ export default function DetailedMonitoring({
             </div>
           ) : null}
 
+          {/*
+          // TODO: Re-enable when wanted
           {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
             <ADXTokenomicsView
               vestRegistry={vestRegistry}
@@ -95,7 +97,7 @@ export default function DetailedMonitoring({
               adxTotalSupply={adxTotalSupply}
               adxStakingAccount={adxStakingAccount}
             />
-          ) : null}
+          ) : null} */}
 
           {selectedTab === 'All' ? (
             <div className="w-full z-10 text-center">
