@@ -120,10 +120,12 @@ export default function PositionsBlocks({
           </div>
 
           {position.side === 'long' &&
-          position.price < (position.liquidationPrice ?? 0)
+          (tokenPrices[position.token.symbol] ?? 0) <
+            (position.liquidationPrice ?? 0)
             ? generateLiquidationBlock()
             : position.side === 'short' &&
-              position.price > (position.liquidationPrice ?? 0)
+              (tokenPrices[position.token.symbol] ?? 0) >
+                (position.liquidationPrice ?? 0)
             ? generateLiquidationBlock()
             : ''}
 

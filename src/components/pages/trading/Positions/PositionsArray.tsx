@@ -60,6 +60,7 @@ export default function PositionsArray({
   const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
 
   function generateLiquidationBlock() {
+    console.log('generateLiquidationBlock');
     return (
       <div className="flex justify-center items-center text-center align-middle relative">
         {arrowElementUpLeft}
@@ -68,7 +69,6 @@ export default function PositionsArray({
       </div>
     );
   }
-
   return (
     <table className={twMerge('w-full', className, bodyClassName)}>
       {/* Header */}
@@ -220,10 +220,12 @@ export default function PositionsArray({
                 className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
               >
                 {position.side === 'long' &&
-                position.price < (position.liquidationPrice ?? 0)
+                (tokenPrices[position.token.symbol] ?? 0) <
+                  (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : position.side === 'short' &&
-                    position.price > (position.liquidationPrice ?? 0)
+                    (tokenPrices[position.token.symbol] ?? 0) >
+                      (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : ''}
               </td>
