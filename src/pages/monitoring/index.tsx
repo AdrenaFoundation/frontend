@@ -20,6 +20,7 @@ export default function Monitoring(pageProps: PageProps) {
   const tabs = [
     'All',
     'ADX tokenomics',
+    'Automation',
     'Pool',
     'Fees',
     'Staking',

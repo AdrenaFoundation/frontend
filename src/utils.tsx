@@ -1,4 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
+import { sha256 } from '@noble/hashes/sha256';
 import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -624,6 +625,16 @@ export const verifyIfValidUrl = (url: string) => {
 
   return regExUrl.test(url);
 };
+
+/*** Helper methods to parse anchor discriminators ***/
+
+export function getAccountDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(`account:${name}`).slice(0, 8));
+}
+
+export function getMethodDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(`global:${name}`).slice(0, 8));
+}
 
 export function calculateCappedFeeForExitEarly(
   lockedStake: LockedStakeExtended,
