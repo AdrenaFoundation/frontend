@@ -54,8 +54,8 @@ export default function DetailedMonitoring({
     !tokenPrices ||
     !cortex ||
     !vestRegistry ||
-    !adxTotalSupply ||
-    !alpTotalSupply ||
+    adxTotalSupply === null ||
+    alpTotalSupply === null ||
     !alpStakingAccount ||
     !adxStakingAccount ||
     !composition ||
