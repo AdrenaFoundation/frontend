@@ -1,4 +1,5 @@
 import { BN, Program } from '@coral-xyz/anchor';
+import { sha256 } from '@noble/hashes/sha256';
 import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -103,6 +104,19 @@ export function formatPriceInfo(
   }
 
   return `$${formatNumber(price, decimals)}`;
+}
+
+export function formatNumberShort(nb: number | string): string {
+  if (typeof nb === 'string') {
+    nb = Number(nb);
+  }
+  if (nb < 1_000) return nb.toString();
+
+  if (nb < 1_000_000) return `${(nb / 1_000).toFixed(1)}K`;
+
+  if (nb < 1_000_000_000) return `${(nb / 1_000_000).toFixed(1)}M`;
+
+  return `${(nb / 1_000_000_000).toFixed(1)}B`;
 }
 
 export function formatPercentage(
@@ -590,7 +604,7 @@ export function getDatasetBackgroundColor(context: Context) {
 
 export function getFontSizeWeight(context: Context): Font {
   return {
-    size: context.chart.width < 512 ? 12 : 14,
+    size: context.chart.width < 512 ? 8 : 14,
     weight: 'bold',
   };
 }
@@ -611,6 +625,16 @@ export const verifyIfValidUrl = (url: string) => {
 
   return regExUrl.test(url);
 };
+
+/*** Helper methods to parse anchor discriminators ***/
+
+export function getAccountDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(`account:${name}`).slice(0, 8));
+}
+
+export function getMethodDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(`global:${name}`).slice(0, 8));
+}
 
 export function calculateCappedFeeForExitEarly(
   lockedStake: LockedStakeExtended,

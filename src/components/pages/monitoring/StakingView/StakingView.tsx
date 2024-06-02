@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
-
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { Staking } from '@/types';
 import {
-  formatMilliseconds,
   formatNumber,
   formatPriceInfo,
   getNextStakingRoundStartTime,
   nativeToUi,
 } from '@/utils';
+
+import RemainingTimeToDate from '../RemainingTimeToDate';
 
 export default function StakingView({
   alpStakingAccount,
@@ -23,33 +22,11 @@ export default function StakingView({
   alpStakingCurrentRoundRewards: number | null;
   adxStakingCurrentRoundRewards: number | null;
 }) {
-  const [timeRemainingAlpStakingRound, setTimeRemainingAlpStakingRound] =
-    useState<number | null>(null);
-  const [timeRemainingAdxStakingRound, setTimeRemainingAdxStakingRound] =
-    useState<number | null>(null);
-
-  useEffect(() => {
-    setTimeRemainingAlpStakingRound(
-      getNextStakingRoundStartTime(
-        alpStakingAccount.currentStakingRound.startTime,
-      ).getTime() - Date.now(),
-    );
-  }, [alpStakingAccount.currentStakingRound.startTime]);
-
-  useEffect(() => {
-    setTimeRemainingAdxStakingRound(
-      getNextStakingRoundStartTime(
-        adxStakingAccount.currentStakingRound.startTime,
-      ).getTime() - Date.now(),
-    );
-  }, [adxStakingAccount.currentStakingRound.startTime]);
-
   return (
-    <>
+    <div className="grid sm:grid-cols-2 gap-6 w-full">
       <StyledContainer
         title="LOCKED TOKENS"
         subTitle="Tokens locked in the staking program."
-        className="min-w-[20em] w-[20em] grow"
       >
         <StyledSubContainer>
           <h2>LOCKED ALP</h2>
@@ -87,7 +64,6 @@ export default function StakingView({
       <StyledContainer
         title="STAKING REWARD VAULTS"
         subTitle="Rewards accruing to be redistributed to stakers at the end of the staking round."
-        className="min-w-[22em] w-[22em] grow"
       >
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING</h2>
@@ -117,7 +93,6 @@ export default function StakingView({
       <StyledContainer
         title="STAKING REWARD WAITING TO BE CLAIMED"
         subTitle="Rewards from past rounds attributed to users waiting to be claimed."
-        className="min-w-[22em] w-[22em] grow"
       >
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING</h2>
@@ -156,7 +131,7 @@ export default function StakingView({
 
           <StyledSubSubContainer className="mt-2 flex-col">
             <h2>
-              {alpStakingAccount.resolvedRewardTokenAmount !== null
+              {adxStakingAccount.resolvedRewardTokenAmount !== null
                 ? formatNumber(
                     nativeToUi(
                       adxStakingAccount.resolvedRewardTokenAmount,
@@ -184,19 +159,20 @@ export default function StakingView({
         </StyledSubContainer>
       </StyledContainer>
 
-      <StyledContainer
-        title="CURRENT STAKING ROUND TIME"
-        className="min-w-[24em] w-[24em] grow"
-      >
+      <StyledContainer title="CURRENT STAKING ROUND TIME">
         <StyledSubContainer>
           <h2>ALP TOKEN STAKING ROUND ENDS IN</h2>
 
           <StyledSubSubContainer className="mt-2">
-            <h2>
-              {timeRemainingAlpStakingRound !== null
-                ? formatMilliseconds(timeRemainingAlpStakingRound)
-                : '-'}
-            </h2>
+            <RemainingTimeToDate
+              timestamp={
+                getNextStakingRoundStartTime(
+                  alpStakingAccount.currentStakingRound.startTime,
+                ).getTime() / 1000
+              }
+              classNameTime="text-xl"
+              tippyText="The call is overdue, please check the thread."
+            />
           </StyledSubSubContainer>
         </StyledSubContainer>
 
@@ -204,14 +180,18 @@ export default function StakingView({
           <h2>ADX TOKEN STAKING ROUND ENDS IN</h2>
 
           <StyledSubSubContainer className="mt-2">
-            <h2>
-              {timeRemainingAdxStakingRound !== null
-                ? formatMilliseconds(timeRemainingAdxStakingRound)
-                : '-'}
-            </h2>
+            <RemainingTimeToDate
+              timestamp={
+                getNextStakingRoundStartTime(
+                  adxStakingAccount.currentStakingRound.startTime,
+                ).getTime() / 1000
+              }
+              classNameTime="text-xl"
+              tippyText="The call is overdue, please check the thread."
+            />
           </StyledSubSubContainer>
         </StyledSubContainer>
       </StyledContainer>
-    </>
+    </div>
   );
 }

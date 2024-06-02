@@ -1,3 +1,4 @@
+import Button from '@/components/common/Button/Button';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -20,48 +21,39 @@ export default function StakesStats({
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
 }) {
   return (
-    <StyledContainer title="Ongoing Stakes">
+    <StyledContainer title="Ongoing Stakes" titleClassName="text-2xl">
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Liquid Staked ADX</div>
 
-          <span>
-            <FormatNumber
-              nb={liquidStakedADX}
-              precision={window.adrena.client.adxToken.decimals}
-              placeholder="0"
-              className="inline"
-            />{' '}
-            ADX
-          </span>
+          <FormatNumber
+            nb={liquidStakedADX}
+            precision={window.adrena.client.adxToken.decimals}
+            placeholder="0"
+            suffix=" ADX"
+          />
         </div>
 
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Locked Staked ADX</div>
 
-          <span>
-            <FormatNumber
-              nb={lockedStakedADX}
-              precision={window.adrena.client.adxToken.decimals}
-              placeholder="0"
-              className="inline"
-            />{' '}
-            ADX
-          </span>
+          <FormatNumber
+            nb={lockedStakedADX}
+            precision={window.adrena.client.adxToken.decimals}
+            placeholder="0"
+            suffix=" ADX"
+          />
         </div>
 
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Locked Staked ALP</div>
 
-          <span>
-            <FormatNumber
-              nb={lockedStakedALP}
-              precision={window.adrena.client.alpToken.decimals}
-              placeholder="0"
-              className="inline"
-            />{' '}
-            ALP
-          </span>
+          <FormatNumber
+            nb={lockedStakedALP}
+            precision={window.adrena.client.alpToken.decimals}
+            placeholder="0"
+            suffix=" ALP"
+          />
         </div>
       </StyledSubSubContainer>
 
@@ -92,6 +84,12 @@ export default function StakesStats({
             ) : (
               <div className="text-sm m-auto mt-4 mb-4 text-txtfade">
                 No Active Locked Stakes
+                <Button
+                  title="Stake ADX"
+                  href={'/stake'}
+                  className="mt-3 mx-auto"
+                  size="lg"
+                />
               </div>
             )}
           </div>

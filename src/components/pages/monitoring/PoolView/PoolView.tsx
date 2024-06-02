@@ -155,7 +155,7 @@ export default function PoolView({
       <StyledContainer
         title="Pool Ratios"
         headerClassName="ml-auto mr-auto"
-        className="min-w-[24em] w-[24em] grow"
+        className="w-full grow"
         bodyClassName="items-center"
       >
         {composition &&

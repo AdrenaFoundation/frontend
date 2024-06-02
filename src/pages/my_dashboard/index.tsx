@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
-import OwnerBloc from '@/components/pages/user_profile/OwnerBloc';
+import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
 import StakesStats from '@/components/pages/user_profile/StakesStats';
@@ -246,7 +246,7 @@ export default function MyDashboard({
                 </div>
               ) : (
                 <>
-                  <OwnerBloc
+                  <OwnerBlock
                     userProfile={userProfile}
                     triggerUserProfileReload={triggerUserProfileReload}
                     canUpdateNickname={!readonly}
@@ -268,6 +268,7 @@ export default function MyDashboard({
               triggerPositionsReload={triggerPositionsReload}
               title="Opened Positions"
             />
+
             <StakesStats
               liquidStakedADX={liquidStakedADX}
               lockedStakedADX={lockedStakedADX}

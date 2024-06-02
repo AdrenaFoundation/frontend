@@ -7,9 +7,11 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
 import { Adrena } from '@/target/adrena';
+import { ThreadProgram as SablierThreadProgram } from '@/target/thread_program';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
+import { SablierClient } from './SablierClient';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -24,6 +26,7 @@ export type GeoBlockingData = {
 export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
+  sablierClient: SablierClient;
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
@@ -194,6 +197,26 @@ export type LockedStake = UserStaking['lockedStakes'][0];
 export type LockedStakeExtended = UserStaking['lockedStakes'][0] & {
   index: number;
   tokenSymbol: 'ADX' | 'ALP';
+};
+
+export type GreaterThanOrEqual = 'gte';
+export type LessThanOrEqual = 'lte';
+
+export type Equality = {
+  GreaterThanOrEqual;
+  LessThanOrEqual;
+};
+
+export type SablierAccounts = IdlAccounts<SablierThreadProgram>;
+export type SablierThread = AccountsThreadProgram['thread'];
+
+export type SablierThreadExtended = {
+  lastExecutionDate: number | null;
+  nextTheoreticalExecutionDate: number | null;
+  paused: boolean;
+  pubkey: PublicKey;
+  funding: number;
+  nativeObject: SablierThread;
 };
 
 //

@@ -19,13 +19,15 @@ export default function Monitoring(pageProps: PageProps) {
 
   const tabs = [
     'All',
-    'Accounts',
+    // TODO: re-enable when needed
+    //'ADX tokenomics',
+    'Automation',
     'Pool',
     'Fees',
     'Staking',
     'Trading',
     'Vesting',
-    'ADX tokenomics',
+    'Accounts',
   ] as const;
   const tabsFormatted = tabs.map((x) => ({
     title: x,
@@ -34,7 +36,7 @@ export default function Monitoring(pageProps: PageProps) {
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0 mx-5">
         <RiveAnimation
           animation="btm-monster"
           layout={
@@ -90,8 +92,8 @@ export default function Monitoring(pageProps: PageProps) {
 
         {detailedDisplay ? (
           <TabSelect
-            wrapperClassName="w-full w-[40em] pl-4 pr-4 bg-secondary flex-col md:flex-row"
-            titleClassName="whitespace-nowrap text-xs"
+            wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
+            titleClassName="whitespace-nowrap text-sm"
             selected={detailedDisplaySelectedTab}
             initialSelectedIndex={tabsFormatted.findIndex(
               (tab) => tab.title === detailedDisplaySelectedTab,

@@ -21,83 +21,80 @@ export default function TradingView({
 
   return (
     <>
-      <StyledContainer
-        headerClassName="text-center justify-center"
-        title="POSITIONS NOW"
-        className="min-w-[25em] w-[25em] grow"
-      >
-        <StyledSubContainer>
-          <div className="flex items-center">
-            <h2>Position count</h2>
-            <div className="font-boldy text-sm ml-2 text-txtfade">
-              Long / Short
+      <div className="flex flex-col sm:flex-row gap-6 w-full">
+        <StyledContainer
+          headerClassName="text-center justify-center"
+          title="POSITIONS NOW"
+        >
+          <StyledSubContainer>
+            <div className="flex items-center">
+              <h2>Position count</h2>
+              <div className="font-boldy text-sm ml-2 text-txtfade">
+                Long / Short
+              </div>
             </div>
-          </div>
 
-          <StyledSubSubContainer className="mt-2 flex-col">
-            <h2>
-              {formatNumber(mainPool.nbOpenLongPositions, 2)} /{' '}
-              {formatNumber(mainPool.nbOpenShortPositions, 2)}
-            </h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
+            <StyledSubSubContainer className="mt-2 flex-col">
+              <h2>
+                {formatNumber(mainPool.nbOpenLongPositions, 2)} /{' '}
+                {formatNumber(mainPool.nbOpenShortPositions, 2)}
+              </h2>
+            </StyledSubSubContainer>
+          </StyledSubContainer>
 
-        <StyledSubContainer>
-          <div className="flex items-center">
-            <h2>Open Interest</h2>
-            <div className="font-boldy text-sm ml-2 text-txtfade">
-              Long / Short
+          <StyledSubContainer>
+            <div className="flex items-center">
+              <h2>Open Interest</h2>
+              <div className="font-boldy text-sm ml-2 text-txtfade">
+                Long / Short
+              </div>
             </div>
-          </div>
 
-          <StyledSubSubContainer className="mt-2 flex-col">
-            <h2>
-              {formatPriceInfo(mainPool.longPositions)} /{' '}
-              {formatPriceInfo(mainPool.shortPositions)}
-            </h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
-      </StyledContainer>
+            <StyledSubSubContainer className="mt-2 flex-col">
+              <h2>
+                {formatPriceInfo(mainPool.longPositions)} /{' '}
+                {formatPriceInfo(mainPool.shortPositions)}
+              </h2>
+            </StyledSubSubContainer>
+          </StyledSubContainer>
+        </StyledContainer>
 
-      <StyledContainer
-        headerClassName="text-center justify-center"
-        title="ALL TIME POSITIONS"
-        className="min-w-[25em] w-[25em] grow"
-      >
-        <StyledSubContainer>
-          <div className="flex items-center">
-            <h2>Open Interest</h2>
-            <div className="font-boldy text-sm ml-2 text-txtfade">
-              Long / Short
+        <StyledContainer
+          headerClassName="text-center justify-center"
+          title="ALL TIME POSITIONS"
+        >
+          <StyledSubContainer>
+            <div className="flex items-center">
+              <h2>Open Interest</h2>
+              <div className="font-boldy text-sm ml-2 text-txtfade">
+                Long / Short
+              </div>
             </div>
-          </div>
 
-          <StyledSubSubContainer className="mt-2">
-            <h2>
-              {formatPriceInfo(mainPool.oiLongUsd)} /{' '}
-              {formatPriceInfo(mainPool.oiShortUsd)}
-            </h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
+            <StyledSubSubContainer className="mt-2">
+              <h2>
+                {formatPriceInfo(mainPool.oiLongUsd)} /{' '}
+                {formatPriceInfo(mainPool.oiShortUsd)}
+              </h2>
+            </StyledSubSubContainer>
+          </StyledSubContainer>
 
-        <StyledSubContainer>
-          <div className="flex items-center">
-            <h2>Profits and Losses</h2>
-          </div>
+          <StyledSubContainer>
+            <div className="flex items-center">
+              <h2>Profits and Losses</h2>
+            </div>
 
-          <StyledSubSubContainer className="mt-2">
-            <h2>
-              {formatPriceInfo(mainPool.profitsUsd)} /{' '}
-              {formatPriceInfo(mainPool.lossUsd * -1)}
-            </h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
-      </StyledContainer>
+            <StyledSubSubContainer className="mt-2">
+              <h2>
+                {formatPriceInfo(mainPool.profitsUsd)} /{' '}
+                {formatPriceInfo(mainPool.lossUsd * -1)}
+              </h2>
+            </StyledSubSubContainer>
+          </StyledSubContainer>
+        </StyledContainer>
+      </div>
 
-      <StyledContainer
-        title="POSITIONS NOW BREAKDOWN"
-        className="min-w-[40em] w-[40em] grow"
-      >
+      <StyledContainer title="POSITIONS NOW BREAKDOWN" className="w-full grow">
         <Table
           rowTitleWidth="20%"
           columnsTitles={['Long', 'Short']}

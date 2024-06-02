@@ -1,5 +1,6 @@
 import AccountsView from '@/components/pages/monitoring/AccountsView/AccountsView';
 import ADXTokenomicsView from '@/components/pages/monitoring/ADXTokenomicsView/ADXTokenomicsView';
+import AutomationView from '@/components/pages/monitoring/AutomationView/AutomationView';
 import FeesView from '@/components/pages/monitoring/FeesView/FeesView';
 import PoolView from '@/components/pages/monitoring/PoolView/PoolView';
 import StakingView from '@/components/pages/monitoring/StakingView/StakingView';
@@ -9,6 +10,7 @@ import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
+import useSablierStakingResolveStakingRoundCronThreads from '@/hooks/useSablierStakingResolveStakingRoundCronThreads';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
 import useVestRegistry from '@/hooks/useVestRegistry';
@@ -40,6 +42,11 @@ export default function DetailedMonitoring({
   const alpTotalSupply = useALPTotalSupply();
   const vests = useVests();
   const composition = useALPIndexComposition(custodies);
+  const sablierStakingResolveStakingRoundCronThreads =
+    useSablierStakingResolveStakingRoundCronThreads({
+      lmStaking: adxStakingAccount,
+      lpStaking: alpStakingAccount,
+    });
 
   if (
     !mainPool ||
@@ -47,11 +54,12 @@ export default function DetailedMonitoring({
     !tokenPrices ||
     !cortex ||
     !vestRegistry ||
-    !adxTotalSupply ||
-    !alpTotalSupply ||
+    adxTotalSupply === null ||
+    alpTotalSupply === null ||
     !alpStakingAccount ||
     !adxStakingAccount ||
     !composition ||
+    !sablierStakingResolveStakingRoundCronThreads ||
     composition.some((c) => c === null)
   )
     return <></>;
@@ -59,20 +67,37 @@ export default function DetailedMonitoring({
   return (
     <>
       <div className="w-full max-w-full overflow-x-auto flex z-10">
-        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap min-w-[40em] w-[60em] max-w-full ml-auto mr-auto justify-center">
+        <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap w-full max-w-[60em] ml-auto mr-auto justify-center">
+          {selectedTab === 'All' ? (
+            <div className="w-full z-10 text-center">
+              <h1 className="text-white">AUTOMATION</h1>
+            </div>
+          ) : null}
+
+          {selectedTab === 'Automation' || selectedTab === 'All' ? (
+            <AutomationView
+              sablierStakingResolveStakingRoundCronThreads={
+                sablierStakingResolveStakingRoundCronThreads
+              }
+            />
+          ) : null}
+
           {selectedTab === 'All' ? (
             <div className="w-full z-10 text-center">
               <h1 className="text-white">ACCOUNTS</h1>
             </div>
           ) : null}
 
-          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
-            <AccountsView
+          {/*
+          // TODO: Re-enable when wanted
+          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
+            <ADXTokenomicsView
+              vestRegistry={vestRegistry}
               cortex={cortex}
-              mainPool={mainPool}
-              custodies={custodies}
+              adxTotalSupply={adxTotalSupply}
+              adxStakingAccount={adxStakingAccount}
             />
-          ) : null}
+          ) : null} */}
 
           {selectedTab === 'All' ? (
             <div className="w-full z-10 text-center">
@@ -140,12 +165,11 @@ export default function DetailedMonitoring({
             </div>
           ) : null}
 
-          {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
-            <ADXTokenomicsView
-              vestRegistry={vestRegistry}
+          {selectedTab === 'Accounts' || selectedTab === 'All' ? (
+            <AccountsView
               cortex={cortex}
-              adxTotalSupply={adxTotalSupply}
-              adxStakingAccount={adxStakingAccount}
+              mainPool={mainPool}
+              custodies={custodies}
             />
           ) : null}
         </div>
