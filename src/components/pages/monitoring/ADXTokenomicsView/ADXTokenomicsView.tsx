@@ -88,7 +88,7 @@ export default function ADXTokenomicsView({
   ] as const;
   const bucketsLabels = ['Core Contrib.', 'DAO Treasury', 'POL', 'Ecosystem'];
   const bucketColors = ['#ff4069f0', '#f9df65f0', '#3b82f6f0', '#07956bf0'];
-  const isBrakingPoint = useBetterMediaQuery('(max-width: 500px)');
+  const isBreakpoint = useBetterMediaQuery('(max-width: 500px)');
 
   return (
     <>
@@ -264,7 +264,7 @@ export default function ADXTokenomicsView({
                         formatNumberShort(value) + ' ADX',
 
                       font: {
-                        size: isBrakingPoint ? 8 : 12,
+                        size: isBreakpoint ? 8 : 12,
                       },
                     },
                     beginAtZero: true,

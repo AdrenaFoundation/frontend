@@ -35,7 +35,7 @@ export default function TradingChartHeader({
 
     const price = streamingTokenPrices?.[selected.symbol];
 
-    if (!price && price !== 0) {
+    if (typeof price === 'undefined' || price === null) {
       return;
     }
 

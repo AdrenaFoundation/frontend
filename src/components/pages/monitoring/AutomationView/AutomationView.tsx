@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { SablierThreadExtended } from '@/types';
 
 import warningImg from '../../../../../public/images/Icons/warning.png';
@@ -30,6 +31,8 @@ export default function AutomationView({
   const [loadFinalizeLockedStakedThreads, setLoadFinalizeLockedStakedThreads] =
     useState<boolean>(false);
 
+  const isBreakpoint = useBetterMediaQuery('(min-width: 800px)');
+
   const stakingResolveRoundCron = (
     title: string,
     stakingResolveRoundCron: SablierThreadExtended,
@@ -49,8 +52,14 @@ export default function AutomationView({
         }
         className="w-full"
       >
-        <StyledSubSubContainer className="items-center justify-center w-full">
+        <StyledSubSubContainer
+          className={twMerge(
+            'items-center justify-center w-full',
+            !isBreakpoint && 'bg-transparent',
+          )}
+        >
           <Table
+            isBreakpoint={isBreakpoint}
             rowTitleWidth="30%"
             data={[
               {
@@ -65,7 +74,7 @@ export default function AutomationView({
                 ),
                 value: (
                   <OnchainAccountInfo
-                    className="ml-auto"
+                    className="md:ml-auto"
                     address={stakingResolveRoundCron.pubkey}
                   />
                 ),
@@ -81,7 +90,7 @@ export default function AutomationView({
                   </div>
                 ),
                 value: (
-                  <div className="ml-auto flex">
+                  <div className="md:ml-auto flex">
                     {stakingResolveRoundCron.funding !== null &&
                     stakingResolveRoundCron.funding < 1 ? (
                       <Image
@@ -109,7 +118,7 @@ export default function AutomationView({
                   </div>
                 ),
                 value: (
-                  <div className="ml-auto">
+                  <div className="md:ml-auto">
                     {stakingResolveRoundCron.lastExecutionDate ? (
                       <DateInfo
                         timestamp={stakingResolveRoundCron.lastExecutionDate}
@@ -132,7 +141,7 @@ export default function AutomationView({
                   </div>
                 ),
                 value: (
-                  <div className="ml-auto flex">
+                  <div className="md:ml-auto flex">
                     {stakingResolveRoundCron.nextTheoreticalExecutionDate ? (
                       <RemainingTimeToDate
                         timestamp={
@@ -157,7 +166,7 @@ export default function AutomationView({
                   </div>
                 ),
                 value: (
-                  <div className="ml-auto">
+                  <div className="md:ml-auto">
                     {stakingResolveRoundCron.nativeObject.paused ? (
                       <div className="flex">
                         <Image
