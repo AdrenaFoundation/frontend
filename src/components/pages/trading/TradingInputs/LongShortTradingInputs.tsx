@@ -419,8 +419,8 @@ export default function LongShortTradingInputs({
           <InfoAnnotation
             text={
               <div className="flex flex-col">
-                The size is the leveraged value of the initial collateral after
-                accounting for entry fees proportional to the leveraged amount.
+                Equals to the provided collateral value times the leverage,
+                minus entry fees percentage on that amount.
               </div>
             }
             className="w-3 ml-1"
