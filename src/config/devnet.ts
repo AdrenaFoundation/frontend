@@ -68,7 +68,7 @@ class DevnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly governanceRealmName = 'Adrenao';
+  public readonly governanceRealmName = 'Adaorena';
 
   public readonly rpcOptions: RpcOption[] = [
     {
