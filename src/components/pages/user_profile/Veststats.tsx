@@ -2,14 +2,13 @@ import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
 import Button from '@/components/common/Button/Button';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { Vest } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
   nativeToUi,
 } from '@/utils';
-
-import FormatNumber from '@/components/Number/FormatNumber';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
