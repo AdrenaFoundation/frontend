@@ -59,7 +59,7 @@ function TermsAndConditionsModal({
           not available in certain regions, including:
         </span>
         <ul className="mt-2 text-sm">
-          <li>- The United States</li>
+          {/*<li>- The United States</li> temporarily waived for devnet until further feedback from legal*/}
           <li>- China</li>
           <li>- India</li>
           <li>- Russia</li>
