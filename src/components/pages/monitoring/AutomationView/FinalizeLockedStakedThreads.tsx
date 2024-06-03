@@ -6,7 +6,7 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import Loader from '@/components/Loader/Loader';
 import useSablierFinalizeLockedStakedThreads from '@/hooks/useSablierFinalizeLockedStakedThreads';
 
-import reloadImg from '../../../../../public/images/Icons/reload.png';
+import reloadImg from '../../../../../public/images/Icons/reload-icon.png';
 import warningImg from '../../../../../public/images/Icons/warning.png';
 import NumberInfo from '../NumberInfo';
 import OnchainAccountInfo from '../OnchainAccountInfo';

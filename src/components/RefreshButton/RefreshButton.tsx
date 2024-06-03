@@ -4,7 +4,7 @@ import React from 'react';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import { addNotification } from '@/utils';
 
-import reloadIcon from '../../../public/images/icons/reload.png';
+import reloadIcon from '../../../public/images/icons/reload-icon.png';
 
 export default function RefreshButton() {
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
