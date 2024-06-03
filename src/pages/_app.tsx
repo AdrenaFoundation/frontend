@@ -3,9 +3,7 @@ import '@/styles/globals.scss';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
-import type { Metadata } from 'next';
 import type { AppProps } from 'next/app';
-import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -35,26 +33,6 @@ import logo from '../../public/images/logo.png';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
-
-export const metadata = {
-  metadataBase: new URL('https://alpha.adrena.xyz/'),
-  title: 'Adrena',
-  description: 'Trade at the speed of light with up to 100x leverage',
-  openGraph: {
-    title: 'Adrena',
-    description: 'Trade at the speed of light with up to 100x leverage',
-    images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Adrena',
-    description: 'Trade at the speed of light with up to 100x leverage',
-    creator: '@adrenaprotocol',
-    images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
-  },
-} as const;
 
 function Loader(): JSX.Element {
   return (
@@ -145,45 +123,24 @@ export default function App(props: AppProps) {
   if (!isInitialized || !activeRpc) return <Loader />;
 
   return (
-    <>
-      <Head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
-        <meta property="og:title" content={metadata.openGraph.title} />
-        <meta
-          property="og:description"
-          content={metadata.openGraph.description}
+    <Provider store={store}>
+      <CookiesProvider>
+        <AppComponent
+          activeRpc={activeRpc}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
+          customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
+          {...props}
         />
-        <meta property="og:image" content={metadata.openGraph.images} />
-        <meta name="twitter:card" content={metadata.twitter.card} />
-        <meta name="twitter:title" content={metadata.twitter.title} />
-        <meta
-          name="twitter:description"
-          content={metadata.twitter.description}
-        />
-        <meta name="twitter:creator" content={metadata.twitter.creator} />
-        <meta name="twitter:image" content={metadata.twitter.images} />
-      </Head>
 
-      <Provider store={store}>
-        <CookiesProvider>
-          <AppComponent
-            activeRpc={activeRpc}
-            rpcInfos={rpcInfos}
-            autoRpcMode={autoRpcMode}
-            customRpcUrl={customRpcUrl}
-            customRpcLatency={customRpcLatency}
-            favoriteRpc={favoriteRpc}
-            setAutoRpcMode={setAutoRpcMode}
-            setCustomRpcUrl={setCustomRpcUrl}
-            setFavoriteRpc={setFavoriteRpc}
-            {...props}
-          />
-
-          <Analytics />
-        </CookiesProvider>
-      </Provider>
-    </>
+        <Analytics />
+      </CookiesProvider>
+    </Provider>
   );
 }
 
