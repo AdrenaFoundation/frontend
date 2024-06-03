@@ -82,7 +82,7 @@ export class SablierClient {
         : null;
 
       const nextTheoreticalExecutionDate = (() => {
-        if (info.trigger.cron.schedule !== '*/21600 * * * * * *') {
+        if (info.trigger.cron.schedule !== '0 0 */6 * * * *') {
           console.warn(
             'The cron schedule have changed for the thread, please adapt the code here.',
           );
