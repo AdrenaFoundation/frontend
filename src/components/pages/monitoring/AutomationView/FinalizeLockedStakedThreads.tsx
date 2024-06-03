@@ -6,8 +6,8 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import Loader from '@/components/Loader/Loader';
 import useSablierFinalizeLockedStakedThreads from '@/hooks/useSablierFinalizeLockedStakedThreads';
 
-import reloadImg from '../../../../../public/images/Icons/reload-icon.png';
 import warningImg from '../../../../../public/images/Icons/warning.png';
+import refreshIcon from '../../../../../public/images/refresh.png';
 import NumberInfo from '../NumberInfo';
 import OnchainAccountInfo from '../OnchainAccountInfo';
 import RemainingTimeToDate from '../RemainingTimeToDate';
@@ -38,7 +38,7 @@ export default function FinalizeLockedStakedThreads() {
             ? 'hover:opacity-40 cursor-not-allowed'
             : 'hover:opacity-100 cursor-pointer',
         )}
-        src={reloadImg}
+        src={refreshIcon}
         alt="Reload icon"
         onClick={() => {
           if (isLoading) return;
