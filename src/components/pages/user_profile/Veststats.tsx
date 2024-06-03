@@ -1,36 +1,54 @@
-import BN from 'bn.js';
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
 import Button from '@/components/common/Button/Button';
-import FormatNumber from '@/components/Number/FormatNumber';
 import { Vest } from '@/types';
 import {
   addFailedTxNotification,
   addSuccessTxNotification,
-  getDaysBetween,
-  getLockedStakeRemainingTime,
-  getYearsBetween,
   nativeToUi,
 } from '@/utils';
+
+import FormatNumber from '@/components/Number/FormatNumber';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function VestStats({ userVest }: { userVest: Vest }) {
-  const vestPeriod = getYearsBetween(
+  // Calculate how much tokens per seconds are getting accrued for the vest
+
+  const amount = nativeToUi(
+    userVest.amount,
+    window.adrena.client.adxToken.decimals,
+  );
+
+  const claimedAmount = nativeToUi(
+    userVest.claimedAmount,
+    window.adrena.client.adxToken.decimals,
+  );
+
+  const unlockEndTimestamp = nativeToUi(
+    userVest.unlockEndTimestamp,
+    window.adrena.client.adxToken.decimals,
+  );
+
+  const unlockStartTimestamp = nativeToUi(
     userVest.unlockStartTimestamp,
-    userVest.unlockEndTimestamp,
+    window.adrena.client.adxToken.decimals,
   );
 
-  const yearsBetween = getYearsBetween(
-    new BN(Date.now() / 1000),
-    userVest.unlockEndTimestamp,
+  const lastClaimTimestamp = nativeToUi(
+    userVest.lastClaimTimestamp,
+    window.adrena.client.adxToken.decimals,
   );
 
-  const daysBetween = getDaysBetween(
-    new BN(Date.now() / 1000),
-    userVest.unlockEndTimestamp,
-  );
+  const amountPerSecond = amount / (unlockEndTimestamp - unlockStartTimestamp);
+
+  // Calculate how many seconds happened since last claim
+  const nbSecondsSinceLastClaim =
+    Date.now() -
+    (lastClaimTimestamp === 0 ? unlockStartTimestamp : lastClaimTimestamp);
+
+  const claimableAmount = nbSecondsSinceLastClaim * amountPerSecond;
 
   const claimVest = async () => {
     try {
@@ -50,20 +68,8 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
 
   return (
     <div className="flex flex-col sm:flex-row items-center bg-secondary  w-full border rounded-lg z-20">
-      <div className="flex flex-col gap-2 w-full p-5 order-2 sm:order-1 sm:border-r sm:border-third">
+      <div className="flex flex-col gap-2 w-full px-5 order-2 sm:order-1">
         <h2>My Vest</h2>
-        <div className="flex w-full items-center justify-between">
-          <p className="text-sm">Vesting period</p>
-
-          <p className="font-mono">
-            {vestPeriod} year{vestPeriod > 1 && 's'}{' '}
-            <span className="opacity-50">
-              ({yearsBetween} year and {daysBetween} days left)
-            </span>
-          </p>
-        </div>
-
-        <div className="w-full h-[1px] bg-third my-3" />
 
         <div className="flex w-full items-center justify-between">
           <p className="text-sm">Total amount vested</p>
@@ -107,14 +113,7 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
           <p className="text-sm">Claimable amount</p>
 
           <FormatNumber
-            nb={
-              userVest
-                ? nativeToUi(
-                    userVest.claimedAmount,
-                    window.adrena.client.adxToken.decimals,
-                  )
-                : null
-            }
+            nb={claimableAmount}
             placeholder="0"
             suffix=" ADX"
             precision={3}
@@ -128,7 +127,7 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
           onClick={() => claimVest()}
         />
       </div>
-      <div className="relative flex flex-col justify-center items-center w-[300px] sm:w-[400px] p-3 order-1 sm:order-2">
+      <div className="relative flex flex-col justify-center items-center w-[300px] sm:w-[400px] p-3 order-1 sm:order-2 sm:border-l sm:border-third">
         <Doughnut
           height={100}
           width={100}
@@ -159,24 +158,7 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
             datasets: [
               {
                 label: 'Total',
-                data: [
-                  nativeToUi(
-                    userVest.claimedAmount,
-                    window.adrena.client.adxToken.decimals,
-                  ),
-                  nativeToUi(
-                    userVest.amount,
-                    window.adrena.client.adxToken.decimals,
-                  ) -
-                    nativeToUi(
-                      userVest.claimedAmount,
-                      window.adrena.client.adxToken.decimals,
-                    ),
-                  nativeToUi(
-                    userVest.amount,
-                    window.adrena.client.adxToken.decimals,
-                  ),
-                ],
+                data: [claimedAmount, claimableAmount, amount],
                 borderWidth: 0,
                 backgroundColor: ['#4BB756', '#314633', '#192128'],
               },

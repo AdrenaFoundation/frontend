@@ -1,17 +1,17 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
+import Table from '../Table';
 
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import Loader from '@/components/Loader/Loader';
-import useSablierFinalizeLockedStakedThreads from '@/hooks/useSablierFinalizeLockedStakedThreads';
 
 import reloadImg from '../../../../../public/images/Icons/reload.png';
 import warningImg from '../../../../../public/images/Icons/warning.png';
 import NumberInfo from '../NumberInfo';
 import OnchainAccountInfo from '../OnchainAccountInfo';
+import useSablierFinalizeLockedStakedThreads from '@/hooks/useSablierFinalizeLockedStakedThreads';
 import RemainingTimeToDate from '../RemainingTimeToDate';
-import Table from '../Table';
 
 export default function FinalizeLockedStakedThreads() {
   const { threads, triggerReload, isLoading } =

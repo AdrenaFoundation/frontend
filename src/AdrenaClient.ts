@@ -13,6 +13,7 @@ import {
   RpcResponseAndContext,
   SignatureResult,
   SystemProgram,
+  SYSVAR_RENT_PUBKEY,
   Transaction,
   TransactionInstruction,
   TransactionMessage,
@@ -2216,7 +2217,7 @@ export class AdrenaClient {
         governanceProgram: config.governanceProgram,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-        rent: '', // TODO
+        rent: SYSVAR_RENT_PUBKEY,
       })
       .transaction();
 

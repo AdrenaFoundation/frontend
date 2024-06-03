@@ -657,13 +657,3 @@ export function estimateLockedStakeEarlyExitFee(
     calculateCappedFeeForExitEarly(lockedStake)
   );
 }
-
-export const getYearsBetween = (start: BN, end: BN) => {
-  const diffTime = end.sub(start).toNumber();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 365));
-};
-
-export const getDaysBetween = (start: BN, end: BN) => {
-  const diffTime = end.sub(start).toNumber();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-};

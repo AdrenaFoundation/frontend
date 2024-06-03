@@ -60,12 +60,12 @@ export default function MyDashboard({
   const [userVest, setUserVest] = useState<Vest | null>({
     amount: new BN(1000000000000),
     claimedAmount: new BN(239192000000),
-    unlockEndTimestamp: new BN(1719857235),
-    unlockStartTimestamp: new BN(1622570835),
+    unlockEndTimestamp: new BN(1748859577),
+    unlockStartTimestamp: new BN(1685701177),
     bump: 12,
     originBucket: 12,
     padding: [2, 2, 2, 2],
-    lastClaimTimestamp: new BN(0),
+    lastClaimTimestamp: new BN(1717237177),
     owner: new PublicKey('6iQqd2L4RNWRTbAgZPGxhNRtERqZJ1gNhcfsCFGvbPdK'),
   });
 
