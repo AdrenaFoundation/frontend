@@ -2,6 +2,7 @@ import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
+import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import type { AppProps } from 'next/app';
 import Image from 'next/image';
@@ -157,6 +158,8 @@ export default function App(props: AppProps) {
           setFavoriteRpc={setFavoriteRpc}
           {...props}
         />
+
+        <Analytics />
       </CookiesProvider>
     </Provider>
   );
