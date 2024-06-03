@@ -2,7 +2,7 @@ import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
-import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -33,26 +33,6 @@ import logo from '../../public/images/logo.png';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
-
-export const metadata: Metadata = {
-  metadataBase: new URL('https://alpha.adrena.xyz/'),
-  title: 'Adrena',
-  description: 'Trade at the speed of light with up to 100x leverage',
-  openGraph: {
-    title: 'Adrena',
-    description: 'Trade at the speed of light with up to 100x leverage',
-    images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Adrena',
-    description: 'Trade at the speed of light with up to 100x leverage',
-    creator: '@adrenaprotocol',
-    images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
-  },
-};
 
 function Loader(): JSX.Element {
   return (
@@ -157,6 +137,8 @@ export default function App(props: AppProps) {
           setFavoriteRpc={setFavoriteRpc}
           {...props}
         />
+
+        <Analytics />
       </CookiesProvider>
     </Provider>
   );

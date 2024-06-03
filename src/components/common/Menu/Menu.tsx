@@ -39,12 +39,6 @@ export default function Menu({
     visible: { opacity: 1 },
   };
 
-  const toggleMenu = () => {
-    if (disabled) return;
-
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   const closeMenu = (el: any) => {
     el.stopPropagation();
     if (ref.current?.contains(el.target) && disableOnClickInside) {

@@ -10,6 +10,7 @@ import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
 import FormatNumber from '@/components/Number/FormatNumber';
+import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
@@ -347,13 +348,17 @@ export default function LongShortTradingInputs({
 
   return (
     <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
-      <h5 className="flex items-center ml-4">
-        Configuration
-        <InfoAnnotation
-          text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
-          className="w-3 ml-1"
-        />
-      </h5>
+      <div className="flex flex-row justify-between">
+        <h5 className="flex items-center ml-4">
+          Configuration
+          <InfoAnnotation
+            text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
+            className="w-3 ml-1"
+          />
+        </h5>
+
+        <RefreshButton />
+      </div>
 
       {/* Input A */}
       <div className="flex">
@@ -432,6 +437,7 @@ export default function LongShortTradingInputs({
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"
             menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
+            menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
             selected={tokenB.symbol}
             options={allowedTokenB.map((token) => ({
               title: token.symbol,

@@ -406,7 +406,7 @@ export default function EditPositionCollateral({
 
           <div className={rowStyle}>
             <div className="text-sm">PnL</div>
-            +
+
             <FormatNumber
               nb={position.pnl && markPrice ? position.pnl : null}
               prefix={position.pnl && position.pnl > 0 ? '+' : ''}
