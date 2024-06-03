@@ -474,7 +474,7 @@ export default function Stake({
           className="absolute hidden md:block bottom-0 right-[-20vh] h-[50vh] w-[80vh] scale-y-[-1] -z-10"
         />
       </div>
-      <div className="flex flex-col lg:flex-row items-evenly gap-4 p-4 justify-center z-30">
+      <div className="flex flex-col lg:flex-row items-evenly gap-4 p-4 justify-center z-10">
         {!connected ? (
           <div className="flex flex-col bg-main w-full h-[10em] border items-center justify-center rounded-xl">
             <WalletConnection connected={connected} />
