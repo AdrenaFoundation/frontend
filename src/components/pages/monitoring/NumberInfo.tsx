@@ -22,7 +22,7 @@ export default function NumberInfo({
   const denominationSymbol = denomination === 'usd' ? '$' : denomination;
 
   return (
-    <div className={`flex items-center ${className}`}>
+    <div className={`flex items-end ${className ?? ''}`}>
       {negative ? '-' : null}
 
       {denominationPos === 'prefix' ? (
