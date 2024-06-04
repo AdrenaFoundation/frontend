@@ -63,7 +63,7 @@ export default function PositionsArray({
     return (
       <div className="flex justify-center items-center text-center align-middle relative">
         {arrowElementUpLeft}
-        Liquideable
+        Liquidation price reached
         {arrowElementUpRight}
       </div>
     );
@@ -219,15 +219,13 @@ export default function PositionsArray({
                 className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
               >
                 {position.side === 'long' &&
-                (position.leverage > 100 ||
-                  (tokenPrices[position.token.symbol] ?? 0) <
-                    (position.liquidationPrice ?? 0))
+                (tokenPrices[position.token.symbol] ?? 0) <
+                  (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : null}
                 {position.side === 'short' &&
-                (position.leverage > 100 ||
-                  (tokenPrices[position.token.symbol] ?? 0) >
-                    (position.liquidationPrice ?? 0))
+                (tokenPrices[position.token.symbol] ?? 0) >
+                  (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : null}
               </td>
