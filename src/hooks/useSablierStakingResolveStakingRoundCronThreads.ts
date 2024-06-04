@@ -21,14 +21,19 @@ const useSablierStakingResolveStakingRoundCronThreads = ({
   const fetchThreads = useCallback(async () => {
     if (!lmStaking || !lpStaking) return;
 
-    setThreads(
-      await window.adrena.sablierClient.loadSablierStakingResolveStakingRoundCronThreads(
-        {
-          lmStaking,
-          lpStaking,
-        },
-      ),
-    );
+    try {
+      setThreads(
+        await window.adrena.sablierClient.loadSablierStakingResolveStakingRoundCronThreads(
+          {
+            lmStaking,
+            lpStaking,
+          },
+        ),
+      );
+    } catch (e) {
+      console.log(e);
+      setThreads(null);
+    }
   }, [lmStaking, lpStaking]);
 
   useEffect(() => {
