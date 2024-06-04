@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
+import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -353,8 +354,10 @@ export default function ALPSwapInputs({
 
   return (
     <div className={twMerge('relative flex flex-col', className)}>
-      <h5 className="text-white mb-3">Pay</h5>
-
+      <div className="flex flex-row justify-between">
+        <h5 className="text-white mb-3">Pay</h5>
+        <RefreshButton />
+      </div>
       {actionType === 'buy' ? collateralComponent : alpInputComponent}
 
       {

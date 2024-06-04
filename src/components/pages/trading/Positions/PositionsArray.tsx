@@ -68,7 +68,6 @@ export default function PositionsArray({
       </div>
     );
   }
-
   return (
     <table className={twMerge('w-full', className, bodyClassName)}>
       {/* Header */}
@@ -220,12 +219,17 @@ export default function PositionsArray({
                 className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
               >
                 {position.side === 'long' &&
-                position.price < (position.liquidationPrice ?? 0)
+                (position.leverage > 100 ||
+                  (tokenPrices[position.token.symbol] ?? 0) <
+                    (position.liquidationPrice ?? 0))
                   ? generateLiquidationBlock()
-                  : position.side === 'short' &&
-                    position.price > (position.liquidationPrice ?? 0)
+                  : null}
+                {position.side === 'short' &&
+                (position.leverage > 100 ||
+                  (tokenPrices[position.token.symbol] ?? 0) >
+                    (position.liquidationPrice ?? 0))
                   ? generateLiquidationBlock()
-                  : ''}
+                  : null}
               </td>
             </tr>
           </React.Fragment>

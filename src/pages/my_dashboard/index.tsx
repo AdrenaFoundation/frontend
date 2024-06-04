@@ -279,7 +279,7 @@ export default function MyDashboard({
             </AnimatePresence>
           </>
         ) : (
-          <div className="flex h-[10em] bg-main w-full border items-center justify-center rounded-xl z-30">
+          <div className="flex h-[10em] bg-main w-full border items-center justify-center rounded-xl z-10">
             <WalletConnection connected={connected} />
           </div>
         )}

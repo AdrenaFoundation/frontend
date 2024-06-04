@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { SwapAmountAndFees, Token } from '@/types';
@@ -275,13 +276,16 @@ export default function SwapTradingInputs({
   return (
     <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
       {/* Input A */}
-      <h5 className="flex items-center ml-4">
-        Pay
-        <InfoAnnotation
-          text="Enter the amount of tokens to send to the protocol (including fees)."
-          className="w-3 ml-1"
-        />
-      </h5>
+      <div className="flex flex-row justify-between">
+        <h5 className="flex items-center ml-4">
+          Pay
+          <InfoAnnotation
+            text="Enter the amount of tokens to send to the protocol (including fees)."
+            className="w-3 ml-1"
+          />
+        </h5>
+        <RefreshButton />
+      </div>
 
       <TradingInput
         className="mt-2 text-sm rounded-full"
