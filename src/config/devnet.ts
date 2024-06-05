@@ -68,7 +68,7 @@ class DevnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly governanceRealmName = 'Adaorena';
+  public readonly governanceRealmName = 'Degena';
 
   public readonly rpcOptions: RpcOption[] = [
     {
@@ -87,7 +87,7 @@ class DevnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '22h3wdapjk9e4TPEtEmFcXB1dCZZEShCtGptdBCvWNQr',
+    '79Ss7JY3nDLgBW945uv3fM1Dy5Kw4SgZhGQhNaGn9FeZ',
   );
 }
 
