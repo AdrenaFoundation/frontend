@@ -133,6 +133,8 @@ function WalletAdapter({
           }}
         />
       )}
+
+      <WalletSelectionModal />
     </div>
   );
 }

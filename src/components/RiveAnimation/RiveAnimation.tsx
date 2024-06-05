@@ -123,15 +123,7 @@ const RiveAnimation = ({
   });
 
   const Comp = useMemo(() => {
-    return (
-      <RiveComponent
-        className={twMerge(
-          isLoaded ? 'opacity-100' : 'opacity-0',
-          className,
-          'transition-opacity duration-300',
-        )}
-      />
-    );
+    return null;
   }, [RiveComponent, isLoaded, className]);
 
   return Comp;
