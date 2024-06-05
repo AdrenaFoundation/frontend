@@ -1,5 +1,6 @@
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import Tippy from '@tippyjs/react';
+import { AnimatePresence } from 'framer-motion';
 import Image, { StaticImageData } from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -9,6 +10,7 @@ import {
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { walletAdapters } from '@/constant';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useDispatch, useSelector } from '@/store/store';
 
 import backpackLogo from '../../../public/images/backpack.png';
@@ -21,7 +23,7 @@ function WalletSelectionModal() {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
 
-  if (!modalIsOpen) return <></>;
+  const isMobile = useBetterMediaQuery('(max-width: 640px)');
 
   if (!window.adrena.geoBlockingData.allowed) {
     return (
@@ -33,79 +35,75 @@ function WalletSelectionModal() {
   }
 
   return (
-    <Modal
-      title=""
-      close={() => dispatch(openCloseConnectionModalAction(false))}
-      className="flex flex-col pb-8 pr-16 pl-16 sm:pr-8 sm:pl-8 relative overflow-visible"
-    >
-      <div className="text-3xl opacity-80 ml-auto mr-auto mb-8 font-special mt-5">
-        Pick a wallet
-      </div>
-      <div className="flex flex-col space-y-3 sm:flex-row sm:space-x-3 sm:space-y-0 flex-wrap">
-        <WalletBloc
-          name="Phantom"
-          logo={phantomLogo}
-          height={50}
-          width={50}
-          onClick={() => {
-            dispatch(connectWalletAction('phantom'));
-            dispatch(openCloseConnectionModalAction(false));
-          }}
-          readyState={walletAdapters['phantom'].readyState}
-        />
+    <AnimatePresence>
+      {modalIsOpen && (
+        <Modal
+          close={() => dispatch(openCloseConnectionModalAction(false))}
+          className="flex flex-col w-full p-5 relative overflow-visible"
+          isMobile={!!isMobile}
+        >
+          <div className="text-3xl opacity-80 font-special text-center mb-6">
+            Pick a wallet
+          </div>
+          <div className="flex flex-col justify-center items-center gap-3 sm:flex-row">
+            <WalletBlock
+              name="Phantom"
+              logo={phantomLogo}
+              onClick={() => {
+                dispatch(connectWalletAction('phantom'));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+              readyState={walletAdapters['phantom'].readyState}
+            />
 
-        <WalletBloc
-          name="Backpack"
-          logo={backpackLogo}
-          height={58}
-          width={40}
-          onClick={() => {
-            dispatch(connectWalletAction('backpack'));
-            dispatch(openCloseConnectionModalAction(false));
-          }}
-          readyState={walletAdapters['backpack'].readyState}
-        />
+            <WalletBlock
+              name="Backpack"
+              logo={backpackLogo}
+              onClick={() => {
+                dispatch(connectWalletAction('backpack'));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+              readyState={walletAdapters['backpack'].readyState}
+            />
 
-        <WalletBloc
-          name="WalletConnect"
-          logo={walletConnectLogo}
-          height={50}
-          width={50}
-          onClick={() => {
-            dispatch(connectWalletAction('walletConnect'));
-            dispatch(openCloseConnectionModalAction(false));
-          }}
-          readyState={walletAdapters['walletConnect'].readyState}
-        />
-      </div>
-    </Modal>
+            <WalletBlock
+              name="WalletConnect"
+              logo={walletConnectLogo}
+              onClick={() => {
+                dispatch(connectWalletAction('walletConnect'));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+              readyState={walletAdapters['walletConnect'].readyState}
+            />
+          </div>
+        </Modal>
+      )}
+    </AnimatePresence>
   );
 }
 
-const WalletBloc = ({
+const WalletBlock = ({
   name,
   logo,
   onClick,
-  height,
-  width,
+
   readyState,
   className,
 }: {
   name: string;
   logo: StaticImageData;
   onClick: () => void;
-  height: number;
-  width: number;
+
   readyState: WalletReadyState;
   className?: string;
 }) => {
   const disabled =
     readyState !== WalletReadyState.Installed || name === 'WalletConnect';
 
-  const walletBloc = (
+  const walletBlock = (
     <div
       className={twMerge(
-        'flex flex-col items-center justify-center p-3 border rounded-lg h-40 w-40 relative',
+        'flex flex-row sm:flex-col gap-3 items-center sm:justify-center p-3 border rounded-lg w-[300px] h-[50px] sm:h-40 sm:w-40 relative',
         disabled
           ? 'cursor-not-allowed opacity-40'
           : 'cursor-pointer hover:bg-bcolor duration-300',
@@ -117,11 +115,11 @@ const WalletBloc = ({
         onClick();
       }}
     >
-      <Image src={logo} alt={`${name} icon`} height={height} width={width} />
+      <Image src={logo} alt={`${name} icon`} className="w-[20px] sm:w-[50px]" />
 
-      <p className="mt-6">{name}</p>
+      <p className="sm:mt-6">{name}</p>
 
-      <div className="h-1 w-32 bg-bcolor absolute bottom-2"></div>
+      <div className="h-1 w-32 bg-bcolor right-3 absolute sm:bottom-2 sm:right-auto"></div>
     </div>
   );
 
@@ -147,12 +145,12 @@ const WalletBloc = ({
         }
         placement="bottom"
       >
-        {walletBloc}
+        {walletBlock}
       </Tippy>
     );
   }
 
-  return walletBloc;
+  return walletBlock;
 };
 
 export default WalletSelectionModal;
