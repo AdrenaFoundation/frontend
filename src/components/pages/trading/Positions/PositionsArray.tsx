@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -68,6 +69,9 @@ export default function PositionsArray({
       </div>
     );
   }
+
+  console.log('positions', positions);
+
   return (
     <table className={twMerge('w-full', className, bodyClassName)}>
       {/* Header */}
@@ -143,17 +147,132 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <FormatNumber nb={position.leverage} suffix="x" />
+                <Tippy
+                  content={
+                    <div className="flex flex-col flex-wrap w-[15em]">
+                      <div className="text-white font-boldy text-md">
+                        Leverage:
+                      </div>
+                      <div className="text-white text-sm">
+                        Position Size * 10 BPS / (Collateral + Unrealized Profit
+                        - Unrealized Loss)
+                      </div>
+
+                      <div className="mt-3">
+                        <span className="text-txtfade text-sm">
+                          Multiplier applied to the collateral to determine the
+                          size of the position.
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  placement="top"
+                >
+                  <FormatNumber nb={position.leverage} suffix="x" />
+                </Tippy>
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <FormatNumber
-                  nb={position.pnl}
-                  format="currency"
-                  className={`text-${
-                    position.pnl && position.pnl > 0 ? 'green' : 'red'
-                  }`}
-                />
+                {position.pnl ? (
+                  <Tippy
+                    content={
+                      <div className="flex flex-col flex-wrap w-[10em]">
+                        <div className="text-white font-boldy text-md">
+                          Net Value:
+                        </div>
+                        <div className="text-white text-sm">
+                          Collateral + PnL - Fees Initial
+                        </div>
+                        <div className="mt-3">
+                          <span className="text-txtfade text-sm">
+                            Collateral:
+                          </span>
+                          <span className="ml-1">
+                            <FormatNumber
+                              nb={position.collateralUsd}
+                              format="currency"
+                            />
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-txtfade text-sm">PnL:</span>
+                          <span className="ml-1">
+                            <FormatNumber
+                              nb={position.pnl}
+                              format="currency"
+                              className={`text-${
+                                position.pnl && position.pnl > 0
+                                  ? 'green'
+                                  : 'red'
+                              }`}
+                            />
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-txtfade text-sm">
+                            borrow Fee:
+                          </span>
+                          <span className="ml-1">
+                            <FormatNumber nb={0} format="currency" />
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-txtfade text-sm">
+                            Open Fee:
+                          </span>
+                          <span className="ml-1">
+                            <FormatNumber
+                              nb={position.entryFeeUsd}
+                              format="currency"
+                            />
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-txtfade text-sm">
+                            Close Fee:
+                          </span>
+                          <span className="ml-1">
+                            <FormatNumber
+                              nb={position.exitFeeUsd}
+                              format="currency"
+                            />
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-txtfade text-sm">
+                            PnL after Fees:
+                          </span>
+                          <span className="ml-1">
+                            <FormatNumber
+                              nb={
+                                (position.pnl ?? 0) -
+                                position.entryFeeUsd -
+                                position.exitFeeUsd
+                              }
+                              format="currency"
+                              className={`text-${
+                                position.pnl && position.pnl > 0
+                                  ? 'green'
+                                  : 'red'
+                              }`}
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    }
+                    placement="top"
+                  >
+                    <FormatNumber
+                      nb={position.pnl}
+                      format="currency"
+                      className={`text-${
+                        position.pnl && position.pnl > 0 ? 'green' : 'red'
+                      }`}
+                    />
+                  </Tippy>
+                ) : (
+                  '-'
+                )}
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
@@ -161,7 +280,52 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <FormatNumber nb={position.collateralUsd} format="currency" />
+                <Tippy
+                  content={
+                    <div className="flex flex-col flex-wrap w-[15em]">
+                      <div className="text-white font-boldy text-md">
+                        Initial Collateral:
+                      </div>
+                      <div className="text-white text-sm">
+                        Position Size * 10 BPS / (Collateral + Unrealized Profit
+                        - Unrealized Loss)
+                      </div>
+
+                      <div className="mt-3">
+                        <span className="text-txtfade text-sm">
+                          Initial Collateral:
+                        </span>
+                        <span className="ml-1">
+                          <FormatNumber
+                            nb={position.collateralUsd}
+                            format="currency"
+                          />
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-txtfade text-sm">
+                          Borrow Fee:
+                        </span>
+                        <span className="ml-1">
+                          <FormatNumber nb={0} format="currency" prefix="-" />
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-txtfade text-sm">
+                          Borrow Fee / Hour:
+                        </span>
+                        <span className="ml-1">
+                          <FormatNumber nb={0} format="currency" prefix="-" />
+                        </span>
+                      </div>
+                    </div>
+                  }
+                  placement="top"
+                >
+                  <FormatNumber nb={position.collateralUsd} format="currency" />
+                </Tippy>
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
@@ -176,10 +340,26 @@ export default function PositionsArray({
               </td>
 
               <td className={columnStyle}>
-                <FormatNumber
-                  nb={position.liquidationPrice}
-                  format="currency"
-                />
+                <Tippy
+                  content={
+                    <div className="flex flex-col flex-wrap w-[15em]">
+                      <div className="text-white font-boldy text-md">
+                        Liquidation Price:
+                      </div>
+                      <div className="text-white text-sm">
+                        Position Price +- (Collateral + Unrealized Profit -
+                        Unrealized Loss - Exit Fee - Interest - Size / Max
+                        Leverage) * Position Price / Size
+                      </div>
+                    </div>
+                  }
+                  placement="top"
+                >
+                  <FormatNumber
+                    nb={position.liquidationPrice}
+                    format="currency"
+                  />
+                </Tippy>
               </td>
 
               <td
