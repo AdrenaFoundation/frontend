@@ -2186,10 +2186,22 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
+    const preInstructions: TransactionInstruction[] = [];
+
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
 
     const receivingAccount = findATAAddressSync(owner, this.adxToken.mint);
+
+    if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: this.adxToken.mint,
+          owner,
+        }),
+      );
+    }
 
     const vestRegistry = await this.loadVestRegistry();
 
@@ -2219,6 +2231,7 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         rent: SYSVAR_RENT_PUBKEY,
       })
+      .preInstructions(preInstructions)
       .transaction();
 
     return this.signAndExecuteTx(transaction);

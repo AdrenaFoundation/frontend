@@ -57,17 +57,7 @@ export default function MyDashboard({
   const [liquidStakedADX, setLiquidStakedADX] = useState<number | null>(null);
   const [lockedStakedADX, setLockedStakedADX] = useState<number | null>(null);
   const [lockedStakedALP, setLockedStakedALP] = useState<number | null>(null);
-  const [userVest, setUserVest] = useState<Vest | null>({
-    amount: new BN(1000000000000),
-    claimedAmount: new BN(239192000000),
-    unlockEndTimestamp: new BN(1748859577),
-    unlockStartTimestamp: new BN(1685701177),
-    bump: 12,
-    originBucket: 12,
-    padding: [2, 2, 2, 2],
-    lastClaimTimestamp: new BN(1717237177),
-    owner: new PublicKey('6iQqd2L4RNWRTbAgZPGxhNRtERqZJ1gNhcfsCFGvbPdK'),
-  });
+  const [userVest, setUserVest] = useState<Vest | null>(null);
 
   // When the profile page loads, update the profile so it's up to date with latests
   // user actions
@@ -79,7 +69,7 @@ export default function MyDashboard({
   useEffect(() => {
     getUserVesting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [owner]);
+  }, [connected]);
 
   useEffect(() => {
     if (!stakingAccounts) {
@@ -200,7 +190,7 @@ export default function MyDashboard({
   const getUserVesting = async () => {
     try {
       const vest = (await window.adrena.client.loadUserVest()) as Vest;
-      // setUserVest(vest);
+      setUserVest(vest);
     } catch (error) {
       console.log('failed to load vesting', error);
     }
@@ -260,7 +250,9 @@ export default function MyDashboard({
               )}
             </div>
 
-            {userVest && <VestStats userVest={userVest} />}
+            {userVest && (
+              <VestStats vest={userVest} getUserVesting={getUserVesting} />
+            )}
 
             <PositionsStats
               connected={connected}

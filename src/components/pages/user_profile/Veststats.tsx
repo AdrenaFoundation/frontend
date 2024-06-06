@@ -1,4 +1,5 @@
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import { Doughnut } from 'react-chartjs-2';
 
 import Button from '@/components/common/Button/Button';
@@ -10,42 +11,42 @@ import {
   nativeToUi,
 } from '@/utils';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(annotationPlugin, ArcElement, Tooltip, Legend);
 
-export default function VestStats({ userVest }: { userVest: Vest }) {
-  // Calculate how much tokens per seconds are getting accrued for the vest
-
+export default function VestStats({
+  vest,
+  getUserVesting,
+}: {
+  vest: Vest;
+  getUserVesting: () => void;
+}) {
   const amount = nativeToUi(
-    userVest.amount,
+    vest.amount,
     window.adrena.client.adxToken.decimals,
   );
 
   const claimedAmount = nativeToUi(
-    userVest.claimedAmount,
+    vest.claimedAmount,
     window.adrena.client.adxToken.decimals,
   );
 
-  const unlockEndTimestamp = nativeToUi(
-    userVest.unlockEndTimestamp,
-    window.adrena.client.adxToken.decimals,
-  );
+  // Calculate how much tokens per seconds are getting accrued for the vest
+  const amountPerSecond =
+    amount /
+    (vest.unlockEndTimestamp.toNumber() * 1000 -
+      vest.unlockStartTimestamp.toNumber() * 1000);
 
-  const unlockStartTimestamp = nativeToUi(
-    userVest.unlockStartTimestamp,
-    window.adrena.client.adxToken.decimals,
-  );
-
-  const lastClaimTimestamp = nativeToUi(
-    userVest.lastClaimTimestamp,
-    window.adrena.client.adxToken.decimals,
-  );
-
-  const amountPerSecond = amount / (unlockEndTimestamp - unlockStartTimestamp);
+  const vestPeriod =
+    new Date(vest.unlockEndTimestamp.toNumber() * 1000).getFullYear() -
+    new Date(vest.unlockStartTimestamp.toNumber() * 1000).getFullYear();
 
   // Calculate how many seconds happened since last claim
   const nbSecondsSinceLastClaim =
     Date.now() -
-    (lastClaimTimestamp === 0 ? unlockStartTimestamp : lastClaimTimestamp);
+    (vest.lastClaimTimestamp.toNumber() === 0
+      ? vest.unlockStartTimestamp.toNumber() * 1000
+      : vest.lastClaimTimestamp.toNumber()) *
+      1000;
 
   const claimableAmount = nbSecondsSinceLastClaim * amountPerSecond;
 
@@ -53,6 +54,7 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
     try {
       const txHash = await window.adrena.client.claimUserVest();
 
+      getUserVesting();
       return addSuccessTxNotification({
         title: 'Successfully Claimed ADX',
         txHash,
@@ -71,13 +73,20 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
         <h2>My Vest</h2>
 
         <div className="flex w-full items-center justify-between">
+          <p className="text-sm">Vest period</p>
+
+          <p>{vestPeriod.toLocaleString()} years</p>
+        </div>
+        <div className="w-full h-[1px] bg-third my-1" />
+
+        <div className="flex w-full items-center justify-between">
           <p className="text-sm">Total amount vested</p>
 
           <FormatNumber
             nb={
-              userVest
+              vest
                 ? nativeToUi(
-                    userVest.amount,
+                    vest.amount,
                     window.adrena.client.adxToken.decimals,
                   )
                 : null
@@ -93,9 +102,9 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
 
           <FormatNumber
             nb={
-              userVest
+              vest
                 ? nativeToUi(
-                    userVest.claimedAmount,
+                    vest.claimedAmount,
                     window.adrena.client.adxToken.decimals,
                   )
                 : null
@@ -106,7 +115,7 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
           />
         </div>
 
-        <div className="w-full h-[1px] bg-third my-3" />
+        <div className="w-full h-[1px] bg-third my-1" />
 
         <div className="flex w-full items-center justify-between">
           <p className="text-sm">Claimable amount</p>
@@ -146,18 +155,14 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
                   usePointStyle: true,
                 },
               },
-
-              tooltip: {
-                enabled: true,
-              },
             },
           }}
           data={{
-            labels: ['Claimed ADX', 'Unclaimed ADX'],
+            labels: ['Claimed ADX', 'Unclaimed ADX', 'Total Vested ADX'],
             datasets: [
               {
-                label: 'Total',
                 data: [claimedAmount, claimableAmount, amount],
+                type: 'doughnut',
                 borderWidth: 0,
                 backgroundColor: ['#4BB756', '#314633', '#192128'],
               },
@@ -168,17 +173,14 @@ export default function VestStats({ userVest }: { userVest: Vest }) {
         <div className="absolute top-1/2">
           <FormatNumber
             nb={nativeToUi(
-              userVest.claimedAmount,
+              vest.claimedAmount,
               window.adrena.client.adxToken.decimals,
             )}
             suffix=" ADX"
-            className="text-lg text-center"
+            className="text-lg text-center w-full"
           />
           <FormatNumber
-            nb={nativeToUi(
-              userVest.amount,
-              window.adrena.client.adxToken.decimals,
-            )}
+            nb={nativeToUi(vest.amount, window.adrena.client.adxToken.decimals)}
             suffix=" ADX"
             className="text-center block opacity-50"
           />
