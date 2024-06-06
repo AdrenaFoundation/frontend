@@ -550,6 +550,7 @@ export default function LongShortTradingInputs({
         <PositionInfos
           className="mt-2 w-full h-auto mb-4 overflow-hidden"
           positionInfos={positionInfos}
+          side={side}
           tokenB={tokenB}
           leverage={leverage}
           openedPosition={openedPosition}

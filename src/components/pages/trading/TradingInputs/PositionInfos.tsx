@@ -13,6 +13,7 @@ import InfoAnnotation from '../../monitoring/InfoAnnotation';
 export default function PositionInfos({
   className,
   positionInfos,
+  side,
   tokenB,
   leverage,
   openedPosition,
@@ -31,6 +32,7 @@ export default function PositionInfos({
     exitFeeUsd: number;
     liquidationFeeUsd: number;
   } | null;
+  side: string;
   tokenB: Token;
   leverage: number;
   openedPosition: PositionExtended | null;
@@ -39,7 +41,10 @@ export default function PositionInfos({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
-  const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
+  const custody =
+    window.adrena.client.getCustodyByMint(
+      side === 'short' ? window.adrena.client.getUsdcToken().mint : tokenB.mint,
+    ) ?? null;
 
   const infoRowStyle = 'w-full flex justify-between items-center mt-1';
 
