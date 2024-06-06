@@ -37,7 +37,7 @@ export default function PositionsBlocks({
       <div className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70">
         <div className="flex justify-center items-center text-center align-middle relative">
           {arrowElementUpLeft}
-          Liquideable
+          Liquidation price reached
           {arrowElementUpRight}
         </div>
       </div>
@@ -120,12 +120,15 @@ export default function PositionsBlocks({
           </div>
 
           {position.side === 'long' &&
-          position.price < (position.liquidationPrice ?? 0)
+          (tokenPrices[position.token.symbol] ?? 0) <
+            (position.liquidationPrice ?? 0)
             ? generateLiquidationBlock()
-            : position.side === 'short' &&
-              position.price > (position.liquidationPrice ?? 0)
+            : null}
+          {position.side === 'short' &&
+          (tokenPrices[position.token.symbol] ?? 0) >
+            (position.liquidationPrice ?? 0)
             ? generateLiquidationBlock()
-            : ''}
+            : null}
 
           <ul className="flex flex-col gap-2 p-4">
             <li className={columnStyle}>

@@ -69,7 +69,7 @@ export default function ADXFeeStreamAnimation({
   ];
 
   return (
-    <div className="relative w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] flex items-center justify-center overflow-hidden ml-auto">
+    <div className="relative w-[300px] h-[300px] lg:w-[400px] lg:h-[400px] flex items-center justify-center overflow-hidden mx-auto lg:ml-auto">
       <Image
         src={
           token === 'ADX'

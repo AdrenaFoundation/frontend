@@ -73,6 +73,11 @@ export class SablierClient {
       return null;
     }
 
+    console.log(
+      'lpStakingResolveRoundCronThreadAccount',
+      lpStakingResolveRoundCronThreadAccount,
+    );
+
     const format = async (pubkey: PublicKey, info: SablierThread) => {
       const lastExecutionSlot: number | null =
         info.execContext?.lastExecAt.toNumber() ?? null;
@@ -94,6 +99,10 @@ export class SablierClient {
         // Adding a check just before to make sure
         if (lastExecutionDate !== null) {
           return lastExecutionDate + 21600;
+        }
+
+        if (!info.execContext) {
+          return null;
         }
 
         return info.execContext.trigger.cron.startedAt.toNumber() + 21600;

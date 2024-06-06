@@ -149,7 +149,7 @@ export default function AutomationView({
                         tippyText="The call is overdue, please check the thread."
                       />
                     ) : (
-                      'Cannot be calculated'
+                      'Now'
                     )}
                   </div>
                 ),
