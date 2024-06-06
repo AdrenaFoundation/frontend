@@ -20,6 +20,7 @@ export default function Trade({
   wallet,
   connected,
   triggerPositionsReload,
+  triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
@@ -241,6 +242,7 @@ export default function Trade({
               connected={connected}
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
             />
           </div>
         </div>
