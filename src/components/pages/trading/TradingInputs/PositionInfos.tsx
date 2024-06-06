@@ -40,6 +40,8 @@ export default function PositionInfos({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
+  const tokenPriceUsdc =
+    tokenPrices?.[window.adrena.client.getUsdcToken().symbol];
 
   const custody =
     window.adrena.client.getCustodyByMint(
@@ -517,7 +519,19 @@ export default function PositionInfos({
 
             {!isInfoLoading ? (
               <FormatNumber
-                nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
+                nb={(() => {
+                  if (!custody) return null;
+
+                  if (side === 'short') {
+                    if (!tokenPriceUsdc) return null;
+
+                    return custody.liquidity * tokenPriceUsdc;
+                  }
+
+                  if (!tokenPriceB) return null;
+
+                  return custody.liquidity * tokenPriceB;
+                })()}
                 format="currency"
               />
             ) : (
