@@ -32,8 +32,6 @@ function WalletConnection({ connected }: { connected?: boolean }) {
       <p className="text-sm opacity-50 font-normal">
         Waiting for wallet connection
       </p>
-
-      <WalletSelectionModal />
     </div>
   );
 }
