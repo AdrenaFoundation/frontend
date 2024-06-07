@@ -57,10 +57,10 @@ export default function PositionInfos({
           <div className={infoRowStyle}>
             <span className="text-sm flex">
               Collateral
-              <InfoAnnotation
+              {/* <InfoAnnotation
                 text="Collateral backing the position. Position can be liquidated if this drop below xx% of position value"
                 className="mr-1 w-3"
-              />
+              /> */}
             </span>
 
             {!isInfoLoading ? (
@@ -112,10 +112,10 @@ export default function PositionInfos({
           <div className={infoRowStyle}>
             <span className="text-sm flex">
               Leverage
-              <InfoAnnotation
+              {/* <InfoAnnotation
                 text="Multiplier applied to the collateral to determine the size of the position."
                 className="mr-1 w-3"
-              />
+              /> */}
             </span>
 
             {!isInfoLoading ? (
@@ -166,10 +166,10 @@ export default function PositionInfos({
           <div className={infoRowStyle}>
             <span className="text-sm flex">
               Entry Price
-              <InfoAnnotation
+              {/* <InfoAnnotation
                 text="Token price at which the position is opened."
                 className="mr-1 w-3"
-              />
+              /> */}
             </span>
 
             {!isInfoLoading ? (
@@ -223,10 +223,10 @@ export default function PositionInfos({
           <div className={infoRowStyle}>
             <span className="text-sm flex">
               Liquidation Price
-              <InfoAnnotation
+              {/* <InfoAnnotation
                 text="If the token's price hits this point, the position is automatically closed to prevent further losses."
                 className="mr-1 w-3"
-              />
+              /> */}
             </span>
 
             {!isInfoLoading ? (
@@ -287,13 +287,13 @@ export default function PositionInfos({
 
           <div className={infoRowStyle}>
             <span className="text-sm flex">
-              {openedPosition ? 'Increase' : 'Open'} Position Fees
-              <InfoAnnotation
+              {openedPosition ? 'Increase' : 'Open'}/Close Position Fees
+              {/* <InfoAnnotation
                 text={`Fees paid when ${
                   openedPosition ? 'increasing' : 'opening'
                 } the position.`}
                 className="mr-1 w-3"
-              />
+              /> */}
             </span>
 
             {!isInfoLoading ? (
@@ -313,11 +313,14 @@ export default function PositionInfos({
 
                         <li className="flex flex-row gap-2 justify-between">
                           <p className="text-sm text-txtfade">
-                            Open position fees:
+                            Open/Close position fees:
                           </p>
 
                           <FormatNumber
-                            nb={positionInfos.openPositionFeeUsd}
+                            nb={
+                              positionInfos.openPositionFeeUsd +
+                              positionInfos.exitFeeUsd
+                            }
                             format="currency"
                           />
                         </li>
@@ -328,7 +331,10 @@ export default function PositionInfos({
                           <p className="text-sm text-txtfade">Total fees:</p>
 
                           <FormatNumber
-                            nb={positionInfos.totalOpenPositionFeeUsd}
+                            nb={
+                              positionInfos.totalOpenPositionFeeUsd +
+                              positionInfos.exitFeeUsd
+                            }
                             format="currency"
                           />
                         </li>
@@ -337,141 +343,28 @@ export default function PositionInfos({
                     placement="bottom"
                   >
                     <div className="tooltip-target">
-                      {/* {formatPriceInfo(positionInfos.totalOpenPositionFeeUsd)} */}
                       <FormatNumber
-                        nb={positionInfos.totalOpenPositionFeeUsd}
+                        nb={
+                          positionInfos.totalOpenPositionFeeUsd +
+                          positionInfos.exitFeeUsd
+                        }
                         format="currency"
                       />
                     </div>
                   </Tippy>
                 ) : (
                   <FormatNumber
-                    nb={positionInfos?.totalOpenPositionFeeUsd}
+                    nb={
+                      typeof positionInfos?.totalOpenPositionFeeUsd !==
+                        'undefined' &&
+                      typeof positionInfos?.exitFeeUsd !== 'undefined'
+                        ? positionInfos.totalOpenPositionFeeUsd +
+                          positionInfos.exitFeeUsd
+                        : undefined
+                    }
                     format="currency"
                   />
                 )}
-              </span>
-            ) : (
-              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
-            )}
-          </div>
-
-          <div className={infoRowStyle}>
-            <span className="text-sm relative flex">
-              Exit Position Fees
-              <InfoAnnotation
-                text="Fees paid when closing the position."
-                className="mr-1 w-3"
-              />
-            </span>
-
-            {!isInfoLoading ? (
-              <span className="font-mono text-sm flex">
-                {(() => {
-                  if (!positionInfos) return '-';
-
-                  if (openedPosition) {
-                    if (!openedPosition.nativeObject.exitFeeUsd) return '-';
-
-                    const newExitPositionFeeUsd =
-                      openedPosition.exitFeeUsd + positionInfos.exitFeeUsd;
-
-                    return (
-                      <>
-                        {/* Opened position */}
-
-                        <FormatNumber
-                          nb={openedPosition.exitFeeUsd}
-                          format="currency"
-                          className="text-txtfade text-xs self-center"
-                          isDecimalDimmed={false}
-                        />
-
-                        {rightArrowElement}
-
-                        {/* New position */}
-
-                        <FormatNumber
-                          nb={newExitPositionFeeUsd}
-                          format="currency"
-                        />
-
-                        {newExitPositionFeeUsd > openedPosition.exitFeeUsd
-                          ? arrowElementUp
-                          : arrowElementDown}
-                      </>
-                    );
-                  }
-
-                  return (
-                    <FormatNumber
-                      nb={positionInfos.exitFeeUsd}
-                      format="currency"
-                    />
-                  );
-                })()}
-              </span>
-            ) : (
-              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
-            )}
-          </div>
-
-          <div className={infoRowStyle}>
-            <span className="text-sm relative flex">
-              Liquidation Fees
-              <InfoAnnotation
-                text="Fees paid when the position is liquidated."
-                className="mr-1 w-3"
-              />
-            </span>
-
-            {!isInfoLoading ? (
-              <span className="font-mono text-sm flex">
-                {(() => {
-                  if (!positionInfos) return '-';
-
-                  if (openedPosition) {
-                    if (!openedPosition.nativeObject.liquidationFeeUsd)
-                      return '-';
-
-                    const newLiquidationFeeUsd =
-                      openedPosition.liquidationFeeUsd +
-                      positionInfos.liquidationFeeUsd;
-
-                    return (
-                      <>
-                        {/* Opened position */}
-
-                        <FormatNumber
-                          nb={openedPosition.liquidationFeeUsd}
-                          format="currency"
-                          className="text-txtfade text-xs self-center"
-                          isDecimalDimmed={false}
-                        />
-
-                        {rightArrowElement}
-
-                        {/* New position */}
-
-                        <FormatNumber
-                          nb={newLiquidationFeeUsd}
-                          format="currency"
-                        />
-
-                        {newLiquidationFeeUsd > openedPosition.liquidationFeeUsd
-                          ? arrowElementUp
-                          : arrowElementDown}
-                      </>
-                    );
-                  }
-
-                  return (
-                    <FormatNumber
-                      nb={positionInfos.liquidationFeeUsd}
-                      format="currency"
-                    />
-                  );
-                })()}
               </span>
             ) : (
               <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />

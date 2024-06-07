@@ -26,6 +26,7 @@ import {
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import errorImg from '../../../../../public/images/Icons/error.svg';
+import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
@@ -345,22 +346,35 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
-      <div className="flex flex-row justify-between">
-        <h5 className="flex items-center ml-4">
-          Configuration
-          <InfoAnnotation
-            text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
-            className="w-3 ml-1"
-          />
-        </h5>
+    <div className={twMerge('relative flex flex-col h-full', className)}>
+      {(() => {
+        if (!tokenA || !walletTokenBalances) return <div className="h-6"></div>;
 
-        <RefreshButton />
-      </div>
+        const balance = walletTokenBalances[tokenA.symbol];
+        if (balance === null) return <div className="h-6"></div>;
+
+        return (
+          <div className="text-sm flex items-center justify-end h-6 mb-1">
+            <Image
+              className="mr-1 opacity-60 relative"
+              src={walletImg}
+              height={14}
+              width={14}
+              alt="Wallet icon"
+            />
+
+            <span className="text-txtfade font-mono text-xs">
+              {formatNumber(balance, tokenA.decimals)}
+            </span>
+
+            <RefreshButton className="border-0 ml-[0.1em] relative -top-[0.1em]" />
+          </div>
+        );
+      })()}
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col border rounded-lg mt-2 w-full bg-inputcolor">
+        <div className="flex flex-col border rounded-lg w-full bg-inputcolor">
           <TradingInput
             className="text-sm rounded-full"
             inputClassName="border-0 tr-rounded-lg bg-inputcolor"
@@ -400,26 +414,10 @@ export default function LongShortTradingInputs({
         </div>
       </div>
 
-      {(() => {
-        if (!tokenA || !walletTokenBalances) return <div className="h-4"></div>;
-
-        const balance = walletTokenBalances[tokenA.symbol];
-        if (balance === null) return <div className="h-4"></div>;
-
-        return (
-          <div className="text-txtfade text-sm ml-auto mt-3 mr-4">
-            <span className="text-txtfade font-mono">
-              {formatNumber(balance, tokenA.decimals)}
-            </span>{' '}
-            {tokenA.symbol} in wallet
-          </div>
-        );
-      })()}
-
       <div className="flex flex-col mt-4 transition-opacity duration-500">
         <h5 className="flex items-center ml-4">
           Position Size
-          <InfoAnnotation
+          {/* <InfoAnnotation
             text={
               <div className="flex flex-col">
                 Equals to the provided collateral value times the leverage,
@@ -427,7 +425,7 @@ export default function LongShortTradingInputs({
               </div>
             }
             className="w-3 ml-1"
-          />
+          /> */}
         </h5>
 
         <div className="flex items-center h-16 pr-5 bg-third mt-2 border rounded-lg">
@@ -525,8 +523,8 @@ export default function LongShortTradingInputs({
         </div>
 
         <h5 className="flex items-center ml-4 mt-4">
-          Position
-          <InfoAnnotation
+          Position Detail
+          {/* <InfoAnnotation
             text={
               <div className="flex flex-col">
                 <span>
@@ -542,7 +540,7 @@ export default function LongShortTradingInputs({
               </div>
             }
             className="w-3 ml-1"
-          />
+          /> */}
         </h5>
 
         <PositionInfos
