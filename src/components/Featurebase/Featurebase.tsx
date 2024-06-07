@@ -15,7 +15,7 @@ const Featurebase = () => {
     win.Featurebase('initialize_feedback_widget', {
       organization: 'adrena',
       theme: 'dark',
-      placement: 'right',
+      placement: 'left',
     });
   }, []);
 
