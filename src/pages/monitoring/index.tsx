@@ -1,5 +1,5 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -17,6 +17,30 @@ export default function Monitoring(pageProps: PageProps) {
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
     useState<(typeof tabs)[number]>('All');
 
+  const searchParams = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    if (searchParams.has('tab')) {
+      setDetailedDisplay(true);
+
+      return setDetailedDisplaySelectedTab(
+        tabs.find((tab) => tab === searchParams.get('tab')) ?? 'All',
+      );
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleTabChange = (tab: (typeof tabs)[number]) => {
+    searchParams.set('tab', tab);
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}?${searchParams.toString()}`,
+    );
+    setDetailedDisplaySelectedTab(tab);
+  };
+
   const tabs = [
     'All',
     // TODO: re-enable when needed
@@ -29,6 +53,7 @@ export default function Monitoring(pageProps: PageProps) {
     'Vesting',
     'Accounts',
   ] as const;
+
   const tabsFormatted = tabs.map((x) => ({
     title: x,
     activeColor: 'border-white',
@@ -72,7 +97,16 @@ export default function Monitoring(pageProps: PageProps) {
               'font-special uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
               !detailedDisplay ? 'opacity-100' : '',
             )}
-            onClick={() => setDetailedDisplay(false)}
+            onClick={() => {
+              searchParams.delete('tab');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+
+              setDetailedDisplay(false);
+            }}
           >
             Lite View
           </span>
@@ -84,7 +118,15 @@ export default function Monitoring(pageProps: PageProps) {
               'font-special uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
               detailedDisplay ? 'opacity-100' : '',
             )}
-            onClick={() => setDetailedDisplay(true)}
+            onClick={() => {
+              searchParams.set('tab', detailedDisplaySelectedTab);
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setDetailedDisplay(true);
+            }}
           >
             Detailed View
           </span>
@@ -100,7 +142,7 @@ export default function Monitoring(pageProps: PageProps) {
             )}
             tabs={tabsFormatted}
             onClick={(tab) => {
-              setDetailedDisplaySelectedTab(tab);
+              handleTabChange(tab);
             }}
           />
         ) : null}
