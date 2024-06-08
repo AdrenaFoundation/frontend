@@ -43,9 +43,7 @@ export default function Document() {
           name="description"
           content="Trade at the speed of light with up to 100x leverage"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-        <title>{metadata.title}</title>
 
         <meta name="description" content={metadata.description} />
         <meta property="og:title" content={metadata.openGraph.title} />

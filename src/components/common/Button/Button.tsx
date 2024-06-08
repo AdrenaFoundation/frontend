@@ -16,6 +16,8 @@ function Button({
   leftIcon,
   className,
   iconClassName,
+  rightIconClassName,
+  leftIconClassName,
   onClick,
   href,
   disabled,
@@ -31,6 +33,8 @@ function Button({
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
   iconClassName?: string;
+  rightIconClassName?: string;
+  leftIconClassName?: string;
   size?: 'sm' | 'md' | 'lg';
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
@@ -96,7 +100,7 @@ function Button({
           alt={alt}
           width="12"
           height="12"
-          className={iconClassName}
+          className={twMerge(iconClassName, leftIconClassName)}
         />
       ) : null}
 
@@ -108,7 +112,7 @@ function Button({
           alt={alt}
           width="12"
           height="12"
-          className={iconClassName}
+          className={twMerge(iconClassName, rightIconClassName)}
         />
       ) : null}
 
