@@ -4,6 +4,7 @@ import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -259,47 +260,52 @@ function AppComponent({
   }, [activeRpc.name]);
 
   return (
-    <RootLayout
-      userProfile={userProfile}
-      activeRpc={activeRpc}
-      rpcInfos={rpcInfos}
-      autoRpcMode={autoRpcMode}
-      customRpcUrl={customRpcUrl}
-      customRpcLatency={customRpcLatency}
-      favoriteRpc={favoriteRpc}
-      setAutoRpcMode={setAutoRpcMode}
-      setCustomRpcUrl={setCustomRpcUrl}
-      setFavoriteRpc={setFavoriteRpc}
-    >
-      {
-        <TermsAndConditionsModal
-          isOpen={isTermsAndConditionModalOpen}
-          agreeTrigger={() => {
-            // User agreed to terms and conditions
-            setIsTermsAndConditionModalOpen(false);
-
-            // Save the user actions to the website
-            setCookie('terms-and-conditions-acceptance', 'true');
-          }}
-          declineTrigger={() => {
-            router.push('https://landing.adrena.xyz/');
-          }}
-          readonly={false}
-        />
-      }
-
-      <Component
-        {...pageProps}
+    <>
+      <Head>
+        <meta name="viewport" content="viewport-fit=cover" />
+      </Head>
+      <RootLayout
         userProfile={userProfile}
-        triggerUserProfileReload={triggerUserProfileReload}
-        mainPool={mainPool}
-        custodies={custodies}
-        wallet={wallet}
-        triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
-        positions={positions}
-        triggerPositionsReload={triggerPositionsReload}
-        connected={connected}
-      />
-    </RootLayout>
+        activeRpc={activeRpc}
+        rpcInfos={rpcInfos}
+        autoRpcMode={autoRpcMode}
+        customRpcUrl={customRpcUrl}
+        customRpcLatency={customRpcLatency}
+        favoriteRpc={favoriteRpc}
+        setAutoRpcMode={setAutoRpcMode}
+        setCustomRpcUrl={setCustomRpcUrl}
+        setFavoriteRpc={setFavoriteRpc}
+      >
+        {
+          <TermsAndConditionsModal
+            isOpen={isTermsAndConditionModalOpen}
+            agreeTrigger={() => {
+              // User agreed to terms and conditions
+              setIsTermsAndConditionModalOpen(false);
+
+              // Save the user actions to the website
+              setCookie('terms-and-conditions-acceptance', 'true');
+            }}
+            declineTrigger={() => {
+              router.push('https://landing.adrena.xyz/');
+            }}
+            readonly={false}
+          />
+        }
+
+        <Component
+          {...pageProps}
+          userProfile={userProfile}
+          triggerUserProfileReload={triggerUserProfileReload}
+          mainPool={mainPool}
+          custodies={custodies}
+          wallet={wallet}
+          triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+          positions={positions}
+          triggerPositionsReload={triggerPositionsReload}
+          connected={connected}
+        />
+      </RootLayout>
+    </>
   );
 }
