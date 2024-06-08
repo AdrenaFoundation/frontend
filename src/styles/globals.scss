@@ -250,10 +250,7 @@ input[type='radio']:checked {
   border: 3px solid #16293d; /* creates padding around scroll thumb */
 }
 
+// Hide the feedback button, instead use a proxy in the footer
 .fb-feedback-widget-feedback-button-left {
-  font-size: 0.8em !important;
-  height: 2.6em !important;
-  left: -1em !important;
-  top: auto !important;
-  bottom: 10em !important;
+  display: none !important;
 }
