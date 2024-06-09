@@ -8,11 +8,12 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
+import TextExplain from '@/components/common/TextExplain/TextExplain';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
   addFailedTxNotification,
   addNotification,
@@ -86,6 +87,8 @@ export default function LongShortTradingInputs({
 
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
+
+  const [custody, setCustody] = useState<CustodyExtended | null>(null);
 
   const [positionInfos, setPositionInfos] = useState<{
     collateralUsd: number;
@@ -178,6 +181,12 @@ export default function LongShortTradingInputs({
       });
     }
   };
+
+  useEffect(() => {
+    if (!tokenB) return setCustody(null);
+
+    setCustody(window.adrena.client.getCustodyByMint(tokenB.mint) ?? null);
+  }, [tokenB]);
 
   useEffect(() => {
     if (!window.adrena.geoBlockingData.allowed)
@@ -347,34 +356,39 @@ export default function LongShortTradingInputs({
 
   return (
     <div className={twMerge('relative flex flex-col h-full', className)}>
-      {(() => {
-        if (!tokenA || !walletTokenBalances) return <div className="h-6"></div>;
+      <div className="flex w-full justify-between items-center mt-1 mb-1">
+        <h5 className="ml-4">Position Controls</h5>
 
-        const balance = walletTokenBalances[tokenA.symbol];
-        if (balance === null) return <div className="h-6"></div>;
+        {(() => {
+          if (!tokenA || !walletTokenBalances)
+            return <div className="h-6"></div>;
 
-        return (
-          <div className="text-sm flex items-center justify-end h-6 mb-1">
-            <Image
-              className="mr-1 opacity-60 relative"
-              src={walletImg}
-              height={14}
-              width={14}
-              alt="Wallet icon"
-            />
+          const balance = walletTokenBalances[tokenA.symbol];
+          if (balance === null) return <div className="h-6"></div>;
 
-            <span className="text-txtfade font-mono text-xs">
-              {formatNumber(balance, tokenA.decimals)}
-            </span>
+          return (
+            <div className="text-sm flex items-center justify-end h-6">
+              <Image
+                className="mr-1 opacity-60 relative"
+                src={walletImg}
+                height={14}
+                width={14}
+                alt="Wallet icon"
+              />
 
-            <RefreshButton className="border-0 ml-[0.1em] relative -top-[0.1em]" />
-          </div>
-        );
-      })()}
+              <span className="text-txtfade font-mono text-xs">
+                {formatNumber(balance, tokenA.decimals)}
+              </span>
+
+              <RefreshButton className="border-0 ml-[0.1em] relative -top-[0.1em]" />
+            </div>
+          );
+        })()}
+      </div>
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col border rounded-lg w-full bg-inputcolor">
+        <div className="flex flex-col border rounded-lg w-full bg-inputcolor relative">
           <TradingInput
             className="text-sm rounded-full"
             inputClassName="border-0 tr-rounded-lg bg-inputcolor"
@@ -413,22 +427,26 @@ export default function LongShortTradingInputs({
           />
         </div>
       </div>
-
       <div className="flex flex-col mt-4 transition-opacity duration-500">
-        <h5 className="flex items-center ml-4">
-          Position Size
-          {/* <InfoAnnotation
-            text={
-              <div className="flex flex-col">
-                Equals to the provided collateral value times the leverage,
-                minus entry fees percentage on that amount.
-              </div>
-            }
-            className="w-3 ml-1"
-          /> */}
-        </h5>
+        <div className="flex">
+          <h5 className="flex items-center ml-4">Position Size</h5>
 
-        <div className="flex items-center h-16 pr-5 bg-third mt-2 border rounded-lg">
+          <div className="ml-auto">
+            <FormatNumber
+              nb={
+                custody && custody.maxPositionLockedUsd
+                  ? custody.maxPositionLockedUsd
+                  : null
+              }
+              format="currency"
+              className="text-txtfade text-xs ml-1"
+            />
+
+            <span className="text-txtfade ml-1">max size</span>
+          </div>
+        </div>
+
+        <div className="flex items-center h-16 pr-5 bg-third mt-1 border rounded-lg">
           <Select
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"
@@ -498,13 +516,13 @@ export default function LongShortTradingInputs({
                     <FormatNumber
                       nb={inputB}
                       precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
-                      className="text-base"
+                      className="text-lg"
                     />
 
                     <FormatNumber
                       nb={priceB}
                       format="currency"
-                      className="text-txtfade text-xs"
+                      className="text-txtfade text-sm"
                     />
                   </div>
                 </div>
@@ -522,26 +540,28 @@ export default function LongShortTradingInputs({
           )}
         </div>
 
-        <h5 className="flex items-center ml-4 mt-4">
-          Position Detail
-          {/* <InfoAnnotation
-            text={
-              <div className="flex flex-col">
-                <span>
-                  Below are various details regarding the future position.
-                  Please review them carefully to ensure you are comfortable
-                  with the parameters.
-                </span>
-                <span className="mt-2">
-                  <b>Note:</b> The information provided is based on best-effort
-                  estimations. Actual numbers will be calculated when the order
-                  is executed.
-                </span>
-              </div>
-            }
-            className="w-3 ml-1"
-          /> */}
-        </h5>
+        <div className="ml-auto">
+          <FormatNumber
+            nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
+            format="currency"
+            precision={0}
+            className="text-txtfade text-xs"
+          />
+
+          <span className="text-txtfade ml-1">available</span>
+        </div>
+
+        {/* Button to execute action */}
+        <Button
+          className={twMerge(
+            'w-full justify-center mt-6 mb-2',
+            side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+          )}
+          size="lg"
+          title={buttonTitle}
+          disabled={errorMessage != null}
+          onClick={handleExecuteButton}
+        />
 
         <PositionInfos
           className="mt-2 w-full h-auto mb-4 overflow-hidden"
@@ -575,18 +595,6 @@ export default function LongShortTradingInputs({
           </AnimatePresence>
         ) : null}
       </div>
-
-      {/* Button to execute action */}
-      <Button
-        className={twMerge(
-          'w-full justify-center mt-auto',
-          side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
-        )}
-        size="lg"
-        title={buttonTitle}
-        disabled={errorMessage != null}
-        onClick={handleExecuteButton}
-      />
     </div>
   );
 }
