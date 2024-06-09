@@ -540,6 +540,10 @@ export class AdrenaClient {
           custody.borrowRateState.currentRate,
           RATE_DECIMALS,
         ),
+        maxPositionLockedUsd: nativeToUi(
+          custody.pricing.maxPositionLockedUsd,
+          USD_DECIMALS,
+        ),
         //
         nativeObject: custody,
       };

@@ -62,18 +62,6 @@ export function getRightArrowElement() {
   );
 }
 
-export function getLeftArrowElement() {
-  return (
-    <Image
-      className="ml-2 mr-2 opacity-60"
-      src={arrowRightIcon}
-      height={16}
-      width={16}
-      alt="Arrow"
-    />
-  );
-}
-
 export function findATAAddressSync(
   wallet: PublicKey,
   mint: PublicKey,

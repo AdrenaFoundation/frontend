@@ -54,21 +54,15 @@ export default function PositionInfos({
     >
       <div className="flex flex-col pr-5">
         <div className="flex flex-col pt-2 pb-2">
-          <div className={infoRowStyle}>
-            <span className="text-sm flex">
-              Collateral
-              {/* <InfoAnnotation
-                text="Collateral backing the position. Position can be liquidated if this drop below xx% of position value"
-                className="mr-1 w-3"
-              /> */}
-            </span>
+          {openedPosition ? (
+            <div className={infoRowStyle}>
+              <span className="text-sm flex">Collateral</span>
 
-            {!isInfoLoading ? (
-              <span className="font-mono text-sm flex">
-                {(() => {
-                  if (!positionInfos) return '-';
+              {!isInfoLoading ? (
+                <span className="font-mono text-sm flex">
+                  {(() => {
+                    if (!positionInfos) return '-';
 
-                  if (openedPosition) {
                     const newCollateralUsd =
                       positionInfos.collateralUsd +
                       openedPosition.collateralUsd;
@@ -94,36 +88,29 @@ export default function PositionInfos({
                           : arrowElementDown}
                       </>
                     );
-                  }
+                  })()}
+                </span>
+              ) : (
+                <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
+              )}
+            </div>
+          ) : null}
 
-                  return (
-                    <FormatNumber
-                      nb={positionInfos.collateralUsd}
-                      format="currency"
-                    />
-                  );
-                })()}
-              </span>
-            ) : (
-              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
-            )}
-          </div>
-
-          <div className={infoRowStyle}>
-            <span className="text-sm flex">
-              Leverage
-              {/* <InfoAnnotation
+          {openedPosition ? (
+            <div className={infoRowStyle}>
+              <span className="text-sm flex">
+                Leverage
+                {/* <InfoAnnotation
                 text="Multiplier applied to the collateral to determine the size of the position."
                 className="mr-1 w-3"
               /> */}
-            </span>
+              </span>
 
-            {!isInfoLoading ? (
-              <span className="font-mono text-sm flex">
-                {(() => {
-                  if (!positionInfos || !tokenPriceB) return '-';
+              {!isInfoLoading ? (
+                <span className="font-mono text-sm flex">
+                  {(() => {
+                    if (!positionInfos || !tokenPriceB) return '-';
 
-                  if (openedPosition) {
                     const newLeverage =
                       (openedPosition.sizeUsd * openedPosition.leverage +
                         positionInfos.sizeUsd * leverage) /
@@ -153,15 +140,13 @@ export default function PositionInfos({
                           : arrowElementDown}
                       </>
                     );
-                  }
-
-                  return <FormatNumber nb={leverage} suffix="x" />;
-                })()}
-              </span>
-            ) : (
-              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
-            )}
-          </div>
+                  })()}
+                </span>
+              ) : (
+                <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
+              )}
+            </div>
+          ) : null}
 
           <div className={infoRowStyle}>
             <span className="text-sm flex">
@@ -397,15 +382,38 @@ export default function PositionInfos({
           <div className={infoRowStyle}>
             <span className="text-sm flex mb-1">
               Available Liquidity
-              <InfoAnnotation
+              {/* <InfoAnnotation
                 text="Amount of funds available to enter new trades."
                 className="mr-1 w-3"
-              />
+              /> */}
             </span>
 
             {!isInfoLoading ? (
               <FormatNumber
                 nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
+                format="currency"
+              />
+            ) : (
+              <div className="w-[45%] h-[18px] bg-bcolor rounded-xl" />
+            )}
+          </div>
+
+          <div className={infoRowStyle}>
+            <span className="text-sm flex mb-1">
+              Max Position Size
+              {/* <InfoAnnotation
+                text="Amount of funds available to enter new trades."
+                className="mr-1 w-3"
+              /> */}
+            </span>
+
+            {!isInfoLoading ? (
+              <FormatNumber
+                nb={
+                  custody && custody.maxPositionLockedUsd
+                    ? custody.maxPositionLockedUsd
+                    : null
+                }
                 format="currency"
               />
             ) : (

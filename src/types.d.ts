@@ -75,8 +75,8 @@ export type CustodyExtended = {
   // Expressed in tokens
   // Do liquidity * tokenPrice to get liquidityUsd
   liquidity: number;
-
   borrowFee: number;
+  maxPositionLockedUsd: number;
 
   // Onchain data
   nativeObject: Custody;
