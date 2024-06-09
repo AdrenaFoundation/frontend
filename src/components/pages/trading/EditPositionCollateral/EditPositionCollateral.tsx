@@ -105,14 +105,16 @@ export default function EditPositionCollateral({
 
     try {
       const txHash = await (position.side === 'long'
-        ? window.adrena.client.removeCollateralLong
-        : window.adrena.client.removeCollateralShort)({
+        ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
+        : window.adrena.client.removeCollateralShort.bind(
+            window.adrena.client,
+          ))({
         position,
         collateralUsd: uiToNative(input, USD_DECIMALS),
       });
 
       addSuccessTxNotification({
-        title: 'Successfull Withdraw',
+        title: 'Successful Withdraw',
         txHash,
       });
 
