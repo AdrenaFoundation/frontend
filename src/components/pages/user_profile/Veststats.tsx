@@ -1,6 +1,10 @@
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
-import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
+import {
+  differenceInDays,
+  differenceInMonths,
+  differenceInYears,
+} from 'date-fns';
 import { Doughnut } from 'react-chartjs-2';
 
 import Button from '@/components/common/Button/Button';
@@ -51,6 +55,14 @@ export default function VestStats({
 
   const claimableAmount = nbSecondsSinceLastClaim * amountPerSecond;
 
+  const unlockEndDate = new Date(vest.unlockEndTimestamp.toNumber() * 1000);
+  const now = new Date();
+
+  const yearsLeft = differenceInYears(unlockEndDate, now);
+  const monthsLeft = differenceInMonths(unlockEndDate, now) % 12;
+  const daysLeft = (differenceInDays(unlockEndDate, now) % 365) % 30;
+  const timeLeft = `${yearsLeft}y ${monthsLeft}m ${daysLeft}d left`;
+
   const claimVest = async () => {
     try {
       const txHash = await window.adrena.client.claimUserVest();
@@ -76,7 +88,10 @@ export default function VestStats({
         <div className="flex w-full items-center justify-between">
           <p className="text-sm">Vest period</p>
 
-          <p>{vestPeriod.toLocaleString()} years</p>
+          <p className="font-mono">
+            {vestPeriod.toLocaleString()} years{' '}
+            <span className="font-mono opacity-50"> ({timeLeft})</span>
+          </p>
         </div>
         <div className="w-full h-[1px] bg-third my-1" />
 
