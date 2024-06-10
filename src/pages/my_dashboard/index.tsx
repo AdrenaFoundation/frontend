@@ -237,6 +237,7 @@ export default function MyDashboard({
               connected={connected}
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
               title="Opened Positions"
             />
 

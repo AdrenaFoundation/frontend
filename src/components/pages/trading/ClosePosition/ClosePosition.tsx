@@ -22,11 +22,13 @@ export default function ClosePosition({
   className,
   position,
   triggerPositionsReload,
+  triggerUserProfileReload,
   onClose,
 }: {
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
+  triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -104,6 +106,7 @@ export default function ClosePosition({
       // Reload positions just after closing the popup
       setTimeout(() => {
         triggerPositionsReload();
+        triggerUserProfileReload();
       }, 0);
 
       onClose();
