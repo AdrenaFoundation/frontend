@@ -93,11 +93,15 @@ export type PositionExtended = {
   collateralToken: Token;
   side: 'long' | 'short';
   pnl?: number | null;
+  profitUsd?: number | null;
+  lossUsd?: number | null;
+  borrowFeeUsd?: number | null;
   liquidationPrice?: number | null;
   sizeUsd: number;
   collateralUsd: number;
   price: number;
   collateralAmount: number;
+  entryFeeUsd: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
 

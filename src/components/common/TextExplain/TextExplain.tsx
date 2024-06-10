@@ -1,4 +1,3 @@
-import { createRef, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export default function TextExplain({
@@ -15,9 +14,9 @@ export default function TextExplain({
         className,
       )}
     >
-      <span className="text-gray-600 whitespace-nowrap">{title}</span>
+      <span className="text-gray-500 whitespace-nowrap">{title}</span>
 
-      <div className="h-1 border-t-2 border-l-2 border-r-2 border-gray-700 w-full mt-[0.15em]"></div>
+      <div className="h-1 border-t-2 border-l-2 border-r-2 border-gray-600 w-full mt-[0.15em]"></div>
     </div>
   );
 }

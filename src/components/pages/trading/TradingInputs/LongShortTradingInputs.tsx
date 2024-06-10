@@ -429,25 +429,9 @@ export default function LongShortTradingInputs({
       </div>
 
       <div className="flex flex-col mt-4 transition-opacity duration-500">
-        <div className="flex">
-          <h5 className="flex items-center ml-4">Size</h5>
+        <h5 className="flex items-center ml-4">Size</h5>
 
-          <div className="ml-auto">
-            <FormatNumber
-              nb={
-                custody && custody.maxPositionLockedUsd
-                  ? custody.maxPositionLockedUsd
-                  : null
-              }
-              format="currency"
-              className="text-txtfade text-xs ml-1"
-            />
-
-            <span className="text-txtfade ml-1">max size</span>
-          </div>
-        </div>
-
-        <div className="flex items-center h-16 pr-5 bg-third mt-1 border rounded-lg">
+        <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg">
           <Select
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"
@@ -478,15 +462,10 @@ export default function LongShortTradingInputs({
           {!isInfoLoading ? (
             <>
               <div className="flex ml-auto">
-                <InfoAnnotation
-                  text="Amount of tokens being traded."
-                  className="w-3 grow-0 mr-3 mb-4"
-                />
-
                 {openedPosition && tokenPriceB && inputB ? (
                   <>
                     {/* Opened position */}
-                    <div className="flex flex-col self-center items-end">
+                    <div className="flex flex-col self-center items-end line-through mr-3">
                       <FormatNumber
                         nb={openedPosition.sizeUsd / tokenPriceB}
                         precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
@@ -496,17 +475,7 @@ export default function LongShortTradingInputs({
                       <FormatNumber
                         nb={openedPosition.sizeUsd}
                         format="currency"
-                        className="text-txtfade text-xs"
-                      />
-                    </div>
-
-                    <div className="ml-2 mr-2 flex items-center">
-                      <Image
-                        className="ml-2 mr-2 opacity-60"
-                        src={arrowRightIcon}
-                        height={16}
-                        width={16}
-                        alt="Arrow"
+                        className="text-txtfade text-xs line-through"
                       />
                     </div>
                   </>
@@ -528,28 +497,37 @@ export default function LongShortTradingInputs({
                   </div>
                 </div>
               </div>
-
-              {openedPosition && tokenPriceB && inputB && priceB
-                ? getArrowElement(
-                    openedPosition.sizeUsd < priceB ? 'up' : 'down',
-                    'right-[0.5em]',
-                  )
-                : null}
             </>
           ) : (
             <div className="w-full h-[40px] bg-bcolor rounded-xl" />
           )}
         </div>
 
-        <div className="ml-auto mb-2">
-          <FormatNumber
-            nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
-            format="currency"
-            precision={0}
-            className="text-txtfade text-xs"
-          />
+        <div className="flex mt-2">
+          <div>
+            <span className="text-txtfade">max size:</span>
 
-          <span className="text-txtfade ml-1">liquidity</span>
+            <FormatNumber
+              nb={
+                custody && custody.maxPositionLockedUsd
+                  ? custody.maxPositionLockedUsd
+                  : null
+              }
+              format="currency"
+              className="text-txtfade text-xs ml-1"
+            />
+          </div>
+
+          <div className="ml-auto mb-2">
+            <FormatNumber
+              nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
+              format="currency"
+              precision={0}
+              className="text-txtfade text-xs"
+            />
+
+            <span className="text-txtfade ml-1">liquidity</span>
+          </div>
         </div>
 
         {errorMessage !== null ? (
@@ -588,10 +566,8 @@ export default function LongShortTradingInputs({
         />
 
         <PositionInfos
-          className="mt-2 w-full h-auto mb-4 overflow-hidden"
           positionInfos={positionInfos}
           tokenB={tokenB}
-          leverage={leverage}
           openedPosition={openedPosition}
           isInfoLoading={isInfoLoading}
         />
