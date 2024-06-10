@@ -1,5 +1,6 @@
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { Doughnut } from 'react-chartjs-2';
 
 import Button from '@/components/common/Button/Button';
@@ -135,13 +136,16 @@ export default function VestStats({
           onClick={() => claimVest()}
         />
       </div>
-      <div className="relative flex flex-col justify-center items-center w-[300px] sm:w-[400px] p-3 order-1 sm:order-2 sm:border-l sm:border-third">
+      <div className="flex flex-col justify-center items-center w-[300px] sm:w-[400px] p-3 order-1 sm:order-2 sm:border-l sm:border-third">
         <Doughnut
           height={100}
           width={100}
           options={{
-            cutout: '90%',
+            cutout: '0%',
             plugins: {
+              datalabels: {
+                display: false,
+              },
               legend: {
                 display: true,
                 position: 'top',
@@ -170,21 +174,6 @@ export default function VestStats({
           }}
           className="w-full h-full"
         />
-        <div className="absolute top-1/2">
-          <FormatNumber
-            nb={nativeToUi(
-              vest.claimedAmount,
-              window.adrena.client.adxToken.decimals,
-            )}
-            suffix=" ADX"
-            className="text-lg text-center w-full"
-          />
-          <FormatNumber
-            nb={nativeToUi(vest.amount, window.adrena.client.adxToken.decimals)}
-            suffix=" ADX"
-            className="text-center block opacity-50"
-          />
-        </div>
       </div>
     </div>
   );
