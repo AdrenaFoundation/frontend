@@ -355,9 +355,9 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col h-full', className)}>
+    <div className={twMerge('relative flex flex-col pb-2', className)}>
       <div className="flex w-full justify-between items-center mt-1 mb-1">
-        <h5 className="ml-4">Position Controls</h5>
+        <h5 className="ml-4">Controls</h5>
 
         {(() => {
           if (!tokenA || !walletTokenBalances)
@@ -427,9 +427,10 @@ export default function LongShortTradingInputs({
           />
         </div>
       </div>
+
       <div className="flex flex-col mt-4 transition-opacity duration-500">
         <div className="flex">
-          <h5 className="flex items-center ml-4">Position Size</h5>
+          <h5 className="flex items-center ml-4">Size</h5>
 
           <div className="ml-auto">
             <FormatNumber
@@ -540,7 +541,7 @@ export default function LongShortTradingInputs({
           )}
         </div>
 
-        <div className="ml-auto">
+        <div className="ml-auto mb-2">
           <FormatNumber
             nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
             format="currency"
@@ -548,34 +549,13 @@ export default function LongShortTradingInputs({
             className="text-txtfade text-xs"
           />
 
-          <span className="text-txtfade ml-1">available</span>
+          <span className="text-txtfade ml-1">liquidity</span>
         </div>
-
-        {/* Button to execute action */}
-        <Button
-          className={twMerge(
-            'w-full justify-center mt-6 mb-2',
-            side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
-          )}
-          size="lg"
-          title={buttonTitle}
-          disabled={errorMessage != null}
-          onClick={handleExecuteButton}
-        />
-
-        <PositionInfos
-          className="mt-2 w-full h-auto mb-4 overflow-hidden"
-          positionInfos={positionInfos}
-          tokenB={tokenB}
-          leverage={leverage}
-          openedPosition={openedPosition}
-          isInfoLoading={isInfoLoading}
-        />
 
         {errorMessage !== null ? (
           <AnimatePresence>
             <motion.div
-              className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 mb-4 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
+              className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 mt-2 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
               initial={{ opacity: 0, scaleY: 0 }}
               animate={{ opacity: 1, scaleY: 1 }}
               exit={{ opacity: 0, scaleY: 0 }}
@@ -594,6 +574,27 @@ export default function LongShortTradingInputs({
             </motion.div>
           </AnimatePresence>
         ) : null}
+
+        {/* Button to execute action */}
+        <Button
+          className={twMerge(
+            'w-full justify-center mt-2 mb-2',
+            side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+          )}
+          size="lg"
+          title={buttonTitle}
+          disabled={errorMessage != null}
+          onClick={handleExecuteButton}
+        />
+
+        <PositionInfos
+          className="mt-2 w-full h-auto mb-4 overflow-hidden"
+          positionInfos={positionInfos}
+          tokenB={tokenB}
+          leverage={leverage}
+          openedPosition={openedPosition}
+          isInfoLoading={isInfoLoading}
+        />
       </div>
     </div>
   );

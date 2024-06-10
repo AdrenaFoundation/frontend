@@ -49,12 +49,15 @@ export default function PositionInfos({
   const arrowElementUp = getArrowElement('up');
   const arrowElementDown = getArrowElement('down');
 
+  //  {positionInfos ? (
   return (
     <>
-      <h5 className="flex items-center ml-4 mt-4">Position in and out</h5>
+      <h5 className="flex items-center ml-4 mt-3 mb-2">Position in and out</h5>
 
-      <StyledSubSubContainer className={twMerge('flex-col p-2', className)}>
-        {positionInfos ? (
+      <StyledSubSubContainer
+        className={twMerge('flex-col p-2 h-[5em] items-center justify-center')}
+      >
+        {positionInfos && !isInfoLoading ? (
           <div className="flex w-full justify-evenly">
             <div className="flex relative items-center">
               <TextExplain title="Entry Price" className="top-[0.2em]" />
@@ -78,43 +81,60 @@ export default function PositionInfos({
               />
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="flex w-full justify-evenly items-center">
+            <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+
+            <div className="h-full w-[1px] bg-gray-800" />
+
+            <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+          </div>
+        )}
       </StyledSubSubContainer>
 
-      <h5 className="flex items-center ml-4">Position fees</h5>
+      <h5 className="flex items-center ml-4 mt-4 mb-2">Fees</h5>
 
       <StyledSubSubContainer
-        className={twMerge('flex p-2 items-center justify-center', className)}
+        className={twMerge('flex p-2 h-[5em] items-center justify-center')}
       >
-        <div className="flex relative items-center">
-          <TextExplain title="Entry/Close Fees" className="top-[0.2em]" />
+        {positionInfos && !isInfoLoading ? (
+          <>
+            <div className="flex relative items-center">
+              <TextExplain title="Entry/Close Fees" className="top-[0.2em]" />
 
-          <FormatNumber
-            nb={
-              typeof positionInfos?.totalOpenPositionFeeUsd !== 'undefined' &&
-              typeof positionInfos?.exitFeeUsd !== 'undefined'
-                ? positionInfos.totalOpenPositionFeeUsd +
-                  positionInfos.exitFeeUsd
-                : undefined
-            }
-            format="currency"
-            className="text-lg pt-8"
-          />
-        </div>
+              <FormatNumber
+                nb={
+                  typeof positionInfos?.totalOpenPositionFeeUsd !==
+                    'undefined' &&
+                  typeof positionInfos?.exitFeeUsd !== 'undefined'
+                    ? positionInfos.totalOpenPositionFeeUsd +
+                      positionInfos.exitFeeUsd
+                    : undefined
+                }
+                format="currency"
+                className="text-lg pt-8"
+              />
+            </div>
 
-        <span className="text-xl ml-2 mr-2 mt-8">+</span>
+            <span className="text-xl ml-2 mr-2 mt-8">+</span>
 
-        <div className="flex relative items-center">
-          <TextExplain title="Borrow Fees" className="top-[0.2em]" />
+            <div className="flex relative items-center">
+              <TextExplain title="Borrow Fees" className="top-[0.2em]" />
 
-          <FormatNumber
-            nb={custody && tokenB && custody.borrowFee}
-            precision={RATE_DECIMALS}
-            suffix="%/hr"
-            isDecimalDimmed={false}
-            className="text-lg pt-8"
-          />
-        </div>
+              <FormatNumber
+                nb={custody && tokenB && custody.borrowFee}
+                precision={RATE_DECIMALS}
+                suffix="%/hr"
+                isDecimalDimmed={false}
+                className="text-lg pt-8"
+              />
+            </div>
+          </>
+        ) : (
+          <div className="flex h-full justify-center items-center">
+            <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+          </div>
+        )}
       </StyledSubSubContainer>
 
       {/* <StyledSubSubContainer
