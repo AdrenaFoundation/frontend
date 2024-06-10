@@ -43,9 +43,7 @@ export default function Document() {
           name="description"
           content="Trade at the speed of light with up to 100x leverage"
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-        <title>{metadata.title}</title>
 
         <meta name="description" content={metadata.description} />
         <meta property="og:title" content={metadata.openGraph.title} />
@@ -70,6 +68,24 @@ export default function Document() {
           src="charting_library/charting_library.standalone.js"
           strategy="lazyOnload"
         ></Script>
+
+        <Script
+          id="hotjar-script"
+          type="text/javascript"
+          strategy="beforeInteractive"
+          async={false}
+          defer={false}
+          dangerouslySetInnerHTML={{
+            __html: `(function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:4990246,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+          })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');`,
+          }}
+        />
 
         <NextScript />
       </body>

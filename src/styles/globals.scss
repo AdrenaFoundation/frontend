@@ -249,3 +249,8 @@ input[type='radio']:checked {
   border-radius: 6px; /* roundness of the scroll thumb */
   border: 3px solid #16293d; /* creates padding around scroll thumb */
 }
+
+// Hide the feedback button, instead use a proxy in the footer
+.fb-feedback-widget-feedback-button-left {
+  display: none !important;
+}

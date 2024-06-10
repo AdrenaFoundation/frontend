@@ -103,7 +103,7 @@ const WalletBlock = ({
   const walletBlock = (
     <div
       className={twMerge(
-        'flex flex-row sm:flex-col gap-3 items-center sm:justify-center p-3 border rounded-lg w-[300px] h-[50px] sm:h-40 sm:w-40 relative',
+        'flex flex-row sm:flex-col gap-3 items-center justify-center p-3 border rounded-lg w-[300px] h-[50px] sm:h-40 sm:w-40 relative',
         disabled
           ? 'cursor-not-allowed opacity-40'
           : 'cursor-pointer hover:bg-bcolor duration-300',
@@ -119,7 +119,7 @@ const WalletBlock = ({
 
       <p className="sm:mt-6">{name}</p>
 
-      <div className="h-1 w-32 bg-bcolor right-3 absolute sm:bottom-2 sm:right-auto"></div>
+      <div className="hidden sm:block h-1 w-32 bg-bcolor right-3 absolute sm:bottom-2 sm:right-auto"></div>
     </div>
   );
 

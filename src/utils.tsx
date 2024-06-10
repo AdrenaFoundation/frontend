@@ -62,6 +62,18 @@ export function getRightArrowElement() {
   );
 }
 
+export function getLeftArrowElement() {
+  return (
+    <Image
+      className="ml-2 mr-2 opacity-60"
+      src={arrowRightIcon}
+      height={16}
+      width={16}
+      alt="Arrow"
+    />
+  );
+}
+
 export function findATAAddressSync(
   wallet: PublicKey,
   mint: PublicKey,
@@ -639,7 +651,7 @@ export function getMethodDiscriminator(name: string): Buffer {
 export function calculateCappedFeeForExitEarly(
   lockedStake: LockedStakeExtended,
 ): number {
-  const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber();
+  const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber() * 1000;
   const timeRemaining = lockedStake.lockDuration.toNumber() - timeElapsed;
   const feeRate = timeRemaining / lockedStake.lockDuration.toNumber();
 
