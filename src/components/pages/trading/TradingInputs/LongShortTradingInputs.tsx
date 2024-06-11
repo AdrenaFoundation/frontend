@@ -6,10 +6,14 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
+import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
+import { RATE_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
@@ -27,7 +31,6 @@ import errorImg from '../../../../../public/images/Icons/error.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
-import PositionInfos from './PositionInfos';
 import PositionSizeTippy from './PositionSizeTippy';
 
 // use the counter to handle asynchronous multiple loading
@@ -566,12 +569,134 @@ export default function LongShortTradingInputs({
           onClick={handleExecuteButton}
         />
 
-        <PositionInfos
-          positionInfos={positionInfos}
-          tokenB={tokenB}
-          openedPosition={openedPosition}
-          isInfoLoading={isInfoLoading}
-        />
+        <h5 className="flex items-center ml-4 mt-3 mb-2">
+          Position in and out
+        </h5>
+
+        <StyledSubSubContainer
+          className={twMerge(
+            'flex-col p-2 h-[6em] items-center justify-center',
+          )}
+        >
+          {positionInfos && !isInfoLoading ? (
+            <div className="flex w-full justify-evenly">
+              <TextExplainWrapper title="Entry Price" className="flex-col mt-8">
+                <FormatNumber
+                  nb={positionInfos.entryPrice}
+                  format="currency"
+                  className="text-lg"
+                />
+
+                {openedPosition ? (
+                  <FormatNumber
+                    nb={openedPosition.price}
+                    format="currency"
+                    className="text-txtfade text-xs self-center line-through"
+                    isDecimalDimmed={false}
+                  />
+                ) : null}
+              </TextExplainWrapper>
+
+              <div className="h-full w-[1px] bg-gray-800" />
+
+              <TextExplainWrapper
+                title="Liquidation Price"
+                className="flex-col mt-8"
+              >
+                <FormatNumber
+                  nb={positionInfos.liquidationPrice}
+                  format="currency"
+                  className="text-lg"
+                />
+
+                {openedPosition && openedPosition.liquidationPrice ? (
+                  <FormatNumber
+                    nb={openedPosition.liquidationPrice}
+                    format="currency"
+                    className="text-txtfade text-xs self-center line-through"
+                    isDecimalDimmed={false}
+                  />
+                ) : null}
+              </TextExplainWrapper>
+            </div>
+          ) : (
+            <div className="flex w-full justify-evenly items-center">
+              <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+
+              <div className="h-full w-[1px] bg-gray-800" />
+
+              <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+            </div>
+          )}
+        </StyledSubSubContainer>
+
+        <h5 className="flex items-center ml-4 mt-4 mb-2">Fees</h5>
+
+        <StyledSubSubContainer
+          className={twMerge(
+            'flex pl-6 pr-6 pt-2 pb-4 h-[6em] items-center justify-center',
+          )}
+        >
+          {positionInfos && !isInfoLoading ? (
+            <AutoScalableDiv>
+              {openedPosition ? (
+                <>
+                  <TextExplainWrapper
+                    title="Current Fees"
+                    className="flex-col mt-3"
+                    position="bottom"
+                  >
+                    <FormatNumber
+                      nb={
+                        openedPosition.entryFeeUsd +
+                        openedPosition.exitFeeUsd +
+                        (openedPosition.borrowFeeUsd ?? 0)
+                      }
+                      format="currency"
+                      className="text-lg"
+                    />
+                  </TextExplainWrapper>
+
+                  <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                </>
+              ) : null}
+
+              <TextExplainWrapper
+                title={!openedPosition ? 'Entry/Close Fees' : 'Additional Fees'}
+                className="flex-col mt-3"
+              >
+                <FormatNumber
+                  nb={
+                    typeof positionInfos?.totalOpenPositionFeeUsd !==
+                      'undefined' &&
+                    typeof positionInfos?.exitFeeUsd !== 'undefined'
+                      ? positionInfos.totalOpenPositionFeeUsd +
+                        positionInfos.exitFeeUsd
+                      : undefined
+                  }
+                  format="currency"
+                  className="text-lg"
+                />
+              </TextExplainWrapper>
+
+              <span className="text-xl ml-2 mr-2 mt-3">+</span>
+
+              <TextExplainWrapper title="Borrow Rate" className="flex-col mt-3">
+                <FormatNumber
+                  nb={custody && tokenB && custody.borrowFee}
+                  precision={RATE_DECIMALS}
+                  suffix="%/hr"
+                  isDecimalDimmed={false}
+                  className="text-lg"
+                />
+              </TextExplainWrapper>
+            </AutoScalableDiv>
+          ) : (
+            <div className="flex h-full justify-center items-center">
+              <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+            </div>
+          )}
+        </StyledSubSubContainer>
       </div>
     </div>
   );

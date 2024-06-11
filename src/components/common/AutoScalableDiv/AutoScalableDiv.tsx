@@ -9,6 +9,7 @@ import { twMerge } from 'tailwind-merge';
 
 /**
  * This div automatically apply scale() effect to the children, so it fits the container width.
+ * Don't go over 1:1 scale.
  */
 export default function AutoScalableDiv({
   className,
@@ -26,7 +27,7 @@ export default function AutoScalableDiv({
       const containerWidth = containerDiv.current.scrollWidth;
       const wrapperWidth = wrapperDiv.current.offsetWidth;
 
-      const scale = wrapperWidth / containerWidth;
+      const scale = Math.min(wrapperWidth / containerWidth, 1);
 
       containerDiv.current.style.transform = `scale(${scale})`;
 

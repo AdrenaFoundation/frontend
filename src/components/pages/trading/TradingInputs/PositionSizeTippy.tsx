@@ -42,7 +42,7 @@ export default function PositionSizeTippy({
           </p>
 
           {positionInfos ? (
-            <StyledSubContainer className="mt-2 flex-row p-8 items-center justify-center w-[20em]">
+            <StyledSubContainer className="mt-2 flex-row p-8 items-center justify-center">
               <AutoScalableDiv className="w-full">
                 {openedPosition ? (
                   <>
