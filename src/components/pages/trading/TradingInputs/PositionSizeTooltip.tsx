@@ -7,7 +7,7 @@ import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapp
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PositionExtended } from '@/types';
 
-export default function PositionSizeTippy({
+export default function PositionSizeTooltip({
   children,
   positionInfos,
   openedPosition,

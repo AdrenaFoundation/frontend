@@ -31,7 +31,7 @@ import errorImg from '../../../../../public/images/Icons/error.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
-import PositionSizeTippy from './PositionSizeTippy';
+import PositionSizeTooltip from './PositionSizeTooltip';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -460,7 +460,7 @@ export default function LongShortTradingInputs({
           />
 
           {!isInfoLoading ? (
-            <PositionSizeTippy
+            <PositionSizeTooltip
               positionInfos={positionInfos}
               openedPosition={openedPosition}
               leverage={leverage}
@@ -501,7 +501,7 @@ export default function LongShortTradingInputs({
                   </div>
                 </div>
               </div>
-            </PositionSizeTippy>
+            </PositionSizeTooltip>
           ) : (
             <div className="w-full h-[40px] bg-bcolor rounded-xl" />
           )}
