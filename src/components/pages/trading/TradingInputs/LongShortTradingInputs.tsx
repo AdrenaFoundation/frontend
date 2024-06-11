@@ -8,7 +8,6 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Select from '@/components/common/Select/Select';
-import TextExplain from '@/components/common/TextExplain/TextExplain';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -20,18 +19,16 @@ import {
   addSuccessTxNotification,
   formatNumber,
   formatPriceInfo,
-  getArrowElement,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
 
-import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import errorImg from '../../../../../public/images/Icons/error.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
-import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionInfos from './PositionInfos';
+import PositionSizeTippy from './PositionSizeTippy';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -460,7 +457,11 @@ export default function LongShortTradingInputs({
           />
 
           {!isInfoLoading ? (
-            <>
+            <PositionSizeTippy
+              positionInfos={positionInfos}
+              openedPosition={openedPosition}
+              leverage={leverage}
+            >
               <div className="flex ml-auto">
                 {openedPosition && tokenPriceB && inputB ? (
                   <>
@@ -497,7 +498,7 @@ export default function LongShortTradingInputs({
                   </div>
                 </div>
               </div>
-            </>
+            </PositionSizeTippy>
           ) : (
             <div className="w-full h-[40px] bg-bcolor rounded-xl" />
           )}

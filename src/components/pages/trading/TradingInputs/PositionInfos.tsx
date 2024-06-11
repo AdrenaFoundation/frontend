@@ -1,14 +1,11 @@
-import Tippy from '@tippyjs/react';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import TextExplain from '@/components/common/TextExplain/TextExplain';
+import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { RATE_DECIMALS } from '@/constant';
 import { PositionExtended, Token } from '@/types';
-
-import InfoAnnotation from '../../monitoring/InfoAnnotation';
 
 export default function PositionInfos({
   positionInfos,
@@ -61,12 +58,9 @@ export default function PositionInfos({
       nb += 1;
     }
 
-    console.log('NB CHAR', nb);
-
     setFeesNbChar(nb);
   }, [openedPosition, positionInfos]);
 
-  //  {positionInfos ? (
   return (
     <>
       <h5 className="flex items-center ml-4 mt-3 mb-2">Position in and out</h5>
@@ -76,49 +70,44 @@ export default function PositionInfos({
       >
         {positionInfos && !isInfoLoading ? (
           <div className="flex w-full justify-evenly">
-            <div className="flex relative items-center">
-              <TextExplain title="Entry Price" className="top-[0.2em]" />
+            <TextExplainWrapper title="Entry Price" className="flex-col mt-8">
+              <FormatNumber
+                nb={positionInfos.entryPrice}
+                format="currency"
+                className="text-lg"
+              />
 
-              <div className="flex flex-col">
+              {openedPosition ? (
                 <FormatNumber
-                  nb={positionInfos.entryPrice}
+                  nb={openedPosition.price}
                   format="currency"
-                  className="pt-8 text-lg"
+                  className="text-txtfade text-xs self-center line-through"
+                  isDecimalDimmed={false}
                 />
-
-                {openedPosition ? (
-                  <FormatNumber
-                    nb={openedPosition.price}
-                    format="currency"
-                    className="text-txtfade text-xs self-center line-through"
-                    isDecimalDimmed={false}
-                  />
-                ) : null}
-              </div>
-            </div>
+              ) : null}
+            </TextExplainWrapper>
 
             <div className="h-full w-[1px] bg-gray-800" />
 
-            <div className="flex relative items-center">
-              <TextExplain title="Liquidation Price" className="top-[0.2em]" />
+            <TextExplainWrapper
+              title="Liquidation Price"
+              className="flex-col mt-8"
+            >
+              <FormatNumber
+                nb={positionInfos.liquidationPrice}
+                format="currency"
+                className="text-lg"
+              />
 
-              <div className="flex flex-col">
+              {openedPosition && openedPosition.liquidationPrice ? (
                 <FormatNumber
-                  nb={positionInfos.liquidationPrice}
+                  nb={openedPosition.liquidationPrice}
                   format="currency"
-                  className="pt-8 text-lg"
+                  className="text-txtfade text-xs self-center line-through"
+                  isDecimalDimmed={false}
                 />
-
-                {openedPosition && openedPosition.liquidationPrice ? (
-                  <FormatNumber
-                    nb={openedPosition.liquidationPrice}
-                    format="currency"
-                    className="text-txtfade text-xs self-center line-through"
-                    isDecimalDimmed={false}
-                  />
-                ) : null}
-              </div>
-            </div>
+              ) : null}
+            </TextExplainWrapper>
           </div>
         ) : (
           <div className="flex w-full justify-evenly items-center">
@@ -145,9 +134,10 @@ export default function PositionInfos({
           >
             {openedPosition ? (
               <>
-                <div className="flex relative items-center">
-                  <TextExplain title="Existing Fees" className="top-[0.2em]" />
-
+                <TextExplainWrapper
+                  title="Existing Fees"
+                  className="flex-col mt-8"
+                >
                   <FormatNumber
                     nb={
                       openedPosition.entryFeeUsd +
@@ -155,20 +145,18 @@ export default function PositionInfos({
                       (openedPosition.borrowFeeUsd ?? 0)
                     }
                     format="currency"
-                    className="text-lg pt-8"
+                    className="text-lg"
                   />
-                </div>
+                </TextExplainWrapper>
 
                 <span className="text-xl ml-2 mr-2 mt-8">+</span>
               </>
             ) : null}
 
-            <div className="flex relative items-center">
-              <TextExplain
-                title={!openedPosition ? 'Entry/Close Fees' : 'New Fees'}
-                className="top-[0.2em]"
-              />
-
+            <TextExplainWrapper
+              title={!openedPosition ? 'Entry/Close Fees' : 'New Fees'}
+              className="flex-col mt-8"
+            >
               <FormatNumber
                 nb={
                   typeof positionInfos?.totalOpenPositionFeeUsd !==
@@ -179,23 +167,21 @@ export default function PositionInfos({
                     : undefined
                 }
                 format="currency"
-                className="text-lg pt-8"
+                className="text-lg"
               />
-            </div>
+            </TextExplainWrapper>
 
             <span className="text-xl ml-2 mr-2 mt-8">+</span>
 
-            <div className="flex relative items-center">
-              <TextExplain title="Borrow Fees" className="top-[0.2em]" />
-
+            <TextExplainWrapper title="Borrow Rate" className="flex-col mt-8">
               <FormatNumber
                 nb={custody && tokenB && custody.borrowFee}
                 precision={RATE_DECIMALS}
                 suffix="%/hr"
                 isDecimalDimmed={false}
-                className="text-lg pt-8"
+                className="text-lg"
               />
-            </div>
+            </TextExplainWrapper>
           </div>
         ) : (
           <div className="flex h-full justify-center items-center">
