@@ -354,7 +354,7 @@ export default function LongShortTradingInputs({
   return (
     <div className={twMerge('relative flex flex-col pb-2', className)}>
       <div className="flex w-full justify-between items-center mt-1 mb-1">
-        <h5 className="ml-4">Controls</h5>
+        <h5 className="ml-4">Inputs</h5>
 
         {(() => {
           if (!tokenA || !walletTokenBalances)
@@ -527,7 +527,7 @@ export default function LongShortTradingInputs({
               className="text-txtfade text-xs"
             />
 
-            <span className="text-txtfade ml-1">liquidity</span>
+            <span className="text-txtfade ml-1">avail. liq.</span>
           </div>
         </div>
 

@@ -20,7 +20,10 @@ export default function TextExplainWrapper({
     <div className={twMerge('flex relative items-center', className)}>
       <TextExplain
         title={title}
-        className={position === 'top' ? 'top-[-1.9em]' : 'bottom-[-1.9em]'}
+        className={twMerge(
+          position === 'top' ? 'top-[-1.9em]' : 'bottom-[-1.9em]',
+          textExplainClassName,
+        )}
         position={position}
       />
 

@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import { ReactElement } from 'react';
-import { twMerge } from 'tailwind-merge';
 
+import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -42,13 +42,8 @@ export default function PositionSizeTippy({
           </p>
 
           {positionInfos ? (
-            <StyledSubContainer className="mt-2 flex-row p-8 items-center justify-center">
-              <div
-                className={twMerge(
-                  'flex',
-                  openedPosition ? 'scale-75' : 'scale-90',
-                )}
-              >
+            <StyledSubContainer className="mt-2 flex-row p-8 items-center justify-center w-[20em]">
+              <AutoScalableDiv className="w-full">
                 {openedPosition ? (
                   <>
                     <TextExplainWrapper title="Previous size">
@@ -89,7 +84,7 @@ export default function PositionSizeTippy({
                     className="text-lg"
                   />
                 </TextExplainWrapper>
-              </div>
+              </AutoScalableDiv>
             </StyledSubContainer>
           ) : null}
         </div>

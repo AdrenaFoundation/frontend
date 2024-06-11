@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -30,36 +30,6 @@ export default function PositionInfos({
   isInfoLoading: boolean;
 }) {
   const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
-  const [feesNbChar, setFeesNbChar] = useState<number | null>(null);
-
-  useEffect(() => {
-    let nb =
-      typeof positionInfos?.totalOpenPositionFeeUsd !== 'undefined' &&
-      typeof positionInfos?.exitFeeUsd !== 'undefined'
-        ? (
-            positionInfos.totalOpenPositionFeeUsd + positionInfos.exitFeeUsd
-          ).toString().length + 1
-        : 0;
-
-    // The + sign between new fees and borrow fees
-    nb += 1;
-
-    nb += '%/hr'.length;
-
-    if (openedPosition) {
-      nb +=
-        (
-          openedPosition.entryFeeUsd +
-          openedPosition.exitFeeUsd +
-          (openedPosition.borrowFeeUsd ?? 0)
-        ).toString().length + 1;
-
-      // The + sign
-      nb += 1;
-    }
-
-    setFeesNbChar(nb);
-  }, [openedPosition, positionInfos]);
 
   return (
     <>
@@ -123,15 +93,12 @@ export default function PositionInfos({
       <h5 className="flex items-center ml-4 mt-4 mb-2">Fees</h5>
 
       <StyledSubSubContainer
-        className={twMerge('flex p-2 h-[5em] items-center justify-center')}
+        className={twMerge(
+          'flex pl-4 pr-4 pt-2 pb-2 h-[5em] items-center justify-center',
+        )}
       >
         {positionInfos && !isInfoLoading ? (
-          <div
-            className={twMerge(
-              'flex',
-              feesNbChar && feesNbChar > 30 ? 'scale-90' : 'scale-100',
-            )}
-          >
+          <AutoScalableDiv>
             {openedPosition ? (
               <>
                 <TextExplainWrapper
@@ -142,7 +109,8 @@ export default function PositionInfos({
                     nb={
                       openedPosition.entryFeeUsd +
                       openedPosition.exitFeeUsd +
-                      (openedPosition.borrowFeeUsd ?? 0)
+                      (openedPosition.borrowFeeUsd ?? 0) +
+                      1000000
                     }
                     format="currency"
                     className="text-lg"
@@ -182,7 +150,7 @@ export default function PositionInfos({
                 className="text-lg"
               />
             </TextExplainWrapper>
-          </div>
+          </AutoScalableDiv>
         ) : (
           <div className="flex h-full justify-center items-center">
             <div className="w-40 h-4 bg-gray-800 rounded-xl" />
