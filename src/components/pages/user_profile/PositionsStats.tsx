@@ -9,11 +9,13 @@ export default function PositionsStats({
   positions,
   title,
   triggerPositionsReload,
+  triggerUserProfileReload,
 }: {
   connected: boolean;
   positions: PositionExtended[] | null;
   title?: string;
   triggerPositionsReload: () => void;
+  triggerUserProfileReload: () => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
 
@@ -33,6 +35,7 @@ export default function PositionsStats({
         connected={connected}
         positions={positions}
         triggerPositionsReload={triggerPositionsReload}
+        triggerUserProfileReload={triggerUserProfileReload}
         wrapped={false}
       />
     </StyledContainer>
