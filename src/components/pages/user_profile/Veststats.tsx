@@ -57,7 +57,6 @@ export default function VestStats({
 
   const unlockEndDate = new Date(vest.unlockEndTimestamp.toNumber() * 1000);
   const now = new Date();
-
   const yearsLeft = differenceInYears(unlockEndDate, now);
   const monthsLeft = differenceInMonths(unlockEndDate, now) % 12;
   const daysLeft = (differenceInDays(unlockEndDate, now) % 365) % 30;
@@ -82,8 +81,8 @@ export default function VestStats({
 
   return (
     <div className="flex flex-col sm:flex-row items-center bg-secondary  w-full border rounded-lg z-20">
-      <div className="flex flex-col gap-2 w-full px-5 order-2 sm:order-1">
-        <h2>My Vest</h2>
+      <div className="flex flex-col gap-2 w-full p-5 sm:py-0 order-2 sm:order-1">
+        <h2 className="hidden sm:block">My Vest</h2>
 
         <div className="flex w-full items-center justify-between">
           <p className="text-sm">Vest period</p>
@@ -96,7 +95,7 @@ export default function VestStats({
         <div className="w-full h-[1px] bg-third my-1" />
 
         <div className="flex w-full items-center justify-between">
-          <p className="text-sm">Total amount vested</p>
+          <p className="text-sm">Vested</p>
 
           <FormatNumber
             nb={
@@ -114,7 +113,7 @@ export default function VestStats({
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <p className="text-sm">Claimed Amount</p>
+          <p className="text-sm">Claimed</p>
 
           <FormatNumber
             nb={
@@ -134,7 +133,7 @@ export default function VestStats({
         <div className="w-full h-[1px] bg-third my-1" />
 
         <div className="flex w-full items-center justify-between">
-          <p className="text-sm">Claimable amount</p>
+          <p className="text-sm">Claimable</p>
 
           <FormatNumber
             nb={claimableAmount}
@@ -151,44 +150,47 @@ export default function VestStats({
           onClick={() => claimVest()}
         />
       </div>
-      <div className="flex flex-col justify-center items-center w-[300px] sm:w-[400px] p-3 order-1 sm:order-2 sm:border-l sm:border-third">
-        <Doughnut
-          height={100}
-          width={100}
-          options={{
-            cutout: '0%',
-            plugins: {
-              datalabels: {
-                display: false,
-              },
-              legend: {
-                display: true,
-                position: 'top',
-                align: 'center',
-                fullSize: true,
-                maxWidth: 20,
+      <div className="py-5 sm:py-0 w-[300px] sm:w-[400px] order-1 sm:order-2">
+        <h2 className="text-left mb-3 sm:hidden">My Vest</h2>
+        <div className="flex flex-col justify-center items-center sm:border-l sm:border-third sm:p-3">
+          <Doughnut
+            height={100}
+            width={100}
+            options={{
+              cutout: '0%',
+              plugins: {
+                datalabels: {
+                  display: false,
+                },
+                legend: {
+                  display: true,
+                  position: 'top',
+                  align: 'center',
+                  fullSize: true,
+                  maxWidth: 20,
 
-                labels: {
-                  boxWidth: 5,
-                  boxHeight: 5,
-                  usePointStyle: true,
+                  labels: {
+                    boxWidth: 5,
+                    boxHeight: 5,
+                    usePointStyle: true,
+                  },
                 },
               },
-            },
-          }}
-          data={{
-            labels: ['Claimed ADX', 'Unclaimed ADX', 'Total Vested ADX'],
-            datasets: [
-              {
-                data: [claimedAmount, claimableAmount, amount],
-                type: 'doughnut',
-                borderWidth: 0,
-                backgroundColor: ['#4BB756', '#314633', '#192128'],
-              },
-            ],
-          }}
-          className="w-full h-full"
-        />
+            }}
+            data={{
+              labels: ['Claimed ADX', 'Unclaimed ADX', 'Total Vested ADX'],
+              datasets: [
+                {
+                  data: [claimedAmount, claimableAmount, amount],
+                  type: 'doughnut',
+                  borderWidth: 0,
+                  backgroundColor: ['#501FDA', '#181349', '#192128'],
+                },
+              ],
+            }}
+            className="w-full h-full"
+          />
+        </div>
       </div>
     </div>
   );
