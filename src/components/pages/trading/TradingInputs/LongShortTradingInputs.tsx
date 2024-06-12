@@ -31,6 +31,7 @@ import errorImg from '../../../../../public/images/Icons/error.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
+import PositionFeesTooltip from './PositionFeesTooltip';
 import PositionSizeTooltip from './PositionSizeTooltip';
 
 // use the counter to handle asynchronous multiple loading
@@ -632,71 +633,83 @@ export default function LongShortTradingInputs({
 
         <h5 className="flex items-center ml-4 mt-4 mb-2">Fees</h5>
 
-        <StyledSubSubContainer
-          className={twMerge(
-            'flex pl-6 pr-6 pt-2 pb-4 h-[6em] items-center justify-center',
-          )}
+        <PositionFeesTooltip
+          borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
+          positionInfos={positionInfos}
+          openedPosition={openedPosition}
         >
-          {positionInfos && !isInfoLoading ? (
-            <AutoScalableDiv>
-              {openedPosition ? (
-                <>
-                  <TextExplainWrapper
-                    title="Current Fees"
-                    className="flex-col mt-3"
-                    position="bottom"
-                  >
-                    <FormatNumber
-                      nb={
-                        openedPosition.entryFeeUsd +
-                        openedPosition.exitFeeUsd +
-                        (openedPosition.borrowFeeUsd ?? 0)
-                      }
-                      format="currency"
-                      className="text-lg"
-                    />
-                  </TextExplainWrapper>
+          <StyledSubSubContainer
+            className={twMerge(
+              'flex pl-6 pr-6 pb-4 h-[6em] items-center justify-center',
+              openedPosition && !isInfoLoading ? 'pt-2' : 'pt-8',
+            )}
+          >
+            {positionInfos && !isInfoLoading ? (
+              <AutoScalableDiv>
+                {openedPosition ? (
+                  <>
+                    <TextExplainWrapper
+                      title="Current Fees"
+                      className="flex-col mt-3"
+                      position="bottom"
+                    >
+                      <FormatNumber
+                        nb={
+                          openedPosition.entryFeeUsd +
+                          openedPosition.exitFeeUsd +
+                          (openedPosition.borrowFeeUsd ?? 0)
+                        }
+                        format="currency"
+                        className="text-lg"
+                      />
+                    </TextExplainWrapper>
 
-                  <span className="text-xl ml-2 mr-2 mt-3">+</span>
-                </>
-              ) : null}
+                    <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                  </>
+                ) : null}
 
-              <TextExplainWrapper
-                title={!openedPosition ? 'Entry/Close Fees' : 'Additional Fees'}
-                className="flex-col mt-3"
-              >
-                <FormatNumber
-                  nb={
-                    typeof positionInfos?.totalOpenPositionFeeUsd !==
-                      'undefined' &&
-                    typeof positionInfos?.exitFeeUsd !== 'undefined'
-                      ? positionInfos.totalOpenPositionFeeUsd +
-                        positionInfos.exitFeeUsd
-                      : undefined
+                <TextExplainWrapper
+                  title={
+                    !openedPosition ? 'Entry/Close Fees' : 'Additional Fees'
                   }
-                  format="currency"
-                  className="text-lg"
-                />
-              </TextExplainWrapper>
+                  className="flex-col mt-3"
+                >
+                  <FormatNumber
+                    nb={
+                      typeof positionInfos?.totalOpenPositionFeeUsd !==
+                        'undefined' &&
+                      typeof positionInfos?.exitFeeUsd !== 'undefined'
+                        ? positionInfos.totalOpenPositionFeeUsd +
+                          positionInfos.exitFeeUsd
+                        : undefined
+                    }
+                    format="currency"
+                    className="text-lg"
+                  />
+                </TextExplainWrapper>
 
-              <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                <span className="text-xl ml-2 mr-2 mt-3">+</span>
 
-              <TextExplainWrapper title="Borrow Rate" className="flex-col mt-3">
-                <FormatNumber
-                  nb={custody && tokenB && custody.borrowFee}
-                  precision={RATE_DECIMALS}
-                  suffix="%/hr"
-                  isDecimalDimmed={false}
-                  className="text-lg"
-                />
-              </TextExplainWrapper>
-            </AutoScalableDiv>
-          ) : (
-            <div className="flex h-full justify-center items-center">
-              <div className="w-40 h-4 bg-gray-800 rounded-xl" />
-            </div>
-          )}
-        </StyledSubSubContainer>
+                <TextExplainWrapper
+                  title="Borrow Rate"
+                  className="flex-col mt-3"
+                >
+                  <FormatNumber
+                    nb={custody && tokenB && custody.borrowFee}
+                    precision={RATE_DECIMALS}
+                    suffix="%/hr"
+                    isDecimalDimmed={false}
+                    className="text-lg"
+                  />
+                </TextExplainWrapper>
+              </AutoScalableDiv>
+            ) : (
+              <div className="flex h-full justify-center items-center">
+                <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+              </div>
+            )}
+          </StyledSubSubContainer>
+        </PositionFeesTooltip>
       </div>
     </div>
   );
