@@ -3291,11 +3291,6 @@ export class AdrenaClient {
       [],
     );
 
-    console.log(
-      'Positions Pubkeys',
-      positionsExtended.map((x) => x.pubkey.toBase58()),
-    );
-
     // Get liquidation price + pnl
     const [liquidationPrices, pnls] = await Promise.all([
       Promise.allSettled(
@@ -3344,6 +3339,23 @@ export class AdrenaClient {
         return profitsAndLosses.profitUsd;
       })();
 
+      const priceChange = (() => {
+        if (!profitsAndLosses) return null;
+
+        if (profitsAndLosses.lossUsd !== 0)
+          return (
+            profitsAndLosses.lossUsd +
+            positionExtended.exitFeeUsd +
+            profitsAndLosses.borrowFeeUsd
+          );
+
+        return (
+          profitsAndLosses.profitUsd +
+          positionExtended.exitFeeUsd +
+          profitsAndLosses.borrowFeeUsd
+        );
+      })();
+
       const leverage =
         positionExtended.sizeUsd /
         (positionExtended.collateralUsd + (pnl ?? 0));
@@ -3352,6 +3364,10 @@ export class AdrenaClient {
         ...positionExtended,
         leverage,
         pnl,
+        priceChangeUsd: priceChange,
+        profitUsd: profitsAndLosses ? profitsAndLosses.profitUsd : null,
+        lossUsd: profitsAndLosses ? profitsAndLosses.lossUsd : null,
+        borrowFeeUsd: profitsAndLosses ? profitsAndLosses.borrowFeeUsd : null,
         liquidationPrice: ((): number | null => {
           if (liquidationPrices[index].status === 'rejected') return null;
 
