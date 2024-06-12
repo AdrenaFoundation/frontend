@@ -669,9 +669,7 @@ export default function LongShortTradingInputs({
                 ) : null}
 
                 <TextExplainWrapper
-                  title={
-                    !openedPosition ? 'Entry/Close Fees' : 'Additional Fees'
-                  }
+                  title={!openedPosition ? 'Flat Fees' : 'Additional Fees'}
                   className="flex-col mt-3"
                 >
                   <FormatNumber
