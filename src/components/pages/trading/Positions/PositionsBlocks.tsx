@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { useSelector } from '@/store/store';
@@ -135,11 +136,9 @@ export default function PositionsBlocks({
             <li className={columnStyle}>
               <Tippy
                 content={
-                  <div className="flex flex-col flex-wrap w-[15em]">
-                    <div className="text-white font-boldy text-md">
-                      Leverage:
-                    </div>
-                    <div className="text-white text-sm">
+                  <div className="flex flex-col flex-wrap w-[20em] p-4">
+                    <h3 className="tracking-wider">Leverage</h3>
+                    <div className="text-white mt-4">
                       Position Size * 10 BPS / (Collateral + Unrealized Profit -
                       Unrealized Loss)
                     </div>
@@ -232,25 +231,19 @@ export default function PositionsBlocks({
             <li className={columnStyle}>
               <Tippy
                 content={
-                  <div className="flex flex-col flex-wrap w-[10em]">
-                    <div className="text-white font-boldy text-md">
-                      Net Value:
-                    </div>
-                    <div className="text-white text-sm">
-                      Collateral + PnL - Fees Initial
-                    </div>
-                    <div className="mt-3">
-                      <span className="text-txtfade text-sm">Collateral:</span>
-                      <span className="ml-1">
+                  <div className="flex flex-col flex-wrap w-[20em] p-4">
+                    <h3 className="tracking-wider">Net Value</h3>
+                    <h4 className="mt-2">Collateral + PnL - Fees</h4>
+                    <StyledSubSubContainer className="flex-col mt-4">
+                      <div className="flex w-full items-center justify-between">
+                        <span className="text-sm">Collateral</span>
                         <FormatNumber
                           nb={position.collateralUsd}
                           format="currency"
                         />
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-txtfade text-sm">PnL:</span>
-                      <span className="ml-1">
+                      </div>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="text-sm">PnL</span>
                         <FormatNumber
                           nb={position.pnl}
                           format="currency"
@@ -258,50 +251,42 @@ export default function PositionsBlocks({
                             position.pnl && position.pnl > 0 ? 'green' : 'red'
                           }`}
                         />
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-txtfade text-sm">borrow Fee:</span>
-                      <span className="ml-1">
-                        <FormatNumber nb={0} format="currency" />
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-txtfade text-sm">Open Fee:</span>
-                      <span className="ml-1">
+                      </div>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="text-sm">borrow Fee</span>
+                        <FormatNumber
+                          nb={position?.borrowFeeUsd ?? 0}
+                          format="currency"
+                          prefix="-"
+                        />
+                      </div>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="text-sm">Open Fee</span>
                         <FormatNumber
                           nb={position.entryFeeUsd}
                           format="currency"
+                          prefix="-"
                         />
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-txtfade text-sm">Close Fee:</span>
-                      <span className="ml-1">
+                      </div>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="text-sm">Close Fee</span>
                         <FormatNumber
                           nb={position.exitFeeUsd}
                           format="currency"
+                          prefix="-"
                         />
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-txtfade text-sm">
-                        PnL after Fees:
-                      </span>
-                      <span className="ml-1">
+                      </div>
+                      <div className="flex w-full items-center justify-between">
+                        <span className="text-sm">PnL after Fees</span>
                         <FormatNumber
-                          nb={
-                            (position.pnl ?? 0) -
-                            position.entryFeeUsd -
-                            position.exitFeeUsd
-                          }
+                          nb={position.pnl}
                           format="currency"
                           className={`text-${
                             position.pnl && position.pnl > 0 ? 'green' : 'red'
                           }`}
                         />
-                      </span>
-                    </div>
+                      </div>
+                    </StyledSubSubContainer>
                   </div>
                 }
                 placement="auto"
@@ -341,11 +326,9 @@ export default function PositionsBlocks({
             <li className={columnStyle}>
               <Tippy
                 content={
-                  <div className="flex flex-col flex-wrap w-[15em]">
-                    <div className="text-white font-boldy text-md">
-                      Liquidation Price:
-                    </div>
-                    <div className="text-white text-sm">
+                  <div className="flex flex-col flex-wrap w-[20em] p-4">
+                    <h3 className="tracking-wider">Liquidation Price:</h3>
+                    <div className="text-white mt-4">
                       Position Price +- (Collateral + Unrealized Profit -
                       Unrealized Loss - Exit Fee - Interest - Size / Max
                       Leverage) * Position Price / Size

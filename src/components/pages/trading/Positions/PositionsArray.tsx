@@ -5,6 +5,7 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
@@ -149,11 +150,9 @@ export default function PositionsArray({
               <td className={twMerge(columnStyle, 'font-mono')}>
                 <Tippy
                   content={
-                    <div className="flex flex-col flex-wrap w-[15em]">
-                      <div className="text-white font-boldy text-md">
-                        Leverage:
-                      </div>
-                      <div className="text-white text-sm">
+                    <div className="flex flex-col flex-wrap w-[20em] p-4">
+                      <h3 className="tracking-wider">Leverage</h3>
+                      <div className="text-white mt-4">
                         Position Size * 10 BPS / (Collateral + Unrealized Profit
                         - Unrealized Loss)
                       </div>
@@ -168,7 +167,11 @@ export default function PositionsArray({
                   }
                   placement="top"
                 >
-                  <FormatNumber nb={position.leverage} suffix="x" />
+                  <FormatNumber
+                    nb={position.leverage}
+                    suffix="x"
+                    className="underline-dashed"
+                  />
                 </Tippy>
               </td>
 
@@ -176,27 +179,48 @@ export default function PositionsArray({
                 {position.pnl ? (
                   <Tippy
                     content={
-                      <div className="flex flex-col flex-wrap w-[10em]">
-                        <div className="text-white font-boldy text-md">
-                          Net Value:
-                        </div>
-                        <div className="text-white text-sm">
-                          Collateral + PnL - Fees Initial
-                        </div>
-                        <div className="mt-3">
-                          <span className="text-txtfade text-sm">
-                            Collateral:
-                          </span>
-                          <span className="ml-1">
+                      <div className="flex flex-col flex-wrap w-[20em] p-4">
+                        <h3 className="tracking-wider">Net Value</h3>
+                        <h4 className="mt-2">
+                          Collateral + Price Change - Fees
+                        </h4>
+                        <StyledSubSubContainer className="flex-col mt-4">
+                          <div className="flex w-full items-center justify-between">
+                            <span className="text-sm">Collateral</span>
                             <FormatNumber
                               nb={position.collateralUsd}
                               format="currency"
                             />
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-txtfade text-sm">PnL:</span>
-                          <span className="ml-1">
+                          </div>
+
+                          <div className="flex w-full items-center justify-between mt-4">
+                            <span className="text-sm">Price Change</span>
+                            <FormatNumber
+                              nb={position?.priceChangeUsd ?? 0}
+                              format="currency"
+                            />
+                          </div>
+
+                          <div className="flex w-full items-center justify-between mt-4">
+                            <span className="text-sm">Borrow Fee</span>
+                            <FormatNumber
+                              nb={position?.borrowFeeUsd ?? 0}
+                              format="currency"
+                              prefix="-"
+                            />
+                          </div>
+                          <div className="flex w-full items-center justify-between">
+                            <span className="text-sm">Close Fee</span>
+                            <FormatNumber
+                              nb={position.exitFeeUsd}
+                              format="currency"
+                              prefix="-"
+                            />
+                          </div>
+                          <div className="h-[1px] bg-bcolor w-full mt-4 mb-2"></div>
+
+                          <div className="flex w-full items-center justify-between">
+                            <span className="text-sm">PnL</span>
                             <FormatNumber
                               nb={position.pnl}
                               format="currency"
@@ -206,58 +230,8 @@ export default function PositionsArray({
                                   : 'red'
                               }`}
                             />
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-txtfade text-sm">
-                            borrow Fee:
-                          </span>
-                          <span className="ml-1">
-                            <FormatNumber nb={0} format="currency" />
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-txtfade text-sm">
-                            Open Fee:
-                          </span>
-                          <span className="ml-1">
-                            <FormatNumber
-                              nb={position.entryFeeUsd}
-                              format="currency"
-                            />
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-txtfade text-sm">
-                            Close Fee:
-                          </span>
-                          <span className="ml-1">
-                            <FormatNumber
-                              nb={position.exitFeeUsd}
-                              format="currency"
-                            />
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-txtfade text-sm">
-                            PnL after Fees:
-                          </span>
-                          <span className="ml-1">
-                            <FormatNumber
-                              nb={
-                                (position.pnl ?? 0) -
-                                position.entryFeeUsd -
-                                position.exitFeeUsd
-                              }
-                              format="currency"
-                              className={`text-${
-                                position.pnl && position.pnl > 0
-                                  ? 'green'
-                                  : 'red'
-                              }`}
-                            />
-                          </span>
-                        </div>
+                          </div>
+                        </StyledSubSubContainer>
                       </div>
                     }
                     placement="top"
@@ -267,7 +241,7 @@ export default function PositionsArray({
                       format="currency"
                       className={`text-${
                         position.pnl && position.pnl > 0 ? 'green' : 'red'
-                      }`}
+                      } underline-dashed`}
                     />
                   </Tippy>
                 ) : (
@@ -282,49 +256,40 @@ export default function PositionsArray({
               <td className={twMerge(columnStyle, 'font-mono')}>
                 <Tippy
                   content={
-                    <div className="flex flex-col flex-wrap w-[15em]">
-                      <div className="text-white font-boldy text-md">
-                        Initial Collateral:
-                      </div>
-                      <div className="text-white text-sm">
-                        Position Size * 10 BPS / (Collateral + Unrealized Profit
-                        - Unrealized Loss)
+                    <div className="flex flex-col flex-wrap w-[20em] p-4">
+                      <h3 className="tracking-wider">Collateral</h3>
+                      <div className="mt-4 text-white">
+                        Position Size * 10 BPS / (Initial Collateral +
+                        Unrealized Profit - Unrealized Loss)
                       </div>
 
-                      <div className="mt-3">
-                        <span className="text-txtfade text-sm">
-                          Initial Collateral:
-                        </span>
-                        <span className="ml-1">
+                      <StyledSubSubContainer className="flex-col mt-4">
+                        <div className="flex w-full items-center justify-between">
+                          <span className="text-sm">Initial Collateral</span>
                           <FormatNumber
                             nb={position.collateralUsd}
                             format="currency"
                           />
-                        </span>
-                      </div>
+                        </div>
 
-                      <div>
-                        <span className="text-txtfade text-sm">
-                          Borrow Fee:
-                        </span>
-                        <span className="ml-1">
-                          <FormatNumber nb={0} format="currency" prefix="-" />
-                        </span>
-                      </div>
-
-                      <div>
-                        <span className="text-txtfade text-sm">
-                          Borrow Fee / Hour:
-                        </span>
-                        <span className="ml-1">
-                          <FormatNumber nb={0} format="currency" prefix="-" />
-                        </span>
-                      </div>
+                        <div className="flex w-full items-center justify-between">
+                          <span className="text-sm">Borrow Fee</span>
+                          <FormatNumber
+                            nb={position?.borrowFeeUsd ?? 0}
+                            format="currency"
+                            prefix="-"
+                          />
+                        </div>
+                      </StyledSubSubContainer>
                     </div>
                   }
                   placement="top"
                 >
-                  <FormatNumber nb={position.collateralUsd} format="currency" />
+                  <FormatNumber
+                    nb={position.collateralUsd - (position?.borrowFeeUsd ?? 0)}
+                    format="currency"
+                    className="underline-dashed"
+                  />
                 </Tippy>
               </td>
 
@@ -342,11 +307,9 @@ export default function PositionsArray({
               <td className={columnStyle}>
                 <Tippy
                   content={
-                    <div className="flex flex-col flex-wrap w-[15em]">
-                      <div className="text-white font-boldy text-md">
-                        Liquidation Price:
-                      </div>
-                      <div className="text-white text-sm">
+                    <div className="flex flex-col flex-wrap w-[20em] p-4">
+                      <h3 className="tracking-wider">Liquidation Price:</h3>
+                      <div className="text-white mt-4">
                         Position Price +- (Collateral + Unrealized Profit -
                         Unrealized Loss - Exit Fee - Interest - Size / Max
                         Leverage) * Position Price / Size
@@ -358,6 +321,7 @@ export default function PositionsArray({
                   <FormatNumber
                     nb={position.liquidationPrice}
                     format="currency"
+                    className="underline-dashed"
                   />
                 </Tippy>
               </td>
