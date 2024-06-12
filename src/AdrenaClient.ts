@@ -3335,6 +3335,7 @@ export class AdrenaClient {
         };
       })();
 
+      // pnl from lossUsd and profitsUsd are calculated taking account exitFee and borrowFee
       const pnl = (() => {
         if (!profitsAndLosses) return null;
 
