@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import { UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
-import logo from '../../../public/images/logo.svg';
+import logo from '../../../public/images/logo.png';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
@@ -61,7 +61,7 @@ export default function Header({
               src={logo}
               className={twMerge(
                 'shrink-0 relative',
-                window.adrena.cluster === 'devnet' ? 'bottom-1' : null,
+                window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
               )}
               alt="logo"
               width={100}
@@ -70,7 +70,7 @@ export default function Header({
           }
 
           {window.adrena.cluster === 'devnet' ? (
-            <span className="absolute font-special text-blue-500 bottom-[-1.1em] right-[-0.5em]">
+            <span className="absolute font-special text-blue-500 bottom-[-1.4em] right-0 text-xs">
               Devnet
             </span>
           ) : null}

@@ -17,6 +17,7 @@ export default function Positions({
   className,
   positions,
   triggerPositionsReload,
+  triggerUserProfileReload,
   wrapped = true,
 }: {
   bodyClassName?: string;
@@ -24,6 +25,7 @@ export default function Positions({
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
+  triggerUserProfileReload: () => void;
   wrapped?: boolean;
 }) {
   const [positionToClose, setPositionToClose] =
@@ -49,6 +51,7 @@ export default function Positions({
             <ClosePosition
               position={positionToClose}
               triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToClose(null);
               }}
@@ -65,6 +68,7 @@ export default function Positions({
             <EditPositionCollateral
               position={positionToEdit}
               triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToEdit(null);
               }}
