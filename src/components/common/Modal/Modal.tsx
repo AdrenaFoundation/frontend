@@ -4,6 +4,8 @@ import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
 
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+
 import adrenaLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import closeBtnIcon from '../../../../public/images/Icons/cross.svg';
 
@@ -37,7 +39,6 @@ const Modal = ({
   children,
   close,
   className,
-  isMobile = false,
 }: {
   title?: ReactNode;
   children: ReactNode;
@@ -45,6 +46,8 @@ const Modal = ({
   className?: string;
   isMobile?: boolean;
 }) => {
+  const isMobile = useBetterMediaQuery('(max-width: 640px)');
+
   useEffect(() => {
     const handler = (evt: KeyboardEvent) => {
       if (evt.key !== 'Escape') return;
@@ -85,7 +88,7 @@ const Modal = ({
           drag="y"
           dragConstraints={{ top: 0, bottom: 0 }}
           onDragEnd={() => {
-            close();
+            isMobile ? close() : null;
           }}
         >
           <div

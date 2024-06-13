@@ -312,24 +312,26 @@ export default function Trade({
                   activePositionModal.slice(1)
                 } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col p-2 overflow-auto h-[75vh]"
+                className="flex flex-col p-4 overflow-auto h-[100%]"
               >
-                <TradeComp
-                  selectedAction={selectedAction}
-                  setSelectedAction={setSelectedAction}
-                  tokenA={tokenA}
-                  tokenB={tokenB}
-                  setTokenA={setTokenA}
-                  setTokenB={setTokenB}
-                  openedPosition={openedPosition}
-                  className="p-0 m-0"
-                  wallet={wallet}
-                  connected={connected}
-                  triggerPositionsReload={triggerPositionsReload}
-                  triggerWalletTokenBalancesReload={
-                    triggerWalletTokenBalancesReload
-                  }
-                />
+                <div className="flex w-full">
+                  <TradeComp
+                    selectedAction={selectedAction}
+                    setSelectedAction={setSelectedAction}
+                    tokenA={tokenA}
+                    tokenB={tokenB}
+                    setTokenA={setTokenA}
+                    setTokenB={setTokenB}
+                    openedPosition={openedPosition}
+                    className="p-0 m-0"
+                    wallet={wallet}
+                    connected={connected}
+                    triggerPositionsReload={triggerPositionsReload}
+                    triggerWalletTokenBalancesReload={
+                      triggerWalletTokenBalancesReload
+                    }
+                  />
+                </div>
               </Modal>
             )}
           </AnimatePresence>
