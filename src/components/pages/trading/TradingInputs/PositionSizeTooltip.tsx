@@ -31,7 +31,8 @@ export default function PositionSizeTooltip({
 }) {
   return (
     <Tippy
-      disabled={!positionInfos}
+      // TODO: reactivate it once the content is correct
+      disabled={true}
       content={
         <div className="flex flex-col p-4">
           <h3>Position Size</h3>
@@ -58,6 +59,10 @@ export default function PositionSizeTooltip({
                   </>
                 ) : null}
 
+                {positionInfos.swapFeeUsd ? (
+                  <span className="text-lg ">{'('}</span>
+                ) : null}
+
                 <TextExplainWrapper title="Collateral">
                   <FormatNumber
                     nb={positionInfos.collateralUsd}
@@ -65,6 +70,22 @@ export default function PositionSizeTooltip({
                     className="text-lg"
                   />
                 </TextExplainWrapper>
+
+                {positionInfos.swapFeeUsd ? (
+                  <>
+                    <span className="text-lg ml-2 mr-2">-</span>
+
+                    <TextExplainWrapper title="Swap Fees">
+                      <FormatNumber
+                        nb={positionInfos.swapFeeUsd}
+                        format="currency"
+                        className="text-lg"
+                      />
+                    </TextExplainWrapper>
+
+                    <span className="text-lg ">{')'}</span>
+                  </>
+                ) : null}
 
                 <span className="text-lg ml-2 mr-2">x</span>
 

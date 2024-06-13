@@ -570,9 +570,7 @@ export default function LongShortTradingInputs({
           onClick={handleExecuteButton}
         />
 
-        <h5 className="flex items-center ml-4 mt-3 mb-2">
-          Position in and out
-        </h5>
+        <h5 className="flex items-center ml-4 mt-3 mb-2">Trade Prices</h5>
 
         <StyledSubSubContainer
           className={twMerge(
@@ -641,7 +639,11 @@ export default function LongShortTradingInputs({
           <StyledSubSubContainer
             className={twMerge(
               'flex pl-6 pr-6 pb-4 h-[6em] items-center justify-center',
-              openedPosition && !isInfoLoading ? 'pt-2' : 'pt-8',
+              isInfoLoading || !positionInfos
+                ? 'pt-4'
+                : openedPosition
+                ? 'pt-2'
+                : 'pt-8',
             )}
           >
             {positionInfos && !isInfoLoading ? (
@@ -669,7 +671,7 @@ export default function LongShortTradingInputs({
                 ) : null}
 
                 <TextExplainWrapper
-                  title={!openedPosition ? 'Flat Fees' : 'Additional Fees'}
+                  title={!openedPosition ? 'Trade Fees' : 'Additional Fees'}
                   className="flex-col mt-3"
                 >
                   <FormatNumber
@@ -689,7 +691,7 @@ export default function LongShortTradingInputs({
                 <span className="text-xl ml-2 mr-2 mt-3">+</span>
 
                 <TextExplainWrapper
-                  title="Borrow Rate"
+                  title="Dynamic Borrow Rate"
                   className="flex-col mt-3"
                 >
                   <FormatNumber

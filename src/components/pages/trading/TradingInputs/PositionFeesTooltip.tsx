@@ -32,7 +32,8 @@ export default function PositionFeesTooltip({
 }) {
   return (
     <Tippy
-      disabled={!positionInfos || !borrowRate}
+      // TODO: reactivate it once the content is correct
+      disabled={true}
       content={
         positionInfos && borrowRate ? (
           <div className="flex flex-col p-4">
@@ -46,7 +47,7 @@ export default function PositionFeesTooltip({
             ) : null}
 
             <h4 className="mt-4">
-              {openedPosition ? 'Additional flat fee' : '#1 Flat fee'}
+              {openedPosition ? 'Additional Trade fee' : '#1 Trade fee'}
             </h4>
 
             <p className="mt-1 text-xs mb-1">
@@ -56,7 +57,7 @@ export default function PositionFeesTooltip({
 
             <StyledSubContainer className="flex-row items-center justify-center w-full mt-2">
               <AutoScalableDiv className="w-full">
-                <TextExplainWrapper title="Flat fee" className="mt-6">
+                <TextExplainWrapper title="Trade fee" className="mt-6">
                   <FormatNumber nb={20} suffix="bps" className="text-lg" />
                 </TextExplainWrapper>
 
@@ -102,7 +103,10 @@ export default function PositionFeesTooltip({
 
                 <span className="text-lg ml-2 mr-2 mt-6">x</span>
 
-                <TextExplainWrapper title="Borrow fee" className="flex mt-6">
+                <TextExplainWrapper
+                  title="Dynamic Borrow fee"
+                  className="flex mt-6"
+                >
                   <FormatNumber
                     nb={borrowRate}
                     precision={RATE_DECIMALS}
