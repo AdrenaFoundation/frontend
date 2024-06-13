@@ -75,8 +75,8 @@ export type CustodyExtended = {
   // Expressed in tokens
   // Do liquidity * tokenPrice to get liquidityUsd
   liquidity: number;
-
   borrowFee: number;
+  maxPositionLockedUsd: number;
 
   // Onchain data
   nativeObject: Custody;
@@ -93,11 +93,15 @@ export type PositionExtended = {
   collateralToken: Token;
   side: 'long' | 'short';
   pnl?: number | null;
+  profitUsd?: number | null;
+  lossUsd?: number | null;
+  borrowFeeUsd?: number | null;
   liquidationPrice?: number | null;
   sizeUsd: number;
   collateralUsd: number;
   price: number;
   collateralAmount: number;
+  entryFeeUsd: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
 

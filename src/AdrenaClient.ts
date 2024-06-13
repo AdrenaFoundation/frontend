@@ -541,6 +541,10 @@ export class AdrenaClient {
           custody.borrowRateState.currentRate,
           RATE_DECIMALS,
         ),
+        maxPositionLockedUsd: nativeToUi(
+          custody.pricing.maxPositionLockedUsd,
+          USD_DECIMALS,
+        ),
         //
         nativeObject: custody,
       };
@@ -3330,6 +3334,7 @@ export class AdrenaClient {
               position.collateralAmount,
               collateralToken.decimals,
             ),
+            entryFeeUsd: nativeToUi(position.entryFeeUsd, USD_DECIMALS),
             exitFeeUsd: nativeToUi(position.exitFeeUsd, USD_DECIMALS),
             liquidationFeeUsd: nativeToUi(
               position.liquidationFeeUsd,
@@ -3368,20 +3373,32 @@ export class AdrenaClient {
 
     // Insert them in positions extended
     return positionsExtended.map((positionExtended, index) => {
-      const pnl = (() => {
+      const profitsAndLosses = (() => {
         if (pnls[index].status === 'rejected') return null;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const promisePnl = pnls[index] as any;
-        const pnl = promisePnl.value as ProfitAndLoss | null;
+        const profitAndLossNative = promisePnl.value as ProfitAndLoss | null;
 
-        if (!pnl) return null;
+        if (!profitAndLossNative) return null;
 
-        if (!pnl.lossUsd.isZero()) {
-          return nativeToUi(pnl.lossUsd, USD_DECIMALS) * -1;
-        }
+        return {
+          profitUsd: nativeToUi(profitAndLossNative.profitUsd, USD_DECIMALS),
+          lossUsd: nativeToUi(profitAndLossNative.lossUsd, USD_DECIMALS) * -1,
+          borrowFeeUsd: nativeToUi(
+            profitAndLossNative.borrowFeeUsd,
+            USD_DECIMALS,
+          ),
+        };
+      })();
 
-        return nativeToUi(pnl.profitUsd, USD_DECIMALS);
+      // pnl from lossUsd and profitsUsd are calculated taking account exitFee and borrowFee
+      const pnl = (() => {
+        if (!profitsAndLosses) return null;
+
+        if (profitsAndLosses.lossUsd !== 0) return profitsAndLosses.lossUsd;
+
+        return profitsAndLosses.profitUsd;
       })();
 
       const leverage =

@@ -418,7 +418,20 @@ export default function SwapTradingInputs({
         })()
       }
 
-      <div className="flex flex-col mt-5">
+      {/* Button to execute action */}
+      <Button
+        className="w-full justify-center mt-4"
+        size="lg"
+        title={buttonTitle}
+        disabled={
+          buttonTitle.includes('Insufficient') ||
+          buttonTitle.includes('not handled yet') ||
+          buttonTitle.includes('Enter an amount')
+        }
+        onClick={handleExecuteButton}
+      />
+
+      <div className="flex flex-col mt-4">
         <h5 className="text-sm flex items-center ml-4">
           Verify
           <InfoAnnotation
@@ -447,19 +460,6 @@ export default function SwapTradingInputs({
           swapFeesAndAmount={swapFeesAndAmount}
         />
       </div>
-
-      {/* Button to execute action */}
-      <Button
-        className="w-full justify-center mt-auto"
-        size="lg"
-        title={buttonTitle}
-        disabled={
-          buttonTitle.includes('Insufficient') ||
-          buttonTitle.includes('not handled yet') ||
-          buttonTitle.includes('Enter an amount')
-        }
-        onClick={handleExecuteButton}
-      />
     </div>
   );
 }
