@@ -1,10 +1,10 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import { TradeComp } from '@/components/pages/trading/TradeComp/TradeComp';
@@ -12,6 +12,10 @@ import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps, PositionExtended, Token } from '@/types';
+
+import longIcon from '../../../public/images/long-green.svg';
+import shortIcon from '../../../public/images/short-red.svg';
+import swapIcon from '../../../public/images/swap.svg';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -265,13 +269,14 @@ export default function Trade({
         />
 
         <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
-          <ul className="flex flex-row gap-3 justify-between">
+          <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
-              <Button
-                title="Long"
-                variant="outline"
-                size="lg"
-                className="border-green text-green bg-green/10"
+              <Image
+                src={longIcon}
+                alt="long"
+                width={40}
+                height={40}
+                className="cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
                 onClick={() => {
                   setActivePositionModal('long');
                   setSelectedAction('long');
@@ -279,23 +284,27 @@ export default function Trade({
               />
             </li>
             <li>
-              <Button
-                title="Short"
-                variant="outline"
-                size="lg"
-                className="border-red text-red bg-red/10"
+              <Image
+                title="Open Short Position"
+                src={shortIcon}
+                alt="short"
+                width={40}
+                height={40}
+                className="cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
                 onClick={() => {
                   setActivePositionModal('short');
                   setSelectedAction('short');
                 }}
+                style={{ color: 'red' }}
               />
             </li>
             <li>
-              <Button
-                title="Swap"
-                variant="outline"
-                size="lg"
-                className="border-white text-white bg-white/10"
+              <Image
+                src={swapIcon}
+                alt="swap"
+                width={40}
+                height={40}
+                className="cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
                 onClick={() => {
                   setActivePositionModal('swap');
                   setSelectedAction('swap');
@@ -312,7 +321,7 @@ export default function Trade({
                   activePositionModal.slice(1)
                 } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col p-4 overflow-auto h-[100%]"
+                className="flex flex-col p-2 sm:p-4 overflow-auto h-[100%]"
               >
                 <div className="flex w-full">
                   <TradeComp
