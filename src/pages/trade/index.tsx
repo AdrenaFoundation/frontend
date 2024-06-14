@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Positions from '@/components/pages/trading/Positions/Positions';
 import { TradeComp } from '@/components/pages/trading/TradeComp/TradeComp';
@@ -271,12 +272,11 @@ export default function Trade({
         <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
-              <Image
-                src={longIcon}
-                alt="long"
-                width={40}
-                height={40}
-                className="cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
+              <Button
+                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
+                title="Long"
+                variant="outline"
+                size="lg"
                 onClick={() => {
                   setActivePositionModal('long');
                   setSelectedAction('long');
@@ -284,27 +284,23 @@ export default function Trade({
               />
             </li>
             <li>
-              <Image
-                title="Open Short Position"
-                src={shortIcon}
-                alt="short"
-                width={40}
-                height={40}
-                className="cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
+              <Button
+                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
+                title="Short"
+                variant="outline"
+                size="lg"
                 onClick={() => {
                   setActivePositionModal('short');
                   setSelectedAction('short');
                 }}
-                style={{ color: 'red' }}
               />
             </li>
             <li>
-              <Image
-                src={swapIcon}
-                alt="swap"
-                width={40}
-                height={40}
-                className="cursor-pointer opacity-80 hover:opacity-100 transition-opacity duration-300"
+              <Button
+                className="bg-transparent text-black font-boldy border-white text-white"
+                title="Swap"
+                variant="outline"
+                size="lg"
                 onClick={() => {
                   setActivePositionModal('swap');
                   setSelectedAction('swap');
