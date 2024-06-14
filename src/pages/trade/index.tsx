@@ -14,10 +14,6 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps, PositionExtended, Token } from '@/types';
 
-import longIcon from '../../../public/images/long-green.svg';
-import shortIcon from '../../../public/images/short-red.svg';
-import swapIcon from '../../../public/images/swap.svg';
-
 export type Action = 'long' | 'short' | 'swap';
 
 export default function Trade({
