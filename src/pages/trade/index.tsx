@@ -265,13 +265,13 @@ export default function Trade({
         />
 
         <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
-          <ul className="flex flex-row gap-3 justify-between">
+          <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
               <Button
+                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
                 title="Long"
                 variant="outline"
                 size="lg"
-                className="border-green text-green bg-green/10"
                 onClick={() => {
                   setActivePositionModal('long');
                   setSelectedAction('long');
@@ -280,10 +280,10 @@ export default function Trade({
             </li>
             <li>
               <Button
+                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
                 title="Short"
                 variant="outline"
                 size="lg"
-                className="border-red text-red bg-red/10"
                 onClick={() => {
                   setActivePositionModal('short');
                   setSelectedAction('short');
@@ -292,10 +292,10 @@ export default function Trade({
             </li>
             <li>
               <Button
+                className="bg-transparent text-black font-boldy border-white text-white"
                 title="Swap"
                 variant="outline"
                 size="lg"
-                className="border-white text-white bg-white/10"
                 onClick={() => {
                   setActivePositionModal('swap');
                   setSelectedAction('swap');
@@ -312,24 +312,26 @@ export default function Trade({
                   activePositionModal.slice(1)
                 } Position`}
                 close={() => setActivePositionModal(null)}
-                className="flex flex-col p-2 overflow-auto h-[75vh]"
+                className="flex flex-col p-2 sm:p-4 overflow-auto h-[100%]"
               >
-                <TradeComp
-                  selectedAction={selectedAction}
-                  setSelectedAction={setSelectedAction}
-                  tokenA={tokenA}
-                  tokenB={tokenB}
-                  setTokenA={setTokenA}
-                  setTokenB={setTokenB}
-                  openedPosition={openedPosition}
-                  className="p-0 m-0"
-                  wallet={wallet}
-                  connected={connected}
-                  triggerPositionsReload={triggerPositionsReload}
-                  triggerWalletTokenBalancesReload={
-                    triggerWalletTokenBalancesReload
-                  }
-                />
+                <div className="flex w-full">
+                  <TradeComp
+                    selectedAction={selectedAction}
+                    setSelectedAction={setSelectedAction}
+                    tokenA={tokenA}
+                    tokenB={tokenB}
+                    setTokenA={setTokenA}
+                    setTokenB={setTokenB}
+                    openedPosition={openedPosition}
+                    className="p-0 m-0"
+                    wallet={wallet}
+                    connected={connected}
+                    triggerPositionsReload={triggerPositionsReload}
+                    triggerWalletTokenBalancesReload={
+                      triggerWalletTokenBalancesReload
+                    }
+                  />
+                </div>
               </Modal>
             )}
           </AnimatePresence>

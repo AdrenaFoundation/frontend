@@ -1,8 +1,10 @@
 import { motion, useDragControls } from 'framer-motion';
 import Image from 'next/image';
-import { ReactNode, useEffect, useState } from 'react';
+import { PointerEvent, ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
+
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 import adrenaLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import closeBtnIcon from '../../../../public/images/Icons/cross.svg';
@@ -37,14 +39,19 @@ const Modal = ({
   children,
   close,
   className,
-  isMobile = false,
 }: {
   title?: ReactNode;
   children: ReactNode;
   close: () => void;
   className?: string;
-  isMobile?: boolean;
 }) => {
+  const isMobile = useBetterMediaQuery('(max-width: 640px)');
+  const controls = useDragControls();
+
+  function startDrag(event: PointerEvent<Element> | PointerEvent) {
+    controls.start(event);
+  }
+
   useEffect(() => {
     const handler = (evt: KeyboardEvent) => {
       if (evt.key !== 'Escape') return;
@@ -83,15 +90,17 @@ const Modal = ({
           )}
           role="dialog"
           drag="y"
+          dragListener={false}
           dragConstraints={{ top: 0, bottom: 0 }}
-          onDragEnd={() => {
-            close();
-          }}
+          dragControls={controls}
+          onDragEnd={() => close()}
         >
           <div
             className={twMerge(
               'h-16 w-full flex items-center justify-start border-b  pl-4 pr-4 relative overflow-hidden bg-secondary',
             )}
+            onPointerDown={isMobile ? startDrag : undefined}
+            style={{ touchAction: 'none' }}
           >
             {!isMobile && (
               <div className="flex text-lg uppercase text-white/90 font-special h-full items-center justify-center opacity-80">
