@@ -8,7 +8,6 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 import adrenaLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import closeBtnIcon from '../../../../public/images/Icons/cross.svg';
-import { Position } from '../../../types';
 
 // Create Portal container targetting specific id
 export const PortalContainer = ({ children }: { children: ReactNode }) => {
