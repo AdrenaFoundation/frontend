@@ -13,6 +13,8 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getArrowElement } from '@/utils';
 
+import LeverageTooltip from '../TradingInputs/LeverageTooltip';
+
 export default function PositionsArray({
   bodyClassName,
   connected,
@@ -148,31 +150,15 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <Tippy
-                  content={
-                    <div className="flex flex-col flex-wrap w-[20em] p-4">
-                      <h3 className="tracking-wider">Leverage</h3>
-                      <div className="text-white mt-4">
-                        Position Size * 10 BPS / (Collateral + Unrealized Profit
-                        - Unrealized Loss)
-                      </div>
-
-                      <div className="mt-3">
-                        <span className="text-txtfade text-sm">
-                          Multiplier applied to the collateral to determine the
-                          size of the position.
-                        </span>
-                      </div>
-                    </div>
-                  }
-                  placement="top"
-                >
-                  <FormatNumber
-                    nb={position.leverage}
-                    suffix="x"
-                    className="underline-dashed"
-                  />
-                </Tippy>
+                {position ? (
+                  <LeverageTooltip openedPosition={position}>
+                    <FormatNumber
+                      nb={position.leverage}
+                      suffix="x"
+                      className="underline-dashed"
+                    />
+                  </LeverageTooltip>
+                ) : null}
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
