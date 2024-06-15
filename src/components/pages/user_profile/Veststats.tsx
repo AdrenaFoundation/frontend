@@ -45,11 +45,11 @@ export default function VestStats({
     new Date(vest.unlockEndTimestamp.toNumber() * 1000).getFullYear() -
     new Date(vest.unlockStartTimestamp.toNumber() * 1000).getFullYear();
 
-  // Calculate how many seconds happened since last claim
+  // Calculate how many seconds has passed since the last claim
   const nbSecondsSinceLastClaim =
     Date.now() -
     (vest.lastClaimTimestamp.toNumber() === 0
-      ? vest.unlockStartTimestamp.toNumber() * 1000
+      ? vest.unlockStartTimestamp.toNumber()
       : vest.lastClaimTimestamp.toNumber()) *
       1000;
 
