@@ -45,7 +45,6 @@ const Modal = ({
   children: ReactNode;
   close: () => void;
   className?: string;
-  isMobile?: boolean;
 }) => {
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const controls = useDragControls();
