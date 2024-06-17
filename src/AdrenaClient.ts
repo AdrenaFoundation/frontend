@@ -3342,15 +3342,10 @@ export class AdrenaClient {
       const priceChange = (() => {
         if (!profitsAndLosses) return null;
 
-        if (profitsAndLosses.lossUsd !== 0)
-          return (
-            profitsAndLosses.lossUsd +
-            positionExtended.exitFeeUsd +
-            profitsAndLosses.borrowFeeUsd
-          );
-
         return (
-          profitsAndLosses.profitUsd +
+          (profitsAndLosses.lossUsd !== 0
+            ? profitsAndLosses.lossUsd
+            : profitsAndLosses.profitUsd) +
           positionExtended.exitFeeUsd +
           profitsAndLosses.borrowFeeUsd
         );
