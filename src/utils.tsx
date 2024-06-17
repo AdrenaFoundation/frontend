@@ -218,7 +218,7 @@ export function addNotification({
       background: {
         success: 'var(--color-green-500)',
         error: 'var(--color-red-500)',
-        info: 'var(--color-blue-500)',
+        info: '#060D16',
       }[type],
     },
   });
