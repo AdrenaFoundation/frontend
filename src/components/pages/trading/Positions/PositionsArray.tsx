@@ -1,11 +1,9 @@
-import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
@@ -14,6 +12,7 @@ import { PositionExtended } from '@/types';
 import { getArrowElement } from '@/utils';
 
 import LeverageTooltip from '../TradingInputs/LeverageTooltip';
+import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 export default function PositionsArray({
   bodyClassName,
@@ -151,7 +150,7 @@ export default function PositionsArray({
 
               <td className={twMerge(columnStyle, 'font-mono')}>
                 {position ? (
-                  <LeverageTooltip openedPosition={position}>
+                  <LeverageTooltip position={position}>
                     <FormatNumber
                       nb={position.leverage}
                       suffix="x"
@@ -162,66 +161,10 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                {position.pnl ? (
-                  <Tippy
-                    content={
-                      <div className="flex flex-col flex-wrap w-[20em] p-4">
-                        <h3 className="tracking-wider">Net Value</h3>
-                        <h4 className="mt-2">
-                          Collateral + Price Change - Fees
-                        </h4>
-                        <StyledSubSubContainer className="flex-col mt-4">
-                          <div className="flex w-full items-center justify-between">
-                            <span className="text-sm">Collateral</span>
-                            <FormatNumber
-                              nb={position.collateralUsd}
-                              format="currency"
-                            />
-                          </div>
-
-                          <div className="flex w-full items-center justify-between mt-4">
-                            <span className="text-sm">Price Change</span>
-                            <FormatNumber
-                              nb={position?.priceChangeUsd ?? 0}
-                              format="currency"
-                            />
-                          </div>
-
-                          <div className="flex w-full items-center justify-between mt-4">
-                            <span className="text-sm">Borrow Fee</span>
-                            <FormatNumber
-                              nb={position?.borrowFeeUsd ?? 0}
-                              format="currency"
-                              prefix="-"
-                            />
-                          </div>
-                          <div className="flex w-full items-center justify-between">
-                            <span className="text-sm">Close Fee</span>
-                            <FormatNumber
-                              nb={position.exitFeeUsd}
-                              format="currency"
-                              prefix="-"
-                            />
-                          </div>
-                          <div className="h-[1px] bg-bcolor w-full mt-4 mb-2"></div>
-
-                          <div className="flex w-full items-center justify-between">
-                            <span className="text-sm">PnL</span>
-                            <FormatNumber
-                              nb={position.pnl}
-                              format="currency"
-                              className={`text-${
-                                position.pnl && position.pnl > 0
-                                  ? 'green'
-                                  : 'red'
-                              }`}
-                            />
-                          </div>
-                        </StyledSubSubContainer>
-                      </div>
-                    }
-                    placement="top"
-                  >
+                {position.pnl &&
+                position?.priceChangeUsd &&
+                position?.borrowFeeUsd ? (
+                  <NetValueTooltip position={position}>
                     <FormatNumber
                       nb={position.pnl}
                       format="currency"
@@ -229,7 +172,7 @@ export default function PositionsArray({
                         position.pnl && position.pnl > 0 ? 'green' : 'red'
                       } underline-dashed`}
                     />
-                  </Tippy>
+                  </NetValueTooltip>
                 ) : (
                   '-'
                 )}
@@ -240,43 +183,10 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <Tippy
-                  content={
-                    <div className="flex flex-col flex-wrap w-[20em] p-4">
-                      <h3 className="tracking-wider">Collateral</h3>
-                      <div className="mt-4 text-white">
-                        Position Size * 10 BPS / (Initial Collateral +
-                        Unrealized Profit - Unrealized Loss)
-                      </div>
-
-                      <StyledSubSubContainer className="flex-col mt-4">
-                        <div className="flex w-full items-center justify-between">
-                          <span className="text-sm">Initial Collateral</span>
-                          <FormatNumber
-                            nb={position.collateralUsd}
-                            format="currency"
-                          />
-                        </div>
-
-                        <div className="flex w-full items-center justify-between">
-                          <span className="text-sm">Borrow Fee</span>
-                          <FormatNumber
-                            nb={position?.borrowFeeUsd ?? 0}
-                            format="currency"
-                            prefix="-"
-                          />
-                        </div>
-                      </StyledSubSubContainer>
-                    </div>
-                  }
-                  placement="top"
-                >
-                  <FormatNumber
-                    nb={position.collateralUsd - (position?.borrowFeeUsd ?? 0)}
-                    format="currency"
-                    className="underline-dashed"
-                  />
-                </Tippy>
+                <FormatNumber
+                  nb={position.collateralUsd - (position?.borrowFeeUsd ?? 0)}
+                  format="currency"
+                />
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
@@ -291,25 +201,10 @@ export default function PositionsArray({
               </td>
 
               <td className={columnStyle}>
-                <Tippy
-                  content={
-                    <div className="flex flex-col flex-wrap w-[20em] p-4">
-                      <h3 className="tracking-wider">Liquidation Price:</h3>
-                      <div className="text-white mt-4">
-                        Position Price +- (Collateral + Unrealized Profit -
-                        Unrealized Loss - Exit Fee - Interest - Size / Max
-                        Leverage) * Position Price / Size
-                      </div>
-                    </div>
-                  }
-                  placement="top"
-                >
-                  <FormatNumber
-                    nb={position.liquidationPrice}
-                    format="currency"
-                    className="underline-dashed"
-                  />
-                </Tippy>
+                <FormatNumber
+                  nb={position.liquidationPrice}
+                  format="currency"
+                />
               </td>
 
               <td
