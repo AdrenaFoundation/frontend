@@ -72,8 +72,6 @@ export default function PositionsArray({
     );
   }
 
-  console.log('positions', positions);
-
   return (
     <table className={twMerge('w-full', className, bodyClassName)}>
       {/* Header */}
@@ -157,7 +155,9 @@ export default function PositionsArray({
                       className="underline-dashed"
                     />
                   </LeverageTooltip>
-                ) : null}
+                ) : (
+                  '-'
+                )}
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
