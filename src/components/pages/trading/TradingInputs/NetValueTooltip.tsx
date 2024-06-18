@@ -7,9 +7,13 @@ import { PositionExtended } from '@/types';
 
 export default function NetValueTooltip({
   children,
+  className,
+  placement = 'auto',
   position,
 }: {
   children: ReactElement;
+  className?: string;
+  placement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
   position: PositionExtended;
 }) {
   return (
@@ -24,9 +28,7 @@ export default function NetValueTooltip({
             </div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">
-                {position.token.symbol} Price Change
-              </span>
+              <span className="text-sm">PnL</span>
               <FormatNumber nb={position.priceChangeUsd} format="currency" />
             </div>
 
@@ -46,10 +48,9 @@ export default function NetValueTooltip({
                 prefix="-"
               />
             </div>
-            <div className="h-[1px] bg-bcolor w-full mt-4 mb-2"></div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">Net Value</span>
+              <span className="text-sm">PnL After Fees</span>
               <FormatNumber
                 nb={position.pnl}
                 format="currency"
@@ -61,7 +62,9 @@ export default function NetValueTooltip({
           </StyledSubContainer>
         </div>
       }
-      placement="auto"
+      placement={placement}
+      className={className}
+      maxWidth="none"
     >
       {children}
     </Tippy>

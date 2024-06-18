@@ -11,8 +11,8 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getArrowElement } from '@/utils';
 
-import LeverageTooltip from '../TradingInputs/LeverageTooltip';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
+import SizeTooltip from '../TradingInputs/SizeTooltip';
 
 export default function PositionsArray({
   bodyClassName,
@@ -148,13 +148,7 @@ export default function PositionsArray({
 
               <td className={twMerge(columnStyle, 'font-mono')}>
                 {position ? (
-                  <LeverageTooltip position={position}>
-                    <FormatNumber
-                      nb={position.leverage}
-                      suffix="x"
-                      className="underline-dashed"
-                    />
-                  </LeverageTooltip>
+                  <FormatNumber nb={position.leverage} suffix="x" />
                 ) : (
                   '-'
                 )}
@@ -164,7 +158,7 @@ export default function PositionsArray({
                 {position.pnl &&
                 position?.priceChangeUsd &&
                 position?.borrowFeeUsd ? (
-                  <NetValueTooltip position={position}>
+                  <NetValueTooltip position={position} placement="top">
                     <FormatNumber
                       nb={position.pnl}
                       format="currency"
@@ -179,7 +173,13 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <FormatNumber nb={position.sizeUsd} format="currency" />
+                <SizeTooltip position={position} placement="top">
+                  <FormatNumber
+                    nb={position.sizeUsd}
+                    format="currency"
+                    className="underline-dashed"
+                  />
+                </SizeTooltip>
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>

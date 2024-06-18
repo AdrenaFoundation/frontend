@@ -9,8 +9,8 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getArrowElement } from '@/utils';
 
-import LeverageTooltip from '../TradingInputs/LeverageTooltip';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
+import SizeTooltip from '../TradingInputs/SizeTooltip';
 
 export default function PositionsBlocks({
   bodyClassName,
@@ -135,28 +135,30 @@ export default function PositionsBlocks({
 
           <ul className="flex flex-col gap-2 p-4">
             <li className={columnStyle}>
-              <LeverageTooltip position={position}>
-                <div className="flex w-full">
-                  <div className="text-txtfade text-sm">Leverage</div>
-                  <FormatNumber
-                    nb={position.leverage}
-                    format="number"
-                    className="ml-auto underline-dashed"
-                    suffix="x"
-                    isDecimalDimmed={false}
-                  />
-                </div>
-              </LeverageTooltip>
+              <div className="flex w-full">
+                <div className="text-txtfade text-sm">Leverage</div>
+                <FormatNumber
+                  nb={position.leverage}
+                  format="number"
+                  className="ml-auto"
+                  suffix="x"
+                  isDecimalDimmed={false}
+                />
+              </div>
             </li>
 
             <li className={columnStyle}>
-              <div className="text-txtfade text-sm">Size</div>
+              <SizeTooltip position={position}>
+                <div className="flex w-full">
+                  <div className="text-txtfade text-sm">Size</div>
 
-              <FormatNumber
-                nb={position.sizeUsd}
-                format="currency"
-                className="text-right"
-              />
+                  <FormatNumber
+                    nb={position.sizeUsd}
+                    format="currency"
+                    className="text-right underline-dashed ml-auto"
+                  />
+                </div>
+              </SizeTooltip>
             </li>
             <li className={columnStyle}>
               <div className="flex w-full">
