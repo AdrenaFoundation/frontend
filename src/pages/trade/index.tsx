@@ -40,6 +40,36 @@ export default function Trade({
     null,
   );
 
+  function pickDefaultToken(positions: PositionExtended[] | null) {
+    const tokens = window.adrena.client.tokens.filter((t) => !t.isStable);
+
+    if (!positions || !positions.length)
+      return tokens.find((t) => t.symbol === 'SOL');
+
+    const positionsPerToken: Record<string, number> = positions.reduce(
+      (acc, position) => {
+        const tokenSymbol = position.token.symbol;
+        const positionSize = position.sizeUsd;
+        acc[tokenSymbol] = (acc[tokenSymbol] || 0) + positionSize;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const maxPositionSize = Math.max(...Object.values(positionsPerToken));
+    const tokenWithMaxSize = tokens.find(
+      (t) =>
+        t.symbol ===
+        Object.keys(positionsPerToken).find(
+          (key) => positionsPerToken[key] === maxPositionSize,
+        ),
+    );
+
+    if (tokenWithMaxSize) return tokenWithMaxSize;
+
+    return tokens.find((t) => t.symbol === 'SOL');
+  }
+
   useEffect(() => {
     if (!tokenA || !tokenB) return;
 
@@ -134,7 +164,9 @@ export default function Trade({
       !tokenB ||
       !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
-      setTokenB(tokenBCandidate[0]);
+      const defaultToken = pickDefaultToken(positions);
+      if (defaultToken) setTokenB(defaultToken);
+      else setTokenB(tokenBCandidate[0]);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
