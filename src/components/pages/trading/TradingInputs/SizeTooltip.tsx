@@ -23,7 +23,7 @@ export default function SizeTooltip({
       content={
         <div className="flex flex-col p-2">
           <h3>Size</h3>
-          <StyledSubContainer className="mt-2 flex-row p-6 items-center justify-center">
+          <StyledSubContainer className="mt-4 flex-row p-6 items-center justify-center">
             <AutoScalableDiv className="w-full">
               <TextExplainWrapper title="Size">
                 <FormatNumber
