@@ -208,7 +208,7 @@ export default function PositionsBlocks({
                 <FormatNumber
                   nb={position.liquidationPrice}
                   format="currency"
-                  className="ml-auto underline"
+                  className="ml-auto"
                 />
               </div>
             </li>
