@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 import infoIcon from '../../../../public/images/Icons/info.png';
 
-const InfoAnnotationTitle = ({
+export default function InfoAnnotationTitle({
   text,
   className,
   title,
@@ -13,7 +13,7 @@ const InfoAnnotationTitle = ({
   text: ReactNode;
   className: string;
   title: string;
-}) => (
+}) (
   <Tippy
     content={
       <div className="text-sm w-60 flex flex-col justify-around">{text}</div>
@@ -32,5 +32,3 @@ const InfoAnnotationTitle = ({
     </div>
   </Tippy>
 );
-
-export default InfoAnnotationTitle;

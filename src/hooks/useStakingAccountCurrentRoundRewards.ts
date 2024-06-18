@@ -3,9 +3,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
 
-const useStakingAccountCurrentRoundRewards = (
+export default function useStakingAccountCurrentRoundRewards(
   stakedTokenMint: PublicKey,
-): number | null => {
+): number | null {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [usdcAmount, setUsdcAmount] = useState<number | null>(null);
   const [usDollarAmount, setUsDollarAmount] = useState<number | null>(null);
@@ -51,5 +51,3 @@ const useStakingAccountCurrentRoundRewards = (
 
   return usDollarAmount;
 };
-
-export default useStakingAccountCurrentRoundRewards;

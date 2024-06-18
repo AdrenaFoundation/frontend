@@ -17,7 +17,7 @@ type FetchedData = {
   };
 };
 
-const useDailyStats = () => {
+export default function useDailyStats() {
   const [stats, setStats] = useState<null | Record<string, Stats>>(null);
 
   const loadStats = useCallback(async () => {
@@ -62,5 +62,3 @@ const useDailyStats = () => {
 
   return stats;
 };
-
-export default useDailyStats;
