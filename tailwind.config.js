@@ -22,6 +22,7 @@ module.exports = {
         orange: '#F0892B',
       },
       fontSize: {
+        xxs: '0.6rem', // Extra Extra Small
         xs: '0.65rem', // Extra Small
         sm: '0.75rem', // Small
         base: '0.875rem', // Base

@@ -78,21 +78,21 @@ export default function PositionsArray({
 
       <thead className="border-b border-bcolor">
         <tr>
-          <th className={twMerge(columnHeadStyle, 'w-[6.5em]')}>Position</th>
-          <th className={columnHeadStyle}>Leverage</th>
-          <th className={columnHeadStyle}>Net Value</th>
-          <th className={columnHeadStyle}>Size</th>
-          <th className={columnHeadStyle}>Collateral</th>
-          <th className={columnHeadStyle}>Entry Price</th>
-          <th className={columnHeadStyle}>Market Price</th>
-          <th className={columnHeadStyle}>Liq. Price</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Position</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
+            Entry / Mark Price
+          </th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Liq. Price</th>
           <th
             className={twMerge(
               columnHeadStyle,
-              'shrink-0 grow-0 w-[7em] border-none',
+              'shrink-0 grow-0 w-[14%] border-none',
             )}
           >
-            Actions
+            Close
           </th>
         </tr>
       </thead>
@@ -103,55 +103,63 @@ export default function PositionsArray({
           // Use Fragment to avoid key error
           <React.Fragment key={position.pubkey.toBase58()}>
             <tr key={position.pubkey.toBase58() + '-0'}>
-              <td
-                className={twMerge(
-                  'flex-col justify-center items-center',
-                  columnStyle,
-                )}
-              >
-                <div className="flex flex-row h-full items-center w-[8em] justify-center relative overflow-hidden pl-2">
-                  <Image
-                    className=""
-                    height={14}
-                    width={14}
-                    src={position.token.image}
-                    alt={`${position.token.symbol} logo`}
-                  />
-
-                  <div className="grow flex h-full items-center justify-start pl-1 mt-[0.2em]">
-                    {window.location.pathname !== '/trade' ? (
-                      <Link
-                        href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
-                        target=""
-                      >
-                        <span className="font-boldy underline">
-                          {position.token.symbol}
-                        </span>
-                      </Link>
-                    ) : (
-                      <span className="font-boldy">
-                        {position.token.symbol}
-                      </span>
-                    )}
-
-                    <h5
-                      className={twMerge(
-                        'text-sm uppercase ml-1',
-                        `text-${position.side === 'long' ? 'green' : 'red'}`,
-                      )}
-                    >
-                      {position.side}
-                    </h5>
-                  </div>
-                </div>
-              </td>
-
-              <td className={twMerge(columnStyle, 'font-mono')}>
-                {position ? (
-                  <FormatNumber nb={position.leverage} suffix="x" />
-                ) : (
-                  '-'
-                )}
+              <td className="flex items-center text-sm text-center h-10">
+                <Image
+                  className="ml-5 mt-2 pt-2"
+                  height={28}
+                  width={28}
+                  src={position.token.image}
+                  alt={`${position.token.symbol} logo`}
+                />
+                <table className="flex flex-col ml-2 text-sm text-center h-10">
+                  <tr>
+                    <td>
+                      <div className="flex flex-col h-full">
+                        <div className="grow flex h-full items-center justify-start pt-2 mt-[0.2em]">
+                          {window.location.pathname !== '/trade' ? (
+                            <Link
+                              href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
+                              target=""
+                            >
+                              <span className="font-boldy text-base underline">
+                                {position.token.symbol}
+                              </span>
+                            </Link>
+                          ) : (
+                            <span className="font-boldy text-base">
+                              {position.token.symbol}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr className="text-xs text-center h-10 font-mono">
+                    <td>
+                      <div className="flex">
+                        {position ? (
+                          <FormatNumber
+                            nb={position.leverage}
+                            suffix="x"
+                            className="text-xs"
+                          />
+                        ) : (
+                          '-'
+                        )}
+                        <h5
+                          className={twMerge(
+                            'text-xs uppercase ml-1',
+                            `text-${
+                              position.side === 'long' ? 'green' : 'red'
+                            }`,
+                          )}
+                        >
+                          {position.side}
+                        </h5>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
@@ -160,16 +168,45 @@ export default function PositionsArray({
                 position?.borrowFeeUsd ? (
                   <NetValueTooltip position={position} placement="top">
                     <FormatNumber
-                      nb={position.pnl}
+                      nb={position.sizeUsd - position.pnl}
                       format="currency"
-                      className={`text-${
-                        position.pnl && position.pnl > 0 ? 'green' : 'red'
-                      } underline-dashed`}
+                      className="underline-dashed"
                     />
                   </NetValueTooltip>
                 ) : (
                   '-'
                 )}
+                <br />
+                {position.pnl &&
+                position?.priceChangeUsd &&
+                position?.borrowFeeUsd ? (
+                  <FormatNumber
+                    nb={position.pnl}
+                    format="currency"
+                    className={`text-xs text-${
+                      position.pnl && position.pnl > 0 ? 'green' : 'red'
+                    }`}
+                  />
+                ) : (
+                  '-'
+                )}
+              </td>
+
+              <td className={twMerge(columnStyle, 'font-mono')}>
+                <div className="flex items-center justify-center">
+                  <FormatNumber
+                    nb={position.collateralUsd - (position?.borrowFeeUsd ?? 0)}
+                    format="currency"
+                  />
+                  <Button
+                    className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
+                    title="Edit"
+                    variant="outline"
+                    onClick={() => {
+                      triggerEditPositionCollateral(position);
+                    }}
+                  />
+                </div>
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
@@ -177,61 +214,47 @@ export default function PositionsArray({
                   <FormatNumber
                     nb={position.sizeUsd}
                     format="currency"
-                    className="underline-dashed"
+                    className="underline-dashed text-xs"
                   />
                 </SizeTooltip>
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
                 <FormatNumber
-                  nb={position.collateralUsd - (position?.borrowFeeUsd ?? 0)}
+                  nb={position.price}
                   format="currency"
+                  className="text-xs mr-1"
                 />
-              </td>
-
-              <td className={twMerge(columnStyle, 'font-mono')}>
-                <FormatNumber nb={position.price} format="currency" />
-              </td>
-
-              <td className={twMerge(columnStyle, 'font-mono')}>
+                <span className="text-txtfade">/</span>
                 <FormatNumber
                   nb={tokenPrices[position.token.symbol]}
                   format="currency"
+                  className="text-xs ml-1 text-txtfade"
                 />
               </td>
 
-              <td className={columnStyle}>
+              <td className={twMerge(columnStyle)}>
                 <FormatNumber
                   nb={position.liquidationPrice}
                   format="currency"
+                  className="text-xs"
                 />
               </td>
 
               <td
-                className={twMerge(
-                  columnStyle,
-                  'font-mono flex w-[7em] shrink-0 grow-0 justify-evenly items-center',
-                )}
+                className={twMerge(columnStyle, 'font-mono items-center')}
+                style={{ height: '5em' }}
               >
-                <Button
-                  className="text-xs p-0"
-                  title="close"
-                  variant="text"
-                  onClick={() => {
-                    triggerClosePosition(position);
-                  }}
-                />
-
-                <span>/</span>
-
-                <Button
-                  className="text-xs p-0"
-                  title="edit"
-                  variant="text"
-                  onClick={() => {
-                    triggerEditPositionCollateral(position);
-                  }}
-                />
+                <div className="flex justify-center items-center">
+                  <Button
+                    className="text-xxs ml-1 text-txtfade border-bcolor bg-[#a8a8a810]"
+                    title="Close"
+                    variant="outline"
+                    onClick={() => {
+                      triggerClosePosition(position);
+                    }}
+                  />
+                </div>
               </td>
             </tr>
 
