@@ -79,9 +79,9 @@ export default function PositionsArray({
       <thead className="border-b border-bcolor">
         <tr>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Position</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
-          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
             Entry / Mark Price
           </th>
