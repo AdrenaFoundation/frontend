@@ -8,7 +8,7 @@ import { DEFAULT_PERPS_USER } from '@/constant';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { IDL as SABLIER_THREAD_IDL } from '@/target/thread_program';
 
-import { SablierClient } from './SablierClient';
+import SablierClient from './SablierClient';
 import { GeoBlockingData } from './types';
 
 export function createReadOnlyAdrenaProgram(connection: Connection) {
