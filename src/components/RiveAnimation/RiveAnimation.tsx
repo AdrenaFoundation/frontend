@@ -7,7 +7,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useResize } from '@/hooks/useResize';
+import useResize from '@/hooks/useResize';
 
 export default function RiveAnimation({
   animation,
@@ -135,4 +135,4 @@ export default function RiveAnimation({
   }, [RiveComponent, isLoaded, className]);
 
   return Comp;
-};
+}
