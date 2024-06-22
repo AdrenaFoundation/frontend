@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import Loader from '@/components/Loader/Loader';
 import { ImageRef } from '@/types';
 
-function Button({
+export default function Button({
   variant = 'primary',
   size = 'md',
   title,
@@ -136,5 +136,3 @@ function Button({
 
   return styledButton;
 }
-
-export default Button;

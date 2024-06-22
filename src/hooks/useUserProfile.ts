@@ -3,10 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
-const useUserProfile = (): {
+export default function useUserProfile(): {
   userProfile: UserProfileExtended | false | null;
   triggerUserProfileReload: () => void;
-} => {
+} {
   const [trickReload, triggerReload] = useState<number>(0);
   const wallet = useSelector((s) => s.walletState.wallet);
 
@@ -41,5 +41,3 @@ const useUserProfile = (): {
     },
   };
 };
-
-export default useUserProfile;

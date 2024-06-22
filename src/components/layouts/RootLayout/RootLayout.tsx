@@ -14,7 +14,7 @@ import { UserProfileExtended } from '@/types';
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
-const RootLayout = ({
+export default function RootLayout({
   children,
   userProfile,
   activeRpc,
@@ -44,7 +44,7 @@ const RootLayout = ({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-}) => {
+}) {
   const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
     { name: 'My Dashboard', link: '/my_dashboard' },
@@ -119,5 +119,3 @@ const RootLayout = ({
     </>
   );
 };
-
-export default RootLayout;

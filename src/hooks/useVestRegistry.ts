@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { VestRegistry } from '@/types';
 
-const useVestRegistry = (): VestRegistry | null => {
+export default function useVestRegistry(): VestRegistry | null {
   const [vestRegistry, setVestRegistry] = useState<VestRegistry | null>(null);
 
   const fetchVestRegistry = useCallback(async () => {
@@ -24,4 +24,3 @@ const useVestRegistry = (): VestRegistry | null => {
   return vestRegistry;
 };
 
-export default useVestRegistry;

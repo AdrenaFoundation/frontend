@@ -6,7 +6,7 @@ import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
 import TermsAndConditionsModal from '../TermsAndConditionsModal/TermsAndConditionsModal';
 
-function GeoBlockedModal({
+export default function GeoBlockedModal({
   className,
   isOpen,
   closeTrigger,
@@ -76,5 +76,3 @@ function GeoBlockedModal({
     </Modal>
   );
 }
-
-export default GeoBlockedModal;

@@ -9,7 +9,7 @@ import { PositionExtended, Token } from '@/types';
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
 
-export const TradeComp = ({
+export default function TradeComp({
   selectedAction,
   setSelectedAction,
   tokenA,
@@ -35,7 +35,7 @@ export const TradeComp = ({
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
   className?: string;
-}) => {
+})  {
   return (
     <div
       className={twMerge(

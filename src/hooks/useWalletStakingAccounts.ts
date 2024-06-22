@@ -9,10 +9,10 @@ export type WalletStakingAccounts = {
   ALP: UserStaking | null;
 };
 
-const useWalletStakingAccounts = (): {
+export default function useWalletStakingAccounts(): {
   stakingAccounts: WalletStakingAccounts | null;
   triggerWalletStakingAccountsReload: () => void;
-} => {
+} {
   const wallet = useSelector((s) => s.walletState.wallet);
   const [triggerCount, setTriggerCount] = useState<number>(0);
 
@@ -60,5 +60,3 @@ const useWalletStakingAccounts = (): {
     },
   };
 };
-
-export default useWalletStakingAccounts;
