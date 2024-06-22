@@ -40,11 +40,14 @@ export default function Trade({
     null,
   );
 
-  function pickDefaultToken(positions: PositionExtended[] | null) {
+  function pickDefaultToken(positions: PositionExtended[] | null): Token {
     const tokens = window.adrena.client.tokens.filter((t) => !t.isStable);
 
-    if (!positions || !positions.length)
-      return tokens.find((t) => t.symbol === 'SOL');
+    const solToken = tokens.find((t) => t.symbol === 'SOL');
+
+    if (!solToken) throw new Error('SOL token not found');
+
+    if (!positions || !positions.length) return solToken;
 
     const positionsPerToken: Record<string, number> = positions.reduce(
       (acc, position) => {
@@ -57,17 +60,16 @@ export default function Trade({
     );
 
     const maxPositionSize = Math.max(...Object.values(positionsPerToken));
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const tokenWithMaxSize = tokens.find(
       (t) =>
         t.symbol ===
         Object.keys(positionsPerToken).find(
           (key) => positionsPerToken[key] === maxPositionSize,
         ),
-    );
+    )!;
 
-    if (tokenWithMaxSize) return tokenWithMaxSize;
-
-    return tokens.find((t) => t.symbol === 'SOL');
+    return tokenWithMaxSize;
   }
 
   useEffect(() => {
@@ -164,9 +166,7 @@ export default function Trade({
       !tokenB ||
       !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
-      const defaultToken = pickDefaultToken(positions);
-      if (defaultToken) setTokenB(defaultToken);
-      else setTokenB(tokenBCandidate[0]);
+      setTokenB(pickDefaultToken(positions));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
