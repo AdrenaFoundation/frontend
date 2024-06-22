@@ -78,7 +78,14 @@ export default function PositionsArray({
 
       <thead className="border-b border-bcolor">
         <tr>
-          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Position</th>
+          <th
+            className={twMerge(
+              columnHeadStyle,
+              'w-[19%] md:w-[16%] xl:w-[14%]',
+            )}
+          >
+            Position
+          </th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
@@ -89,7 +96,7 @@ export default function PositionsArray({
           <th
             className={twMerge(
               columnHeadStyle,
-              'shrink-0 grow-0 w-[14%] border-none',
+              'shrink-0 grow-0 w-[11%] md:w-[12%] xl:w-[14%] border-none',
             )}
           >
             Close
@@ -105,7 +112,7 @@ export default function PositionsArray({
             <tr key={position.pubkey.toBase58() + '-0'}>
               <td className="flex items-center text-sm text-center h-10">
                 <Image
-                  className="ml-5 mt-2 pt-2"
+                  className="ml-1 sm:ml-2 md:ml-3 xl:ml-5 mt-2 pt-2"
                   height={28}
                   width={28}
                   src={position.token.image}
@@ -168,7 +175,7 @@ export default function PositionsArray({
                 position?.borrowFeeUsd ? (
                   <NetValueTooltip position={position} placement="top">
                     <FormatNumber
-                      nb={position.sizeUsd - position.pnl}
+                      nb={position.collateralUsd - position.pnl}
                       format="currency"
                       className="underline-dashed"
                     />
@@ -210,13 +217,11 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <SizeTooltip position={position} placement="top">
-                  <FormatNumber
-                    nb={position.sizeUsd}
-                    format="currency"
-                    className="underline-dashed text-xs"
-                  />
-                </SizeTooltip>
+                <FormatNumber
+                  nb={position.sizeUsd}
+                  format="currency"
+                  className="text-xs"
+                />
               </td>
 
               <td className={twMerge(columnStyle, 'font-mono')}>

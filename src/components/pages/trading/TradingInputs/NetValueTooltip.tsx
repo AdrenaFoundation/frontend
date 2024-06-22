@@ -29,7 +29,15 @@ export default function NetValueTooltip({
 
             <div className="flex w-full items-center justify-between">
               <span className="text-sm">PnL</span>
-              <FormatNumber nb={position.priceChangeUsd} format="currency" />
+              <FormatNumber
+                nb={position.priceChangeUsd}
+                format="currency"
+                className={`text-${
+                  position.priceChangeUsd && position.priceChangeUsd > 0
+                    ? 'green'
+                    : 'red'
+                }`}
+              />
             </div>
 
             <div className="flex w-full items-center justify-between">
@@ -38,6 +46,7 @@ export default function NetValueTooltip({
                 nb={position.borrowFeeUsd}
                 format="currency"
                 prefix="-"
+                className={'text-red'}
               />
             </div>
             <div className="flex w-full items-center justify-between">
@@ -46,6 +55,7 @@ export default function NetValueTooltip({
                 nb={position.exitFeeUsd}
                 format="currency"
                 prefix="-"
+                className={'text-red'}
               />
             </div>
 
