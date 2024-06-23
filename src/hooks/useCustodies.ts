@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { CustodyExtended, PoolExtended } from '@/types';
 
-// TODO: needs to refresh periodically to access new informations
 export default function useCustodies(
   mainPool: PoolExtended | null,
 ): CustodyExtended[] | null {
@@ -28,4 +27,4 @@ export default function useCustodies(
   }, [fetchCustodies]);
 
   return custodies;
-};
+}

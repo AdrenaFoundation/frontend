@@ -59,4 +59,4 @@ export default function useWalletStakingAccounts(): {
       setTriggerCount(triggerCount + 1);
     },
   };
-};
+}

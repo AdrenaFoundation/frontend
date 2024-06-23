@@ -22,4 +22,4 @@ export default function useVests(): VestExtended[] | null {
   }, [fetchVests]);
 
   return vests;
-};
+}

@@ -97,4 +97,4 @@ export default function useWatchWalletBalance(): {
       triggerReload(trickReload + 1);
     },
   };
-};
+}

@@ -23,4 +23,4 @@ export default function Featurebase() {
   return (
     <Script src="https://do.featurebase.app/js/sdk.js" id="featurebase-sdk" />
   );
-};
+}

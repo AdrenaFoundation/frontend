@@ -5,7 +5,11 @@ import phantomLogo from '../../../public/images/phantom.png';
 import Button from '../common/Button/Button';
 import WalletSelectionModal from './WalletSelectionModal';
 
-export default function WalletConnection({ connected }: { connected?: boolean }) {
+export default function WalletConnection({
+  connected,
+}: {
+  connected?: boolean;
+}) {
   const dispatch = useDispatch();
 
   const handleClick = () => {

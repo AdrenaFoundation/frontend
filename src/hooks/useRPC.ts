@@ -30,9 +30,7 @@ function pickBestLatencyRpcIndex(rpcLatencies: (number | null)[]): {
   );
 }
 
-export default function useRpc(
-  config: IConfiguration | null,
-): {
+export default function useRpc(config: IConfiguration | null): {
   activeRpc: {
     name: string;
     connection: Connection;
@@ -311,4 +309,4 @@ export default function useRpc(
       setCookies('favoriteRpc', favoriteRpc);
     },
   };
-};
+}

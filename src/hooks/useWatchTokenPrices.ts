@@ -116,4 +116,4 @@ export default function useWatchTokenPrices() {
     // Manually handle dependencies to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadALPTokenPrice]);
-};
+}
