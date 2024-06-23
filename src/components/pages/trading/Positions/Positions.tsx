@@ -37,8 +37,6 @@ export default function Positions({
 
   const isBigScreen = useBetterMediaQuery('(min-width: 640px)');
 
-  console.log(isBigScreen);
-
   if (isBigScreen === null) return null;
 
   return (

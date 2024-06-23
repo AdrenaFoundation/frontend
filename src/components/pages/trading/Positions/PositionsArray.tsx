@@ -12,7 +12,6 @@ import { PositionExtended } from '@/types';
 import { getArrowElement } from '@/utils';
 
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
-import SizeTooltip from '../TradingInputs/SizeTooltip';
 
 export default function PositionsArray({
   bodyClassName,
@@ -119,9 +118,9 @@ export default function PositionsArray({
                   alt={`${position.token.symbol} logo`}
                 />
                 <table className="flex flex-col ml-2 text-sm text-center h-10">
-                  <tr>
-                    <td>
-                      <div className="flex flex-col h-full">
+                  <tbody className="flex flex-col h-full">
+                    <tr>
+                      <td>
                         <div className="grow flex h-full items-center justify-start pt-2 mt-[0.2em]">
                           {window.location.pathname !== '/trade' ? (
                             <Link
@@ -138,38 +137,38 @@ export default function PositionsArray({
                             </span>
                           )}
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr className="text-xs text-center h-10 font-mono">
-                    <td>
-                      <div className="flex">
-                        {position ? (
-                          <FormatNumber
-                            nb={position.leverage}
-                            suffix="x"
-                            className="text-xs"
-                          />
-                        ) : (
-                          '-'
-                        )}
-                        <h5
-                          className={twMerge(
-                            'text-xs uppercase ml-1',
-                            `text-${
-                              position.side === 'long' ? 'green' : 'red'
-                            }`,
+                      </td>
+                    </tr>
+                    <tr className="text-xs text-center h-10 font-mono">
+                      <td>
+                        <div className="flex">
+                          {position ? (
+                            <FormatNumber
+                              nb={position.leverage}
+                              suffix="x"
+                              className="text-xs"
+                            />
+                          ) : (
+                            '-'
                           )}
-                        >
-                          {position.side}
-                        </h5>
-                      </div>
-                    </td>
-                  </tr>
+                          <h5
+                            className={twMerge(
+                              'text-xs uppercase ml-1',
+                              `text-${
+                                position.side === 'long' ? 'green' : 'red'
+                              }`,
+                            )}
+                          >
+                            {position.side}
+                          </h5>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </td>
 
-              <td className={twMerge(columnStyle, 'font-mono')}>
+              <td className={twMerge(columnStyle, 'font-mono items-center')}>
                 {position.pnl &&
                 position?.priceChangeUsd &&
                 position?.borrowFeeUsd ? (
