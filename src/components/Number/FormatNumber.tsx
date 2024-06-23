@@ -29,6 +29,8 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       className,
       placeholderClassName,
       isDecimalDimmed = true,
+      minimumFractionDigits = 0,
+      precisionIfPriceDecimalsBelow = 6,
     },
     ref,
   ) => {
@@ -43,10 +45,20 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       );
     }
 
-    let num = formatNumber(nb, precision);
+    let num = formatNumber(
+      nb,
+      precision,
+      minimumFractionDigits,
+      precisionIfPriceDecimalsBelow,
+    );
 
     if (format === 'currency') {
-      num = formatPriceInfo(nb, precision);
+      num = formatPriceInfo(
+        nb,
+        precision,
+        minimumFractionDigits,
+        precisionIfPriceDecimalsBelow,
+      );
     }
 
     if (format === 'percentage') {
