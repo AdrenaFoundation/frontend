@@ -3,11 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { SablierThreadExtended } from '@/types';
 
 // TODO: needs to refresh periodically to access new information
-const useSablierFinalizeLockedStakedThreads = (): {
+export default function useSablierFinalizeLockedStakedThreads(): {
   threads: SablierThreadExtended[] | null;
   triggerReload: () => void;
   isLoading: boolean;
-} => {
+} {
   const [threads, setThreads] = useState<SablierThreadExtended[] | null>(null);
   const [trickReload, triggerReload] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -43,5 +43,3 @@ const useSablierFinalizeLockedStakedThreads = (): {
     isLoading,
   };
 };
-
-export default useSablierFinalizeLockedStakedThreads;

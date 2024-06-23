@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
-import arrowRightIcon from '../../../public/images/arrow-right.svg';
 import discordLogo from '../../../public/images/discord.png';
 import discourseLogo from '../../../public/images/discourse.svg';
 import githubLogo from '../../../public/images/github.svg';

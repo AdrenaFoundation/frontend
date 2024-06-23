@@ -165,7 +165,7 @@ export default function Stake({
             });
 
       addSuccessTxNotification({
-        title: 'Successfully Staked ADX',
+        title: `Successfully Staked ${activeStakingToken}`,
         txHash,
       });
 

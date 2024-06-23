@@ -11,7 +11,7 @@ import { ThreadProgram as SablierThreadProgram } from '@/target/thread_program';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
-import { SablierClient } from './SablierClient';
+import SablierClient from './SablierClient';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;

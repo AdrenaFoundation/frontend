@@ -123,7 +123,9 @@ export default function ClosePosition({
   };
 
   return (
-    <div className={twMerge('flex flex-col h-full w-[22em]', className)}>
+    <div
+      className={twMerge('flex flex-col h-full w-full sm:w-[22em]', className)}
+    >
       <div className="flex items-center">
         <div className="flex border p-4 bg-third w-full justify-between items-center">
           <div className="text-2xl tracking-wider font-special ml-4">

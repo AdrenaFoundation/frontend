@@ -21,7 +21,7 @@ import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import WalletSelectionModal from './WalletSelectionModal';
 
-function WalletAdapter({
+export default function WalletAdapter({
   className,
   userProfile,
 }: {
@@ -138,5 +138,3 @@ function WalletAdapter({
     </div>
   );
 }
-
-export default WalletAdapter;

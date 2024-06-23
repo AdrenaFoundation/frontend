@@ -13,6 +13,8 @@ interface FormatNumberProps {
   className?: string;
   placeholderClassName?: string;
   isDecimalDimmed?: boolean;
+  minimumFractionDigits?: number;
+  precisionIfPriceDecimalsBelow?: number;
 }
 
 const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(

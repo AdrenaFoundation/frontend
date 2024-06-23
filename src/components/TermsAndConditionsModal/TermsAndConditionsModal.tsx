@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
 
-function TermsAndConditionsModal({
+export default function TermsAndConditionsModal({
   className,
   isOpen,
   // User don't agree or decline, just read it
@@ -124,5 +124,3 @@ function TermsAndConditionsModal({
     </Modal>
   );
 }
-
-export default TermsAndConditionsModal;

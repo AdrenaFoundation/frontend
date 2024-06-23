@@ -71,7 +71,7 @@ function generateUtilizationChart(utilizationChartData: ChartData<'bar'>) {
         //needed so the labels don't get hidden if bar is 100%
         layout: {
           padding: {
-            top: 10,
+            top: 20,
           },
         },
         scales: {
