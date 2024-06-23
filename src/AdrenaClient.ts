@@ -3339,7 +3339,7 @@ export class AdrenaClient {
         return profitsAndLosses.profitUsd;
       })();
 
-      const priceChange = (() => {
+      const priceChangeUsd = (() => {
         if (!profitsAndLosses) return null;
 
         return (
@@ -3359,7 +3359,7 @@ export class AdrenaClient {
         ...positionExtended,
         leverage,
         pnl,
-        priceChangeUsd: priceChange,
+        priceChangeUsd,
         profitUsd: profitsAndLosses ? profitsAndLosses.profitUsd : null,
         lossUsd: profitsAndLosses ? profitsAndLosses.lossUsd : null,
         borrowFeeUsd: profitsAndLosses ? profitsAndLosses.borrowFeeUsd : null,
