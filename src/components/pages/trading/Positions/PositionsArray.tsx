@@ -174,7 +174,7 @@ export default function PositionsArray({
                 position?.borrowFeeUsd ? (
                   <NetValueTooltip position={position} placement="top">
                     <FormatNumber
-                      nb={position.collateralUsd - position.pnl}
+                      nb={position.collateralUsd + position.pnl}
                       format="currency"
                       className="underline-dashed"
                     />
