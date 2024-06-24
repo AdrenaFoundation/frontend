@@ -77,25 +77,28 @@ export default function PositionsArray({
 
       <thead className="border-b border-bcolor">
         <tr>
-          <th
-            className={twMerge(
-              columnHeadStyle,
-              'w-[19%] md:w-[16%] xl:w-[14%]',
-            )}
-          >
+          <th className={twMerge(columnHeadStyle, 'w-[16%] xl:w-[14%]')}>
             Position
           </th>
-          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
-          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
-          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
-          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
+          <th className={twMerge(columnHeadStyle, 'w-[16%] xl:w-[14%]')}>
+            Net Value
+          </th>
+          <th className={twMerge(columnHeadStyle, 'w-[16%] xl:w-[14%]')}>
+            Collateral
+          </th>
+          <th className={twMerge(columnHeadStyle, 'w-[12%] xl:w-[14%]')}>
+            Size
+          </th>
+          <th className={twMerge(columnHeadStyle, 'w-[12%] xl:w-[14%]')}>
             Entry / Mark Price
           </th>
-          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Liq. Price</th>
+          <th className={twMerge(columnHeadStyle, 'w-[10%] xl:w-[14%]')}>
+            Liq. Price
+          </th>
           <th
             className={twMerge(
               columnHeadStyle,
-              'shrink-0 grow-0 w-[11%] md:w-[12%] xl:w-[14%] border-none',
+              'shrink-0 grow-0 w-[8%] border-none',
             )}
           >
             Close
@@ -109,7 +112,7 @@ export default function PositionsArray({
           // Use Fragment to avoid key error
           <React.Fragment key={position.pubkey.toBase58()}>
             <tr key={position.pubkey.toBase58() + '-0'}>
-              <td className="flex items-center text-sm text-center h-10">
+              <td className="flex items-center text-xs md:text-sm text-center h-10">
                 <Image
                   className="ml-1 sm:ml-2 md:ml-3 xl:ml-5 mt-2 pt-2"
                   height={28}
@@ -117,7 +120,7 @@ export default function PositionsArray({
                   src={position.token.image}
                   alt={`${position.token.symbol} logo`}
                 />
-                <table className="flex flex-col ml-2 text-sm text-center h-10">
+                <table className="flex flex-col ml-2 text-xs md:text-sm text-center h-10">
                   <tbody className="flex flex-col h-full">
                     <tr>
                       <td>
@@ -127,19 +130,29 @@ export default function PositionsArray({
                               href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
                               target=""
                             >
-                              <span className="font-boldy text-base underline">
+                              <span className="font-boldy text-base underline text-xs md:text-sm">
                                 {position.token.symbol}
                               </span>
                             </Link>
                           ) : (
-                            <span className="font-boldy text-base">
+                            <span className="font-boldy text-base text-xs md:text-sm">
                               {position.token.symbol}
                             </span>
                           )}
+                          <span
+                            className={twMerge(
+                              'font-boldy text-base ml-1 uppercase text-xs md:text-sm',
+                              `text-${
+                                position.side === 'long' ? 'green' : 'redbright'
+                              }`,
+                            )}
+                          >
+                            {position.side}
+                          </span>
                         </div>
                       </td>
                     </tr>
-                    <tr className="text-xs text-center h-10 font-mono">
+                    <tr className="text-sm text-center h-10 font-mono">
                       <td>
                         <div className="flex">
                           {position ? (
@@ -151,16 +164,6 @@ export default function PositionsArray({
                           ) : (
                             '-'
                           )}
-                          <h5
-                            className={twMerge(
-                              'text-xs uppercase ml-1',
-                              `text-${
-                                position.side === 'long' ? 'green' : 'red'
-                              }`,
-                            )}
-                          >
-                            {position.side}
-                          </h5>
                         </div>
                       </td>
                     </tr>
@@ -168,7 +171,11 @@ export default function PositionsArray({
                 </table>
               </td>
 
-              <td className={twMerge(columnStyle, 'font-mono items-center')}>
+              <td
+                className={twMerge(
+                  'font-mono items-center text-xs md:text-sm text-center h-10',
+                )}
+              >
                 {position.pnl &&
                 position?.priceChangeUsd &&
                 position?.borrowFeeUsd ? (
@@ -176,7 +183,7 @@ export default function PositionsArray({
                     <FormatNumber
                       nb={position.collateralUsd + position.pnl}
                       format="currency"
-                      className="underline-dashed"
+                      className="underline-dashed text-xs md:text-sm"
                     />
                   </NetValueTooltip>
                 ) : (
@@ -186,21 +193,48 @@ export default function PositionsArray({
                 {position.pnl &&
                 position?.priceChangeUsd &&
                 position?.borrowFeeUsd ? (
-                  <FormatNumber
-                    nb={position.pnl}
-                    format="currency"
-                    className={`text-xs text-${
-                      position.pnl && position.pnl > 0 ? 'green' : 'red'
-                    }`}
-                  />
+                  <>
+                    <FormatNumber
+                      nb={position.pnl}
+                      format="currency"
+                      className={`mr-0.5 text-xs md:text-sm text-${
+                        position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                      }`}
+                    />
+                    {position.pnl ? (
+                      <>
+                        <FormatNumber
+                          nb={(position.pnl / position.collateralUsd) * 100}
+                          format="percentage"
+                          prefix="("
+                          suffix=")"
+                          precision={2}
+                          isDecimalDimmed={false}
+                          className={`text-xs md:text-sm text-${
+                            position.pnl && position.pnl > 0
+                              ? 'green'
+                              : 'redbright'
+                          }`}
+                        />
+                      </>
+                    ) : null}
+                  </>
                 ) : (
                   '-'
                 )}
               </td>
 
-              <td className={twMerge(columnStyle, 'font-mono')}>
+              <td
+                className={twMerge(
+                  'font-mono text-xs md:text-sm text-center h-10',
+                )}
+              >
                 <div className="flex items-center justify-center">
-                  <FormatNumber nb={position.collateralUsd} format="currency" />
+                  <FormatNumber
+                    nb={position.collateralUsd}
+                    format="currency"
+                    className="text-xs md:text-sm"
+                  />
                   <Button
                     className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
                     title="Edit"

@@ -21,6 +21,8 @@ export default function NetValueTooltip({
       content={
         <div className="flex flex-col p-2">
           <h3>Net Value</h3>
+          <h4 className="mt-4">{'Collateral + PnL - Fees'}</h4>
+
           <StyledSubContainer className="flex-col mt-4 p-6 min-w-[20em]">
             <div className="flex w-full items-center justify-between">
               <span className="text-sm">Collateral</span>
@@ -35,7 +37,7 @@ export default function NetValueTooltip({
                 className={`text-${
                   position.priceChangeUsd && position.priceChangeUsd > 0
                     ? 'green'
-                    : 'red'
+                    : 'redbright'
                 }`}
               />
             </div>
@@ -46,7 +48,7 @@ export default function NetValueTooltip({
                 nb={position.borrowFeeUsd}
                 format="currency"
                 prefix="-"
-                className={'text-red'}
+                className={'text-redbright'}
               />
             </div>
             <div className="flex w-full items-center justify-between">
@@ -55,7 +57,7 @@ export default function NetValueTooltip({
                 nb={position.exitFeeUsd}
                 format="currency"
                 prefix="-"
-                className={'text-red'}
+                className={'text-redbright'}
               />
             </div>
 
@@ -65,7 +67,7 @@ export default function NetValueTooltip({
                 nb={position.pnl}
                 format="currency"
                 className={`text-${
-                  position.pnl && position.pnl > 0 ? 'green' : 'red'
+                  position.pnl && position.pnl > 0 ? 'green' : 'redbright'
                 }`}
               />
             </div>
