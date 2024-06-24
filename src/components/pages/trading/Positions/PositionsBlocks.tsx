@@ -10,7 +10,6 @@ import { PositionExtended } from '@/types';
 import { getArrowElement } from '@/utils';
 
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
-import SizeTooltip from '../TradingInputs/SizeTooltip';
 
 export default function PositionsBlocks({
   bodyClassName,
@@ -148,17 +147,15 @@ export default function PositionsBlocks({
             </li>
 
             <li className={columnStyle}>
-              <SizeTooltip position={position}>
-                <div className="flex w-full">
-                  <div className="text-txtfade text-sm">Size</div>
+              <div className="flex w-full">
+                <div className="text-txtfade text-sm">Size</div>
 
-                  <FormatNumber
-                    nb={position.sizeUsd}
-                    format="currency"
-                    className="text-right underline-dashed ml-auto"
-                  />
-                </div>
-              </SizeTooltip>
+                <FormatNumber
+                  nb={position.sizeUsd}
+                  format="currency"
+                  className="text-right underline-dashed ml-auto"
+                />
+              </div>
             </li>
             <li className={columnStyle}>
               <div className="flex w-full">

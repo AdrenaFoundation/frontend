@@ -200,10 +200,7 @@ export default function PositionsArray({
 
               <td className={twMerge(columnStyle, 'font-mono')}>
                 <div className="flex items-center justify-center">
-                  <FormatNumber
-                    nb={position.collateralUsd - (position?.borrowFeeUsd ?? 0)}
-                    format="currency"
-                  />
+                  <FormatNumber nb={position.collateralUsd} format="currency" />
                   <Button
                     className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
                     title="Edit"
