@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeOverview from '@/components/pages/stake/ALPStakeOverview';
@@ -22,9 +23,7 @@ import {
   PageProps,
 } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
   getLockedStakeRemainingTime,
@@ -144,30 +143,29 @@ export default function Stake({
 
     if (!activeStakingToken) return;
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Stake').fire();
+
     const stakedTokenMint =
       activeStakingToken === 'ADX'
         ? window.adrena.client.adxToken.mint
         : window.adrena.client.alpToken.mint;
 
     try {
-      const txHash =
-        lockPeriod === 0
-          ? await window.adrena.client.addLiquidStake({
-              owner,
-              amount,
-              stakedTokenMint,
-            })
-          : await window.adrena.client.addLockedStake({
-              owner,
-              amount,
-              lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
-              stakedTokenMint,
-            });
-
-      addSuccessTxNotification({
-        title: 'Successfully Staked ADX',
-        txHash,
-      });
+      lockPeriod === 0
+        ? await window.adrena.client.addLiquidStake({
+            owner,
+            amount,
+            stakedTokenMint,
+            notification,
+          })
+        : await window.adrena.client.addLockedStake({
+            owner,
+            amount,
+            lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
+            stakedTokenMint,
+            notification,
+          });
 
       setAmount(null);
       setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
@@ -175,10 +173,7 @@ export default function Stake({
       triggerWalletStakingAccountsReload();
       setActiveStakingToken(null);
     } catch (error) {
-      return addFailedTxNotification({
-        title: `Error Staking ${activeStakingToken}`,
-        error,
-      });
+      console.error('error', error);
     }
   };
 
@@ -193,28 +188,24 @@ export default function Stake({
 
     if (!activeRedeemLiquidADX) return;
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Unstake').fire();
+
     const stakedTokenMint = window.adrena.client.adxToken.mint;
 
     try {
-      const txHash = await window.adrena.client.removeLiquidStake({
+      await window.adrena.client.removeLiquidStake({
         owner,
         amount,
         stakedTokenMint,
-      });
-
-      addSuccessTxNotification({
-        title: 'Successfully Removed Liquid Stake',
-        txHash,
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
       setActiveRedeemLiquidADX(false);
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Removing Liquid Stake',
-        error,
-      });
+      console.error('error', error);
     }
   };
 
@@ -232,24 +223,23 @@ export default function Stake({
 
     if (earlyExit && !finalizeLockedStakeRedeem) return;
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Unstake').fire();
+
     const stakedTokenMint =
       lockedStake.tokenSymbol === 'ADX'
         ? window.adrena.client.adxToken.mint
         : window.adrena.client.alpToken.mint;
 
     try {
-      const txHash = await window.adrena.client.removeLockedStake({
+      await window.adrena.client.removeLockedStake({
         owner,
         resolved: !!lockedStake.resolved,
         threadId: lockedStake.stakeResolutionThreadId,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
         earlyExit,
-      });
-
-      addSuccessTxNotification({
-        title: 'Successfully Removed Locked Stake',
-        txHash,
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
@@ -259,10 +249,7 @@ export default function Stake({
         setFinalizeLockedStakeRedeem(false);
       }
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Removing Locked Stake',
-        error,
-      });
+      console.error('error', error);
     }
   };
 
@@ -280,24 +267,21 @@ export default function Stake({
         ? window.adrena.client.adxToken.mint
         : window.adrena.client.alpToken.mint;
 
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Claim Stakes Rewards',
+    ).fire();
+
     try {
-      const txHash = await window.adrena.client.claimStakes({
+      await window.adrena.client.claimStakes({
         owner,
         stakedTokenMint,
-      });
-
-      addSuccessTxNotification({
-        title: 'Successfully Claimed Rewards',
-        txHash,
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Claiming Rewards',
-        error,
-      });
+      console.error('error', error);
     }
   };
 

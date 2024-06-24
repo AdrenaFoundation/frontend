@@ -8,9 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
-import MultiStepNotification, {
-  NotificationStepState,
-} from '@/components/common/MultiStepNotification/MultiStepNotification';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Select from '@/components/common/Select/Select';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
@@ -21,9 +19,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   formatNumber,
   formatPriceInfo,
   uiLeverageToNative,
@@ -130,27 +126,9 @@ export default function LongShortTradingInputs({
       });
     }
 
-    const notification = MultiStepNotification.new({
-      title: 'Long Position Opening',
-      steps: [
-        {
-          title: 'Prepare transaction',
-        },
-        {
-          title: 'Sign transaction',
-        },
-        {
-          title: 'Execute transaction',
-        },
-        {
-          title: 'Confirm transaction',
-        },
-      ],
-    });
-
-    console.log('FIREEEEEE IN THE HOLE');
-
-    notification.fire();
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Long Position Opening',
+    ).fire();
 
     // Existing position or not, it's the same
     const collateralAmount = uiToNative(inputA, tokenA.decimals);
@@ -165,11 +143,7 @@ export default function LongShortTradingInputs({
       });
 
     if (!openPositionWithSwapAmountAndFees) {
-      return addNotification({
-        title: 'Error Opening Position',
-        type: 'error',
-        message: 'Error calculating fees',
-      });
+      return notification.currentStepErrored('Error calculating fees');
     }
 
     try {

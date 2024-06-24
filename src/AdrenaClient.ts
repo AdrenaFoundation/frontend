@@ -657,11 +657,13 @@ export class AdrenaClient {
     mint,
     amountIn,
     minLpAmountOut,
+    notification,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     amountIn: BN;
     minLpAmountOut: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -710,7 +712,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   protected async buildRemoveLiquidityTx({
@@ -787,11 +789,13 @@ export class AdrenaClient {
     mint,
     lpAmountIn,
     minAmountOut,
+    notification,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     lpAmountIn: BN;
     minAmountOut: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -840,7 +844,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   protected buildOpenOrIncreasePositionWithSwapLong({
@@ -1150,12 +1154,14 @@ export class AdrenaClient {
     minAmountOut,
     mintA,
     mintB,
+    notification,
   }: {
     owner: PublicKey;
     amountIn: BN;
     minAmountOut: BN;
     mintA: PublicKey;
     mintB: PublicKey;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1223,15 +1229,17 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async closePositionLong({
     position,
     price,
+    notification,
   }: {
     position: PositionExtended;
     price: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1340,15 +1348,18 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
   public async closePositionShort({
     position,
     price,
+    notification,
   }: {
     position: PositionExtended;
     price: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1467,6 +1478,7 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
@@ -1808,9 +1820,11 @@ export class AdrenaClient {
   public async addCollateralToPosition({
     position,
     addedCollateral,
+    notification,
   }: {
     position: PositionExtended;
     addedCollateral: BN;
+    notification: MultiStepNotification;
   }) {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1851,10 +1865,16 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
-  public async initUserProfile({ nickname }: { nickname: string }) {
+  public async initUserProfile({
+    nickname,
+    notification,
+  }: {
+    nickname: string;
+    notification: MultiStepNotification;
+  }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
@@ -1877,10 +1897,16 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
-  public async editUserProfile({ nickname }: { nickname: string }) {
+  public async editUserProfile({
+    nickname,
+    notification,
+  }: {
+    nickname: string;
+    notification: MultiStepNotification;
+  }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
@@ -1902,7 +1928,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async deleteUserProfile(): Promise<string> {
@@ -2014,9 +2040,11 @@ export class AdrenaClient {
   public async removeCollateralLong({
     position,
     collateralUsd,
+    notification,
   }: {
     position: PositionExtended;
     collateralUsd: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2081,15 +2109,18 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
   public async removeCollateralShort({
     position,
     collateralUsd,
+    notification,
   }: {
     position: PositionExtended;
     collateralUsd: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2166,6 +2197,7 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
@@ -2251,10 +2283,12 @@ export class AdrenaClient {
     owner,
     amount,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     amount: number;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2374,7 +2408,7 @@ export class AdrenaClient {
 
     console.log('transaction debug in AdrenaClient', transaction);
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async addLockedStake({
@@ -2382,11 +2416,13 @@ export class AdrenaClient {
     amount,
     lockedDays,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     amount: number;
     lockedDays: AlpLockPeriod | AdxLockPeriod;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2502,17 +2538,19 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async removeLiquidStake({
     owner,
     amount,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     amount: number;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2591,7 +2629,7 @@ export class AdrenaClient {
       .preInstructions([modifyComputeUnits])
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async buildFinalizeLockedStakeTx({
@@ -2660,9 +2698,11 @@ export class AdrenaClient {
   public async claimStakes({
     owner,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2730,7 +2770,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async removeLockedStake({
@@ -2740,6 +2780,7 @@ export class AdrenaClient {
     lockedStakeIndex,
     stakedTokenMint,
     earlyExit = false,
+    notification,
   }: {
     owner: PublicKey;
     resolved: boolean;
@@ -2747,6 +2788,7 @@ export class AdrenaClient {
     lockedStakeIndex: BN;
     stakedTokenMint: PublicKey;
     earlyExit?: boolean;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2832,7 +2874,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async initUserStaking({
@@ -3502,7 +3544,7 @@ export class AdrenaClient {
    */
 
   // Some instructions requires to provide all custody + custody oracle account
-  // as reamining accounts
+  // as remaining accounts
   protected prepareCustodiesForRemainingAccounts(): {
     pubkey: PublicKey;
     isSigner: boolean;

@@ -59,6 +59,27 @@ export default class MultiStepNotification {
     );
   }
 
+  // Contains the steps for a regular transaction
+  public static newForRegularTransaction(title: string): MultiStepNotification {
+    return MultiStepNotification.new({
+      title,
+      steps: [
+        {
+          title: 'Prepare transaction',
+        },
+        {
+          title: 'Sign transaction',
+        },
+        {
+          title: 'Execute transaction',
+        },
+        {
+          title: 'Confirm transaction',
+        },
+      ],
+    });
+  }
+
   public setTxHash(txHash: string): void {
     this.txHash = txHash;
   }
