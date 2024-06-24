@@ -154,7 +154,7 @@ export default class MultiStepNotification {
     })();
 
     return (
-      <div className="w-[20em] h-[10em] bg-main shadow-2xl z-[9999] border">
+      <div className="w-[20em] h-[10em] bg-[#162a3d] shadow-2xl z-[9999] border">
         <div className="flex flex-col pt-2 pb-2 pl-4 h-full w-full">
           <div className="flex w-full">
             <h2>{this.title ?? 'Title'}</h2>
