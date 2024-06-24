@@ -347,8 +347,8 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col pb-2', className)}>
-      <div className="flex w-full justify-between items-center mt-1 mb-1">
+    <div className={twMerge('relative flex flex-col sm:pb-2', className)}>
+      <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
 
         {(() => {
@@ -420,7 +420,7 @@ export default function LongShortTradingInputs({
         </div>
       </div>
 
-      <div className="flex flex-col mt-4 transition-opacity duration-500">
+      <div className="flex flex-col mt-2 sm:mt-4 transition-opacity duration-500">
         <h5 className="flex items-center ml-4">Size</h5>
 
         <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg">
@@ -499,7 +499,7 @@ export default function LongShortTradingInputs({
           )}
         </div>
 
-        <div className="flex mt-2">
+        <div className="flex sm:mt-2">
           <div>
             <span className="text-txtfade">max size:</span>
 
@@ -514,7 +514,7 @@ export default function LongShortTradingInputs({
             />
           </div>
 
-          <div className="ml-auto mb-2">
+          <div className="ml-auto sm:mb-2">
             <FormatNumber
               nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
               format="currency"
@@ -529,7 +529,7 @@ export default function LongShortTradingInputs({
         {errorMessage !== null ? (
           <AnimatePresence>
             <motion.div
-              className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 mt-2 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
+              className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
               initial={{ opacity: 0, scaleY: 0 }}
               animate={{ opacity: 1, scaleY: 1 }}
               exit={{ opacity: 0, scaleY: 0 }}
@@ -552,7 +552,7 @@ export default function LongShortTradingInputs({
         {/* Button to execute action */}
         <Button
           className={twMerge(
-            'w-full justify-center mt-2 mb-2',
+            'w-full justify-center mt-2 mb-1 sm:mb-2',
             side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
           )}
           size="lg"
@@ -561,11 +561,13 @@ export default function LongShortTradingInputs({
           onClick={handleExecuteButton}
         />
 
-        <h5 className="flex items-center ml-4 mt-3 mb-2">Trade Prices</h5>
+        <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2">
+          Trade Prices
+        </h5>
 
         <StyledSubSubContainer
           className={twMerge(
-            'flex-col p-2 h-[6em] items-center justify-center',
+            'flex-col p-2 h-[6em] items-center justify-center mt-2 sm:mt-0',
           )}
         >
           {positionInfos && !isInfoLoading ? (
@@ -620,7 +622,9 @@ export default function LongShortTradingInputs({
           )}
         </StyledSubSubContainer>
 
-        <h5 className="flex items-center ml-4 mt-4 mb-2">Fees</h5>
+        <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
+          Fees
+        </h5>
 
         <PositionFeesTooltip
           borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
@@ -629,7 +633,7 @@ export default function LongShortTradingInputs({
         >
           <StyledSubSubContainer
             className={twMerge(
-              'flex pl-6 pr-6 pb-4 h-[6em] items-center justify-center',
+              'flex pl-6 pr-6 pb-4 h-[6em] items-center justify-center mt-2 sm:mt-0',
               isInfoLoading || !positionInfos
                 ? 'pt-4'
                 : openedPosition
@@ -643,7 +647,7 @@ export default function LongShortTradingInputs({
                   <>
                     <TextExplainWrapper
                       title="Current Fees"
-                      className="flex-col mt-3"
+                      className="flex-col sm:mt-3"
                       position="bottom"
                     >
                       <FormatNumber

@@ -7,7 +7,7 @@ const getCurrentDimension = () => {
   };
 };
 
-export const useResize = () => {
+export default function useResize() {
   const [screenSize, setScreenSize] = useState(getCurrentDimension());
 
   useEffect(() => {

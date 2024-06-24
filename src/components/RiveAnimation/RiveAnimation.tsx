@@ -7,9 +7,9 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useResize } from '@/hooks/useResize';
+import useResize from '@/hooks/useResize';
 
-const RiveAnimation = ({
+export default function RiveAnimation({
   animation,
   layout,
   className,
@@ -26,7 +26,7 @@ const RiveAnimation = ({
   className?: string;
   automaticallyHandleEvents?: boolean;
   stateMachines?: string;
-}) => {
+}) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const [assetsLoaded, setAssetsLoaded] = useState(0);
@@ -135,6 +135,4 @@ const RiveAnimation = ({
   }, [RiveComponent, isLoaded, className]);
 
   return Comp;
-};
-
-export default RiveAnimation;
+}

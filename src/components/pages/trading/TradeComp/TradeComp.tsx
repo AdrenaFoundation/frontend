@@ -9,7 +9,7 @@ import { PositionExtended, Token } from '@/types';
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
 
-export const TradeComp = ({
+export default function TradeComp({
   selectedAction,
   setSelectedAction,
   tokenA,
@@ -35,15 +35,15 @@ export const TradeComp = ({
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
   className?: string;
-}) => {
+})  {
   return (
     <div
       className={twMerge(
-        'sm:flex w-full lg:w-[30em] min-w-[350px] bg-main/90 flex-col sm:flex-row lg:flex-col mt-4 lg:mt-0 border rounded-lg',
+        'sm:flex w-full lg:w-[30em] min-w-[350px] bg-main/90 flex-col sm:flex-row lg:flex-col mt-4 lg:mt-0 sm:border sm:rounded-lg ',
         className,
       )}
     >
-      <div className="w-full flex flex-col p-3">
+      <div className="w-full flex flex-col sm:p-3">
         <TabSelect
           selected={selectedAction}
           tabs={[

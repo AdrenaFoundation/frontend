@@ -17,7 +17,7 @@ let alpPriceInterval: NodeJS.Timeout | null = null;
 const PYTH_PRICE_LOADING_INTERVAL_IN_MS = 3_000;
 const ALP_PRICE_LOADING_INTERVAL_IN_MS = 10_000;
 
-const useWatchTokenPrices = () => {
+export default function useWatchTokenPrices() {
   const dispatch = useDispatch();
 
   const [pythClient, setPythClient] = useState<PythHttpClient | null>(null);
@@ -117,5 +117,3 @@ const useWatchTokenPrices = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadALPTokenPrice]);
 };
-
-export default useWatchTokenPrices;

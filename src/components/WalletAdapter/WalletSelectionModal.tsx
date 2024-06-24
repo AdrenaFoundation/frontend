@@ -10,7 +10,6 @@ import {
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
 import { walletAdapters } from '@/constant';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useDispatch, useSelector } from '@/store/store';
 
 import backpackLogo from '../../../public/images/backpack.png';
@@ -19,11 +18,9 @@ import walletConnectLogo from '../../../public/images/wallet-connect.png';
 import Modal from '../common/Modal/Modal';
 import GeoBlockedModal from '../GeoBlockedModal/GeoBlockedModal';
 
-function WalletSelectionModal() {
+export default function WalletSelectionModal() {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
-
-  const isMobile = useBetterMediaQuery('(max-width: 640px)');
 
   if (!window.adrena.geoBlockingData.allowed) {
     return (
@@ -40,7 +37,6 @@ function WalletSelectionModal() {
         <Modal
           close={() => dispatch(openCloseConnectionModalAction(false))}
           className="flex flex-col w-full p-5 relative overflow-visible"
-          isMobile={!!isMobile}
         >
           <div className="text-3xl opacity-80 font-special text-center mb-6">
             Pick a wallet
@@ -152,5 +148,3 @@ const WalletBlock = ({
 
   return walletBlock;
 };
-
-export default WalletSelectionModal;

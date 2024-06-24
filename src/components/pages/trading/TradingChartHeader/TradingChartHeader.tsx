@@ -86,6 +86,7 @@ export default function TradingChartHeader({
         <FormatNumber
           nb={streamingTokenPrices?.[selected.symbol]}
           format="currency"
+          minimumFractionDigits={2}
           className={twMerge('text-lg font-bold', tokenColor)}
         />
         <div className="flex flex-row gap-3 sm:gap-6">

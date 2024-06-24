@@ -19,7 +19,7 @@ export type TokenInfo = {
 
 export type ALPIndexComposition = TokenInfo[];
 
-const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
+export default function useALPIndexComposition(custodies: CustodyExtended[] | null){
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const [alpIndexComposition, setALPIndexComposition] =
@@ -81,5 +81,3 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
 
   return alpIndexComposition;
 };
-
-export default useALPIndexComposition;

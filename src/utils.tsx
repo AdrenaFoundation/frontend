@@ -90,17 +90,29 @@ export function formatNumber(
 export function formatPriceInfo(
   price: number | null | undefined,
   decimals = 2,
+  minimumFractionDigits = 0,
+  precisionIfPriceDecimalsBelow = 6,
 ) {
   if (price === null || typeof price === 'undefined') {
     return '-';
   }
 
   if (price == 0) {
-    return `$${formatNumber(price, decimals)}`;
+    return `$${formatNumber(
+      price,
+      decimals,
+      minimumFractionDigits,
+      precisionIfPriceDecimalsBelow,
+    )}`;
   }
 
   if (price < 0) {
-    return `-$${formatNumber(price * -1, decimals)}`;
+    return `-$${formatNumber(
+      price * -1,
+      decimals,
+      minimumFractionDigits,
+      precisionIfPriceDecimalsBelow,
+    )}`;
   }
 
   return `$${formatNumber(price, decimals)}`;
