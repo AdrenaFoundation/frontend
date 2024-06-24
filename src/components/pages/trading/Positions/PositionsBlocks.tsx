@@ -153,7 +153,7 @@ export default function PositionsBlocks({
                 <FormatNumber
                   nb={position.sizeUsd}
                   format="currency"
-                  className="text-right underline-dashed ml-auto"
+                  className="text-right ml-auto"
                 />
               </div>
             </li>
