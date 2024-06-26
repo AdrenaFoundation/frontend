@@ -7,6 +7,7 @@ import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getArrowElement } from '@/utils';
@@ -29,6 +30,10 @@ export default function PositionsArray({
   triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+
+  console.log('tokenPrices: ', tokenPrices);
+
+  const isBelow1070 = useBetterMediaQuery('(max-width: 1080px)');
 
   if (positions === null && !connected) {
     return <WalletConnection connected={connected} />;
@@ -86,9 +91,11 @@ export default function PositionsArray({
           <th className={twMerge(columnHeadStyle, 'w-[16%] xl:w-[14%]')}>
             Collateral
           </th>
-          <th className={twMerge(columnHeadStyle, 'w-[12%] xl:w-[14%]')}>
-            Size
-          </th>
+          {!isBelow1070 ? (
+            <th className={twMerge(columnHeadStyle, 'w-[12%] xl:w-[14%]')}>
+              Size
+            </th>
+          ) : null}
           <th className={twMerge(columnHeadStyle, 'w-[12%] xl:w-[14%]')}>
             Entry / Mark Price
           </th>
@@ -230,42 +237,74 @@ export default function PositionsArray({
                 )}
               >
                 <div className="flex items-center justify-center">
-                  <FormatNumber
-                    nb={position.collateralUsd}
-                    format="currency"
-                    className="text-xs md:text-sm"
-                  />
-                  <Button
-                    className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
-                    title="Edit"
-                    variant="outline"
-                    onClick={() => {
-                      triggerEditPositionCollateral(position);
-                    }}
-                  />
+                  {isBelow1070 ? (
+                    <>
+                      <div className="inline-flex flex-col items-center justify-center">
+                        <FormatNumber
+                          nb={position.collateralUsd}
+                          format="currency"
+                          className="text-xs md:text-sm"
+                        />
+                        <Button
+                          className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
+                          title="Edit"
+                          variant="outline"
+                          onClick={() => {
+                            triggerEditPositionCollateral(position);
+                          }}
+                        />
+                        <span className="text-txtfade">/</span>
+                        <FormatNumber
+                          nb={position.sizeUsd}
+                          format="currency"
+                          className="text-xs ml-1 text-txtfade"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <FormatNumber
+                        nb={position.collateralUsd}
+                        format="currency"
+                        className="text-xs md:text-sm"
+                      />
+                      <Button
+                        className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
+                        title="Edit"
+                        variant="outline"
+                        onClick={() => {
+                          triggerEditPositionCollateral(position);
+                        }}
+                      />
+                    </>
+                  )}
                 </div>
               </td>
 
-              <td className={twMerge(columnStyle, 'font-mono')}>
-                <FormatNumber
-                  nb={position.sizeUsd}
-                  format="currency"
-                  className="text-xs"
-                />
-              </td>
+              {!isBelow1070 ? (
+                <td className={twMerge(columnStyle, 'font-mono')}>
+                  <FormatNumber
+                    nb={position.sizeUsd}
+                    format="currency"
+                    className="text-xs"
+                  />
+                </td>
+              ) : null}
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <FormatNumber
-                  nb={position.price}
-                  format="currency"
-                  className="text-xs mr-1"
-                />
-                <span className="text-txtfade">/</span>
-                <FormatNumber
-                  nb={tokenPrices[position.token.symbol]}
-                  format="currency"
-                  className="text-xs ml-1 text-txtfade"
-                />
+                <div className="h-full w-full items-center justify-center flex">
+                  <FormatNumber
+                    nb={position.price}
+                    format="currency"
+                    className="text-xs mr-1"
+                  />
+                  <span className="text-txtfade">/</span>
+                  <FormatNumber
+                    nb={tokenPrices[position.token.symbol]}
+                    format="currency"
+                    className="text-xs ml-1 text-txtfade"
+                  />
+                </div>
               </td>
 
               <td className={twMerge(columnStyle)}>
@@ -302,11 +341,13 @@ export default function PositionsArray({
                 className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
               >
                 {position.side === 'long' &&
+                tokenPrices[position.token.symbol] &&
                 (tokenPrices[position.token.symbol] ?? 0) <
                   (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()
                   : null}
                 {position.side === 'short' &&
+                tokenPrices[position.token.symbol] &&
                 (tokenPrices[position.token.symbol] ?? 0) >
                   (position.liquidationPrice ?? 0)
                   ? generateLiquidationBlock()

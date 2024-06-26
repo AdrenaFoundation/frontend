@@ -21,7 +21,8 @@ export default function NetValueTooltip({
       content={
         <div className="flex flex-col p-2">
           <h3>Net Value</h3>
-          <h4 className="mt-4">{'Collateral + PnL - Fees'}</h4>
+
+          <h4 className="mt-4">Formula: Collateral + PnL - Fees</h4>
 
           <StyledSubContainer className="flex-col mt-4 p-6 min-w-[20em]">
             <div className="flex w-full items-center justify-between">
