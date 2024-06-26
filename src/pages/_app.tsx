@@ -110,15 +110,12 @@ export default function App(props: AppProps) {
 
     setInitializationInProgress(true);
 
-    // TODO: use Pyth connection
-    // const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+    const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
 
-    initializeApp(config, activeRpc.connection, activeRpc.connection).then(
-      () => {
-        setIsInitialized(true);
-        setInitializationInProgress(false);
-      },
-    );
+    initializeApp(config, activeRpc.connection, pythConnection).then(() => {
+      setIsInitialized(true);
+      setInitializationInProgress(false);
+    });
   }, [activeRpc, config, initializationInProgress, isInitialized]);
 
   if (!isInitialized || !activeRpc) return <Loader />;
