@@ -109,8 +109,10 @@ export default function RootLayout({
         </div>
       </div>
 
-      <ToastContainer newestOnTop className="relative top-16" />
+      <ToastContainer />
+
       <Featurebase />
+
       <Footer className="z-10" />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
