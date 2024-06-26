@@ -380,6 +380,7 @@ export class AdrenaClient {
               image: ImageRef;
               coingeckoId: string;
               decimals: number;
+              pythNetFeedId: PublicKey;
             }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
@@ -398,6 +399,7 @@ export class AdrenaClient {
           // loadCustodies gets the custodies on the same order as in the main pool
           custody: custodiesAddresses[i],
           coingeckoId: infos.coingeckoId,
+          pythNetFeedId: infos.pythNetFeedId,
         };
       })
       .filter((token) => !!token) as Token[];
