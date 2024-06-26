@@ -31,9 +31,7 @@ export default function PositionsArray({
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  console.log('tokenPrices: ', tokenPrices);
-
-  const isBelow1070 = useBetterMediaQuery('(max-width: 1080px)');
+  const isBelow1100 = useBetterMediaQuery('(max-width: 1100px)');
 
   if (positions === null && !connected) {
     return <WalletConnection connected={connected} />;
@@ -82,26 +80,30 @@ export default function PositionsArray({
 
       <thead className="border-b border-bcolor">
         <tr>
-          <th className={twMerge(columnHeadStyle, 'w-[16%] xl:w-[14%]')}>
-            Position
-          </th>
-          <th className={twMerge(columnHeadStyle, 'w-[16%] xl:w-[14%]')}>
-            Net Value
-          </th>
-          <th className={twMerge(columnHeadStyle, 'w-[16%] xl:w-[14%]')}>
-            Collateral
-          </th>
-          {!isBelow1070 ? (
-            <th className={twMerge(columnHeadStyle, 'w-[12%] xl:w-[14%]')}>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Position</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
+          {isBelow1100 ? (
+            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
+              Collateral <br />
               Size
             </th>
-          ) : null}
-          <th className={twMerge(columnHeadStyle, 'w-[12%] xl:w-[14%]')}>
-            Entry / Mark Price
-          </th>
-          <th className={twMerge(columnHeadStyle, 'w-[10%] xl:w-[14%]')}>
-            Liq. Price
-          </th>
+          ) : (
+            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
+          )}
+          {isBelow1100 ? null : (
+            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
+          )}
+          {isBelow1100 ? (
+            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
+              Entry Price <br />
+              Mark Price
+            </th>
+          ) : (
+            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
+              Entry / Mark Price
+            </th>
+          )}
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Liq. Price</th>
           <th
             className={twMerge(
               columnHeadStyle,
@@ -122,6 +124,7 @@ export default function PositionsArray({
               <td className="items-center text-xs md:text-sm text-center h-10">
                 <div className="h-full w-full items-center justify-center flex font-mono">
                   <Image
+                    className="hidden sm:block lg:hidden xl:block"
                     height={28}
                     width={28}
                     src={position.token.image}
@@ -245,7 +248,7 @@ export default function PositionsArray({
                 )}
               >
                 <div className="flex flex-col items-center justify-center">
-                  {isBelow1070 ? (
+                  {isBelow1100 ? (
                     <div className="inline-flex flex-col items-center justify-center">
                       <div className="flex items-center justify-center">
                         <FormatNumber
@@ -278,7 +281,7 @@ export default function PositionsArray({
                         className="text-xs md:text-sm"
                       />
                       <Button
-                        className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
+                        className="text-xxs ml-1.5 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
                         title="Edit"
                         variant="outline"
                         onClick={() => {
@@ -290,7 +293,7 @@ export default function PositionsArray({
                 </div>
               </td>
 
-              {!isBelow1070 ? (
+              {isBelow1100 ? null : (
                 <td className={twMerge(columnStyle, 'font-mono')}>
                   <div className="h-full w-full items-center justify-center flex">
                     <FormatNumber
@@ -300,22 +303,39 @@ export default function PositionsArray({
                     />
                   </div>
                 </td>
-              ) : null}
+              )}
 
               <td className={twMerge(columnStyle, 'font-mono')}>
-                <div className="h-full w-full items-center justify-center flex">
-                  <FormatNumber
-                    nb={position.price}
-                    format="currency"
-                    className="text-xs mr-1"
-                  />
-                  <span className="text-txtfade">/</span>
-                  <FormatNumber
-                    nb={tokenPrices[position.token.symbol]}
-                    format="currency"
-                    className="text-xs ml-1 text-txtfade"
-                  />
-                </div>
+                {isBelow1100 ? (
+                  <div className="flex flex-col h-full w-full items-center justify-center">
+                    <FormatNumber
+                      nb={position.price}
+                      format="currency"
+                      className="text-xs mr-1"
+                    />
+                    <div className="flex">
+                      <FormatNumber
+                        nb={tokenPrices[position.token.symbol]}
+                        format="currency"
+                        className="text-xs ml-1 text-txtfade"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <FormatNumber
+                      nb={position.price}
+                      format="currency"
+                      className="text-xs mr-1"
+                    />
+                    <span className="text-xs text-txtfade">/</span>
+                    <FormatNumber
+                      nb={tokenPrices[position.token.symbol]}
+                      format="currency"
+                      className="text-xs ml-1 text-txtfade"
+                    />
+                  </div>
+                )}
               </td>
 
               <td className={twMerge(columnStyle)}>
