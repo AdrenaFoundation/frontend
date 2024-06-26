@@ -119,63 +119,66 @@ export default function PositionsArray({
           // Use Fragment to avoid key error
           <React.Fragment key={position.pubkey.toBase58()}>
             <tr key={position.pubkey.toBase58() + '-0'}>
-              <td className="flex items-center text-xs md:text-sm text-center h-10">
-                <Image
-                  className="ml-1 sm:ml-2 md:ml-3 xl:ml-5 mt-2 pt-2"
-                  height={28}
-                  width={28}
-                  src={position.token.image}
-                  alt={`${position.token.symbol} logo`}
-                />
-                <table className="flex flex-col ml-2 text-xs md:text-sm text-center h-10">
-                  <tbody className="flex flex-col h-full">
-                    <tr>
-                      <td>
-                        <div className="grow flex h-full items-center justify-start pt-2 mt-[0.2em]">
-                          {window.location.pathname !== '/trade' ? (
-                            <Link
-                              href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
-                              target=""
-                            >
-                              <span className="font-boldy text-base underline text-xs md:text-sm">
+              <td className="items-center text-xs md:text-sm text-center h-10">
+                <div className="h-full w-full items-center justify-center flex font-mono">
+                  <Image
+                    height={28}
+                    width={28}
+                    src={position.token.image}
+                    alt={`${position.token.symbol} logo`}
+                  />
+                  <table className="flex flex-col ml-2 text-xs md:text-sm text-center h-10">
+                    <tbody className="flex flex-col h-full">
+                      <tr>
+                        <td>
+                          <div className="grow flex h-full items-center justify-start pt-0.5 mt-[0.2em]">
+                            {window.location.pathname !== '/trade' ? (
+                              <Link
+                                href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
+                                target=""
+                              >
+                                <span className="font-boldy text-base underline text-xs md:text-sm">
+                                  {position.token.symbol}
+                                </span>
+                              </Link>
+                            ) : (
+                              <span className="font-boldy text-base text-xs md:text-sm">
                                 {position.token.symbol}
                               </span>
-                            </Link>
-                          ) : (
-                            <span className="font-boldy text-base text-xs md:text-sm">
-                              {position.token.symbol}
-                            </span>
-                          )}
-                          <span
-                            className={twMerge(
-                              'font-boldy text-base ml-1 uppercase text-xs md:text-sm',
-                              `text-${
-                                position.side === 'long' ? 'green' : 'redbright'
-                              }`,
                             )}
-                          >
-                            {position.side}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="text-sm text-center h-10 font-mono">
-                      <td>
-                        <div className="flex">
-                          {position ? (
-                            <FormatNumber
-                              nb={position.leverage}
-                              suffix="x"
-                              className="text-xs"
-                            />
-                          ) : (
-                            '-'
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                            <span
+                              className={twMerge(
+                                'font-boldy text-base ml-1 uppercase text-xs md:text-sm',
+                                `text-${
+                                  position.side === 'long'
+                                    ? 'green'
+                                    : 'redbright'
+                                }`,
+                              )}
+                            >
+                              {position.side}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="text-sm text-center h-10 font-mono">
+                        <td>
+                          <div className="flex">
+                            {position ? (
+                              <FormatNumber
+                                nb={position.leverage}
+                                suffix="x"
+                                className="text-xs"
+                              />
+                            ) : (
+                              '-'
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </td>
 
               <td
@@ -183,52 +186,57 @@ export default function PositionsArray({
                   'font-mono items-center text-xs md:text-sm text-center h-10',
                 )}
               >
-                {position.pnl &&
-                position?.priceChangeUsd &&
-                position?.borrowFeeUsd ? (
-                  <NetValueTooltip position={position} placement="top">
-                    <FormatNumber
-                      nb={position.collateralUsd + position.pnl}
-                      format="currency"
-                      className="underline-dashed text-xs md:text-sm"
-                    />
-                  </NetValueTooltip>
-                ) : (
-                  '-'
-                )}
-                <br />
-                {position.pnl &&
-                position?.priceChangeUsd &&
-                position?.borrowFeeUsd ? (
-                  <>
-                    <FormatNumber
-                      nb={position.pnl}
-                      format="currency"
-                      className={`mr-0.5 text-xs md:text-sm text-${
-                        position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                      }`}
-                    />
-                    {position.pnl ? (
-                      <>
+                <div className="flex flex-col h-full w-full items-center justify-center">
+                  {position.pnl &&
+                  position?.priceChangeUsd &&
+                  position?.borrowFeeUsd ? (
+                    <div className="flex items-center justify-center">
+                      <NetValueTooltip position={position} placement="top">
                         <FormatNumber
-                          nb={(position.pnl / position.collateralUsd) * 100}
-                          format="percentage"
-                          prefix="("
-                          suffix=")"
-                          precision={2}
-                          isDecimalDimmed={false}
-                          className={`text-xs md:text-sm text-${
-                            position.pnl && position.pnl > 0
-                              ? 'green'
-                              : 'redbright'
-                          }`}
+                          nb={position.collateralUsd + position.pnl}
+                          format="currency"
+                          className="underline-dashed text-xs md:text-sm"
                         />
-                      </>
-                    ) : null}
-                  </>
-                ) : (
-                  '-'
-                )}
+                      </NetValueTooltip>
+                    </div>
+                  ) : (
+                    '-'
+                  )}
+                  {position.pnl &&
+                  position?.priceChangeUsd &&
+                  position?.borrowFeeUsd ? (
+                    <div className="flex">
+                      <FormatNumber
+                        nb={position.pnl}
+                        format="currency"
+                        className={`mr-0.5 text-xs md:text-sm text-${
+                          position.pnl && position.pnl > 0
+                            ? 'green'
+                            : 'redbright'
+                        }`}
+                      />
+                      {position.pnl ? (
+                        <>
+                          <FormatNumber
+                            nb={(position.pnl / position.collateralUsd) * 100}
+                            format="percentage"
+                            prefix="("
+                            suffix=")"
+                            precision={2}
+                            isDecimalDimmed={false}
+                            className={`text-xs md:text-sm text-${
+                              position.pnl && position.pnl > 0
+                                ? 'green'
+                                : 'redbright'
+                            }`}
+                          />
+                        </>
+                      ) : null}
+                    </div>
+                  ) : (
+                    '-'
+                  )}
+                </div>
               </td>
 
               <td
@@ -236,33 +244,34 @@ export default function PositionsArray({
                   'font-mono text-xs md:text-sm text-center h-10',
                 )}
               >
-                <div className="flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
                   {isBelow1070 ? (
-                    <>
-                      <div className="inline-flex flex-col items-center justify-center">
+                    <div className="inline-flex flex-col items-center justify-center">
+                      <div className="flex items-center justify-center">
                         <FormatNumber
                           nb={position.collateralUsd}
                           format="currency"
                           className="text-xs md:text-sm"
                         />
                         <Button
-                          className="text-xxs ml-1 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
+                          className="text-xxs ml-1.5 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
                           title="Edit"
                           variant="outline"
                           onClick={() => {
                             triggerEditPositionCollateral(position);
                           }}
                         />
-                        <span className="text-txtfade">/</span>
+                      </div>
+                      <div className="flex items-center justify-center">
                         <FormatNumber
                           nb={position.sizeUsd}
                           format="currency"
                           className="text-xs ml-1 text-txtfade"
                         />
                       </div>
-                    </>
+                    </div>
                   ) : (
-                    <>
+                    <div className="h-full w-full items-center justify-center flex">
                       <FormatNumber
                         nb={position.collateralUsd}
                         format="currency"
@@ -276,18 +285,20 @@ export default function PositionsArray({
                           triggerEditPositionCollateral(position);
                         }}
                       />
-                    </>
+                    </div>
                   )}
                 </div>
               </td>
 
               {!isBelow1070 ? (
                 <td className={twMerge(columnStyle, 'font-mono')}>
-                  <FormatNumber
-                    nb={position.sizeUsd}
-                    format="currency"
-                    className="text-xs"
-                  />
+                  <div className="h-full w-full items-center justify-center flex">
+                    <FormatNumber
+                      nb={position.sizeUsd}
+                      format="currency"
+                      className="text-xs"
+                    />
+                  </div>
                 </td>
               ) : null}
 
@@ -308,18 +319,20 @@ export default function PositionsArray({
               </td>
 
               <td className={twMerge(columnStyle)}>
-                <FormatNumber
-                  nb={position.liquidationPrice}
-                  format="currency"
-                  className="text-xs"
-                />
+                <div className="h-full w-full items-center justify-center flex">
+                  <FormatNumber
+                    nb={position.liquidationPrice}
+                    format="currency"
+                    className="text-xs"
+                  />
+                </div>
               </td>
 
               <td
                 className={twMerge(columnStyle, 'font-mono items-center')}
                 style={{ height: '5em' }}
               >
-                <div className="flex justify-center items-center">
+                <div className="flex h-full w-full justify-center items-center">
                   <Button
                     className="text-xxs ml-1 text-txtfade border-bcolor bg-[#a8a8a810]"
                     title="Close"
