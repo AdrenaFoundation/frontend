@@ -231,7 +231,6 @@ function AppComponent({
   //
   useEffect(() => {
     window.adrena.mainConnection = activeRpc.connection;
-    window.adrena.pythConnection = activeRpc.connection;
 
     window.adrena.client.setReadonlyAdrenaProgram(
       createReadOnlyAdrenaProgram(activeRpc.connection),
