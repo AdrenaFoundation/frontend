@@ -3,16 +3,12 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, PositionExtended } from '@/types';
-import {
-  addFailedTxNotification,
-  addNotification,
-  addSuccessTxNotification,
-  nativeToUi,
-} from '@/utils';
+import { nativeToUi } from '@/utils';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
@@ -67,16 +63,18 @@ export default function ClosePosition({
   const doFullClose = async () => {
     if (!markPrice) return;
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Close Position').fire();
+
     try {
       const priceAndFee = await window.adrena.client.getExitPriceAndFee({
         position,
       });
 
       if (!priceAndFee) {
-        return addNotification({
-          title: 'Cannot calculate position closing price',
-          type: 'info',
-        });
+        return notification.currentStepErrored(
+          'Cannot calculate position closing price',
+        );
       }
 
       // 1%
@@ -91,16 +89,12 @@ export default function ClosePosition({
               .mul(new BN(10_000 - slippageInBps))
               .div(new BN(10_000));
 
-      const txHash = await (position.side === 'long'
+      await (position.side === 'long'
         ? window.adrena.client.closePositionLong.bind(window.adrena.client)
         : window.adrena.client.closePositionShort.bind(window.adrena.client))({
         position,
         price: priceWithSlippage,
-      });
-
-      addSuccessTxNotification({
-        title: 'Successful Position Close',
-        txHash,
+        notification,
       });
 
       // Reload positions just after closing the popup
@@ -111,10 +105,7 @@ export default function ClosePosition({
 
       onClose();
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Closing Position',
-        error,
-      });
+      console.error('error', error);
     }
   };
 
@@ -123,7 +114,9 @@ export default function ClosePosition({
   };
 
   return (
-    <div className={twMerge('flex flex-col h-full w-[22em]', className)}>
+    <div
+      className={twMerge('flex flex-col h-full w-full sm:w-[22em]', className)}
+    >
       <div className="flex items-center">
         <div className="flex border p-4 bg-third w-full justify-between items-center">
           <div className="text-2xl tracking-wider font-special ml-4">

@@ -9,6 +9,7 @@ export type TokenInfo = {
   image: ImageRef;
   coingeckoId: string;
   decimals: number;
+  pythNetFeedId: PublicKey;
 };
 
 export type RpcOption = {

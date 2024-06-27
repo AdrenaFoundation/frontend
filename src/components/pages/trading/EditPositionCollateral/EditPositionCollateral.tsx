@@ -4,18 +4,14 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import {
-  addFailedTxNotification,
-  addSuccessTxNotification,
-  nativeToUi,
-  uiToNative,
-} from '@/utils';
+import { nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import TradingInput from '../TradingInput/TradingInput';
@@ -105,51 +101,45 @@ export default function EditPositionCollateral({
   const doRemoveCollateral = async () => {
     if (!input) return;
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction(
+        'Remove Collateral',
+      ).fire();
+
     try {
-      const txHash = await (position.side === 'long'
+      await (position.side === 'long'
         ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
         : window.adrena.client.removeCollateralShort.bind(
             window.adrena.client,
           ))({
         position,
         collateralUsd: uiToNative(input, USD_DECIMALS),
-      });
-
-      addSuccessTxNotification({
-        title: 'Successful Withdraw',
-        txHash,
+        notification,
       });
 
       triggerPositionsReload();
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Withdraw Error',
-        error,
-      });
+      console.log('error', error);
     }
   };
 
   const doAddCollateral = async () => {
     if (!input) return;
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Add Collateral').fire();
+
     try {
-      const txHash = await window.adrena.client.addCollateralToPosition({
+      await window.adrena.client.addCollateralToPosition({
         position,
         addedCollateral: uiToNative(input, position.token.decimals),
-      });
-
-      addSuccessTxNotification({
-        title: 'Successfull Deposit',
-        txHash,
+        notification,
       });
 
       triggerPositionsReload();
       triggerUserProfileReload();
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Deposit Error',
-        error,
-      });
+      console.log('error', error);
     }
   };
 

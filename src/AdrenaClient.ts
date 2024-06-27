@@ -25,6 +25,7 @@ import AdrenaJson from '@/target/adrena.json';
 
 import adxIcon from '../public/images/adx.svg';
 import alpIcon from '../public/images/alp.svg';
+import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import config from './config/devnet';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
@@ -381,6 +382,7 @@ export class AdrenaClient {
               image: ImageRef;
               coingeckoId: string;
               decimals: number;
+              pythNetFeedId: PublicKey;
             }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
@@ -399,6 +401,7 @@ export class AdrenaClient {
           // loadCustodies gets the custodies on the same order as in the main pool
           custody: custodiesAddresses[i],
           coingeckoId: infos.coingeckoId,
+          pythNetFeedId: infos.pythNetFeedId,
         };
       })
       .filter((token) => !!token) as Token[];
@@ -657,11 +660,13 @@ export class AdrenaClient {
     mint,
     amountIn,
     minLpAmountOut,
+    notification,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     amountIn: BN;
     minLpAmountOut: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -710,7 +715,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   protected async buildRemoveLiquidityTx({
@@ -787,11 +792,13 @@ export class AdrenaClient {
     mint,
     lpAmountIn,
     minAmountOut,
+    notification,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     lpAmountIn: BN;
     minAmountOut: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -840,7 +847,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   protected buildOpenOrIncreasePositionWithSwapLong({
@@ -1150,12 +1157,14 @@ export class AdrenaClient {
     minAmountOut,
     mintA,
     mintB,
+    notification,
   }: {
     owner: PublicKey;
     amountIn: BN;
     minAmountOut: BN;
     mintA: PublicKey;
     mintB: PublicKey;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1223,15 +1232,17 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async closePositionLong({
     position,
     price,
+    notification,
   }: {
     position: PositionExtended;
     price: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1340,15 +1351,18 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
   public async closePositionShort({
     position,
     price,
+    notification,
   }: {
     position: PositionExtended;
     price: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1467,6 +1481,7 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
@@ -1494,6 +1509,7 @@ export class AdrenaClient {
     // amount of collateralMint token provided as collateral
     collateralAmount,
     leverage,
+    notification,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1501,6 +1517,7 @@ export class AdrenaClient {
     price: BN;
     collateralAmount: BN;
     leverage: number;
+    notification: MultiStepNotification;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1573,7 +1590,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   // Estimate the fee + other infos that will be paid by user if opening a new position with conditional swap
@@ -1716,6 +1733,7 @@ export class AdrenaClient {
     // amount of collateralMint token provided as collateral
     collateralAmount,
     leverage,
+    notification,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1723,6 +1741,7 @@ export class AdrenaClient {
     price: BN;
     collateralAmount: BN;
     leverage: number;
+    notification: MultiStepNotification;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1798,15 +1817,17 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async addCollateralToPosition({
     position,
     addedCollateral,
+    notification,
   }: {
     position: PositionExtended;
     addedCollateral: BN;
+    notification: MultiStepNotification;
   }) {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1847,10 +1868,16 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
-  public async initUserProfile({ nickname }: { nickname: string }) {
+  public async initUserProfile({
+    nickname,
+    notification,
+  }: {
+    nickname: string;
+    notification: MultiStepNotification;
+  }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
@@ -1873,10 +1900,16 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
-  public async editUserProfile({ nickname }: { nickname: string }) {
+  public async editUserProfile({
+    nickname,
+    notification,
+  }: {
+    nickname: string;
+    notification: MultiStepNotification;
+  }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
     }
@@ -1898,7 +1931,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async deleteUserProfile(): Promise<string> {
@@ -2010,9 +2043,11 @@ export class AdrenaClient {
   public async removeCollateralLong({
     position,
     collateralUsd,
+    notification,
   }: {
     position: PositionExtended;
     collateralUsd: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2077,15 +2112,18 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
   public async removeCollateralShort({
     position,
     collateralUsd,
+    notification,
   }: {
     position: PositionExtended;
     collateralUsd: BN;
+    notification: MultiStepNotification;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2162,6 +2200,7 @@ export class AdrenaClient {
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
         .transaction(),
+      notification,
     );
   }
 
@@ -2303,10 +2342,12 @@ export class AdrenaClient {
     owner,
     amount,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     amount: number;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2426,7 +2467,7 @@ export class AdrenaClient {
 
     console.log('transaction debug in AdrenaClient', transaction);
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async addLockedStake({
@@ -2434,11 +2475,13 @@ export class AdrenaClient {
     amount,
     lockedDays,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     amount: number;
     lockedDays: AlpLockPeriod | AdxLockPeriod;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2554,17 +2597,19 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async removeLiquidStake({
     owner,
     amount,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     amount: number;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2643,7 +2688,7 @@ export class AdrenaClient {
       .preInstructions([modifyComputeUnits])
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async buildFinalizeLockedStakeTx({
@@ -2712,9 +2757,11 @@ export class AdrenaClient {
   public async claimStakes({
     owner,
     stakedTokenMint,
+    notification,
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2782,7 +2829,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async removeLockedStake({
@@ -2792,6 +2839,7 @@ export class AdrenaClient {
     lockedStakeIndex,
     stakedTokenMint,
     earlyExit = false,
+    notification,
   }: {
     owner: PublicKey;
     resolved: boolean;
@@ -2799,6 +2847,7 @@ export class AdrenaClient {
     lockedStakeIndex: BN;
     stakedTokenMint: PublicKey;
     earlyExit?: boolean;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2884,7 +2933,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   public async initUserStaking({
@@ -3554,7 +3603,7 @@ export class AdrenaClient {
    */
 
   // Some instructions requires to provide all custody + custody oracle account
-  // as reamining accounts
+  // as remaining accounts
   protected prepareCustodiesForRemainingAccounts(): {
     pubkey: PublicKey;
     isSigner: boolean;
@@ -3650,7 +3699,10 @@ export class AdrenaClient {
     return this.readonlyAdrenaProgram.coder.types.decode(typeName, returnData);
   }
 
-  protected async signAndExecuteTx(transaction: Transaction): Promise<string> {
+  protected async signAndExecuteTx(
+    transaction: Transaction,
+    notification?: MultiStepNotification,
+  ): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
@@ -3670,11 +3722,18 @@ export class AdrenaClient {
     ]);
 
     if (estimatedFee !== null && userSolBalance < estimatedFee) {
-      throw new AdrenaTransactionError(
+      const adrenaError = new AdrenaTransactionError(
         null,
         'Insufficient SOL to pay for fees',
       );
+
+      // Prepare the transaction failed
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
     }
+
+    // Prepare the transaction succeeded
+    notification?.currentStepSucceeded();
 
     let signedTransaction: Transaction;
 
@@ -3683,12 +3742,22 @@ export class AdrenaClient {
     } catch (err) {
       console.log('sign error:', err);
 
-      throw new AdrenaTransactionError(null, 'User rejected the request');
+      const adrenaError = new AdrenaTransactionError(
+        null,
+        'User rejected the request',
+      );
+
+      // Sign the transaction failed
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
     }
 
-    // VersionnedTransaction are not handled by anchor client yet, will be released in 0.27.0
+    // VersionedTransaction are not handled by anchor client yet, will be released in 0.27.0
     // https://github.com/coral-xyz/anchor/blob/master/CHANGELOG.md
     let txHash: string;
+
+    // Sign the transaction succeeded
+    notification?.currentStepSucceeded();
 
     try {
       txHash = await this.connection.sendRawTransaction(
@@ -3703,8 +3772,16 @@ export class AdrenaClient {
         },
       );
     } catch (err) {
-      throw parseTransactionError(this.adrenaProgram, err);
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+
+      // Execute the transaction errored
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
     }
+
+    // Execute the transaction succeeded
+    notification?.setTxHash(txHash);
+    notification?.currentStepSucceeded();
 
     console.log(`tx: https://explorer.solana.com/tx/${txHash}?cluster=devnet`);
 
@@ -3715,6 +3792,9 @@ export class AdrenaClient {
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txHash);
+
+      // Confirm the transaction errored
+      notification?.currentStepErrored(adrenaError);
       throw adrenaError;
     }
 
@@ -3724,8 +3804,14 @@ export class AdrenaClient {
         result.value.err,
       );
       adrenaError.setTxHash(txHash);
+
+      // Confirm the transaction errored
+      notification?.currentStepErrored(adrenaError);
       throw adrenaError;
     }
+
+    // Confirm the transaction succeeded
+    notification?.currentStepSucceeded();
 
     return txHash;
   }

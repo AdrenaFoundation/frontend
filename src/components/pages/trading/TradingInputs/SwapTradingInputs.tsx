@@ -6,14 +6,13 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { SwapAmountAndFees, Token } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   formatNumber,
   formatPriceInfo,
   nativeToUi,
@@ -212,16 +211,15 @@ export default function SwapTradingInputs({
       return;
     }
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Swap').fire();
+
     if (!tokenA || !tokenB || !inputA || !inputB) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot perform swap',
-        message: 'Missing information',
-      });
+      return notification.currentStepErrored('Missing information');
     }
 
     try {
-      const txHash = await window.adrena.client.swap({
+      await window.adrena.client.swap({
         owner: new PublicKey(wallet.publicKey),
         amountIn: uiToNative(inputA, tokenA.decimals),
 
@@ -231,19 +229,12 @@ export default function SwapTradingInputs({
         minAmountOut: new BN(0),
         mintA: tokenA.mint,
         mintB: tokenB.mint,
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
-
-      return addSuccessTxNotification({
-        title: 'Successful Swap',
-        txHash,
-      });
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Swapping',
-        error,
-      });
+      console.log('error', error);
     }
   };
 

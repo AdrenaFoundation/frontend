@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { PoolExtended } from '@/types';
 
-const useMainPool = (): PoolExtended | null => {
+export default function useMainPool(): PoolExtended | null {
   const [mainPool, setMainPool] = useState<PoolExtended | null>(null);
 
   const fetchMainPool = useCallback(async () => {
@@ -23,5 +23,3 @@ const useMainPool = (): PoolExtended | null => {
 
   return mainPool;
 };
-
-export default useMainPool;

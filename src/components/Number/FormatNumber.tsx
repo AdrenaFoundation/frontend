@@ -13,6 +13,8 @@ export default function FormatNumber({
   className,
   placeholderClassName,
   isDecimalDimmed = true,
+  minimumFractionDigits = 0,
+  precisionIfPriceDecimalsBelow = 6,
 }: {
   nb?: number | null;
   format?: 'number' | 'currency' | 'percentage';
@@ -23,6 +25,8 @@ export default function FormatNumber({
   className?: string;
   placeholderClassName?: string;
   isDecimalDimmed?: boolean;
+  minimumFractionDigits?: number;
+  precisionIfPriceDecimalsBelow?: number;
 }) {
   if (nb === null || typeof nb === 'undefined') {
     return (
@@ -32,10 +36,20 @@ export default function FormatNumber({
     );
   }
 
-  let num = formatNumber(nb, precision);
+  let num = formatNumber(
+    nb,
+    precision,
+    minimumFractionDigits,
+    precisionIfPriceDecimalsBelow,
+  );
 
   if (format === 'currency') {
-    num = formatPriceInfo(nb, precision);
+    num = formatPriceInfo(
+      nb,
+      precision,
+      minimumFractionDigits,
+      precisionIfPriceDecimalsBelow,
+    );
   }
 
   if (format === 'percentage') {
