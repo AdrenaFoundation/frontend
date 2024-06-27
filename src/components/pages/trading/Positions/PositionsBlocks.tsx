@@ -32,7 +32,7 @@ export default function PositionsBlocks({
   const arrowElementUpRight = getArrowElement('up', 'right-[0.5em] opacity-70');
   const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
 
-  const columnStyle = 'flex w-full justify-between';
+  const columnStyleTitle = 'flex w-full font-mono text-xs text-txtfade';
 
   function generateLiquidationBlock() {
     return (
@@ -71,16 +71,7 @@ export default function PositionsBlocks({
                 alt={`${position.token.symbol} logo`}
               />
 
-              <div className="flex">
-                <span
-                  className={twMerge(
-                    'ml-16 capitalize font-mono',
-                    position.side === 'long' ? 'text-green' : 'text-red',
-                  )}
-                >
-                  {position.side}
-                </span>
-
+              <div className="flex ml-16">
                 {window.location.pathname !== '/trade' ? (
                   <Link
                     href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
@@ -95,10 +86,23 @@ export default function PositionsBlocks({
                     {position.token.symbol}
                   </h3>
                 )}
+                <span
+                  className={twMerge(
+                    'text-sm uppercase font-mono ml-1',
+                    position.side === 'long' ? 'text-green' : 'text-red',
+                  )}
+                >
+                  {position.side}
+                </span>
+                <FormatNumber
+                  nb={position.leverage}
+                  format="number"
+                  className="ml-1 text-xs mt-0.5 text-txtfade"
+                  suffix="x"
+                  isDecimalDimmed={false}
+                />
               </div>
             </div>
-
-            <div></div>
 
             <div className="flex ml-auto mr-3">
               <Button
@@ -132,86 +136,101 @@ export default function PositionsBlocks({
             ? generateLiquidationBlock()
             : null}
 
-          <ul className="flex flex-col gap-2 p-4">
-            <li className={columnStyle}>
-              <div className="flex w-full">
-                <div className="text-txtfade text-sm">Leverage</div>
-                <FormatNumber
-                  nb={position.leverage}
-                  format="number"
-                  className="ml-auto"
-                  suffix="x"
-                  isDecimalDimmed={false}
-                />
+          <div className="grid grid-cols-3 gap-4 p-2">
+            <div className="flex flex-col">
+              <div className={columnStyleTitle}>Net value</div>
+              <div className="flex">
+                {position.pnl ? (
+                  <>
+                    <NetValueTooltip position={position}>
+                      <FormatNumber
+                        nb={position.collateralUsd + position.pnl}
+                        format="currency"
+                        className={`underline-dashed text-md`}
+                      />
+                    </NetValueTooltip>
+                  </>
+                ) : (
+                  '-'
+                )}
               </div>
-            </li>
-
-            <li className={columnStyle}>
-              <div className="flex w-full">
-                <div className="text-txtfade text-sm">Size</div>
-
+              <div className="flex">
+                {position.pnl ? (
+                  <>
+                    <FormatNumber
+                      nb={position.pnl}
+                      format="currency"
+                      className={`mr-0.5 text-sm text-${
+                        position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                      }`}
+                    />
+                    <FormatNumber
+                      nb={(position.pnl / position.collateralUsd) * 100}
+                      format="percentage"
+                      prefix="("
+                      suffix=")"
+                      precision={2}
+                      isDecimalDimmed={false}
+                      className={`text-sm text-${
+                        position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                      }`}
+                    />
+                  </>
+                ) : null}
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <div className={columnStyleTitle}>Size</div>
+              <div className="flex">
                 <FormatNumber
                   nb={position.sizeUsd}
                   format="currency"
-                  className="text-right ml-auto"
+                  className="text-xs"
                 />
               </div>
-            </li>
-            <li className={columnStyle}>
-              <div className="flex w-full">
-                <div className="text-txtfade text-sm">Collateral</div>
+            </div>
+            <div className="flex flex-col">
+              <div className={columnStyleTitle}>Collateral</div>
+              <div className="flex">
                 <FormatNumber
                   nb={position.collateralUsd}
                   format="currency"
-                  className="ml-auto"
+                  className="text-xs"
                 />
               </div>
-            </li>
-            <li className={columnStyle}>
-              <NetValueTooltip position={position}>
-                <div className="flex w-full">
-                  <div className="text-txtfade text-sm">Net value</div>
-                  <FormatNumber
-                    nb={position.pnl}
-                    format="currency"
-                    className={`text-${
-                      position.pnl && position.pnl > 0 ? 'green' : 'red'
-                    } ml-auto underline-dashed`}
-                  />
-                </div>
-              </NetValueTooltip>
-            </li>
+            </div>
 
-            <li className={columnStyle}>
-              <p className="text-txtfade text-sm">Entry Price</p>
-              <FormatNumber
-                nb={position.price}
-                format="currency"
-                className="text-right"
-              />
-            </li>
-
-            <li className={columnStyle}>
-              <p className="text-txtfade text-sm">Mark Price</p>
-
-              <FormatNumber
-                nb={tokenPrices[position.token.symbol]}
-                format="currency"
-                className="text-right"
-              />
-            </li>
-
-            <li className={columnStyle}>
-              <div className="flex w-full">
-                <div className="text-txtfade text-sm">Liquidation Price</div>
+            <div className="flex flex-col">
+              <div className={columnStyleTitle}>Entry Price</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={position.price}
+                  format="currency"
+                  className="text-xs bold"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <div className={columnStyleTitle}>Market Price</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={tokenPrices[position.token.symbol]}
+                  format="currency"
+                  className="text-xs bold"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <div className={columnStyleTitle}>Liq. Price</div>
+              <div className="flex">
                 <FormatNumber
                   nb={position.liquidationPrice}
                   format="currency"
-                  className="ml-auto"
+                  className="text-xs"
                 />
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
     ));

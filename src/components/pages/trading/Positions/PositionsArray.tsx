@@ -124,7 +124,7 @@ export default function PositionsArray({
               <td className="items-center text-xs md:text-sm text-center h-10">
                 <div className="h-full w-full items-center justify-center flex font-mono">
                   <Image
-                    className="hidden sm:block lg:hidden xl:block"
+                    className="hidden md:block lg:hidden xl:block"
                     height={28}
                     width={28}
                     src={position.token.image}
