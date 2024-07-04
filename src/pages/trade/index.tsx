@@ -11,6 +11,7 @@ import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
 
 export type Action = 'long' | 'short' | 'swap';
@@ -39,6 +40,8 @@ export default function Trade({
   const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(
     null,
   );
+
+  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -228,41 +231,78 @@ export default function Trade({
           </div>
         </div>
 
-        <div className="flex flex-col w-full">
-          <div
-            className={twMerge(
-              'flex z-30 overflow-hidden bg-main/90 xl:pl-3 xl:pr-3 border rounded-lg mt-4',
-              !positions?.length
-                ? 'min-h-[15em] items-center justify-center'
-                : null,
-            )}
-          >
+        {isBigScreen ? (
+          <div className="flex flex-col w-full">
+            <div
+              className={twMerge(
+                'flex z-30 overflow-hidden bg-main/90 xl:pl-3 xl:pr-3 border rounded-lg mt-4',
+                !positions?.length
+                  ? 'min-h-[15em] items-center justify-center'
+                  : null,
+              )}
+            >
+              <Positions
+                bodyClassName={'mt-3'}
+                connected={connected}
+                positions={positions}
+                triggerPositionsReload={triggerPositionsReload}
+                triggerUserProfileReload={triggerUserProfileReload}
+                isBigScreen={isBigScreen}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-row">
             <Positions
-              bodyClassName={'mt-3 mr-3'}
+              className={
+                'sm:w-1/2 sm:mr-4 lg:mr-0 lg:mt-4 md:w-[57%] lg:w-[65%] h-full'
+              }
               connected={connected}
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
+              isBigScreen={isBigScreen}
             />
+            <div className="flex sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
+              <TradeComp
+                selectedAction={selectedAction}
+                setSelectedAction={setSelectedAction}
+                tokenA={tokenA}
+                tokenB={tokenB}
+                setTokenA={setTokenA}
+                setTokenB={setTokenB}
+                openedPosition={openedPosition}
+                wallet={wallet}
+                connected={connected}
+                triggerPositionsReload={triggerPositionsReload}
+                triggerWalletTokenBalancesReload={
+                  triggerWalletTokenBalancesReload
+                }
+                isBigScreen={isBigScreen}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <>
-        <TradeComp
-          className="lg:max-h-[50em] hidden sm:flex lg:ml-4"
-          selectedAction={selectedAction}
-          setSelectedAction={setSelectedAction}
-          tokenA={tokenA}
-          tokenB={tokenB}
-          setTokenA={setTokenA}
-          setTokenB={setTokenB}
-          openedPosition={openedPosition}
-          wallet={wallet}
-          connected={connected}
-          triggerPositionsReload={triggerPositionsReload}
-          triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
-        />
+        {isBigScreen ? (
+          <TradeComp
+            className="lg:max-h-[50em] hidden sm:flex lg:ml-4"
+            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
+            tokenA={tokenA}
+            tokenB={tokenB}
+            setTokenA={setTokenA}
+            setTokenB={setTokenB}
+            openedPosition={openedPosition}
+            wallet={wallet}
+            connected={connected}
+            triggerPositionsReload={triggerPositionsReload}
+            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+            isBigScreen={isBigScreen}
+          />
+        ) : null}
 
         <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">

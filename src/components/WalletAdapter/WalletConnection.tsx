@@ -3,7 +3,6 @@ import { useDispatch } from '@/store/store';
 
 import phantomLogo from '../../../public/images/phantom.png';
 import Button from '../common/Button/Button';
-import WalletSelectionModal from './WalletSelectionModal';
 
 export default function WalletConnection({
   connected,

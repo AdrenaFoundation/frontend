@@ -16,6 +16,7 @@ import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 export default function PositionsArray({
   bodyClassName,
+  borderColor,
   connected,
   className,
   positions,
@@ -23,6 +24,7 @@ export default function PositionsArray({
   triggerEditPositionCollateral,
 }: {
   bodyClassName?: string;
+  borderColor?: string;
   connected: boolean;
   className?: string;
   positions: PositionExtended[] | null;
@@ -60,7 +62,7 @@ export default function PositionsArray({
 
   const columnHeadStyle = 'text-sm text-center opacity-50 font-boldy p-3';
   const columnStyle = 'text-sm text-center h-10';
-  const border = 'border-b border-bcolor pt-2';
+  const border = 'border-b pt-2' + borderColor ? borderColor : 'border-bcolor';
   const arrowElementUpRight = getArrowElement('up', 'right-[0.5em] opacity-70');
   const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
 
@@ -78,36 +80,27 @@ export default function PositionsArray({
     <table className={twMerge('w-full', className, bodyClassName)}>
       {/* Header */}
 
-      <thead className="border-b border-bcolor">
+      <thead
+        className={twMerge(
+          'border-b',
+          borderColor ? borderColor : 'border-bcolor',
+        )}
+      >
         <tr>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Position</th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
-          {isBelow1100 ? (
-            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
-              Collateral <br />
-              Size
-            </th>
-          ) : (
-            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
-          )}
-          {isBelow1100 ? null : (
-            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
-          )}
-          {isBelow1100 ? (
-            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
-              Entry Price <br />
-              Mark Price
-            </th>
-          ) : (
-            <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
-              Entry / Mark Price
-            </th>
-          )}
+
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
+
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
+            Entry / Mark Price
+          </th>
           <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Liq. Price</th>
           <th
             className={twMerge(
               columnHeadStyle,
-              'shrink-0 grow-0 w-[8%] border-none',
+              'w-[14%] lg:w-[10%] border-none',
             )}
           >
             Close
@@ -120,8 +113,18 @@ export default function PositionsArray({
         {positions?.map((position, i) => (
           // Use Fragment to avoid key error
           <React.Fragment key={position.pubkey.toBase58()}>
-            <tr key={position.pubkey.toBase58() + '-0'}>
-              <td className="items-center text-xs md:text-sm text-center h-10">
+            <tr
+              key={position.pubkey.toBase58() + '-0'}
+              className={twMerge(
+                'border-b',
+                borderColor ? borderColor : 'border-bcolor',
+              )}
+            >
+              <td
+                className={twMerge(
+                  'items-center text-xs md:text-sm text-center h-10',
+                )}
+              >
                 <div className="h-full w-full items-center justify-center flex font-mono">
                   <Image
                     className="hidden md:block lg:hidden xl:block"
@@ -190,9 +193,7 @@ export default function PositionsArray({
                 )}
               >
                 <div className="flex flex-col h-full w-full items-center justify-center">
-                  {position.pnl &&
-                  position?.priceChangeUsd &&
-                  position?.borrowFeeUsd ? (
+                  {position.pnl && position?.collateralUsd ? (
                     <div className="flex items-center justify-center">
                       <NetValueTooltip position={position} placement="top">
                         <FormatNumber
@@ -205,9 +206,7 @@ export default function PositionsArray({
                   ) : (
                     '-'
                   )}
-                  {position.pnl &&
-                  position?.priceChangeUsd &&
-                  position?.borrowFeeUsd ? (
+                  {position.pnl ? (
                     <div className="flex">
                       <FormatNumber
                         nb={position.pnl}
@@ -248,48 +247,21 @@ export default function PositionsArray({
                 )}
               >
                 <div className="flex flex-col items-center justify-center">
-                  {isBelow1100 ? (
-                    <div className="inline-flex flex-col items-center justify-center">
-                      <div className="flex items-center justify-center">
-                        <FormatNumber
-                          nb={position.collateralUsd}
-                          format="currency"
-                          className="text-xs md:text-sm"
-                        />
-                        <Button
-                          className="text-xxs ml-1.5 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
-                          title="Edit"
-                          variant="outline"
-                          onClick={() => {
-                            triggerEditPositionCollateral(position);
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center justify-center">
-                        <FormatNumber
-                          nb={position.sizeUsd}
-                          format="currency"
-                          className="text-xs ml-1 text-txtfade"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="h-full w-full items-center justify-center flex">
-                      <FormatNumber
-                        nb={position.collateralUsd}
-                        format="currency"
-                        className="text-xs md:text-sm"
-                      />
-                      <Button
-                        className="text-xxs ml-1.5 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
-                        title="Edit"
-                        variant="outline"
-                        onClick={() => {
-                          triggerEditPositionCollateral(position);
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div className="h-full w-full items-center justify-center flex">
+                    <FormatNumber
+                      nb={position.collateralUsd}
+                      format="currency"
+                      className="text-xs md:text-sm"
+                    />
+                    <Button
+                      className="text-xxs ml-1.5 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
+                      title="Edit"
+                      variant="outline"
+                      onClick={() => {
+                        triggerEditPositionCollateral(position);
+                      }}
+                    />
+                  </div>
                 </div>
               </td>
 

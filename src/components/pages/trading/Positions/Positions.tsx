@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
@@ -13,20 +12,24 @@ import PositionsBlocks from './PositionsBlocks';
 
 export default function Positions({
   bodyClassName,
+  borderColor,
   connected,
   className,
   positions,
   triggerPositionsReload,
   triggerUserProfileReload,
   wrapped = true,
+  isBigScreen,
 }: {
   bodyClassName?: string;
+  borderColor?: string;
   connected: boolean;
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   wrapped?: boolean;
+  isBigScreen: boolean | null;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -34,8 +37,6 @@ export default function Positions({
   const [positionToEdit, setPositionToEdit] = useState<PositionExtended | null>(
     null,
   );
-
-  const isBigScreen = useBetterMediaQuery('(min-width: 640px)');
 
   if (isBigScreen === null) return null;
 
@@ -80,6 +81,7 @@ export default function Positions({
       {isBigScreen ? (
         <PositionsArray
           bodyClassName={bodyClassName}
+          borderColor={borderColor}
           connected={connected}
           positions={positions}
           className={className}
@@ -89,6 +91,7 @@ export default function Positions({
       ) : (
         <PositionsBlocks
           bodyClassName={bodyClassName}
+          borderColor={borderColor}
           connected={connected}
           positions={positions}
           className={className}

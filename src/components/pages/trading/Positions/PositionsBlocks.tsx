@@ -13,6 +13,7 @@ import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 export default function PositionsBlocks({
   bodyClassName,
+  borderColor,
   connected,
   className,
   positions,
@@ -21,6 +22,7 @@ export default function PositionsBlocks({
   wrapped = true,
 }: {
   bodyClassName?: string;
+  borderColor?: string;
   connected: boolean;
   className?: string;
   positions: PositionExtended[] | null;
@@ -47,21 +49,37 @@ export default function PositionsBlocks({
   }
 
   if (positions === null && !connected) {
-    return <WalletConnection connected={connected} />;
+    return (
+      <div className="flex overflow-hidden bg-main/90 w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[60%] md:w-[65%] border rounded-lg mt-4 h-[15em] items-center justify-center">
+        <WalletConnection connected={connected} />
+      </div>
+    );
   }
 
   function generatePositionBlocs(positions: PositionExtended[] | null) {
     return positions?.map((position) => (
-      <div className="flex flex-col w-full" key={position.pubkey.toBase58()}>
+      <div
+        className={twMerge(
+          'flex min-w-[300px] w-full',
+          window.location.pathname === '/my_dashboard'
+            ? 'lg:max-w-[49%] mt-0'
+            : 'lg:max-w-[49%] mt-4 lg:mt-0',
+        )}
+        key={position.pubkey.toBase58()}
+      >
         <div
           className={twMerge(
-            'flex flex-col border rounded-lg w-full',
-            position === positions[0] ? '' : 'mt-3',
-            position === positions[positions.length - 1] ? 'mb-3' : '',
+            'flex flex-col border rounded-lg w-full bg-secondary',
             bodyClassName,
+            borderColor,
           )}
         >
-          <div className="flex flex-row justify-between items-center border-b">
+          <div
+            className={twMerge(
+              'flex flex-row justify-between items-center border-b',
+              borderColor ? borderColor : 'border-bcolor',
+            )}
+          >
             <div className="flex flex-row h-10 items-center relative overflow-hidden rounded-tl-lg">
               <Image
                 className="absolute left-[-0.7em] top-auto grayscale opacity-40"
@@ -97,35 +115,16 @@ export default function PositionsBlocks({
                 <FormatNumber
                   nb={position.leverage}
                   format="number"
-                  className="ml-1 text-xs mt-0.5 text-txtfade"
+                  className="ml-1 text-xs mt-[0.15em] text-txtfade"
                   suffix="x"
                   isDecimalDimmed={false}
                 />
               </div>
             </div>
-
-            <div className="flex ml-auto mr-3">
-              <Button
-                className="text-xs"
-                title="close"
-                variant="secondary"
-                onClick={() => {
-                  triggerClosePosition(position);
-                }}
-              />
-
-              <Button
-                className="text-xs ml-2"
-                title="edit"
-                variant="secondary"
-                onClick={() => {
-                  triggerEditPositionCollateral(position);
-                }}
-              />
-            </div>
           </div>
 
           {position.side === 'long' &&
+          tokenPrices[position.token.symbol] &&
           (tokenPrices[position.token.symbol] ?? 0) <
             (position.liquidationPrice ?? 0)
             ? generateLiquidationBlock()
@@ -136,7 +135,7 @@ export default function PositionsBlocks({
             ? generateLiquidationBlock()
             : null}
 
-          <div className="grid grid-cols-3 gap-4 p-2">
+          <div className="grid grid-cols-3 gap-4 p-4">
             <div className="flex flex-col">
               <div className={columnStyleTitle}>Net value</div>
               <div className="flex">
@@ -160,7 +159,7 @@ export default function PositionsBlocks({
                     <FormatNumber
                       nb={position.pnl}
                       format="currency"
-                      className={`mr-0.5 text-sm text-${
+                      className={`mr-0.5 text-xs text-${
                         position.pnl && position.pnl > 0 ? 'green' : 'redbright'
                       }`}
                     />
@@ -171,7 +170,7 @@ export default function PositionsBlocks({
                       suffix=")"
                       precision={2}
                       isDecimalDimmed={false}
-                      className={`text-sm text-${
+                      className={`text-xs text-${
                         position.pnl && position.pnl > 0 ? 'green' : 'redbright'
                       }`}
                     />
@@ -179,8 +178,10 @@ export default function PositionsBlocks({
                 ) : null}
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className={columnStyleTitle}>Size</div>
+            <div className="flex flex-col items-center">
+              <div className={twMerge(columnStyleTitle, 'justify-center')}>
+                Size
+              </div>
               <div className="flex">
                 <FormatNumber
                   nb={position.sizeUsd}
@@ -189,8 +190,10 @@ export default function PositionsBlocks({
                 />
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className={columnStyleTitle}>Collateral</div>
+            <div className="flex flex-col items-end">
+              <div className={twMerge(columnStyleTitle, 'justify-end')}>
+                Collateral
+              </div>
               <div className="flex">
                 <FormatNumber
                   nb={position.collateralUsd}
@@ -210,8 +213,10 @@ export default function PositionsBlocks({
                 />
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className={columnStyleTitle}>Market Price</div>
+            <div className="flex flex-col items-center">
+              <div className={twMerge(columnStyleTitle, 'justify-center')}>
+                Market Price
+              </div>
               <div className="flex">
                 <FormatNumber
                   nb={tokenPrices[position.token.symbol]}
@@ -220,8 +225,10 @@ export default function PositionsBlocks({
                 />
               </div>
             </div>
-            <div className="flex flex-col">
-              <div className={columnStyleTitle}>Liq. Price</div>
+            <div className="flex flex-col items-end">
+              <div className={twMerge(columnStyleTitle, 'justify-end')}>
+                Liq. Price
+              </div>
               <div className="flex">
                 <FormatNumber
                   nb={position.liquidationPrice}
@@ -230,6 +237,24 @@ export default function PositionsBlocks({
                 />
               </div>
             </div>
+          </div>
+          <div className="flex justify-center items-center w-full p-2">
+            <Button
+              className="text-txtfade px-2 border-bcolor bg-[#a8a8a810] w-[90%]"
+              title="Edit"
+              variant="outline"
+              onClick={() => {
+                triggerEditPositionCollateral(position);
+              }}
+            />
+            <Button
+              className="text-txtfade border-bcolor ml-2 bg-[#a8a8a810] w-[90%]"
+              title="Close"
+              variant="outline"
+              onClick={() => {
+                triggerClosePosition(position);
+              }}
+            />
           </div>
         </div>
       </div>
@@ -259,10 +284,8 @@ export default function PositionsBlocks({
         wrapped ? (
           <div
             className={twMerge(
-              'w-full',
-              'flex',
-              'flex-wrap',
-              'ml-3 mr-3',
+              'flex flex-col bg-first w-full h-full',
+              'lg:gap-3 lg:flex-row lg:flex-wrap',
               className,
             )}
           >

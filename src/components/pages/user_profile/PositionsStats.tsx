@@ -26,17 +26,19 @@ export default function PositionsStats({
       bodyClassName={
         isBigScreen && positions && positions.length
           ? 'border rounded-lg'
-          : 'gap-0'
+          : 'gap-3 flex-row flex-wrap justify-center'
       }
     >
       <Positions
         bodyClassName="bg-third"
+        borderColor="border-inputcolor"
         className="bg-secondary rounded-lg"
         connected={connected}
         positions={positions}
         triggerPositionsReload={triggerPositionsReload}
         triggerUserProfileReload={triggerUserProfileReload}
         wrapped={false}
+        isBigScreen={isBigScreen}
       />
     </StyledContainer>
   );
