@@ -270,7 +270,7 @@ export default function PositionsBlocks({
       ) : null}
 
       {positions && !positions.length ? (
-        <div className="flex flex-col gap-3 items-center justify-center mb-5">
+        <div className="flex overflow-hidden bg-main/90 w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[60%] md:w-[65%] border rounded-lg mt-4 h-[15em] items-center justify-center">
           <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
             No opened position
           </div>
