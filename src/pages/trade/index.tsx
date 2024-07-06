@@ -16,6 +16,41 @@ import { PageProps, PositionExtended, Token } from '@/types';
 
 export type Action = 'long' | 'short' | 'swap';
 
+function pickDefaultToken(positions: PositionExtended[] | null): Token {
+  const tokens = window.adrena.client.tokens.filter((t) => !t.isStable);
+
+  const solToken = tokens.find((t) => t.symbol === 'SOL');
+
+  if (!solToken) throw new Error('SOL token not found');
+
+  if (!positions || !positions.length) return solToken;
+
+  const positionsPerToken: Record<string, number> = positions.reduce(
+    (acc, position) => {
+      const tokenSymbol = position.token.symbol;
+      const positionSize = position.sizeUsd;
+
+      acc[tokenSymbol] = (acc[tokenSymbol] || 0) + positionSize;
+
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
+  const maxPositionSize = Math.max(...Object.values(positionsPerToken));
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const tokenWithMaxSize = tokens.find(
+    (t) =>
+      t.symbol ===
+      Object.keys(positionsPerToken).find(
+        (key) => positionsPerToken[key] === maxPositionSize,
+      ),
+  )!;
+
+  return tokenWithMaxSize;
+}
+
 export default function Trade({
   positions,
   wallet,
@@ -137,7 +172,7 @@ export default function Trade({
       !tokenB ||
       !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
-      setTokenB(tokenBCandidate[0]);
+      setTokenB(pickDefaultToken(positions));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
