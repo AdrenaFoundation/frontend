@@ -248,7 +248,8 @@ export default function PositionsBlocks({
 
             <div className="flex justify-center items-center w-full p-2 grow-0">
               <Button
-                className="text-txtfade px-2 border-bcolor bg-[#a8a8a810] w-[90%]"
+                size="xs"
+                className="text-txtfade border-bcolor bg-[#a8a8a810] w-[90%]"
                 title="Edit"
                 variant="outline"
                 onClick={() => {
@@ -256,6 +257,7 @@ export default function PositionsBlocks({
                 }}
               />
               <Button
+                size="xs"
                 className="text-txtfade border-bcolor ml-2 bg-[#a8a8a810] w-[90%]"
                 title="Close"
                 variant="outline"
@@ -297,7 +299,7 @@ export default function PositionsBlocks({
               </div>
             </div>
           ) : (
-            <Button title="Open a position" href={'/trade'} size="lg" />
+            <Button title="Open a position" href="/trade" size="lg" />
           )}
         </>
       ) : null}

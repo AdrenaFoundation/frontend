@@ -285,11 +285,12 @@ export default function PositionsArray({
                       format="currency"
                       className="text-xs mr-1"
                     />
+
                     <div className="flex">
                       <FormatNumber
                         nb={tokenPrices[position.token.symbol]}
                         format="currency"
-                        className="text-xs ml-1 text-txtfade"
+                        className="text-xs text-txtfade"
                       />
                     </div>
                   </div>
@@ -298,13 +299,15 @@ export default function PositionsArray({
                     <FormatNumber
                       nb={position.price}
                       format="currency"
-                      className="text-xs mr-1"
+                      className="text-xs"
                     />
-                    <span className="text-xs text-txtfade">/</span>
+
+                    <span className="text-xs text-txtfade ml-1 mr-1">/</span>
+
                     <FormatNumber
                       nb={tokenPrices[position.token.symbol]}
                       format="currency"
-                      className="text-xs ml-1 text-txtfade"
+                      className="text-xs text-txtfade"
                     />
                   </div>
                 )}
