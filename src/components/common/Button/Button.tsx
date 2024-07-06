@@ -35,7 +35,7 @@ export default function Button({
   iconClassName?: string;
   rightIconClassName?: string;
   leftIconClassName?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
   rounded?: boolean;
@@ -62,6 +62,7 @@ export default function Button({
   };
 
   const sizes = {
+    xs: 'px-2 py-1 text-xs',
     sm: 'px-2 py-1 text-sm',
     md: 'px-4 py-1 text-sm',
     lg: 'px-6 py-2 text-sm',
