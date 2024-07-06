@@ -38,4 +38,4 @@ export default function useUserVest(): {
       triggerReload(trickReload + 1);
     },
   };
-};
+}

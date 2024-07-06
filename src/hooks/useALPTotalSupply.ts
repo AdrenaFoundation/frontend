@@ -40,4 +40,4 @@ export default function useALPTotalSupply() {
   }, [loadTotalSupply]);
 
   return totalSupply;
-};
+}

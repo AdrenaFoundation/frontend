@@ -22,4 +22,4 @@ export default function useWallet() {
   }, [walletState]);
 
   return wallet;
-};
+}

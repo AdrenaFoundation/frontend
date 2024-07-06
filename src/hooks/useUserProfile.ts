@@ -40,4 +40,4 @@ export default function useUserProfile(): {
       triggerReload(trickReload + 1);
     },
   };
-};
+}

@@ -22,4 +22,4 @@ export default function useResize() {
   }, [screenSize]);
 
   return [screenSize];
-};
+}

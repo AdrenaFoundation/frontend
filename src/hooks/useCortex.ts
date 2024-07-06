@@ -23,4 +23,4 @@ export default function useCortex(): Cortex | null {
   }, [fetchCortex]);
 
   return cortex;
-};
+}

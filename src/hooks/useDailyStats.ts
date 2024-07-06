@@ -61,4 +61,4 @@ export default function useDailyStats() {
   }, [loadStats]);
 
   return stats;
-};
+}

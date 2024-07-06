@@ -138,4 +138,4 @@ export default function Modal({
       </motion.div>
     </PortalContainer>
   );
-};
+}

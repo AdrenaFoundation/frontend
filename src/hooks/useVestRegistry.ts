@@ -22,5 +22,4 @@ export default function useVestRegistry(): VestRegistry | null {
   }, [fetchVestRegistry, reloadVestRegistry]);
 
   return vestRegistry;
-};
-
+}
