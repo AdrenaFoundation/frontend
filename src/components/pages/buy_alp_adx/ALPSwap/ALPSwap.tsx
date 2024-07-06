@@ -4,15 +4,12 @@ import { useEffect, useState } from 'react';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
-import {
-  addFailedTxNotification,
-  addSuccessTxNotification,
-  uiToNative,
-} from '@/utils';
+import { uiToNative } from '@/utils';
 
 import ALPSwapInputs from './ALPSwapInputs';
 
@@ -84,37 +81,33 @@ export default function ALPSwap({
       return;
     }
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Buying ALP').fire();
+
     if (selectedAction === 'buy') {
       try {
-        const txHash = await window.adrena.client.addLiquidity({
+        await window.adrena.client.addLiquidity({
           owner: new PublicKey(wallet.walletAddress),
           amountIn: uiToNative(collateralInput, collateralToken.decimals),
           mint: collateralToken.mint,
 
           // TODO: Apply proper slippage
           minLpAmountOut: new BN(0),
+          notification,
         });
 
         triggerWalletTokenBalancesReload();
         setCollateralInput(null);
-
-        return addSuccessTxNotification({
-          title: 'Successful Transaction',
-          txHash,
-        });
       } catch (error) {
         console.log('error', error);
-
-        return addFailedTxNotification({
-          title: 'Error Buying ALP',
-          error,
-        });
       }
+
+      return;
     }
 
     // "sell"
     try {
-      const txHash = await window.adrena.client.removeLiquidity({
+      await window.adrena.client.removeLiquidity({
         owner: new PublicKey(wallet.walletAddress),
         mint: collateralToken.mint,
         lpAmountIn: uiToNative(
@@ -124,20 +117,13 @@ export default function ALPSwap({
 
         // TODO: Apply proper slippage
         minAmountOut: new BN(0),
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
       setCollateralInput(null);
-
-      return addSuccessTxNotification({
-        title: 'Successfull Transaction',
-        txHash,
-      });
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Selling ALP',
-        error,
-      });
+      console.log('error', error);
     }
   };
 

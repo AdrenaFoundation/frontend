@@ -149,6 +149,7 @@ export interface Token {
   image: ImageRef;
   custody?: PublicKey;
   coingeckoId?: string;
+  pythNetFeedId?: PublicKey;
 }
 
 export type UserProfileExtended = {

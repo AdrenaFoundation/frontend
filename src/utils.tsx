@@ -212,8 +212,13 @@ export function addNotification({
     <p className="text-sm font-mono font-medium">{title}</p>
   );
 
+  console.log(
+    'autoClose',
+    { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
+  );
+
   toast[type](content, {
-    position,
+    position: 'bottom-left',
     autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
     hideProgressBar: true,
     closeOnClick: true,
@@ -225,7 +230,7 @@ export function addNotification({
       background: {
         success: 'var(--color-green-500)',
         error: 'var(--color-red-500)',
-        info: 'var(--color-blue-500)',
+        info: '#162a3d',
       }[type],
     },
   });

@@ -258,3 +258,11 @@ input[type='radio']:checked {
 .fb-feedback-widget-feedback-button-left {
   display: none !important;
 }
+
+.Toastify__toast-container--bottom-left {
+  bottom: 4em !important;
+}
+
+.Toastify__toast-theme--light {
+  background-color: #162a3d;
+}

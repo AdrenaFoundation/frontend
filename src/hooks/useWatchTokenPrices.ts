@@ -36,9 +36,7 @@ export default function useWatchTokenPrices() {
     if (!pythClient || !dispatch) return;
 
     const feedIds: PublicKey[] = window.adrena.client.tokens.map(
-      (token) =>
-        window.adrena.client.getCustodyByMint(token.mint).nativeObject.oracle
-          .oracleAccount,
+      (token) => token.pythNetFeedId as PublicKey,
     );
 
     const prices = await pythClient.getAssetPricesFromAccounts(feedIds);

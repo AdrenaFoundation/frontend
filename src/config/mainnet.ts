@@ -20,42 +20,52 @@ class MainnetConfiguration implements IConfiguration {
       image: ImageRef;
       coingeckoId: string;
       decimals: number;
+      pythNetFeedId: PublicKey;
     };
   } = {
-    EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: {
+    '3jdYcGYZaQVvcvMQGqVpt37JegEoDDnX7k4gSGAeGRqG': {
       name: 'USD Coin',
       color: '#2775ca',
       symbol: 'USDC',
       image: usdcLogo,
       coingeckoId: 'usd-coin',
-
       decimals: 6,
+      pythNetFeedId: new PublicKey(
+        'Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD',
+      ),
     },
-    // WETH Sollet
-    '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk': {
+    HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
       name: 'Ethereum',
       color: '#3D3E3F',
       symbol: 'ETH',
       image: ethLogo,
       coingeckoId: 'ethereum',
       decimals: 6,
+      pythNetFeedId: new PublicKey(
+        'JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB',
+      ),
     },
-    // WBTC Sollet
-    '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E': {
+    '7MoYkgWVCEDtNR6i2WUH9LTUSFXkQCsD9tBHriHQvuP5': {
       name: 'Bitcoin',
       color: '#f7931a',
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 6,
+      pythNetFeedId: new PublicKey(
+        'GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU',
+      ),
     },
     [NATIVE_MINT.toBase58()]: {
       name: 'Solana',
-      symbol: 'SOL',
       color: '#9945FF',
+      symbol: 'SOL',
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,
+      pythNetFeedId: new PublicKey(
+        'H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG',
+      ),
     },
   };
 

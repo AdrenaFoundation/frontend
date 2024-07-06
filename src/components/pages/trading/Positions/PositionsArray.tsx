@@ -143,18 +143,18 @@ export default function PositionsArray({
                                 href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
                                 target=""
                               >
-                                <span className="font-boldy text-base underline text-xs md:text-sm">
+                                <span className="font-boldy underline text-xs md:text-sm">
                                   {position.token.symbol}
                                 </span>
                               </Link>
                             ) : (
-                              <span className="font-boldy text-base text-xs md:text-sm">
+                              <span className="font-boldy text-xs md:text-sm">
                                 {position.token.symbol}
                               </span>
                             )}
                             <span
                               className={twMerge(
-                                'font-boldy text-base ml-1 uppercase text-xs md:text-sm',
+                                'font-boldy ml-1 uppercase text-xs md:text-sm',
                                 `text-${
                                   position.side === 'long'
                                     ? 'green'
@@ -167,7 +167,7 @@ export default function PositionsArray({
                           </div>
                         </td>
                       </tr>
-                      <tr className="text-sm text-center h-10 font-mono">
+                      <tr className="text-center h-10 font-mono">
                         <td>
                           <div className="flex">
                             {position ? (
@@ -189,33 +189,36 @@ export default function PositionsArray({
 
               <td
                 className={twMerge(
-                  'font-mono items-center text-xs md:text-sm text-center h-10',
+                  'font-mono items-center text-xs text-center h-10',
                 )}
               >
                 <div className="flex flex-col h-full w-full items-center justify-center">
                   {position.pnl && position?.collateralUsd ? (
                     <div className="flex items-center justify-center">
                       <NetValueTooltip position={position} placement="top">
-                        <FormatNumber
-                          nb={position.collateralUsd + position.pnl}
-                          format="currency"
-                          className="underline-dashed text-xs md:text-sm"
-                        />
+                        <span className="underline-dashed">
+                          <FormatNumber
+                            nb={position.collateralUsd + position.pnl}
+                            format="currency"
+                            className="text-xs"
+                          />
+                        </span>
                       </NetValueTooltip>
                     </div>
                   ) : (
                     '-'
                   )}
                   {position.pnl ? (
-                    <div className="flex">
+                    <div className="flex mt-1">
                       <FormatNumber
                         nb={position.pnl}
                         format="currency"
-                        className={`mr-0.5 text-xs md:text-sm text-${
+                        className={`mr-0.5 text-xs text-${
                           position.pnl && position.pnl > 0
                             ? 'green'
                             : 'redbright'
                         }`}
+                        isDecimalDimmed={false}
                       />
                       {position.pnl ? (
                         <>
@@ -226,7 +229,7 @@ export default function PositionsArray({
                             suffix=")"
                             precision={2}
                             isDecimalDimmed={false}
-                            className={`text-xs md:text-sm text-${
+                            className={`text-xs text-${
                               position.pnl && position.pnl > 0
                                 ? 'green'
                                 : 'redbright'
@@ -241,20 +244,17 @@ export default function PositionsArray({
                 </div>
               </td>
 
-              <td
-                className={twMerge(
-                  'font-mono text-xs md:text-sm text-center h-10',
-                )}
-              >
+              <td className={twMerge('font-mono text-xs text-center h-10')}>
                 <div className="flex flex-col items-center justify-center">
                   <div className="h-full w-full items-center justify-center flex">
                     <FormatNumber
                       nb={position.collateralUsd}
                       format="currency"
-                      className="text-xs md:text-sm"
+                      className="text-xs"
                     />
                     <Button
-                      className="text-xxs ml-1.5 text-txtfade px-2 border-bcolor bg-[#a8a8a810]"
+                      size="xs"
+                      className="ml-1.5 text-txtfade border-bcolor bg-[#a8a8a810] hover:text-white"
                       title="Edit"
                       variant="outline"
                       onClick={() => {
@@ -326,7 +326,8 @@ export default function PositionsArray({
               >
                 <div className="flex h-full w-full justify-center items-center">
                   <Button
-                    className="text-xxs ml-1 text-txtfade border-bcolor bg-[#a8a8a810]"
+                    size="xs"
+                    className="ml-1.5 text-txtfade border-bcolor bg-[#a8a8a810] hover:text-white"
                     title="Close"
                     variant="outline"
                     onClick={() => {
