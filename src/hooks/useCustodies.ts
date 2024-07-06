@@ -28,4 +28,4 @@ export default function useCustodies(
   }, [fetchCustodies]);
 
   return custodies;
-};
+}

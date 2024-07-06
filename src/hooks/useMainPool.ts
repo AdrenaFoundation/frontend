@@ -22,4 +22,4 @@ export default function useMainPool(): PoolExtended | null {
   }, [fetchMainPool]);
 
   return mainPool;
-};
+}

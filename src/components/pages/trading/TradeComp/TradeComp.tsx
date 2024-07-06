@@ -35,7 +35,7 @@ export default function TradeComp({
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
   className?: string;
-})  {
+}) {
   return (
     <div
       className={twMerge(
@@ -98,4 +98,4 @@ export default function TradeComp({
       </div>
     </div>
   );
-};
+}
