@@ -30,9 +30,7 @@ function pickBestLatencyRpcIndex(rpcLatencies: (number | null)[]): {
   );
 }
 
-const useRpc = (
-  config: IConfiguration | null,
-): {
+export default function useRpc(config: IConfiguration | null): {
   activeRpc: {
     name: string;
     connection: Connection;
@@ -48,7 +46,7 @@ const useRpc = (
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-} => {
+} {
   const [cookies, setCookies] = useCookies([
     'favoriteRpc',
     'customRpc',
@@ -311,6 +309,4 @@ const useRpc = (
       setCookies('favoriteRpc', favoriteRpc);
     },
   };
-};
-
-export default useRpc;
+}

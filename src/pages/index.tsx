@@ -11,5 +11,5 @@ export default function Home() {
     router.push('/trade');
   }, [router]);
 
-  return <main className={twMerge('w-full', 'h-full', 'flex', '')}></main>;
+  return <main className="w-full h-full flex" />;
 }

@@ -18,7 +18,7 @@ import { nativeToUi } from './utils';
 // Locked staking: finalize locked stake (many)
 // User staking: auto claim (many)
 
-export class SablierClient {
+export default class SablierClient {
   public static sablierThreadProgramId = new PublicKey(
     SablierThreadProgramJson.metadata.address,
   );

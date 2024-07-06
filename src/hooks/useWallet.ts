@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { walletAdapters } from '@/constant';
 import { useSelector } from '@/store/store';
 
-const useWallet = () => {
+export default function useWallet() {
   const walletState = useSelector((s) => s.walletState.wallet);
 
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -22,6 +22,4 @@ const useWallet = () => {
   }, [walletState]);
 
   return wallet;
-};
-
-export default useWallet;
+}

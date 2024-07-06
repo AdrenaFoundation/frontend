@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Select from '@/components/common/Select/Select';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
@@ -18,9 +19,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   formatNumber,
   formatPriceInfo,
   uiLeverageToNative,
@@ -127,6 +126,10 @@ export default function LongShortTradingInputs({
       });
     }
 
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Long Position Opening',
+    ).fire();
+
     // Existing position or not, it's the same
     const collateralAmount = uiToNative(inputA, tokenA.decimals);
 
@@ -140,15 +143,11 @@ export default function LongShortTradingInputs({
       });
 
     if (!openPositionWithSwapAmountAndFees) {
-      return addNotification({
-        title: 'Error Opening Position',
-        type: 'error',
-        message: 'Error calculating fees',
-      });
+      return notification.currentStepErrored('Error calculating fees');
     }
 
     try {
-      const txHash = await (side === 'long'
+      await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
@@ -156,6 +155,7 @@ export default function LongShortTradingInputs({
             price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
             leverage: uiLeverageToNative(leverage),
+            notification,
           })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
             owner: new PublicKey(wallet.publicKey),
@@ -164,22 +164,13 @@ export default function LongShortTradingInputs({
             price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
             leverage: uiLeverageToNative(leverage),
+            notification,
           }));
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
-
-      return addSuccessTxNotification({
-        title: 'Successfully Opened Position',
-        txHash,
-      });
     } catch (error) {
       console.log('Error', error);
-
-      return addFailedTxNotification({
-        title: 'Error Opening Position',
-        error,
-      });
     }
   };
 

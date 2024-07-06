@@ -3,10 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { Vest } from '@/types';
 
-const useUserVest = (): {
+export default function useUserVest(): {
   userVest: Vest | false | null;
   triggerUserVestReload: () => void;
-} => {
+} {
   const [trickReload, triggerReload] = useState<number>(0);
   const wallet = useSelector((s) => s.walletState.wallet);
 
@@ -38,6 +38,4 @@ const useUserVest = (): {
       triggerReload(trickReload + 1);
     },
   };
-};
-
-export default useUserVest;
+}

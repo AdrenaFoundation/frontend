@@ -34,7 +34,7 @@ export const PortalContainer = ({ children }: { children: ReactNode }) => {
   return createPortal(children, portalContainer);
 };
 
-const Modal = ({
+export default function Modal({
   title,
   children,
   close,
@@ -44,7 +44,7 @@ const Modal = ({
   children: ReactNode;
   close: () => void;
   className?: string;
-}) => {
+}) {
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const controls = useDragControls();
 
@@ -138,6 +138,4 @@ const Modal = ({
       </motion.div>
     </PortalContainer>
   );
-};
-
-export default Modal;
+}

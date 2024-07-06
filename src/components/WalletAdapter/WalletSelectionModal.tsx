@@ -18,7 +18,7 @@ import walletConnectLogo from '../../../public/images/wallet-connect.png';
 import Modal from '../common/Modal/Modal';
 import GeoBlockedModal from '../GeoBlockedModal/GeoBlockedModal';
 
-function WalletSelectionModal() {
+export default function WalletSelectionModal() {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
 
@@ -148,5 +148,3 @@ const WalletBlock = ({
 
   return walletBlock;
 };
-
-export default WalletSelectionModal;

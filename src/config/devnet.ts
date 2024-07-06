@@ -20,6 +20,7 @@ class DevnetConfiguration implements IConfiguration {
       image: ImageRef;
       coingeckoId: string;
       decimals: number;
+      pythNetFeedId: PublicKey;
     };
   } = {
     '3jdYcGYZaQVvcvMQGqVpt37JegEoDDnX7k4gSGAeGRqG': {
@@ -29,6 +30,9 @@ class DevnetConfiguration implements IConfiguration {
       image: usdcLogo,
       coingeckoId: 'usd-coin',
       decimals: 6,
+      pythNetFeedId: new PublicKey(
+        'Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD',
+      ),
     },
     HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
       name: 'Ethereum',
@@ -37,6 +41,9 @@ class DevnetConfiguration implements IConfiguration {
       image: ethLogo,
       coingeckoId: 'ethereum',
       decimals: 6,
+      pythNetFeedId: new PublicKey(
+        'JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB',
+      ),
     },
     '7MoYkgWVCEDtNR6i2WUH9LTUSFXkQCsD9tBHriHQvuP5': {
       name: 'Bitcoin',
@@ -45,6 +52,9 @@ class DevnetConfiguration implements IConfiguration {
       image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 6,
+      pythNetFeedId: new PublicKey(
+        'GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU',
+      ),
     },
     [NATIVE_MINT.toBase58()]: {
       name: 'Solana',
@@ -53,6 +63,9 @@ class DevnetConfiguration implements IConfiguration {
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,
+      pythNetFeedId: new PublicKey(
+        'H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG',
+      ),
     },
   };
 

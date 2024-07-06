@@ -4,15 +4,11 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import DateInfo from '@/components/pages/monitoring/DateInfo';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
-import {
-  addFailedTxNotification,
-  addNotification,
-  addSuccessTxNotification,
-} from '@/utils';
 
 import editIcon from '../.../../../../../public/images/edit-icon.png';
 
@@ -33,17 +29,19 @@ export default function OwnerBloc({
   const editNickname = async () => {
     const trimmedNickname = (updatedNickname ?? '').trim();
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Edit Nickname').fire();
+
     if (trimmedNickname.length < 3 || trimmedNickname.length > 24) {
-      return addNotification({
-        title: 'Cannot update profile',
-        type: 'info',
-        message: 'Nickname must be between 3 to 24 characters long',
-      });
+      return notification.currentStepErrored(
+        'Nickname must be between 3 to 24 characters long',
+      );
     }
 
     try {
-      const txHash = await window.adrena.client.editUserProfile({
+      await window.adrena.client.editUserProfile({
         nickname: trimmedNickname,
+        notification,
       });
 
       triggerUserProfileReload();
@@ -52,16 +50,8 @@ export default function OwnerBloc({
       userProfile.nickname = trimmedNickname;
 
       setNicknameUpdating(false);
-
-      return addSuccessTxNotification({
-        title: 'Successfully Edited Profile',
-        txHash,
-      });
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Editing Profile',
-        error,
-      });
+      console.error('error', error);
     }
   };
 

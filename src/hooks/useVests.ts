@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { VestExtended } from '@/types';
 
-const useVests = (): VestExtended[] | null => {
+export default function useVests(): VestExtended[] | null {
   const [vests, setVests] = useState<VestExtended[] | null>(null);
 
   const fetchVests = useCallback(async () => {
@@ -22,6 +22,4 @@ const useVests = (): VestExtended[] | null => {
   }, [fetchVests]);
 
   return vests;
-};
-
-export default useVests;
+}

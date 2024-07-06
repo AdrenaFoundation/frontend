@@ -93,6 +93,10 @@
   .tooltip-target {
     @apply border-b border-dashed border-[#8C8D97];
   }
+  .underline-dashed {
+    border-bottom: 1px dashed currentColor;
+    padding-bottom: 0.02rem;
+  }
 }
 
 * {
@@ -253,4 +257,12 @@ input[type='radio']:checked {
 // Hide the feedback button, instead use a proxy in the footer
 .fb-feedback-widget-feedback-button-left {
   display: none !important;
+}
+
+.Toastify__toast-container--bottom-left {
+  bottom: 4em !important;
+}
+
+.Toastify__toast-theme--light {
+  background-color: #162a3d;
 }

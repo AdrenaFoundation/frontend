@@ -1,5 +1,4 @@
 import AccountsView from '@/components/pages/monitoring/AccountsView/AccountsView';
-import ADXTokenomicsView from '@/components/pages/monitoring/ADXTokenomicsView/ADXTokenomicsView';
 import AutomationView from '@/components/pages/monitoring/AutomationView/AutomationView';
 import FeesView from '@/components/pages/monitoring/FeesView/FeesView';
 import PoolView from '@/components/pages/monitoring/PoolView/PoolView';
@@ -7,9 +6,9 @@ import StakingView from '@/components/pages/monitoring/StakingView/StakingView';
 import TradingView from '@/components/pages/monitoring/TradingView/TradingView';
 import VestingView from '@/components/pages/monitoring/VestingView/VestingView';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
+import { PoolInfo } from '@/hooks/usePoolInfo';
 import useSablierStakingResolveStakingRoundCronThreads from '@/hooks/useSablierStakingResolveStakingRoundCronThreads';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
@@ -24,8 +23,10 @@ export default function DetailedMonitoring({
   mainPool,
   custodies,
   selectedTab,
+  poolInfo,
 }: PageProps & {
   selectedTab: string;
+  poolInfo: PoolInfo | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const cortex = useCortex();
@@ -41,7 +42,6 @@ export default function DetailedMonitoring({
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
   const vests = useVests();
-  const composition = useALPIndexComposition(custodies);
   const sablierStakingResolveStakingRoundCronThreads =
     useSablierStakingResolveStakingRoundCronThreads({
       lmStaking: adxStakingAccount,
@@ -58,9 +58,7 @@ export default function DetailedMonitoring({
     alpTotalSupply === null ||
     !alpStakingAccount ||
     !adxStakingAccount ||
-    !composition ||
-    !sablierStakingResolveStakingRoundCronThreads ||
-    composition.some((c) => c === null)
+    !sablierStakingResolveStakingRoundCronThreads
   )
     return <></>;
 
@@ -106,7 +104,7 @@ export default function DetailedMonitoring({
           ) : null}
 
           {selectedTab === 'Pool' || selectedTab === 'All' ? (
-            <PoolView mainPool={mainPool} custodies={custodies} />
+            <PoolView custodies={custodies} poolInfo={poolInfo} />
           ) : null}
 
           {selectedTab === 'All' ? (

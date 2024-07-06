@@ -3,7 +3,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Staking } from '@/types';
 
-const useStakingAccount = (stakedTokenMint: PublicKey): Staking | null => {
+export default function useStakingAccount(
+  stakedTokenMint: PublicKey,
+): Staking | null {
   const [stakingAccount, setStakingAccount] = useState<Staking | null>(null);
 
   const pda = window.adrena.client.getStakingPda(stakedTokenMint);
@@ -27,6 +29,4 @@ const useStakingAccount = (stakedTokenMint: PublicKey): Staking | null => {
   }, [fetchStakingAccount]);
 
   return stakingAccount;
-};
-
-export default useStakingAccount;
+}

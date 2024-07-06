@@ -5,10 +5,10 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 
 // TODO: Reload periodically?
-const usePositions = (): {
+export default function usePositions(): {
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
-} => {
+} {
   const [trickReload, triggerReload] = useState<number>(0);
   const wallet = useSelector((s) => s.walletState.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
@@ -49,6 +49,4 @@ const usePositions = (): {
       triggerReload(trickReload + 1);
     },
   };
-};
-
-export default usePositions;
+}

@@ -14,7 +14,7 @@ import { UserProfileExtended } from '@/types';
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
-const RootLayout = ({
+export default function RootLayout({
   children,
   userProfile,
   activeRpc,
@@ -44,7 +44,7 @@ const RootLayout = ({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-}) => {
+}) {
   const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
   const [pages, setPages] = useState<{ name: string; link: string }[]>([
     { name: 'My Dashboard', link: '/my_dashboard' },
@@ -109,8 +109,10 @@ const RootLayout = ({
         </div>
       </div>
 
-      <ToastContainer newestOnTop className="relative top-16" />
+      <ToastContainer />
+
       <Featurebase />
+
       <Footer className="z-10" />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
@@ -118,6 +120,4 @@ const RootLayout = ({
       </div>
     </>
   );
-};
-
-export default RootLayout;
+}

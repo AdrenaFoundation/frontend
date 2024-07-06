@@ -17,30 +17,58 @@ export type TokenInfo = {
   ownedAssets: number | null;
 };
 
-export type ALPIndexComposition = TokenInfo[];
+export type PoolComposition = TokenInfo[];
 
-const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
+export type PoolInfo = {
+  composition: PoolComposition;
+  aumUsd: number;
+};
+
+export default function usePoolInfo(
+  custodies: CustodyExtended[] | null,
+): PoolInfo | null {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  const [alpIndexComposition, setALPIndexComposition] =
-    useState<ALPIndexComposition | null>(null);
+  const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null);
 
-  const calculateALPIndexComposition = useCallback(async () => {
-    const alpIndexComposition = window.adrena.client.tokens.map((token) => {
+  const calculatePoolInfo = useCallback(async () => {
+    const poolAumUsd = window.adrena.client.tokens.reduce((total, token) => {
+      if (total === null) return null;
+
       const price = tokenPrices[token.symbol];
-      const color = token.color;
+
       const custody = custodies?.find(
         (custody) => token.custody && custody.pubkey.equals(token.custody),
       );
+
+      if (!custody) return null;
+      if (!price) return null;
+
+      const custodyUsdValue =
+        nativeToUi(custody.nativeObject.assets.owned, token.decimals) * price;
+
+      return total + custodyUsdValue;
+    }, 0 as number | null);
+
+    if (poolAumUsd === null) return setPoolInfo(null);
+
+    const composition = window.adrena.client.tokens.map((token) => {
+      const price = tokenPrices[token.symbol];
+      const color = token.color;
+
+      const custody = custodies?.find(
+        (custody) => token.custody && custody.pubkey.equals(token.custody),
+      );
+
       const custodyUsdValue =
         custody && price
           ? nativeToUi(custody.nativeObject.assets.owned, token.decimals) *
             price
           : null;
+
       const currentRatio =
-        custodyUsdValue !== null
-          ? (custodyUsdValue * 100) / window.adrena.client.mainPool.aumUsd
-          : null;
+        custodyUsdValue !== null ? (custodyUsdValue * 100) / poolAumUsd : null;
+
       const utilization = (() => {
         if (!custody) return null;
         if (custody.nativeObject.assets.locked.isZero()) return 0;
@@ -72,14 +100,15 @@ const useALPIndexComposition = (custodies: CustodyExtended[] | null) => {
       };
     });
 
-    setALPIndexComposition(alpIndexComposition);
+    setPoolInfo({
+      composition,
+      aumUsd: poolAumUsd,
+    });
   }, [tokenPrices, custodies]);
 
   useEffect(() => {
-    calculateALPIndexComposition();
-  }, [calculateALPIndexComposition]);
+    calculatePoolInfo();
+  }, [calculatePoolInfo]);
 
-  return alpIndexComposition;
-};
-
-export default useALPIndexComposition;
+  return poolInfo;
+}

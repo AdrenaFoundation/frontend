@@ -10,9 +10,9 @@ import { TokenSymbol } from '@/types';
 import { findATAAddressSync, nativeToUi } from '@/utils';
 
 // TODO: Make it responsive to wallet token balance change
-const useWatchWalletBalance = (): {
+export default function useWatchWalletBalance(): {
   triggerWalletTokenBalancesReload: () => void;
-} => {
+} {
   const [trickReload, triggerReload] = useState<number>(0);
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -97,6 +97,4 @@ const useWatchWalletBalance = (): {
       triggerReload(trickReload + 1);
     },
   };
-};
-
-export default useWatchWalletBalance;
+}

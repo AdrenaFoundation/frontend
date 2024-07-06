@@ -4,7 +4,7 @@ let interval: NodeJS.Timeout | null = null;
 
 const TOTAL_SUPPLY_LOADING_INTERVAL_IN_MS = 30_000;
 
-const useADXTotalSupply = () => {
+export default function useADXTotalSupply() {
   const [totalSupply, setTotalSupply] = useState<number | null>(null);
 
   const loadTotalSupply = useCallback(async () => {
@@ -44,6 +44,4 @@ const useADXTotalSupply = () => {
   }, [loadTotalSupply]);
 
   return totalSupply;
-};
-
-export default useADXTotalSupply;
+}

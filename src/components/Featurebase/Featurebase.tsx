@@ -2,7 +2,7 @@
 import Script from 'next/script';
 import { useEffect } from 'react';
 
-const Featurebase = () => {
+export default function Featurebase() {
   useEffect(() => {
     const win = window as any;
 
@@ -23,6 +23,4 @@ const Featurebase = () => {
   return (
     <Script src="https://do.featurebase.app/js/sdk.js" id="featurebase-sdk" />
   );
-};
-
-export default Featurebase;
+}

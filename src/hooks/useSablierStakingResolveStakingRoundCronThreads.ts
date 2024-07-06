@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { SablierThreadExtended, Staking } from '@/types';
 
 // TODO: needs to refresh periodically to access new information
-const useSablierStakingResolveStakingRoundCronThreads = ({
+export default function useSablierStakingResolveStakingRoundCronThreads({
   lmStaking,
   lpStaking,
 }: {
@@ -12,7 +12,7 @@ const useSablierStakingResolveStakingRoundCronThreads = ({
 }): {
   lmStakingResolveRoundCron: SablierThreadExtended;
   lpStakingResolveRoundCron: SablierThreadExtended;
-} | null => {
+} | null {
   const [threads, setThreads] = useState<{
     lmStakingResolveRoundCron: SablierThreadExtended;
     lpStakingResolveRoundCron: SablierThreadExtended;
@@ -41,6 +41,4 @@ const useSablierStakingResolveStakingRoundCronThreads = ({
   }, [fetchThreads]);
 
   return threads;
-};
-
-export default useSablierStakingResolveStakingRoundCronThreads;
+}

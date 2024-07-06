@@ -24,7 +24,7 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { ALPIndexComposition, TokenInfo } from '@/hooks/useALPIndexComposition';
+import { PoolComposition, TokenInfo } from '@/hooks/usePoolInfo';
 import {
   formatNumber,
   formatPriceInfo,
@@ -79,7 +79,7 @@ function formatOwnedAssets(ownedAssets: unknown): string {
 
 function generateCompositionChart(
   compositionChartData: ChartData<'bar'>,
-  composition: ALPIndexComposition,
+  composition: PoolComposition,
 ): JSX.Element {
   return (
     <Bar
@@ -167,7 +167,7 @@ export default function GlobalHealthOverview({
 }: {
   compositionChartData: ChartData<'bar'>;
   aumUsd: number | null;
-  composition: ALPIndexComposition;
+  composition: PoolComposition;
   className?: string;
 }) {
   return (

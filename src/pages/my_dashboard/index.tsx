@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
@@ -18,9 +19,7 @@ import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { LockedStakeExtended, PageProps } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
   nativeToUi,
@@ -104,31 +103,26 @@ export default function MyDashboard({
   const initUserProfile = async () => {
     const trimmedNickname = (nickname ?? '').trim();
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction(
+        'Initialize Profile',
+      ).fire();
+
     if (trimmedNickname.length < 3 || trimmedNickname.length > 24) {
-      return addNotification({
-        title: 'Cannot create profile',
-        type: 'info',
-        message: 'Nickname must be between 3 to 24 characters long',
-      });
+      return notification.currentStepErrored(
+        'Nickname must be between 3 to 24 characters long',
+      );
     }
 
     try {
-      const txHash = await window.adrena.client.initUserProfile({
+      await window.adrena.client.initUserProfile({
         nickname: trimmedNickname,
+        notification,
       });
 
       triggerUserProfileReload();
-
-      return addSuccessTxNotification({
-        title: 'Successfully Created Profile',
-        txHash,
-      });
     } catch (error) {
       console.log('error', error);
-      return addFailedTxNotification({
-        title: 'Error Creating Profile',
-        error,
-      });
     }
   };
 
@@ -146,37 +140,35 @@ export default function MyDashboard({
 
     if (earlyExit && !finalizeLockedStakeRedeem) return;
 
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Remove Locked Stake',
+    ).fire();
+
     const stakedTokenMint =
       lockedStake.tokenSymbol === 'ADX'
         ? window.adrena.client.adxToken.mint
         : window.adrena.client.alpToken.mint;
 
     try {
-      const txHash = await window.adrena.client.removeLockedStake({
+      await window.adrena.client.removeLockedStake({
         owner,
         resolved: !!lockedStake.resolved,
         threadId: lockedStake.stakeResolutionThreadId,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
         earlyExit,
-      });
-
-      addSuccessTxNotification({
-        title: 'Successfully Removed Locked Stake',
-        txHash,
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
+
       if (earlyExit) {
         setLockedStake(null);
         setFinalizeLockedStakeRedeem(false);
       }
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Removing Locked Stake',
-        error,
-      });
+      console.error('error', error);
     }
   };
 
