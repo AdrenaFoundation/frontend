@@ -23,9 +23,9 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
-import usePoolInfo, { PoolInfo, TokenInfo } from '@/hooks/usePoolInfo';
+import { PoolInfo, TokenInfo } from '@/hooks/usePoolInfo';
 import { useSelector } from '@/store/store';
-import { CustodyExtended, PoolExtended } from '@/types';
+import { CustodyExtended } from '@/types';
 import {
   formatNumber,
   formatPriceInfo,
