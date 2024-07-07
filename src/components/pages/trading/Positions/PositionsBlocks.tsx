@@ -92,43 +92,48 @@ export default function PositionsBlocks({
                   alt={`${position.token.symbol} logo`}
                 />
 
-                <div className="flex ml-16 w-full">
+                <div className="flex ml-16 h-full w-full items-center pl-2">
                   {window.location.pathname !== '/trade' ? (
                     <Link
                       href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
                       target=""
                     >
-                      <h3 className="text-sm capitalize font-mono ml-2 underline">
+                      <h3 className="uppercase underline font-boldy">
                         {position.token.symbol}
                       </h3>
                     </Link>
                   ) : (
-                    <h3 className="text-sm capitalize font-mono ml-2">
+                    <h3 className="uppercase font-boldy">
                       {position.token.symbol}
                     </h3>
                   )}
-                  <span
+
+                  <h3
                     className={twMerge(
-                      'text-sm uppercase font-mono ml-1',
+                      'uppercase font-boldy ml-1',
                       position.side === 'long' ? 'text-green' : 'text-red',
                     )}
                   >
                     {position.side}
-                  </span>
+                  </h3>
 
-                  <FormatNumber
-                    nb={position.leverage}
-                    format="number"
-                    className="ml-1 text-xs mt-[0.15em] text-txtfade"
-                    suffix="x"
-                    isDecimalDimmed={false}
-                  />
-
-                  {liquidable ? (
-                    <div className="text-sm text-redbright text-center ml-auto mr-2">
-                      Liquidable
+                  <div className="flex flex-col ml-auto pr-4 items-end">
+                    <div className="flex">
+                      <FormatNumber
+                        nb={position.leverage}
+                        format="number"
+                        className="text-sm lowercase"
+                        suffix="x"
+                        isDecimalDimmed={false}
+                      />
                     </div>
-                  ) : null}
+
+                    {liquidable ? (
+                      <div className="flex">
+                        <h5 className="text-red text-xs">Liquidable</h5>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </div>
