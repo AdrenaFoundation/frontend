@@ -220,6 +220,7 @@ export default function PositionsArray({
                         }`}
                         isDecimalDimmed={false}
                       />
+
                       {position.pnl ? (
                         <>
                           <FormatNumber
@@ -300,6 +301,7 @@ export default function PositionsArray({
                       nb={position.price}
                       format="currency"
                       className="text-xs"
+                      minimumFractionDigits={2}
                     />
 
                     <span className="text-xs text-txtfade ml-1 mr-1">/</span>
@@ -308,6 +310,7 @@ export default function PositionsArray({
                       nb={tokenPrices[position.token.symbol]}
                       format="currency"
                       className="text-xs text-txtfade"
+                      minimumFractionDigits={2}
                     />
                   </div>
                 )}
@@ -319,6 +322,7 @@ export default function PositionsArray({
                     nb={position.liquidationPrice}
                     format="currency"
                     className="text-xs"
+                    minimumFractionDigits={2}
                   />
                 </div>
               </td>
