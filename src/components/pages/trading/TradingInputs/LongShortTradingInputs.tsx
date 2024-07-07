@@ -406,9 +406,29 @@ export default function LongShortTradingInputs({
             onMaxButtonClick={() => {
               if (!walletTokenBalances || !tokenA) return;
 
-              const amount = walletTokenBalances[tokenA.symbol];
+              // Pick up the maximum amount the user can use, considering:
+              // the custody liquidity, the max position size and the user wallet amount
+              const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
 
-              handleInputAChange(amount);
+              const tokenPriceA = tokenPrices[tokenA.symbol];
+
+              if (custody && tokenPriceB && tokenPriceA) {
+                const availableCustodyLiquidity =
+                  (custody.liquidity * tokenPriceB) / tokenPriceA / leverage;
+
+                const maxPositionSize =
+                  custody.maxPositionLockedUsd / tokenPriceA / leverage;
+
+                return handleInputAChange(
+                  Math.min(
+                    userWalletAmount,
+                    availableCustodyLiquidity,
+                    maxPositionSize,
+                  ),
+                );
+              }
+
+              handleInputAChange(userWalletAmount);
             }}
           />
 
