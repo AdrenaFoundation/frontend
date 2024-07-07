@@ -413,11 +413,21 @@ export default function LongShortTradingInputs({
               const tokenPriceA = tokenPrices[tokenA.symbol];
 
               if (custody && tokenPriceB && tokenPriceA) {
-                const availableCustodyLiquidity =
-                  (custody.liquidity * tokenPriceB) / tokenPriceA / leverage;
+                const availableCustodyLiquidity = Number(
+                  (
+                    (custody.liquidity * tokenPriceB) /
+                    tokenPriceA /
+                    leverage
+                  ).toFixed(tokenA.decimals),
+                );
 
-                const maxPositionSize =
-                  custody.maxPositionLockedUsd / tokenPriceA / leverage;
+                const maxPositionSize = Number(
+                  (
+                    custody.maxPositionLockedUsd /
+                    tokenPriceA /
+                    leverage
+                  ).toFixed(tokenA.decimals),
+                );
 
                 return handleInputAChange(
                   Math.min(
