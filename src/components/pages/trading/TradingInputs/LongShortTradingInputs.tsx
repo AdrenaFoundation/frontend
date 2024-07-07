@@ -22,6 +22,7 @@ import {
   addNotification,
   formatNumber,
   formatPriceInfo,
+  nativeToUi,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
@@ -394,7 +395,9 @@ export default function LongShortTradingInputs({
             subText={
               priceA ? (
                 <div className="text-sm text-txtfade font-mono">
-                  {formatPriceInfo(priceA)}
+                  {priceA > 500000000
+                    ? `> ${formatPriceInfo(500000000)}`
+                    : formatPriceInfo(priceA)}
                 </div>
               ) : null
             }
@@ -403,7 +406,7 @@ export default function LongShortTradingInputs({
             tokenList={allowedTokenA}
             onTokenSelect={setTokenA}
             onChange={handleInputAChange}
-            onMaxButtonClick={() => {
+            onMaxButtonClick={async () => {
               if (!walletTokenBalances || !tokenA) return;
 
               // Pick up the maximum amount the user can use, considering:
@@ -413,9 +416,18 @@ export default function LongShortTradingInputs({
               const tokenPriceA = tokenPrices[tokenA.symbol];
 
               if (custody && tokenPriceB && tokenPriceA) {
+                const latestCustody = await window.adrena.client
+                  .getReadonlyAdrenaProgram()
+                  .account.custody.fetch(custody.pubkey);
+
+                const latestAvailableLiquidity = nativeToUi(
+                  latestCustody.assets.owned.sub(latestCustody.assets.locked),
+                  latestCustody.decimals,
+                );
+
                 const availableCustodyLiquidity = Number(
                   (
-                    (custody.liquidity * tokenPriceB) /
+                    (latestAvailableLiquidity * tokenPriceB) /
                     tokenPriceA /
                     leverage
                   ).toFixed(tokenA.decimals),
@@ -423,7 +435,8 @@ export default function LongShortTradingInputs({
 
                 const maxPositionSize = Number(
                   (
-                    custody.maxPositionLockedUsd /
+                    (custody.maxPositionLockedUsd -
+                      (openedPosition?.sizeUsd ?? 0)) /
                     tokenPriceA /
                     leverage
                   ).toFixed(tokenA.decimals),

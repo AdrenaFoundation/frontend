@@ -97,12 +97,15 @@ export default function TradingInput({
             )}
 
             {maxButton ? (
-              <Button
-                title="MAX"
-                variant="primary"
-                className={twMerge('mx-2 text-sm h-6', maxClassName)}
-                onClick={() => onMaxButtonClick?.()}
-              />
+              <div className="mr-1">
+                <Button
+                  title="MAX"
+                  variant="primary"
+                  className={twMerge('text-sm h-6 w-14', maxClassName)}
+                  onClick={() => onMaxButtonClick?.()}
+                  loaderClassName="w-14"
+                />
+              </div>
             ) : null}
           </div>
         </div>

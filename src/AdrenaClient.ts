@@ -233,6 +233,10 @@ export class AdrenaClient {
     this.readonlyAdrenaProgram = program;
   }
 
+  public getReadonlyAdrenaProgram(): Program<Adrena> {
+    return this.readonlyAdrenaProgram;
+  }
+
   public setAdrenaProgram(program: Program<Adrena> | null) {
     this.adrenaProgram = program;
   }
