@@ -115,7 +115,12 @@ export function formatPriceInfo(
     )}`;
   }
 
-  return `$${formatNumber(price, decimals)}`;
+  return `$${formatNumber(
+    price,
+    decimals,
+    minimumFractionDigits,
+    precisionIfPriceDecimalsBelow,
+  )}`;
 }
 
 export function formatNumberShort(nb: number | string): string {

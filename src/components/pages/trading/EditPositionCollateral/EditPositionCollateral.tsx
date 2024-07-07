@@ -407,8 +407,9 @@ export default function EditPositionCollateral({
               prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
               className={`text-${
-                position.pnl && position.pnl > 0 ? 'green' : 'red'
+                position.pnl && position.pnl > 0 ? 'green' : 'redbright'
               }`}
+              isDecimalDimmed={false}
             />
           </div>
 

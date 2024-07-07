@@ -175,6 +175,7 @@ export default function PositionsArray({
                                 nb={position.leverage}
                                 suffix="x"
                                 className="text-xs"
+                                isDecimalDimmed={false}
                               />
                             ) : (
                               '-'
@@ -285,6 +286,7 @@ export default function PositionsArray({
                       nb={position.price}
                       format="currency"
                       className="text-xs mr-1"
+                      minimumFractionDigits={2}
                     />
 
                     <div className="flex">
@@ -292,6 +294,7 @@ export default function PositionsArray({
                         nb={tokenPrices[position.token.symbol]}
                         format="currency"
                         className="text-xs text-txtfade"
+                        minimumFractionDigits={2}
                       />
                     </div>
                   </div>
