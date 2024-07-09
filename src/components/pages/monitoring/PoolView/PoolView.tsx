@@ -110,7 +110,45 @@ export default function PoolView({
         title="AUM Breakdown"
         className="min-w-[22em] w-[22em] grow"
       >
-        <Table
+        <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
+          {...custodies.map((custody) => {
+            return (
+              <StyledSubSubContainer
+                key={custody.pubkey.toBase58()}
+                className="flex flex-col w-full sm:w-[40%] h-20 items-center justify-center p-0 relative overflow-hidden"
+              >
+                <Image
+                  src={custody.tokenInfo.image}
+                  className="absolute top-0 left-[-40px] -z-10 grayscale opacity-5"
+                  alt="token icon"
+                  width="100"
+                  height="100"
+                />
+
+                <NumberInfo
+                  value={custody.owned}
+                  precision={custody.tokenInfo.symbol === 'BTC' ? 2 : 0}
+                  denomination={custody.tokenInfo.symbol}
+                  wholePartClassName="text-base"
+                  denominationClassName="text-xs"
+                />
+
+                {tokenPrices[custody.tokenInfo.symbol] ? (
+                  <NumberInfo
+                    value={
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      custody.owned * tokenPrices[custody.tokenInfo.symbol]!
+                    }
+                    precision={0}
+                    wholePartClassName="text-txtfade"
+                  />
+                ) : null}
+              </StyledSubSubContainer>
+            );
+          })}
+        </div>
+
+        {/* <Table
           rowTitleWidth="50%"
           data={[
             ...custodies.map((custody) => ({
@@ -130,7 +168,7 @@ export default function PoolView({
                 <div className="flex flex-col">
                   <NumberInfo
                     value={custody.owned}
-                    precision={custody.decimals}
+                    precision={custody.tokenInfo.symbol === 'BTC' ? 2 : 0}
                     denomination={custody.tokenInfo.symbol}
                   />
 
@@ -140,13 +178,14 @@ export default function PoolView({
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         custody.owned * tokenPrices[custody.tokenInfo.symbol]!
                       }
+                      precision={0}
                     />
                   ) : null}
                 </div>
               ),
             })),
           ]}
-        />
+        /> */}
       </StyledContainer>
 
       <StyledContainer
