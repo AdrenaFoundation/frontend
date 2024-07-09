@@ -53,6 +53,7 @@ export default function FeesView({
           </StyledSubSubContainer>
         </StyledContainer>
       </div>
+
       <StyledContainer
         title="All time Fees Breakdown"
         subTitle="Fees per custody per action."
