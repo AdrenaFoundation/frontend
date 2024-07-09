@@ -243,7 +243,13 @@ export default function MyDashboard({
             </div>
 
             {userVest && (
-              <VestStats vest={userVest} getUserVesting={getUserVesting} />
+              <VestStats
+                vest={userVest}
+                getUserVesting={getUserVesting}
+                triggerWalletTokenBalancesReload={
+                  triggerWalletTokenBalancesReload
+                }
+              />
             )}
 
             <PositionsStats

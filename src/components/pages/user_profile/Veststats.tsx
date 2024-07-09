@@ -21,9 +21,11 @@ ChartJS.register(annotationPlugin, ArcElement, Tooltip, Legend);
 export default function VestStats({
   vest,
   getUserVesting,
+  triggerWalletTokenBalancesReload,
 }: {
   vest: Vest;
   getUserVesting: () => void;
+  triggerWalletTokenBalancesReload: () => void;
 }) {
   const amount = nativeToUi(
     vest.amount,
@@ -67,6 +69,8 @@ export default function VestStats({
       const txHash = await window.adrena.client.claimUserVest();
 
       getUserVesting();
+      triggerWalletTokenBalancesReload();
+
       return addSuccessTxNotification({
         title: 'Successfully Claimed ADX',
         txHash,
