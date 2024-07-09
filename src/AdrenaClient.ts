@@ -1657,6 +1657,14 @@ export class AdrenaClient {
 
     if (info === null) throw new Error('cannot calculate fees');
 
+    console.log('Info:', {
+      collateralAmount: collateralAmount.toString(),
+    });
+    console.log(
+      'Info:',
+      Object.entries(info).map(([k, v]) => [k, v.toString()]),
+    );
+
     const {
       size: nativeSize,
       entryPrice,
@@ -1684,12 +1692,13 @@ export class AdrenaClient {
       nativeToUi(swapFeeOut, swappedTokenDecimals) * swappedTokenPrice;
 
     const openPositionFeeUsd =
-      nativeToUi(openPositionFee, tokenB.decimals) * tokenBPrice;
+      nativeToUi(openPositionFee, swappedTokenDecimals) * swappedTokenPrice;
 
-    const exitFeeUsd = nativeToUi(exitFee, tokenB.decimals) * tokenBPrice;
+    const exitFeeUsd =
+      nativeToUi(exitFee, swappedTokenDecimals) * swappedTokenPrice;
 
     const liquidationFeeUsd =
-      nativeToUi(liquidationFee, tokenB.decimals) * tokenBPrice;
+      nativeToUi(liquidationFee, swappedTokenDecimals) * swappedTokenPrice;
 
     const collateralUsd =
       nativeToUi(collateralAmount, tokenA.decimals) * tokenAPrice;
