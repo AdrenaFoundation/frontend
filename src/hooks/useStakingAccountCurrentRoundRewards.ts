@@ -50,4 +50,4 @@ export default function useStakingAccountCurrentRoundRewards(
   }, [tokenPrices[usdc.symbol], usdcAmount]);
 
   return usDollarAmount;
-};
+}

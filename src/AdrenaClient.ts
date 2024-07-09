@@ -1658,6 +1658,14 @@ export class AdrenaClient {
 
     if (info === null) throw new Error('cannot calculate fees');
 
+    console.log('Info:', {
+      collateralAmount: collateralAmount.toString(),
+    });
+    console.log(
+      'Info:',
+      Object.entries(info).map(([k, v]) => [k, v.toString()]),
+    );
+
     const {
       size: nativeSize,
       entryPrice,
@@ -1685,12 +1693,13 @@ export class AdrenaClient {
       nativeToUi(swapFeeOut, swappedTokenDecimals) * swappedTokenPrice;
 
     const openPositionFeeUsd =
-      nativeToUi(openPositionFee, tokenB.decimals) * tokenBPrice;
+      nativeToUi(openPositionFee, swappedTokenDecimals) * swappedTokenPrice;
 
-    const exitFeeUsd = nativeToUi(exitFee, tokenB.decimals) * tokenBPrice;
+    const exitFeeUsd =
+      nativeToUi(exitFee, swappedTokenDecimals) * swappedTokenPrice;
 
     const liquidationFeeUsd =
-      nativeToUi(liquidationFee, tokenB.decimals) * tokenBPrice;
+      nativeToUi(liquidationFee, swappedTokenDecimals) * swappedTokenPrice;
 
     const collateralUsd =
       nativeToUi(collateralAmount, tokenA.decimals) * tokenAPrice;
@@ -3397,11 +3406,6 @@ export class AdrenaClient {
       [],
     );
 
-    console.log(
-      'Positions Pubkeys',
-      positionsExtended.map((x) => x.pubkey.toBase58()),
-    );
-
     // Get liquidation price + pnl
     const [liquidationPrices, pnls] = await Promise.all([
       Promise.allSettled(
@@ -3450,6 +3454,18 @@ export class AdrenaClient {
         return profitsAndLosses.profitUsd;
       })();
 
+      const priceChangeUsd = (() => {
+        if (!profitsAndLosses) return null;
+
+        return (
+          (profitsAndLosses.lossUsd !== 0
+            ? profitsAndLosses.lossUsd
+            : profitsAndLosses.profitUsd) +
+          positionExtended.exitFeeUsd +
+          profitsAndLosses.borrowFeeUsd
+        );
+      })();
+
       const leverage =
         positionExtended.sizeUsd /
         (positionExtended.collateralUsd + (pnl ?? 0));
@@ -3458,6 +3474,10 @@ export class AdrenaClient {
         ...positionExtended,
         leverage,
         pnl,
+        priceChangeUsd,
+        profitUsd: profitsAndLosses ? profitsAndLosses.profitUsd : null,
+        lossUsd: profitsAndLosses ? profitsAndLosses.lossUsd : null,
+        borrowFeeUsd: profitsAndLosses ? profitsAndLosses.borrowFeeUsd : null,
         liquidationPrice: ((): number | null => {
           if (liquidationPrices[index].status === 'rejected') return null;
 

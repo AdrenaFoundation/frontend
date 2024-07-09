@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
 import BasicMonitoring from './basic';
@@ -12,6 +13,7 @@ import DetailedMonitoring from './detailed';
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring(pageProps: PageProps) {
+  const poolInfo = usePoolInfo(pageProps.custodies);
   const [detailedDisplay, setDetailedDisplay] = useState<boolean>(false);
 
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
@@ -152,11 +154,12 @@ export default function Monitoring(pageProps: PageProps) {
         <DetailedMonitoring
           {...pageProps}
           selectedTab={detailedDisplaySelectedTab}
+          poolInfo={poolInfo}
         />
       </div>
 
       <div className={twMerge('hidden', !detailedDisplay ? 'block' : '')}>
-        <BasicMonitoring {...pageProps} />
+        <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
       </div>
     </>
   );

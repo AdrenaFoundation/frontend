@@ -22,6 +22,7 @@ export default function TradeComp({
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
   className,
+  isBigScreen,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -35,11 +36,13 @@ export default function TradeComp({
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
   className?: string;
-})  {
+  isBigScreen?: boolean | null;
+}) {
   return (
     <div
       className={twMerge(
-        'sm:flex w-full lg:w-[30em] min-w-[350px] bg-main/90 flex-col sm:flex-row lg:flex-col mt-4 lg:mt-0 sm:border sm:rounded-lg ',
+        'sm:flex w-full bg-main/90 flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg ',
+        isBigScreen ? 'mt-0 w-[30em]' : 'mt-4',
         className,
       )}
     >
@@ -98,4 +101,4 @@ export default function TradeComp({
       </div>
     </div>
   );
-};
+}

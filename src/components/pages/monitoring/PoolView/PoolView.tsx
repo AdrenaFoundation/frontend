@@ -23,11 +23,9 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
-import useALPIndexComposition, {
-  TokenInfo,
-} from '@/hooks/useALPIndexComposition';
+import { PoolInfo, TokenInfo } from '@/hooks/usePoolInfo';
 import { useSelector } from '@/store/store';
-import { CustodyExtended, PoolExtended } from '@/types';
+import { CustodyExtended } from '@/types';
 import {
   formatNumber,
   formatPriceInfo,
@@ -81,15 +79,14 @@ function generateLine(
 
 export default function PoolView({
   className,
-  mainPool,
   custodies,
+  poolInfo,
 }: {
   className?: string;
-  mainPool: PoolExtended;
   custodies: CustodyExtended[];
+  poolInfo: PoolInfo | null;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const composition = useALPIndexComposition(custodies);
 
   const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
 
@@ -104,7 +101,7 @@ export default function PoolView({
           <h2>Total USD worth</h2>
 
           <StyledSubSubContainer className="mt-2">
-            <h2>{formatPriceInfo(mainPool.aumUsd)}</h2>
+            <h2>{poolInfo ? formatPriceInfo(poolInfo.aumUsd) : '-'}</h2>
           </StyledSubSubContainer>
         </StyledSubContainer>
       </StyledContainer>
@@ -158,8 +155,7 @@ export default function PoolView({
         className="w-full grow"
         bodyClassName="items-center"
       >
-        {composition &&
-        composition.every(
+        {poolInfo?.composition.every(
           (comp) =>
             comp.targetRatio !== null &&
             comp.currentRatio !== null &&
@@ -186,14 +182,15 @@ export default function PoolView({
 
             <Bar
               data={{
-                labels: composition.map((comp) => comp.token.symbol),
+                labels: poolInfo.composition.map((comp) => comp.token.symbol),
                 datasets: [
                   {
                     label: 'Ratio',
-                    data: composition.map((comp) => comp.currentRatio),
+                    data: poolInfo.composition.map((comp) => comp.currentRatio),
                     backgroundColor: '#fffffff0',
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    borderColor: composition.map((comp) => comp.color!) || [],
+                    borderColor:
+                      poolInfo.composition.map((comp) => comp.color!) || [],
                     borderWidth: 1,
                   },
                 ],
@@ -218,7 +215,7 @@ export default function PoolView({
                     ],
                   },
                   annotation: {
-                    annotations: composition.reduce(
+                    annotations: poolInfo.composition.reduce(
                       (
                         lines: {
                           [key: string]: ReturnType<typeof generateLine>;
@@ -230,7 +227,7 @@ export default function PoolView({
                         [`line${(i + 1) * 3}`]: generateLine(
                           i,
                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          composition[i].targetRatio!, // checked above
+                          poolInfo.composition[i].targetRatio!, // checked above
                           '#07956b',
                         ),
 
@@ -238,7 +235,7 @@ export default function PoolView({
                         [`line${(i + 1) * 3 + 1}`]: generateLine(
                           i,
                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          composition[i].minRatio!, // checked above
+                          poolInfo.composition[i].minRatio!, // checked above
                           '#3b82f6',
                         ),
 
@@ -246,7 +243,7 @@ export default function PoolView({
                         [`line${(i + 1) * 3 + 2}`]: generateLine(
                           i,
                           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          composition[i].maxRatio!, // checked above
+                          poolInfo.composition[i].maxRatio!, // checked above
                           '#c9243a',
                         ),
 
@@ -263,7 +260,7 @@ export default function PoolView({
                     callbacks: {
                       label: (context: TooltipItem<'bar'>) =>
                         (() => {
-                          const comp = composition[context.dataIndex];
+                          const comp = poolInfo.composition[context.dataIndex];
 
                           return [
                             `current ratio: ${formatNumber(

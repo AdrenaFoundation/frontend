@@ -41,4 +41,4 @@ export default function useSablierStakingResolveStakingRoundCronThreads({
   }, [fetchThreads]);
 
   return threads;
-};
+}

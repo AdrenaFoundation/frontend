@@ -5,8 +5,8 @@ import GlobalHealthOverview from '@/components/pages/global/GlobalHealthOverview
 import TokenStakingOverview from '@/components/pages/global/TokenStakingOverview';
 import UsageOverview from '@/components/pages/global/UsageOverview';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import useALPIndexComposition from '@/hooks/useALPIndexComposition';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
+import { PoolInfo } from '@/hooks/usePoolInfo';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
@@ -14,7 +14,12 @@ import { nativeToUi } from '@/utils';
 
 export const DEFAULT_LOCKED_STAKE_DURATION = 90;
 
-export default function BasicMonitoring({ mainPool, custodies }: PageProps) {
+export default function BasicMonitoring({
+  mainPool,
+  poolInfo,
+}: PageProps & {
+  poolInfo: PoolInfo | null;
+}) {
   const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
   const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
   const alpPrice =
@@ -25,7 +30,6 @@ export default function BasicMonitoring({ mainPool, custodies }: PageProps) {
     null;
   const alpTotalSupply = useALPTotalSupply();
   const adxTotalSupply = useADXTotalSupply();
-  const composition = useALPIndexComposition(custodies);
   const [stakedAlpChartData, setStakedAlpChartData] =
     useState<ChartData<'bar'> | null>(null);
   const [stakedAdxChartData, setStakedAdxChartData] =
@@ -100,6 +104,8 @@ export default function BasicMonitoring({ mainPool, custodies }: PageProps) {
   }, [adxStakingAccount, adxTotalSupply]);
 
   useEffect(() => {
+    const composition = poolInfo?.composition ?? null;
+
     if (composition === null) return setAlpChartData(null);
 
     setAlpChartData({
@@ -131,7 +137,7 @@ export default function BasicMonitoring({ mainPool, custodies }: PageProps) {
         },
       ],
     });
-  }, [composition]);
+  }, [poolInfo?.composition]);
 
   const numberOpenedPositions =
     mainPool?.nbOpenLongPositions ?? 0 + (mainPool?.nbOpenShortPositions ?? 0);
@@ -143,8 +149,8 @@ export default function BasicMonitoring({ mainPool, custodies }: PageProps) {
       {alpChartData ? (
         <GlobalHealthOverview
           compositionChartData={alpChartData}
-          aumUsd={mainPool?.aumUsd ?? null}
-          composition={composition ?? []}
+          aumUsd={poolInfo?.aumUsd ?? null}
+          composition={poolInfo?.composition ?? []}
           className="max-w-[30em]"
         />
       ) : null}

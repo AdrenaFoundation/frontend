@@ -49,4 +49,4 @@ export default function usePositions(): {
       triggerReload(trickReload + 1);
     },
   };
-};
+}

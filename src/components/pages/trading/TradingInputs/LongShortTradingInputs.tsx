@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
   addNotification,
+  AdrenaTransactionError,
   formatNumber,
   formatPriceInfo,
   uiLeverageToNative,
@@ -169,6 +170,13 @@ export default function LongShortTradingInputs({
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
+
+      setInputA(null);
+      setErrorMessage(null);
+      setInputB(null);
+      setPriceA(null);
+      setPriceB(null);
+      setPositionInfos(null);
     } catch (error) {
       console.log('Error', error);
     }
@@ -245,9 +253,13 @@ export default function LongShortTradingInputs({
 
         console.log('Position infos', infos);
       } catch (err) {
-        setErrorMessage('Error calculating position');
+        if (err instanceof AdrenaTransactionError) {
+          setErrorMessage(err.errorString);
+        } else {
+          setErrorMessage('Error calculating position');
+        }
 
-        console.log('Ignored error:', err);
+        console.log('Error:', err);
       } finally {
         setTimeout(() => {
           setIsInfoLoading(false);
@@ -321,20 +333,25 @@ export default function LongShortTradingInputs({
     const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     if (!walletTokenABalance || inputA > walletTokenABalance) {
-      setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
+      return setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
+    }
+
+    if (!tokenB || !inputB) {
       return;
     }
 
-    if (!tokenB || !inputB) return setErrorMessage(null);
-
     const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
+
+    if (tokenPriceB !== null)
+      if (inputB * tokenPriceB > custody.maxPositionLockedUsd)
+        return setErrorMessage(`Position Exceeds Max Size`);
 
     // If user wallet balance doesn't have enough tokens, tell user
     if (inputB > custody.liquidity)
       return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
 
     return setErrorMessage(null);
-  }, [inputA, inputB, tokenA.symbol, tokenB, walletTokenBalances]);
+  }, [inputA, inputB, tokenA.symbol, tokenB, tokenPriceB, walletTokenBalances]);
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);

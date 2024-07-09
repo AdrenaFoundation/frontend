@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Cortex } from '@/types';
 
-// TODO: Reload periodically?
 export default function useCortex(): Cortex | null {
   const [cortex, setCortex] = useState<Cortex | null>(null);
 
@@ -23,4 +22,4 @@ export default function useCortex(): Cortex | null {
   }, [fetchCortex]);
 
   return cortex;
-};
+}
