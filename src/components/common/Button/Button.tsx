@@ -16,6 +16,7 @@ export default function Button({
   leftIcon,
   className,
   iconClassName,
+  loaderClassName,
   rightIconClassName,
   leftIconClassName,
   onClick,
@@ -33,6 +34,7 @@ export default function Button({
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
   iconClassName?: string;
+  loaderClassName?: string;
   rightIconClassName?: string;
   leftIconClassName?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg';
@@ -118,7 +120,11 @@ export default function Button({
       ) : null}
 
       {onClickInProgress ? (
-        <Loader height={23} width={50} className="text-white" />
+        <Loader
+          height={23}
+          width={50}
+          className={twMerge('text-white', loaderClassName)}
+        />
       ) : null}
     </button>
   );

@@ -22,6 +22,7 @@ import {
   addNotification,
   formatNumber,
   formatPriceInfo,
+  nativeToUi,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
@@ -87,6 +88,49 @@ export default function LongShortTradingInputs({
       window.removeEventListener('resize', updateComponentWidth);
     };
   }, []);
+
+  const calculateMax = async () => {
+    if (!walletTokenBalances || !tokenA) return;
+
+    // Pick up the maximum amount the user can use, considering:
+    // the custody liquidity, the max position size and the user wallet amount
+    const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
+
+    const tokenPriceA = tokenPrices[tokenA.symbol];
+
+    if (custody && tokenPriceB && tokenPriceA) {
+      const latestCustody = await window.adrena.client
+        .getReadonlyAdrenaProgram()
+        .account.custody.fetch(custody.pubkey);
+
+      const latestAvailableLiquidity = nativeToUi(
+        latestCustody.assets.owned.sub(latestCustody.assets.locked),
+        latestCustody.decimals,
+      );
+
+      const availableCustodyLiquidity = Number(
+        (
+          (latestAvailableLiquidity * tokenPriceB) /
+          tokenPriceA /
+          leverage
+        ).toFixed(tokenA.decimals),
+      );
+
+      const maxPositionSize = Number(
+        (
+          (custody.maxPositionLockedUsd - (openedPosition?.sizeUsd ?? 0)) /
+          tokenPriceA /
+          leverage
+        ).toFixed(tokenA.decimals),
+      );
+
+      return handleInputAChange(
+        Math.min(userWalletAmount, availableCustodyLiquidity, maxPositionSize),
+      );
+    }
+
+    handleInputAChange(userWalletAmount);
+  };
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
@@ -387,14 +431,7 @@ export default function LongShortTradingInputs({
                   variant="text"
                   className="text-sm h-6 opacity-70"
                   size="xs"
-                  onClick={() => {
-                    //TODO: Factorize
-                    if (!walletTokenBalances || !tokenA) return;
-
-                    const amount = walletTokenBalances[tokenA.symbol];
-
-                    handleInputAChange(amount);
-                  }}
+                  onClick={calculateMax}
                 />
               ) : null}
               <Image
@@ -431,7 +468,9 @@ export default function LongShortTradingInputs({
             subText={
               priceA ? (
                 <div className="text-sm text-txtfade font-mono">
-                  {formatPriceInfo(priceA)}
+                  {priceA > 500000000
+                    ? `> ${formatPriceInfo(500000000)}`
+                    : formatPriceInfo(priceA)}
                 </div>
               ) : null
             }
@@ -440,14 +479,7 @@ export default function LongShortTradingInputs({
             tokenList={allowedTokenA}
             onTokenSelect={setTokenA}
             onChange={handleInputAChange}
-            onMaxButtonClick={() => {
-              //TODO: Factorize
-              if (!walletTokenBalances || !tokenA) return;
-
-              const amount = walletTokenBalances[tokenA.symbol];
-
-              handleInputAChange(amount);
-            }}
+            onMaxButtonClick={calculateMax}
           />
 
           <LeverageSlider
