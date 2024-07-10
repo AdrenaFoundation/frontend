@@ -2,7 +2,7 @@ import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -69,6 +69,24 @@ export default function LongShortTradingInputs({
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+
+  /** Resize handling for component max button display **/
+  const [componentWidth, setComponentWidth] = useState(0);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const updateComponentWidth = () => {
+    if (componentRef.current) {
+      setComponentWidth(componentRef.current.offsetWidth);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateComponentWidth);
+    updateComponentWidth();
+    return () => {
+      window.removeEventListener('resize', updateComponentWidth);
+    };
+  }, []);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
@@ -347,7 +365,10 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col sm:pb-2', className)}>
+    <div
+      className={twMerge('relative flex flex-col sm:pb-2', className)}
+      ref={componentRef}
+    >
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
 
@@ -360,6 +381,22 @@ export default function LongShortTradingInputs({
 
           return (
             <div className="text-sm flex items-center justify-end h-6">
+              {connected && componentWidth < 350 ? (
+                <Button
+                  title="MAX"
+                  variant="text"
+                  className="text-sm h-6 opacity-70"
+                  size="xs"
+                  onClick={() => {
+                    //TODO: Factorize
+                    if (!walletTokenBalances || !tokenA) return;
+
+                    const amount = walletTokenBalances[tokenA.symbol];
+
+                    handleInputAChange(amount);
+                  }}
+                />
+              ) : null}
               <Image
                 className="mr-1 opacity-60 relative"
                 src={walletImg}
@@ -398,12 +435,13 @@ export default function LongShortTradingInputs({
                 </div>
               ) : null
             }
-            maxButton={connected}
+            maxButton={connected && componentWidth >= 350}
             selectedToken={tokenA}
             tokenList={allowedTokenA}
             onTokenSelect={setTokenA}
             onChange={handleInputAChange}
             onMaxButtonClick={() => {
+              //TODO: Factorize
               if (!walletTokenBalances || !tokenA) return;
 
               const amount = walletTokenBalances[tokenA.symbol];
