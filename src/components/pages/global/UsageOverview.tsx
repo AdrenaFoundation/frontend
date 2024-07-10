@@ -105,14 +105,14 @@ export default function UsageOverview({
 }) {
   return (
     <StyledContainer
-      title="Pool utilization"
+      title="Current Pool utilization"
       subTitle="Is the pool capital efficient?"
       className={className}
     >
       <StyledSubContainer>
         <div className="flex items-center">
           <InfoAnnotation
-            text="Positions currently openned using the pool's capital."
+            text="Positions currently opened using the pool's capital."
             className="mr-1"
             title="Positions"
           />

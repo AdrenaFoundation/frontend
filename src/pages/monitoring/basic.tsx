@@ -142,7 +142,7 @@ export default function BasicMonitoring({
   const numberOpenedPositions =
     mainPool?.nbOpenLongPositions ?? 0 + (mainPool?.nbOpenShortPositions ?? 0);
   const totalPositionsValue =
-    mainPool?.oiLongUsd ?? 0 + (mainPool?.oiShortUsd ?? 0);
+    mainPool?.longPositions ?? 0 + (mainPool?.shortPositions ?? 0);
 
   return (
     <div className="flex flex-row flex-wrap justify-center gap-4 p-4">

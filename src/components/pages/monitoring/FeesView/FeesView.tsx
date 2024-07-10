@@ -55,62 +55,69 @@ export default function FeesView({
       </div>
 
       <StyledContainer
-        title="All time Fees Breakdown"
-        subTitle="Fees per custody per action."
-        className="w-full grow"
+        title="All time Fees Breakdown Per Token"
+        className="min-w-[22em] w-[22em] grow"
       >
-        <Table
-          rowTitleWidth="90px"
-          columnsTitles={attributes.map(abbreviateWords)}
-          data={[
-            ...custodies.map((custody) => ({
-              rowTitle: (
-                <div className="flex items-center">
-                  <Image
-                    src={custody.tokenInfo.image}
-                    alt="token icon"
-                    width="16"
-                    height="16"
-                  />
-                  <span className="ml-1 text-base">
-                    {custody.tokenInfo.name}
-                  </span>
+        <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
+          {...custodies.map((custody) => {
+            return (
+              <StyledSubSubContainer
+                key={custody.pubkey.toBase58()}
+                className="flex flex-col w-full sm:w-[40%] h-40 items-center justify-center p-0 relative overflow-hidden"
+              >
+                <div className="absolute top-2 right-4 opacity-10 font-boldy">
+                  {custody.tokenInfo.symbol}
                 </div>
-              ),
 
-              values: attributes.map((attribute) => (
-                <NumberInfo
-                  key={attribute}
-                  value={nativeToUi(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (custody.nativeObject.collectedFees as any)[attribute],
-                    USD_DECIMALS,
-                  )}
+                <Image
+                  src={custody.tokenInfo.image}
+                  className="absolute left-[-100px] -z-10 grayscale opacity-5"
+                  alt="token icon"
+                  width="200"
+                  height="200"
                 />
-              )),
-            })),
 
-            {
-              rowTitle: <div className="font-semibold">Total</div>,
-              values: attributes.map((param, i) => (
-                <NumberInfo
-                  key={i}
-                  value={custodies.reduce(
-                    (total, custody) =>
-                      total +
-                      nativeToUi(
-                        // Force typing as we know the keys are matching the collectedFees field
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (custody.nativeObject.collectedFees as any)[param],
-                        USD_DECIMALS,
-                      ),
-                    0,
-                  )}
-                />
-              )),
-            },
-          ]}
-        />
+                <div className="flex w-full">
+                  <div className="flex flex-col w-[55%] items-end">
+                    {attributes.map((attribute) => (
+                      <div key={attribute} className="flex">
+                        <NumberInfo
+                          value={nativeToUi(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (custody.nativeObject.collectedFees as any)[
+                              attribute
+                            ],
+                            USD_DECIMALS,
+                          )}
+                          precision={0}
+                          className="mr-2"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-col w-[45%] shrink-0">
+                    {attributes.map((_, i) => (
+                      <span className="text-txtfade w-[10em]" key={i}>
+                        {
+                          [
+                            'Swap',
+                            'Add Liq.',
+                            'Remove Liq.',
+                            'Open Pos.',
+                            'Close Pos.',
+                            'Liquidation',
+                            'Borrow',
+                          ][i]
+                        }
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </StyledSubSubContainer>
+            );
+          })}
+        </div>
       </StyledContainer>
     </>
   );
