@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
 import discordLogo from '../../../public/images/discord.png';
-import discourseLogo from '../../../public/images/discourse.svg';
+// import discourseLogo from '../../../public/images/discourse.svg';
 import githubLogo from '../../../public/images/github.svg';
 import twitterLogo from '../../../public/images/x.svg';
 import Button from '../common/Button/Button';
@@ -73,7 +73,7 @@ export default function Footer({ className }: { className?: string }) {
           />
         </Link>
 
-        <Link href="https://adrena.discourse.group/" target="_blank">
+        {/* <Link href="https://adrena.discourse.group/" target="_blank">
           <Image
             className="hover:opacity-100 opacity-50 cursor-pointer h-5 w-auto"
             src={discourseLogo}
@@ -81,7 +81,7 @@ export default function Footer({ className }: { className?: string }) {
             width="20"
             height="20"
           />
-        </Link>
+        </Link> */}
         {/* <Link
           href="/terms_and_conditions"
           className="absolute right-6 text-txtfade hover:text-white font-mono"
