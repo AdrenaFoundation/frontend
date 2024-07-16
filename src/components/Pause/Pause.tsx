@@ -28,7 +28,7 @@ export default function Pause(): JSX.Element {
           'flex flex-col h-full w-full items-center justify-center z-10 scale-75 sm:scale-90 2xl:scale-95 3xl:scale-100',
         )}
       >
-        <Image src={logo} alt="adrena logo" className="w-[20em]" />
+        <Image src={logo} alt="adrena logo" className="w-[30em]" />
 
         <h1 className="mt-4 text-center">Devnet feedback window has ended</h1>
 
