@@ -13,6 +13,7 @@ import { Provider } from 'react-redux';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
+import Pause from '@/components/Pause/Pause';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
@@ -120,21 +121,27 @@ export default function App(props: AppProps) {
 
   if (!isInitialized || !activeRpc) return <Loader />;
 
+  const paused = true;
+
   return (
     <Provider store={store}>
       <CookiesProvider>
-        <AppComponent
-          activeRpc={activeRpc}
-          rpcInfos={rpcInfos}
-          autoRpcMode={autoRpcMode}
-          customRpcUrl={customRpcUrl}
-          customRpcLatency={customRpcLatency}
-          favoriteRpc={favoriteRpc}
-          setAutoRpcMode={setAutoRpcMode}
-          setCustomRpcUrl={setCustomRpcUrl}
-          setFavoriteRpc={setFavoriteRpc}
-          {...props}
-        />
+        {paused ? (
+          <Pause />
+        ) : (
+          <AppComponent
+            activeRpc={activeRpc}
+            rpcInfos={rpcInfos}
+            autoRpcMode={autoRpcMode}
+            customRpcUrl={customRpcUrl}
+            customRpcLatency={customRpcLatency}
+            favoriteRpc={favoriteRpc}
+            setAutoRpcMode={setAutoRpcMode}
+            setCustomRpcUrl={setCustomRpcUrl}
+            setFavoriteRpc={setFavoriteRpc}
+            {...props}
+          />
+        )}
 
         <Analytics />
       </CookiesProvider>
@@ -260,6 +267,7 @@ function AppComponent({
       <Head>
         <meta name="viewport" content="viewport-fit=cover" />
       </Head>
+
       <RootLayout
         userProfile={userProfile}
         activeRpc={activeRpc}
