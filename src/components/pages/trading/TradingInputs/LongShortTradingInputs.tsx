@@ -128,7 +128,7 @@ export default function LongShortTradingInputs({
     }
 
     const notification = MultiStepNotification.newForRegularTransaction(
-      side.charAt(0).toUpperCase() + side.slice(1) + 'Position Opening',
+      side + ' Position Opening',
     ).fire();
 
     // Existing position or not, it's the same
