@@ -25,12 +25,14 @@ export default function Pause(): JSX.Element {
 
       <div
         className={twMerge(
-          'flex flex-col h-full w-full items-center justify-center z-10 scale-75 sm:scale-90 2xl:scale-95 3xl:scale-100',
+          'flex flex-col h-full w-full items-center justify-center z-10 scale-[58%] sm:scale-[58%] md:scale-[65%] lg:scale-75 2xl:scale-95 3xl:scale-100',
         )}
       >
         <Image src={logo} alt="adrena logo" className="w-[30em]" />
 
-        <h1 className="mt-4 text-center">Devnet feedback window has ended</h1>
+        <h1 className="mt-4 text-center">
+          Devnet feedback period has concluded!
+        </h1>
 
         <div className="block h-[2px] w-[15em] bg-gradient-to-b from-[#1A2A3D] via-[#2B3A55] to-[#1A2A3D] mt-8" />
 
