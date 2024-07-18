@@ -31,7 +31,7 @@ import initializeApp, {
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { SupportedCluster } from '@/types';
 
-import logo from '../../public/images/logo.png';
+import logo from '../../public/images/logo.svg';
 import devnetConfiguration from '../config/devnet';
 import mainnetConfiguration from '../config/mainnet';
 import store from '../store/store';

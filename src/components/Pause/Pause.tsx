@@ -8,7 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 
 import discordLogo from '../../../public/images/discord.png';
-import logo from '../../../public/images/logo.png';
+import logo from '../../../public/images/logo.svg';
 import twitterLogo from '../../../public/images/x.svg';
 
 export default function Pause(): JSX.Element {
@@ -38,7 +38,7 @@ export default function Pause(): JSX.Element {
 
         <h3 className="mt-8 w-[30em] font-boldy text-center">
           The team is actively working on app improvements based on your
-          feedback and preparing for mainnet launch. Stay tuned!
+          feedback and preparing for full throttle mainnet launch. Stay tuned!
         </h3>
 
         <div className="flex w-full justify-center items-center gap-x-16 mt-12">
