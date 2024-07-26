@@ -20,7 +20,6 @@ import Image from 'next/image';
 import { Bar } from 'react-chartjs-2';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
 import { PoolInfo, TokenInfo } from '@/hooks/usePoolInfo';
@@ -33,9 +32,7 @@ import {
   nativeToUi,
 } from '@/utils';
 
-import abbreviateWords from '../abbreviateWords';
 import NumberInfo from '../NumberInfo';
-import Table from '../Table';
 
 ChartJS.register(
   ArcElement,
