@@ -94,20 +94,17 @@ export default function PoolView({
     <>
       <StyledContainer
         title="AUM"
-        subTitle=""
+        headerClassName="text-center justify-center"
         className="min-w-[20em] w-[20em] grow"
       >
-        <StyledSubContainer>
-          <h2>Total USD worth</h2>
-
-          <StyledSubSubContainer className="mt-2">
-            <h2>{poolInfo ? formatPriceInfo(poolInfo.aumUsd) : '-'}</h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
+        <StyledSubSubContainer className="mt-2 justify-center items-center">
+          <h2>{poolInfo ? formatPriceInfo(poolInfo.aumUsd) : '-'}</h2>
+        </StyledSubSubContainer>
       </StyledContainer>
 
       <StyledContainer
         title="AUM Breakdown"
+        headerClassName="text-center justify-center"
         className="min-w-[22em] w-[22em] grow"
       >
         <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
@@ -129,8 +126,8 @@ export default function PoolView({
                   value={custody.owned}
                   precision={custody.tokenInfo.symbol === 'BTC' ? 2 : 0}
                   denomination={custody.tokenInfo.symbol}
-                  wholePartClassName="text-base"
-                  denominationClassName="text-xs"
+                  wholePartClassName="text-lg"
+                  denominationClassName="text-base"
                 />
 
                 {tokenPrices[custody.tokenInfo.symbol] ? (
@@ -314,6 +311,7 @@ export default function PoolView({
 
       <StyledContainer
         title="Volume Breakdown Per Token"
+        headerClassName="text-center justify-center"
         className="min-w-[22em] w-[22em] grow"
       >
         <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
@@ -321,7 +319,7 @@ export default function PoolView({
             return (
               <StyledSubSubContainer
                 key={custody.pubkey.toBase58()}
-                className="flex flex-col w-full sm:w-[40%] h-40 items-center justify-center p-0 relative overflow-hidden"
+                className="flex flex-col w-full sm:w-[40%] h-[11em] items-center justify-center p-0 relative overflow-hidden"
               >
                 <div className="absolute top-2 right-4 opacity-10 font-boldy">
                   {custody.tokenInfo.symbol}
@@ -349,6 +347,7 @@ export default function PoolView({
                           )}
                           precision={0}
                           className="mr-2"
+                          wholePartClassName="text-base"
                         />
                       </div>
                     ))}
@@ -356,7 +355,7 @@ export default function PoolView({
 
                   <div className="flex flex-col w-[45%] shrink-0">
                     {attributes.map((_, i) => (
-                      <span className="text-txtfade w-[10em]" key={i}>
+                      <span className="text-txtfade w-[10em] text-base" key={i}>
                         {
                           [
                             'Swap',

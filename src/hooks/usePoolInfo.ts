@@ -73,15 +73,6 @@ export default function usePoolInfo(
         if (!custody) return null;
         if (custody.nativeObject.assets.locked.isZero()) return 0;
 
-        console.log(
-          'LOCKED',
-          custody.nativeObject.assets.locked.toString(),
-          'OWNED',
-          custody.nativeObject.assets.owned.toString(),
-          'DECIMALS',
-          custody.decimals,
-        );
-
         return (
           (nativeToUi(custody.nativeObject.assets.locked, custody.decimals) *
             100) /

@@ -104,7 +104,7 @@ export default function VestingView({
                     vest.claimedAmount,
                     window.adrena.client.adxToken.decimals,
                   )}
-                  precision={window.adrena.client.adxToken.decimals}
+                  precision={0}
                   denomination="ADX"
                 />,
 

@@ -34,7 +34,7 @@ export default function Table({
 
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
-      <div className="flex">
+      <div className="flex pb-2">
         <div
           className="flex shrink-0 ml-2"
           style={{

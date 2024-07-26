@@ -56,6 +56,7 @@ export default function FeesView({
 
       <StyledContainer
         title="All time Fees Breakdown Per Token"
+        headerClassName="text-center justify-center"
         className="min-w-[22em] w-[22em] grow"
       >
         <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
@@ -63,7 +64,7 @@ export default function FeesView({
             return (
               <StyledSubSubContainer
                 key={custody.pubkey.toBase58()}
-                className="flex flex-col w-full sm:w-[40%] h-40 items-center justify-center p-0 relative overflow-hidden"
+                className="flex flex-col w-full sm:w-[40%] h-[11em] items-center justify-center p-0 relative overflow-hidden"
               >
                 <div className="absolute top-2 right-4 opacity-10 font-boldy">
                   {custody.tokenInfo.symbol}
@@ -91,6 +92,7 @@ export default function FeesView({
                           )}
                           precision={0}
                           className="mr-2"
+                          wholePartClassName="text-base"
                         />
                       </div>
                     ))}
@@ -98,7 +100,7 @@ export default function FeesView({
 
                   <div className="flex flex-col w-[45%] shrink-0">
                     {attributes.map((_, i) => (
-                      <span className="text-txtfade w-[10em]" key={i}>
+                      <span className="text-txtfade w-[10em] text-base" key={i}>
                         {
                           [
                             'Swap',

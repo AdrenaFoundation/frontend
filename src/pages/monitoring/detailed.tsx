@@ -57,8 +57,7 @@ export default function DetailedMonitoring({
     adxTotalSupply === null ||
     alpTotalSupply === null ||
     !alpStakingAccount ||
-    !adxStakingAccount ||
-    !sablierStakingResolveStakingRoundCronThreads
+    !adxStakingAccount
   )
     return <></>;
 
@@ -66,13 +65,15 @@ export default function DetailedMonitoring({
     <>
       <div className="w-full max-w-full overflow-x-auto flex z-10">
         <div className="flex gap-4 pb-4 pt-2 pl-4 pr-4 flex-wrap w-full max-w-[60em] ml-auto mr-auto justify-center">
-          {selectedTab === 'All' ? (
+          {selectedTab === 'All' &&
+          sablierStakingResolveStakingRoundCronThreads ? (
             <div className="w-full z-10 text-center">
               <h1 className="text-white">AUTOMATION</h1>
             </div>
           ) : null}
 
-          {selectedTab === 'Automation' || selectedTab === 'All' ? (
+          {(selectedTab === 'Automation' || selectedTab === 'All') &&
+          sablierStakingResolveStakingRoundCronThreads ? (
             <AutomationView
               sablierStakingResolveStakingRoundCronThreads={
                 sablierStakingResolveStakingRoundCronThreads
@@ -80,14 +81,14 @@ export default function DetailedMonitoring({
             />
           ) : null}
 
+          {/*
+          // TODO: Re-enable when wanted
           {selectedTab === 'All' ? (
             <div className="w-full z-10 text-center">
-              <h1 className="text-white">ACCOUNTS</h1>
+              <h1 className="text-white">ADX TOKENOMICS</h1>
             </div>
           ) : null}
 
-          {/*
-          // TODO: Re-enable when wanted
           {selectedTab === 'ADX tokenomics' || selectedTab === 'All' ? (
             <ADXTokenomicsView
               vestRegistry={vestRegistry}
@@ -159,7 +160,7 @@ export default function DetailedMonitoring({
 
           {selectedTab === 'All' ? (
             <div className="w-full z-10 text-center">
-              <h1 className="text-white">ADX TOKENOMICS</h1>
+              <h1 className="text-white">ACCOUNTS</h1>
             </div>
           ) : null}
 

@@ -120,7 +120,7 @@ export default function TradingView({
                     height="200"
                   />
 
-                  <div className="flex w-full flex-col items-center gap-y-4">
+                  <div className="flex w-full flex-col items-center h-full justify-evenly">
                     <div className="flex">
                       <div className="flex items-center text-base uppercase font-boldy mr-6">
                         Long
@@ -149,6 +149,8 @@ export default function TradingView({
                       </div>
                     </div>
 
+                    <div className="w-full h-[1px] bg-[#ffffff20]" />
+
                     <div className="flex">
                       <div className="flex items-center text-base uppercase font-boldy mr-6">
                         Short
@@ -172,79 +174,6 @@ export default function TradingView({
               );
             })}
         </div>
-      </StyledContainer>
-
-      <StyledContainer title="POSITIONS NOW BREAKDOWN" className="w-full grow">
-        <Table
-          rowTitleWidth="20%"
-          columnsTitles={['Long', 'Short']}
-          data={[
-            ...custodies
-              .filter((custody) => !custody.isStable)
-              .map((custody) => ({
-                rowTitle: (
-                  <div className="flex items-center">
-                    <Image
-                      src={custody.tokenInfo.image}
-                      alt="token icon"
-                      width="16"
-                      height="16"
-                    />
-                    <span className="ml-1 text-base">
-                      {custody.tokenInfo.name}
-                    </span>
-                  </div>
-                ),
-                values: [
-                  <div key="long" className="flex flex-col">
-                    <NumberInfo
-                      value={nativeToUi(
-                        custody.nativeObject.tradeStats.oiLongUsd,
-                        custody.decimals,
-                      )}
-                      denomination={custody.tokenInfo.symbol}
-                      precision={custody.decimals}
-                    />
-
-                    {tokenPrices[custody.tokenInfo.symbol] ? (
-                      <NumberInfo
-                        value={
-                          nativeToUi(
-                            custody.nativeObject.tradeStats.oiLongUsd,
-                            custody.decimals,
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          ) * tokenPrices[custody.tokenInfo.symbol]!
-                        }
-                      />
-                    ) : null}
-                  </div>,
-
-                  <div key="short" className="flex flex-col">
-                    <NumberInfo
-                      value={nativeToUi(
-                        custody.nativeObject.tradeStats.oiShortUsd,
-                        custody.decimals,
-                      )}
-                      denomination={custody.tokenInfo.symbol}
-                      precision={custody.decimals}
-                    />
-
-                    {tokenPrices[custody.tokenInfo.symbol] ? (
-                      <NumberInfo
-                        value={
-                          nativeToUi(
-                            custody.nativeObject.tradeStats.oiShortUsd,
-                            custody.decimals,
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                          ) * tokenPrices[custody.tokenInfo.symbol]!
-                        }
-                      />
-                    ) : null}
-                  </div>,
-                ],
-              })),
-          ]}
-        />
       </StyledContainer>
     </>
   );
