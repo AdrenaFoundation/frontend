@@ -13,6 +13,7 @@ import {
   RpcResponseAndContext,
   SignatureResult,
   SystemProgram,
+  SYSVAR_RENT_PUBKEY,
   Transaction,
   TransactionInstruction,
   TransactionMessage,
@@ -2230,6 +2231,62 @@ export class AdrenaClient {
     if (!vest) return null;
 
     return vest;
+  }
+
+  public async claimUserVest() {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const receivingAccount = findATAAddressSync(owner, this.adxToken.mint);
+
+    if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: this.adxToken.mint,
+          owner,
+        }),
+      );
+    }
+
+    const vestRegistry = await this.loadVestRegistry();
+
+    if (vestRegistry === null) {
+      throw new Error('vest registry not found');
+    }
+
+    const transaction = await this.adrenaProgram.methods
+      .claimVest()
+      .accountsStrict({
+        owner,
+        receivingAccount,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        vestRegistry: AdrenaClient.vestRegistryPda,
+        vest: this.getUserVestPda(owner),
+        lmTokenMint: this.lmTokenMint,
+        governanceTokenMint: this.governanceTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
+        adrenaProgram: this.adrenaProgram.programId,
+        governanceProgram: config.governanceProgram,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        rent: SYSVAR_RENT_PUBKEY,
+      })
+      .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {
