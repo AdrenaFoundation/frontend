@@ -93,7 +93,7 @@ export default function DetailedMonitoring({
   const smallBodyClassName = 'text-xl font-boldy';
 
   return (
-    <div className="flex gap-2 pb-4 pt-2 pl-4 pr-4 flex-wrap w-full ml-auto mr-auto justify-center">
+    <div className="flex gap-2 pb-4 pt-2 flex-wrap w-full ml-auto mr-auto justify-center">
       <div className="flex gap-2 flex-wrap w-full ml-auto mr-auto justify-center">
         {selectedTab === 'All' || selectedTab === 'Pool' ? (
           <AUM
@@ -300,9 +300,7 @@ export default function DetailedMonitoring({
         <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
       ) : null}
 
-      {selectedTab === 'All' ||
-      selectedTab === 'Staking' ||
-      selectedTab === 'Automation' ? (
+      {selectedTab === 'All' || selectedTab === 'Staking' ? (
         <FinalizeLockedStakedThreads titleClassName={titleClassName} />
       ) : null}
     </div>

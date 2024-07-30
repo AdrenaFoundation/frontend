@@ -95,7 +95,7 @@ export default function Monitoring(pageProps: PageProps) {
         >
           <span
             className={twMerge(
-              'font-special uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
               !detailedDisplay ? 'opacity-100' : '',
             )}
             onClick={() => {
@@ -116,7 +116,7 @@ export default function Monitoring(pageProps: PageProps) {
 
           <span
             className={twMerge(
-              'font-special uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
               detailedDisplay ? 'opacity-100' : '',
             )}
             onClick={() => {
