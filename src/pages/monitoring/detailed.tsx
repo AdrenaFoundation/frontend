@@ -95,118 +95,173 @@ export default function DetailedMonitoring({
   return (
     <div className="flex gap-2 pb-4 pt-2 pl-4 pr-4 flex-wrap w-full ml-auto mr-auto justify-center">
       <div className="flex gap-2 flex-wrap w-full ml-auto mr-auto justify-center">
-        <AUM
+        {selectedTab === 'All' || selectedTab === 'Pool' ? (
+          <AUM
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            poolInfo={poolInfo}
+          />
+        ) : null}
+        {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
+          <ADXCirculatingSupply
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            adxTotalSupply={adxTotalSupply}
+          />
+        ) : null}
+        {selectedTab === 'All' || selectedTab === 'Staking' ? (
+          <LockedStakedADX
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            adxStakingAccount={adxStakingAccount}
+          />
+        ) : null}
+        {selectedTab === 'All' ||
+        selectedTab === 'Vesting' ||
+        selectedTab === 'ADX tokenomics' ? (
+          <VestedADX
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            vestRegistry={vestRegistry}
+          />
+        ) : null}
+        {selectedTab === 'All' ||
+        selectedTab === 'Vesting' ||
+        selectedTab === 'ADX tokenomics' ? (
+          <VestedTokens
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            vestRegistry={vestRegistry}
+          />
+        ) : null}
+        {selectedTab === 'All' || selectedTab === 'Vesting' ? (
+          <VestsCount
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            vestRegistry={vestRegistry}
+          />
+        ) : null}
+        {selectedTab === 'All' || selectedTab === 'Fees' ? (
+          <AllTimeFees
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            mainPool={mainPool}
+          />
+        ) : null}
+        {selectedTab === 'All' ||
+        selectedTab === 'Fees' ||
+        selectedTab === 'Staking' ? (
+          <CurrentStakingRoundFees
+            titleClassName={titleClassName}
+            bodyClassName={bodyClassName}
+            alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
+            adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+          />
+        ) : null}
+      </div>
+
+      {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        <AUMBreakdown
           titleClassName={titleClassName}
-          bodyClassName={bodyClassName}
-          poolInfo={poolInfo}
+          mainWholeNumberClassName={bodyClassName}
+          dollarWholeNumberClassName={dollarBodyClassName}
+          custodies={custodies}
         />
-        <ADXCirculatingSupply
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Staking' ? (
+        <StakingRewardVaults
           titleClassName={titleClassName}
           bodyClassName={bodyClassName}
-          adxTotalSupply={adxTotalSupply}
+          alpStakingAccount={alpStakingAccount}
+          adxStakingAccount={adxStakingAccount}
+          alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
+          adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
         />
-        <LockedStakedADX
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Staking' ? (
+        <StakingRewardsWaitingToBeClaimed
           titleClassName={titleClassName}
           bodyClassName={bodyClassName}
+          alpStakingAccount={alpStakingAccount}
           adxStakingAccount={adxStakingAccount}
         />
-        <VestedADX
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Staking' ? (
+        <CurrentStakingRoundTime
           titleClassName={titleClassName}
           bodyClassName={bodyClassName}
-          vestRegistry={vestRegistry}
+          alpStakingAccount={alpStakingAccount}
+          adxStakingAccount={adxStakingAccount}
         />
-        <VestedTokens
+      ) : null}
+
+      {selectedTab === 'All' || selectedTab === 'Staking' ? (
+        <StakingLockedTokens
           titleClassName={titleClassName}
           bodyClassName={bodyClassName}
-          vestRegistry={vestRegistry}
+          alpStakingAccount={alpStakingAccount}
+          adxStakingAccount={adxStakingAccount}
         />
-        <VestsCount
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        <VolumeBreakdownPerToken
           titleClassName={titleClassName}
-          bodyClassName={bodyClassName}
-          vestRegistry={vestRegistry}
+          bodyClassName={smallBodyClassName}
+          custodies={custodies}
         />
-        <AllTimeFees
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Fees' ? (
+        <AllTimeFeesBreakdownPerToken
+          titleClassName={titleClassName}
+          bodyClassName={smallBodyClassName}
+          custodies={custodies}
+        />
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        <PositionsNow
           titleClassName={titleClassName}
           bodyClassName={bodyClassName}
           mainPool={mainPool}
         />
-        <CurrentStakingRoundFees
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        <PositionsAllTime
           titleClassName={titleClassName}
           bodyClassName={bodyClassName}
-          alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-          adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+          mainPool={mainPool}
         />
-      </div>
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        <PositionsNowBreakdown
+          titleClassName={titleClassName}
+          custodies={custodies}
+          mainWholeNumberClassName={bodyClassName}
+          dollarWholeNumberClassName={dollarBodyClassName}
+        />
+      ) : null}
 
-      <AUMBreakdown
-        titleClassName={titleClassName}
-        mainWholeNumberClassName={bodyClassName}
-        dollarWholeNumberClassName={dollarBodyClassName}
-        custodies={custodies}
-      />
-      <StakingRewardVaults
-        titleClassName={titleClassName}
-        bodyClassName={bodyClassName}
-        alpStakingAccount={alpStakingAccount}
-        adxStakingAccount={adxStakingAccount}
-        alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-        adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
-      />
-      <StakingRewardsWaitingToBeClaimed
-        titleClassName={titleClassName}
-        bodyClassName={bodyClassName}
-        alpStakingAccount={alpStakingAccount}
-        adxStakingAccount={adxStakingAccount}
-      />
-      <CurrentStakingRoundTime
-        titleClassName={titleClassName}
-        bodyClassName={bodyClassName}
-        alpStakingAccount={alpStakingAccount}
-        adxStakingAccount={adxStakingAccount}
-      />
+      {selectedTab === 'All' || selectedTab === 'Vesting' ? (
+        <VestsBreakdown titleClassName={titleClassName} vests={vests} />
+      ) : null}
 
-      <StakingLockedTokens
-        titleClassName={titleClassName}
-        bodyClassName={bodyClassName}
-        alpStakingAccount={alpStakingAccount}
-        adxStakingAccount={adxStakingAccount}
-      />
-      <VolumeBreakdownPerToken
-        titleClassName={titleClassName}
-        bodyClassName={smallBodyClassName}
-        custodies={custodies}
-      />
-      <AllTimeFeesBreakdownPerToken
-        titleClassName={titleClassName}
-        bodyClassName={smallBodyClassName}
-        custodies={custodies}
-      />
-      <PositionsNow
-        titleClassName={titleClassName}
-        bodyClassName={bodyClassName}
-        mainPool={mainPool}
-      />
-      <PositionsAllTime
-        titleClassName={titleClassName}
-        bodyClassName={bodyClassName}
-        mainPool={mainPool}
-      />
-      <PositionsNowBreakdown
-        titleClassName={titleClassName}
-        custodies={custodies}
-        mainWholeNumberClassName={bodyClassName}
-        dollarWholeNumberClassName={dollarBodyClassName}
-      />
+      {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
+        <BucketsAllocation titleClassName={titleClassName} cortex={cortex} />
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
+        <BucketsMintedAmount titleClassName={titleClassName} cortex={cortex} />
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
+        <Tokenomics titleClassName={titleClassName} />
+      ) : null}
 
-      <VestsBreakdown titleClassName={titleClassName} vests={vests} />
+      {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
+      ) : null}
 
-      <BucketsAllocation titleClassName={titleClassName} cortex={cortex} />
-      <BucketsMintedAmount titleClassName={titleClassName} cortex={cortex} />
-      <Tokenomics titleClassName={titleClassName} />
-
-      <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
-
-      {sablierStakingResolveStakingRoundCronThreads ? (
+      {sablierStakingResolveStakingRoundCronThreads &&
+      (selectedTab === 'All' ||
+        selectedTab === 'Staking' ||
+        selectedTab === 'Automation') ? (
         <StakingResolveRoundThread
           titleClassName={titleClassName}
           title="LM Staking Resolve Round Thread"
@@ -215,7 +270,10 @@ export default function DetailedMonitoring({
           }
         />
       ) : null}
-      {sablierStakingResolveStakingRoundCronThreads ? (
+      {sablierStakingResolveStakingRoundCronThreads &&
+      (selectedTab === 'All' ||
+        selectedTab === 'Staking' ||
+        selectedTab === 'Automation') ? (
         <StakingResolveRoundThread
           titleClassName={titleClassName}
           title="LP Staking Resolve Round Thread"
@@ -225,18 +283,28 @@ export default function DetailedMonitoring({
         />
       ) : null}
 
-      <AdrenaAccounts
-        titleClassName={titleClassName}
-        cortex={cortex}
-        mainPool={mainPool}
-        custodies={custodies}
-      />
+      {selectedTab === 'All' || selectedTab === 'Accounts' ? (
+        <AdrenaAccounts
+          titleClassName={titleClassName}
+          cortex={cortex}
+          mainPool={mainPool}
+          custodies={custodies}
+        />
+      ) : null}
 
-      <MintAccounts titleClassName={titleClassName} custodies={custodies} />
+      {selectedTab === 'All' || selectedTab === 'Accounts' ? (
+        <MintAccounts titleClassName={titleClassName} custodies={custodies} />
+      ) : null}
 
-      <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
+      {selectedTab === 'All' || selectedTab === 'Accounts' ? (
+        <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
+      ) : null}
 
-      <FinalizeLockedStakedThreads titleClassName={titleClassName} />
+      {selectedTab === 'All' ||
+      selectedTab === 'Staking' ||
+      selectedTab === 'Automation' ? (
+        <FinalizeLockedStakedThreads titleClassName={titleClassName} />
+      ) : null}
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function StakingRewardVaults({
     <StyledContainer
       title="STAKING REWARD VAULTS"
       subTitle="Rewards accruing to be redistributed to stakers at the end of the staking round."
-      className="w-auto grow"
+      className="grow w-[40em]"
       titleClassName={titleClassName}
       bodyClassName="flex flex-col sm:flex-row grow items-center justify-center"
     >
