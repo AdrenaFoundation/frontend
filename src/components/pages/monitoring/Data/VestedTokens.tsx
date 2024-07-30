@@ -15,7 +15,7 @@ export default function VestedTokens({
     <StyledContainer
       headerClassName="text-center justify-center"
       title="VESTED TOKENS"
-      className="w-auto grow min-w-[22em]"
+      className="grow flex items-center min-w-[22em] w-[22em]"
       bodyClassName="items-center"
       titleClassName={titleClassName}
     >

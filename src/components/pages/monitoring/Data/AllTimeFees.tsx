@@ -17,7 +17,7 @@ export default function AllTimeFees({
     <StyledContainer
       headerClassName="text-center justify-center"
       title="ALL TIME FEES"
-      className="w-auto grow min-w-[22em]"
+      className="grow flex items-center min-w-[22em] w-[22em]"
       titleClassName={titleClassName}
     >
       <div

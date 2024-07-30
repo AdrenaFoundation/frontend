@@ -15,7 +15,7 @@ export default function VestedADX({
     <StyledContainer
       headerClassName="text-center justify-center"
       title="VESTED ADX"
-      className="w-auto grow"
+      className="grow flex items-center min-w-[22em] w-[22em]"
       bodyClassName="items-center"
       titleClassName={titleClassName}
     >

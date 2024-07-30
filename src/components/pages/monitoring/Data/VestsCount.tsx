@@ -17,7 +17,7 @@ export default function VestsCount({
     <StyledContainer
       headerClassName="text-center justify-center min-w-[10em]"
       title="VESTS COUNT"
-      className="w-auto grow"
+      className="grow flex items-center min-w-[22em] w-[22em]"
       bodyClassName="items-center"
       titleClassName={titleClassName}
     >

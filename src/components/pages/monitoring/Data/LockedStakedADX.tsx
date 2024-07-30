@@ -15,7 +15,7 @@ export default function LockedStakedADX({
     <StyledContainer
       headerClassName="text-center justify-center"
       title="LOCKED STAKED ADX"
-      className="w-auto grow min-w-[22em]"
+      className="grow flex items-center min-w-[22em] w-[22em]"
       titleClassName={titleClassName}
     >
       <div className="flex items-center justify-center">

@@ -13,7 +13,7 @@ export default function ADXCirculatingSupply({
   return (
     <StyledContainer
       title="ADX CIRCULATING SUPPLY"
-      className="w-auto grow items-center min-w-[22em]"
+      className="grow flex items-center min-w-[22em] w-[22em]"
       titleClassName={titleClassName}
       bodyClassName="items-center"
     >

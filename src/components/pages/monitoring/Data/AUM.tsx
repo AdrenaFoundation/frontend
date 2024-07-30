@@ -15,7 +15,7 @@ export default function AUM({
     <StyledContainer
       title="AUM"
       headerClassName="text-center justify-center"
-      className="w-auto grow flex items-center min-w-[22em]"
+      className="grow flex items-center min-w-[22em] w-[22em]"
       titleClassName={titleClassName}
     >
       <div className={bodyClassName}>
