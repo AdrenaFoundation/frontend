@@ -45,7 +45,7 @@ export default function Table({
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className="text-lg font-special overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
+            className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade"
           >
             {title}
           </div>
