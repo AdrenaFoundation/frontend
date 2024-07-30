@@ -22,7 +22,7 @@ export default function AdrenaAccounts({
     <StyledContainer
       title="Adrena Accounts"
       subTitle="Adrena Program on-chain accounts (PDAs)."
-      className="w-auto grow"
+      className="w-auto grow min-w-[45%]"
       titleClassName={titleClassName}
     >
       <Table
@@ -31,7 +31,7 @@ export default function AdrenaAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 Program
                 <InfoAnnotation
                   text="Account containing the source code of the Adrena smart contract."
@@ -48,7 +48,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 Admin
                 <InfoAnnotation
                   text="The program's administrator account, authorized to modify settings and upgrade the program."
@@ -65,7 +65,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 Cortex
                 <TitleAnnotation text="PDA" />
                 <InfoAnnotation
@@ -83,7 +83,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 Pool
                 <TitleAnnotation text="PDA" />
                 <InfoAnnotation
@@ -121,7 +121,7 @@ export default function AdrenaAccounts({
             .flat(),
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 Transfer Authority
                 <TitleAnnotation text="PDA" />
                 <InfoAnnotation
@@ -139,7 +139,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 ADX Staking <TitleAnnotation text="PDA" />
                 <InfoAnnotation
                   text="Top-level account holding details on ADX token staking, tracking participation and rewards."
@@ -158,7 +158,7 @@ export default function AdrenaAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 ALP Staking <TitleAnnotation text="PDA" />
                 <InfoAnnotation
                   text="Top-level account holding details on ALP token staking, tracking participation and rewards."

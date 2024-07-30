@@ -16,7 +16,7 @@ export default function MintAccounts({
   return (
     <StyledContainer
       title="Mints"
-      className="w-auto grow"
+      className="w-auto grow min-w-[45%]"
       titleClassName={titleClassName}
     >
       <Table
@@ -25,7 +25,7 @@ export default function MintAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 ADX <TitleAnnotation text="Mint" />
                 <InfoAnnotation
                   text="Adrena's Governance token mint, can be staked for governance and revenue share access."
@@ -42,7 +42,7 @@ export default function MintAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 ALP <TitleAnnotation text="Mint" />
                 <InfoAnnotation
                   text="Adrena's Liquidity Pool token mint, represents a share of the pool."
@@ -60,7 +60,7 @@ export default function MintAccounts({
 
           ...custodies.map((custody) => ({
             rowTitle: (
-              <div>
+              <div className="font-boldy">
                 {custody.tokenInfo.symbol}
                 <TitleAnnotation text="Mint" />
               </div>

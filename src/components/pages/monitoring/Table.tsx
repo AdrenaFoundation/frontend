@@ -40,7 +40,7 @@ export default function Table({
           style={{
             width: rowTitleWidth ?? '150px',
           }}
-        ></div>
+        />
 
         {(columnsTitles ?? []).map((title, i) => (
           <div

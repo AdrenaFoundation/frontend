@@ -30,7 +30,7 @@ export default function FinalizeLockedStakedThreadsInner() {
   }
 
   return (
-    <>
+    <div className="w-full">
       <Image
         className={twMerge(
           'absolute w-auto h-[1.5em] top-8 right-8 opacity-40',
@@ -114,6 +114,6 @@ export default function FinalizeLockedStakedThreadsInner() {
           }
         />
       </div>
-    </>
+    </div>
   );
 }

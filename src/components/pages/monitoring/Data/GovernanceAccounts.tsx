@@ -17,7 +17,7 @@ export default function GovernanceAccounts({
     <StyledContainer
       title="Governance Accounts"
       subTitle="List on-chain accounts related to Governance."
-      className="w-auto grow"
+      className="w-auto grow min-w-[45%]"
       titleClassName={titleClassName}
     >
       <Table
@@ -26,7 +26,7 @@ export default function GovernanceAccounts({
         data={[
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 Governance Program
                 <InfoAnnotation
                   text="Manages the DAO's operations as the official Solana governance smart contract."
@@ -43,7 +43,7 @@ export default function GovernanceAccounts({
           },
           {
             rowTitle: (
-              <div className="flex items-center">
+              <div className="flex items-center font-boldy">
                 Governance Realm <TitleAnnotation text="PDA" />
                 <InfoAnnotation
                   text="Represents Adrena's DAO within the Solana DAO program."

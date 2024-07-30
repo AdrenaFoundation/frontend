@@ -30,7 +30,10 @@ export default function Block({
     >
       {data.map(({ rowTitle, ...v }, i) => (
         <div className="bg-third rounded-md p-3" key={i}>
-          <p className="opacity-50">{rowTitle}</p>
+          <p className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade">
+            {rowTitle}
+          </p>
+
           <ul className="flex flex-col gap-2 py-2">
             {(() => {
               const values = Object.hasOwn(v, 'value')
