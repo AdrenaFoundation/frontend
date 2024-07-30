@@ -4,7 +4,8 @@ import AllTimeFees from '@/components/pages/monitoring/Data/AllTimeFees';
 import AllTimeFeesBreakdownPerToken from '@/components/pages/monitoring/Data/AllTimeFeesBreakdownPerToken';
 import AUM from '@/components/pages/monitoring/Data/AUM';
 import AUMBreakdown from '@/components/pages/monitoring/Data/AUMBreakdown';
-import Buckets from '@/components/pages/monitoring/Data/Buckets';
+import BucketsAllocation from '@/components/pages/monitoring/Data/BucketsAllocation';
+import BucketsMintedAmount from '@/components/pages/monitoring/Data/BucketsMintedAmount';
 import CurrentStakingRoundFees from '@/components/pages/monitoring/Data/CurrentStakingRoundFees';
 import CurrentStakingRoundTime from '@/components/pages/monitoring/Data/CurrentStakingRoundTime';
 import FinalizeLockedStakedThreads from '@/components/pages/monitoring/Data/FinalizeLockedStakeThreads';
@@ -199,7 +200,8 @@ export default function DetailedMonitoring({
 
       <VestsBreakdown titleClassName={titleClassName} vests={vests} />
 
-      <Buckets titleClassName={titleClassName} cortex={cortex} />
+      <BucketsAllocation titleClassName={titleClassName} cortex={cortex} />
+      <BucketsMintedAmount titleClassName={titleClassName} cortex={cortex} />
       <Tokenomics titleClassName={titleClassName} />
 
       <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
