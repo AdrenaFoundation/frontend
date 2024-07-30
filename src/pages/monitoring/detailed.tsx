@@ -93,7 +93,7 @@ export default function DetailedMonitoring({
   const smallBodyClassName = 'text-xl font-boldy';
 
   return (
-    <div className="flex gap-2 pb-4 pt-2 flex-wrap w-full ml-auto mr-auto justify-center">
+    <div className="flex gap-2 pb-4 pt-2 pl-2 pr-2 flex-wrap w-full ml-auto mr-auto justify-center">
       <div className="flex gap-2 flex-wrap w-full ml-auto mr-auto justify-center">
         {selectedTab === 'All' || selectedTab === 'Pool' ? (
           <AUM

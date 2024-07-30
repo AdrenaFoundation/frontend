@@ -145,7 +145,7 @@ export default function BasicMonitoring({
     mainPool?.longPositions ?? 0 + (mainPool?.shortPositions ?? 0);
 
   return (
-    <div className="flex flex-row flex-wrap justify-center gap-2 pb-4 pt-2">
+    <div className="flex flex-row flex-wrap justify-center gap-2 pb-4 pt-2 pl-2 pr-2">
       {alpChartData ? (
         <GlobalHealthOverview
           compositionChartData={alpChartData}
