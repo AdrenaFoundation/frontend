@@ -121,8 +121,6 @@ export default function App(props: AppProps) {
 
   if (!isInitialized || !activeRpc) return <Loader />;
 
-  console.log('process.env', process.env);
-
   const paused = process.env.NEXT_PUBLIC_PAUSED === 'true';
 
   return (

@@ -6,14 +6,14 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import Loader from '@/components/Loader/Loader';
 import useSablierFinalizeLockedStakedThreads from '@/hooks/useSablierFinalizeLockedStakedThreads';
 
-import warningImg from '../../../../../public/images/Icons/warning.png';
-import refreshIcon from '../../../../../public/images/refresh.png';
-import NumberInfo from '../NumberInfo';
-import OnchainAccountInfo from '../OnchainAccountInfo';
-import RemainingTimeToDate from '../RemainingTimeToDate';
-import Table from '../Table';
+import warningImg from '../../../../public/images/Icons/warning.png';
+import refreshIcon from '../../../../public/images/refresh.png';
+import NumberInfo from './NumberInfo';
+import OnchainAccountInfo from './OnchainAccountInfo';
+import RemainingTimeToDate from './RemainingTimeToDate';
+import Table from './Table';
 
-export default function FinalizeLockedStakedThreads() {
+export default function FinalizeLockedStakedThreadsInner() {
   const { threads, triggerReload, isLoading } =
     useSablierFinalizeLockedStakedThreads();
 
@@ -30,7 +30,7 @@ export default function FinalizeLockedStakedThreads() {
   }
 
   return (
-    <>
+    <div className="w-full">
       <Image
         className={twMerge(
           'absolute w-auto h-[1.5em] top-8 right-8 opacity-40',
@@ -114,6 +114,6 @@ export default function FinalizeLockedStakedThreads() {
           }
         />
       </div>
-    </>
+    </div>
   );
 }

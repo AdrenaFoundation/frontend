@@ -34,18 +34,18 @@ export default function Table({
 
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
-      <div className="flex">
+      <div className="flex pb-2">
         <div
           className="flex shrink-0 ml-2"
           style={{
             width: rowTitleWidth ?? '150px',
           }}
-        ></div>
+        />
 
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className="text-lg font-special overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
+            className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade"
           >
             {title}
           </div>
