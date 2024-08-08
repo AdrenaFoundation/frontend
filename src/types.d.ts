@@ -102,7 +102,6 @@ export type PositionExtended = {
   collateralUsd: number;
   price: number;
   collateralAmount: number;
-  entryFeeUsd: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
 

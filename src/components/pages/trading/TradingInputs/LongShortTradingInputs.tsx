@@ -96,8 +96,6 @@ export default function LongShortTradingInputs({
     sizeUsd: number;
     size: number;
     swapFeeUsd: number | null;
-    openPositionFeeUsd: number;
-    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
     exitFeeUsd: number;
@@ -669,7 +667,6 @@ export default function LongShortTradingInputs({
                     >
                       <FormatNumber
                         nb={
-                          openedPosition.entryFeeUsd +
                           openedPosition.exitFeeUsd +
                           (openedPosition.borrowFeeUsd ?? 0)
                         }
@@ -687,14 +684,7 @@ export default function LongShortTradingInputs({
                   className="flex-col mt-3"
                 >
                   <FormatNumber
-                    nb={
-                      typeof positionInfos?.totalOpenPositionFeeUsd !==
-                        'undefined' &&
-                      typeof positionInfos?.exitFeeUsd !== 'undefined'
-                        ? positionInfos.totalOpenPositionFeeUsd +
-                          positionInfos.exitFeeUsd
-                        : undefined
-                    }
+                    nb={positionInfos.exitFeeUsd}
                     format="currency"
                     className="text-lg"
                   />
