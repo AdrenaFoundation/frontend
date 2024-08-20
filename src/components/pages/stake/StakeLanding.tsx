@@ -154,7 +154,11 @@ export default function StakeLanding() {
         <div className="bg-main rounded-lg border p-1 mt-10">
           <Table
             className="bg-transparent border-none"
-            columnsTitles={['liquid', '180d', '360d', '540d', '720d']}
+            columnsTitles={
+              token.name === 'ADX'
+                ? ['liquid', '180d', '360d', '540d', '720d']
+                : ['180d', '360d', '540d', '720d']
+            }
             columnTitlesClassName="text-base text-white"
             data={[
               {
