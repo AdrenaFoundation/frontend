@@ -12,10 +12,12 @@ export default function Table({
   columnsTitles,
   data,
   rowTitleWidth,
+  columnTitlesClassName,
 }: {
   breakpoint?: string | null;
   className?: string;
   columnsTitles?: ReactNode[];
+  columnTitlesClassName?: string;
   data: (
     | {
         rowTitle: ReactNode;
@@ -45,7 +47,10 @@ export default function Table({
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade"
+            className={twMerge(
+              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
+              columnTitlesClassName,
+            )}
           >
             {title}
           </div>
@@ -85,6 +90,6 @@ export default function Table({
       ))}
     </StyledSubSubContainer>
   ) : (
-    <Block data={data} columnsTitles={columnsTitles} />
+    <Block data={data} columnsTitles={columnsTitles} className={className} />
   );
 }
