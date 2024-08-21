@@ -154,12 +154,11 @@ export default function StakeLanding() {
         <div className="bg-main rounded-lg border p-1 mt-10">
           <Table
             className="bg-transparent border-none"
-            columnsTitles={
-              token.name === 'ADX'
-                ? ['liquid', '180d', '360d', '540d', '720d']
-                : ['180d', '360d', '540d', '720d']
-            }
+            columnsTitles={token.days.map((d) =>
+              d === 0 ? 'liquid' : `${d}d`,
+            )}
             columnTitlesClassName="text-base text-white"
+            columnWrapperClassName="ml-1"
             data={[
               {
                 rowTitle: 'USDC yield',
@@ -191,7 +190,7 @@ export default function StakeLanding() {
         <Image
           src={alpMonster}
           alt="ALP Monster"
-          className="absolute bottom-0 left-0 w-1/2 grayscale"
+          className="absolute bottom-0 left-0 w-1/2 grayscale scale-[0.75]"
         />
         <div
           className="hidden sm:block absolute left-0 top-0 w-1/2 h-full flex-1 opacity-60"
@@ -210,7 +209,7 @@ export default function StakeLanding() {
         <Image
           src={adxMonster}
           alt="ADX Monster"
-          className="absolute bottom-0 right-0 w-1/2 grayscale"
+          className="absolute bottom-10 right-0 w-1/2 grayscale"
         />
         <div
           className="hidden sm:block absolute right-0 top-0 w-1/2 h-full flex-1 opacity-60"

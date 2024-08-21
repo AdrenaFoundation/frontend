@@ -13,11 +13,13 @@ export default function Table({
   data,
   rowTitleWidth,
   columnTitlesClassName,
+  columnWrapperClassName,
 }: {
   breakpoint?: string | null;
   className?: string;
   columnsTitles?: ReactNode[];
   columnTitlesClassName?: string;
+  columnWrapperClassName?: string;
   data: (
     | {
         rowTitle: ReactNode;
@@ -38,7 +40,7 @@ export default function Table({
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
       <div className="flex pb-2">
         <div
-          className="flex shrink-0 ml-2"
+          className={twMerge('flex shrink-0 ml-2', columnWrapperClassName)}
           style={{
             width: rowTitleWidth ?? '150px',
           }}
