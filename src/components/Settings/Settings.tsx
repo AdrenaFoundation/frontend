@@ -84,7 +84,6 @@ export default function Settings({
             addNotification({
               title: `Automatic switch ${autoRpcMode ? 'disabled' : 'enabled'}`,
               duration: 'fast',
-              position: 'bottom-right',
             });
           }}
         />
