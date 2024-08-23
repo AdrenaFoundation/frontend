@@ -44,10 +44,12 @@ export default function TradingChartHeader({
     } else if (price < previousTokenPrice) {
       setTokenColor('text-red');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streamingTokenPrices]);
 
   useEffect(() => {
     setPreviousTokenPrice(streamingTokenPrices?.[selected.symbol] || 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streamingTokenPrices]);
 
   return (

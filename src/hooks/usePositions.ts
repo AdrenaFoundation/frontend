@@ -41,6 +41,7 @@ export default function usePositions(): {
     return () => {
       clearInterval(interval);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadPositions, trickReload, window.adrena.client.readonlyConnection]);
 
   return {

@@ -55,7 +55,6 @@ export const autoConnectWalletAction =
       addNotification({
         title: 'Wallet auto-connected',
         duration: 'fast',
-        position: 'bottom-right',
       });
     };
 
@@ -97,7 +96,6 @@ export const connectWalletAction =
       addNotification({
         title: 'Wallet connected',
         duration: 'fast',
-        position: 'bottom-right',
       });
     };
 
@@ -119,7 +117,6 @@ export const connectWalletAction =
         message:
           err instanceof WalletConnectionError ? err.message : 'Unknown error',
         duration: 'long',
-        position: 'bottom-right',
       });
 
       adapter.removeListener('connect', connectFn);
@@ -139,7 +136,6 @@ export const disconnectWalletAction =
       addNotification({
         title: 'Wallet disconnected',
         duration: 'fast',
-        position: 'bottom-right',
       });
     });
 

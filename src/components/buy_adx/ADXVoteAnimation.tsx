@@ -19,9 +19,9 @@ export default function ADXVoteAnimation() {
     { vote: 0 | 1; pfp: StaticImageData }[]
   >([]);
 
-  const monsters = [mons1, mons2, mons3, mons4, mons5, mons6, mons7];
-
   useEffect(() => {
+    const monsters = [mons1, mons2, mons3, mons4, mons5, mons6, mons7] as const;
+
     if (totalParticipants === 30) {
       setNoCounter(0);
       setYesCounter(0);
@@ -45,7 +45,6 @@ export default function ADXVoteAnimation() {
     }, 1000);
 
     return () => clearInterval(interval);
-    9;
   }, [totalParticipants]);
 
   return (

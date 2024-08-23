@@ -52,7 +52,9 @@ export default function ClosePosition({
       }
 
       setExitPriceAndFee(exitPriceAndFee);
-    })().catch(/* ignore error */);
+    })().catch(() => {
+      /* ignore error */
+    });
 
     // Trick here so we reload only when one of the prices changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
