@@ -18,7 +18,6 @@ export default function PositionsBlocks({
   positions,
   triggerClosePosition,
   triggerEditPositionCollateral,
-  wrapped = true,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -30,7 +29,8 @@ export default function PositionsBlocks({
   wrapped?: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const columnStyleTitle = 'flex w-full font-mono text-xs text-txtfade';
+  const columnStyleTitle =
+    'flex w-full font-mono text-xxs text-txtfade justify-center items-center';
 
   if (positions === null && !connected) {
     return (
@@ -62,215 +62,190 @@ export default function PositionsBlocks({
       return (
         <div
           className={twMerge(
-            'flex min-w-[300px] w-full',
-            window.location.pathname === '/my_dashboard'
-              ? 'mt-0'
-              : 'mt-4 lg:mt-0',
-            positions.length > 1 ? 'lg:max-w-[49%]' : 'lg:max-w-full',
+            'min-w-[300px] w-full flex flex-col border rounded-lg bg-secondary',
+            bodyClassName,
+            borderColor,
           )}
           key={position.pubkey.toBase58()}
         >
-          <div
-            className={twMerge(
-              'flex flex-col border rounded-lg w-full bg-secondary',
-              bodyClassName,
-              borderColor,
-            )}
-          >
-            <div
-              className={twMerge(
-                'flex flex-row justify-between items-center border-b',
-                borderColor ? borderColor : 'border-bcolor',
-              )}
-            >
-              <div className="flex flex-row h-10 items-center relative overflow-hidden rounded-tl-lg w-full">
-                <Image
-                  className="absolute left-[-0.7em] top-auto grayscale opacity-40"
-                  src={position.token.image}
-                  width={70}
-                  height={70}
-                  alt={`${position.token.symbol} logo`}
-                />
-
-                <div className="flex ml-16 h-full w-full items-center pl-2">
-                  {window.location.pathname !== '/trade' ? (
-                    <Link
-                      href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
-                      target=""
-                    >
-                      <h3 className="uppercase underline font-boldy">
-                        {position.token.symbol}
-                      </h3>
-                    </Link>
-                  ) : (
-                    <h3 className="uppercase font-boldy">
-                      {position.token.symbol}
-                    </h3>
-                  )}
-
-                  <h3
-                    className={twMerge(
-                      'uppercase font-boldy ml-1',
-                      position.side === 'long' ? 'text-green' : 'text-red',
-                    )}
-                  >
-                    {position.side}
+          <div className="flex border-b p-2 pb-2 justify-center items-center relative overflow-hidden">
+            <div className="flex absolute top-2 left-4">
+              {window.location.pathname !== '/trade' ? (
+                <Link
+                  href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
+                  target=""
+                >
+                  <h3 className="uppercase underline font-boldy">
+                    {position.token.symbol}
                   </h3>
-
-                  <div className="flex flex-col ml-auto pr-4 items-end">
-                    <div className="flex">
-                      <FormatNumber
-                        nb={position.leverage}
-                        format="number"
-                        className="text-sm lowercase"
-                        suffix="x"
-                        isDecimalDimmed={false}
-                      />
-                    </div>
-
-                    {liquidable ? (
-                      <div className="flex">
-                        <h5 className="text-red text-xs">Liquidable</h5>
-                      </div>
-                    ) : null}
-                  </div>
+                </Link>
+              ) : (
+                <div className="uppercase font-boldy text-sm lg:text-xl">
+                  {position.token.symbol}
                 </div>
+              )}
+
+              <div
+                className={twMerge(
+                  'uppercase font-boldy text-sm lg:text-xl ml-1',
+                  position.side === 'long' ? 'text-green' : 'text-red',
+                )}
+              >
+                {position.side}
               </div>
             </div>
 
-            <div className="flex flex-col grow justify-evenly">
-              <div className="grid grid-cols-3 gap-4 p-4">
-                <div className="flex flex-col">
-                  <div className={columnStyleTitle}>Net value</div>
-                  <div className="flex">
-                    {position.pnl ? (
-                      <>
-                        <NetValueTooltip position={position}>
-                          <span className="underline-dashed">
-                            <FormatNumber
-                              nb={position.collateralUsd + position.pnl}
-                              format="currency"
-                              className="text-md"
-                            />
-                          </span>
-                        </NetValueTooltip>
-                      </>
-                    ) : (
-                      '-'
-                    )}
-                  </div>
-                  <div className="flex">
-                    {position.pnl ? (
-                      <>
+            {liquidable ? (
+              <div className="flex absolute right-3 top-2">
+                <h2 className="text-red text-xs">Liquidable</h2>
+              </div>
+            ) : null}
+
+            <Image
+              className="absolute right-[-2em] top-auto grayscale opacity-10 w-[5em] h-[5em] md:w-[7em] md:h-[7em] lg:w-[10em] lg:h-[10em]"
+              src={position.token.image}
+              width={200}
+              height={200}
+              alt={`${position.token.symbol} logo`}
+            />
+
+            <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+              <div className={columnStyleTitle}>Net value</div>
+              <div className="flex">
+                {position.pnl ? (
+                  <>
+                    <NetValueTooltip position={position}>
+                      <span className="underline-dashed">
                         <FormatNumber
-                          nb={position.pnl}
+                          nb={position.collateralUsd + position.pnl}
                           format="currency"
-                          className={`mr-0.5 text-xs text-${
-                            position.pnl && position.pnl > 0
-                              ? 'green'
-                              : 'redbright'
-                          }`}
-                          isDecimalDimmed={false}
+                          className="text-md"
                         />
-                        <FormatNumber
-                          nb={(position.pnl / position.collateralUsd) * 100}
-                          format="percentage"
-                          prefix="("
-                          suffix=")"
-                          precision={2}
-                          isDecimalDimmed={false}
-                          className={`text-xs text-${
-                            position.pnl && position.pnl > 0
-                              ? 'green'
-                              : 'redbright'
-                          }`}
-                        />
-                      </>
-                    ) : null}
-                  </div>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className={twMerge(columnStyleTitle, 'justify-center')}>
-                    Size
-                  </div>
-                  <div className="flex">
-                    <FormatNumber
-                      nb={position.sizeUsd}
-                      format="currency"
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className={twMerge(columnStyleTitle, 'justify-end')}>
-                    Collateral
-                  </div>
-                  <div className="flex">
-                    <FormatNumber
-                      nb={position.collateralUsd}
-                      format="currency"
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
+                      </span>
+                    </NetValueTooltip>
+                  </>
+                ) : (
+                  '-'
+                )}
+              </div>
 
-                <div className="flex flex-col">
-                  <div className={columnStyleTitle}>Entry Price</div>
-                  <div className="flex">
+              <div className="flex mt-1">
+                {position.pnl ? (
+                  <>
                     <FormatNumber
-                      nb={position.price}
+                      nb={position.pnl}
                       format="currency"
-                      className="text-xs bold"
+                      className={`mr-0.5 text-xs text-${
+                        position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                      }`}
+                      isDecimalDimmed={false}
                     />
-                  </div>
-                </div>
-                <div className="flex flex-col items-center">
-                  <div className={twMerge(columnStyleTitle, 'justify-center')}>
-                    Market Price
-                  </div>
-                  <div className="flex">
                     <FormatNumber
-                      nb={tokenPrices[position.token.symbol]}
-                      format="currency"
-                      className="text-xs bold"
+                      nb={(position.pnl / position.collateralUsd) * 100}
+                      format="percentage"
+                      prefix="("
+                      suffix=")"
+                      precision={2}
+                      isDecimalDimmed={false}
+                      className={`text-xs text-${
+                        position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                      }`}
                     />
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <div className={twMerge(columnStyleTitle, 'justify-end')}>
-                    Liq. Price
-                  </div>
-                  <div className="flex">
-                    <FormatNumber
-                      nb={position.liquidationPrice}
-                      format="currency"
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
+            <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+              <div className={columnStyleTitle}>Leverage</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={position.leverage}
+                  format="number"
+                  className="text-sm lowercase"
+                  suffix="x"
+                  isDecimalDimmed={false}
+                />
               </div>
             </div>
 
-            <div className="flex justify-center items-center w-full p-2 grow-0">
-              <Button
-                size="xs"
-                className="text-txtfade border-bcolor bg-[#a8a8a810] w-[90%]"
-                title="Edit"
-                variant="outline"
-                onClick={() => {
-                  triggerEditPositionCollateral(position);
-                }}
-              />
-              <Button
-                size="xs"
-                className="text-txtfade border-bcolor ml-2 bg-[#a8a8a810] w-[90%]"
-                title="Close"
-                variant="outline"
-                onClick={() => {
-                  triggerClosePosition(position);
-                }}
-              />
+            <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+              <div className={columnStyleTitle}>Size</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={position.sizeUsd}
+                  format="currency"
+                  className="text-xs"
+                />
+              </div>
             </div>
+
+            <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+              <div className={columnStyleTitle}>Collateral</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={position.collateralUsd}
+                  format="currency"
+                  className="text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col min-w-[5em] w-[5em] items-center">
+              <div className={columnStyleTitle}>Entry Price</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={position.price}
+                  format="currency"
+                  className="text-xs bold"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+              <div className={columnStyleTitle}>Market Price</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={tokenPrices[position.token.symbol]}
+                  format="currency"
+                  className="text-xs bold"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+              <div className={columnStyleTitle}>Liq. Price</div>
+              <div className="flex">
+                <FormatNumber
+                  nb={position.liquidationPrice}
+                  format="currency"
+                  className="text-xs"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center w-full pl-2 pr-2 pb-2 grow-0">
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor bg-[#a8a8a810] w-[90%]"
+              title="Edit"
+              variant="outline"
+              onClick={() => {
+                triggerEditPositionCollateral(position);
+              }}
+            />
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor ml-2 bg-[#a8a8a810] w-[90%]"
+              title="Close"
+              variant="outline"
+              onClick={() => {
+                triggerClosePosition(position);
+              }}
+            />
           </div>
         </div>
       );
@@ -310,19 +285,14 @@ export default function PositionsBlocks({
       ) : null}
 
       {positions && positions.length ? (
-        wrapped ? (
-          <div
-            className={twMerge(
-              'flex flex-col bg-first w-full h-full',
-              'lg:gap-3 lg:flex-row lg:flex-wrap',
-              className,
-            )}
-          >
-            {generatePositionBlocs(positions)}
-          </div>
-        ) : (
-          generatePositionBlocs(positions)
-        )
+        <div
+          className={twMerge(
+            'flex flex-col bg-first w-full h-full gap-2',
+            className,
+          )}
+        >
+          {generatePositionBlocs(positions)}
+        </div>
       ) : null}
     </>
   );

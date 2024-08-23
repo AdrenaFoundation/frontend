@@ -268,29 +268,20 @@ export default function Trade({
 
         {isBigScreen ? (
           <div className="flex flex-col w-full">
-            <div
-              className={twMerge(
-                'flex z-30 overflow-hidden bg-main/90 xl:pl-3 xl:pr-3 border rounded-lg mt-4',
-                !positions?.length
-                  ? 'min-h-[15em] items-center justify-center'
-                  : null,
-              )}
-            >
-              <Positions
-                bodyClassName={'mt-3'}
-                connected={connected}
-                positions={positions}
-                triggerPositionsReload={triggerPositionsReload}
-                triggerUserProfileReload={triggerUserProfileReload}
-                isBigScreen={isBigScreen}
-              />
-            </div>
+            <Positions
+              className="mt-4"
+              connected={connected}
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
+              isBigScreen={isBigScreen}
+            />
           </div>
         ) : (
           <div className="flex flex-row">
             <Positions
               className={
-                'sm:w-1/2 sm:mr-4 lg:mr-0 lg:mt-4 md:w-[57%] lg:w-[65%] h-full'
+                'mt-4 sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full'
               }
               connected={connected}
               positions={positions}
@@ -298,6 +289,7 @@ export default function Trade({
               triggerUserProfileReload={triggerUserProfileReload}
               isBigScreen={isBigScreen}
             />
+
             <div className="flex sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}

@@ -78,7 +78,7 @@ export default function Positions({
         )}
       </AnimatePresence>
 
-      {isBigScreen ? (
+      {/* {isBigScreen ? (
         <PositionsArray
           bodyClassName={bodyClassName}
           borderColor={borderColor}
@@ -88,18 +88,18 @@ export default function Positions({
           triggerClosePosition={setPositionToClose}
           triggerEditPositionCollateral={setPositionToEdit}
         />
-      ) : (
-        <PositionsBlocks
-          bodyClassName={bodyClassName}
-          borderColor={borderColor}
-          connected={connected}
-          positions={positions}
-          className={className}
-          triggerClosePosition={setPositionToClose}
-          triggerEditPositionCollateral={setPositionToEdit}
-          wrapped={wrapped}
-        />
-      )}
+      ) : ( */}
+      <PositionsBlocks
+        bodyClassName={bodyClassName}
+        borderColor={borderColor}
+        connected={connected}
+        positions={positions}
+        className={className}
+        triggerClosePosition={setPositionToClose}
+        triggerEditPositionCollateral={setPositionToEdit}
+        wrapped={wrapped}
+      />
+      {/* )} */}
     </>
   );
 }
