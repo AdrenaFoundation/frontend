@@ -1,5 +1,4 @@
 import { Connection } from '@solana/web3.js';
-import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
