@@ -38,7 +38,7 @@ export default function StakeLanding() {
     {
       name: 'ALP',
       desc: 'Provide liquidities long term: the longer the period, the higher the rewards. 70% of protocol fees are distributed to ALP holder and stakers.',
-      logo: adxLogo,
+      logo: alpLogo,
       sellingPoints: [
         {
           title: 'Locked stake rewards',
@@ -64,7 +64,7 @@ export default function StakeLanding() {
     {
       name: 'ADX',
       desc: 'Align with the protocol long term success: the longer the period, the higher the rewards. 20% of protocol fees are distributed to ADX stakers.',
-      logo: alpLogo,
+      logo: adxLogo,
       sellingPoints: [
         {
           title: 'Locked stake rewards',
@@ -151,7 +151,7 @@ export default function StakeLanding() {
           ))}
         </ul>
 
-        <div className="bg-main rounded-lg border p-1 mt-10">
+        <div className="bg-third rounded-lg border p-1 mt-10">
           <Table
             className="bg-transparent border-none"
             columnsTitles={token.days.map((d) =>
