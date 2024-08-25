@@ -7,7 +7,7 @@ import { PositionExtended } from '@/types';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
-import PositionsArray from './PositionsArray';
+import StopLossTakeProfit from '../StopLossTakeProfit/StopLossTakeProfit';
 import PositionsBlocks from './PositionsBlocks';
 
 export default function Positions({
@@ -18,7 +18,6 @@ export default function Positions({
   positions,
   triggerPositionsReload,
   triggerUserProfileReload,
-  wrapped = true,
   isBigScreen,
 }: {
   bodyClassName?: string;
@@ -28,7 +27,6 @@ export default function Positions({
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
-  wrapped?: boolean;
   isBigScreen: boolean | null;
 }) {
   const [positionToClose, setPositionToClose] =
@@ -37,6 +35,9 @@ export default function Positions({
   const [positionToEdit, setPositionToEdit] = useState<PositionExtended | null>(
     null,
   );
+
+  const [positionToStopLossTakeProfit, setPositionToStopLossTakeProfit] =
+    useState<PositionExtended | null>(null);
 
   if (isBigScreen === null) return null;
 
@@ -64,7 +65,7 @@ export default function Positions({
           <Modal
             title="Edit Collateral"
             close={() => setPositionToEdit(null)}
-            className={twMerge('flex flex-col items-center')}
+            className="flex flex-col items-center"
           >
             <EditPositionCollateral
               position={positionToEdit}
@@ -76,30 +77,35 @@ export default function Positions({
             />
           </Modal>
         )}
+
+        {positionToStopLossTakeProfit && (
+          <Modal
+            title="Stop Loss and Take Profit"
+            close={() => setPositionToStopLossTakeProfit(null)}
+            className="flex flex-col items-center min-w-[30em] max-w-full justify-center"
+          >
+            <StopLossTakeProfit
+              position={positionToStopLossTakeProfit}
+              triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
+              onClose={() => {
+                setPositionToStopLossTakeProfit(null);
+              }}
+            />
+          </Modal>
+        )}
       </AnimatePresence>
 
-      {/* {isBigScreen ? (
-        <PositionsArray
-          bodyClassName={bodyClassName}
-          borderColor={borderColor}
-          connected={connected}
-          positions={positions}
-          className={className}
-          triggerClosePosition={setPositionToClose}
-          triggerEditPositionCollateral={setPositionToEdit}
-        />
-      ) : ( */}
       <PositionsBlocks
         bodyClassName={bodyClassName}
         borderColor={borderColor}
         connected={connected}
         positions={positions}
         className={className}
+        triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}
         triggerEditPositionCollateral={setPositionToEdit}
-        wrapped={wrapped}
       />
-      {/* )} */}
     </>
   );
 }

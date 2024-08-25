@@ -37,7 +37,6 @@ export default function PositionsStats({
         positions={positions}
         triggerPositionsReload={triggerPositionsReload}
         triggerUserProfileReload={triggerUserProfileReload}
-        wrapped={false}
         isBigScreen={isBigScreen}
       />
     </StyledContainer>
