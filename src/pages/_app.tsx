@@ -29,7 +29,6 @@ import initializeApp, {
   createReadOnlySablierThreadProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { SupportedCluster } from '@/types';
 
 import logo from '../../public/images/logo.svg';
 import devnetConfiguration from '../config/devnet';
