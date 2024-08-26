@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 
-import { ImageRef } from '@/types';
+import { ImageRef, SupportedCluster } from '@/types';
 
 export type TokenInfo = {
   name: string;
@@ -18,7 +18,7 @@ export type RpcOption = {
 };
 
 export default interface IConfiguration {
-  readonly cluster: 'mainnet' | 'devnet';
+  readonly cluster: SupportedCluster;
 
   readonly tokensInfo: {
     [tokenPubkey: string]: TokenInfo;

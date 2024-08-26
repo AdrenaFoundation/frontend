@@ -53,8 +53,6 @@ function Loader(): JSX.Element {
 // Load cluster from URL then load the config and initialize the app.
 // When everything is ready load the main component
 export default function App(props: AppProps) {
-  const router = useRouter();
-  const [cluster, setCluster] = useState<SupportedCluster | null>(null);
   const [config, setConfig] = useState<IConfiguration | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [initializationInProgress, setInitializationInProgress] =
@@ -72,37 +70,26 @@ export default function App(props: AppProps) {
     setFavoriteRpc,
   } = useRpc(config);
 
-  // Load cluster from router
+  // The URL determine in which configuration we are
+  // If the URL is not in the list, it means we are developing in local or we are in vercel preview
+  // In that case, use env variable to determine the configuration
   useEffect(() => {
-    if (!router || !router.query || !router.isReady) return;
-
-    const cluster = router.query.cluster;
-
-    // Reload with default cluster if no cluster or un-recognized cluster
-    if (
-      !cluster ||
-      typeof cluster !== 'string' ||
-      !['devnet', 'mainnet'].includes(cluster)
-    ) {
-      router.query.cluster = 'devnet';
-      router.push(router);
-      return;
-    }
-
-    setCluster(cluster as SupportedCluster);
-  }, [router]);
-
-  // Load config from cluster
-  useEffect(() => {
-    if (!cluster) return;
-
     const config =
-      cluster === 'devnet'
-        ? { ...devnetConfiguration }
-        : { ...mainnetConfiguration };
+      (
+        {
+          'app.adrena.xyz': mainnetConfiguration,
+          'devnet.adrena.xyz': devnetConfiguration,
+          'alpha.adrena.xyz': devnetConfiguration,
+        } as Record<string, IConfiguration>
+      )[window.location.hostname] ??
+      {
+        mainnet: mainnetConfiguration,
+        devnet: devnetConfiguration,
+      }[process.env.NEXT_PUBLIC_DEV_CLUSTER ?? 'devnet'] ??
+      devnetConfiguration;
 
     setConfig(config);
-  }, [cluster]);
+  }, []);
 
   // Initialize the app once the config and rpc are ready
   useEffect(() => {
@@ -209,7 +196,7 @@ function AppComponent({
     }
   }, [cookies]);
 
-  // When the wallet connect/disconnect load/unload informations
+  // When the wallet connect/disconnect load/unload information
   // 1) load the program so we can execute txs with its wallet
   // 2) Set connected variable variable to true/false
   // 3) load the user profile so we can display nickname
