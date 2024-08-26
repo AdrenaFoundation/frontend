@@ -72,21 +72,42 @@ export default function App(props: AppProps) {
 
   // The URL determine in which configuration we are
   // If the URL is not in the list, it means we are developing in local or we are in vercel preview
-  // In that case, use env variable to determine the configuration
+  // In that case, use env variable/query params to determine the configuration
   useEffect(() => {
-    const config =
-      (
+    const config = (() => {
+      // Specific configuration for specific URLs (users front)
+      const specificUrlConfig = (
         {
           'app.adrena.xyz': mainnetConfiguration,
           'devnet.adrena.xyz': devnetConfiguration,
           'alpha.adrena.xyz': devnetConfiguration,
         } as Record<string, IConfiguration>
-      )[window.location.hostname] ??
-      {
-        mainnet: mainnetConfiguration,
-        devnet: devnetConfiguration,
-      }[process.env.NEXT_PUBLIC_DEV_CLUSTER ?? 'devnet'] ??
-      devnetConfiguration;
+      )[window.location.hostname];
+
+      if (specificUrlConfig) return specificUrlConfig;
+
+      // Configuration depending on query params, can be useful for dev or testing to force a cluster
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParam = urlParams.get('cluster');
+
+      if (queryParam) {
+        const queryParamConfig = {
+          mainnet: mainnetConfiguration,
+          devnet: devnetConfiguration,
+        }[queryParam];
+
+        if (queryParamConfig) return queryParamConfig;
+      }
+
+      // Dev default configuration, can be setup in local or in vercel preview settings
+      return (
+        {
+          mainnet: mainnetConfiguration,
+          devnet: devnetConfiguration,
+        }[process.env.NEXT_PUBLIC_DEV_CLUSTER ?? 'devnet'] ??
+        devnetConfiguration
+      );
+    })();
 
     setConfig(config);
   }, []);
