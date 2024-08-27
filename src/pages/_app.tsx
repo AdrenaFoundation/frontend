@@ -31,8 +31,8 @@ import initializeApp, {
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 
 import logo from '../../public/images/logo.svg';
-import devnetConfiguration from '../config/devnet';
-import mainnetConfiguration from '../config/mainnet';
+import DevnetConfiguration from '../config/devnet';
+import MainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
 
 function Loader(): JSX.Element {
@@ -74,6 +74,13 @@ export default function App(props: AppProps) {
   // In that case, use env variable/query params to determine the configuration
   useEffect(() => {
     const config = (() => {
+      // If devMode, adapts the RPCs to use ones that are different from production
+      // Protects from being stolen as the repo and devtools are public
+      const devMode = !window.location.hostname.endsWith('adrena.xyz');
+
+      const mainnetConfiguration = new MainnetConfiguration(devMode);
+      const devnetConfiguration = new DevnetConfiguration(devMode);
+
       // Specific configuration for specific URLs (users front)
       const specificUrlConfig = (
         {
@@ -107,6 +114,10 @@ export default function App(props: AppProps) {
         devnetConfiguration
       );
     })();
+
+    console.info(
+      `Loaded config is ${config.cluster} in dev mode: ${config.devMode}`,
+    );
 
     setConfig(config);
   }, []);

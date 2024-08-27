@@ -19,6 +19,7 @@ export type RpcOption = {
 
 export default interface IConfiguration {
   readonly cluster: SupportedCluster;
+  readonly devMode: boolean;
 
   readonly tokensInfo: {
     [tokenPubkey: string]: TokenInfo;
