@@ -2024,13 +2024,17 @@ export class AdrenaClient {
     }
 
     const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
+
     const collateralCustodyOracleAccount =
       collateralCustody.nativeObject.oracle.oracleAccount;
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
     );
 
-    const fundingAccount = findATAAddressSync(position.owner, custody.mint);
+    const fundingAccount = findATAAddressSync(
+      position.owner,
+      collateralCustody.mint,
+    );
 
     return this.adrenaProgram.methods
       .addCollateralShort({
@@ -2165,7 +2169,10 @@ export class AdrenaClient {
       collateralCustody.mint,
     );
 
-    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+    const receivingAccount = findATAAddressSync(
+      position.owner,
+      collateralCustody.mint,
+    );
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
@@ -2203,7 +2210,7 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: position.custody,
           custodyOracleAccount,
-          collateralCustody: position.custody,
+          collateralCustody: position.collateralCustody,
           collateralCustodyOracleAccount,
           collateralCustodyTokenAccount,
           tokenProgram: TOKEN_PROGRAM_ID,
