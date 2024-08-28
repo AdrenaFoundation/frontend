@@ -11,7 +11,7 @@ import { AlpLockPeriod, LockedStakeExtended } from '@/types';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 
-export default function ALPStakeOverview({
+export default function StakeOverview({
   token,
   totalLockedStake,
   totalLiquidStaked,
@@ -111,40 +111,36 @@ export default function ALPStakeOverview({
             </>
           )}
 
-          {totalLockedStake !== null && totalLockedStake > 0 ? (
-            <>
-              <div className="h-[1px] bg-bcolor w-full my-5" />
+          <div className="h-[1px] bg-bcolor w-full my-5" />
 
-              <span className="font-bold opacity-50 px-5">
-                My Locked Stakes{' '}
-                {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
-              </span>
+          <span className="font-bold opacity-50 px-5">
+            My Locked Stakes{' '}
+            {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
+          </span>
 
-              <div className="flex flex-row flex-wrap gap-4 mt-3 px-5">
-                {lockedStakes ? (
-                  lockedStakes.map((lockedStake, i) => (
-                    <LockedStakedElement
-                      lockedStake={lockedStake}
-                      key={i}
-                      token={
-                        isALP
-                          ? window.adrena.client.alpToken
-                          : window.adrena.client.adxToken
-                      }
-                      handleRedeem={handleLockedStakeRedeem}
-                      handleClickOnFinalizeLockedRedeem={
-                        handleClickOnFinalizeLockedRedeem
-                      }
-                    />
-                  ))
-                ) : (
-                  <div className="text-lg m-auto mt-4 mb-4 text-txtfade">
-                    No Active Locked Stakes
-                  </div>
-                )}
+          <div className="flex flex-row flex-wrap gap-4 mt-3 px-5">
+            {lockedStakes && lockedStakes.length > 0 ? (
+              lockedStakes.map((lockedStake, i) => (
+                <LockedStakedElement
+                  lockedStake={lockedStake}
+                  key={i}
+                  token={
+                    isALP
+                      ? window.adrena.client.alpToken
+                      : window.adrena.client.adxToken
+                  }
+                  handleRedeem={handleLockedStakeRedeem}
+                  handleClickOnFinalizeLockedRedeem={
+                    handleClickOnFinalizeLockedRedeem
+                  }
+                />
+              ))
+            ) : (
+              <div className="text-lg m-auto mt-4 mb-4 text-txtfade">
+                No Active Locked Stakes
               </div>
-            </>
-          ) : null}
+            )}
+          </div>
         </div>
 
         <div>
@@ -185,14 +181,13 @@ export default function ALPStakeOverview({
                 );
             })()}
           </div>
-          {lockedStakes?.length ? (
-            <p className="opacity-25 text-center w-full p-5 pt-0">
-              * ADX and USDC rewards accrue automatically every ~6 hours and get
-              <span className="underlines"> auto-claimed</span> every 18 days.
-              You can manually claim rewards. The locked ALP tokens can be
-              redeemed once the locking period is over.
-            </p>
-          ) : null}
+
+          <p className="opacity-25 text-center w-full p-5 pt-0">
+            * ADX and USDC rewards accrue automatically every ~6 hours and get
+            <span className="underlines"> auto-claimed</span> every 18 days. You
+            can manually claim rewards. The locked ALP tokens can be redeemed
+            once the locking period is over.
+          </p>
         </div>
       </div>
     </div>

@@ -79,7 +79,7 @@ export default function LockedStakedElement({
   return (
     <div
       className={twMerge(
-        'flex flex-col gap-3 border justify-between items-center bg-secondary rounded-xl shadow-lg flex-1 min-w-[275px]',
+        'flex flex-col gap-3 border justify-between items-center bg-secondary rounded-xl shadow-lg flex-1 min-w-[275px] max-w-[400px]',
         lockedStake.resolved && 'border-green',
       )}
       ref={containerRef}

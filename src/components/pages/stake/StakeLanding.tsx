@@ -24,14 +24,25 @@ import dollarIcon from '../../../../public/images/currency_dollar.svg';
 import governanceIcon from '../../../../public/images/governance.svg';
 import Table from '../monitoring/Table';
 
-export default function StakeLanding() {
+export default function StakeLanding({
+  handleClickOnStakeMoreALP,
+  handleClickOnStakeMoreADX,
+  connected,
+}: {
+  connected: boolean;
+  handleClickOnStakeMoreALP: () => void;
+  handleClickOnStakeMoreADX: () => void;
+}) {
   const [selectedAdxDays, setSelectedAdxDays] = useState('180d');
   const [selectedAlpDays, setSelectedAlpDays] = useState('180d');
 
   const dispatch = useDispatch();
 
-  const handleClick = () => {
-    dispatch(openCloseConnectionModalAction(true));
+  const handleClick = (token: 'ALP' | 'ADX') => {
+    if (!connected) {
+      return dispatch(openCloseConnectionModalAction(true));
+    }
+    token === 'ADX' ? handleClickOnStakeMoreADX() : handleClickOnStakeMoreALP();
   };
 
   const TOKENS = [
@@ -128,7 +139,7 @@ export default function StakeLanding() {
               ? 'bg-gradient-to-r from-[#3B2ED2] to-[#5A2ABE]'
               : 'bg-gradient-to-r from-[#DA1A31] to-[#DE1933]',
           )}
-          onClick={handleClick}
+          onClick={() => handleClick(token.name as 'ALP' | 'ADX')}
         />
 
         <div className="w-full h-[1px] bg-bcolor my-[30px]" />

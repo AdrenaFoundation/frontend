@@ -8,10 +8,10 @@ import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
-import ALPStakeOverview from '@/components/pages/stake/ALPStakeOverview';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import StakeLanding from '@/components/pages/stake/StakeLanding';
+import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
@@ -435,7 +435,19 @@ export default function Stake({
   ]);
 
   if (!connected) {
-    return <StakeLanding />;
+    return (
+      <StakeLanding
+        connected={connected}
+        handleClickOnStakeMoreALP={() => {
+          setLockPeriod(180);
+          setActiveStakingToken('ALP');
+        }}
+        handleClickOnStakeMoreADX={() => {
+          setLockPeriod(180);
+          setActiveStakingToken('ADX');
+        }}
+      />
+    );
   }
 
   return (
@@ -465,7 +477,7 @@ export default function Stake({
       </div>
       <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[1300px] m-auto">
         <>
-          <ALPStakeOverview
+          <StakeOverview
             token={'ALP'}
             totalLockedStake={alpDetails.totalLockedStake}
             totalRedeemableLockedStake={getTotalRedeemableLockedStake('ALP')}
@@ -484,7 +496,7 @@ export default function Stake({
             handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
           />
 
-          <ALPStakeOverview
+          <StakeOverview
             token={'ADX'}
             totalLockedStake={adxDetails.totalLockedStake}
             totalLiquidStaked={adxDetails.totalLiquidStaked}
