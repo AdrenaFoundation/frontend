@@ -80,9 +80,9 @@ export default function Positions({
 
         {positionToStopLossTakeProfit && (
           <Modal
-            title="Stop Loss and Take Profit"
+            title="SL/TP"
             close={() => setPositionToStopLossTakeProfit(null)}
-            className="flex flex-col items-center min-w-[30em] max-w-full justify-center"
+            className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center"
           >
             <StopLossTakeProfit
               position={positionToStopLossTakeProfit}

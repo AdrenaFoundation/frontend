@@ -26,7 +26,7 @@ export default function PositionsBlocks({
 }) {
   if (positions === null && !connected) {
     return (
-      <div className="flex overflow-hidden bg-main/90 w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[65%] border rounded-lg mt-4 h-[15em] items-center justify-center">
+      <div className="flex overflow-hidden bg-main/90 w-full border rounded-lg mt-4 h-[15em] items-center justify-center">
         <WalletConnection connected={connected} />
       </div>
     );
