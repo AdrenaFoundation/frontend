@@ -13,12 +13,14 @@ export default function Table({
   data,
   rowTitleWidth,
   columnTitlesClassName,
+  rowTitleClassName,
   columnWrapperClassName,
 }: {
   breakpoint?: string | null;
   className?: string;
   columnsTitles?: ReactNode[];
   columnTitlesClassName?: string;
+  rowTitleClassName?: string;
   columnWrapperClassName?: string;
   data: (
     | {
@@ -62,7 +64,7 @@ export default function Table({
       {data.map(({ rowTitle, ...v }, i) => (
         <div key={i} className="flex w-full border-b last:border-b-0 text-base">
           <div
-            className="flex shrink-0 items-center"
+            className={twMerge('flex shrink-0 items-center', rowTitleClassName)}
             style={{
               width: rowTitleWidth ?? '150px',
             }}
@@ -92,6 +94,11 @@ export default function Table({
       ))}
     </StyledSubSubContainer>
   ) : (
-    <Block data={data} columnsTitles={columnsTitles} className={className} />
+    <Block
+      data={data}
+      rowTitleClassName={rowTitleClassName}
+      columnsTitles={columnsTitles}
+      className={className}
+    />
   );
 }

@@ -52,19 +52,15 @@ export default function StakeLanding({
       logo: alpLogo,
       sellingPoints: [
         {
-          title: 'Locked stake rewards',
-          desc: 'ADX and USDC rewards accrue automatically every ~6 hours',
-          icon: lockIcon,
+          title: 'USDC yield',
+          desc: 'Base yield for all holders in the form of USDC. They originate from platform fees and revenues (70%), and are continuously being distributed to the pool, growing the value of your ALP shares automatically.',
+          icon: window.adrena.client.tokens.find((t) => t.symbol === 'USDC')
+            ?.image,
         },
         {
-          title: 'Governance',
-          desc: "Get amplified voting power to participate in the protocol's governance",
-          icon: governanceIcon,
-        },
-        {
-          title: 'Rewards',
-          desc: 'Locked principal becomes available at the end of the period, with the possibility to unstake earlier for a fee',
-          icon: dollarIcon,
+          title: 'ADX yield',
+          desc: 'For the most committed users who Lock Stake their ALP, an extra yield distributed as ADX token. The yield amount is a function of the lock duration.',
+          icon: window.adrena.client.adxToken.image,
         },
       ],
       days: ALP_LOCK_PERIODS,
@@ -74,23 +70,24 @@ export default function StakeLanding({
     },
     {
       name: 'ADX',
-      desc: 'Align with the protocol long term success: the longer the period, the higher the rewards. 20% of protocol fees are distributed to ADX stakers.',
+      desc: 'Own a share of the protocol: Adx governance token provides yield and voting power when staked. Align with the protocol long term success and earn more. 20% of the protocol fees and revenues are distributed to stakers.',
       logo: adxLogo,
       sellingPoints: [
         {
-          title: 'Locked stake rewards',
-          desc: 'ADX and USDC rewards accrue automatically every ~6 hours',
-          icon: lockIcon,
+          title: 'USDC yield',
+          desc: 'Base yield for all staker in the form of USDC. They originate from platform fees and revenues (20%)',
+          icon: window.adrena.client.tokens.find((t) => t.symbol === 'USDC')
+            ?.image,
         },
         {
-          title: 'Governance',
-          desc: "Get amplified voting power to participate in the protocol's governance",
+          title: 'ADX yield',
+          desc: 'For the most committed users who Lock Stake their ALP, an extra yield distributed as ADX token. The yield amount is a function of the lock duration.',
+          icon: window.adrena.client.adxToken.image,
+        },
+        {
+          title: 'Governance Boost',
+          desc: 'Lock Stake your ADX and receive amplified voting rights to influence the protocol. The additional voting rights is a function of the lock duration, and only available during the lock duration.',
           icon: governanceIcon,
-        },
-        {
-          title: 'Rewards',
-          desc: 'Locked principal becomes available at the end of the period, with the possibility to unstake earlier for a fee',
-          icon: dollarIcon,
         },
       ],
       days: ADX_LOCK_PERIODS,
@@ -120,14 +117,14 @@ export default function StakeLanding({
       >
         <div>
           <div className="flex flex-row gap-3 items-center">
-            <h1 className="text-[4rem]">{token.name}</h1>
+            <h1 className="text-[3rem]">{token.name}</h1>
             <Image
               src={token.logo}
               alt="logo"
-              className="w-12 h-12 opacity-10"
+              className="w-10 h-10 opacity-10"
             />
           </div>
-          <p className="text-lg">{token.desc}</p>
+          <p className="text-base">{token.desc}</p>
         </div>
 
         <Button
@@ -155,7 +152,7 @@ export default function StakeLanding({
             >
               <Image src={sp.icon} alt="icon" className="w-4 h-4" />
               <div>
-                <h3 className="text-xl mb-1">{sp.title}</h3>
+                <h3 className="text-lg mb-1">{sp.title}</h3>
                 <p className="text-base opacity-75">{sp.desc}</p>
               </div>
             </li>
@@ -169,6 +166,7 @@ export default function StakeLanding({
               d === 0 ? 'liquid' : `${d}d`,
             )}
             columnTitlesClassName="text-base text-white"
+            rowTitleClassName="text-lg text-white uppercase font-boldy"
             columnWrapperClassName="ml-1"
             data={[
               {
@@ -220,7 +218,7 @@ export default function StakeLanding({
         <Image
           src={adxMonster}
           alt="ADX Monster"
-          className="absolute bottom-10 right-0 w-1/2 grayscale"
+          className="absolute bottom-10 right-32 w-1/2 grayscale"
         />
         <div
           className="hidden sm:block absolute right-0 top-0 w-1/2 h-full flex-1 opacity-60"

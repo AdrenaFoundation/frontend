@@ -434,19 +434,64 @@ export default function Stake({
     wallet,
   ]);
 
-  if (!connected) {
+  const modal = activeStakingToken && (
+    <Modal
+      title={`Stake ${activeStakingToken}`}
+      close={() => {
+        setAmount(null);
+        setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
+        setActiveStakingToken(null);
+      }}
+    >
+      {activeStakingToken === 'ADX' ? (
+        <ADXStakeToken
+          amount={amount}
+          setAmount={setAmount}
+          onStakeAmountChange={onStakeAmountChange}
+          errorMessage={errorMessage}
+          stakeAmount={stakeAmount}
+          lockPeriod={lockPeriod as AdxLockPeriod}
+          setLockPeriod={(lockPeriod: AdxLockPeriod) =>
+            setLockPeriod(lockPeriod)
+          }
+          balance={adxBalance}
+        />
+      ) : (
+        <ALPStakeToken
+          amount={amount}
+          setAmount={setAmount}
+          onStakeAmountChange={onStakeAmountChange}
+          errorMessage={errorMessage}
+          stakeAmount={stakeAmount}
+          lockPeriod={lockPeriod as AlpLockPeriod}
+          setLockPeriod={(lockPeriod: AlpLockPeriod) =>
+            setLockPeriod(lockPeriod)
+          }
+          balance={alpBalance}
+        />
+      )}
+    </Modal>
+  );
+
+  if (
+    !connected ||
+    (adxDetails.totalStaked === 0 && alpDetails.totalLockedStake === 0)
+  ) {
     return (
-      <StakeLanding
-        connected={connected}
-        handleClickOnStakeMoreALP={() => {
-          setLockPeriod(180);
-          setActiveStakingToken('ALP');
-        }}
-        handleClickOnStakeMoreADX={() => {
-          setLockPeriod(180);
-          setActiveStakingToken('ADX');
-        }}
-      />
+      <>
+        {modal}
+        <StakeLanding
+          connected={connected}
+          handleClickOnStakeMoreALP={() => {
+            setLockPeriod(180);
+            setActiveStakingToken('ALP');
+          }}
+          handleClickOnStakeMoreADX={() => {
+            setLockPeriod(180);
+            setActiveStakingToken('ADX');
+          }}
+        />
+      </>
     );
   }
 
@@ -518,44 +563,7 @@ export default function Stake({
           />
 
           <AnimatePresence>
-            {activeStakingToken && (
-              <Modal
-                title={`Stake ${activeStakingToken}`}
-                close={() => {
-                  setAmount(null);
-                  setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
-                  setActiveStakingToken(null);
-                }}
-              >
-                {activeStakingToken === 'ADX' ? (
-                  <ADXStakeToken
-                    amount={amount}
-                    setAmount={setAmount}
-                    onStakeAmountChange={onStakeAmountChange}
-                    errorMessage={errorMessage}
-                    stakeAmount={stakeAmount}
-                    lockPeriod={lockPeriod as AdxLockPeriod}
-                    setLockPeriod={(lockPeriod: AdxLockPeriod) =>
-                      setLockPeriod(lockPeriod)
-                    }
-                    balance={adxBalance}
-                  />
-                ) : (
-                  <ALPStakeToken
-                    amount={amount}
-                    setAmount={setAmount}
-                    onStakeAmountChange={onStakeAmountChange}
-                    errorMessage={errorMessage}
-                    stakeAmount={stakeAmount}
-                    lockPeriod={lockPeriod as AlpLockPeriod}
-                    setLockPeriod={(lockPeriod: AlpLockPeriod) =>
-                      setLockPeriod(lockPeriod)
-                    }
-                    balance={alpBalance}
-                  />
-                )}
-              </Modal>
-            )}
+            {modal}
 
             {finalizeLockedStakeRedeem && (
               <Modal
