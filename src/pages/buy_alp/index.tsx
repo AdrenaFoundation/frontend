@@ -206,7 +206,7 @@ export default function Buy({
 
   return (
     <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10 mt-[50px]">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4 lg:h-[800px]">
+      <div className="flex flex-col lg:flex-row items-start justify-between gap-4 p-4 lg:h-[800px]">
         <div className="absolute w-full h-full left-0 top-0 opacity-20">
           <RiveAnimation
             animation="fred-bg"

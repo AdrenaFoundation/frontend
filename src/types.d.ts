@@ -41,6 +41,7 @@ declare global {
   interface Window {
     riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;
+    Jupiter: JupiterTerminal;
   }
 }
 

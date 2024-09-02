@@ -70,6 +70,12 @@ export default function Document() {
         ></Script>
 
         <Script
+          src="https://terminal.jup.ag/main-v2.js"
+          strategy="lazyOnload"
+          data-preload
+        ></Script>
+
+        <Script
           id="hotjar-script"
           type="text/javascript"
           strategy="beforeInteractive"
