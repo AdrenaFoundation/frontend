@@ -218,6 +218,34 @@ export class AdrenaClient {
     AdrenaClient.programId,
   )[0];
 
+  public getTakeProfitOrStopLossThreadAddress({
+    authority,
+    threadId,
+    user,
+  }: {
+    authority: PublicKey;
+    threadId: BN;
+    user: PublicKey;
+  }): {
+    publicKey: PublicKey;
+    bump: number;
+  } {
+    const [publicKey, bump] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('thread'),
+        authority.toBuffer(),
+        threadId.toBuffer('le', 8),
+        user.toBuffer().subarray(0, 6),
+      ],
+      this.config.sablierThreadProgram,
+    );
+
+    return {
+      publicKey,
+      bump,
+    };
+  }
+
   protected adrenaProgram: Program<Adrena> | null = null;
 
   constructor(
@@ -228,6 +256,7 @@ export class AdrenaClient {
     public mainPool: PoolExtended,
     public custodies: CustodyExtended[],
     public tokens: Token[],
+    public genesisLockPda: PublicKey,
   ) {}
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
@@ -491,6 +520,11 @@ export class AdrenaClient {
       nativeObject: mainPool,
     };
 
+    const genesisLockPda = PublicKey.findProgramAddressSync(
+      [Buffer.from('genesis_lock'), config.mainPool.toBuffer()],
+      AdrenaClient.programId,
+    )[0];
+
     return new AdrenaClient(
       config,
       readonlyAdrenaProgram,
@@ -498,6 +532,7 @@ export class AdrenaClient {
       mainPoolExtended,
       custodies,
       tokens,
+      genesisLockPda,
     );
   }
 
@@ -1358,6 +1393,18 @@ export class AdrenaClient {
           protocolFeeRecipient: this.cortex.protocolFeeRecipient,
           adrenaProgram: this.adrenaProgram.programId,
           userProfile: userProfile ? userProfile.pubkey : null,
+          caller: position.owner,
+          sablierProgram: this.config.sablierThreadProgram,
+          takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.takeProfitThreadId,
+            user: position.owner,
+          }).publicKey,
+          stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.stopLossThreadId,
+            user: position.owner,
+          }).publicKey,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -1488,6 +1535,18 @@ export class AdrenaClient {
           collateralCustodyOracleAccount,
           collateralCustodyTokenAccount,
           userProfile: userProfile ? userProfile.pubkey : null,
+          caller: position.owner,
+          sablierProgram: this.config.sablierThreadProgram,
+          takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.takeProfitThreadId,
+            user: position.owner,
+          }).publicKey,
+          stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.stopLossThreadId,
+            user: position.owner,
+          }).publicKey,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -1624,8 +1683,6 @@ export class AdrenaClient {
     sizeUsd: number;
     size: number;
     swapFeeUsd: number | null;
-    openPositionFeeUsd: number;
-    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
     exitFeeUsd: number;
@@ -1683,7 +1740,6 @@ export class AdrenaClient {
       liquidationPrice,
       swapFeeIn,
       swapFeeOut,
-      openPositionFee,
       exitFee,
       liquidationFee,
     } = info;
@@ -1702,9 +1758,6 @@ export class AdrenaClient {
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
       nativeToUi(swapFeeOut, swappedTokenDecimals) * swappedTokenPrice;
-
-    const openPositionFeeUsd =
-      nativeToUi(openPositionFee, swappedTokenDecimals) * swappedTokenPrice;
 
     const exitFeeUsd =
       nativeToUi(exitFee, swappedTokenDecimals) * swappedTokenPrice;
@@ -1725,10 +1778,8 @@ export class AdrenaClient {
       size,
       sizeUsd,
       swapFeeUsd,
-      openPositionFeeUsd,
       exitFeeUsd,
       liquidationFeeUsd,
-      totalOpenPositionFeeUsd: (swapFeeUsd ?? 0) + openPositionFeeUsd,
       entryPrice: nativeToUi(entryPrice, PRICE_DECIMALS),
       liquidationPrice: nativeToUi(liquidationPrice, PRICE_DECIMALS),
     };
@@ -1914,7 +1965,6 @@ export class AdrenaClient {
         payer: wallet.publicKey,
         cortex: AdrenaClient.cortexPda,
         systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
         userProfile: userProfilePda,
         user: wallet.publicKey,
       })
@@ -1946,7 +1996,6 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         userProfile: userProfilePda,
         user: wallet.publicKey,
-        tokenProgram: TOKEN_PROGRAM_ID,
         payer: wallet.publicKey,
       })
       .transaction();
@@ -2300,6 +2349,8 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         rent: SYSVAR_RENT_PUBKEY,
+        payer: owner,
+        caller: owner,
       })
       .preInstructions(preInstructions)
       .transaction();
@@ -2488,6 +2539,8 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
+        pool: this.mainPool.pubkey,
+        genesisLock: this.genesisLockPda,
       })
       .preInstructions(preInstructions)
       .transaction();
@@ -2711,6 +2764,8 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         stakedTokenAccount,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
+        genesisLock: this.genesisLockPda,
+        pool: this.mainPool.pubkey,
       })
       .preInstructions([modifyComputeUnits])
       .transaction();
@@ -2852,6 +2907,8 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
+        pool: this.mainPool.pubkey,
+        genesisLock: this.genesisLockPda,
       })
       .preInstructions(preInstructions)
       .transaction();
@@ -2956,6 +3013,8 @@ export class AdrenaClient {
         feeRedistributionMint: this.cortex.feeRedistributionMint,
         stakedTokenAccount,
         stakedTokenMint,
+        pool: this.mainPool.pubkey,
+        genesisLock: this.genesisLockPda,
       })
       .preInstructions(preInstructions)
       .transaction();
@@ -3057,6 +3116,8 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
+        pool: this.mainPool.pubkey,
+        genesisLock: '',
       })
       .instruction();
 
@@ -3340,7 +3401,6 @@ export class AdrenaClient {
           pool: this.mainPool.pubkey,
           position: position.pubkey,
           custody: custody.pubkey,
-          custodyOracleAccount: custody.nativeObject.oracle.oracleAccount,
           collateralCustodyOracleAccount:
             collateralCustody.nativeObject.oracle.oracleAccount,
           collateralCustody: collateralCustody.pubkey,
@@ -3410,7 +3470,6 @@ export class AdrenaClient {
               position.collateralAmount,
               collateralToken.decimals,
             ),
-            entryFeeUsd: nativeToUi(position.entryFeeUsd, USD_DECIMALS),
             exitFeeUsd: nativeToUi(position.exitFeeUsd, USD_DECIMALS),
             liquidationFeeUsd: nativeToUi(
               position.liquidationFeeUsd,
