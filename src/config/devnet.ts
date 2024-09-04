@@ -35,14 +35,14 @@ class DevnetConfiguration implements IConfiguration {
       ),
     },
     HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
-      name: 'Ethereum',
-      color: '#3D3E3F',
-      symbol: 'ETH',
+      name: 'BONK',
+      color: '#FFA500',
+      symbol: 'BONK',
       image: ethLogo,
-      coingeckoId: 'ethereum',
-      decimals: 6,
+      coingeckoId: 'bonk',
+      decimals: 6, // 5 in real life
       pythNetFeedId: new PublicKey(
-        'JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB',
+        'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
     },
     '7MoYkgWVCEDtNR6i2WUH9LTUSFXkQCsD9tBHriHQvuP5': {
@@ -81,7 +81,7 @@ class DevnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly governanceRealmName = 'Adaorena';
+  public readonly governanceRealmName = 'Adaorenareturn2';
 
   public readonly rpcOptions: RpcOption[] = [
     {
@@ -100,7 +100,7 @@ class DevnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '22h3wdapjk9e4TPEtEmFcXB1dCZZEShCtGptdBCvWNQr',
+    '2buhqUduNw7wNhZ1ixFxfvLRX3gAZkGmg8G1Rv5SEur7',
   );
 }
 

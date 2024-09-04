@@ -219,6 +219,34 @@ export class AdrenaClient {
     AdrenaClient.programId,
   )[0];
 
+  public static getTakeProfitOrStopLossThreadAddress({
+    authority,
+    threadId,
+    user,
+  }: {
+    authority: PublicKey;
+    threadId: BN;
+    user: PublicKey;
+  }): {
+    publicKey: PublicKey;
+    bump: number;
+  } {
+    const [publicKey, bump] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('thread'),
+        authority.toBuffer(),
+        threadId.toBuffer('le', 8),
+        user.toBuffer().subarray(0, 6),
+      ],
+      config.sablierThreadProgram,
+    );
+
+    return {
+      publicKey,
+      bump,
+    };
+  }
+
   protected adrenaProgram: Program<Adrena> | null = null;
 
   constructor(
@@ -1354,6 +1382,18 @@ export class AdrenaClient {
           protocolFeeRecipient: this.cortex.protocolFeeRecipient,
           adrenaProgram: this.adrenaProgram.programId,
           userProfile: userProfile ? userProfile.pubkey : null,
+          caller: position.owner,
+          sablierProgram: config.sablierThreadProgram,
+          takeProfitThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.takeProfitThreadId,
+            user: position.owner,
+          }).publicKey,
+          stopLossThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.stopLossThreadId,
+            user: position.owner,
+          }).publicKey,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -1484,6 +1524,18 @@ export class AdrenaClient {
           collateralCustodyOracleAccount,
           collateralCustodyTokenAccount,
           userProfile: userProfile ? userProfile.pubkey : null,
+          caller: position.owner,
+          sablierProgram: config.sablierThreadProgram,
+          takeProfitThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.takeProfitThreadId,
+            user: position.owner,
+          }).publicKey,
+          stopLossThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+            authority: AdrenaClient.transferAuthorityAddress,
+            threadId: position.nativeObject.stopLossThreadId,
+            user: position.owner,
+          }).publicKey,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -2279,6 +2331,8 @@ export class AdrenaClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         rent: SYSVAR_RENT_PUBKEY,
+        payer: owner,
+        caller: owner,
       })
       .preInstructions(preInstructions)
       .transaction();
