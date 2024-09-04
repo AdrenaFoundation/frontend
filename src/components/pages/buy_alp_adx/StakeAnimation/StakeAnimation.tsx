@@ -60,7 +60,7 @@ export default function StakeAnimation({
       controlsUsdc.stop();
       controlsAdx.stop();
     };
-  }, [adxBalance, usdcBalance]);
+  }, [adxBalance, countAdx, countUsdc, usdcBalance]);
 
   return (
     <div className="flex flex-col md:flex-row gap-[30px] justify-between items-center mb-[200px]">

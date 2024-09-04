@@ -54,12 +54,19 @@ export default function EditPositionCollateral({
     collateralUsd: number;
   } | null>();
 
-  const markPrice: number | null = tokenPrices[position.token.symbol];
+  const markPrice: number | null =
+    position.side === 'long'
+      ? tokenPrices[position.token.symbol]
+      : tokenPrices[position.collateralToken.symbol];
   const markCollateralPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
   const walletBalance: number | null =
-    walletTokenBalances?.[position.token.symbol] ?? null;
+    walletTokenBalances?.[
+      position.side === 'long'
+        ? position.token.symbol
+        : position.collateralToken.symbol
+    ] ?? null;
 
   const [underLeverage, setUnderLeverage] = useState<boolean>(false);
   const [overLeverage, setOverLeverage] = useState<boolean>(false);
@@ -132,7 +139,12 @@ export default function EditPositionCollateral({
     try {
       await window.adrena.client.addCollateralToPosition({
         position,
-        addedCollateral: uiToNative(input, position.token.decimals),
+        addedCollateral: uiToNative(
+          input,
+          position.side === 'long'
+            ? position.token.decimals
+            : position.collateralToken.decimals,
+        ),
         notification,
       });
 
@@ -155,7 +167,12 @@ export default function EditPositionCollateral({
       const liquidationPrice = await (selectedAction === 'deposit'
         ? window.adrena.client.getPositionLiquidationPrice({
             position,
-            addCollateral: uiToNative(input, position.token.decimals),
+            addCollateral: uiToNative(
+              input,
+              position.side === 'long'
+                ? position.token.decimals
+                : position.collateralToken.decimals,
+            ),
             removeCollateral: new BN(0),
           })
         : window.adrena.client.getPositionLiquidationPrice({
@@ -163,7 +180,9 @@ export default function EditPositionCollateral({
             addCollateral: new BN(0),
             removeCollateral: uiToNative(
               input / markCollateralPrice,
-              position.token.decimals,
+              position.side === 'long'
+                ? position.token.decimals
+                : position.collateralToken.decimals,
             ),
           }));
 
@@ -182,7 +201,13 @@ export default function EditPositionCollateral({
       console.log(e);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedInput, position, position.token, selectedAction]);
+  }, [
+    debouncedInput,
+    position,
+    position.token,
+    position.collateralToken,
+    selectedAction,
+  ]);
 
   // Recalculate leverage/collateral depending on the input and price
   useEffect(() => {
@@ -202,7 +227,6 @@ export default function EditPositionCollateral({
     if (selectedAction === 'deposit') {
       updatedCollateralAmount =
         position.collateralUsd / markCollateralPrice + input;
-
       updatedCollateralUsd = updatedCollateralAmount * markCollateralPrice;
     } else {
       updatedCollateralUsd = position.collateralUsd - input;
@@ -211,7 +235,7 @@ export default function EditPositionCollateral({
     }
 
     let updatedLeverage =
-      position.sizeUsd / (updatedCollateralUsd - position.pnl);
+      position.sizeUsd / (updatedCollateralUsd + position.pnl);
 
     // Leverage overflow
     if (updatedLeverage < 0) {
@@ -291,7 +315,11 @@ export default function EditPositionCollateral({
               inputClassName="border-0 bg-inputcolor"
               value={input}
               maxButton={true}
-              selectedToken={position.token}
+              selectedToken={
+                position.side === 'long'
+                  ? position.token
+                  : position.collateralToken
+              }
               tokenList={[]}
               onTokenSelect={() => {
                 // One token only
@@ -414,7 +442,7 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Initial Collateral</div>
+            <div className="text-sm">Collateral</div>
 
             <div className="flex">
               <div className="flex flex-col items-end justify-center">
@@ -431,7 +459,10 @@ export default function EditPositionCollateral({
 
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end">
-                      <FormatNumber nb={updatedInfos?.collateralUsd} />
+                      <FormatNumber
+                        nb={updatedInfos?.collateralUsd}
+                        format="currency"
+                      />
                     </div>
                   </div>
                 </>

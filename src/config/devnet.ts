@@ -9,8 +9,11 @@ import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
-class DevnetConfiguration implements IConfiguration {
+export default class DevnetConfiguration implements IConfiguration {
   public readonly cluster = 'devnet';
+
+  // If devMode is true, means that the app is running in localhost or in a vercel preview
+  constructor(public readonly devMode: boolean) {}
 
   public readonly tokensInfo: {
     [tokenPubkey: string]: {
@@ -83,26 +86,51 @@ class DevnetConfiguration implements IConfiguration {
 
   public readonly governanceRealmName = 'Adaorenareturn2';
 
-  public readonly rpcOptions: RpcOption[] = [
-    {
-      name: 'Triton RPC',
-      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com/eb24df90-f9aa-45f2-9a9c-fe20cd0f35fd',
-    },
-    {
-      name: 'Helius RPC',
-      url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
-    },
-  ];
+  public readonly rpcOptions: RpcOption[] = this.devMode
+    ? [
+        {
+          // Free Plan Helius Plan solely for development
+          name: 'Helius RPC',
+          url: 'https://devnet.helius-rpc.com/?api-key=d7a1bbbc-5a12-43d0-ab41-c96ffef811e0',
+        },
+      ]
+    : [
+        {
+          name: 'Triton RPC',
+          url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com',
+        },
+        {
+          name: 'Helius RPC',
+          url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+        },
+        {
+          name: 'Solana RPC',
+          url: 'https://api.devnet.solana.com',
+        },
+      ];
 
-  public readonly pythnetRpc: RpcOption = {
-    name: 'Triton Pythnet',
-    url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com/ad1705c9-2ec3-4a48-87c0-086a554cbff1',
-  };
+  public readonly pythnetRpc: RpcOption = (() => {
+    const rpc = {
+      name: 'Triton Pythnet',
+      url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com',
+    };
+
+    if (!this.devMode) return rpc;
+
+    const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_PYTHNET_API_KEY;
+
+    if (!apiKey || !apiKey.length) {
+      throw new Error(
+        'Missing environment variable NEXT_PUBLIC_DEV_TRITON_PYTHNET_API_KEY',
+      );
+    }
+
+    rpc.url = `${rpc.url}/${apiKey}`;
+
+    return rpc;
+  })();
 
   public readonly mainPool: PublicKey = new PublicKey(
     '2buhqUduNw7wNhZ1ixFxfvLRX3gAZkGmg8G1Rv5SEur7',
   );
 }
-
-const config = new DevnetConfiguration();
-export default config;
