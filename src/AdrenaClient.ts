@@ -3475,6 +3475,23 @@ export class AdrenaClient {
               position.liquidationFeeUsd,
               USD_DECIMALS,
             ),
+            stopLossClosePositionPrice:
+              position.stopLossThreadIsSet === 1
+                ? nativeToUi(
+                    position.stopLossClosePositionPrice,
+                    PRICE_DECIMALS,
+                  )
+                : null,
+            stopLossLimitPrice:
+              position.stopLossThreadIsSet === 1
+                ? nativeToUi(position.stopLossLimitPrice, PRICE_DECIMALS)
+                : null,
+            stopLossThreadIsSet: position.stopLossThreadIsSet === 1,
+            takeProfitLimitPrice: position.stopLossThreadIsSet
+              ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
+              : null,
+            takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
+
             //
             nativeObject: position,
           },

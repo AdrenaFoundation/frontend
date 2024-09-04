@@ -9,14 +9,6 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
-function plus10Percent(price: number) {
-  return price + (price * 10) / 100;
-}
-
-function minus10Percent(price: number) {
-  return price - (price * 10) / 100;
-}
-
 export default function StopLossTakeProfit({
   className,
   position,
