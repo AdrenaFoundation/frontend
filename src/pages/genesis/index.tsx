@@ -88,14 +88,9 @@ export default function Genesis({
     ? totalADXSupply * GENESIS_REWARD_SHARE_OF_TOTAL_ADX_SUPPLY
     : null;
 
-  const adxPerUSDCPublic =
+  const adxPerUSDC =
     genesis?.publicAmount && usdc?.decimals && genesisReward
       ? genesisReward / nativeToUi(genesis.publicAmountClaimed, usdc.decimals)
-      : null;
-
-  const adxPerUSDCReserved =
-    genesis?.reservedAmount && usdc?.decimals && genesisReward
-      ? genesisReward / nativeToUi(genesis.reservedAmountClaimed, usdc.decimals)
       : null;
 
   const dummyData = {
@@ -212,6 +207,8 @@ export default function Genesis({
   const url = 'https://www.adrena.xyz/';
   const text = `Just bought some ALP locked and staked for 180 days`;
 
+  const MAX_USDC_AMOUNT = 500_000;
+
   return (
     <>
       <ProgressBar currentStep={currentStep} />
@@ -231,7 +228,7 @@ export default function Genesis({
 
         <div className="relative items-center border rounded-lg w-full p-2 shadow-2xl bg-[#050D14]">
           <div className="flex flex-col md:flex-row gap-2 m-auto z-20">
-            <div className="sm:hidden h-[65%] bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
+            <div className="sm:hidden h-full bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
               <Image src={logo} alt="Adrena logo" width={60} />
               <div className="flex flex-row gap-3 mb-3">
                 <h1 className="text-[24px]">Genesis Lock</h1>
@@ -269,7 +266,7 @@ export default function Genesis({
             </div>
 
             <div className="flex flex-col gap-2 order-2 md:order-1">
-              <div className="hidden sm:block h-[65%] bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
+              <div className="hidden sm:block h-full bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
                 <Image src={logo} alt="Adrena logo" width={60} />
                 <div className="flex flex-row gap-3 mb-3">
                   <h1 className="text-[24px]">Genesis Lock</h1>
@@ -306,7 +303,7 @@ export default function Genesis({
                 </p>
               </div>
 
-              <div className="flex flex-col justify-between h-[35%] bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
+              <div className="flex flex-col gap-6 justify-between flex-none min-h-[170px] bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
                 <h2>Liquidity pool</h2>
                 <div className="flex flex-row items-center">
                   <div className="w-full mt-auto">
@@ -376,14 +373,11 @@ export default function Genesis({
                         </p>
                       )}
 
-                    {wallet?.walletAddress &&
-                      genesis?.reservedGrantOwners?.includes(
-                        new PublicKey(wallet?.walletAddress),
-                      ) && (
-                        <p className="opacity-50 text-right font-mono">
-                          Your limit: $499,999 / $500,000
-                        </p>
-                      )}
+                    {isReserved && (
+                      <p className="opacity-50 text-right font-mono">
+                        Your limit: $499,999 / $500,000
+                      </p>
+                    )}
                     {genesis?.reservedAmountClaimed &&
                       genesis?.reservedAmount &&
                       usdc && (
@@ -451,6 +445,10 @@ export default function Genesis({
                       setFundsAmount(walletTokenABalance ?? null);
                     }}
                     onChange={(e) => {
+                      if (e !== null && e >= MAX_USDC_AMOUNT) {
+                        setErrorMsg('Max amount is 500,000 USDC');
+                        return;
+                      }
                       setIsLoading(true);
                       setErrorMsg(null);
                       setFundsAmount(e);
@@ -539,17 +537,21 @@ export default function Genesis({
               ) : null}
               <div className="w-full mt-6">
                 <p className="opacity-50 text-sm mb-3">Rewards</p>
-                <ul className="flex flex-row gap-3 items-center justify-evenly p-3 rounded-lg border border-bcolor">
+                <ul className="flex gap-1 sm:gap-3 items-center flex-wrap justify-evenly p-1 py-2 sm:p-3 rounded-lg border border-bcolor">
                   <li className="flex flex-col items-center">
                     <p className="text-sm">USDC Yield</p>
-                    <p className="font-medium font-mono text-lg">1.75x</p>
+                    <p className="font-medium font-mono text-sm sm:text-lg">
+                      1.75x
+                    </p>
                   </li>
 
                   <li className="h-[40px] w-[1px] bg-bcolor" />
 
                   <li className="flex flex-col items-center">
                     <p className="text-sm">ADX rewards</p>
-                    <p className="font-medium font-mono text-lg">1.75x</p>
+                    <p className="font-medium font-mono text-sm sm:text-lg">
+                      1.75x
+                    </p>
                   </li>
 
                   <li className="h-[40px] w-[1px] bg-bcolor" />
@@ -559,18 +561,12 @@ export default function Genesis({
 
                     <FormatNumber
                       nb={
-                        genesis &&
-                        adxPerUSDCReserved !== null &&
-                        adxPerUSDCPublic !== null &&
-                        feeAndAmount?.amount
-                          ? feeAndAmount.amount *
-                            (!isReserved || genesis.hasTransitionedToFullyPublic
-                              ? adxPerUSDCPublic
-                              : adxPerUSDCReserved)
+                        genesis && adxPerUSDC !== null && feeAndAmount?.amount
+                          ? feeAndAmount.amount * adxPerUSDC
                           : null
                       }
                       isLoading={isLoading}
-                      className="font-medium font-mono text-lg"
+                      className="font-medium font-mono text-sm sm:text-lg"
                       suffix=" ADX"
                     />
                   </li>
@@ -583,7 +579,7 @@ export default function Genesis({
 
       <AnimatePresence>
         {isSuccess && (
-          <Modal title="" close={() => setIsSuccess(false)}>
+          <Modal close={() => setIsSuccess(false)}>
             <div className="relative p-10">
               <div className="absolute top-0 w-[300px] left-[150px]">
                 <Congrats />
@@ -597,21 +593,21 @@ export default function Genesis({
                 <div className="absolute bottom-0 h-[120px] w-full bg-gradient-to-b from-secondary/0 to-secondary" />
               </div>
 
-              <h1 className="text-center mt-6">Congratulations!</h1>
+              <h1 className="text-center mt-6">Welcome to Adrena!</h1>
               <p className="text-center mt-1 text-base opacity-50 max-w-[400px]">
-                Welcome to Adrena family, you have bought{' '}
-                {feeAndAmount?.amount.toFixed(2)} ALP locked and staked for 6
-                months
+                You have bought {feeAndAmount?.amount.toFixed(2)} ALP locked and
+                staked for 6 months
               </p>
               <Button
                 size="lg"
-                title="Share on X"
+                title="Share on"
                 className="w-full mt-6 py-3 text-base"
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                   text,
                 )}&url=${encodeURIComponent(url)}`}
                 isOpenLinkInNewTab
-                leftIcon={xIcon}
+                rightIcon={xIcon}
+                rightIconClassName="w-4 h-4"
                 onClick={() => setIsSuccess(false)}
               />
             </div>
