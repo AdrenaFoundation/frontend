@@ -218,7 +218,7 @@ export class AdrenaClient {
     AdrenaClient.programId,
   )[0];
 
-  public static getTakeProfitOrStopLossThreadAddress({
+  public getTakeProfitOrStopLossThreadAddress({
     authority,
     threadId,
     user,
@@ -237,7 +237,7 @@ export class AdrenaClient {
         threadId.toBuffer('le', 8),
         user.toBuffer().subarray(0, 6),
       ],
-      config.sablierThreadProgram,
+      this.config.sablierThreadProgram,
     );
 
     return {
@@ -1394,13 +1394,13 @@ export class AdrenaClient {
           adrenaProgram: this.adrenaProgram.programId,
           userProfile: userProfile ? userProfile.pubkey : null,
           caller: position.owner,
-          sablierProgram: config.sablierThreadProgram,
-          takeProfitThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+          sablierProgram: this.config.sablierThreadProgram,
+          takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
             authority: AdrenaClient.transferAuthorityAddress,
             threadId: position.nativeObject.takeProfitThreadId,
             user: position.owner,
           }).publicKey,
-          stopLossThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+          stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
             authority: AdrenaClient.transferAuthorityAddress,
             threadId: position.nativeObject.stopLossThreadId,
             user: position.owner,
@@ -1536,13 +1536,13 @@ export class AdrenaClient {
           collateralCustodyTokenAccount,
           userProfile: userProfile ? userProfile.pubkey : null,
           caller: position.owner,
-          sablierProgram: config.sablierThreadProgram,
-          takeProfitThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+          sablierProgram: this.config.sablierThreadProgram,
+          takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
             authority: AdrenaClient.transferAuthorityAddress,
             threadId: position.nativeObject.takeProfitThreadId,
             user: position.owner,
           }).publicKey,
-          stopLossThread: AdrenaClient.getTakeProfitOrStopLossThreadAddress({
+          stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
             authority: AdrenaClient.transferAuthorityAddress,
             threadId: position.nativeObject.stopLossThreadId,
             user: position.owner,
