@@ -18,10 +18,9 @@ import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
-import MenuSeperator from '../common/Menu/MenuSeperator';
 import WalletSelectionModal from './WalletSelectionModal';
 
-function WalletAdapter({
+export default function WalletAdapter({
   className,
   userProfile,
 }: {
@@ -80,7 +79,7 @@ function WalletAdapter({
             <Button
               className={twMerge(
                 // use monster font when displaying the nickname only
-                userProfile ? 'font-specialmonster text-md' : '',
+                userProfile ? 'font-special text-md' : '',
                 className,
               )}
               title={
@@ -90,7 +89,7 @@ function WalletAdapter({
               }
               rightIcon={threeDotsIcon}
               alt="wallet icon"
-              variant="outline"
+              variant="secondary"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}
@@ -99,17 +98,6 @@ function WalletAdapter({
           openMenuClassName="w-[120px] right-0"
         >
           <MenuItems>
-            <MenuItem
-              href={'/user_profile'}
-              onClick={() => {
-                setMenuIsOpen(false);
-              }}
-            >
-              Profile
-            </MenuItem>
-
-            <MenuSeperator />
-
             <MenuItem
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
@@ -149,5 +137,3 @@ function WalletAdapter({
     </div>
   );
 }
-
-export default WalletAdapter;

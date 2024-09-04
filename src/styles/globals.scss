@@ -7,36 +7,17 @@
   --color-light: #f5f5f5;
   --color-dark: #080a0d;
 
-  --color-gray-200: #192128;
-  --color-gray-300: #101419;
-  --color-gray-300-85: #101419d9;
-  --color-gray-400: #222a31;
-  --color-gray-500: #3d4b5b;
+  --color-bcolor: #2a2a2a;
 
-  --color-blue-200: #101241;
-  --color-blue-300: #191c7b;
-  --color-blue-400: #2126b4;
-  --color-blue-500: #2a30ee;
+  --color-gray-200: #1a2431;
 
-  --color-red-200: #361212;
-  --color-red-300: #651d1d;
-  --color-red-400: #932727;
-  --color-red-500: #c13232;
+  --color-blue-500: #3b82f6;
 
-  --color-green-200: #172f19;
-  --color-green-300: #26552b;
-  --color-green-400: #367c3c;
-  --color-green-500: #45a34e;
+  --color-red-500: #c9243a;
 
-  --color-orange-200: #3f2612;
-  --color-orange-300: #76441c;
-  --color-orange-400: #ad6326;
-  --color-orange-500: #e48130;
+  --color-green-500: #07956b;
 
-  --color-pink-200: #3d1325;
-  --color-pink-300: #721f43;
-  --color-pink-400: #a82a60;
-  --color-pink-500: #dd367e;
+  --color-orange-500: #f0892b;
 
   --bezier-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --bezier-smooth: cubic-bezier(0.2, 0.8, 0.4, 1);
@@ -44,48 +25,57 @@
 
 @layer base {
   @font-face {
-    font-family: specialmonster;
-    src: url('/fonts/Pink Blue.ttf');
+    font-family: special;
+    src: url('/fonts/Oswald-Bold.ttf');
   }
 
-  // @font-face {
-  //   font-family: regular;
-  //   src: url('/fonts/Louis George Cafe.ttf');
-  // }
+  @font-face {
+    font-family: regular;
+    src: url('/fonts/Louis George Cafe.ttf');
+  }
 
-  // @font-face {
-  //   font-family: thin;
-  //   src: url('/fonts/Louis George Cafe Light.ttf');
-  // }
+  @font-face {
+    font-family: boldy;
+    src: url('/fonts/Louis George Cafe Bold.ttf');
+  }
 
-  // @font-face {
-  //   font-family: bold;
-  //   src: url('/fonts/Louis George Cafe Bold.ttf');
-  // }
+  div {
+    @apply border-bcolor;
+    @apply font-regular;
+  }
 
   span,
   p {
     @apply text-sm;
+    @apply font-regular;
   }
 
   h1 {
     @apply text-4xl;
-    @apply font-medium;
+    @apply font-special;
+    text-transform: uppercase;
   }
 
   h2 {
     @apply text-2xl;
-    @apply font-medium;
+    @apply font-special;
+    text-transform: uppercase;
   }
 
   h3 {
     @apply text-xl;
-    @apply font-medium;
+    @apply font-special;
+    text-transform: uppercase;
   }
 
   h4 {
     @apply text-lg;
-    @apply font-medium;
+    @apply font-boldy;
+  }
+
+  h5 {
+    @apply text-sm;
+    @apply font-boldy;
   }
 
   button:focus,
@@ -102,6 +92,10 @@
 @layer utilities {
   .tooltip-target {
     @apply border-b border-dashed border-[#8C8D97];
+  }
+  .underline-dashed {
+    border-bottom: 1px dashed currentColor;
+    padding-bottom: 0.02rem;
   }
 }
 
@@ -120,7 +114,7 @@ body,
   width: 100%;
   min-width: 375px;
   min-height: 100vh;
-  background-color: var(--color-dark);
+  background-color: #050f19;
   font-family: 'Inter', sans-serif;
 }
 
@@ -184,7 +178,7 @@ input[type='radio'] {
   font: inherit;
   width: 16px;
   height: 16px;
-  border: 1px solid var(--color-gray-400);
+  border: 1px solid var(--color-bcolor);
   border-radius: 50%;
   transition: 0.3s var(--bezier-spring);
   box-shadow: 0 0 0 0px var(--color-dark) inset;
@@ -236,7 +230,7 @@ input[type='radio']:checked {
 }
 
 .rc-slider-handle:active {
-  box-shadow: 0 0 5px 10px rgba(42, 48, 238, 0.2) !important;
+  box-shadow: 0 0 5px 10px #fdfdff33 !important;
 }
 
 /* Works on Firefox */
@@ -258,4 +252,17 @@ input[type='radio']:checked {
   background-color: #ffffff; /* color of the scroll thumb */
   border-radius: 6px; /* roundness of the scroll thumb */
   border: 3px solid #16293d; /* creates padding around scroll thumb */
+}
+
+// Hide the feedback button, instead use a proxy in the footer
+.fb-feedback-widget-feedback-button-left {
+  display: none !important;
+}
+
+.Toastify__toast-container--bottom-left {
+  bottom: 4em !important;
+}
+
+.Toastify__toast-theme--light {
+  background-color: #162a3d;
 }

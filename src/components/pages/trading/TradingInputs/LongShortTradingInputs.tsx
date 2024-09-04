@@ -2,29 +2,38 @@ import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
+import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import Select from '@/components/common/Select/Select';
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
+import FormatNumber from '@/components/Number/FormatNumber';
+import RefreshButton from '@/components/RefreshButton/RefreshButton';
+import { RATE_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
-import { PositionExtended, Token } from '@/types';
+import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
+  AdrenaTransactionError,
   formatNumber,
   formatPriceInfo,
+  nativeToUi,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
 
 import errorImg from '../../../../../public/images/Icons/error.svg';
+import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
-import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
-import PositionInfos from './PositionInfos';
+import PositionFeesTooltip from './PositionFeesTooltip';
+import PositionSizeTooltip from './PositionSizeTooltip';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -39,6 +48,7 @@ export default function LongShortTradingInputs({
   allowedTokenB,
   openedPosition,
   wallet,
+  connected,
   setTokenA,
   setTokenB,
   triggerPositionsReload,
@@ -52,16 +62,78 @@ export default function LongShortTradingInputs({
   allowedTokenB: Token[];
   openedPosition: PositionExtended | null;
   wallet: Wallet | null;
+  connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
 }) {
   const dispatch = useDispatch();
-  const [connected, setConnected] = useState<boolean>(false);
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+
+  /** Resize handling for component max button display **/
+  const [componentWidth, setComponentWidth] = useState(0);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const updateComponentWidth = () => {
+    if (componentRef.current) {
+      setComponentWidth(componentRef.current.offsetWidth);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateComponentWidth);
+    updateComponentWidth();
+    return () => {
+      window.removeEventListener('resize', updateComponentWidth);
+    };
+  }, []);
+
+  const calculateMax = async () => {
+    if (!walletTokenBalances || !tokenA) return;
+
+    // Pick up the maximum amount the user can use, considering:
+    // the custody liquidity, the max position size and the user wallet amount
+    const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
+
+    const tokenPriceA = tokenPrices[tokenA.symbol];
+
+    if (custody && tokenPriceB && tokenPriceA) {
+      const latestCustody = await window.adrena.client
+        .getReadonlyAdrenaProgram()
+        .account.custody.fetch(custody.pubkey);
+
+      const latestAvailableLiquidity = nativeToUi(
+        latestCustody.assets.owned.sub(latestCustody.assets.locked),
+        latestCustody.decimals,
+      );
+
+      const availableCustodyLiquidity = Number(
+        (
+          (latestAvailableLiquidity * tokenPriceB) /
+          tokenPriceA /
+          leverage
+        ).toFixed(tokenA.decimals),
+      );
+
+      const maxPositionSize = Number(
+        (
+          (custody.maxPositionLockedUsd - (openedPosition?.sizeUsd ?? 0)) /
+          tokenPriceA /
+          leverage
+        ).toFixed(tokenA.decimals),
+      );
+
+      return handleInputAChange(
+        Math.min(userWalletAmount, availableCustodyLiquidity, maxPositionSize),
+      );
+    }
+
+    handleInputAChange(userWalletAmount);
+  };
+
+  const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -69,7 +141,7 @@ export default function LongShortTradingInputs({
   const [priceA, setPriceA] = useState<number | null>(null);
   const [priceB, setPriceB] = useState<number | null>(null);
 
-  const [leverage, setLeverage] = useState<number>(5);
+  const [leverage, setLeverage] = useState<number>(10);
 
   const [buttonTitle, setButtonTitle] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -78,6 +150,8 @@ export default function LongShortTradingInputs({
 
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
+
+  const [custody, setCustody] = useState<CustodyExtended | null>(null);
 
   const [positionInfos, setPositionInfos] = useState<{
     collateralUsd: number;
@@ -91,10 +165,6 @@ export default function LongShortTradingInputs({
     exitFeeUsd: number;
     liquidationFeeUsd: number;
   } | null>(null);
-
-  useEffect(() => {
-    setConnected(!!wallet);
-  }, [wallet]);
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
@@ -119,6 +189,10 @@ export default function LongShortTradingInputs({
       });
     }
 
+    const notification = MultiStepNotification.newForRegularTransaction(
+      side + ' Position Opening',
+    ).fire();
+
     // Existing position or not, it's the same
     const collateralAmount = uiToNative(inputA, tokenA.decimals);
 
@@ -132,58 +206,56 @@ export default function LongShortTradingInputs({
       });
 
     if (!openPositionWithSwapAmountAndFees) {
-      return addNotification({
-        title: 'Error Opening Position',
-        type: 'error',
-        message: 'Error calculating fees',
-      });
+      return notification.currentStepErrored('Error calculating fees');
     }
 
     try {
-      const txHash = await (side === 'long'
-        ? window.adrena.client.openLongPositionWithConditionalSwap({
+      await (side === 'long'
+        ? window.adrena.client.openOrIncreasePositionWithSwapLong({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
             mint: tokenB.mint,
             price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
             leverage: uiLeverageToNative(leverage),
+            notification,
           })
-        : window.adrena.client.openShortPositionWithConditionalSwap({
+        : window.adrena.client.openOrIncreasePositionWithSwapShort({
             owner: new PublicKey(wallet.publicKey),
             collateralMint: tokenA.mint,
             mint: tokenB.mint,
             price: openPositionWithSwapAmountAndFees.entryPrice,
             collateralAmount,
             leverage: uiLeverageToNative(leverage),
+            notification,
           }));
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
 
-      return addSuccessTxNotification({
-        title: 'Successfully Opened Position',
-        txHash,
-      });
+      setInputA(null);
+      setErrorMessage(null);
+      setInputB(null);
+      setPriceA(null);
+      setPriceB(null);
+      setPositionInfos(null);
     } catch (error) {
       console.log('Error', error);
-
-      return addFailedTxNotification({
-        title: 'Error Opening Position',
-        error,
-      });
     }
   };
 
   useEffect(() => {
-    if (!connected && !window.adrena.geoBlockingData.allowed) {
+    if (!tokenB) return setCustody(null);
+
+    setCustody(window.adrena.client.getCustodyByMint(tokenB.mint) ?? null);
+  }, [tokenB]);
+
+  useEffect(() => {
+    if (!window.adrena.geoBlockingData.allowed)
       return setButtonTitle('Geo-Restricted Access');
-    }
 
     // If wallet not connected, then user need to connect wallet
-    if (!connected) {
-      return setButtonTitle('Connect wallet');
-    }
+    if (!connected) return setButtonTitle('Connect wallet');
 
     if (openedPosition) {
       if (side === 'short') {
@@ -201,6 +273,7 @@ export default function LongShortTradingInputs({
     openedPosition,
     side,
     tokenA,
+    wallet,
     walletTokenBalances,
   ]);
 
@@ -236,17 +309,19 @@ export default function LongShortTradingInputs({
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means
         // an other request has been casted due to input change
-        if (localLoadingCounter !== loadingCounter) {
-          return;
-        }
+        if (localLoadingCounter !== loadingCounter) return;
 
         setPositionInfos(infos);
 
         console.log('Position infos', infos);
       } catch (err) {
-        setErrorMessage('Error calculating position');
+        if (err instanceof AdrenaTransactionError) {
+          setErrorMessage(err.errorString);
+        } else {
+          setErrorMessage('Error calculating position');
+        }
 
-        console.log('Ignored error:', err);
+        console.log('Error:', err);
       } finally {
         setTimeout(() => {
           setIsInfoLoading(false);
@@ -267,7 +342,6 @@ export default function LongShortTradingInputs({
     }
 
     const tokenPriceA = tokenPrices[tokenA.symbol];
-    const tokenPriceB = tokenPrices[tokenB.symbol];
 
     // No price available yet
     if (!tokenPriceA || !tokenPriceB) {
@@ -321,23 +395,25 @@ export default function LongShortTradingInputs({
     const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     if (!walletTokenABalance || inputA > walletTokenABalance) {
-      setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
-      return;
+      return setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
     }
 
     if (!tokenB || !inputB) {
-      return setErrorMessage(null);
+      return;
     }
 
     const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
+    if (tokenPriceB !== null)
+      if (inputB * tokenPriceB > custody.maxPositionLockedUsd)
+        return setErrorMessage(`Position Exceeds Max Size`);
+
     // If user wallet balance doesn't have enough tokens, tell user
-    if (inputB > custody.liquidity) {
+    if (inputB > custody.liquidity)
       return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
-    }
 
     return setErrorMessage(null);
-  }, [inputA, inputB, tokenA.symbol, tokenB, walletTokenBalances]);
+  }, [inputA, inputB, tokenA.symbol, tokenB, tokenPriceB, walletTokenBalances]);
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
@@ -350,123 +426,197 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative', 'flex', 'flex-col', className)}>
-      <div className="text-sm  flex items-center">
-        Collateral deposited
-        <InfoAnnotation
-          text="Set the amount of tokens provided to set up the position. They're used as a guarantee to cover potential losses and pay fees."
-          className="w-3 ml-1"
-        />
+    <div
+      className={twMerge('relative flex flex-col sm:pb-2', className)}
+      ref={componentRef}
+    >
+      <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
+        <h5 className="ml-4">Inputs</h5>
+
+        {(() => {
+          if (!tokenA || !walletTokenBalances)
+            return <div className="h-6"></div>;
+
+          const balance = walletTokenBalances[tokenA.symbol];
+          if (balance === null) return <div className="h-6"></div>;
+
+          return (
+            <div className="text-sm flex items-center justify-end h-6">
+              {connected && componentWidth < 350 ? (
+                <Button
+                  title="MAX"
+                  variant="text"
+                  className="text-sm h-6 opacity-70"
+                  size="xs"
+                  onClick={calculateMax}
+                />
+              ) : null}
+              <Image
+                className="mr-1 opacity-60 relative"
+                src={walletImg}
+                height={14}
+                width={14}
+                alt="Wallet icon"
+              />
+
+              <span className="text-txtfade font-mono text-xs">
+                {formatNumber(balance, tokenA.decimals)}
+              </span>
+
+              <RefreshButton className="border-0 ml-[0.1em] relative -top-[0.1em]" />
+            </div>
+          );
+        })()}
       </div>
 
       {/* Input A */}
       <div className="flex">
-        <div className="flex flex-col">
+        <div className="flex flex-col border rounded-lg w-full bg-inputcolor relative">
           <TradingInput
-            className="mt-2 text-sm"
+            className="text-sm rounded-full"
+            inputClassName="border-0 tr-rounded-lg bg-inputcolor"
+            tokenListClassName="border-none bg-inputcolor"
+            menuClassName="shadow-none"
+            menuOpenBorderClassName="rounded-tr-lg"
+            maxClassName={
+              side === 'short' ? 'bg-red text-white' : 'bg-green text-white'
+            }
             value={inputA}
             subText={
               priceA ? (
                 <div className="text-sm text-txtfade font-mono">
-                  {formatPriceInfo(priceA)}
+                  {priceA > 500000000
+                    ? `> ${formatPriceInfo(500000000)}`
+                    : formatPriceInfo(priceA)}
                 </div>
               ) : null
             }
-            maxButton={connected}
+            maxButton={connected && componentWidth >= 350}
             selectedToken={tokenA}
             tokenList={allowedTokenA}
             onTokenSelect={setTokenA}
             onChange={handleInputAChange}
-            onMaxButtonClick={() => {
-              if (!walletTokenBalances || !tokenA) return;
+            onMaxButtonClick={calculateMax}
+          />
 
-              const amount = walletTokenBalances[tokenA.symbol];
+          <LeverageSlider
+            value={leverage}
+            className="w-full font-mono border-t"
+            onChange={(v: number) => setLeverage(v)}
+          />
+        </div>
+      </div>
 
-              console.log('max button triggered', amount);
+      <div className="flex flex-col mt-2 sm:mt-4 transition-opacity duration-500">
+        <h5 className="flex items-center ml-4">Size</h5>
 
-              handleInputAChange(amount);
+        <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg">
+          <Select
+            className="shrink-0 h-full flex items-center w-[7em]"
+            selectedClassName="w-14"
+            menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
+            menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
+            selected={tokenB.symbol}
+            options={allowedTokenB.map((token) => ({
+              title: token.symbol,
+              img: token.image,
+            }))}
+            onSelect={(name) => {
+              // Force linting, you cannot not find the token in the list
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const token = allowedTokenB.find((t) => t.symbol === name)!;
+              setTokenB(token);
+
+              // if the prev value has more decimals than the new token, we need to adjust the value
+              const newTokenDecimals = token.decimals ?? 18;
+              const decimals = inputB?.toString().split('.')[1]?.length;
+
+              if (Number(decimals) > Number(newTokenDecimals)) {
+                handleInputBChange(Number(inputB?.toFixed(newTokenDecimals)));
+              }
             }}
+            reversed={true}
           />
 
-          {
-            /* Display wallet balance */
-            (() => {
-              if (!tokenA || !walletTokenBalances) return null;
+          {!isInfoLoading ? (
+            <PositionSizeTooltip
+              positionInfos={positionInfos}
+              openedPosition={openedPosition}
+              leverage={leverage}
+            >
+              <div className="flex ml-auto">
+                {openedPosition && tokenPriceB && inputB ? (
+                  <>
+                    {/* Opened position */}
+                    <div className="flex flex-col self-center items-end line-through mr-3">
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd / tokenPriceB}
+                        precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                        className="text-txtfade"
+                      />
 
-              const balance = walletTokenBalances[tokenA.symbol];
-              if (balance === null) return null;
+                      <FormatNumber
+                        nb={openedPosition.sizeUsd}
+                        format="currency"
+                        className="text-txtfade text-xs line-through"
+                      />
+                    </div>
+                  </>
+                ) : null}
 
-              return (
-                <div className="text-txtfade text-sm ml-auto mt-3">
-                  <span className="text-txtfade font-mono">
-                    {formatNumber(balance, tokenA.decimals)}
-                  </span>{' '}
-                  {tokenA.symbol} in wallet
+                <div className="relative flex flex-col">
+                  <div className="flex flex-col items-end font-mono">
+                    <FormatNumber
+                      nb={inputB}
+                      precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                      className="text-lg"
+                    />
+
+                    <FormatNumber
+                      nb={priceB}
+                      format="currency"
+                      className="text-txtfade text-sm"
+                    />
+                  </div>
                 </div>
-              );
-            })()
-          }
-        </div>
-      </div>
-
-      {/* Leverage (only in short/long) */}
-
-      <div className="flex flex-col">
-        <div className="text-sm  flex items-center mt-3">
-          Leverage
-          <InfoAnnotation
-            text="Select a multiplier to apply to the collateral to determine the size of the position."
-            className="w-3 ml-1"
-          />
-        </div>
-
-        <LeverageSlider
-          value={leverage}
-          className="mt-3 w-full font-mono"
-          onChange={(v: number) => setLeverage(v)}
-        />
-      </div>
-
-      <div className="flex flex-col mt-5 transition-opacity duration-500">
-        <div className="text-sm flex items-center">
-          Position
-          <InfoAnnotation
-            text={
-              <div className="flex flex-col">
-                <span>
-                  Below are various details regarding the future position.
-                  Please review them carefully to ensure you are comfortable
-                  with the parameters.
-                </span>
-                <span className="mt-2">
-                  <b>Note:</b> The information provided is based on best-effort
-                  estimations. Actual numbers will be calculated when the order
-                  is executed.
-                </span>
               </div>
-            }
-            className="w-3 ml-1"
-          />
+            </PositionSizeTooltip>
+          ) : (
+            <div className="w-full h-[40px] bg-bcolor rounded-xl" />
+          )}
         </div>
 
-        <PositionInfos
-          className="mt-3 w-full h-auto"
-          positionInfos={positionInfos}
-          tokenB={tokenB}
-          leverage={leverage}
-          openedPosition={openedPosition}
-          allowedTokenB={allowedTokenB}
-          inputB={inputB}
-          priceB={priceB}
-          setTokenB={setTokenB}
-          handleInputBChange={handleInputBChange}
-          isInfoLoading={isInfoLoading}
-        />
+        <div className="flex sm:mt-2">
+          <div>
+            <span className="text-txtfade">max size:</span>
+
+            <FormatNumber
+              nb={
+                custody && custody.maxPositionLockedUsd
+                  ? custody.maxPositionLockedUsd
+                  : null
+              }
+              format="currency"
+              className="text-txtfade text-xs ml-1"
+            />
+          </div>
+
+          <div className="ml-auto sm:mb-2">
+            <FormatNumber
+              nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
+              format="currency"
+              precision={0}
+              className="text-txtfade text-xs"
+            />
+
+            <span className="text-txtfade ml-1">avail. liq.</span>
+          </div>
+        </div>
 
         {errorMessage !== null ? (
           <AnimatePresence>
             <motion.div
-              className="flex w-full h-auto relative overflow-hidden mt-2 pl-6 pt-2 pb-2 pr-2 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
+              className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 mt-1 sm:mt-2 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
               initial={{ opacity: 0, scaleY: 0 }}
               animate={{ opacity: 1, scaleY: 1 }}
               exit={{ opacity: 0, scaleY: 0 }}
@@ -485,19 +635,164 @@ export default function LongShortTradingInputs({
             </motion.div>
           </AnimatePresence>
         ) : null}
-      </div>
 
-      {/* Button to execute action */}
-      <Button
-        className={twMerge(
-          'w-full justify-center',
-          errorMessage ? 'mt-2' : 'mt-8',
-        )}
-        size="lg"
-        title={buttonTitle}
-        disabled={errorMessage != null}
-        onClick={handleExecuteButton}
-      />
+        {/* Button to execute action */}
+        <Button
+          className={twMerge(
+            'w-full justify-center mt-2 mb-1 sm:mb-2',
+            side === 'short' ? 'bg-red text-white' : 'bg-green text-white',
+          )}
+          size="lg"
+          title={buttonTitle}
+          disabled={errorMessage != null}
+          onClick={handleExecuteButton}
+        />
+
+        <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2">
+          Trade Prices
+        </h5>
+
+        <StyledSubSubContainer
+          className={twMerge(
+            'flex-col p-2 h-[6em] items-center justify-center mt-2 sm:mt-0',
+          )}
+        >
+          {positionInfos && !isInfoLoading ? (
+            <div className="flex w-full justify-evenly">
+              <TextExplainWrapper title="Entry Price" className="flex-col mt-8">
+                <FormatNumber
+                  nb={positionInfos.entryPrice}
+                  format="currency"
+                  className="text-lg"
+                />
+
+                {openedPosition ? (
+                  <FormatNumber
+                    nb={openedPosition.price}
+                    format="currency"
+                    className="text-txtfade text-xs self-center line-through"
+                    isDecimalDimmed={false}
+                  />
+                ) : null}
+              </TextExplainWrapper>
+
+              <div className="h-full w-[1px] bg-gray-800" />
+
+              <TextExplainWrapper
+                title="Liquidation Price"
+                className="flex-col mt-8"
+              >
+                <FormatNumber
+                  nb={positionInfos.liquidationPrice}
+                  format="currency"
+                  className="text-lg"
+                />
+
+                {openedPosition && openedPosition.liquidationPrice ? (
+                  <FormatNumber
+                    nb={openedPosition.liquidationPrice}
+                    format="currency"
+                    className="text-txtfade text-xs self-center line-through"
+                    isDecimalDimmed={false}
+                  />
+                ) : null}
+              </TextExplainWrapper>
+            </div>
+          ) : (
+            <div className="flex w-full justify-evenly items-center">
+              <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+
+              <div className="h-full w-[1px] bg-gray-800" />
+
+              <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+            </div>
+          )}
+        </StyledSubSubContainer>
+
+        <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
+          Fees
+        </h5>
+
+        <PositionFeesTooltip
+          borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
+          positionInfos={positionInfos}
+          openedPosition={openedPosition}
+        >
+          <StyledSubSubContainer
+            className={twMerge(
+              'flex pl-6 pr-6 pb-4 h-[6em] items-center justify-center mt-2 sm:mt-0',
+              isInfoLoading || !positionInfos
+                ? 'pt-4'
+                : openedPosition
+                ? 'pt-2'
+                : 'pt-8',
+            )}
+          >
+            {positionInfos && !isInfoLoading ? (
+              <AutoScalableDiv>
+                {openedPosition ? (
+                  <>
+                    <TextExplainWrapper
+                      title="Current Fees"
+                      className="flex-col sm:mt-3"
+                      position="bottom"
+                    >
+                      <FormatNumber
+                        nb={
+                          openedPosition.entryFeeUsd +
+                          openedPosition.exitFeeUsd +
+                          (openedPosition.borrowFeeUsd ?? 0)
+                        }
+                        format="currency"
+                        className="text-lg"
+                      />
+                    </TextExplainWrapper>
+
+                    <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                  </>
+                ) : null}
+
+                <TextExplainWrapper
+                  title={!openedPosition ? 'Trade Fees' : 'Additional Fees'}
+                  className="flex-col mt-3"
+                >
+                  <FormatNumber
+                    nb={
+                      typeof positionInfos?.totalOpenPositionFeeUsd !==
+                        'undefined' &&
+                      typeof positionInfos?.exitFeeUsd !== 'undefined'
+                        ? positionInfos.totalOpenPositionFeeUsd +
+                          positionInfos.exitFeeUsd
+                        : undefined
+                    }
+                    format="currency"
+                    className="text-lg"
+                  />
+                </TextExplainWrapper>
+
+                <span className="text-xl ml-2 mr-2 mt-3">+</span>
+
+                <TextExplainWrapper
+                  title="Dynamic Borrow Rate"
+                  className="flex-col mt-3"
+                >
+                  <FormatNumber
+                    nb={custody && tokenB && custody.borrowFee}
+                    precision={RATE_DECIMALS}
+                    suffix="%/hr"
+                    isDecimalDimmed={false}
+                    className="text-lg"
+                  />
+                </TextExplainWrapper>
+              </AutoScalableDiv>
+            ) : (
+              <div className="flex h-full justify-center items-center">
+                <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+              </div>
+            )}
+          </StyledSubSubContainer>
+        </PositionFeesTooltip>
+      </div>
     </div>
   );
 }

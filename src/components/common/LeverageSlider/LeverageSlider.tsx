@@ -1,21 +1,14 @@
 import 'rc-slider/assets/index.css';
 
 import Slider from 'rc-slider';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '../Button/Button';
 import InputNumber from '../InputNumber/InputNumber';
 
-// Leverage colors
-
-// GMX Style
-// const colorA = '#2d3ed5';
-// const colorB = '#232743';
-
 // ADRENA Style
-const colorA = 'var(--color-blue-500)';
-const colorB = 'var(--color-gray-200)';
-// const colorC = 'var(--color-blue-300)';
+const colorA = '#ffffff20';
 
 export default function LeverageSlider({
   className,
@@ -30,109 +23,91 @@ export default function LeverageSlider({
   // overwise the user is stuck with one number, which is bad ux
   const [isLeverageInputEmpty, setIsLeverageInputEmpty] =
     useState<boolean>(false);
+  const marks = [3, 5, 10, 25, 50, 100];
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col rounded-2xl overflow-hidden border',
-        className,
-      )}
-    >
-      <div className="flex items-center pl-4 pt-2 pr-2 pb-3 bg-dark w-full">
-        <span className="shrink-0 w-3">x</span>
+    <div className={twMerge('flex flex-col overflow-hidden', className)}>
+      <div className="flex">
+        <div className="flex flex-col pl-1 pt-1 pr-2 pb-1 w-[4.5em] h-12">
+          <div className="flex w-full h-full items-center ml-1 shrink-0">
+            <span className="shrink-0 w-2">x</span>
 
-        <InputNumber
-          className="w-full bg-transparent"
-          value={isLeverageInputEmpty ? undefined : value}
-          max={50}
-          onChange={function (value: number | null): void {
-            // throw new Error('Function not implemented.');
-            if (value === null) {
-              setIsLeverageInputEmpty(true);
-              return;
-            }
-
-            onChange(value);
-            setIsLeverageInputEmpty(false);
-          }}
-          inputFontSize="1em"
-        />
-
-        <div
-          className="w-5 h-5 border flex items-center justify-center rounded cursor-pointer opacity-80 hover:opacity-100"
-          onClick={() => {
-            let newValue: number = value ? value - 1 : 1;
-
-            if (newValue < 1) {
-              newValue = 1;
-            }
-
-            onChange(newValue);
-          }}
-        >
-          -
+            <InputNumber
+              className="flex w-full max-w-full overflow-hidden text-center bg-inputcolor"
+              value={isLeverageInputEmpty ? undefined : value}
+              min={1.1}
+              max={100}
+              onChange={function (value: number | null): void {
+                if (value === null) {
+                  setIsLeverageInputEmpty(true);
+                  return;
+                }
+                onChange(value);
+                setIsLeverageInputEmpty(false);
+              }}
+              inputFontSize="1em"
+            />
+          </div>
         </div>
 
-        <div
-          className="w-5 h-5 border flex items-center justify-center rounded cursor-pointer opacity-80 hover:opacity-100 ml-2"
-          onClick={() => {
-            let newValue: number = value ? value + 1 : 1;
-
-            if (newValue > 50) {
-              newValue = 50;
-            }
-
-            onChange(newValue);
-          }}
-        >
-          +
+        <div className="flex h-full w-full pr-4 pl-4 border-r">
+          <Slider
+            className="relative top-5"
+            min={1.1}
+            max={100}
+            value={value}
+            step={0.1}
+            railStyle={{
+              backgroundColor: colorA,
+              borderColor: 'white',
+              height: 2,
+            }}
+            trackStyle={{
+              backgroundColor: 'white',
+              height: 2,
+            }}
+            handleStyle={{
+              backgroundColor: 'white',
+              borderColor: 'white',
+              opacity: 1,
+              borderWidth: '3px',
+            }}
+            activeDotStyle={{
+              backgroundColor: 'white',
+              borderColor: colorA,
+            }}
+            dotStyle={{
+              borderRadius: 0,
+              width: '2px',
+              border: 0,
+              height: '0.8em',
+              backgroundColor: colorA,
+              borderColor: colorA,
+            }}
+            // Use as number because we don't use the slider as a range
+            onChange={(v) => onChange(v as number)}
+          />
         </div>
       </div>
-
-      <div className="flex p-6 h-[3.5em] bg-dark border-t border-gray-200">
-        <Slider
-          className="relative bottom-3"
-          min={1}
-          max={50}
-          value={value}
-          defaultValue={1}
-          step={0.1}
-          marks={[2, 5, 10, 15, 20, 30, 40, 50].reduce((acc, mark) => {
-            acc[mark] = (
-              <span className="text-white text-sm opacity-30 hover:opacity-100">
-                x{mark}
-              </span>
-            );
-            return acc;
-          }, {} as Record<number, ReactNode>)}
-          railStyle={{
-            backgroundColor: colorB,
-          }}
-          trackStyle={{
-            backgroundColor: 'white',
-            height: 2,
-          }}
-          handleStyle={{
-            backgroundColor: 'white',
-            borderColor: 'white',
-            opacity: 1,
-            borderWidth: '3px',
-          }}
-          activeDotStyle={{
-            backgroundColor: 'white',
-            borderColor: colorA,
-          }}
-          dotStyle={{
-            borderRadius: 0,
-            width: '2px',
-            border: 0,
-            height: '0.8em',
-            backgroundColor: colorB,
-            borderColor: colorB,
-          }}
-          // Use as number because we don't use the slider as a range
-          onChange={(v) => onChange(v as number)}
-        />
+      <div className="flex h-7">
+        {marks.map((mark, index) => (
+          <Button
+            key={index}
+            title={`x${mark.toString()}`}
+            variant="secondary"
+            rounded={false}
+            className={twMerge(
+              'w-[6em] opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor',
+              // Put 0.7 e.m instead of lg because conflicts in the border handling by browser
+              index === 0 ? 'rounded-bl-[0.7em]' : '',
+              index === marks.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',
+            )}
+            onClick={() => {
+              onChange(mark);
+              setIsLeverageInputEmpty(false);
+            }}
+          ></Button>
+        ))}
       </div>
     </div>
   );

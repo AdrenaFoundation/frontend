@@ -1,3 +1,4 @@
+import { Connection } from '@solana/web3.js';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -11,15 +12,40 @@ import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
-import MenuSeperator from '../common/Menu/MenuSeperator';
+import MenuSeparator from '../common/Menu/MenuSeparator';
+import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
   userProfile,
   PAGES,
+  activeRpc,
+  rpcInfos,
+  autoRpcMode,
+  customRpcUrl,
+  customRpcLatency,
+  favoriteRpc,
+  setAutoRpcMode,
+  setCustomRpcUrl,
+  setFavoriteRpc,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
+  rpcInfos: {
+    name: string;
+    latency: number | null;
+  }[];
+  customRpcLatency: number | null;
+  autoRpcMode: boolean;
+  customRpcUrl: string | null;
+  favoriteRpc: string | null;
+  setAutoRpcMode: (autoRpcMode: boolean) => void;
+  setCustomRpcUrl: (customRpcUrl: string | null) => void;
+  setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
   const { pathname } = useRouter();
   const router = useRouter();
@@ -27,13 +53,16 @@ export default function Header({
   const clusterSwitchEnabled = false;
 
   return (
-    <div className="fixed top-0 w-full flex flex-row items-center justify-between p-3 px-7 border border-b-gray-200 z-50 bg-gray-300/85 backdrop-blur-md">
+    <div className="w-full flex flex-row items-center justify-between p-3 px-7 border-b border-b-bcolor bg-secondary z-50">
       <div className="flex flex-row items-center gap-6">
         <Link className="font-bold uppercase relative" href="/">
           {
             <Image
               src={logo}
-              className="shrink-0"
+              className={twMerge(
+                'shrink-0 relative',
+                window.adrena.cluster === 'devnet' ? 'bottom-1' : '',
+              )}
               alt="logo"
               width={100}
               height={25}
@@ -41,7 +70,7 @@ export default function Header({
           }
 
           {window.adrena.cluster === 'devnet' ? (
-            <span className="absolute font-specialmonster text-blue-500 bottom-[-0.7em] right-[-0.5em]">
+            <span className="absolute font-special text-blue-500 bottom-[-1.4em] right-0 text-xs">
               Devnet
             </span>
           ) : null}
@@ -56,23 +85,35 @@ export default function Header({
             <Link
               href={page.link}
               className={twMerge(
-                'font-normal text-sm opacity-50 hover:opacity-100 transition-opacity duration-300',
+                'text-sm opacity-75 hover:opacity-100 transition-opacity duration-300',
                 pathname === page.link ? 'opacity-100' : '',
               )}
               key={page.name}
             >
-              {page.name}
+              <h5>{page.name}</h5>
             </Link>
           );
         })}
       </div>
 
-      <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-row items-center gap-2 sm:gap-3">
         <Link href="/trade">
           <Button title="Trade now" disabled={pathname === '/trade'} />
         </Link>
 
         <WalletAdapter userProfile={userProfile} />
+
+        <Settings
+          activeRpc={activeRpc}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
+          customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
+        />
 
         {clusterSwitchEnabled ? (
           <Menu
@@ -99,7 +140,7 @@ export default function Header({
                 Devnet
               </MenuItem>
 
-              <MenuSeperator />
+              <MenuSeparator />
 
               <MenuItem
                 selected={window.adrena.cluster === 'mainnet'}

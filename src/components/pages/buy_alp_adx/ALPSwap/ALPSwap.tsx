@@ -1,18 +1,15 @@
 import { PublicKey } from '@solana/web3.js';
 import BN from 'bn.js';
-import { twMerge } from 'tailwind-merge';
+import { useEffect, useState } from 'react';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import { FeesAndAmountsType } from '@/pages/buy_alp_adx';
+import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
-import {
-  addFailedTxNotification,
-  addSuccessTxNotification,
-  uiToNative,
-} from '@/utils';
+import { uiToNative } from '@/utils';
 
 import ALPSwapInputs from './ALPSwapInputs';
 
@@ -22,6 +19,8 @@ export default function ALPSwap({
   setCollateralInput,
   alpInput,
   setAlpInput,
+  errorMessage,
+  setErrorMessage,
   collateralToken,
   onCollateralTokenChange,
   feesUsd,
@@ -34,6 +33,7 @@ export default function ALPSwap({
   setCollateralPrice,
   feesAndAmounts,
   className,
+  connected,
 }: {
   className?: string;
   triggerWalletTokenBalancesReload: () => void;
@@ -41,6 +41,8 @@ export default function ALPSwap({
   setCollateralInput: (v: number | null) => void;
   alpInput: number | null;
   setAlpInput: (v: number | null) => void;
+  errorMessage: string | null;
+  setErrorMessage: (v: string | null) => void;
   alpPrice: number | null;
   setAlpPrice: (v: number | null) => void;
   collateralToken: Token | null;
@@ -53,11 +55,15 @@ export default function ALPSwap({
   selectedAction: 'buy' | 'sell';
   setSelectedAction: (v: 'buy' | 'sell') => void;
   feesAndAmounts: FeesAndAmountsType | null;
+  connected: boolean;
 }) {
   const dispatch = useDispatch();
   const wallet = useSelector((s) => s.walletState.wallet);
-  const connected = !!wallet;
+
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [buttonTitle, setButtonTitle] = useState<string | null>(null);
+  const [errorDescription, setErrorDescription] = useState<string | null>(null);
+  const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
 
   const handleExecuteButton = async () => {
     if (!connected) {
@@ -75,37 +81,33 @@ export default function ALPSwap({
       return;
     }
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Buying ALP').fire();
+
     if (selectedAction === 'buy') {
       try {
-        const txHash = await window.adrena.client.addLiquidity({
+        await window.adrena.client.addLiquidity({
           owner: new PublicKey(wallet.walletAddress),
           amountIn: uiToNative(collateralInput, collateralToken.decimals),
           mint: collateralToken.mint,
 
           // TODO: Apply proper slippage
           minLpAmountOut: new BN(0),
+          notification,
         });
 
         triggerWalletTokenBalancesReload();
         setCollateralInput(null);
-
-        return addSuccessTxNotification({
-          title: 'Successful Transaction',
-          txHash,
-        });
       } catch (error) {
         console.log('error', error);
-
-        return addFailedTxNotification({
-          title: 'Error Buying ALP',
-          error,
-        });
       }
+
+      return;
     }
 
     // "sell"
     try {
-      const txHash = await window.adrena.client.removeLiquidity({
+      await window.adrena.client.removeLiquidity({
         owner: new PublicKey(wallet.walletAddress),
         mint: collateralToken.mint,
         lpAmountIn: uiToNative(
@@ -115,91 +117,127 @@ export default function ALPSwap({
 
         // TODO: Apply proper slippage
         minAmountOut: new BN(0),
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
       setCollateralInput(null);
-
-      return addSuccessTxNotification({
-        title: 'Successfull Transaction',
-        txHash,
-      });
     } catch (error) {
       console.log('error', error);
-
-      return addFailedTxNotification({
-        title: 'Error Selling ALP',
-        error,
-      });
     }
   };
 
-  const buttonTitle = (() => {
-    if (!connected && !window.adrena.geoBlockingData.allowed) {
-      return 'Geo-Restricted Access';
-    }
+  useEffect(() => {
+    const newButtonTitle = () => {
+      if (!connected && !window.adrena.geoBlockingData.allowed) {
+        setIsDisabledButton(true);
+        return 'Geo-Restricted Access';
+      }
 
-    // If wallet not connected, then user need to connect wallet
-    if (!connected) {
-      return 'Connect wallet';
-    }
+      // If wallet not connected, then user need to connect wallet
+      if (!connected) {
+        setIsDisabledButton(false);
+        return 'Connect wallet';
+      }
 
-    if (alpInput === null || collateralInput === null) {
-      return 'Enter an amount';
-    }
+      if (
+        errorMessage !== null &&
+        (alpInput !== null || collateralInput !== null)
+      ) {
+        setIsDisabledButton(true);
+        return errorMessage;
+      }
 
-    // Loading, should happens quickly
-    if (!collateralToken) {
-      return '...';
-    }
+      if (alpInput === null || collateralInput === null) {
+        setIsDisabledButton(true);
+        return 'Enter an amount';
+      }
 
-    const walletCollateralTokenBalance =
-      walletTokenBalances?.[collateralToken.symbol];
+      // Loading, should happens quickly
+      if (!collateralToken) {
+        setIsDisabledButton(true);
+        return '...';
+      }
 
-    const walletAlpTokenBalance =
-      walletTokenBalances?.[window.adrena.client.alpToken.symbol];
+      const walletCollateralTokenBalance =
+        walletTokenBalances?.[collateralToken.symbol];
 
-    // Loading, should happens quickly
-    if (typeof walletCollateralTokenBalance === 'undefined') {
-      return '...';
-    }
+      const walletAlpTokenBalance =
+        walletTokenBalances?.[window.adrena.client.alpToken.symbol];
 
-    // If user wallet balance doesn't have enough tokens, tell user
-    if (
-      selectedAction === 'buy' &&
-      ((walletCollateralTokenBalance != null &&
-        collateralInput > walletCollateralTokenBalance) ||
-        walletCollateralTokenBalance === null)
-    ) {
-      return `Insufficient ${collateralToken.symbol} balance`;
-    }
+      if (typeof walletCollateralTokenBalance === 'undefined') {
+        setIsDisabledButton(true);
+        return '...';
+      }
 
-    // If user wallet balance doesn't have enough tokens, tell user
-    if (
-      selectedAction === 'sell' &&
-      ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
-        walletAlpTokenBalance === null)
-    ) {
-      return `Insufficient ${window.adrena.client.alpToken.symbol} balance`;
-    }
+      // If user wallet balance doesn't have enough tokens, tell user
+      if (
+        selectedAction === 'buy' &&
+        ((walletCollateralTokenBalance != null &&
+          collateralInput > walletCollateralTokenBalance) ||
+          walletCollateralTokenBalance === null)
+      ) {
+        setIsDisabledButton(true);
+        return `Insufficient ${collateralToken.symbol} balance`;
+      }
 
-    if (selectedAction === 'buy') {
-      return `Buy ${window.adrena.client.alpToken.symbol}`;
-    }
+      // If user wallet balance doesn't have enough tokens, tell user
+      if (
+        selectedAction === 'sell' &&
+        ((walletAlpTokenBalance != null && alpInput > walletAlpTokenBalance) ||
+          walletAlpTokenBalance === null)
+      ) {
+        setIsDisabledButton(true);
+        return `Insufficient ${window.adrena.client.alpToken.symbol} balance`;
+      }
 
-    return `Sell ${window.adrena.client.alpToken.symbol}`;
-  })();
+      if (selectedAction === 'buy') {
+        setIsDisabledButton(false);
+        return `Buy ${window.adrena.client.alpToken.symbol}`;
+      }
+
+      setIsDisabledButton(false);
+      return `Sell ${window.adrena.client.alpToken.symbol}`;
+    };
+
+    setButtonTitle(newButtonTitle);
+  }, [
+    alpInput,
+    buttonTitle,
+    collateralInput,
+    collateralToken,
+    connected,
+    errorMessage,
+    selectedAction,
+    walletTokenBalances,
+  ]);
+
+  useEffect(() => {
+    if (errorMessage === null) setErrorDescription(null);
+    if (errorMessage === 'Pool ratio reached for this token')
+      setErrorDescription(
+        `The target ratio for the selected token has already been reached,
+        please use a different token.
+        If you want to see more details on the pool and the ratios,
+        please go to Monitoring page.`,
+      );
+    if (errorMessage === 'Not enough liquidity in the pool for this token')
+      setErrorDescription(
+        `Not enough liquidity in the pool for this token to perform this action,
+        please use a different token.
+        If you want to see more details on the pool and the ratios,
+        please go to Monitoring page.`,
+      );
+  }, [errorMessage]);
 
   return (
-    <div
-      className={twMerge(
-        'bg-gray-300/85 backdrop-blur-md border border-gray-200 p-4 rounded-2xl h-fit',
-        className,
-      )}
-    >
+    <div className={className}>
       <TabSelect
         selected={selectedAction}
-        tabs={[{ title: 'buy' }, { title: 'sell' }]}
+        tabs={[
+          { title: 'buy', activeColor: 'border-white' },
+          { title: 'sell', activeColor: 'border-white' },
+        ]}
         onClick={(title) => {
           setSelectedAction(title);
         }}
@@ -223,17 +261,25 @@ export default function ALPSwap({
             setAlpPrice={setAlpPrice}
             collateralPrice={collateralPrice}
             setCollateralPrice={setCollateralPrice}
+            setErrorMessage={setErrorMessage}
             feesAndAmounts={feesAndAmounts}
+            connected={connected}
           />
 
           {/* Button to execute action */}
           <Button
             title={buttonTitle}
             size="lg"
-            disabled={buttonTitle.includes('Insufficient')}
+            disabled={isDisabledButton}
             className="justify-center w-full mt-5"
             onClick={handleExecuteButton}
           />
+
+          {errorDescription ? (
+            <div className="flex mt-4 text-txtfade text-xs font-mono">
+              {errorDescription}
+            </div>
+          ) : null}
         </>
       ) : null}
     </div>

@@ -7,9 +7,11 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
 import { Adrena } from '@/target/adrena';
+import { ThreadProgram as SablierThreadProgram } from '@/target/thread_program';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
+import SablierClient from './SablierClient';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -24,14 +26,20 @@ export type GeoBlockingData = {
 export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
+  sablierClient: SablierClient;
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
   geoBlockingData: GeoBlockingData;
 };
 
+// Rive doesn't expose the type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RiveImage = any;
+
 declare global {
   interface Window {
+    riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;
   }
 }
@@ -67,8 +75,8 @@ export type CustodyExtended = {
   // Expressed in tokens
   // Do liquidity * tokenPrice to get liquidityUsd
   liquidity: number;
-
   borrowFee: number;
+  maxPositionLockedUsd: number;
 
   // Onchain data
   nativeObject: Custody;
@@ -85,11 +93,16 @@ export type PositionExtended = {
   collateralToken: Token;
   side: 'long' | 'short';
   pnl?: number | null;
-  liquidationPrice?: number;
+  priceChangeUsd?: number | null;
+  profitUsd?: number | null;
+  lossUsd?: number | null;
+  borrowFeeUsd?: number | null;
+  liquidationPrice?: number | null;
   sizeUsd: number;
   collateralUsd: number;
   price: number;
   collateralAmount: number;
+  entryFeeUsd: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
 
@@ -102,6 +115,8 @@ export type PoolExtended = {
 
   // Formatted data
   totalFeeCollected: number;
+  profitsUsd: number;
+  lossUsd: number;
   longPositions: number;
   shortPositions: number;
   aumUsd: number;
@@ -110,8 +125,6 @@ export type PoolExtended = {
   oiShortUsd: number;
   nbOpenLongPositions: number;
   nbOpenShortPositions: number;
-  averageLongLeverage: number;
-  averageShortLeverage: number;
   custodies: PublicKey[];
 
   // Onchain data
@@ -129,12 +142,14 @@ export type TokenSymbol = string;
 export interface Token {
   mint: PublicKey;
   symbol: TokenSymbol;
+  color: string;
   name: TokenName;
   decimals: number;
   isStable: boolean;
   image: ImageRef;
   custody?: PublicKey;
   coingeckoId?: string;
+  pythNetFeedId?: PublicKey;
 }
 
 export type UserProfileExtended = {
@@ -172,6 +187,7 @@ export type UserProfileExtended = {
 type Accounts = IdlAccounts<Adrena>;
 
 export type Cortex = Accounts['cortex'];
+export type VestRegistry = Accounts['vestRegistry'];
 export type Custody = Accounts['custody'];
 export type Multisig = Accounts['multisig'];
 export type Perpetuals = Accounts['perpetuals'];
@@ -189,12 +205,34 @@ export type LockedStakeExtended = UserStaking['lockedStakes'][0] & {
   tokenSymbol: 'ADX' | 'ALP';
 };
 
+export type GreaterThanOrEqual = 'gte';
+export type LessThanOrEqual = 'lte';
+
+export type Equality = {
+  GreaterThanOrEqual;
+  LessThanOrEqual;
+};
+
+export type SablierAccounts = IdlAccounts<SablierThreadProgram>;
+export type SablierThread = AccountsThreadProgram['thread'];
+
+export type SablierThreadExtended = {
+  lastExecutionDate: number | null;
+  nextTheoreticalExecutionDate: number | null;
+  paused: boolean;
+  pubkey: PublicKey;
+  funding: number;
+  nativeObject: SablierThread;
+};
+
 //
 // Params Types
 //
 
 type Params = IdlTypes<Adrena>;
 
+export type U128Split = Params['U128Split'];
+export type LimitedString = Params['LimitedString'];
 export type AddCollateralParams = Params['AddCollateralParams'];
 export type AddCustodyParams = Params['AddCustodyParams'];
 export type AddLiquidityParams = Params['AddLiquidityParams'];
@@ -290,4 +328,6 @@ export type AdrenaProgram = Program<Adrena>;
 //
 // Constants
 //
-export type LockPeriod = 0 | 30 | 60 | 90 | 180 | 360 | 720;
+
+export type AdxLockPeriod = 0 | 180 | 360 | 540 | 720;
+export type AlpLockPeriod = 180 | 360 | 540 | 720;

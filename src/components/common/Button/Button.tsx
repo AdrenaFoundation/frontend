@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import Loader from '@/components/Loader/Loader';
 import { ImageRef } from '@/types';
 
-function Button({
+export default function Button({
   variant = 'primary',
   size = 'md',
   title,
@@ -15,9 +15,15 @@ function Button({
   rightIcon,
   leftIcon,
   className,
+  iconClassName,
+  loaderClassName,
+  rightIconClassName,
+  leftIconClassName,
   onClick,
   href,
   disabled,
+  rounded = true,
+  isOpenLinkInNewTab = false,
   // isLoading,
   ...rest
 }: {
@@ -27,23 +33,38 @@ function Button({
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  iconClassName?: string;
+  loaderClassName?: string;
+  rightIconClassName?: string;
+  leftIconClassName?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
+  rounded?: boolean;
   href?: Url;
+  isOpenLinkInNewTab?: boolean;
   // isLoading?: boolean;
 }) {
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
 
+  const variantsBgDisabledOpacity = {
+    primary: `bg-highlight/25`,
+    secondary: 'bg-secondary/25',
+    danger: 'bg-red/25',
+    text: 'bg-transparent',
+    outline: 'bg-transparent',
+  };
+
   const variants = {
-    primary: 'bg-blue-500 hover:bg-blue-700 font-medium rounded-full',
-    secondary: 'bg-gray-300 hover:bg-gray-400 rounded-full',
-    danger: 'bg-red-500 hover:bg-red-700 font-medium rounded-full',
-    text: 'opacity-50 hover:opacity-100 rounded-full',
-    outline: 'border border-gray-200 hover:bg-gray-200 rounded-full',
+    primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium`,
+    secondary: 'bg-secondary text-white opacity-90 hover:opacity-100',
+    danger: 'bg-red text-white hover:bg-red font-medium',
+    text: 'opacity-50 text-white hover:opacity-100',
+    outline: 'border text-white hover:bg-bcolor',
   };
 
   const sizes = {
+    xs: 'px-2 py-1 text-xs',
     sm: 'px-2 py-1 text-sm',
     md: 'px-4 py-1 text-sm',
     lg: 'px-6 py-2 text-sm',
@@ -55,9 +76,14 @@ function Button({
         'flex flex-row items-center justify-center gap-3 font-mono',
         sizes[size],
         variants[variant],
+        rounded ? 'rounded-full' : '',
         className,
         disabled || onClickInProgress
-          ? 'opacity-25 cursor-not-allowed pointer-events-none'
+          ? ' text-white cursor-not-allowed pointer-events-none'
+          : null,
+
+        disabled || onClickInProgress
+          ? variantsBgDisabledOpacity[variant]
           : null,
         'transition duration-300',
       )}
@@ -72,24 +98,48 @@ function Button({
       {...rest}
     >
       {leftIcon && !onClickInProgress ? (
-        <Image src={leftIcon} alt={alt} width="12" height="12" />
+        <Image
+          src={leftIcon}
+          alt={alt}
+          width="12"
+          height="12"
+          className={twMerge(iconClassName, leftIconClassName)}
+        />
       ) : null}
 
       {title && !onClickInProgress ? title : null}
 
       {rightIcon && !onClickInProgress ? (
-        <Image src={rightIcon} alt={alt} width="12" height="12" />
+        <Image
+          src={rightIcon}
+          alt={alt}
+          width="12"
+          height="12"
+          className={twMerge(iconClassName, rightIconClassName)}
+        />
       ) : null}
 
-      {onClickInProgress ? <Loader height={20} /> : null}
+      {onClickInProgress ? (
+        <Loader
+          height={23}
+          width={50}
+          className={twMerge('text-white', loaderClassName)}
+        />
+      ) : null}
     </button>
   );
 
   if (href) {
-    return <Link href={href}>{styledButton}</Link>;
+    return (
+      <Link
+        href={href}
+        target={isOpenLinkInNewTab ? '_blank' : ''}
+        rel={isOpenLinkInNewTab ? 'noopener noreferrer' : ''}
+      >
+        {styledButton}
+      </Link>
+    );
   }
 
   return styledButton;
 }
-
-export default Button;

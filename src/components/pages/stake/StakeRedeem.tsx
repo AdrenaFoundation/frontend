@@ -17,7 +17,7 @@ export default function StakeRedeem({
   return (
     <div className="p-5">
       <div>
-        <div className="flex flex-row justify-between mb-2">
+        <div className="flex flex-row justify-between">
           <p className="text-sm opacity-50 font-medium"> Enter Amount</p>
           <p className="text-sm font-medium">
             <span className="opacity-50"> Total reedemable · </span>
@@ -26,12 +26,13 @@ export default function StakeRedeem({
               : '–'}
           </p>
         </div>
-        <div className="relative flex flex-row w-full">
-          <div className="flex items-center bg-gray-200 border border-gray-400 rounded-l-xl px-3  border-r-none">
+        <div className="relative flex flex-row w-full mt-4">
+          <div className="flex items-center bg-bcolor border border-bcolor rounded-l-xl px-3 border-r-none">
             <p className="opacity-50 font-mono text-sm">{tokenSymbol}</p>
           </div>
           <input
-            className="w-full bg-dark border border-gray-400 rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+            className="w-full bg-inputcolor border rounded-xl rounded-l-none p-3 px-4 text-xl font-mono"
+            style={{ borderColor: '#2a2a2a' }}
             type="number"
             onWheel={(e) => {
               // Disable the scroll changing input value
@@ -39,19 +40,23 @@ export default function StakeRedeem({
             }}
             value={amount ?? ''}
             onChange={(e) => {
-              if (!e.target.value) {
+              if (
+                !e.target.value ||
+                Number(e.target.value) > totalLiquidStaked
+              ) {
                 setAmount(null);
                 return;
               }
               setAmount(Number(e.target.value));
             }}
             placeholder="0.00"
+            max={totalLiquidStaked}
           />
 
           <Button
-            className="absolute right-2 bottom-[20%]"
+            className="absolute right-2 bottom-3.5"
             title="MAX"
-            variant="secondary"
+            variant="primary"
             onClick={() => {
               if (!totalLiquidStaked) {
                 return;
@@ -63,8 +68,8 @@ export default function StakeRedeem({
       </div>
 
       <Button
-        variant="danger"
-        className="w-full mt-3"
+        variant="primary"
+        className="w-full mt-6"
         size="lg"
         title="Remove stake"
         disabled={!amount}
@@ -72,7 +77,7 @@ export default function StakeRedeem({
           if (!amount) {
             return;
           }
-          handleRemoveLiquidStake(amount);
+          return handleRemoveLiquidStake(amount);
         }}
       />
     </div>

@@ -7,7 +7,7 @@ import {
 import { Keypair } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
-import { LockPeriod, WalletAdapterName } from './types';
+import { AdxLockPeriod, AlpLockPeriod, WalletAdapterName } from './types';
 
 export const walletAdapters: Record<
   WalletAdapterName,
@@ -59,45 +59,62 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
   ]),
 );
 
-export const STAKE_MULTIPLIERS: {
-  [K in LockPeriod]: { usdc: number; adx: number; votes: number };
+export const ALP_STAKE_MULTIPLIERS: {
+  [K in AlpLockPeriod]: { usdc: number; adx: number };
+} = {
+  180: {
+    usdc: 1.75,
+    adx: 1.75,
+  },
+  360: {
+    usdc: 2.5,
+    adx: 2.5,
+  },
+  540: {
+    usdc: 3.25,
+    adx: 3.25,
+  },
+  720: {
+    usdc: 4,
+    adx: 4,
+  },
+} as const;
+
+export const ALP_LOCK_PERIODS: AlpLockPeriod[] = [180, 360, 540, 720];
+
+export const ADX_STAKE_MULTIPLIERS: {
+  [K in AdxLockPeriod]: { usdc: number; adx: number; votes: number };
 } = {
   0: {
     usdc: 1,
     adx: 0,
     votes: 1,
   },
-  30: {
-    usdc: 1.25,
-    adx: 1,
-    votes: 1.21,
-  },
-  60: {
-    usdc: 1.56,
-    adx: 1.25,
-    votes: 1.33,
-  },
-  90: {
-    usdc: 1.95,
-    adx: 1.56,
-    votes: 1.46,
-  },
   180: {
-    usdc: 2.44,
-    adx: 1.95,
-    votes: 1.61,
+    usdc: 1.75,
+    adx: 1.75,
+    votes: 1.75,
   },
   360: {
-    usdc: 3.05,
-    adx: 2.44,
-    votes: 1.78,
+    usdc: 2.5,
+    adx: 2.5,
+    votes: 2.5,
+  },
+  540: {
+    usdc: 3.25,
+    adx: 3.25,
+    votes: 3.25,
   },
   720: {
-    usdc: 3.81,
-    adx: 3.05,
-    votes: 1.95,
+    usdc: 4,
+    adx: 4,
+    votes: 4,
   },
-};
+} as const;
+
+export const ADX_LOCK_PERIODS: AdxLockPeriod[] = [0, 180, 360, 540, 720];
+
+export const ROUND_MIN_DURATION_SECONDS = 3_600 * 6;
 
 export const SUPPORTED_RESOLUTIONS = [
   '1',
@@ -110,3 +127,12 @@ export const SUPPORTED_RESOLUTIONS = [
   '240',
   '1D',
 ] as ResolutionString[];
+
+export const alpLiquidityCap = 10000000;
+
+export const VEST_BUCKETS = [
+  'Core Contributor',
+  'Dao Treasury',
+  'PoL',
+  'Ecosystem',
+] as const;

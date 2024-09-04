@@ -1,5 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ReactNode, useRef, useState } from 'react';
+import {
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+  useRef,
+  useState,
+} from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { useOnClickOutside } from '@/hooks/onClickOutside';
@@ -8,23 +13,28 @@ export default function Menu({
   trigger,
   className,
   openMenuClassName,
+  menuOpenBorderClassName,
   children,
   withBorder,
   disabled,
+  disableOnClickInside = false,
+  isDim = false,
 }: {
   trigger: ReactNode;
   className?: string;
   openMenuClassName?: string;
+  menuOpenBorderClassName?: string;
   children: ReactNode;
   withBorder?: boolean;
   disabled?: boolean;
+  disableOnClickInside?: boolean;
+  isDim?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   // Note 1: Clicks outside of parent trigger onClose
-  // Note 2: Parent require 'relative' class
   useOnClickOutside(ref, () => {
     setIsMenuOpen(!isMenuOpen);
   });
@@ -34,42 +44,62 @@ export default function Menu({
     visible: { opacity: 1 },
   };
 
-  return (
-    <AnimatePresence>
-      <div
-        className={twMerge('relative', className)}
-        onClick={() => !disabled && setIsMenuOpen(!isMenuOpen)}
-      >
-        <div
-          className={twMerge(
-            'flex h-full w-full border border-transparent',
-            isMenuOpen && withBorder
-              ? 'border-zinc-700 shadow-zinc-800 shadow-lg'
-              : '',
-          )}
-        >
-          {trigger}
-        </div>
+  const closeMenu = (el: ReactMouseEvent<HTMLDivElement>) => {
+    el.stopPropagation();
 
-        {isMenuOpen && (
-          <motion.div
-            ref={ref}
-            initial="hidden"
-            animate="visible"
-            variants={variants}
-            transition={{ duration: 0.3 }}
+    if (ref.current?.contains(el.target as Node) && disableOnClickInside) {
+      return;
+    }
+
+    setIsMenuOpen(false);
+  };
+
+  return (
+    <>
+      <AnimatePresence>
+        <div
+          className={twMerge('relative', className)}
+          onClick={() => !disabled && setIsMenuOpen(!isMenuOpen)}
+        >
+          <div
             className={twMerge(
-              'absolute flex flex-col bg-dark overflow-hidden z-50 border mt-2',
-              withBorder
-                ? 'border border-zinc-700 shadow-zinc-800 shadow-lg'
+              'flex h-full w-full border border-transparent',
+              isMenuOpen && withBorder
+                ? twMerge('bg-secondary', menuOpenBorderClassName)
                 : '',
-              openMenuClassName,
             )}
           >
-            {children}
-          </motion.div>
-        )}
-      </div>
-    </AnimatePresence>
+            {trigger}
+          </div>
+
+          {isMenuOpen ? (
+            <motion.div
+              ref={ref}
+              initial="hidden"
+              animate="visible"
+              onClick={(e) => closeMenu(e)}
+              variants={variants}
+              transition={{ duration: 0.3 }}
+              className={twMerge(
+                'absolute flex flex-col bg-third overflow-hidden z-50 border mt-2 rounded-md',
+                withBorder ? 'border bg-third shadow-lg' : '',
+                openMenuClassName,
+              )}
+            >
+              {children}
+            </motion.div>
+          ) : null}
+        </div>
+      </AnimatePresence>
+      {isDim && isMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="absolute top-0 left-0 w-full h-full bg-black/75"
+        />
+      )}
+    </>
   );
 }

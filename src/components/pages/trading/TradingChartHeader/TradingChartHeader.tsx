@@ -1,12 +1,18 @@
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
+import FormatNumber from '@/components/Number/FormatNumber';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatNumber } from '@/utils';
 
-export default function TradingInputs({
+export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
+  return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
+}
+
+export default function TradingChartHeader({
   className,
   tokenList,
   selected,
@@ -17,20 +23,46 @@ export default function TradingInputs({
   selected: Token;
   onChange: (t: Token) => void;
 }) {
-  const tokenPrices = useSelector((s) => s.tokenPrices);
+  const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
   const stats = useDailyStats();
+  const [previousTokenPrice, setPreviousTokenPrice] = useState<number>(0);
+  const [tokenColor, setTokenColor] = useState<string>('text-white');
+
+  useEffect(() => {
+    // if streamingTokenPrices is larger than previous value, set color to green
+    // if streamingTokenPrices is smaller than previous value, set color to red
+    if (!streamingTokenPrices) return;
+
+    const price = streamingTokenPrices?.[selected.symbol];
+
+    if (typeof price === 'undefined' || price === null) {
+      return;
+    }
+
+    if (price > previousTokenPrice) {
+      setTokenColor('text-green');
+    } else if (price < previousTokenPrice) {
+      setTokenColor('text-red');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streamingTokenPrices]);
+
+  useEffect(() => {
+    setPreviousTokenPrice(streamingTokenPrices?.[selected.symbol] || 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streamingTokenPrices]);
 
   return (
     <div
       className={twMerge(
-        'flex items-center justify-between sm:justify-start gap-3 h-14 bg-gray-300/85 backdrop-blur-md border border-gray-200 border-b-transparent rounded-t-2xl z-30',
+        'flex flex-col sm:flex-row items-center justify-between sm:gap-3 z-30 bg-main border-b',
         className,
       )}
     >
-      <div className="flex items-center sm:border-r sm:border-r-gray-200 h-full">
+      <div className="flex items-center w-full sm:w-[200px] border-b border-r-none sm:border-b-0 sm:border-r">
         <Select
-          className="w-[8em]"
-          selectedClassName="p-2"
+          className="w-full"
+          selectedClassName="py-3 px-2 sm:px-3"
           selected={`${selected.symbol} / USD`}
           options={tokenList
             .filter((token) => token.symbol !== selected.symbol)
@@ -38,10 +70,7 @@ export default function TradingInputs({
               return { title: `${token.symbol} / USD` };
             })}
           onSelect={(opt: string) => {
-            const selectedTokenSymbol = opt.slice(
-              0,
-              opt.length - ' / USD'.length,
-            );
+            const selectedTokenSymbol = getTokenSymbolFromChartFormat(opt);
             // Force linting, you cannot not find the token in the list
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const token = tokenList.find(
@@ -55,40 +84,43 @@ export default function TradingInputs({
         />
       </div>
 
-      <div className="flex flex-row gap-3 p-3 items-center">
-        <div className="font-mono mr-3 text-base">
-          {tokenPrices && tokenPrices[selected.symbol]
-            ? // Force linting, we check it just bellow
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              formatPriceInfo(tokenPrices[selected.symbol]!)
-            : null}
-        </div>
+      <div className="flex w-full p-3 sm:p-0 flex-row gap-3 justify-between sm:justify-end sm:gap-12 items-center sm:pr-5">
+        <FormatNumber
+          nb={streamingTokenPrices?.[selected.symbol]}
+          format="currency"
+          minimumFractionDigits={2}
+          className={twMerge('text-lg font-bold', tokenColor)}
+        />
+        <div className="flex flex-row gap-3 sm:gap-6">
+          <div className="flex flex-col p-1 rounded-full flex-wrap">
+            <span className="text-xs sm:text-sm text-txtfade text-right">
+              24h Change
+            </span>
 
-        <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
-          <span
-            className={twMerge(
-              'font-mono text-sm',
-              stats && stats[selected.symbol].dailyChange > 0
-                ? 'text-green-500'
-                : 'text-red-500',
-            )}
-          >
-            {stats
-              ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
-              : '-'}
-          </span>
-          <span className="text-sm text-txtfade ml-2 relative top-[0.1em]">
-            24h Change
-          </span>
-        </div>
+            <span
+              className={twMerge(
+                'font-mono text-sm',
+                stats && stats[selected.symbol].dailyChange > 0
+                  ? 'text-green'
+                  : 'text-red',
+              )}
+            >
+              {stats
+                ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
+                : '-'}
+            </span>
+          </div>
 
-        <div className="hidden sm:flex flex-col sm:flex-row bg-white/5 p-1 px-5 rounded-full flex-wrap justify-center">
-          <span className="font-mono text-sm">
-            {formatPriceInfo(stats?.[selected.symbol].dailyVolume ?? null)}
-          </span>
-          <span className="text-sm text-txtfade ml-2 relative top-[0.1em]">
-            24h Volume
-          </span>
+          <div className="flex flex-col p-1 rounded-full flex-wrap">
+            <span className="text-xs sm:text-sm text-txtfade text-right">
+              24h Volume
+            </span>
+
+            <FormatNumber
+              nb={stats?.[selected.symbol].dailyVolume}
+              format="currency"
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ let interval: NodeJS.Timeout | null = null;
 
 const TOTAL_SUPPLY_LOADING_INTERVAL_IN_MS = 30_000;
 
-const useALPTotalSupply = () => {
+export default function useALPTotalSupply() {
   const [totalSupply, setTotalSupply] = useState<number | null>(null);
 
   const loadTotalSupply = useCallback(async () => {
@@ -40,6 +40,4 @@ const useALPTotalSupply = () => {
   }, [loadTotalSupply]);
 
   return totalSupply;
-};
-
-export default useALPTotalSupply;
+}

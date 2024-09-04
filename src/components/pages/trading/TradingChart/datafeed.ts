@@ -53,6 +53,8 @@ const datafeed: IBasicDataFeed = {
         .json()
         .then((symbolInfo) => {
           console.log('[resolveSymbol]: Symbol resolved', symbolInfo);
+          // force price Scale of the whole currencies to have 2 decimals when creating new lines (custom Formatter was not applied)
+          symbolInfo.pricescale = 100;
           onSymbolResolvedCallback(symbolInfo);
         })
         .catch(() => {

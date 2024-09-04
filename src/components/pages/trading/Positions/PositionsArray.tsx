@@ -1,59 +1,42 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import Loader from '@/components/Loader/Loader';
-import WalletSelectionModal from '@/components/WalletAdapter/WalletSelectionModal';
-import { useDispatch, useSelector } from '@/store/store';
+import FormatNumber from '@/components/Number/FormatNumber';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { getArrowElement } from '@/utils';
 
-import phantomLogo from '../../../../../public/images/phantom.png';
+import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 export default function PositionsArray({
+  bodyClassName,
+  borderColor,
+  connected,
+  className,
   positions,
   triggerClosePosition,
   triggerEditPositionCollateral,
 }: {
+  bodyClassName?: string;
+  borderColor?: string;
+  connected: boolean;
+  className?: string;
   positions: PositionExtended[] | null;
   triggerClosePosition: (p: PositionExtended) => void;
   triggerEditPositionCollateral: (p: PositionExtended) => void;
 }) {
-  const dispatch = useDispatch();
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
-  const connected = !!useSelector((s) => s.walletState.wallet);
 
-  const handleClick = () => {
-    if (!connected) {
-      dispatch(openCloseConnectionModalAction(true));
-      return;
-    }
-  };
+  const isBelow1100 = useBetterMediaQuery('(max-width: 1100px)');
 
   if (positions === null && !connected) {
-    return (
-      <div className="flex flex-col h-full items-center justify-center">
-        <Button
-          title={
-            !window.adrena.geoBlockingData.allowed
-              ? 'Geo-Restricted Access'
-              : 'Connect wallet'
-          }
-          variant="secondary"
-          rightIcon={phantomLogo}
-          className="mb-2"
-          onClick={handleClick}
-        />
-
-        <p className="text-sm opacity-50 font-normal">
-          Waiting for wallet connection
-        </p>
-
-        <WalletSelectionModal />
-      </div>
-    );
+    return <WalletConnection connected={connected} />;
   }
 
   if (positions === null && connected) {
@@ -66,36 +49,61 @@ export default function PositionsArray({
 
   if (positions && !positions.length) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-sm opacity-50 font-normal">No opened position</p>
+      <div className="flex flex-col gap-2 h-full min-h-[5em] grow items-center justify-center">
+        <span className="text-sm opacity-50 font-normal flex items-center justify-center font-boldy">
+          No opened position
+        </span>
+        {window.location.pathname === '/trade' ? null : (
+          <Button title="Open a position" href={'/trade'} size="lg" />
+        )}
       </div>
     );
   }
 
-  const columnHeadStyle = 'text-sm text-center opacity-50 font-medium p-3 ';
+  const columnHeadStyle = 'text-sm text-center opacity-50 font-boldy p-3';
   const columnStyle = 'text-sm text-center h-10';
+  const border = 'border-b pt-2' + borderColor ? borderColor : 'border-bcolor';
+  const arrowElementUpRight = getArrowElement('up', 'right-[0.5em] opacity-70');
+  const arrowElementUpLeft = getArrowElement('up', 'left-[0.5em] opacity-70');
+
+  function generateLiquidationBlock() {
+    return (
+      <div className="flex justify-center items-center text-center align-middle relative">
+        {arrowElementUpLeft}
+        Liquidation price reached
+        {arrowElementUpRight}
+      </div>
+    );
+  }
 
   return (
-    <table className="w-full">
+    <table className={twMerge('w-full', className, bodyClassName)}>
       {/* Header */}
 
-      <thead className="bg-dark border-b border-b-gray-200">
+      <thead
+        className={twMerge(
+          'border-b',
+          borderColor ? borderColor : 'border-bcolor',
+        )}
+      >
         <tr>
-          <th className={twMerge(columnHeadStyle, 'w-[6.5em]')}>Position</th>
-          <th className={columnHeadStyle}>Leverage</th>
-          <th className={columnHeadStyle}>Net Value</th>
-          <th className={columnHeadStyle}>Size</th>
-          <th className={columnHeadStyle}>Collateral</th>
-          <th className={columnHeadStyle}>Entry Price</th>
-          <th className={columnHeadStyle}>Market Price</th>
-          <th className={columnHeadStyle}>Liq. Price</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Position</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Net Value</th>
+
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Collateral</th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Size</th>
+
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>
+            Entry / Mark Price
+          </th>
+          <th className={twMerge(columnHeadStyle, 'w-[14%]')}>Liq. Price</th>
           <th
             className={twMerge(
               columnHeadStyle,
-              'shrink-0 grow-0 w-[7em] border-none',
+              'w-[14%] lg:w-[10%] border-none',
             )}
           >
-            Actions
+            Close
           </th>
         </tr>
       </thead>
@@ -103,162 +111,266 @@ export default function PositionsArray({
       {/* Content */}
       <tbody>
         {positions?.map((position, i) => (
-          <tr
-            key={position.pubkey.toBase58()}
-            className={twMerge(
-              i !== positions.length - 1 && 'border-b border-b-gray-200',
-            )}
-          >
-            <td
+          // Use Fragment to avoid key error
+          <React.Fragment key={position.pubkey.toBase58()}>
+            <tr
+              key={position.pubkey.toBase58() + '-0'}
               className={twMerge(
-                'flex-col justify-center items-center',
-                columnStyle,
+                'border-b',
+                borderColor ? borderColor : 'border-bcolor',
               )}
             >
-              <div className="flex flex-row h-full items-center w-[6.5em] justify-center relative overflow-hidden">
-                <Image
-                  className="opacity-[10%] absolute left-[-2.5em] grayscale"
-                  height={80}
-                  width={80}
-                  src={position.token.image}
-                  alt={`${position.token.symbol} logo`}
-                />
-
-                <div className="grow flex h-full items-center justify-start pl-3">
-                  <span className="font-mono">{position.token.symbol}</span>
-                  <div
-                    className={twMerge(
-                      'text-sm font-mono capitalize font-bold ml-1',
-                      `text-${position.side === 'long' ? 'green' : 'red'}-500`,
-                    )}
-                  >
-                    {position.side}
-                  </div>
-                </div>
-              </div>
-            </td>
-
-            <td className={twMerge(columnStyle, 'font-mono')}>
-              {formatNumber(position.leverage, 2)}x
-            </td>
-
-            <td className={twMerge(columnStyle, 'font-mono')}>
-              {position.pnl ? (
-                <span
-                  className={`text-${
-                    position.pnl > 0 ? 'green' : 'red'
-                  }-500 font-mono`}
-                >
-                  {formatPriceInfo(position.pnl)}
-                </span>
-              ) : (
-                '-'
-              )}
-              {/* <Tippy
-                content={
-                  <ul className="flex flex-col gap-2">
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">
-                        initial collateral:
-                      </p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">PnL:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Borrow fee:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Open fee:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Close fee:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-
-                    <div className="w-full h-[1px] bg-gray-300" />
-
-                    <li className="flex flex-row gap-2 justify-between">
-                      <p className="text-sm text-txtfade">Pnl after fees:</p>
-                      <p className="text-sm font-mono">-</p>
-                    </li>
-                  </ul>
-                }
-                placement="bottom"
-                disabled={true}
+              <td
+                className={twMerge(
+                  'items-center text-xs md:text-sm text-center h-10',
+                )}
               >
-                <div className="tooltip-target">
+                <div className="h-full w-full items-center justify-center flex font-mono">
+                  <Image
+                    className="hidden md:block lg:hidden xl:block"
+                    height={28}
+                    width={28}
+                    src={position.token.image}
+                    alt={`${position.token.symbol} logo`}
+                  />
+                  <table className="flex flex-col ml-2 text-xs md:text-sm text-center h-10">
+                    <tbody className="flex flex-col h-full">
+                      <tr>
+                        <td>
+                          <div className="grow flex h-full items-center justify-start pt-0.5 mt-[0.2em]">
+                            {window.location.pathname !== '/trade' ? (
+                              <Link
+                                href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
+                                target=""
+                              >
+                                <span className="font-boldy underline text-xs md:text-sm">
+                                  {position.token.symbol}
+                                </span>
+                              </Link>
+                            ) : (
+                              <span className="font-boldy text-xs md:text-sm">
+                                {position.token.symbol}
+                              </span>
+                            )}
+                            <span
+                              className={twMerge(
+                                'font-boldy ml-1 uppercase text-xs md:text-sm',
+                                `text-${
+                                  position.side === 'long'
+                                    ? 'green'
+                                    : 'redbright'
+                                }`,
+                              )}
+                            >
+                              {position.side}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr className="text-center h-10 font-mono">
+                        <td>
+                          <div className="flex">
+                            {position ? (
+                              <FormatNumber
+                                nb={position.leverage}
+                                suffix="x"
+                                className="text-xs"
+                                isDecimalDimmed={false}
+                              />
+                            ) : (
+                              '-'
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </td>
+
+              <td
+                className={twMerge(
+                  'font-mono items-center text-xs text-center h-10',
+                )}
+              >
+                <div className="flex flex-col h-full w-full items-center justify-center">
+                  {position.pnl && position?.collateralUsd ? (
+                    <div className="flex items-center justify-center">
+                      <NetValueTooltip position={position} placement="top">
+                        <span className="underline-dashed">
+                          <FormatNumber
+                            nb={position.collateralUsd + position.pnl}
+                            format="currency"
+                            className="text-xs"
+                          />
+                        </span>
+                      </NetValueTooltip>
+                    </div>
+                  ) : (
+                    '-'
+                  )}
                   {position.pnl ? (
-                    <span
-                      className={`text-${
-                        position.pnl > 0 ? 'green' : 'red'
-                      }-500 font-mono`}
-                    >
-                      {formatPriceInfo(position.pnl)}
-                    </span>
+                    <div className="flex mt-1">
+                      <FormatNumber
+                        nb={position.pnl}
+                        format="currency"
+                        className={`mr-0.5 text-xs text-${
+                          position.pnl && position.pnl > 0
+                            ? 'green'
+                            : 'redbright'
+                        }`}
+                        isDecimalDimmed={false}
+                      />
+
+                      {position.pnl ? (
+                        <>
+                          <FormatNumber
+                            nb={(position.pnl / position.collateralUsd) * 100}
+                            format="percentage"
+                            prefix="("
+                            suffix=")"
+                            precision={2}
+                            isDecimalDimmed={false}
+                            className={`text-xs text-${
+                              position.pnl && position.pnl > 0
+                                ? 'green'
+                                : 'redbright'
+                            }`}
+                          />
+                        </>
+                      ) : null}
+                    </div>
                   ) : (
                     '-'
                   )}
                 </div>
-              </Tippy> */}
-            </td>
+              </td>
 
-            <td className={twMerge(columnStyle, 'font-mono')}>
-              {formatPriceInfo(position.sizeUsd)}
-            </td>
+              <td className={twMerge('font-mono text-xs text-center h-10')}>
+                <div className="flex flex-col items-center justify-center">
+                  <div className="h-full w-full items-center justify-center flex">
+                    <FormatNumber
+                      nb={position.collateralUsd}
+                      format="currency"
+                      className="text-xs"
+                    />
+                    <Button
+                      size="xs"
+                      className="ml-1.5 text-txtfade border-bcolor bg-[#a8a8a810] hover:text-white"
+                      title="Edit"
+                      variant="outline"
+                      onClick={() => {
+                        triggerEditPositionCollateral(position);
+                      }}
+                    />
+                  </div>
+                </div>
+              </td>
 
-            <td className={twMerge(columnStyle, 'font-mono')}>
-              {formatPriceInfo(position.collateralUsd)}
-            </td>
-
-            <td className={twMerge(columnStyle, 'font-mono')}>
-              {formatPriceInfo(position.price)}
-            </td>
-
-            <td className={twMerge(columnStyle, 'font-mono')}>
-              {tokenPrices[position.token.symbol]
-                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  formatPriceInfo(tokenPrices[position.token.symbol]!)
-                : '-'}
-            </td>
-
-            <td className={columnStyle}>
-              {formatPriceInfo(position.liquidationPrice ?? null)}
-            </td>
-
-            <td
-              className={twMerge(
-                columnStyle,
-                'font-mono flex w-[7em] shrink-0 grow-0 justify-evenly items-center',
+              {isBelow1100 ? null : (
+                <td className={twMerge(columnStyle, 'font-mono')}>
+                  <div className="h-full w-full items-center justify-center flex">
+                    <FormatNumber
+                      nb={position.sizeUsd}
+                      format="currency"
+                      className="text-xs"
+                    />
+                  </div>
+                </td>
               )}
+
+              <td className={twMerge(columnStyle, 'font-mono')}>
+                {isBelow1100 ? (
+                  <div className="flex flex-col h-full w-full items-center justify-center">
+                    <FormatNumber
+                      nb={position.price}
+                      format="currency"
+                      className="text-xs mr-1"
+                      minimumFractionDigits={2}
+                    />
+
+                    <div className="flex">
+                      <FormatNumber
+                        nb={tokenPrices[position.token.symbol]}
+                        format="currency"
+                        className="text-xs text-txtfade"
+                        minimumFractionDigits={2}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <FormatNumber
+                      nb={position.price}
+                      format="currency"
+                      className="text-xs"
+                      minimumFractionDigits={2}
+                    />
+
+                    <span className="text-xs text-txtfade ml-1 mr-1">/</span>
+
+                    <FormatNumber
+                      nb={tokenPrices[position.token.symbol]}
+                      format="currency"
+                      className="text-xs text-txtfade"
+                      minimumFractionDigits={2}
+                    />
+                  </div>
+                )}
+              </td>
+
+              <td className={twMerge(columnStyle)}>
+                <div className="h-full w-full items-center justify-center flex">
+                  <FormatNumber
+                    nb={position.liquidationPrice}
+                    format="currency"
+                    className="text-xs"
+                    minimumFractionDigits={2}
+                  />
+                </div>
+              </td>
+
+              <td
+                className={twMerge(columnStyle, 'font-mono items-center')}
+                style={{ height: '5em' }}
+              >
+                <div className="flex h-full w-full justify-center items-center">
+                  <Button
+                    size="xs"
+                    className="ml-1.5 text-txtfade border-bcolor bg-[#a8a8a810] hover:text-white"
+                    title="Close"
+                    variant="outline"
+                    onClick={() => {
+                      triggerClosePosition(position);
+                    }}
+                  />
+                </div>
+              </td>
+            </tr>
+
+            <tr
+              key={position.pubkey.toBase58() + '-1'}
+              className={twMerge(i !== positions.length - 1 && border)}
             >
-              <Button
-                className="text-xs p-0"
-                title="close"
-                variant="text"
-                onClick={() => {
-                  triggerClosePosition(position);
-                }}
-              />
-              <span>/</span>
-              <Button
-                className="text-xs p-0"
-                title="edit"
-                variant="text"
-                onClick={() => {
-                  triggerEditPositionCollateral(position);
-                }}
-              />
-            </td>
-          </tr>
+              <td
+                colSpan={9}
+                className="flex-col bg-red justify-center items-center text-center align-middle text-xs opacity-70"
+              >
+                {position.side === 'long' &&
+                tokenPrices[position.token.symbol] &&
+                (tokenPrices[position.token.symbol] ?? 0) <
+                  (position.liquidationPrice ?? 0)
+                  ? generateLiquidationBlock()
+                  : null}
+                {position.side === 'short' &&
+                tokenPrices[position.token.symbol] &&
+                (tokenPrices[position.token.symbol] ?? 0) >
+                  (position.liquidationPrice ?? 0)
+                  ? generateLiquidationBlock()
+                  : null}
+              </td>
+            </tr>
+          </React.Fragment>
         ))}
       </tbody>
     </table>

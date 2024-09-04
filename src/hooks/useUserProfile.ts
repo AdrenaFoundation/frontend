@@ -3,11 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
-// TODO: Reload periodically?
-const useUserProfile = (): {
+export default function useUserProfile(): {
   userProfile: UserProfileExtended | false | null;
   triggerUserProfileReload: () => void;
-} => {
+} {
   const [trickReload, triggerReload] = useState<number>(0);
   const wallet = useSelector((s) => s.walletState.wallet);
 
@@ -28,6 +27,10 @@ const useUserProfile = (): {
 
   useEffect(() => {
     fetchUserProfile();
+    const interval = setInterval(() => {
+      fetchUserProfile();
+    }, 30000);
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchUserProfile, trickReload, window.adrena.client.connection]);
 
@@ -37,6 +40,4 @@ const useUserProfile = (): {
       triggerReload(trickReload + 1);
     },
   };
-};
-
-export default useUserProfile;
+}

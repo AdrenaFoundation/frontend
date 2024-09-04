@@ -2,24 +2,38 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 
+import discordLogo from '../../../public/images/discord.png';
+// import discourseLogo from '../../../public/images/discourse.svg';
 import githubLogo from '../../../public/images/github.svg';
-import twitterLogo from '../../../public/images/twitter.svg';
+import twitterLogo from '../../../public/images/x.svg';
+import Button from '../common/Button/Button';
 
 export default function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={twMerge(
-        'mt-auto flex-col w-full pt-4 pb-4 border-t border-grey justify-center items-center bg-gray-300/85 backdrop-blur-md',
+        'flex flex-col w-full border-t border-bcolor justify-center items-center bg-main h-14 shrink-0 max-h-14 min-h-14',
+        window.location.pathname === '/trade' && 'hidden sm:flex',
         className,
       )}
     >
-      <div className="flex w-full justify-center items-center">
+      <div className="flex w-full justify-center items-center gap-x-6">
+        <Link href="https://discord.gg/adrena" target="_blank">
+          <Image
+            className="hover:opacity-100 opacity-50 cursor-pointer h-6 w-auto"
+            src={discordLogo}
+            alt="Discord icon"
+            width="24"
+            height="24"
+          />
+        </Link>
+
         <Link
           href="https://github.com/orgs/AdrenaDEX/repositories"
           target="_blank"
         >
           <Image
-            className="hover:opacity-90 cursor-pointer"
+            className="hover:opacity-100 opacity-50 cursor-pointer h-5 w-auto"
             src={githubLogo}
             alt="github icon"
             width="25"
@@ -27,9 +41,31 @@ export default function Footer({ className }: { className?: string }) {
           />
         </Link>
 
+        <Button
+          onClick={() => {
+            // Open feedback widget
+            const element = document.querySelector<HTMLButtonElement>(
+              '.fb-feedback-widget-feedback-button-left',
+            );
+
+            if (element) {
+              element.click();
+            }
+          }}
+          className="opacity-60 p-0"
+          title={
+            <div className="flex">
+              <span className="mr-4 opacity-30">-</span>
+              <h5>Provide Feedback</h5>
+              <span className="ml-4 opacity-30">-</span>
+            </div>
+          }
+          variant="secondary"
+        />
+
         <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
           <Image
-            className="hover:opacity-90 cursor-pointer ml-8"
+            className="hover:opacity-100 opacity-50 cursor-pointer h-4 w-auto"
             src={twitterLogo}
             alt="twitter icon"
             width="20"
@@ -37,6 +73,15 @@ export default function Footer({ className }: { className?: string }) {
           />
         </Link>
 
+        {/* <Link href="https://adrena.discourse.group/" target="_blank">
+          <Image
+            className="hover:opacity-100 opacity-50 cursor-pointer h-5 w-auto"
+            src={discourseLogo}
+            alt="discourse icon"
+            width="20"
+            height="20"
+          />
+        </Link> */}
         {/* <Link
           href="/terms_and_conditions"
           className="absolute right-6 text-txtfade hover:text-white font-mono"

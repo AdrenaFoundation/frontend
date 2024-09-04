@@ -1,12 +1,19 @@
 import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+
+import Block from './Block';
+
 export default function Table({
+  breakpoint,
   className,
   columnsTitles,
   data,
   rowTitleWidth,
 }: {
+  breakpoint?: string | null;
   className?: string;
   columnsTitles?: ReactNode[];
   data: (
@@ -21,20 +28,24 @@ export default function Table({
   )[];
   rowTitleWidth?: string;
 }) {
-  return (
-    <div className={twMerge('flex flex-col p-4', className)}>
-      <div className="flex">
+  const isBreakpoint = useBetterMediaQuery(
+    `(max-width: ${breakpoint ?? '800px'})`,
+  );
+
+  return !isBreakpoint ? (
+    <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
+      <div className="flex pb-2">
         <div
           className="flex shrink-0 ml-2"
           style={{
             width: rowTitleWidth ?? '150px',
           }}
-        ></div>
+        />
 
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className="text-lg font-specialmonster overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0"
+            className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade"
           >
             {title}
           </div>
@@ -42,10 +53,7 @@ export default function Table({
       </div>
 
       {data.map(({ rowTitle, ...v }, i) => (
-        <div
-          key={i}
-          className="flex w-full border-b last:border-b-0 border-gray-400 text-sm"
-        >
+        <div key={i} className="flex w-full border-b last:border-b-0 text-base">
           <div
             className="flex shrink-0 items-center"
             style={{
@@ -75,6 +83,8 @@ export default function Table({
           })()}
         </div>
       ))}
-    </div>
+    </StyledSubSubContainer>
+  ) : (
+    <Block data={data} columnsTitles={columnsTitles} />
   );
 }

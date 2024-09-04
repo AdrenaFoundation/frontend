@@ -44,7 +44,7 @@ export default function YesOrNoModal({
       {body ? (
         <>
           <div>{body}</div>
-          <div className="h-[1px] w-full bg-gray-300 mt-8"></div>
+          <div className="h-[1px] w-full bg-bcolor mt-8"></div>
         </>
       ) : null}
 

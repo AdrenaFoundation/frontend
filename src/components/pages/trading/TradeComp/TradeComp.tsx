@@ -9,42 +9,51 @@ import { PositionExtended, Token } from '@/types';
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
 
-export const TradeComp = ({
+export default function TradeComp({
   selectedAction,
   setSelectedAction,
   tokenA,
   tokenB,
   wallet,
+  connected,
   setTokenA,
   setTokenB,
   openedPosition,
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
   className,
+  isBigScreen,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
   tokenA: Token | null;
   tokenB: Token | null;
   wallet: Wallet | null;
+  connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   openedPosition: PositionExtended | null;
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
   className?: string;
-}) => {
+  isBigScreen?: boolean | null;
+}) {
   return (
     <div
       className={twMerge(
-        'sm:flex w-full lg:w-[30em] min-w-[350px] flex-col sm:flex-row lg:flex-col mt-4 lg:ml-4 lg:mt-0',
+        'sm:flex w-full bg-main/90 flex-col sm:flex-row lg:flex-col sm:border sm:rounded-lg ',
+        isBigScreen ? 'mt-0 w-[30em]' : 'mt-4',
         className,
       )}
     >
-      <div className="w-full bg-gray-300/85 backdrop-blur-md border border-gray-200 rounded-2xl pt-3 pl-3 pr-3 pb-4 flex flex-col">
+      <div className="w-full flex flex-col sm:p-3">
         <TabSelect
           selected={selectedAction}
-          tabs={[{ title: 'long' }, { title: 'short' }, { title: 'swap' }]}
+          tabs={[
+            { title: 'long', activeColor: 'border-b-green text-green' },
+            { title: 'short', activeColor: 'border-b-red text-red' },
+            { title: 'swap', activeColor: 'border-white' },
+          ]}
           onClick={(title) => {
             setSelectedAction(title);
           }}
@@ -66,6 +75,7 @@ export const TradeComp = ({
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 wallet={wallet}
+                connected={connected}
                 triggerPositionsReload={triggerPositionsReload}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
@@ -80,6 +90,7 @@ export const TradeComp = ({
                 setTokenA={setTokenA}
                 setTokenB={setTokenB}
                 wallet={wallet}
+                connected={connected}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
                 }
@@ -90,4 +101,4 @@ export const TradeComp = ({
       </div>
     </div>
   );
-};
+}

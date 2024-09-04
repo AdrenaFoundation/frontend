@@ -1,127 +1,164 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
+import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-import AccountsBloc from '@/components/pages/monitoring/Blocs/AccountsBloc';
-import AssetsUnderManagementBloc from '@/components/pages/monitoring/Blocs/AssetsUnderManagementBloc';
-import BucketsBloc from '@/components/pages/monitoring/Blocs/BucketsBloc';
-import FeeCustodyBreakdownBloc from '@/components/pages/monitoring/Blocs/FeeCustodyBreakdownBloc';
-import GlobalOverviewBloc from '@/components/pages/monitoring/Blocs/GlobalOverviewBloc';
-import PoolBloc from '@/components/pages/monitoring/Blocs/PoolBloc';
-import PositionsBloc from '@/components/pages/monitoring/Blocs/PositionsBloc';
-import StakingBloc from '@/components/pages/monitoring/Blocs/StakingBloc';
-import VestingBloc from '@/components/pages/monitoring/Blocs/VestingBloc';
-import VolumeCustodyBreakdownBloc from '@/components/pages/monitoring/Blocs/VolumeCustodyBreakdownBloc';
+import TabSelect from '@/components/common/TabSelect/TabSelect';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import useADXTotalSupply from '@/hooks/useADXTotalSupply';
-import useALPIndexComposition from '@/hooks/useALPIndexComposition';
-import useALPTotalSupply from '@/hooks/useALPTotalSupply';
-import useCortex from '@/hooks/useCortex';
-import usePerpetuals from '@/hooks/usePerpetuals';
-import useStakingAccount from '@/hooks/useStakingAccount';
-import useVests from '@/hooks/useVests';
-import { useSelector } from '@/store/store';
+import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
+
+import BasicMonitoring from './basic';
+import DetailedMonitoring from './detailed';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
-export default function Monitoring({ mainPool, custodies }: PageProps) {
-  const tokenPrices = useSelector((s) => s.tokenPrices);
-  const cortex = useCortex();
-  const perpetuals = usePerpetuals();
-  const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
-  const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
-  const adxTotalSupply = useADXTotalSupply();
-  const alpTotalSupply = useALPTotalSupply();
-  const vests = useVests();
-  const composition = useALPIndexComposition(custodies);
+export default function Monitoring(pageProps: PageProps) {
+  const poolInfo = usePoolInfo(pageProps.custodies);
+  const [detailedDisplay, setDetailedDisplay] = useState<boolean>(false);
 
-  if (
-    !mainPool ||
-    !custodies ||
-    !tokenPrices ||
-    !cortex ||
-    !adxTotalSupply ||
-    !alpTotalSupply ||
-    !perpetuals ||
-    !alpStakingAccount ||
-    !adxStakingAccount ||
-    !composition ||
-    composition.some((c) => c === null)
-  )
-    return <></>;
+  const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
+    useState<(typeof tabs)[number]>('All');
 
-  console.log('Cortex', cortex);
+  const searchParams = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    if (searchParams.has('tab')) {
+      setDetailedDisplay(true);
+
+      return setDetailedDisplaySelectedTab(
+        tabs.find((tab) => tab === searchParams.get('tab')) ?? 'All',
+      );
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleTabChange = (tab: (typeof tabs)[number]) => {
+    searchParams.set('tab', tab);
+    window.history.replaceState(
+      null,
+      '',
+      `${window.location.pathname}?${searchParams.toString()}`,
+    );
+    setDetailedDisplaySelectedTab(tab);
+  };
+
+  const tabs = [
+    'All',
+    'ADX tokenomics',
+    'Automation',
+    'Pool',
+    'Fees',
+    'Staking',
+    'Trading',
+    'Vesting',
+    'Accounts',
+  ] as const;
+
+  const tabsFormatted = tabs.map((x) => ({
+    title: x,
+    activeColor: 'border-white',
+  }));
 
   return (
     <>
-      <RiveAnimation
-        animation="mid-monster"
-        layout={new Layout({ fit: Fit.Contain, alignment: Alignment.TopRight })}
-        className={
-          'fixed lg:absolute top-[50px] md:top-[-50px] right-0 w-full h-full'
-        }
-      />
-
-      <div className="flex flex-wrap z-10 min-w-40 overflow-auto">
-        <AccountsBloc
-          className="m-2 grow"
-          perpetuals={perpetuals}
-          cortex={cortex}
-          mainPool={mainPool}
-          custodies={custodies}
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0 mx-5">
+        <RiveAnimation
+          animation="btm-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
         />
 
-        <GlobalOverviewBloc
-          className="m-2 grow"
-          cortex={cortex}
-          mainPool={mainPool}
-          custodies={custodies}
-          adxTotalSupply={adxTotalSupply}
-          alpTotalSupply={alpTotalSupply}
+        <RiveAnimation
+          animation="mid-monster"
+          layout={
+            new Layout({
+              fit: Fit.Fill,
+              alignment: Alignment.TopLeft,
+            })
+          }
+          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
         />
+      </div>
 
-        <StakingBloc
-          className="m-2 grow"
-          stakedTokenName={'ADX'}
-          stakedTokenDecimals={window.adrena.client.adxToken.decimals}
-          staking={adxStakingAccount}
+      <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10">
+        <div
+          className={twMerge(
+            'flex items-center justify-evenly w-[14em] ml-auto mr-auto',
+            detailedDisplay ? 'pt-2 pb-2' : '',
+          )}
+        >
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              !detailedDisplay ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              searchParams.delete('tab');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+
+              setDetailedDisplay(false);
+            }}
+          >
+            Lite View
+          </span>
+
+          <span className="opacity-20 text-2xl">/</span>
+
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              detailedDisplay ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              searchParams.set('tab', detailedDisplaySelectedTab);
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setDetailedDisplay(true);
+            }}
+          >
+            Detailed View
+          </span>
+        </div>
+
+        {detailedDisplay ? (
+          <TabSelect
+            wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
+            titleClassName="whitespace-nowrap text-sm"
+            selected={detailedDisplaySelectedTab}
+            initialSelectedIndex={tabsFormatted.findIndex(
+              (tab) => tab.title === detailedDisplaySelectedTab,
+            )}
+            tabs={tabsFormatted}
+            onClick={(tab) => {
+              handleTabChange(tab);
+            }}
+          />
+        ) : null}
+      </div>
+
+      <div className={twMerge('hidden', detailedDisplay ? 'block' : '')}>
+        <DetailedMonitoring
+          {...pageProps}
+          selectedTab={detailedDisplaySelectedTab}
+          poolInfo={poolInfo}
         />
+      </div>
 
-        <StakingBloc
-          className="m-2 grow"
-          stakedTokenName={'ALP'}
-          stakedTokenDecimals={window.adrena.client.alpToken.decimals}
-          staking={alpStakingAccount}
-        />
-
-        <AssetsUnderManagementBloc
-          className="m-2 grow"
-          mainPool={mainPool}
-          custodies={custodies}
-        />
-
-        <VestingBloc className="m-2 grow" cortex={cortex} vests={vests} />
-
-        <PoolBloc
-          className="m-2 grow"
-          mainPool={mainPool}
-          custodies={custodies}
-          alpComposition={composition}
-        />
-
-        <BucketsBloc className="m-2 grow" cortex={cortex} />
-
-        <PositionsBloc
-          className="m-2 grow"
-          mainPool={mainPool}
-          custodies={custodies}
-        />
-
-        <FeeCustodyBreakdownBloc className="m-2 grow" custodies={custodies} />
-
-        <VolumeCustodyBreakdownBloc
-          className="m-2 grow"
-          custodies={custodies}
-        />
+      <div className={twMerge('hidden', !detailedDisplay ? 'block' : '')}>
+        <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
       </div>
     </>
   );

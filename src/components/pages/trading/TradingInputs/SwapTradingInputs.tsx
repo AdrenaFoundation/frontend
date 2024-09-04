@@ -6,13 +6,13 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { SwapAmountAndFees, Token } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   formatNumber,
   formatPriceInfo,
   nativeToUi,
@@ -35,6 +35,7 @@ export default function SwapTradingInputs({
   allowedTokenA,
   allowedTokenB,
   wallet,
+  connected,
   setTokenA,
   setTokenB,
   triggerWalletTokenBalancesReload,
@@ -45,6 +46,7 @@ export default function SwapTradingInputs({
   allowedTokenA: Token[];
   allowedTokenB: Token[];
   wallet: Wallet | null;
+  connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   triggerWalletTokenBalancesReload: () => void;
@@ -53,7 +55,6 @@ export default function SwapTradingInputs({
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [connected, setConnected] = useState<boolean>(false);
 
   // Keep track of the last input modified by the user
   // We consider it as the reference value
@@ -73,10 +74,6 @@ export default function SwapTradingInputs({
 
   const [swapFeesAndAmount, setSwapFeesAndAmount] =
     useState<SwapAmountAndFees | null>(null);
-
-  useEffect(() => {
-    setConnected(!!wallet);
-  }, [wallet]);
 
   // Switch inputs values and tokens
   const switchAB = () => {
@@ -98,8 +95,6 @@ export default function SwapTradingInputs({
   };
 
   useEffect(() => {
-    console.log('Trigger recalculation');
-
     if (!tokenA || !tokenB || !inputA) {
       setSwapFeesAndAmount(null);
       return;
@@ -132,6 +127,11 @@ export default function SwapTradingInputs({
         console.log('Swap infos', infos);
       } catch (err) {
         console.log('Ignored error:', err);
+        addNotification({
+          type: 'error',
+          title: 'Error during simulation',
+          message: `An error occurred while simulating the swap.`,
+        });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -184,6 +184,7 @@ export default function SwapTradingInputs({
 
       setPriceB(inputB * tokenPriceB);
       setInputB(inputB);
+      setButtonTitle('Swap');
     } else {
       setPriceB(null);
       setInputB(null);
@@ -210,16 +211,15 @@ export default function SwapTradingInputs({
       return;
     }
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Swap').fire();
+
     if (!tokenA || !tokenB || !inputA || !inputB) {
-      return addNotification({
-        type: 'info',
-        title: 'Cannot perform swap',
-        message: 'Missing information',
-      });
+      return notification.currentStepErrored('Missing information');
     }
 
     try {
-      const txHash = await window.adrena.client.swap({
+      await window.adrena.client.swap({
         owner: new PublicKey(wallet.publicKey),
         amountIn: uiToNative(inputA, tokenA.decimals),
 
@@ -229,67 +229,61 @@ export default function SwapTradingInputs({
         minAmountOut: new BN(0),
         mintA: tokenA.mint,
         mintB: tokenB.mint,
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
-
-      return addSuccessTxNotification({
-        title: 'Successful Swap',
-        txHash,
-      });
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Error Swapping',
-        error,
-      });
+      console.log('error', error);
     }
   };
 
   useEffect(() => {
-    if (!wallet && !window.adrena.geoBlockingData.allowed) {
+    if (!window.adrena.geoBlockingData.allowed)
       return setButtonTitle('Geo-Restricted Access');
-    }
 
     // If wallet not connected, then user need to connect wallet
-    if (!wallet) {
-      return setButtonTitle('Connect wallet');
-    }
+    if (!connected) return setButtonTitle('Connect wallet');
 
-    if (inputA === null || inputB === null) {
+    if (inputA === null || inputB === null)
       return setButtonTitle('Enter an amount');
-    }
 
     // Loading, should happens quickly
-    if (!tokenA) {
-      return setButtonTitle('...');
-    }
+    if (!tokenA) return setButtonTitle('...');
 
     const walletTokenABalance = walletTokenBalances?.[tokenA.symbol];
 
     // Loading, should happens quickly
-    if (typeof walletTokenABalance === 'undefined') {
+    if (typeof walletTokenABalance === 'undefined')
       return setButtonTitle('...');
-    }
 
     // If user wallet balance doesn't have enough tokens, tell user
-    if (!walletTokenABalance || inputA > walletTokenABalance) {
+    if (!walletTokenABalance || inputA > walletTokenABalance)
       return setButtonTitle(`Insufficient ${tokenA.symbol} balance`);
-    }
-  }, [inputA, inputB, tokenA, wallet, walletTokenBalances]);
+
+    return setButtonTitle('Swap');
+  }, [inputA, inputB, connected, tokenA, wallet, walletTokenBalances]);
 
   return (
-    <div className={twMerge('relative flex flex-col', className)}>
+    <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
       {/* Input A */}
-      <div className="text-sm text-txtfade flex items-center">
-        Pay
-        <InfoAnnotation
-          text="Enter the amount of tokens to send to the protocol (including fees)."
-          className="w-3 ml-1"
-        />
+      <div className="flex flex-row justify-between">
+        <h5 className="flex items-center ml-4">
+          Pay
+          <InfoAnnotation
+            text="Enter the amount of tokens to send to the protocol (including fees)."
+            className="w-3 ml-1"
+          />
+        </h5>
+        <RefreshButton />
       </div>
 
       <TradingInput
-        className="mt-2 text-sm"
+        className="mt-2 text-sm rounded-full"
+        inputClassName="tr-rounded-lg bg-inputcolor"
+        tokenListClassName="border-none bg-inputcolor rounded-tr-lg rounded-br-lg"
+        menuClassName="shadow-none"
+        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
         value={inputA}
         subText={
           priceA ? (
@@ -298,7 +292,7 @@ export default function SwapTradingInputs({
             </div>
           ) : null
         }
-        maxButton={!connected}
+        maxButton={connected}
         selectedToken={tokenA}
         tokenList={allowedTokenA}
         onTokenSelect={setTokenA}
@@ -307,8 +301,6 @@ export default function SwapTradingInputs({
           if (!walletTokenBalances || !tokenA) return;
 
           const amount = walletTokenBalances[tokenA.symbol];
-
-          console.log('max button triggered', amount);
 
           handleInputAChange(amount);
         }}
@@ -327,7 +319,7 @@ export default function SwapTradingInputs({
             balance = walletTokenBalances[tokenA.symbol];
 
           return (
-            <div className="ml-auto mt-3">
+            <div className="ml-auto mt-3 mr-4">
               <span className="text-txtfade text-sm font-mono">
                 {balance !== null
                   ? formatNumber(balance, tokenA.decimals)
@@ -345,7 +337,7 @@ export default function SwapTradingInputs({
       <div className="relative w-full overflow-visible flex justify-center items-center z-[2] mt-8 mb-2">
         <div
           className={twMerge(
-            'group absolute bg-gray-200 flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center',
+            'group absolute bg-third border flex rounded-full p-1 w-7 h-7 cursor-pointer items-center justify-center',
           )}
           onClick={() => {
             switchAB();
@@ -364,17 +356,21 @@ export default function SwapTradingInputs({
       </div>
 
       {/* Input B */}
-      <div className="text-sm text-txtfade flex items-center mt-3">
+      <h5 className="flex items-center mt-2 ml-4">
         Receive
         <InfoAnnotation
           text="Enter the amount of tokens to send to the protocol (including fees)."
           className="w-3 ml-1"
         />
-      </div>
+      </h5>
 
       <TradingInput
         disabled={true}
-        className="mt-3 text-sm"
+        className="mt-3 text-sm rounded-full"
+        inputClassName="tr-rounded-lg bg-third"
+        tokenListClassName="border-none bg-third rounded-tr-lg rounded-br-lg"
+        menuClassName="shadow-none"
+        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
         value={inputB}
         subText={
           priceB ? (
@@ -399,7 +395,7 @@ export default function SwapTradingInputs({
           if (balance === null) return null;
 
           return (
-            <div className="ml-auto mt-3">
+            <div className="ml-auto mt-3 mr-4">
               <span className="text-txtfade text-sm font-mono">
                 {custodyTokenB
                   ? formatNumber(custodyTokenB.liquidity, tokenB.decimals)
@@ -413,8 +409,21 @@ export default function SwapTradingInputs({
         })()
       }
 
-      <div className="flex flex-col mt-5">
-        <div className="text-sm text-txtfade flex items-center">
+      {/* Button to execute action */}
+      <Button
+        className="w-full justify-center mt-4"
+        size="lg"
+        title={buttonTitle}
+        disabled={
+          buttonTitle.includes('Insufficient') ||
+          buttonTitle.includes('not handled yet') ||
+          buttonTitle.includes('Enter an amount')
+        }
+        onClick={handleExecuteButton}
+      />
+
+      <div className="flex flex-col mt-4">
+        <h5 className="text-sm flex items-center ml-4">
           Verify
           <InfoAnnotation
             text={
@@ -433,7 +442,7 @@ export default function SwapTradingInputs({
             }
             className="w-3 ml-1"
           />
-        </div>
+        </h5>
 
         <SwapInfo
           className="mt-3 text-sm"
@@ -442,18 +451,6 @@ export default function SwapTradingInputs({
           swapFeesAndAmount={swapFeesAndAmount}
         />
       </div>
-
-      {/* Button to execute action */}
-      <Button
-        className="w-full justify-center mt-8"
-        size="lg"
-        title={buttonTitle}
-        disabled={
-          buttonTitle.includes('Insufficient') ||
-          buttonTitle.includes('not handled yet')
-        }
-        onClick={handleExecuteButton}
-      />
     </div>
   );
 }

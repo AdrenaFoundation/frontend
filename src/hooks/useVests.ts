@@ -2,8 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { VestExtended } from '@/types';
 
-// TODO: Reload periodically?
-const useVests = (): VestExtended[] | null => {
+export default function useVests(): VestExtended[] | null {
   const [vests, setVests] = useState<VestExtended[] | null>(null);
 
   const fetchVests = useCallback(async () => {
@@ -12,9 +11,15 @@ const useVests = (): VestExtended[] | null => {
 
   useEffect(() => {
     fetchVests();
+
+    const interval = setInterval(() => {
+      fetchVests();
+    }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchVests]);
 
   return vests;
-};
-
-export default useVests;
+}

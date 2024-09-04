@@ -1,7 +1,10 @@
 import '@/styles/globals.scss';
 
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { Connection } from '@solana/web3.js';
+import { Analytics } from '@vercel/analytics/react';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -10,22 +13,26 @@ import { Provider } from 'react-redux';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
+import Pause from '@/components/Pause/Pause';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
+import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
-import initializeApp from '@/initializeApp';
+import initializeApp, {
+  createReadOnlyAdrenaProgram,
+  createReadOnlySablierThreadProgram,
+} from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { SupportedCluster } from '@/types';
 
 import logo from '../../public/images/logo.svg';
-import devnetConfiguration from '../config/devnet';
-import mainnetConfiguration from '../config/mainnet';
+import DevnetConfiguration from '../config/devnet';
+import MainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
 
 function Loader(): JSX.Element {
@@ -45,54 +52,116 @@ function Loader(): JSX.Element {
 // Load cluster from URL then load the config and initialize the app.
 // When everything is ready load the main component
 export default function App(props: AppProps) {
-  const router = useRouter();
-  const [cluster, setCluster] = useState<SupportedCluster | null>(null);
   const [config, setConfig] = useState<IConfiguration | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [initializationInProgress, setInitializationInProgress] =
+    useState<boolean>(false);
 
-  // Load cluster from router
+  const {
+    activeRpc,
+    rpcInfos,
+    customRpcLatency,
+    autoRpcMode,
+    customRpcUrl,
+    favoriteRpc,
+    setAutoRpcMode,
+    setCustomRpcUrl,
+    setFavoriteRpc,
+  } = useRpc(config);
+
+  // The URL determine in which configuration we are
+  // If the URL is not in the list, it means we are developing in local or we are in vercel preview
+  // In that case, use env variable/query params to determine the configuration
   useEffect(() => {
-    if (!router || !router.query || !router.isReady) return;
+    const config = (() => {
+      // If devMode, adapts the RPCs to use ones that are different from production
+      // Protects from being stolen as the repo and devtools are public
+      const devMode = !window.location.hostname.endsWith('adrena.xyz');
 
-    const cluster = router.query.cluster;
+      const mainnetConfiguration = new MainnetConfiguration(devMode);
+      const devnetConfiguration = new DevnetConfiguration(devMode);
 
-    // Reload with default cluster if no cluster or un-recognized cluster
-    if (
-      !cluster ||
-      typeof cluster !== 'string' ||
-      !['devnet', 'mainnet'].includes(cluster)
-    ) {
-      router.query.cluster = 'devnet';
-      router.push(router);
-      return;
-    }
+      // Specific configuration for specific URLs (users front)
+      const specificUrlConfig = (
+        {
+          'app.adrena.xyz': devnetConfiguration, // TEMPORARY // mainnetConfiguration,
+          'devnet.adrena.xyz': devnetConfiguration,
+          'alpha.adrena.xyz': devnetConfiguration,
+        } as Record<string, IConfiguration>
+      )[window.location.hostname];
 
-    setCluster(cluster as SupportedCluster);
-  }, [router]);
+      if (specificUrlConfig) return specificUrlConfig;
 
-  // Load config from cluster
-  useEffect(() => {
-    if (!cluster) return;
+      // Configuration depending on query params, can be useful for dev or testing to force a cluster
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryParam = urlParams.get('cluster');
 
-    setConfig(
-      cluster === 'devnet' ? devnetConfiguration : mainnetConfiguration,
+      if (queryParam) {
+        const queryParamConfig = {
+          mainnet: mainnetConfiguration,
+          devnet: devnetConfiguration,
+        }[queryParam];
+
+        if (queryParamConfig) return queryParamConfig;
+      }
+
+      // Dev default configuration, can be setup in local or in vercel preview settings
+      return (
+        {
+          mainnet: mainnetConfiguration,
+          devnet: devnetConfiguration,
+        }[process.env.NEXT_PUBLIC_DEV_CLUSTER ?? 'devnet'] ??
+        devnetConfiguration
+      );
+    })();
+
+    console.info(
+      `Loaded config is ${config.cluster} in dev mode: ${config.devMode}`,
     );
-  }, [cluster]);
 
+    setConfig(config);
+  }, []);
+
+  // Initialize the app once the config and rpc are ready
   useEffect(() => {
-    if (!config) return;
+    if (!config || !activeRpc || isInitialized || initializationInProgress)
+      return;
 
-    initializeApp(config).then(() => {
+    setInitializationInProgress(true);
+
+    const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+
+    initializeApp(config, activeRpc.connection, pythConnection).then(() => {
       setIsInitialized(true);
+      setInitializationInProgress(false);
     });
-  }, [config]);
+  }, [activeRpc, config, initializationInProgress, isInitialized]);
 
-  if (!isInitialized) return <Loader />;
+  if (!isInitialized || !activeRpc) return <Loader />;
+
+  const paused = process.env.NEXT_PUBLIC_PAUSED === 'true';
 
   return (
     <Provider store={store}>
       <CookiesProvider>
-        <AppComponent {...props} />
+        {paused ? (
+          <Pause />
+        ) : (
+          <AppComponent
+            activeRpc={activeRpc}
+            rpcInfos={rpcInfos}
+            autoRpcMode={autoRpcMode}
+            customRpcUrl={customRpcUrl}
+            customRpcLatency={customRpcLatency}
+            favoriteRpc={favoriteRpc}
+            setAutoRpcMode={setAutoRpcMode}
+            setCustomRpcUrl={setCustomRpcUrl}
+            setFavoriteRpc={setFavoriteRpc}
+            {...props}
+          />
+        )}
+
+        <Analytics />
       </CookiesProvider>
     </Provider>
   );
@@ -104,7 +173,35 @@ export default function App(props: AppProps) {
 //
 // Tricks: wrap RootLayout + component here to be able to use hooks
 // without getting error being out of Provider
-function AppComponent({ Component, pageProps }: AppProps) {
+function AppComponent({
+  Component,
+  pageProps,
+  activeRpc,
+  rpcInfos,
+  autoRpcMode,
+  customRpcUrl,
+  customRpcLatency,
+  favoriteRpc,
+  setAutoRpcMode,
+  setCustomRpcUrl,
+  setFavoriteRpc,
+}: AppProps & {
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
+  rpcInfos: {
+    name: string;
+    latency: number | null;
+  }[];
+  customRpcLatency: number | null;
+  autoRpcMode: boolean;
+  customRpcUrl: string | null;
+  favoriteRpc: string | null;
+  setAutoRpcMode: (autoRpcMode: boolean) => void;
+  setCustomRpcUrl: (customRpcUrl: string | null) => void;
+  setFavoriteRpc: (favoriteRpc: string) => void;
+}) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
@@ -121,6 +218,7 @@ function AppComponent({ Component, pageProps }: AppProps) {
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
+  const [connected, setConnected] = useState<boolean>(false);
 
   // Open the terms and conditions modal if cookies isn't set to true
   useEffect(() => {
@@ -129,15 +227,18 @@ function AppComponent({ Component, pageProps }: AppProps) {
     }
   }, [cookies]);
 
-  // When the wallet connect/disconnect load/unload informations
+  // When the wallet connect/disconnect load/unload information
   // 1) load the program so we can execute txs with its wallet
-  // 2) load the user profile so we can display nickname
+  // 2) Set connected variable variable to true/false
+  // 3) load the user profile so we can display nickname
   useEffect(() => {
     if (!wallet) {
+      setConnected(false);
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
 
+    setConnected(true);
     window.adrena.client.setAdrenaProgram(
       new Program(
         ADRENA_IDL,
@@ -150,39 +251,83 @@ function AppComponent({ Component, pageProps }: AppProps) {
     );
   }, [wallet]);
 
-  const connected = !!wallet;
+  //
+  // When the RPC change, change the connection in the adrena client
+  //
+  useEffect(() => {
+    window.adrena.mainConnection = activeRpc.connection;
+
+    window.adrena.client.setReadonlyAdrenaProgram(
+      createReadOnlyAdrenaProgram(activeRpc.connection),
+    );
+
+    window.adrena.sablierClient.setReadonlySablierProgram(
+      createReadOnlySablierThreadProgram(activeRpc.connection),
+    );
+
+    if (wallet) {
+      window.adrena.client.setAdrenaProgram(
+        new Program(
+          ADRENA_IDL,
+          AdrenaClient.programId,
+          new AnchorProvider(window.adrena.mainConnection, wallet, {
+            commitment: 'processed',
+            skipPreflight: true,
+          }),
+        ),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRpc.name]);
 
   return (
-    <RootLayout userProfile={userProfile}>
-      {
-        <TermsAndConditionsModal
-          isOpen={isTermsAndConditionModalOpen}
-          agreeTrigger={() => {
-            // User agreed to terms and conditions
-            setIsTermsAndConditionModalOpen(false);
+    <>
+      <Head>
+        <meta name="viewport" content="viewport-fit=cover" />
+      </Head>
 
-            // Save the user actions to the website
-            setCookie('terms-and-conditions-acceptance', 'true');
-          }}
-          declineTrigger={() => {
-            router.push('https://landing.adrena.xyz/');
-          }}
-          readonly={false}
-        />
-      }
-
-      <Component
-        {...pageProps}
+      <RootLayout
         userProfile={userProfile}
-        triggerUserProfileReload={triggerUserProfileReload}
-        mainPool={mainPool}
-        custodies={custodies}
-        wallet={wallet}
-        triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
-        positions={positions}
-        triggerPositionsReload={triggerPositionsReload}
-        connected={connected}
-      />
-    </RootLayout>
+        activeRpc={activeRpc}
+        rpcInfos={rpcInfos}
+        autoRpcMode={autoRpcMode}
+        customRpcUrl={customRpcUrl}
+        customRpcLatency={customRpcLatency}
+        favoriteRpc={favoriteRpc}
+        setAutoRpcMode={setAutoRpcMode}
+        setCustomRpcUrl={setCustomRpcUrl}
+        setFavoriteRpc={setFavoriteRpc}
+      >
+        {
+          <TermsAndConditionsModal
+            isOpen={isTermsAndConditionModalOpen}
+            agreeTrigger={() => {
+              // User agreed to terms and conditions
+              setIsTermsAndConditionModalOpen(false);
+
+              // Save the user actions to the website
+              setCookie('terms-and-conditions-acceptance', 'true');
+            }}
+            declineTrigger={() => {
+              router.push('https://landing.adrena.xyz/');
+            }}
+            readonly={false}
+          />
+        }
+
+        <Component
+          {...pageProps}
+          userProfile={userProfile}
+          triggerUserProfileReload={triggerUserProfileReload}
+          mainPool={mainPool}
+          custodies={custodies}
+          wallet={wallet}
+          triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
+          positions={positions}
+          triggerPositionsReload={triggerPositionsReload}
+          connected={connected}
+        />
+      </RootLayout>
+    </>
   );
 }

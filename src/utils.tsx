@@ -1,4 +1,6 @@
 import { BN, Program } from '@coral-xyz/anchor';
+import { sha256 } from '@noble/hashes/sha256';
+import * as Sentry from '@sentry/nextjs';
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountIdempotentInstruction,
@@ -14,11 +16,51 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js';
 import { BigNumber } from 'bignumber.js';
+import { Context } from 'chartjs-plugin-datalabels';
+import { Font } from 'chartjs-plugin-datalabels/types/options';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import { toast } from 'react-toastify';
+import { twMerge } from 'tailwind-merge';
 
 import { Adrena } from '@/target/adrena';
+
+import arrowDown from '../public/images/arrow-down.png';
+import arrowRightIcon from '../public/images/arrow-right.svg';
+import arrowUp from '../public/images/arrow-up.png';
+import { ROUND_MIN_DURATION_SECONDS } from './constant';
+import { WalletStakingAccounts } from './hooks/useWalletStakingAccounts';
+import { LimitedString, LockedStakeExtended, U128Split } from './types';
+
+export function getArrowElement(side: 'up' | 'down', className?: string) {
+  const pxSize = 9;
+
+  return (
+    <Image
+      className={twMerge(
+        `grow-0 max-h-[${pxSize}px] max-w-[${pxSize}px] self-center absolute right-[0.6em]`,
+        className,
+      )}
+      src={side === 'down' ? arrowDown : arrowUp}
+      height={pxSize}
+      width={pxSize}
+      alt="Arrow"
+    />
+  );
+}
+
+export function getRightArrowElement() {
+  return (
+    <Image
+      className="ml-2 mr-2 opacity-60"
+      src={arrowRightIcon}
+      height={16}
+      width={16}
+      alt="Arrow"
+    />
+  );
+}
 
 export function findATAAddressSync(
   wallet: PublicKey,
@@ -33,54 +75,65 @@ export function findATAAddressSync(
 export function formatNumber(
   nb: number,
   precision: number,
-  displayPlusSymbol = false,
+  minimumFractionDigits = 0,
+  precisionIfPriceDecimalsBelow = 6,
 ): string {
-  const str = Number(nb.toFixed(precision)).toLocaleString(undefined, {
-    minimumFractionDigits: 0,
+  // If price is below decimals precision, display up to 6 decimals
+  if (nb < 10 ** -precision) precision = precisionIfPriceDecimalsBelow;
+
+  return Number(nb.toFixed(precision)).toLocaleString(undefined, {
+    minimumFractionDigits,
     maximumFractionDigits: precision,
   });
-
-  if (displayPlusSymbol && nb > 0) {
-    return `+${str}`;
-  }
-
-  return str;
 }
 
 export function formatPriceInfo(
   price: number | null | undefined,
-  displayPlusSymbol = false,
   decimals = 2,
-  displayAsIs = false,
+  minimumFractionDigits = 0,
+  precisionIfPriceDecimalsBelow = 6,
 ) {
   if (price === null || typeof price === 'undefined') {
     return '-';
   }
 
   if (price == 0) {
-    return `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+    return `$${formatNumber(
+      price,
+      decimals,
+      minimumFractionDigits,
+      precisionIfPriceDecimalsBelow,
+    )}`;
   }
 
   if (price < 0) {
-    return `-$${formatNumber(price * -1, decimals)}`;
+    return `-$${formatNumber(
+      price * -1,
+      decimals,
+      minimumFractionDigits,
+      precisionIfPriceDecimalsBelow,
+    )}`;
   }
 
-  let display = '';
+  return `$${formatNumber(
+    price,
+    decimals,
+    minimumFractionDigits,
+    precisionIfPriceDecimalsBelow,
+  )}`;
+}
 
-  // If the price is very low, display it as it is, to not display $0
-  if (price < 10 ** -decimals && price > 0 && !displayAsIs) {
-    // Never go more than 6 decimals
-    display = `$${formatNumber(price, 6, displayPlusSymbol)}`;
-  } else {
-    display = `$${formatNumber(price, decimals, displayPlusSymbol)}`;
+export function formatNumberShort(nb: number | string): string {
+  if (typeof nb === 'string') {
+    nb = Number(nb);
   }
+  if (nb < 1_000) return nb.toString();
 
-  // Put the + in front of the $ if needed
-  if (displayPlusSymbol) {
-    display = `+${display.replace('+', '')}`;
-  }
+  if (nb < 1_000_000) return `${(nb / 1_000).toFixed(1)}K`;
 
-  return display;
+  if (nb < 1_000_000_000) return `${(nb / 1_000_000).toFixed(1)}M`;
+
+  return `${(nb / 1_000_000_000).toFixed(1)}B`;
 }
 
 export function formatPercentage(
@@ -94,14 +147,34 @@ export function formatPercentage(
   return `${Number(nb).toFixed(precision)}%`;
 }
 
+export function stringToLimitedString(str: string): LimitedString {
+  return {
+    value: Array.from(str).map((char) => char.charCodeAt(0)),
+    length: str.length,
+  };
+}
+
+export function limitedStringToString(str: LimitedString): string {
+  return String.fromCharCode(...str.value);
+}
+
+export function u128SplitToBN(u128: U128Split): BN {
+  // Shift the high part 64 bits to the left
+  const highShifted = u128.high.shln(64);
+
+  // Combine the shifted high part with the low part
+  return highShifted.add(u128.low);
+}
+
 export function nativeToUi(nb: BN, decimals: number): number {
+  // stop displaying at hundred thousandth
   return new BigNumber(nb.toString()).shiftedBy(-decimals).toNumber();
 }
 
 // 10_000 = x1 leverage
 // 500_000 = x50 leverage
-export function uiLeverageToNative(leverage: number): BN {
-  return new BN(Math.floor(leverage * 10_000));
+export function uiLeverageToNative(leverage: number): number {
+  return Math.floor(leverage * 10_000);
 }
 
 export function uiToNative(nb: number, decimals: number): BN {
@@ -112,18 +185,24 @@ export function getTokenNameByMint(mint: PublicKey): string {
   return window.adrena.config.tokensInfo[mint.toBase58()]?.symbol ?? 'Unknown';
 }
 
+export function getNextStakingRoundStartTime(timestamp: BN): Date {
+  const d = new Date();
+
+  d.setTime((timestamp.toNumber() + ROUND_MIN_DURATION_SECONDS) * 1000);
+
+  return d;
+}
+
 export function addNotification({
   title,
   message,
   type = 'info',
   duration = 'regular',
-  position = 'top-right',
 }: {
   title: string;
   type?: 'success' | 'error' | 'info';
   message?: ReactNode;
   duration?: 'fast' | 'regular' | 'long';
-  position?: 'top-right' | 'top-center' | 'top-left' | 'bottom-right';
 }) {
   const content = message ? (
     <div className="flex flex-col">
@@ -136,21 +215,25 @@ export function addNotification({
     <p className="text-sm font-mono font-medium">{title}</p>
   );
 
+  console.log(
+    'autoClose',
+    { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
+  );
+
   toast[type](content, {
-    position,
+    position: 'bottom-left',
     autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
     hideProgressBar: true,
     closeOnClick: true,
     pauseOnHover: true,
     draggable: false,
-    progress: undefined,
     theme: 'colored',
     icon: false,
     style: {
       background: {
         success: 'var(--color-green-500)',
         error: 'var(--color-red-500)',
-        info: 'var(--color-blue-500)',
+        info: '#162a3d',
       }[type],
     },
   });
@@ -300,6 +383,7 @@ export function parseTransactionError(
       return match?.length ? match[1] : null;
     })();
 
+    Sentry.captureException(err);
     console.debug('Error parsing: error:', safeJSONStringify(err));
     console.debug('Error parsing: errCodeHex: ', errCodeHex);
     console.debug('Error parsing: errCodeDecimals', errCodeDecimals);
@@ -449,6 +533,39 @@ export function getLockedStakeRemainingTime(
   return endDate - Date.now();
 }
 
+export function formatAndFilterLockedStakes(
+  lockedStakes: LockedStakeExtended[] | [],
+  lockedStakesTokenSymbol: string,
+): LockedStakeExtended[] | null {
+  return (
+    (lockedStakes
+      .map((stake, index) => ({
+        ...stake,
+        index,
+        tokenSymbol: lockedStakesTokenSymbol,
+      }))
+      .filter((x) => !x.stakeTime.isZero()) as LockedStakeExtended[]) ?? null
+  );
+}
+
+export function getAdxLockedStakes(
+  stakingAccounts: WalletStakingAccounts | null,
+): LockedStakeExtended[] | null {
+  return formatAndFilterLockedStakes(
+    (stakingAccounts?.ADX?.lockedStakes as LockedStakeExtended[]) ?? [],
+    'ADX',
+  );
+}
+
+export function getAlpLockedStakes(
+  stakingAccounts: WalletStakingAccounts | null,
+): LockedStakeExtended[] | null {
+  return formatAndFilterLockedStakes(
+    (stakingAccounts?.ALP?.lockedStakes as LockedStakeExtended[]) ?? [],
+    'ALP',
+  );
+}
+
 // i.e percentage = -2 (for -2%)
 // i.e percentage = 5 (for 5%)
 export function applySlippage(nb: BN, percentage: number): BN {
@@ -468,8 +585,8 @@ export async function makeApiRequest(path: string) {
   try {
     const response = await fetch(`https://min-api.cryptocompare.com/${path}`);
     return response.json();
-  } catch (error: any) {
-    throw new Error(`CryptoCompare request error: ${error.status}`);
+  } catch (error: unknown) {
+    throw new Error(`CryptoCompare request error: ${String(error)}`);
   }
 }
 
@@ -497,4 +614,66 @@ export function parseFullSymbol(fullSymbol: string) {
     fromSymbol: match[2],
     toSymbol: match[3],
   };
+}
+
+/* Chart js datalabels plugin utils, may export in different file if many come along */
+
+export function getDatasetBackgroundColor(context: Context) {
+  return (context.dataset.backgroundColor as string) ?? '';
+}
+
+export function getFontSizeWeight(context: Context): Font {
+  return {
+    size: context.chart.width < 512 ? 8 : 14,
+    weight: 'bold',
+  };
+}
+
+export const verifyRpcConnection = async (rpc: string) => {
+  if (!rpc) return false;
+  try {
+    const connection = await new Connection(rpc)?.getVersion();
+
+    return !!connection;
+  } catch {
+    return false;
+  }
+};
+
+export const verifyIfValidUrl = (url: string) => {
+  const regExUrl = new RegExp(/^(http|https):\/\/[^ "]+$/);
+
+  return regExUrl.test(url);
+};
+
+/*** Helper methods to parse anchor discriminators ***/
+
+export function getAccountDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(`account:${name}`).slice(0, 8));
+}
+
+export function getMethodDiscriminator(name: string): Buffer {
+  return Buffer.from(sha256(`global:${name}`).slice(0, 8));
+}
+
+export function calculateCappedFeeForExitEarly(
+  lockedStake: LockedStakeExtended,
+): number {
+  const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber() * 1000;
+  const timeRemaining = lockedStake.lockDuration.toNumber() - timeElapsed;
+  const feeRate = timeRemaining / lockedStake.lockDuration.toNumber();
+
+  // Cap the fee rate between the lower and upper caps
+
+  return Math.min(Math.max(feeRate, 0.15), 0.4);
+}
+
+export function estimateLockedStakeEarlyExitFee(
+  lockedStake: LockedStakeExtended,
+  stakeTokenMintDecimals: number,
+): number {
+  return (
+    nativeToUi(lockedStake.amount, stakeTokenMintDecimals) *
+    calculateCappedFeeForExitEarly(lockedStake)
+  );
 }

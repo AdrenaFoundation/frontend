@@ -7,9 +7,9 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { useResize } from '@/hooks/useResize';
+import useResize from '@/hooks/useResize';
 
-const RiveAnimation = ({
+export default function RiveAnimation({
   animation,
   layout,
   className,
@@ -26,7 +26,7 @@ const RiveAnimation = ({
   className?: string;
   automaticallyHandleEvents?: boolean;
   stateMachines?: string;
-}) => {
+}) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const [assetsLoaded, setAssetsLoaded] = useState(0);
@@ -77,22 +77,32 @@ const RiveAnimation = ({
   }, [assetsLoaded, totalAssets]);
 
   const getImages = async (asset: ImageAsset) => {
-    const img =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require(`../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`).default;
+    let image =
+      window.riveImageCaching[
+        `../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`
+      ];
 
-    const arrayBuffer = await fetch(img.src).then((response) =>
-      response.arrayBuffer(),
-    );
+    if (!image) {
+      const img =
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        require(`../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`).default;
 
-    const image = await decodeImage(new Uint8Array(arrayBuffer));
+      const arrayBuffer = await fetch(img.src).then((response) =>
+        response.arrayBuffer(),
+      );
+
+      // /!\ this method creates a new image element that is kept by the browser
+      // Growing the memory usage
+      // Needed to use a trick and keep the image in a global object as image.unref() doesn't work
+      image = await decodeImage(new Uint8Array(arrayBuffer));
+
+      window.riveImageCaching[
+        `../../../public/rive/${folder}/${subFolder}/${asset.name}.webp`
+      ] = image;
+    }
 
     asset.setRenderImage(image);
-
     setAssetsLoaded((prev) => prev + 1);
-
-    // call unref to release any references when no longer needed.
-    image.unref();
   };
 
   const { RiveComponent } = useRive({
@@ -106,9 +116,9 @@ const RiveAnimation = ({
       if (asset.isImage) {
         getImages(asset as ImageAsset);
         return true;
-      } else {
-        return false;
       }
+
+      return false;
     },
   });
 
@@ -125,6 +135,4 @@ const RiveAnimation = ({
   }, [RiveComponent, isLoaded, className]);
 
   return Comp;
-};
-
-export default RiveAnimation;
+}

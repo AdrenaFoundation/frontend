@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
@@ -12,13 +11,25 @@ import PositionsArray from './PositionsArray';
 import PositionsBlocks from './PositionsBlocks';
 
 export default function Positions({
+  bodyClassName,
+  borderColor,
+  connected,
   className,
   positions,
   triggerPositionsReload,
+  triggerUserProfileReload,
+  wrapped = true,
+  isBigScreen,
 }: {
+  bodyClassName?: string;
+  borderColor?: string;
+  connected: boolean;
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
+  triggerUserProfileReload: () => void;
+  wrapped?: boolean;
+  isBigScreen: boolean | null;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -27,8 +38,6 @@ export default function Positions({
     null,
   );
 
-  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
-
   if (isBigScreen === null) return null;
 
   return (
@@ -36,30 +45,31 @@ export default function Positions({
       <AnimatePresence>
         {positionToClose && (
           <Modal
-            title={`Close ${positionToClose.side} ${positionToClose.token.symbol} Position`}
+            title={`Close ${positionToClose.side} ${positionToClose.token.symbol}`}
             close={() => setPositionToClose(null)}
-            className="flex flex-col items-center p-4"
+            className="flex flex-col items-center"
           >
             <ClosePosition
               position={positionToClose}
               triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToClose(null);
               }}
             />
           </Modal>
         )}
+
         {positionToEdit && (
           <Modal
-            title={`Edit ${positionToEdit.side === 'long' ? 'Long' : 'Short'} ${
-              positionToEdit.token.symbol
-            } Position`}
+            title="Edit Collateral"
             close={() => setPositionToEdit(null)}
-            className={twMerge('flex', 'flex-col', 'items-center', 'p-4')}
+            className={twMerge('flex flex-col items-center')}
           >
             <EditPositionCollateral
               position={positionToEdit}
               triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToEdit(null);
               }}
@@ -70,16 +80,24 @@ export default function Positions({
 
       {isBigScreen ? (
         <PositionsArray
+          bodyClassName={bodyClassName}
+          borderColor={borderColor}
+          connected={connected}
           positions={positions}
+          className={className}
           triggerClosePosition={setPositionToClose}
           triggerEditPositionCollateral={setPositionToEdit}
         />
       ) : (
         <PositionsBlocks
+          bodyClassName={bodyClassName}
+          borderColor={borderColor}
+          connected={connected}
           positions={positions}
           className={className}
           triggerClosePosition={setPositionToClose}
           triggerEditPositionCollateral={setPositionToEdit}
+          wrapped={wrapped}
         />
       )}
     </>

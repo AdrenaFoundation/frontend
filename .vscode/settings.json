@@ -1,5 +1,17 @@
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "cSpell.words": ["adrena"]
+  "cSpell.words": [
+    "adrena",
+    "boldy",
+    "Cooldown",
+    "devnet",
+    "Helius",
+    "pyth",
+    "Pythnet",
+    "rpcs",
+    "sablier",
+    "Tokenomics",
+    "WSOL"
+  ]
 }

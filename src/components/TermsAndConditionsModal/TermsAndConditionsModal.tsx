@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '../common/Button/Button';
 import Modal from '../common/Modal/Modal';
 
-function TermsAndConditionsModal({
+export default function TermsAndConditionsModal({
   className,
   isOpen,
   // User don't agree or decline, just read it
@@ -59,7 +59,7 @@ function TermsAndConditionsModal({
           not available in certain regions, including:
         </span>
         <ul className="mt-2 text-sm">
-          <li>- The United States</li>
+          {/*<li>- The United States</li> temporarily waived for devnet until further feedback from legal*/}
           <li>- China</li>
           <li>- India</li>
           <li>- Russia</li>
@@ -124,5 +124,3 @@ function TermsAndConditionsModal({
     </Modal>
   );
 }
-
-export default TermsAndConditionsModal;

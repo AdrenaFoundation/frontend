@@ -4,19 +4,14 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import {
-  addFailedTxNotification,
-  addSuccessTxNotification,
-  formatNumber,
-  formatPriceInfo,
-  nativeToUi,
-  uiToNative,
-} from '@/utils';
+import { nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import TradingInput from '../TradingInput/TradingInput';
@@ -24,18 +19,20 @@ import TradingInput from '../TradingInput/TradingInput';
 const LEVERAGE_OVERFLOW = 999;
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 export default function EditPositionCollateral({
   className,
   position,
   triggerPositionsReload,
+  triggerUserProfileReload,
   onClose,
 }: {
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
+  triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
   const [selectedAction, setSelectedAction] = useState<'deposit' | 'withdraw'>(
@@ -57,12 +54,19 @@ export default function EditPositionCollateral({
     collateralUsd: number;
   } | null>();
 
-  const markPrice: number | null = tokenPrices[position.token.symbol];
+  const markPrice: number | null =
+    position.side === 'long'
+      ? tokenPrices[position.token.symbol]
+      : tokenPrices[position.collateralToken.symbol];
   const markCollateralPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
   const walletBalance: number | null =
-    walletTokenBalances?.[position.token.symbol] ?? null;
+    walletTokenBalances?.[
+      position.side === 'long'
+        ? position.token.symbol
+        : position.collateralToken.symbol
+    ] ?? null;
 
   const [underLeverage, setUnderLeverage] = useState<boolean>(false);
   const [overLeverage, setOverLeverage] = useState<boolean>(false);
@@ -104,46 +108,50 @@ export default function EditPositionCollateral({
   const doRemoveCollateral = async () => {
     if (!input) return;
 
+    const notification =
+      MultiStepNotification.newForRegularTransaction(
+        'Remove Collateral',
+      ).fire();
+
     try {
-      const txHash = await window.adrena.client.removeCollateral({
+      await (position.side === 'long'
+        ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
+        : window.adrena.client.removeCollateralShort.bind(
+            window.adrena.client,
+          ))({
         position,
         collateralUsd: uiToNative(input, USD_DECIMALS),
-      });
-
-      addSuccessTxNotification({
-        title: 'Successfull Withdraw',
-        txHash,
+        notification,
       });
 
       triggerPositionsReload();
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Withdraw Error',
-        error,
-      });
+      console.log('error', error);
     }
   };
 
   const doAddCollateral = async () => {
     if (!input) return;
 
-    try {
-      const txHash = await window.adrena.client.addCollateralToPosition({
-        position,
-        addedCollateral: uiToNative(input, position.token.decimals),
-      });
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Add Collateral').fire();
 
-      addSuccessTxNotification({
-        title: 'Successfull Deposit',
-        txHash,
+    try {
+      await window.adrena.client.addCollateralToPosition({
+        position,
+        addedCollateral: uiToNative(
+          input,
+          position.side === 'long'
+            ? position.token.decimals
+            : position.collateralToken.decimals,
+        ),
+        notification,
       });
 
       triggerPositionsReload();
+      triggerUserProfileReload();
     } catch (error) {
-      return addFailedTxNotification({
-        title: 'Deposit Error',
-        error,
-      });
+      console.log('error', error);
     }
   };
 
@@ -159,7 +167,12 @@ export default function EditPositionCollateral({
       const liquidationPrice = await (selectedAction === 'deposit'
         ? window.adrena.client.getPositionLiquidationPrice({
             position,
-            addCollateral: uiToNative(input, position.token.decimals),
+            addCollateral: uiToNative(
+              input,
+              position.side === 'long'
+                ? position.token.decimals
+                : position.collateralToken.decimals,
+            ),
             removeCollateral: new BN(0),
           })
         : window.adrena.client.getPositionLiquidationPrice({
@@ -167,7 +180,9 @@ export default function EditPositionCollateral({
             addCollateral: new BN(0),
             removeCollateral: uiToNative(
               input / markCollateralPrice,
-              position.token.decimals,
+              position.side === 'long'
+                ? position.token.decimals
+                : position.collateralToken.decimals,
             ),
           }));
 
@@ -186,7 +201,13 @@ export default function EditPositionCollateral({
       console.log(e);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedInput, position, position.token, selectedAction]);
+  }, [
+    debouncedInput,
+    position,
+    position.token,
+    position.collateralToken,
+    selectedAction,
+  ]);
 
   // Recalculate leverage/collateral depending on the input and price
   useEffect(() => {
@@ -206,7 +227,6 @@ export default function EditPositionCollateral({
     if (selectedAction === 'deposit') {
       updatedCollateralAmount =
         position.collateralUsd / markCollateralPrice + input;
-
       updatedCollateralUsd = updatedCollateralAmount * markCollateralPrice;
     } else {
       updatedCollateralUsd = position.collateralUsd - input;
@@ -215,7 +235,7 @@ export default function EditPositionCollateral({
     }
 
     let updatedLeverage =
-      position.sizeUsd / (updatedCollateralUsd - position.pnl);
+      position.sizeUsd / (updatedCollateralUsd + position.pnl);
 
     // Leverage overflow
     if (updatedLeverage < 0) {
@@ -274,8 +294,12 @@ export default function EditPositionCollateral({
   return (
     <div className={twMerge('flex flex-col gap-3 h-full w-[24em]', className)}>
       <TabSelect
+        wrapperClassName="h-12 flex items-center"
         selected={selectedAction}
-        tabs={[{ title: 'deposit' }, { title: 'withdraw' }]}
+        tabs={[
+          { title: 'deposit', activeColor: 'border-b-white' },
+          { title: 'withdraw', activeColor: 'border-b-white' },
+        ]}
         onClick={(title) => {
           // Reset input when changing selected action
           setInput(null);
@@ -285,17 +309,25 @@ export default function EditPositionCollateral({
 
       {selectedAction === 'deposit' ? (
         <>
-          <TradingInput
-            value={input}
-            maxButton={true}
-            selectedToken={position.token}
-            tokenList={[]}
-            onTokenSelect={() => {
-              // One token only
-            }}
-            onChange={setInput}
-            onMaxButtonClick={() => setInput(walletBalance)}
-          />
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+            <TradingInput
+              className="text-md"
+              inputClassName="border-0 bg-inputcolor"
+              value={input}
+              maxButton={true}
+              selectedToken={
+                position.side === 'long'
+                  ? position.token
+                  : position.collateralToken
+              }
+              tokenList={[]}
+              onTokenSelect={() => {
+                // One token only
+              }}
+              onChange={setInput}
+              onMaxButtonClick={() => setInput(walletBalance)}
+            />
+          </div>
 
           {
             /* Display wallet balance */
@@ -307,11 +339,13 @@ export default function EditPositionCollateral({
               if (balance === null) return null;
 
               return (
-                <div className="ml-auto">
-                  <span className="text-txtfade text-sm font-mono">
-                    {formatNumber(balance, position.collateralToken.decimals)}
-                  </span>
-                  <span className="text-txtfade text-sm ml-1">
+                <div className="ml-auto mr-4">
+                  <FormatNumber
+                    nb={balance}
+                    precision={position.collateralToken.decimals}
+                    className="text-txtfade"
+                  />
+                  <span className="text-sm text-txtfade ml-1">
                     {position.collateralToken.symbol} in wallet
                   </span>
                 </div>
@@ -321,44 +355,52 @@ export default function EditPositionCollateral({
         </>
       ) : (
         <>
-          <TradingInput
-            value={input}
-            selectedToken={
-              {
-                symbol: 'USD',
-              } as Token
-            }
-            tokenList={[]}
-            onTokenSelect={() => {
-              // One token only
-            }}
-            onChange={setInput}
-          />
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+            <TradingInput
+              className="text-md"
+              inputClassName="border-0 bg-inputcolor"
+              value={input}
+              selectedToken={
+                {
+                  symbol: 'USD',
+                } as Token
+              }
+              tokenList={[]}
+              onTokenSelect={() => {
+                // One token only
+              }}
+              onChange={setInput}
+            />
+          </div>
 
-          <div className="text-txtfade text-sm ml-auto">
-            {formatPriceInfo(position.collateralUsd)} of collateral in the
-            position
+          <div className="text-sm ml-auto mr-4">
+            <FormatNumber
+              nb={position.collateralUsd}
+              format="currency"
+              className="inline"
+            />{' '}
+            of collateral in the position
           </div>
         </>
       )}
 
-      <div className="flex flex-col gap-3 text-sm mt-1">
+      <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">
         {selectedAction === 'withdraw' ? (
-          <div className="bg-dark flex justify-evenly p-2 rounded-2xl border">
+          <div className="bg-third flex justify-evenly p-2 rounded-lg border">
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              className="text-md  hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(25))}
             >
               25%
             </div>
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              className="text-md  hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(50))}
             >
               50%
             </div>
             <div
-              className="text-md text-txtfade hover:text-white cursor-pointer font-mono"
+              className="text-md  hover:text-white cursor-pointer font-mono"
               onClick={() => setInput(calculateCollateralPercentage(75))}
             >
               75%
@@ -366,85 +408,49 @@ export default function EditPositionCollateral({
           </div>
         ) : null}
 
-        <div className="flex flex-col border p-4 pt-2 bg-dark rounded-2xl">
+        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Size</div>
+            <div className="text-sm">Size</div>
 
-            <div className="flex text-sm font-mono">
-              {formatPriceInfo(position.sizeUsd)}
-            </div>
+            <FormatNumber nb={position.sizeUsd} format="currency" />
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Entry Price</div>
+            <div className="text-sm">Entry Price</div>
 
-            <div className="text-sm font-mono">
-              {formatPriceInfo(position.price)}
-            </div>
+            <FormatNumber nb={position.price} format="currency" />
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Mark Price</div>
+            <div className="text-sm">Mark Price</div>
 
-            <div className="text-sm font-mono">
-              {formatPriceInfo(markPrice)}
-            </div>
+            <FormatNumber nb={markPrice} format="currency" />
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">PnL</div>
+            <div className="text-sm">PnL</div>
 
-            <div className="text-sm font-mono">
-              {position.pnl && markPrice ? (
-                <span
-                  className={`text-sm text-${
-                    position.pnl > 0 ? 'green' : 'red'
-                  }-500`}
-                >
-                  {formatPriceInfo(position.pnl, true)}
-                </span>
-              ) : (
-                '-'
-              )}
-            </div>
+            <FormatNumber
+              nb={position.pnl && markPrice ? position.pnl : null}
+              prefix={position.pnl && position.pnl > 0 ? '+' : ''}
+              format="currency"
+              className={`text-${
+                position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+              }`}
+              isDecimalDimmed={false}
+            />
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Collateral</div>
+            <div className="text-sm">Collateral</div>
 
             <div className="flex">
               <div className="flex flex-col items-end justify-center">
-                <div className="flex">
-                  <span
-                    className={twMerge(
-                      'font-mono',
-                      input ? 'text-txtfade text-xs' : 'text-sm',
-                    )}
-                  >
-                    {formatNumber(
-                      position.collateralAmount,
-                      position.collateralToken.decimals,
-                    )}{' '}
-                  </span>
-
-                  <span
-                    className={twMerge(
-                      'font-mono ml-1',
-                      input ? 'text-txtfade text-xs' : 'text-sm',
-                    )}
-                  >
-                    {position.collateralToken.symbol}
-                  </span>
-                </div>
-
-                <div
-                  className={twMerge(
-                    'flex text-txtfade font-mono',
-                    input ? 'text-xs' : 'text-sm',
-                  )}
-                >
-                  {formatPriceInfo(position.collateralUsd)}
-                </div>
+                <FormatNumber
+                  nb={position.collateralUsd}
+                  format="currency"
+                  className={input ? 'text-xs' : 'text-sm'}
+                />
               </div>
 
               {input ? (
@@ -453,25 +459,10 @@ export default function EditPositionCollateral({
 
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end">
-                      <div>
-                        <span className="text-sm font-mono">
-                          {updatedInfos
-                            ? formatNumber(
-                                updatedInfos.collateral,
-                                position.collateralToken.decimals,
-                              )
-                            : '-'}{' '}
-                        </span>
-                        <span className="text-sm">
-                          {position.collateralToken.symbol}
-                        </span>
-                      </div>
-
-                      <div className="text-sm text-txtfade font-mono">
-                        {updatedInfos
-                          ? formatPriceInfo(updatedInfos.collateralUsd)
-                          : '-'}
-                      </div>
+                      <FormatNumber
+                        nb={updatedInfos?.collateralUsd}
+                        format="currency"
+                      />
                     </div>
                   </div>
                 </>
@@ -480,16 +471,14 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Leverage</div>
+            <div className="text-sm">Leverage</div>
             <div className="flex items-center">
-              <div
-                className={twMerge(
-                  'flex font-mono',
-                  input ? 'text-txtfade text-xs' : 'text-sm',
-                )}
-              >
-                {formatNumber(position.leverage, 2)}x
-              </div>
+              <FormatNumber
+                nb={position.leverage}
+                suffix="x"
+                className={input ? ' text-xs' : 'text-sm'}
+                isDecimalDimmed={false}
+              />
 
               {input ? (
                 <>
@@ -497,11 +486,9 @@ export default function EditPositionCollateral({
 
                   {updatedInfos ? (
                     updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
-                      <span className="text-sm text-txtfade">Overflow</span>
+                      <span className="text-sm ">Overflow</span>
                     ) : (
-                      <span className="text-sm font-mono">
-                        {formatNumber(updatedInfos.leverage, 2)}x
-                      </span>
+                      <FormatNumber nb={updatedInfos?.leverage} suffix="x" />
                     )
                   ) : (
                     '-'
@@ -512,26 +499,19 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-txtfade text-sm">Liquidation Price</div>
+            <div className="text-sm">Liquidation Price</div>
             <div className="flex items-center">
-              <div
-                className={twMerge(
-                  'font-mono',
-                  input ? 'text-txtfade text-xs' : 'text-sm',
-                )}
-              >
-                {formatPriceInfo(position.liquidationPrice)}
-              </div>
+              <FormatNumber
+                nb={position.liquidationPrice}
+                format="currency"
+                className={input ? ' text-xs' : 'text-sm'}
+              />
 
               {input ? (
                 <>
                   {rightArrowElement}
 
-                  <div className="text-sm font-mono">
-                    {liquidationPrice !== null
-                      ? formatPriceInfo(liquidationPrice)
-                      : '-'}
-                  </div>
+                  <FormatNumber nb={liquidationPrice} format="currency" />
                 </>
               ) : null}
             </div>
@@ -540,11 +520,11 @@ export default function EditPositionCollateral({
       </div>
 
       <Button
-        className="mt-4"
+        className="mt-4 rounded-none font-boldy text-lg"
         size="lg"
         title={executeBtnText}
+        disabled={executeBtnText !== 'Deposit' && executeBtnText !== 'Withdraw'}
         onClick={() => handleExecute()}
-        // disabled={!!overMaxAuthorizedLeverage || !!overMinAuthorizedLeverage}
       />
     </div>
   );

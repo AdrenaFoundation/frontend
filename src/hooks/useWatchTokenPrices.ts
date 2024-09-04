@@ -17,7 +17,7 @@ let alpPriceInterval: NodeJS.Timeout | null = null;
 const PYTH_PRICE_LOADING_INTERVAL_IN_MS = 3_000;
 const ALP_PRICE_LOADING_INTERVAL_IN_MS = 10_000;
 
-const useWatchTokenPrices = () => {
+export default function useWatchTokenPrices() {
   const dispatch = useDispatch();
 
   const [pythClient, setPythClient] = useState<PythHttpClient | null>(null);
@@ -36,9 +36,7 @@ const useWatchTokenPrices = () => {
     if (!pythClient || !dispatch) return;
 
     const feedIds: PublicKey[] = window.adrena.client.tokens.map(
-      (token) =>
-        window.adrena.client.getCustodyByMint(token.mint).nativeObject.oracle
-          .oracleAccount,
+      (token) => token.pythNetFeedId as PublicKey,
     );
 
     const prices = await pythClient.getAssetPricesFromAccounts(feedIds);
@@ -116,6 +114,4 @@ const useWatchTokenPrices = () => {
     // Manually handle dependencies to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadALPTokenPrice]);
-};
-
-export default useWatchTokenPrices;
+}
