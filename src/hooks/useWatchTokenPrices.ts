@@ -1,7 +1,5 @@
-import {
-  getPythProgramKeyForCluster,
-  PythHttpClient,
-} from '@pythnetwork/client';
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
+import { PythSolanaReceiver } from '@pythnetwork/pyth-solana-receiver';
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -20,42 +18,57 @@ const ALP_PRICE_LOADING_INTERVAL_IN_MS = 10_000;
 export default function useWatchTokenPrices() {
   const dispatch = useDispatch();
 
-  const [pythClient, setPythClient] = useState<PythHttpClient | null>(null);
+  const [pythSolanaReceiver, setPythSolanaReceiver] =
+    useState<PythSolanaReceiver | null>(null);
 
   useEffect(() => {
-    setPythClient(
-      new PythHttpClient(
-        window.adrena.pythConnection,
-        getPythProgramKeyForCluster('devnet'),
-        'confirmed',
-      ),
+    setPythSolanaReceiver(
+      new PythSolanaReceiver({
+        connection: window.adrena.pythConnection,
+        wallet: {} as any as NodeWallet,
+      }),
     );
   }, []);
 
   const loadPythPrices = useCallback(async () => {
-    if (!pythClient || !dispatch) return;
+    if (!pythSolanaReceiver || !dispatch) return;
 
-    const feedIds: PublicKey[] = window.adrena.client.tokens.map(
-      (token) => token.pythNetFeedId as PublicKey,
+    const priceUpdateV2List: PublicKey[] = window.adrena.client.tokens.map(
+      (token) => token.pythPriceUpdateV2 as PublicKey,
     );
 
-    const prices = await pythClient.getAssetPricesFromAccounts(feedIds);
+    const priceUpdateV2Accounts =
+      await pythSolanaReceiver.receiver.account.priceUpdateV2.fetchMultiple(
+        priceUpdateV2List,
+      );
 
     // Store the prices in Store
-    prices.map(({ price }, index) => {
+    priceUpdateV2Accounts.map((priceUpdateV2Account, index) => {
+      if (!priceUpdateV2Account) {
+        console.warn(
+          'Price not found for token',
+          window.adrena.client.tokens[index].symbol,
+        );
+        return;
+      }
+
       dispatch(
         setTokenPriceAction(
           window.adrena.client.tokens[index].symbol,
-          price ?? null,
+          nativeToUi(
+            priceUpdateV2Account.priceMessage.price,
+            -priceUpdateV2Account.priceMessage.exponent,
+          ),
         ),
       );
     });
+
     // Manually handle dependencies to avoid unwanted refreshs
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!pythClient, dispatch]);
+  }, [!!pythSolanaReceiver, dispatch]);
 
   useEffect(() => {
-    if (!pythClient || !window.adrena.client || !dispatch) {
+    if (!pythSolanaReceiver || !window.adrena.client || !dispatch) {
       return;
     }
 

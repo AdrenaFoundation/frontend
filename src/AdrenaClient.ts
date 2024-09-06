@@ -420,7 +420,7 @@ export class AdrenaClient {
               image: ImageRef;
               coingeckoId: string;
               decimals: number;
-              pythNetFeedId: PublicKey;
+              pythPriceUpdateV2: PublicKey;
             }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
@@ -439,7 +439,7 @@ export class AdrenaClient {
           // loadCustodies gets the custodies on the same order as in the main pool
           custody: custodiesAddresses[i],
           coingeckoId: infos.coingeckoId,
-          pythNetFeedId: infos.pythNetFeedId,
+          pythPriceUpdateV2: infos.pythPriceUpdateV2,
         };
       })
       .filter((token) => !!token) as Token[];
@@ -567,6 +567,13 @@ export class AdrenaClient {
 
     return (result as Custody[]).map((custody, i) => {
       const ratios = mainPool.ratios[i];
+
+      if (!config.tokensInfo[custody.mint.toBase58()]) {
+        console.error(
+          'Cannot find token in config file that is used in custody',
+          custody.mint.toBase58(),
+        );
+      }
 
       return {
         tokenInfo: config.tokensInfo[custody.mint.toBase58()],

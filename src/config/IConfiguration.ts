@@ -9,7 +9,7 @@ export type TokenInfo = {
   image: ImageRef;
   coingeckoId: string;
   decimals: number;
-  pythNetFeedId: PublicKey;
+  pythPriceUpdateV2: PublicKey;
 };
 
 export type RpcOption = {
@@ -28,6 +28,7 @@ export default interface IConfiguration {
   readonly governanceProgram: PublicKey;
   readonly sablierThreadProgram: PublicKey;
   readonly stakesClaimPayer: PublicKey;
+  readonly pythProgram: PublicKey;
 
   readonly governanceRealmName: string;
 

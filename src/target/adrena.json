@@ -10164,6 +10164,11 @@
       "code": 6065,
       "name": "InvalidVoteMultiplier",
       "msg": "Invalid vote multiplier"
+    },
+    {
+      "code": 6066,
+      "name": "PositionTooYoung",
+      "msg": "A position cannot be close right after open, a slight delay is enforced"
     }
   ],
   "metadata": {

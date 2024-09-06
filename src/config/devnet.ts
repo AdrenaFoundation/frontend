@@ -23,7 +23,7 @@ export default class DevnetConfiguration implements IConfiguration {
       image: ImageRef;
       coingeckoId: string;
       decimals: number;
-      pythNetFeedId: PublicKey;
+      pythPriceUpdateV2: PublicKey;
     };
   } = {
     '3jdYcGYZaQVvcvMQGqVpt37JegEoDDnX7k4gSGAeGRqG': {
@@ -33,7 +33,7 @@ export default class DevnetConfiguration implements IConfiguration {
       image: usdcLogo,
       coingeckoId: 'usd-coin',
       decimals: 6,
-      pythNetFeedId: new PublicKey(
+      pythPriceUpdateV2: new PublicKey(
         'Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD',
       ),
     },
@@ -44,7 +44,7 @@ export default class DevnetConfiguration implements IConfiguration {
       image: ethLogo,
       coingeckoId: 'bonk',
       decimals: 6, // 5 in real life
-      pythNetFeedId: new PublicKey(
+      pythPriceUpdateV2: new PublicKey(
         'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
     },
@@ -55,7 +55,7 @@ export default class DevnetConfiguration implements IConfiguration {
       image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 6,
-      pythNetFeedId: new PublicKey(
+      pythPriceUpdateV2: new PublicKey(
         'GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU',
       ),
     },
@@ -66,7 +66,7 @@ export default class DevnetConfiguration implements IConfiguration {
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,
-      pythNetFeedId: new PublicKey(
+      pythPriceUpdateV2: new PublicKey(
         'H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG',
       ),
     },
@@ -84,14 +84,26 @@ export default class DevnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
+  public readonly pythProgram: PublicKey = new PublicKey(
+    'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
+  );
+
   public readonly governanceRealmName = 'Adaorenareturn2';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
     ? [
         {
-          // Free Plan Helius Plan solely for development
-          name: 'Helius RPC',
-          url: 'https://devnet.helius-rpc.com/?api-key=d7a1bbbc-5a12-43d0-ab41-c96ffef811e0',
+          name: 'Triton Dev RPC',
+          url: (() => {
+            const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+
+            if (!apiKey)
+              throw new Error(
+                'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+              );
+
+            return `https://adrena-solanad-ac2e.devnet.rpcpool.com/${apiKey}`;
+          })(),
         },
       ]
     : [
@@ -109,26 +121,23 @@ export default class DevnetConfiguration implements IConfiguration {
         },
       ];
 
-  public readonly pythnetRpc: RpcOption = (() => {
-    const rpc = {
-      name: 'Triton Pythnet',
-      url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com',
-    };
+  public readonly pythnetRpc: RpcOption = {
+    name: 'Triton Mainnet',
+    url: (() => {
+      const url = 'https://adrena-solanad-ac2e.devnet.rpcpool.com';
 
-    if (!this.devMode) return rpc;
+      if (!this.devMode) return url;
 
-    const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_PYTHNET_API_KEY;
+      const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
 
-    if (!apiKey || !apiKey.length) {
-      throw new Error(
-        'Missing environment variable NEXT_PUBLIC_DEV_TRITON_PYTHNET_API_KEY',
-      );
-    }
+      if (!apiKey)
+        throw new Error(
+          'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+        );
 
-    rpc.url = `${rpc.url}/${apiKey}`;
-
-    return rpc;
-  })();
+      return `${url}/${apiKey}`;
+    })(),
+  };
 
   public readonly mainPool: PublicKey = new PublicKey(
     '2buhqUduNw7wNhZ1ixFxfvLRX3gAZkGmg8G1Rv5SEur7',
