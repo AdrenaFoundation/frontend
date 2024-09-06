@@ -104,7 +104,6 @@ export type PositionExtended = {
   collateralUsd: number;
   price: number;
   collateralAmount: number;
-  entryFeeUsd: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
 
@@ -151,7 +150,7 @@ export interface Token {
   image: ImageRef;
   custody?: PublicKey;
   coingeckoId?: string;
-  pythNetFeedId?: PublicKey;
+  pythPriceUpdateV2?: PublicKey;
 }
 
 export type UserProfileExtended = {

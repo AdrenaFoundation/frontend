@@ -84,7 +84,7 @@ export default function App(props: AppProps) {
       // Specific configuration for specific URLs (users front)
       const specificUrlConfig = (
         {
-          'app.adrena.xyz': devnetConfiguration, // TEMPORARY // mainnetConfiguration,
+          'app.adrena.xyz': mainnetConfiguration,
           'devnet.adrena.xyz': devnetConfiguration,
           'alpha.adrena.xyz': devnetConfiguration,
         } as Record<string, IConfiguration>

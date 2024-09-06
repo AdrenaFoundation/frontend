@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
-    "@pythnetwork/client": "^2.15.0",
+    "@pythnetwork/pyth-solana-receiver": "^0.8.1",
     "@reduxjs/toolkit": "^1.9.3",
     "@rive-app/react-canvas": "4.9.5",
     "@sentry/nextjs": "^7.105.0",
