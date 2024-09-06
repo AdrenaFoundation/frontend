@@ -25,6 +25,7 @@ export default function useWatchTokenPrices() {
     setPythSolanaReceiver(
       new PythSolanaReceiver({
         connection: window.adrena.pythConnection,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         wallet: {} as any as NodeWallet,
       }),
     );
