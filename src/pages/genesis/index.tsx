@@ -1,5 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
-import BN from 'bn.js';
+import { Connection } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -94,21 +93,21 @@ export default function Genesis({
       ? genesisReward / nativeToUi(genesis.publicAmountClaimed, usdc.decimals)
       : null;
 
-  const dummyData = {
-    bump: 0,
-    campaignDuration: new BN(new Date().getTime()),
-    campaignStartDate: new BN(new Date().getTime()),
-    finalizeGenesisLockCampaignThreadId: new BN(0),
-    hasTransitionedToFullyPublic: 0,
-    padding: [0],
-    publicAmount: new BN(1000000000000),
-    publicAmountClaimed: new BN(50589485029),
-    reservedAmount: new BN(1000000000000),
-    reservedAmountClaimed: new BN(130136285029),
-    reservedGrantAmounts: [],
-    reservedGrantDuration: new BN(new Date().getTime()),
-    reservedGrantOwners: [],
-  };
+  // const dummyData = {
+  //   bump: 0,
+  //   campaignDuration: new BN(new Date().getTime()),
+  //   campaignStartDate: new BN(new Date().getTime()),
+  //   finalizeGenesisLockCampaignThreadId: new BN(0),
+  //   hasTransitionedToFullyPublic: 0,
+  //   padding: [0],
+  //   publicAmount: new BN(1000000000000),
+  //   publicAmountClaimed: new BN(50589485029),
+  //   reservedAmount: new BN(1000000000000),
+  //   reservedAmountClaimed: new BN(130136285029),
+  //   reservedGrantAmounts: [],
+  //   reservedGrantDuration: new BN(new Date().getTime()),
+  //   reservedGrantOwners: [],
+  // };
 
   useEffect(() => {
     getAlpAmount();
@@ -117,6 +116,27 @@ export default function Genesis({
   useEffect(() => {
     getGenesis();
   }, [connected]);
+
+  useEffect(() => {
+    const isRebalancing = process.env.NEXT_PUBLIC_IS_REBALANCING;
+
+    if (genesis) {
+      const daysElapsed = Math.floor(
+        (Date.now() - genesis.campaignStartDate.toNumber()) /
+          (1000 * 60 * 60 * 24),
+      );
+
+      console.log('days elapsed', daysElapsed);
+
+      if (!isRebalancing && daysElapsed > 3) return setCurrentStep(4);
+
+      if (isRebalancing) return setCurrentStep(3);
+
+      if (genesis.hasTransitionedToFullyPublic) return setCurrentStep(2);
+
+      setCurrentStep(2);
+    }
+  }, [genesis]);
 
   const getGenesis = async () => {
     // setGenesis(dummyData);
@@ -132,7 +152,7 @@ export default function Genesis({
       setGenesis(genesis);
       setIsGenesisLoading(false);
     } catch (error) {
-      console.log('error', error);
+      console.log('error fetching genesis', error);
       setIsGenesisLoading(false);
     }
   };
