@@ -3,14 +3,17 @@ import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
+import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
-import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
-class MainnetConfiguration implements IConfiguration {
+export default class MainnetConfiguration implements IConfiguration {
   public readonly cluster = 'mainnet';
+
+  // If devMode is true, means that the app is running in localhost or in a vercel preview
+  constructor(public readonly devMode: boolean) {}
 
   public readonly tokensInfo: {
     [tokenPubkey: string]: {
@@ -20,40 +23,40 @@ class MainnetConfiguration implements IConfiguration {
       image: ImageRef;
       coingeckoId: string;
       decimals: number;
-      pythNetFeedId: PublicKey;
+      pythPriceUpdateV2: PublicKey;
     };
   } = {
-    '3jdYcGYZaQVvcvMQGqVpt37JegEoDDnX7k4gSGAeGRqG': {
+    EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: {
       name: 'USD Coin',
       color: '#2775ca',
       symbol: 'USDC',
       image: usdcLogo,
       coingeckoId: 'usd-coin',
       decimals: 6,
-      pythNetFeedId: new PublicKey(
-        'Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD',
+      pythPriceUpdateV2: new PublicKey(
+        'Dpw1EAVrSB1ibxiDQyTAW6Zip3J4Btk2x4SgApQCeFbX',
       ),
     },
-    HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
-      name: 'Ethereum',
+    DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263: {
+      name: 'BONK',
       color: '#3D3E3F',
-      symbol: 'ETH',
-      image: ethLogo,
-      coingeckoId: 'ethereum',
-      decimals: 6,
-      pythNetFeedId: new PublicKey(
-        'JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB',
+      symbol: 'BONK',
+      image: bonkLogo,
+      coingeckoId: 'bonk',
+      decimals: 5,
+      pythPriceUpdateV2: new PublicKey(
+        'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
     },
-    '7MoYkgWVCEDtNR6i2WUH9LTUSFXkQCsD9tBHriHQvuP5': {
+    '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E': {
       name: 'Bitcoin',
       color: '#f7931a',
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 6,
-      pythNetFeedId: new PublicKey(
-        'GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU',
+      pythPriceUpdateV2: new PublicKey(
+        '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
     },
     [NATIVE_MINT.toBase58()]: {
@@ -63,52 +66,80 @@ class MainnetConfiguration implements IConfiguration {
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,
-      pythNetFeedId: new PublicKey(
-        'H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG',
+      pythPriceUpdateV2: new PublicKey(
+        '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
       ),
     },
   };
 
-  // devnet address
   public readonly governanceProgram: PublicKey = new PublicKey(
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   );
 
-  // devnet address
   public readonly sablierThreadProgram: PublicKey = new PublicKey(
-    'CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh',
+    'sabGLGXfBiUCkwtprPMtatG6tCNxhcWWs1hjQAvDqEE',
   );
 
   public readonly stakesClaimPayer: PublicKey = new PublicKey(
-    'C1ockworkPayer11111111111111111111111111111',
+    'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly governanceRealmName = 'AdrenaRealm5';
+  public readonly pythProgram: PublicKey = new PublicKey(
+    'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
+  );
 
-  public readonly rpcOptions: RpcOption[] = [
-    {
-      name: 'Triton RPC',
-      url: 'https://adrena-solanad-ac2e.devnet.rpcpool.com/eb24df90-f9aa-45f2-9a9c-fe20cd0f35fd',
-    },
-    {
-      name: 'Helius RPC',
-      url: 'https://devnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
-    },
-    {
-      name: 'Solana RPC',
-      url: 'https://api.devnet.solana.com',
-    },
-  ];
+  public readonly governanceRealmName = 'AdrenaTestrun';
+
+  public readonly rpcOptions: RpcOption[] = this.devMode
+    ? [
+        {
+          name: 'Triton Dev RPC',
+          url: (() => {
+            const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+
+            if (!apiKey)
+              throw new Error(
+                'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+              );
+
+            return `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${apiKey}`;
+          })(),
+        },
+      ]
+    : [
+        {
+          name: 'Triton RPC',
+          url: 'https://adrena-solanam-6f0c.mainnet.rpcpool.com',
+        },
+        {
+          name: 'Helius RPC',
+          url: 'https://mainnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+        },
+        {
+          name: 'Solana RPC',
+          url: 'https://api.mainnet-beta.solana.com',
+        },
+      ];
 
   public readonly pythnetRpc: RpcOption = {
-    name: 'Triton Pythnet',
-    url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com/ad1705c9-2ec3-4a48-87c0-086a554cbff1',
+    name: 'Triton Mainnet',
+    url: (() => {
+      const url = 'https://adrena-solanam-6f0c.mainnet.rpcpool.com';
+
+      if (!this.devMode) return url;
+
+      const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+
+      if (!apiKey)
+        throw new Error(
+          'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+        );
+
+      return `${url}/${apiKey}`;
+    })(),
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',
+    '2buhqUduNw7wNhZ1ixFxfvLRX3gAZkGmg8G1Rv5SEur7',
   );
 }
-
-const config = new MainnetConfiguration();
-export default config;

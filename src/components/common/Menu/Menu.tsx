@@ -1,5 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ReactNode, useRef, useState } from 'react';
+import {
+  MouseEvent as ReactMouseEvent,
+  ReactNode,
+  useRef,
+  useState,
+} from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { useOnClickOutside } from '@/hooks/onClickOutside';
@@ -39,11 +44,13 @@ export default function Menu({
     visible: { opacity: 1 },
   };
 
-  const closeMenu = (el: any) => {
+  const closeMenu = (el: ReactMouseEvent<HTMLDivElement>) => {
     el.stopPropagation();
-    if (ref.current?.contains(el.target) && disableOnClickInside) {
+
+    if (ref.current?.contains(el.target as Node) && disableOnClickInside) {
       return;
     }
+
     setIsMenuOpen(false);
   };
 
@@ -90,7 +97,7 @@ export default function Menu({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="absolute top-0 left-0 w-full h-full bg-black/75"
+          className="absolute top-0 left-0 w-full h-full bg-black/75 z-30"
         />
       )}
     </>

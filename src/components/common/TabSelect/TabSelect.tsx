@@ -32,7 +32,7 @@ export default function TabSelect<T extends string | number>({
     if (typeof selected !== 'undefined') {
       setActiveTab(tabs.findIndex((tab) => tab.title === selected));
     }
-  }, [selected]);
+  }, [selected, tabs]);
 
   return (
     <div

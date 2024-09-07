@@ -198,13 +198,11 @@ export function addNotification({
   message,
   type = 'info',
   duration = 'regular',
-  position = 'top-right',
 }: {
   title: string;
   type?: 'success' | 'error' | 'info';
   message?: ReactNode;
   duration?: 'fast' | 'regular' | 'long';
-  position?: 'top-right' | 'top-center' | 'top-left' | 'bottom-right';
 }) {
   const content = message ? (
     <div className="flex flex-col">
@@ -587,8 +585,8 @@ export async function makeApiRequest(path: string) {
   try {
     const response = await fetch(`https://min-api.cryptocompare.com/${path}`);
     return response.json();
-  } catch (error: any) {
-    throw new Error(`CryptoCompare request error: ${error.status}`);
+  } catch (error: unknown) {
+    throw new Error(`CryptoCompare request error: ${String(error)}`);
   }
 }
 

@@ -52,6 +52,7 @@ export default function RootLayout({
     { name: 'Stake', link: '/stake' },
     { name: 'ALP', link: '/buy_alp' },
     { name: 'ADX', link: '/buy_adx' },
+    { name: 'Genesis', link: '/genesis' },
     // { name: 'Docs', link: 'https://www.gitbook.com/' },
   ]);
 
@@ -73,7 +74,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {isBigScreen ? (
+      {window.location.pathname === '/genesis' ? null : isBigScreen ? (
         <Header
           userProfile={userProfile}
           PAGES={pages}
@@ -112,8 +113,9 @@ export default function RootLayout({
       <ToastContainer />
 
       <Featurebase />
-
-      <Footer className="z-10" />
+      {window.location.pathname === '/genesis' ? null : (
+        <Footer className="z-10" />
+      )}
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>

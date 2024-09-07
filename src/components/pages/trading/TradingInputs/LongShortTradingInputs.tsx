@@ -2,7 +2,7 @@ import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -23,6 +23,7 @@ import {
   AdrenaTransactionError,
   formatNumber,
   formatPriceInfo,
+  nativeToUi,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
@@ -71,6 +72,67 @@ export default function LongShortTradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
+  /** Resize handling for component max button display **/
+  const [componentWidth, setComponentWidth] = useState(0);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const updateComponentWidth = () => {
+    if (componentRef.current) {
+      setComponentWidth(componentRef.current.offsetWidth);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateComponentWidth);
+    updateComponentWidth();
+    return () => {
+      window.removeEventListener('resize', updateComponentWidth);
+    };
+  }, []);
+
+  const calculateMax = async () => {
+    if (!walletTokenBalances || !tokenA) return;
+
+    // Pick up the maximum amount the user can use, considering:
+    // the custody liquidity, the max position size and the user wallet amount
+    const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
+
+    const tokenPriceA = tokenPrices[tokenA.symbol];
+
+    if (custody && tokenPriceB && tokenPriceA) {
+      const latestCustody = await window.adrena.client
+        .getReadonlyAdrenaProgram()
+        .account.custody.fetch(custody.pubkey);
+
+      const latestAvailableLiquidity = nativeToUi(
+        latestCustody.assets.owned.sub(latestCustody.assets.locked),
+        latestCustody.decimals,
+      );
+
+      const availableCustodyLiquidity = Number(
+        (
+          (latestAvailableLiquidity * tokenPriceB) /
+          tokenPriceA /
+          leverage
+        ).toFixed(tokenA.decimals),
+      );
+
+      const maxPositionSize = Number(
+        (
+          (custody.maxPositionLockedUsd - (openedPosition?.sizeUsd ?? 0)) /
+          tokenPriceA /
+          leverage
+        ).toFixed(tokenA.decimals),
+      );
+
+      return handleInputAChange(
+        Math.min(userWalletAmount, availableCustodyLiquidity, maxPositionSize),
+      );
+    }
+
+    handleInputAChange(userWalletAmount);
+  };
+
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   const [inputA, setInputA] = useState<number | null>(null);
@@ -96,8 +158,6 @@ export default function LongShortTradingInputs({
     sizeUsd: number;
     size: number;
     swapFeeUsd: number | null;
-    openPositionFeeUsd: number;
-    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
     exitFeeUsd: number;
@@ -364,7 +424,10 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div className={twMerge('relative flex flex-col sm:pb-2', className)}>
+    <div
+      className={twMerge('relative flex flex-col sm:pb-2', className)}
+      ref={componentRef}
+    >
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
 
@@ -377,6 +440,15 @@ export default function LongShortTradingInputs({
 
           return (
             <div className="text-sm flex items-center justify-end h-6">
+              {connected && componentWidth < 350 ? (
+                <Button
+                  title="MAX"
+                  variant="text"
+                  className="text-sm h-6 opacity-70"
+                  size="xs"
+                  onClick={calculateMax}
+                />
+              ) : null}
               <Image
                 className="mr-1 opacity-60 relative"
                 src={walletImg}
@@ -411,22 +483,18 @@ export default function LongShortTradingInputs({
             subText={
               priceA ? (
                 <div className="text-sm text-txtfade font-mono">
-                  {formatPriceInfo(priceA)}
+                  {priceA > 500000000
+                    ? `> ${formatPriceInfo(500000000)}`
+                    : formatPriceInfo(priceA)}
                 </div>
               ) : null
             }
-            maxButton={connected}
+            maxButton={connected && componentWidth >= 350}
             selectedToken={tokenA}
             tokenList={allowedTokenA}
             onTokenSelect={setTokenA}
             onChange={handleInputAChange}
-            onMaxButtonClick={() => {
-              if (!walletTokenBalances || !tokenA) return;
-
-              const amount = walletTokenBalances[tokenA.symbol];
-
-              handleInputAChange(amount);
-            }}
+            onMaxButtonClick={calculateMax}
           />
 
           <LeverageSlider
@@ -669,7 +737,6 @@ export default function LongShortTradingInputs({
                     >
                       <FormatNumber
                         nb={
-                          openedPosition.entryFeeUsd +
                           openedPosition.exitFeeUsd +
                           (openedPosition.borrowFeeUsd ?? 0)
                         }
@@ -687,14 +754,7 @@ export default function LongShortTradingInputs({
                   className="flex-col mt-3"
                 >
                   <FormatNumber
-                    nb={
-                      typeof positionInfos?.totalOpenPositionFeeUsd !==
-                        'undefined' &&
-                      typeof positionInfos?.exitFeeUsd !== 'undefined'
-                        ? positionInfos.totalOpenPositionFeeUsd +
-                          positionInfos.exitFeeUsd
-                        : undefined
-                    }
+                    nb={positionInfos.exitFeeUsd}
                     format="currency"
                     className="text-lg"
                   />

@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -17,8 +16,6 @@ export default function GeoBlockedModal({
 }) {
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
-
-  const router = useRouter();
 
   if (!isOpen) {
     return null;

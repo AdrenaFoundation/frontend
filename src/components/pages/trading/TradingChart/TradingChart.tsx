@@ -253,6 +253,7 @@ export default function TradingChart({
     positionLines?.short?.liquidation?.remove();
 
     setPositionLines(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token.symbol]);
 
   useEffect(() => {
@@ -325,6 +326,7 @@ export default function TradingChart({
     } catch {
       // ignore error due to conflicts with charts and react effects
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [positions, token.symbol, !!widget, widgetReady]);
 
   return (

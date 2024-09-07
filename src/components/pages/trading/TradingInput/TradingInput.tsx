@@ -42,7 +42,7 @@ export default function TradingInput({
   prefix?: ReactNode;
   placeholder?: string;
   maxClassName?: string;
-  onTokenSelect: (t: Token) => void;
+  onTokenSelect?: (t: Token) => void;
   onChange: (v: number | null) => void;
   onMaxButtonClick?: () => void;
 }) {
@@ -97,12 +97,15 @@ export default function TradingInput({
             )}
 
             {maxButton ? (
-              <Button
-                title="MAX"
-                variant="primary"
-                className={twMerge('mx-2 text-sm h-6', maxClassName)}
-                onClick={() => onMaxButtonClick?.()}
-              />
+              <div className="mr-1">
+                <Button
+                  title="MAX"
+                  variant="primary"
+                  className={twMerge('text-sm h-6 w-14', maxClassName)}
+                  onClick={() => onMaxButtonClick?.()}
+                  loaderClassName="w-14"
+                />
+              </div>
             ) : null}
           </div>
         </div>
@@ -125,7 +128,7 @@ export default function TradingInput({
               // Force linting, you cannot not find the token in the list
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               const token = tokenList.find((t) => t.symbol === name)!;
-              onTokenSelect(token);
+              onTokenSelect?.(token);
 
               // if the prev value has more decimals than the new token, we need to adjust the value
               const newTokenDecimals = token.decimals ?? 18;
