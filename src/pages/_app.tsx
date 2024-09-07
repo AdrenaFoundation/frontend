@@ -326,6 +326,15 @@ function AppComponent({
           positions={positions}
           triggerPositionsReload={triggerPositionsReload}
           connected={connected}
+          activeRpc={activeRpc}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
+          customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
         />
       </RootLayout>
     </>

@@ -57,10 +57,11 @@ export default function Button({
 
   const variants = {
     primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium`,
-    secondary: 'bg-secondary text-white opacity-90 hover:opacity-100',
+    secondary:
+      'bg-secondary text-white opacity-90 hover:opacity-100 font-medium',
     danger: 'bg-red text-white hover:bg-red font-medium',
-    text: 'opacity-50 text-white hover:opacity-100',
-    outline: 'border text-white hover:bg-bcolor',
+    text: 'opacity-50 text-white hover:opacity-100 font-medium',
+    outline: 'border text-white hover:bg-bcolor font-medium',
   };
 
   const sizes = {
@@ -79,7 +80,7 @@ export default function Button({
         rounded ? 'rounded-full' : '',
         className,
         disabled || onClickInProgress
-          ? ' text-white cursor-not-allowed pointer-events-none'
+          ? 'cursor-not-allowed pointer-events-none'
           : null,
 
         disabled || onClickInProgress
