@@ -144,6 +144,13 @@ export class AdrenaClient {
     )[0];
   };
 
+  public getGenesisLockPda = () => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('genesis_lock')],
+      this.mainPool.pubkey,
+    )[0];
+  };
+
   public getStakingStakedTokenVaultPda = (stakingPda: PublicKey) => {
     return PublicKey.findProgramAddressSync(
       [Buffer.from('staking_staked_token_vault'), stakingPda.toBuffer()],
@@ -3129,6 +3136,122 @@ export class AdrenaClient {
       .instruction();
 
     return [...preInstructions, instruction];
+  }
+
+  public async getGensisLock() {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const genesisLockPda = this.getGenesisLockPda();
+
+    return this.adrenaProgram?.account.genesisLock.fetch(genesisLockPda);
+  }
+
+  public async addGenesisLiquidity({
+    amountIn,
+    minLpAmountOut,
+  }: {
+    amountIn: number;
+    minLpAmountOut: number;
+  }) {
+    const preInstructions: TransactionInstruction[] = [];
+
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const stakedTokenMint = this.lpTokenMint;
+    const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
+    const transferAuthority = AdrenaClient.transferAuthorityAddress;
+    const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
+
+    if (!(await isATAInitialized(this.connection, lpTokenAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: lpTokenAccount,
+          mint: this.lpTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    const lpStaking = this.getStakingPda(this.lpTokenMint);
+    const lpUserStaking = this.getUserStakingPda(owner, lpStaking);
+    const cortex = AdrenaClient.cortexPda;
+    const pool = this.mainPool.pubkey;
+    const lpStakingStakedTokenVault =
+      this.getStakingStakedTokenVaultPda(lpStaking);
+    const custody = this.getCustodyByMint(this.lpTokenMint);
+    const custodyOracleAccount = custody.nativeObject.oracle.oracleAccount;
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+      custody.mint,
+    );
+
+    const lmTokenMint = this.lmTokenMint;
+    const lpTokenMint = this.lpTokenMint;
+    const governanceTokenMint = this.governanceTokenMint;
+    const governanceRealm = this.governanceRealm;
+    const governanceRealmConfig = this.governanceRealmConfig;
+    const governanceGoverningTokenHolding =
+      this.governanceGoverningTokenHolding;
+
+    const governanceGoverningTokenOwnerRecord =
+      this.getGovernanceGoverningTokenOwnerRecordPda(owner);
+    const lpStakeResolutionThread = this.getThreadAddressPda(
+      new BN(Date.now()),
+    );
+    const stakesClaimCronThread = this.getThreadAddressPda(new BN(Date.now()));
+    const sablierProgram = this.config.sablierThreadProgram;
+    const governanceProgram = this.config.governanceProgram;
+    const systemProgram = SystemProgram.programId;
+    const tokenProgram = TOKEN_PROGRAM_ID;
+    const adrenaProgram = this.adrenaProgram.programId;
+    const genesisLock = this.getGenesisLockPda();
+    const custodyAddress = custody.pubkey;
+
+    const transaction = await this.adrenaProgram.methods
+      .addGenesisLiquidity({
+        lpStakeResolutionThreadId: new BN(Date.now()),
+        amountIn: uiToNative(amountIn, this.alpToken.decimals),
+        minLpAmountOut: uiToNative(minLpAmountOut, this.alpToken.decimals),
+      })
+      .accountsStrict({
+        owner,
+        fundingAccount,
+        transferAuthority,
+        lpUserStaking,
+        lpStaking,
+        cortex,
+        pool,
+        lpStakingStakedTokenVault,
+        custody: custodyAddress,
+        custodyOracleAccount,
+        custodyTokenAccount,
+        lmTokenMint,
+        lpTokenMint,
+        governanceTokenMint,
+        governanceRealm,
+        governanceRealmConfig,
+        governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord,
+        lpStakeResolutionThread,
+        stakesClaimCronThread,
+        sablierProgram,
+        governanceProgram,
+        systemProgram,
+        tokenProgram,
+        adrenaProgram,
+        genesisLock,
+        lpTokenAccount,
+      })
+      .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction);
   }
 
   /*

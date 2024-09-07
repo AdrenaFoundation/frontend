@@ -40,6 +40,8 @@ export const SOL_DECIMALS = 9;
 
 export const BPS = 10_000;
 
+export const GENESIS_REWARD_SHARE_OF_TOTAL_ADX_SUPPLY = 0.05;
+
 // FL4KKyvANrRFsm8kRRCoUW9QJY5LixttpdFxEBEm7ufW
 export const devnetFaucetBankWallet = Keypair.fromSecretKey(
   Uint8Array.from([
