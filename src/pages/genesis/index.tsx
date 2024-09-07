@@ -82,6 +82,7 @@ export default function Genesis({
   const totalADXSupply = useADXTotalSupply();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGenesisLoading, setIsGenesisLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const genesisReward = totalADXSupply
@@ -118,19 +119,25 @@ export default function Genesis({
   }, [connected]);
 
   const getGenesis = async () => {
+    // setGenesis(dummyData);
+
     if (!connected) {
       return;
     }
 
+    setIsGenesisLoading(true);
+
     try {
       const genesis = await window.adrena.client.getGensisLock();
-      // setGenesis(genesis);
+      setGenesis(genesis);
+      setIsGenesisLoading(false);
     } catch (error) {
       console.log('error', error);
+      setIsGenesisLoading(false);
     }
-
-    setGenesis(dummyData);
   };
+
+  console.log('genesis', genesis);
 
   const getAlpAmount = async () => {
     if (!fundsAmount || !usdc) {
@@ -181,13 +188,14 @@ export default function Genesis({
 
       triggerWalletTokenBalancesReload();
       setFundsAmount(null);
-
+      setIsSuccess(true);
       return addSuccessTxNotification({
         title: 'Successful Transaction',
         txHash,
       });
     } catch (error) {
       console.log('error', error);
+      setErrorMsg('Error buying ALP');
 
       return addFailedTxNotification({
         title: 'Error Buying ALP',
@@ -196,12 +204,18 @@ export default function Genesis({
     }
   };
 
-  const reservedGrantOwners = genesis?.reservedGrantOwners.map((pk) =>
-    pk.toString(),
-  );
+  const reservedGrantOwners = genesis?.reservedGrantOwners.map((pk, i) => {
+    return {
+      walletAddress: pk.toString(),
+      maxAmount: genesis.reservedGrantAmounts[i],
+    };
+  });
 
   const isReserved = !!(
-    wallet?.walletAddress && reservedGrantOwners?.includes(wallet.walletAddress)
+    wallet?.walletAddress &&
+    reservedGrantOwners?.find(
+      (owner) => owner.walletAddress === wallet.walletAddress,
+    )
   );
 
   const url = 'https://www.adrena.xyz/';
@@ -305,105 +319,117 @@ export default function Genesis({
 
               <div className="flex flex-col gap-6 justify-between flex-none min-h-[170px] bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
                 <h2>Liquidity pool</h2>
-                <div className="flex flex-row items-center">
-                  <div className="w-full mt-auto">
-                    <p className="opacity-50 text-base mb-1">
-                      Public liquidity
-                    </p>
-                    {genesis?.publicAmountClaimed &&
-                      genesis?.publicAmount &&
-                      usdc?.decimals && (
-                        <p className="text-lg font-mono">
-                          {usdc.decimals &&
-                            formatPriceInfo(
-                              nativeToUi(
-                                genesis.publicAmountClaimed,
-                                usdc?.decimals,
-                              ),
-                            )}{' '}
-                          <span className="text-lg font-mono opacity-50">
-                            /{' '}
-                            {formatPriceInfo(
-                              nativeToUi(genesis.publicAmount, usdc.decimals),
-                            )}
-                          </span>
+                {genesis?.publicAmountClaimed &&
+                genesis?.publicAmount &&
+                usdc?.decimals ? (
+                  <div className="flex flex-row items-center">
+                    <div className="w-full mt-auto">
+                      <p className="opacity-50 text-base mb-1">
+                        Public liquidity
+                      </p>
+                      <p className="text-lg font-mono">
+                        {usdc.decimals &&
+                          formatPriceInfo(
+                            nativeToUi(
+                              genesis.publicAmountClaimed,
+                              usdc?.decimals,
+                            ),
+                          )}{' '}
+                        <span className="text-lg font-mono opacity-50">
+                          /{' '}
+                          {formatPriceInfo(
+                            nativeToUi(genesis.publicAmount, usdc.decimals),
+                          )}
+                        </span>
+                      </p>
+
+                      <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0 scale-[-1]">
+                        <motion.div
+                          initial={{ width: '0%' }}
+                          animate={{ width: '30%' }}
+                          transition={{ duration: 0.5, delay: 0.5 }}
+                          className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#1F2A8A] to-[#5B6AE8] rounded-full"
+                        ></motion.div>
+                      </div>
+                    </div>
+
+                    <div className="relative flex items-center justify-center bg-bcolor h-[60px] w-[4px] z-1 mt-auto">
+                      <div className="absolute top-0 w-2 h-2 rounded-full bg-bcolor" />
+                    </div>
+
+                    <div
+                      className={twMerge(
+                        'w-full',
+                        genesis?.hasTransitionedToFullyPublic && 'opacity-50',
+                      )}
+                    >
+                      <p className="opacity-50 text-right text-base mb-1">
+                        Reserved liquidity
+                      </p>
+                      {genesis?.reservedAmount &&
+                        genesis?.reservedAmountClaimed &&
+                        usdc?.decimals && (
+                          <p className="text-lg font-mono text-right">
+                            {usdc.decimals &&
+                              formatPriceInfo(
+                                nativeToUi(
+                                  genesis?.reservedAmountClaimed,
+                                  usdc?.decimals,
+                                ),
+                              )}{' '}
+                            <span className="text-lg font-mono opacity-50">
+                              /{' '}
+                              {formatPriceInfo(
+                                nativeToUi(
+                                  genesis.reservedAmount,
+                                  usdc.decimals,
+                                ),
+                              )}
+                            </span>
+                          </p>
+                        )}
+
+                      {isReserved && (
+                        <p className="opacity-50 text-right font-mono">
+                          Your limit:{' '}
+                          {Number(
+                            reservedGrantOwners?.find(
+                              (owner) =>
+                                owner.walletAddress === wallet.walletAddress,
+                            )?.maxAmount,
+                          )}{' '}
+                          USDC
                         </p>
                       )}
-
-                    <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0 scale-[-1]">
-                      <motion.div
-                        initial={{ width: '0%' }}
-                        animate={{ width: '30%' }}
-                        transition={{ duration: 0.5, delay: 0.5 }}
-                        className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#1F2A8A] to-[#5B6AE8] rounded-full"
-                      ></motion.div>
+                      {genesis?.reservedAmountClaimed &&
+                        genesis?.reservedAmount &&
+                        usdc && (
+                          <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0">
+                            <motion.div
+                              initial={{ width: '0%' }}
+                              animate={{
+                                width: `${
+                                  (nativeToUi(
+                                    genesis.reservedAmountClaimed,
+                                    usdc.decimals,
+                                  ) /
+                                    nativeToUi(
+                                      genesis.reservedAmount,
+                                      usdc.decimals,
+                                    )) *
+                                  100
+                                }%`,
+                              }}
+                              transition={{ duration: 0.5, delay: 0.5 }}
+                              className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#6D1324] to-[#A33D50] rounded-full"
+                            ></motion.div>
+                          </div>
+                        )}
                     </div>
                   </div>
-
-                  <div className="relative flex items-center justify-center bg-bcolor h-[60px] w-[4px] z-1 mt-auto">
-                    <div className="absolute top-0 w-2 h-2 rounded-full bg-bcolor" />
-                  </div>
-
-                  <div
-                    className={twMerge(
-                      'w-full',
-                      genesis?.hasTransitionedToFullyPublic && 'opacity-50',
-                    )}
-                  >
-                    <p className="opacity-50 text-right text-base mb-1">
-                      Reserved liquidity
-                    </p>
-                    {genesis?.reservedAmount &&
-                      genesis?.reservedAmountClaimed &&
-                      usdc?.decimals && (
-                        <p className="text-lg font-mono text-right">
-                          {usdc.decimals &&
-                            formatPriceInfo(
-                              nativeToUi(
-                                genesis?.reservedAmountClaimed,
-                                usdc?.decimals,
-                              ),
-                            )}{' '}
-                          <span className="text-lg font-mono opacity-50">
-                            /{' '}
-                            {formatPriceInfo(
-                              nativeToUi(genesis.reservedAmount, usdc.decimals),
-                            )}
-                          </span>
-                        </p>
-                      )}
-
-                    {isReserved && (
-                      <p className="opacity-50 text-right font-mono">
-                        Your limit: $499,999 / $500,000
-                      </p>
-                    )}
-                    {genesis?.reservedAmountClaimed &&
-                      genesis?.reservedAmount &&
-                      usdc && (
-                        <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0">
-                          <motion.div
-                            initial={{ width: '0%' }}
-                            animate={{
-                              width: `${
-                                (nativeToUi(
-                                  genesis.reservedAmountClaimed,
-                                  usdc.decimals,
-                                ) /
-                                  nativeToUi(
-                                    genesis.reservedAmount,
-                                    usdc.decimals,
-                                  )) *
-                                100
-                              }%`,
-                            }}
-                            transition={{ duration: 0.5, delay: 0.5 }}
-                            className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#6D1324] to-[#A33D50] rounded-full"
-                          ></motion.div>
-                        </div>
-                      )}
-                  </div>
-                </div>
+                ) : (
+                  <p className="font-mono animate-pulse">Loading</p>
+                )}
               </div>
             </div>
 
@@ -502,14 +528,14 @@ export default function Genesis({
                 size="lg"
                 title="Provide Liquidity"
                 className="w-full mt-3 py-3"
-                // disabled={
-                //   !connected ||
-                //   !usdc ||
-                //   isLoading ||
-                //   !fundsAmount ||
-                //   !feeAndAmount?.amount
-                // }
-                onClick={() => setIsSuccess(true)}
+                disabled={
+                  !connected ||
+                  !usdc ||
+                  isLoading ||
+                  !fundsAmount ||
+                  !feeAndAmount?.amount
+                }
+                onClick={() => addGenesisLiquidity()}
               />
 
               {errorMsg !== null ? (
