@@ -90,7 +90,7 @@ export default function FaucetDevnet({
       triggerWalletTokenBalancesReload();
 
       return addSuccessTxNotification({
-        title: 'Successfull Transaction',
+        title: 'Successful Transaction',
         txHash,
       });
     } catch (error) {
@@ -128,7 +128,7 @@ export default function FaucetDevnet({
       setPendingTx(false);
 
       return addSuccessTxNotification({
-        title: 'Successfull Transaction',
+        title: 'Successful Transaction',
         txHash,
       });
     } catch (error) {
@@ -179,7 +179,7 @@ export default function FaucetDevnet({
             <div className="text-sm mt-4 text-txtfade">
               {(() => {
                 if (token.mint.equals(NATIVE_MINT) || token.symbol === 'ADX')
-                  return 'Aidropped 1 ';
+                  return 'Airdropped 1 ';
                 return '$10k worth of ';
               })()}
               token at a time

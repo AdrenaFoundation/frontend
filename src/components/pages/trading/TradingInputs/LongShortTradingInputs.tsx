@@ -29,6 +29,7 @@ import {
 } from '@/utils';
 
 import errorImg from '../../../../../public/images/Icons/error.svg';
+import solLogo from '../../../../../public/images/sol.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
@@ -514,15 +515,19 @@ export default function LongShortTradingInputs({
             selectedClassName="w-14"
             menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
             menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
-            selected={tokenB.symbol}
+            selected={tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'}
             options={allowedTokenB.map((token) => ({
-              title: token.symbol,
-              img: token.image,
+              title: token.symbol !== 'JITOSOL' ? token.symbol : 'SOL',
+              img: token.symbol !== 'JITOSOL' ? token.image : solLogo,
             }))}
             onSelect={(name) => {
               // Force linting, you cannot not find the token in the list
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const token = allowedTokenB.find((t) => t.symbol === name)!;
+              const token = allowedTokenB.find(
+                (t) =>
+                  t.symbol === name ||
+                  (t.symbol === 'JITOSOL' && name === 'SOL'),
+              )!;
               setTokenB(token);
 
               // if the prev value has more decimals than the new token, we need to adjust the value

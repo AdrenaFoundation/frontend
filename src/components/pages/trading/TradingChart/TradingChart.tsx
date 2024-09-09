@@ -126,7 +126,9 @@ export default function TradingChart({
           width: 100,
           height: 100,
           autosize: true,
-          symbol: `Crypto.${token.symbol}/USD`,
+          symbol: `Crypto.${
+            token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
+          }/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
           toolbar_bg: '#061018',
@@ -239,7 +241,7 @@ export default function TradingChart({
     setWidgetReady(false);
 
     widget?.setSymbol(
-      `Crypto.${token.symbol}/USD`,
+      `Crypto.${token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
       'D' as ResolutionString,
       () => {
         setWidgetReady(true);
@@ -344,11 +346,13 @@ export default function TradingChart({
           The chart is provided by TradingView, an advanced platform that
           provides unparalleled access to live data e.g.
           <Link
-            href={`https://www.tradingview.com/symbols/${token.symbol}USD/`}
+            href={`https://www.tradingview.com/symbols/${
+              token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
+            }USD/`}
             target="__blank"
             className="ml-1 underline"
           >
-            {token.symbol} USD chart
+            {token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'} USD chart
           </Link>
         </div>
       </div>

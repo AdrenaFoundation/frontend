@@ -33,7 +33,10 @@ export default function TradingChartHeader({
     // if streamingTokenPrices is smaller than previous value, set color to red
     if (!streamingTokenPrices) return;
 
-    const price = streamingTokenPrices?.[selected.symbol];
+    const price =
+      streamingTokenPrices[
+        selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
+      ];
 
     if (typeof price === 'undefined' || price === null) {
       return;
@@ -48,7 +51,11 @@ export default function TradingChartHeader({
   }, [streamingTokenPrices]);
 
   useEffect(() => {
-    setPreviousTokenPrice(streamingTokenPrices?.[selected.symbol] || 0);
+    setPreviousTokenPrice(
+      streamingTokenPrices[
+        selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
+      ] || 0,
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streamingTokenPrices]);
 
@@ -63,18 +70,26 @@ export default function TradingChartHeader({
         <Select
           className="w-full"
           selectedClassName="py-3 px-2 sm:px-3"
-          selected={`${selected.symbol} / USD`}
+          selected={`${
+            selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
+          } / USD`}
           options={tokenList
             .filter((token) => token.symbol !== selected.symbol)
             .map((token) => {
-              return { title: `${token.symbol} / USD` };
+              return {
+                title: `${
+                  token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
+                } / USD`,
+              };
             })}
           onSelect={(opt: string) => {
             const selectedTokenSymbol = getTokenSymbolFromChartFormat(opt);
             // Force linting, you cannot not find the token in the list
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const token = tokenList.find(
-              (t) => t.symbol === selectedTokenSymbol,
+              (t) =>
+                t.symbol === selectedTokenSymbol ||
+                (t.symbol === 'JITOSOL' && selectedTokenSymbol === 'SOL'),
             )!;
 
             if (!token) return;
@@ -86,11 +101,16 @@ export default function TradingChartHeader({
 
       <div className="flex w-full p-3 sm:p-0 flex-row gap-3 justify-between sm:justify-end sm:gap-12 items-center sm:pr-5">
         <FormatNumber
-          nb={streamingTokenPrices?.[selected.symbol]}
+          nb={
+            streamingTokenPrices[
+              selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
+            ]
+          }
           format="currency"
           minimumFractionDigits={2}
           className={twMerge('text-lg font-bold', tokenColor)}
         />
+
         <div className="flex flex-row gap-3 sm:gap-6">
           <div className="flex flex-col p-1 rounded-full flex-wrap">
             <span className="text-xs sm:text-sm text-txtfade text-right">
