@@ -1,11 +1,10 @@
-import { NATIVE_MINT } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
+import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
-import ethLogo from '../../public/images/eth.svg';
-import solLogo from '../../public/images/sol.svg';
+import jitosolLogo from '../../public/images/jitosol.png';
 import usdcLogo from '../../public/images/usdc.svg';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
@@ -34,16 +33,16 @@ export default class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'usd-coin',
       decimals: 6,
       pythPriceUpdateV2: new PublicKey(
-        'Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD',
+        'Dpw1EAVrSB1ibxiDQyTAW6Zip3J4Btk2x4SgApQCeFbX',
       ),
     },
-    HRHfoVPeLKKwHAMP1P5zsgG9w4HHSu93Merjxpt8u5a7: {
+    '2eU7sUxhpQuBaUrjd6oPTzoFZNPEaawrAka4zqowMzbJ': {
       name: 'BONK',
       color: '#FFA500',
       symbol: 'BONK',
-      image: ethLogo,
+      image: bonkLogo,
       coingeckoId: 'bonk',
-      decimals: 6, // 5 in real life
+      decimals: 5,
       pythPriceUpdateV2: new PublicKey(
         'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
@@ -56,21 +55,25 @@ export default class DevnetConfiguration implements IConfiguration {
       coingeckoId: 'bitcoin',
       decimals: 6,
       pythPriceUpdateV2: new PublicKey(
-        'GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU',
+        '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
     },
-    [NATIVE_MINT.toBase58()]: {
-      name: 'Solana',
-      color: '#9945FF',
-      symbol: 'SOL',
-      image: solLogo,
+    DmfSVHxadyJU4HJXT4pvXMzVfBHDiyS32NRKSAdxkzEy: {
+      name: 'Jito Staked SOL',
+      color: '#84CC90',
+      symbol: 'JITOSOL',
+      image: jitosolLogo,
       coingeckoId: 'solana',
       decimals: 9,
       pythPriceUpdateV2: new PublicKey(
-        'H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG',
+        'AxaxyeDT8JnWERSaTKvFXvPKkEdxnamKSqpWbsSjYg1g',
       ),
     },
   };
+
+  public readonly solPythPriceUpdateV2: PublicKey = new PublicKey(
+    '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
+  );
 
   public readonly governanceProgram: PublicKey = new PublicKey(
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
@@ -88,7 +91,7 @@ export default class DevnetConfiguration implements IConfiguration {
     'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
   );
 
-  public readonly governanceRealmName = 'Adaorenareturn2';
+  public readonly governanceRealmName = 'AdrenaDaoTestingA';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
     ? [
@@ -140,6 +143,6 @@ export default class DevnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '2buhqUduNw7wNhZ1ixFxfvLRX3gAZkGmg8G1Rv5SEur7',
+    '9dZ6MWYfNFXVAmDquj27zeHCMfZCAU1G5xQahRinLQiy',
   );
 }

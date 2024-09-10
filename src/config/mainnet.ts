@@ -72,6 +72,10 @@ export default class MainnetConfiguration implements IConfiguration {
     },
   };
 
+  public readonly solPythPriceUpdateV2: PublicKey = new PublicKey(
+    '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
+  );
+
   public readonly governanceProgram: PublicKey = new PublicKey(
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   );

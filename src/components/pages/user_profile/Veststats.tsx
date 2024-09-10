@@ -149,7 +149,7 @@ export default function VestStats({
 
         <Button
           title="Claim ADX"
-          className="w-full mt-3"
+          className="w-full mt-3 h-8"
           size="lg"
           onClick={() => claimVest()}
         />

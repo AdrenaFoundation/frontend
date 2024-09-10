@@ -29,6 +29,7 @@ import {
 } from '@/utils';
 
 import errorImg from '../../../../../public/images/Icons/error.svg';
+import solLogo from '../../../../../public/images/sol.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
@@ -354,19 +355,32 @@ export default function LongShortTradingInputs({
     // Use positionInfos only
     if (positionInfos) {
       let priceUsd = positionInfos.sizeUsd;
-      let size = positionInfos.size;
 
       // Add current position
       if (openedPosition) {
-        size += openedPosition.sizeUsd / tokenPriceB;
         priceUsd += openedPosition.sizeUsd;
       }
 
-      // Round to token decimals
-      size = Number(size.toFixed(tokenB.decimals));
-
       setPriceB(priceUsd);
-      setInputB(size);
+
+      const solPrice = tokenPrices['SOL'];
+
+      // Cannot calculate size because we don't have SOL price
+      if (
+        tokenB.symbol === 'JITOSOL' &&
+        (solPrice === null || solPrice === 0)
+      ) {
+        return setInputB(null);
+      }
+
+      const size =
+        priceUsd /
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (tokenB.symbol !== 'JITOSOL' ? tokenPriceB : solPrice!);
+
+      setInputB(
+        Number(size.toFixed(tokenB.symbol !== 'JITOSOL' ? tokenB.decimals : 9)),
+      );
     } else {
       setPriceB(null);
       setInputB(null);
@@ -514,15 +528,19 @@ export default function LongShortTradingInputs({
             selectedClassName="w-14"
             menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
             menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
-            selected={tokenB.symbol}
+            selected={tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'}
             options={allowedTokenB.map((token) => ({
-              title: token.symbol,
-              img: token.image,
+              title: token.symbol !== 'JITOSOL' ? token.symbol : 'SOL',
+              img: token.symbol !== 'JITOSOL' ? token.image : solLogo,
             }))}
             onSelect={(name) => {
               // Force linting, you cannot not find the token in the list
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const token = allowedTokenB.find((t) => t.symbol === name)!;
+              const token = allowedTokenB.find(
+                (t) =>
+                  t.symbol === name ||
+                  (t.symbol === 'JITOSOL' && name === 'SOL'),
+              )!;
               setTokenB(token);
 
               // if the prev value has more decimals than the new token, we need to adjust the value
@@ -769,6 +787,7 @@ export default function LongShortTradingInputs({
                   <FormatNumber
                     nb={custody && tokenB && custody.borrowFee}
                     precision={RATE_DECIMALS}
+                    minimumFractionDigits={4}
                     suffix="%/hr"
                     isDecimalDimmed={false}
                     className="text-lg"
