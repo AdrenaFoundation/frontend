@@ -38,6 +38,7 @@ import {
   Custody,
   CustodyExtended,
   ExitPriceAndFee,
+  GenesisLock,
   ImageRef,
   NewPositionPricesAndFee,
   OpenPositionWithSwapAmountAndFees,
@@ -146,8 +147,8 @@ export class AdrenaClient {
 
   public getGenesisLockPda = () => {
     return PublicKey.findProgramAddressSync(
-      [Buffer.from('genesis_lock')],
-      this.mainPool.pubkey,
+      [Buffer.from('genesis_lock'), this.mainPool.pubkey.toBuffer()],
+      AdrenaClient.programId,
     )[0];
   };
 
@@ -2481,15 +2482,7 @@ export class AdrenaClient {
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
-      console.log('init user staking account');
-
-      const instructions = await this.initUserStaking({
-        owner,
-        stakedTokenMint,
-        threadId,
-      });
-
-      preInstructions.push(...instructions);
+      throw new Error('User staking account not found');
     } else {
       if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
         preInstructions.push(
@@ -2606,15 +2599,7 @@ export class AdrenaClient {
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
     if (!userStakingAccount) {
-      console.log('init user staking account');
-
-      const instructions = await this.initUserStaking({
-        owner,
-        stakedTokenMint,
-        threadId,
-      });
-
-      preInstructions.push(...instructions);
+      throw new Error('User staking account not found');
     } else {
       if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
         console.log('init user reward account');
@@ -3131,14 +3116,15 @@ export class AdrenaClient {
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
         pool: this.mainPool.pubkey,
-        genesisLock: '',
+        genesisLock: this.genesisLockPda,
       })
-      .instruction();
+      .preInstructions(preInstructions)
+      .transaction();
 
-    return [...preInstructions, instruction];
+    return this.signAndExecuteTx(instruction);
   }
 
-  public async getGensisLock() {
+  public async getGensisLock(): Promise<GenesisLock | null> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
@@ -3151,46 +3137,39 @@ export class AdrenaClient {
   public async addGenesisLiquidity({
     amountIn,
     minLpAmountOut,
+    notification,
   }: {
     amountIn: number;
-    minLpAmountOut: number;
+    minLpAmountOut: BN;
+    notification?: MultiStepNotification;
   }) {
     const preInstructions: TransactionInstruction[] = [];
 
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
+    const usdc = this.getTokenBySymbol('USDC');
+
+    if (!usdc) {
+      throw new Error('USDC not found');
+    }
 
     const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
       .publicKey;
-
-    const stakedTokenMint = this.lpTokenMint;
-    const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
+    const fundingAccount = findATAAddressSync(owner, usdc.mint);
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
     const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
-
-    if (!(await isATAInitialized(this.connection, lpTokenAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: lpTokenAccount,
-          mint: this.lpTokenMint,
-          owner,
-        }),
-      );
-    }
-
     const lpStaking = this.getStakingPda(this.lpTokenMint);
     const lpUserStaking = this.getUserStakingPda(owner, lpStaking);
     const cortex = AdrenaClient.cortexPda;
     const pool = this.mainPool.pubkey;
     const lpStakingStakedTokenVault =
       this.getStakingStakedTokenVaultPda(lpStaking);
-    const custody = this.getCustodyByMint(this.lpTokenMint);
+    const custody = this.getCustodyByMint(usdc.mint);
     const custodyOracle = custody.nativeObject.oracle;
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
-
     const lmTokenMint = this.lmTokenMint;
     const lpTokenMint = this.lpTokenMint;
     const governanceTokenMint = this.governanceTokenMint;
@@ -3198,13 +3177,23 @@ export class AdrenaClient {
     const governanceRealmConfig = this.governanceRealmConfig;
     const governanceGoverningTokenHolding =
       this.governanceGoverningTokenHolding;
-
+    const threadId = new BN(Date.now());
     const governanceGoverningTokenOwnerRecord =
       this.getGovernanceGoverningTokenOwnerRecordPda(owner);
-    const lpStakeResolutionThread = this.getThreadAddressPda(
-      new BN(Date.now()),
+    const lpStakeResolutionThread = this.getThreadAddressPda(threadId);
+    const userStakingAccount =
+      await this.adrenaProgram.account.userStaking.fetchNullable(lpUserStaking);
+
+    if (!userStakingAccount) {
+      throw new Error('user staking account not found');
+    }
+
+    const stakesClaimCronThread = this.getThreadAddressPda(
+      userStakingAccount
+        ? userStakingAccount.stakesClaimCronThreadId
+        : threadId,
     );
-    const stakesClaimCronThread = this.getThreadAddressPda(new BN(Date.now()));
+
     const sablierProgram = this.config.sablierThreadProgram;
     const governanceProgram = this.config.governanceProgram;
     const systemProgram = SystemProgram.programId;
@@ -3215,13 +3204,14 @@ export class AdrenaClient {
 
     const transaction = await this.adrenaProgram.methods
       .addGenesisLiquidity({
-        lpStakeResolutionThreadId: new BN(Date.now()),
+        minLpAmountOut,
+        lpStakeResolutionThreadId: threadId,
         amountIn: uiToNative(amountIn, this.alpToken.decimals),
-        minLpAmountOut: uiToNative(minLpAmountOut, this.alpToken.decimals),
       })
       .accountsStrict({
         owner,
         fundingAccount,
+        lpTokenAccount,
         transferAuthority,
         lpUserStaking,
         lpStaking,
@@ -3246,12 +3236,12 @@ export class AdrenaClient {
         tokenProgram,
         adrenaProgram,
         genesisLock,
-        lpTokenAccount,
       })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx(transaction, notification);
   }
 
   /*
