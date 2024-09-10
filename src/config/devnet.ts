@@ -60,7 +60,7 @@ export default class DevnetConfiguration implements IConfiguration {
     },
     DmfSVHxadyJU4HJXT4pvXMzVfBHDiyS32NRKSAdxkzEy: {
       name: 'Jito Staked SOL',
-      color: '#9945FF',
+      color: '#84CC90',
       symbol: 'JITOSOL',
       image: jitosolLogo,
       coingeckoId: 'solana',

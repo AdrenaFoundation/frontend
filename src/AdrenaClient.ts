@@ -3587,7 +3587,7 @@ export class AdrenaClient {
             side: (position.side === 1 ? 'long' : 'short') as 'long' | 'short',
             sizeUsd: nativeToUi(position.sizeUsd, USD_DECIMALS),
             collateralUsd: nativeToUi(position.collateralUsd, USD_DECIMALS),
-            price: nativeToUi(position.price, USD_DECIMALS),
+            price: nativeToUi(position.price, PRICE_DECIMALS),
             collateralAmount: nativeToUi(
               position.collateralAmount,
               collateralToken.decimals,

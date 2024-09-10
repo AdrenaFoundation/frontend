@@ -374,7 +374,7 @@ export default function LongShortTradingInputs({
       }
 
       const size =
-        positionInfos.sizeUsd /
+        priceUsd /
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         (tokenB.symbol !== 'JITOSOL' ? tokenPriceB : solPrice!);
 
