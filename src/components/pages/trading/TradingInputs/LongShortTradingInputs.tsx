@@ -355,20 +355,31 @@ export default function LongShortTradingInputs({
     // Use positionInfos only
     if (positionInfos) {
       let priceUsd = positionInfos.sizeUsd;
-      let size = positionInfos.size;
 
       // Add current position
       if (openedPosition) {
-        size += openedPosition.sizeUsd / tokenPriceB;
         priceUsd += openedPosition.sizeUsd;
       }
 
-      // Round to token decimals
-      // size = Number(size.toFixed(tokenB.decimals));
-
       setPriceB(priceUsd);
+
+      const solPrice = tokenPrices['SOL'];
+
+      // Cannot calculate size because we don't have SOL price
+      if (
+        tokenB.symbol === 'JITOSOL' &&
+        (solPrice === null || solPrice === 0)
+      ) {
+        return setInputB(null);
+      }
+
+      const size =
+        positionInfos.sizeUsd /
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (tokenB.symbol !== 'JITOSOL' ? tokenPriceB : solPrice!);
+
       setInputB(
-        Number((positionInfos.sizeUsd / tokenPriceB).toFixed(tokenB.decimals)),
+        Number(size.toFixed(tokenB.symbol !== 'JITOSOL' ? tokenB.decimals : 9)),
       );
     } else {
       setPriceB(null);
@@ -776,6 +787,7 @@ export default function LongShortTradingInputs({
                   <FormatNumber
                     nb={custody && tokenB && custody.borrowFee}
                     precision={RATE_DECIMALS}
+                    minimumFractionDigits={4}
                     suffix="%/hr"
                     isDecimalDimmed={false}
                     className="text-lg"

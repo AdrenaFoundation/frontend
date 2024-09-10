@@ -69,23 +69,11 @@ export default class DevnetConfiguration implements IConfiguration {
         'AxaxyeDT8JnWERSaTKvFXvPKkEdxnamKSqpWbsSjYg1g',
       ),
     },
-    // [NATIVE_MINT.toBase58()]: {
-    //   name: 'SOL',
-    //   color: '#9945FF',
-    //   symbol: 'JITOSOL',
-    //   tradeSymbol: 'SOL',
-    //   tradeImage: solLogo,
-    //   image: jitosolLogo,
-    //   coingeckoId: 'solana',
-    //   decimals: 9,
-    //   pythPriceUpdateV2: new PublicKey(
-    //     'AxaxyeDT8JnWERSaTKvFXvPKkEdxnamKSqpWbsSjYg1g', // jitoSOL/USD
-    //   ),
-    //   pythTradePriceUpdateV2: new PublicKey( // SOL/USD
-    //     '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
-    //   ),
-    // },
   };
+
+  public readonly solPythPriceUpdateV2: PublicKey = new PublicKey(
+    '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
+  );
 
   public readonly governanceProgram: PublicKey = new PublicKey(
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
