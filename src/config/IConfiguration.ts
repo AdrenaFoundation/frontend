@@ -29,6 +29,7 @@ export default interface IConfiguration {
   readonly sablierThreadProgram: PublicKey;
   readonly stakesClaimPayer: PublicKey;
   readonly pythProgram: PublicKey;
+  readonly solPythPriceUpdateV2: PublicKey;
 
   readonly governanceRealmName: string;
 

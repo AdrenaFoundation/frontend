@@ -3,31 +3,53 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { GenesisLock } from '@/types';
+
 import chevronIcon from '../../../public/images/chevron-down.svg';
 import GensisStepsBGImg from '../../../public/images/genesis-bg.png';
 import Modal from '../common/Modal/Modal';
 
-export default function ProgressBar({ currentStep }: { currentStep: number }) {
+export default function ProgressBar({
+  currentStep,
+  genesis,
+}: {
+  currentStep: number;
+  genesis: GenesisLock | null;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   const steps = [
     {
-      title: 'Gensis opening',
-      date: 'Jan 5, 2023',
+      title: 'Campaign Starts',
+      date: genesis
+        ? new Date(genesis?.campaignStartDate.toNumber() * 1000)
+        : null,
     },
     {
-      title: 'Close Private pool',
-      date: 'Jan 6, 2023',
+      title: 'Reserved Period Ends',
+      // two days after the start
+      date: genesis
+        ? new Date(
+            genesis?.campaignStartDate.toNumber() * 1000 +
+              2 * (24 * 60 * 60) * 1000,
+          )
+        : null,
     },
     {
-      title: 'Close Public pool',
-      date: 'Jan 7, 2023',
+      title: 'Campaign Ends',
+      // three days after the start
+      date: genesis
+        ? new Date(
+            genesis?.campaignStartDate.toNumber() * 1000 +
+              3 * (24 * 60 * 60) * 1000,
+          )
+        : null,
     },
     {
-      title: 'Rebalancing',
+      title: 'Pool Rebalancing',
     },
     {
-      title: 'Adrena Launch',
+      title: 'Trading Live',
     },
   ];
 
@@ -43,7 +65,7 @@ export default function ProgressBar({ currentStep }: { currentStep: number }) {
             className="max-w-[1040px] z-0 hidden sm:block"
           />
           <div className="sm:absolute flex flex-row justify-center top-2 w-full sm:max-w-[920px] px-5 pt-5 sm:px-[50px] sm:pt-0">
-            {steps.map((step, index) =>
+            {steps.map((_, index) =>
               index !== lastStep ? (
                 <div key={index} className="flex flex-row items-center w-full">
                   <div
@@ -78,7 +100,9 @@ export default function ProgressBar({ currentStep }: { currentStep: number }) {
           <div className="flex sm:hidden flex-row justify-between w-full px-5 pb-3">
             <div>
               <h2 className="font-bold">{steps[currentStep].title}</h2>
-              <p className="sm:text-sm opacity-50">{steps[currentStep].date}</p>
+              <p className="sm:text-sm opacity-50">
+                {steps[currentStep].date?.toLocaleDateString()}
+              </p>
             </div>
 
             <Image
@@ -101,10 +125,9 @@ export default function ProgressBar({ currentStep }: { currentStep: number }) {
                     .title
                 }{' '}
                 –{' '}
-                {
-                  steps[currentStep === lastStep ? lastStep : currentStep + 1]
-                    .date
-                }
+                {steps[
+                  currentStep === lastStep ? lastStep : currentStep + 1
+                ]?.date?.toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -112,37 +135,47 @@ export default function ProgressBar({ currentStep }: { currentStep: number }) {
           <div className="hidden sm:flex flex-row justify-center top-2 w-full max-w-[990px] px-[50px]">
             <div className="flex flex-row w-full">
               <div>
-                <p className="font-bold text-center">Gensis opening</p>
-                <p className="text-center text-sm opacity-50">12/09/2024</p>
+                <p className="font-bold text-center">{steps[0].title}</p>
+                <p className="text-center text-sm opacity-50">
+                  {steps[0].date?.toLocaleDateString()}
+                </p>
               </div>
             </div>
 
             <div className="flex flex-row w-full">
               <div>
                 <p className="font-bold text-center opacity-50">
-                  Close Private pool
+                  {steps[1].title}
                 </p>
-                <p className="text-center text-sm opacity-50">12/09/2024</p>
+                <p className="text-center text-sm opacity-50">
+                  {steps[1].date?.toLocaleDateString()}
+                </p>
               </div>
             </div>
 
             <div className="flex flex-row w-full">
               <div>
                 <p className="font-bold text-center opacity-50">
-                  Close Public pool
+                  {steps[2].title}
                 </p>
-                <p className="text-center text-sm opacity-50">12/09/2024</p>
+                <p className="text-center text-sm opacity-50">
+                  {steps[2].date?.toLocaleDateString()}
+                </p>
               </div>
             </div>
 
             <div className="flex flex-row w-full">
               <div>
-                <p className="font-bold text-center opacity-50">Rebalancing</p>
+                <p className="font-bold text-center opacity-50">
+                  {steps[3].title}
+                </p>
               </div>
             </div>
 
             <div className="flex-none">
-              <p className="font-bold text-center opacity-50">Adrena Launch</p>
+              <p className="font-bold text-center opacity-50">
+                {steps[4].title}
+              </p>
             </div>
           </div>
         </div>
@@ -176,7 +209,9 @@ export default function ProgressBar({ currentStep }: { currentStep: number }) {
                       )}
                     >
                       <h2 className="font-bold">{step.title}</h2>
-                      <p className="sm:text-sm opacity-50">{step.date}</p>
+                      <p className="sm:text-sm opacity-50">
+                        {step.date?.toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                   {index !== lastStep && (

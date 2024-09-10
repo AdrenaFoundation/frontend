@@ -1,4 +1,5 @@
-import { Connection } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -6,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { Congrats } from '@/components/Congrats/Congrats';
 import ProgressBar from '@/components/Genesis/ProgressBar';
@@ -82,6 +84,8 @@ export default function Genesis({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenesisLoading, setIsGenesisLoading] = useState(false);
+  const [isUserStakingAccountInit, setIsUserStakingAccountFound] =
+    useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const genesisReward = totalADXSupply
@@ -93,54 +97,38 @@ export default function Genesis({
       ? genesisReward / nativeToUi(genesis.publicAmountClaimed, usdc.decimals)
       : null;
 
-  // const dummyData = {
-  //   bump: 0,
-  //   campaignDuration: new BN(new Date().getTime()),
-  //   campaignStartDate: new BN(new Date().getTime()),
-  //   finalizeGenesisLockCampaignThreadId: new BN(0),
-  //   hasTransitionedToFullyPublic: 0,
-  //   padding: [0],
-  //   publicAmount: new BN(1000000000000),
-  //   publicAmountClaimed: new BN(50589485029),
-  //   reservedAmount: new BN(1000000000000),
-  //   reservedAmountClaimed: new BN(130136285029),
-  //   reservedGrantAmounts: [],
-  //   reservedGrantDuration: new BN(new Date().getTime()),
-  //   reservedGrantOwners: [],
-  // };
-
   useEffect(() => {
     getAlpAmount();
   }, [fundsAmountDebounced]);
 
   useEffect(() => {
-    getGenesis();
+    getUserStakingAccount();
   }, [connected]);
 
   useEffect(() => {
-    const isRebalancing = process.env.NEXT_PUBLIC_IS_REBALANCING;
+    getGenesis();
+  }, [connected, isSuccess]);
+
+  useEffect(() => {
+    const isRebalancing = process.env.NEXT_PUBLIC_IS_REBALANCING === 'true';
 
     if (genesis) {
       const daysElapsed = Math.floor(
-        (Date.now() - genesis.campaignStartDate.toNumber()) /
+        (Date.now() - genesis.campaignStartDate.toNumber() * 1000) /
           (1000 * 60 * 60 * 24),
       );
 
-      console.log('days elapsed', daysElapsed);
-
-      if (!isRebalancing && daysElapsed > 3) return setCurrentStep(4);
+      if (!isRebalancing && daysElapsed >= 4) return setCurrentStep(3);
 
       if (isRebalancing) return setCurrentStep(3);
 
       if (genesis.hasTransitionedToFullyPublic) return setCurrentStep(2);
 
-      setCurrentStep(2);
+      setCurrentStep(0);
     }
   }, [genesis]);
 
   const getGenesis = async () => {
-    // setGenesis(dummyData);
-
     if (!connected) {
       return;
     }
@@ -149,15 +137,18 @@ export default function Genesis({
 
     try {
       const genesis = await window.adrena.client.getGensisLock();
-      setGenesis(genesis);
+
+      if (!genesis) {
+        return;
+      }
+
+      setGenesis(genesis as GenesisLock);
       setIsGenesisLoading(false);
     } catch (error) {
       console.log('error fetching genesis', error);
       setIsGenesisLoading(false);
     }
   };
-
-  console.log('genesis', genesis);
 
   const getAlpAmount = async () => {
     if (!fundsAmount || !usdc) {
@@ -168,7 +159,10 @@ export default function Genesis({
 
     const price = tokenPrices[usdc?.symbol];
 
+    if (!wallet) return;
+
     try {
+      // drop view and call instruction
       const alp = await window.adrena.client.getAddLiquidityAmountAndFee({
         amountIn: uiToNative(fundsAmount, usdc.decimals),
         token: usdc,
@@ -193,17 +187,73 @@ export default function Genesis({
     }
   };
 
+  const getUserStakingAccount = async () => {
+    if (!connected || !wallet) {
+      return;
+    }
+
+    try {
+      const userStaking = await window.adrena.client.getUserStakingAccount({
+        owner: new PublicKey(wallet.walletAddress),
+        stakedTokenMint: window.adrena.client.alpToken.mint,
+      });
+
+      if (!userStaking) {
+        setIsUserStakingAccountFound(false);
+      }
+    } catch (error) {
+      console.log('error fetching user staking', error);
+    }
+  };
+
+  const initUserStakingAccount = async () => {
+    if (!wallet) return;
+
+    try {
+      const txHash = await window.adrena.client.initUserStaking({
+        owner: new PublicKey(wallet.walletAddress),
+        stakedTokenMint: window.adrena.client.alpToken.mint,
+        threadId: new BN(Date.now()),
+      });
+
+      triggerWalletTokenBalancesReload();
+      setIsUserStakingAccountFound(true);
+      return addSuccessTxNotification({
+        title: 'Successful Transaction',
+        txHash,
+      });
+    } catch (error) {
+      console.log('error', error);
+      setErrorMsg('Error initializing user staking account');
+
+      return addFailedTxNotification({
+        title: 'Error Initializing User Staking Account',
+        error,
+      });
+    }
+  };
+
   const addGenesisLiquidity = async () => {
     if (!fundsAmount) {
       return;
     }
 
+    if (!isUserStakingAccountInit) {
+      await initUserStakingAccount();
+    }
+
+    const notification =
+      MultiStepNotification.newForRegularTransaction('Buying ALP').fire();
+
     try {
+      if (!wallet) return;
+
       const txHash = await window.adrena.client.addGenesisLiquidity({
         amountIn: fundsAmount,
 
         // TODO: Apply proper slippage
-        minLpAmountOut: 0,
+        minLpAmountOut: new BN(0),
+        notification,
       });
 
       triggerWalletTokenBalancesReload();
@@ -224,28 +274,31 @@ export default function Genesis({
     }
   };
 
-  const reservedGrantOwners = genesis?.reservedGrantOwners.map((pk, i) => {
+  const reservedGrantOwners = genesis?.reservedGrantOwners.map((key, i) => {
     return {
-      walletAddress: pk.toString(),
+      walletAddress: key.toString(),
       maxAmount: genesis.reservedGrantAmounts[i],
     };
   });
 
-  const isReserved = !!(
+  const isReserved =
     wallet?.walletAddress &&
     reservedGrantOwners?.find(
       (owner) => owner.walletAddress === wallet.walletAddress,
-    )
-  );
+    );
 
   const url = 'https://www.adrena.xyz/';
   const text = `Just bought some ALP locked and staked for 180 days`;
 
   const MAX_USDC_AMOUNT = 500_000;
 
+  const reservedGrantOwnerLeftAmount = reservedGrantOwners?.find(
+    (owner) => owner.walletAddress === wallet?.walletAddress,
+  )?.maxAmount;
+
   return (
     <>
-      <ProgressBar currentStep={currentStep} />
+      <ProgressBar currentStep={currentStep} genesis={genesis} />
 
       <div className="relative p-4 m-auto max-w-[1150px]">
         <Image
@@ -274,8 +327,8 @@ export default function Genesis({
               </div>
               <p className="text-sm lg:text-base font-mono opacity-75 mb-4">
                 Kickstart protocol liquidity and get rewarded for your support.
-                The Genesis Lock campaign has for goal to seed the initial
-                liquidity to the platform, filling the first 10m TVL cap.
+                The Genesis Lock campaign has for goal to seed initial
+                liquidities to the platform, filling the first 10m TVL cap.
                 Special rewards are granted for the participants, in the form of
                 boosted ALP Locked Stake rewards:
               </p>
@@ -286,16 +339,23 @@ export default function Genesis({
                   is a one time opportunity
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc">
-                  receive Locked ALP tokens, details about the base rewards here
-                  (link to ALP/ADX page (open in new page))
+                  receive Locked ALP tokens, details about the base rewards{' '}
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    here
+                  </a>
                 </li>
               </ul>
 
               <p className="text-sm lg:text-base font-mono opacity-75">
-                The pool has a reserved component that has been whitelisted to
-                early supporters and contributors, after a duration of X the
-                remaining allocation of the reserved pool will move back to the
-                public allocation and become available to all.
+                The pool has a reserved component that has been whitelisted for
+                early supporters and contributors, after 24 hours if any amount
+                of the reserved pool remains un-claimed, it will move back to
+                the public allocation and become available to all.
               </p>
             </div>
 
@@ -312,8 +372,8 @@ export default function Genesis({
                 </div>
                 <p className="text-sm font-mono opacity-75 mb-4">
                   Kickstart protocol liquidity and get rewarded for your
-                  support. The Genesis Lock campaign has for goal to seed the
-                  initial liquidity to the platform, filling the first 10m TVL
+                  support. The Genesis Lock campaign has for goal to seed
+                  initial liquidities to the platform, filling the first 10m TVL
                   cap. Special rewards are granted for the participants, in the
                   form of boosted ALP Locked Stake rewards:
                 </p>
@@ -324,16 +384,23 @@ export default function Genesis({
                     is a one time opportunity
                   </li>
                   <li className="text-sm font-mono opacity-75 list-disc">
-                    receive Locked ALP tokens, details about the base rewards
-                    here (link to ALP/ADX page (open in new page))
+                    receive Locked ALP tokens, details about the base rewards{' '}
+                    <a
+                      href={`${window.location.origin}/buy_alp`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline"
+                    >
+                      here
+                    </a>
                   </li>
                 </ul>
 
                 <p className="text-sm font-mono opacity-75">
-                  The pool has a reserved component that has been whitelisted to
-                  early supporters and contributors, after a duration of X the
-                  remaining allocation of the reserved pool will move back to
-                  the public allocation and become available to all.
+                  The pool has a reserved component that has been whitelisted
+                  for early supporters and contributors, after 24 hours if any
+                  amount of the reserved pool remains un-claimed, it will move
+                  back to the public allocation and become available to all.
                 </p>
               </div>
 
@@ -344,10 +411,10 @@ export default function Genesis({
                 usdc?.decimals ? (
                   <div className="flex flex-row items-center">
                     <div className="w-full mt-auto">
-                      <p className="opacity-50 text-base mb-1">
+                      <p className="opacity-50 text-sm sm:text-base mb-1">
                         Public liquidity
                       </p>
-                      <p className="text-lg font-mono">
+                      <p className="text-base sm:text-lg font-mono">
                         {usdc.decimals &&
                           formatPriceInfo(
                             nativeToUi(
@@ -355,7 +422,7 @@ export default function Genesis({
                               usdc?.decimals,
                             ),
                           )}{' '}
-                        <span className="text-lg font-mono opacity-50">
+                        <span className="text-base sm:text-lg font-mono opacity-50">
                           /{' '}
                           {formatPriceInfo(
                             nativeToUi(genesis.publicAmount, usdc.decimals),
@@ -366,7 +433,19 @@ export default function Genesis({
                       <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0 scale-[-1]">
                         <motion.div
                           initial={{ width: '0%' }}
-                          animate={{ width: '30%' }}
+                          animate={{
+                            width: `${
+                              (nativeToUi(
+                                genesis.publicAmountClaimed,
+                                usdc.decimals,
+                              ) /
+                                nativeToUi(
+                                  genesis.publicAmount,
+                                  usdc.decimals,
+                                )) *
+                              100
+                            }%`,
+                          }}
                           transition={{ duration: 0.5, delay: 0.5 }}
                           className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#1F2A8A] to-[#5B6AE8] rounded-full"
                         ></motion.div>
@@ -383,13 +462,13 @@ export default function Genesis({
                         genesis?.hasTransitionedToFullyPublic && 'opacity-50',
                       )}
                     >
-                      <p className="opacity-50 text-right text-base mb-1">
+                      <p className="opacity-50 text-right text-sm sm:text-base mb-1">
                         Reserved liquidity
                       </p>
                       {genesis?.reservedAmount &&
                         genesis?.reservedAmountClaimed &&
                         usdc?.decimals && (
-                          <p className="text-lg font-mono text-right">
+                          <p className="text-base sm:text-lg font-mono text-right">
                             {usdc.decimals &&
                               formatPriceInfo(
                                 nativeToUi(
@@ -397,7 +476,7 @@ export default function Genesis({
                                   usdc?.decimals,
                                 ),
                               )}{' '}
-                            <span className="text-lg font-mono opacity-50">
+                            <span className="text-base sm:text-lg font-mono opacity-50">
                               /{' '}
                               {formatPriceInfo(
                                 nativeToUi(
@@ -409,16 +488,17 @@ export default function Genesis({
                           </p>
                         )}
 
-                      {isReserved && (
-                        <p className="opacity-50 text-right font-mono">
-                          Your limit:{' '}
-                          {Number(
-                            reservedGrantOwners?.find(
-                              (owner) =>
-                                owner.walletAddress === wallet.walletAddress,
-                            )?.maxAmount,
-                          )}{' '}
-                          USDC
+                      {isReserved && reservedGrantOwnerLeftAmount && (
+                        <p className="hidden sm:block opacity-50 text-right font-mono">
+                          Reserved amount left:{' '}
+                          <FormatNumber
+                            nb={nativeToUi(
+                              reservedGrantOwnerLeftAmount,
+                              usdc.decimals,
+                            )}
+                            suffix=" USDC"
+                            className="inline-block"
+                          />
                         </p>
                       )}
                       {genesis?.reservedAmountClaimed &&
@@ -449,6 +529,18 @@ export default function Genesis({
                   </div>
                 ) : (
                   <p className="font-mono animate-pulse">Loading</p>
+                )}
+                {isReserved && usdc && reservedGrantOwnerLeftAmount && (
+                  <p className="sm:hidden opacity-50 text-center font-mono">
+                    Reserved amount left:{' '}
+                    <FormatNumber
+                      nb={nativeToUi(
+                        reservedGrantOwnerLeftAmount,
+                        usdc.decimals,
+                      )}
+                      className="inline-block"
+                    />
+                  </p>
                 )}
               </div>
             </div>
@@ -549,11 +641,9 @@ export default function Genesis({
                 title="Provide Liquidity"
                 className="w-full mt-3 py-3"
                 disabled={
-                  !connected ||
-                  !usdc ||
-                  isLoading ||
-                  !fundsAmount ||
-                  !feeAndAmount?.amount
+                  !connected || !usdc || isLoading
+                  // !fundsAmount ||
+                  // !feeAndAmount?.amount
                 }
                 onClick={() => addGenesisLiquidity()}
               />

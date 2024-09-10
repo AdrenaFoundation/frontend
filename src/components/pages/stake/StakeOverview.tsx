@@ -22,7 +22,6 @@ export default function StakeOverview({
   handleClickOnStakeMore,
   handleClickOnClaimRewards,
   handleClickOnFinalizeLockedRedeem,
-  className,
 }: {
   token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
@@ -37,7 +36,6 @@ export default function StakeOverview({
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod) => void;
   handleClickOnClaimRewards: () => void;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
-  className?: string;
 }) {
   const isALP = token === 'ALP';
 

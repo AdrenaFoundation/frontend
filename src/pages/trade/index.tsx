@@ -19,7 +19,9 @@ export type Action = 'long' | 'short' | 'swap';
 function pickDefaultToken(positions: PositionExtended[] | null): Token {
   const tokens = window.adrena.client.tokens.filter((t) => !t.isStable);
 
-  const solToken = tokens.find((t) => t.symbol === 'SOL');
+  const solToken = tokens.find(
+    (t) => t.symbol === 'JITOSOL' || t.symbol === 'SOL',
+  );
 
   if (!solToken) throw new Error('SOL token not found');
 
@@ -298,7 +300,7 @@ export default function Trade({
               triggerUserProfileReload={triggerUserProfileReload}
               isBigScreen={isBigScreen}
             />
-            <div className="flex sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
+            <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
                 setSelectedAction={setSelectedAction}
@@ -367,7 +369,7 @@ export default function Trade({
             </li>
             <li>
               <Button
-                className="bg-transparent text-black font-boldy border-white text-white"
+                className="bg-transparent font-boldy border-white text-white"
                 title="Swap"
                 variant="outline"
                 size="lg"
