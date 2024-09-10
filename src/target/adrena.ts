@@ -4722,7 +4722,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "custodyOracle",
+          "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -4818,7 +4818,7 @@ export type Adrena = {
           ]
         },
         {
-          "name": "principalCustodyOracle",
+          "name": "principalCustodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -16915,7 +16915,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "custodyOracle",
+          "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [
@@ -17011,7 +17011,7 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "principalCustodyOracle",
+          "name": "principalCustodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": [

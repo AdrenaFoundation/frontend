@@ -3311,7 +3311,8 @@ export class AdrenaClient {
     }
 
     const principalCustody = this.getCustodyByMint(mint);
-    const principalCustodyOracle = principalCustody.nativeObject.oracle;
+    const principalCustodyTradeOracle =
+      principalCustody.nativeObject.tradeOracle;
 
     const receivingCustody = this.getCustodyByMint(collateralMint);
     const receivingCustodyOracle = receivingCustody.nativeObject.oracle;
@@ -3343,7 +3344,7 @@ export class AdrenaClient {
         collateralCustody: collateralCustody.pubkey,
         collateralCustodyOracle,
         principalCustody: principalCustody.pubkey,
-        principalCustodyOracle,
+        principalCustodyTradeOracle,
         adrenaProgram: this.readonlyAdrenaProgram.programId,
       })
       .instruction();
@@ -3393,7 +3394,7 @@ export class AdrenaClient {
           cortex: AdrenaClient.cortexPda,
           pool: this.mainPool.pubkey,
           custody: token.custody,
-          custodyOracle: custody.nativeObject.oracle,
+          custodyTradeOracle: custody.nativeObject.tradeOracle,
           collateralCustodyOracle: collateralCustody.nativeObject.oracle,
           collateralCustody: collateralToken.custody,
         },
@@ -3844,6 +3845,21 @@ export class AdrenaClient {
 
         return {
           pubkey: custody.nativeObject.oracle,
+          isSigner: false,
+          isWritable: false,
+        };
+      }),
+
+      ...custodiesAddresses.map((pubkey) => {
+        const custody = this.custodies.find((custody) =>
+          custody.pubkey.equals(pubkey),
+        );
+
+        // Should never happens
+        if (!custody) throw new Error('Custody not found');
+
+        return {
+          pubkey: custody.nativeObject.tradeOracle,
           isSigner: false,
           isWritable: false,
         };
