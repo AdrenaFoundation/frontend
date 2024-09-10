@@ -1780,9 +1780,13 @@ export class AdrenaClient {
     const collateralUsd =
       nativeToUi(collateralAmount, tokenA.decimals) * tokenAPrice;
 
-    const size = nativeToUi(nativeSize, tokenB.decimals);
+    // Size is always in collateral token
+    const size = nativeToUi(
+      nativeSize,
+      side === 'long' ? tokenB.decimals : usdcToken.decimals,
+    );
 
-    const sizeUsd = size * tokenBPrice;
+    const sizeUsd = size * (side === 'long' ? tokenBPrice : usdcTokenPrice);
 
     // calculate and return fee amount in usd
     return {

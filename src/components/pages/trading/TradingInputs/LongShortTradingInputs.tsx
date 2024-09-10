@@ -364,10 +364,12 @@ export default function LongShortTradingInputs({
       }
 
       // Round to token decimals
-      size = Number(size.toFixed(tokenB.decimals));
+      // size = Number(size.toFixed(tokenB.decimals));
 
       setPriceB(priceUsd);
-      setInputB(size);
+      setInputB(
+        Number((positionInfos.sizeUsd / tokenPriceB).toFixed(tokenB.decimals)),
+      );
     } else {
       setPriceB(null);
       setInputB(null);
