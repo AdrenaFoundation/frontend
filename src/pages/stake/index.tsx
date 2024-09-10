@@ -24,7 +24,9 @@ import {
   PageProps,
 } from '@/types';
 import {
+  addFailedTxNotification,
   addNotification,
+  addSuccessTxNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
   getLockedStakeRemainingTime,
@@ -58,6 +60,9 @@ export default function Stake({
 }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [isUserStakingAccountInit, setIsUserStakingAccountFound] =
+    useState(true);
+
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
@@ -143,6 +148,10 @@ export default function Stake({
     }
 
     if (!activeStakingToken) return;
+
+    if (!isUserStakingAccountInit) {
+      await initUserStakingAccount();
+    }
 
     const notification =
       MultiStepNotification.newForRegularTransaction('Stake').fire();
@@ -433,6 +442,55 @@ export default function Stake({
     getTotalStaked,
     wallet,
   ]);
+
+  useEffect(() => {
+    getUserStakingAccount();
+  }, [connected]);
+
+  const getUserStakingAccount = async () => {
+    if (!connected || !wallet) {
+      return;
+    }
+
+    try {
+      const userStaking = await window.adrena.client.getUserStakingAccount({
+        owner: new PublicKey(wallet.walletAddress),
+        stakedTokenMint: window.adrena.client.alpToken.mint,
+      });
+
+      if (!userStaking) {
+        setIsUserStakingAccountFound(false);
+      }
+    } catch (error) {
+      console.log('error fetching user staking', error);
+    }
+  };
+
+  const initUserStakingAccount = async () => {
+    if (!wallet) return;
+
+    try {
+      const txHash = await window.adrena.client.initUserStaking({
+        owner: new PublicKey(wallet.walletAddress),
+        stakedTokenMint: window.adrena.client.alpToken.mint,
+        threadId: new BN(Date.now()),
+      });
+
+      triggerWalletTokenBalancesReload();
+      setIsUserStakingAccountFound(true);
+      return addSuccessTxNotification({
+        title: 'Successful Transaction',
+        txHash,
+      });
+    } catch (error) {
+      console.log('error', error);
+
+      return addFailedTxNotification({
+        title: 'Error Initializing User Staking Account',
+        error,
+      });
+    }
+  };
 
   const modal = activeStakingToken && (
     <Modal
