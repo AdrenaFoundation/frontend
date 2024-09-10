@@ -140,6 +140,6 @@ export default class MainnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '2buhqUduNw7wNhZ1ixFxfvLRX3gAZkGmg8G1Rv5SEur7',
+    '6d9FSQL3t4RyHFHMtx4xUU3TXQiFJwvNebCdfg4cRmpJ',
   );
 }
