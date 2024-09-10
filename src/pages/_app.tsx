@@ -84,7 +84,7 @@ export default function App(props: AppProps) {
       // Specific configuration for specific URLs (users front)
       const specificUrlConfig = (
         {
-          'app.adrena.xyz': devnetConfiguration, // TEMPORARY // mainnetConfiguration,
+          'app.adrena.xyz': mainnetConfiguration,
           'devnet.adrena.xyz': devnetConfiguration,
           'alpha.adrena.xyz': devnetConfiguration,
         } as Record<string, IConfiguration>
@@ -326,6 +326,15 @@ function AppComponent({
           positions={positions}
           triggerPositionsReload={triggerPositionsReload}
           connected={connected}
+          activeRpc={activeRpc}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
+          customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
         />
       </RootLayout>
     </>

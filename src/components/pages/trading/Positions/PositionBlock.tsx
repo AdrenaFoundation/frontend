@@ -69,21 +69,27 @@ export default function PositionBlock({
         src={position.token.image}
         width={200}
         height={200}
-        alt={`${position.token.symbol} logo`}
+        alt={`${
+          position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
+        } logo`}
       />
 
       {window.location.pathname !== '/trade' ? (
         <Link
-          href={`/trade?pair=USDC_${position.token.symbol}&action=${position.side}`}
+          href={`/trade?pair=USDC_${
+            position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
+          }&action=${position.side}`}
           target=""
         >
           <div className="uppercase underline font-boldy text-sm lg:text-xl">
-            {position.token.symbol}
+            {position.token.symbol !== 'JITOSOL'
+              ? position.token.symbol
+              : 'SOL'}
           </div>
         </Link>
       ) : (
         <div className="uppercase font-boldy text-sm lg:text-xl">
-          {position.token.symbol}
+          {position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'}
         </div>
       )}
 
@@ -253,7 +259,13 @@ export default function PositionBlock({
           </div>
           <div className="flex">
             <FormatNumber
-              nb={tokenPrices[position.token.symbol]}
+              nb={
+                tokenPrices[
+                  position.token.symbol !== 'JITOSOL'
+                    ? position.token.symbol
+                    : 'SOL'
+                ]
+              }
               format="currency"
               className="text-xs bold"
             />

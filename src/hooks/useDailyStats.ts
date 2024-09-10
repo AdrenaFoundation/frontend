@@ -52,7 +52,7 @@ export default function useDailyStats() {
         }, {} as Record<string, Stats>),
       );
     } catch (err) {
-      console.log('Ignore coinguecko api error', err);
+      console.log('Ignore coingecko api error', err);
     }
   }, []);
 

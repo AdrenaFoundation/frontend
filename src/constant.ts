@@ -33,12 +33,14 @@ export const walletAdapters: Record<
 };
 
 export const RATE_DECIMALS = 9;
-export const PRICE_DECIMALS = 6;
+export const PRICE_DECIMALS = 10;
 export const USD_DECIMALS = 6;
 export const LP_DECIMALS = 6;
 export const SOL_DECIMALS = 9;
 
 export const BPS = 10_000;
+
+export const GENESIS_REWARD_SHARE_OF_TOTAL_ADX_SUPPLY = 0.05;
 
 // FL4KKyvANrRFsm8kRRCoUW9QJY5LixttpdFxEBEm7ufW
 export const devnetFaucetBankWallet = Keypair.fromSecretKey(

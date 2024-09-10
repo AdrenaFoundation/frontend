@@ -3,8 +3,8 @@ import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
+import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
-import ethLogo from '../../public/images/eth.svg';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
 import IConfiguration, { RpcOption } from './IConfiguration';
@@ -23,7 +23,7 @@ export default class MainnetConfiguration implements IConfiguration {
       image: ImageRef;
       coingeckoId: string;
       decimals: number;
-      pythNetFeedId: PublicKey;
+      pythPriceUpdateV2: PublicKey;
     };
   } = {
     EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: {
@@ -33,29 +33,29 @@ export default class MainnetConfiguration implements IConfiguration {
       image: usdcLogo,
       coingeckoId: 'usd-coin',
       decimals: 6,
-      pythNetFeedId: new PublicKey(
+      pythPriceUpdateV2: new PublicKey(
         'Dpw1EAVrSB1ibxiDQyTAW6Zip3J4Btk2x4SgApQCeFbX',
       ),
     },
-    '7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs': {
-      name: 'Ethereum',
+    DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263: {
+      name: 'BONK',
       color: '#3D3E3F',
-      symbol: 'ETH',
-      image: ethLogo,
-      coingeckoId: 'ethereum',
-      decimals: 6,
-      pythNetFeedId: new PublicKey(
-        '42amVS4KgzR9rA28tkVYqVXjq9Qa8dcZQMbH5EYFX6XC',
+      symbol: 'BONK',
+      image: bonkLogo,
+      coingeckoId: 'bonk',
+      decimals: 5,
+      pythPriceUpdateV2: new PublicKey(
+        'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
     },
-    '3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh': {
+    '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E': {
       name: 'Bitcoin',
       color: '#f7931a',
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 6,
-      pythNetFeedId: new PublicKey(
+      pythPriceUpdateV2: new PublicKey(
         '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
     },
@@ -66,11 +66,15 @@ export default class MainnetConfiguration implements IConfiguration {
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,
-      pythNetFeedId: new PublicKey(
+      pythPriceUpdateV2: new PublicKey(
         '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
       ),
     },
   };
+
+  public readonly solPythPriceUpdateV2: PublicKey = new PublicKey(
+    '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
+  );
 
   public readonly governanceProgram: PublicKey = new PublicKey(
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
@@ -84,18 +88,26 @@ export default class MainnetConfiguration implements IConfiguration {
     'Sab1ierPayer1111111111111111111111111111111',
   );
 
-  public readonly governanceRealmName = 'AdrenaRealm';
+  public readonly pythProgram: PublicKey = new PublicKey(
+    'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
+  );
+
+  public readonly governanceRealmName = 'AdrenaTestrun';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
     ? [
         {
-          // Free Plan Helius Plan solely for development
-          name: 'Helius RPC',
-          url: '  https://mainnet.helius-rpc.com/?api-key=d7a1bbbc-5a12-43d0-ab41-c96ffef811e0',
-        },
-        {
-          name: 'Solana RPC',
-          url: 'https://api.mainnet-beta.solana.com',
+          name: 'Triton Dev RPC',
+          url: (() => {
+            const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+
+            if (!apiKey)
+              throw new Error(
+                'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+              );
+
+            return `https://adrena-solanam-6f0c.mainnet.rpcpool.com/${apiKey}`;
+          })(),
         },
       ]
     : [
@@ -113,28 +125,25 @@ export default class MainnetConfiguration implements IConfiguration {
         },
       ];
 
-  public readonly pythnetRpc: RpcOption = (() => {
-    const rpc = {
-      name: 'Triton Pythnet',
-      url: 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com',
-    };
+  public readonly pythnetRpc: RpcOption = {
+    name: 'Triton Mainnet',
+    url: (() => {
+      const url = 'https://adrena-solanam-6f0c.mainnet.rpcpool.com';
 
-    if (!this.devMode) return rpc;
+      if (!this.devMode) return url;
 
-    const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_PYTHNET_API_KEY;
+      const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
 
-    if (!apiKey || !apiKey.length) {
-      throw new Error(
-        'Missing environment variable NEXT_PUBLIC_DEV_TRITON_PYTHNET_API_KEY',
-      );
-    }
+      if (!apiKey)
+        throw new Error(
+          'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+        );
 
-    rpc.url = `${rpc.url}/${apiKey}`;
-
-    return rpc;
-  })();
+      return `${url}/${apiKey}`;
+    })(),
+  };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    'FcE6ZcbvJ7i9FBWA2q8BE64m2wd6coPrsp7xFTam4KH7',
+    '6d9FSQL3t4RyHFHMtx4xUU3TXQiFJwvNebCdfg4cRmpJ',
   );
 }

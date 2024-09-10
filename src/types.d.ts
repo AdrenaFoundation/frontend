@@ -37,6 +37,8 @@ export type AdrenaGlobal = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RiveImage = any;
 
+declare module '*.lottie';
+
 declare global {
   interface Window {
     riveImageCaching: Record<string, RiveImage>;
@@ -153,7 +155,7 @@ export interface Token {
   image: ImageRef;
   custody?: PublicKey;
   coingeckoId?: string;
-  pythNetFeedId?: PublicKey;
+  pythPriceUpdateV2?: PublicKey;
 }
 
 export type UserProfileExtended = {
@@ -200,6 +202,7 @@ export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
 export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
+export type GenesisLock = Accounts['genesisLock'];
 export type UserProfile = Accounts['userProfile'];
 
 export type LockedStake = UserStaking['lockedStakes'][0];
