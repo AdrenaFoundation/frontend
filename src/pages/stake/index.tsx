@@ -6,7 +6,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import ADXStakeOverview from '@/components/pages/stake/ADXStakeOverview';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
@@ -14,7 +13,6 @@ import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import {
@@ -445,6 +443,7 @@ export default function Stake({
 
   useEffect(() => {
     getUserStakingAccount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected]);
 
   const getUserStakingAccount = async () => {
