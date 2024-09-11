@@ -21,8 +21,6 @@ export default function PositionFeesTooltip({
     sizeUsd: number;
     size: number;
     swapFeeUsd: number | null;
-    openPositionFeeUsd: number;
-    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
     exitFeeUsd: number;
@@ -74,10 +72,7 @@ export default function PositionFeesTooltip({
                 <span className="text-lg ml-2 mr-2 mt-6">=</span>
 
                 <FormatNumber
-                  nb={
-                    positionInfos.totalOpenPositionFeeUsd +
-                    positionInfos.exitFeeUsd
-                  }
+                  nb={positionInfos.exitFeeUsd}
                   format="currency"
                   className="text-lg mt-6"
                 />

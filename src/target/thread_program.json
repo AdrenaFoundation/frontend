@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.2",
   "name": "thread_program",
   "docs": ["Program for creating transaction threads on Solana."],
   "constants": [
@@ -12,13 +12,6 @@
       "name": "THREAD_MINIMUM_FEE",
       "type": "u64",
       "value": "1000"
-    },
-    {
-      "name": "NEXT_INSTRUCTION_SIZE",
-      "type": {
-        "defined": "usize"
-      },
-      "value": "1232"
     },
     {
       "name": "POOL_ID",
@@ -123,6 +116,12 @@
         {
           "name": "id",
           "type": "bytes"
+        },
+        {
+          "name": "domain",
+          "type": {
+            "option": "bytes"
+          }
         },
         {
           "name": "instructions",
@@ -313,9 +312,15 @@
       "accounts": [
         {
           "name": "authority",
-          "isMut": true,
+          "isMut": false,
           "isSigner": true,
           "docs": ["The authority (owner) of the thread."]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": ["The payer of the reallocation."]
         },
         {
           "name": "systemProgram",
@@ -395,6 +400,12 @@
             }
           },
           {
+            "name": "domain",
+            "type": {
+              "option": "bytes"
+            }
+          },
+          {
             "name": "execContext",
             "docs": ["The context of the thread's current execution state."],
             "type": {
@@ -423,11 +434,6 @@
                 "defined": "SerializableInstruction"
               }
             }
-          },
-          {
-            "name": "name",
-            "docs": ["The name of the thread."],
-            "type": "string"
           },
           {
             "name": "nextInstruction",
@@ -790,6 +796,22 @@
               {
                 "name": "price",
                 "type": "i64"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "VersionedThread",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "V1",
+            "fields": [
+              {
+                "defined": "Thread"
               }
             ]
           }
