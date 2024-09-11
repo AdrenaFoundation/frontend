@@ -37,6 +37,8 @@ export type AdrenaGlobal = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RiveImage = any;
 
+declare module '*.lottie';
+
 declare global {
   interface Window {
     riveImageCaching: Record<string, RiveImage>;
@@ -45,7 +47,12 @@ declare global {
   }
 }
 
-export type WalletAdapterName = 'phantom' | 'backpack' | 'walletConnect';
+export type WalletAdapterName =
+  | 'phantom'
+  | 'backpack'
+  | 'walletConnect'
+  | 'coinbase'
+  | 'solflare';
 
 export type PageProps = {
   mainPool: PoolExtended | null;
@@ -103,9 +110,13 @@ export type PositionExtended = {
   collateralUsd: number;
   price: number;
   collateralAmount: number;
-  entryFeeUsd: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
+  stopLossClosePositionPrice?: number | null;
+  stopLossLimitPrice?: number | null;
+  stopLossThreadIsSet: boolean;
+  takeProfitLimitPrice?: number | null;
+  takeProfitThreadIsSet: boolean;
 
   // Onchain data
   nativeObject: Position;
@@ -150,7 +161,7 @@ export interface Token {
   image: ImageRef;
   custody?: PublicKey;
   coingeckoId?: string;
-  pythNetFeedId?: PublicKey;
+  pythPriceUpdateV2?: PublicKey;
 }
 
 export type UserProfileExtended = {
@@ -197,6 +208,7 @@ export type Position = Accounts['position'];
 export type UserStaking = Accounts['userStaking'];
 export type Staking = Accounts['staking'];
 export type Vest = Accounts['vest'];
+export type GenesisLock = Accounts['genesisLock'];
 export type UserProfile = Accounts['userProfile'];
 
 export type LockedStake = UserStaking['lockedStakes'][0];

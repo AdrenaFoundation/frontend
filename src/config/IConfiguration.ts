@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 
-import { ImageRef } from '@/types';
+import { ImageRef, SupportedCluster } from '@/types';
 
 export type TokenInfo = {
   name: string;
@@ -9,7 +9,7 @@ export type TokenInfo = {
   image: ImageRef;
   coingeckoId: string;
   decimals: number;
-  pythNetFeedId: PublicKey;
+  pythPriceUpdateV2: PublicKey;
 };
 
 export type RpcOption = {
@@ -18,7 +18,8 @@ export type RpcOption = {
 };
 
 export default interface IConfiguration {
-  readonly cluster: 'mainnet' | 'devnet';
+  readonly cluster: SupportedCluster;
+  readonly devMode: boolean;
 
   readonly tokensInfo: {
     [tokenPubkey: string]: TokenInfo;
@@ -27,6 +28,8 @@ export default interface IConfiguration {
   readonly governanceProgram: PublicKey;
   readonly sablierThreadProgram: PublicKey;
   readonly stakesClaimPayer: PublicKey;
+  readonly pythProgram: PublicKey;
+  readonly solPythPriceUpdateV2: PublicKey;
 
   readonly governanceRealmName: string;
 

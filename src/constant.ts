@@ -1,7 +1,9 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   BackpackWalletAdapter,
+  CoinbaseWalletAdapter,
   PhantomWalletAdapter,
+  SolflareWalletAdapter,
   WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
@@ -13,10 +15,14 @@ export const walletAdapters: Record<
   WalletAdapterName,
   | PhantomWalletAdapter
   | BackpackWalletAdapter
+  | CoinbaseWalletAdapter
+  | SolflareWalletAdapter
   | WalletConnectWalletAdapter /* | ... */
 > = {
   phantom: new PhantomWalletAdapter(),
   backpack: new BackpackWalletAdapter(),
+  coinbase: new CoinbaseWalletAdapter(),
+  solflare: new SolflareWalletAdapter(),
   walletConnect: new WalletConnectWalletAdapter({
     network: WalletAdapterNetwork.Devnet,
     options: {
@@ -33,12 +39,14 @@ export const walletAdapters: Record<
 };
 
 export const RATE_DECIMALS = 9;
-export const PRICE_DECIMALS = 6;
+export const PRICE_DECIMALS = 10;
 export const USD_DECIMALS = 6;
 export const LP_DECIMALS = 6;
 export const SOL_DECIMALS = 9;
 
 export const BPS = 10_000;
+
+export const GENESIS_REWARD_SHARE_OF_TOTAL_ADX_SUPPLY = 0.05;
 
 // FL4KKyvANrRFsm8kRRCoUW9QJY5LixttpdFxEBEm7ufW
 export const devnetFaucetBankWallet = Keypair.fromSecretKey(

@@ -6,10 +6,14 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 export default function Block({
   columnsTitles,
   className,
+  rowTitleClassName,
+  columnTitlesClassName,
   data,
 }: {
   className?: string;
+  columnTitlesClassName?: string;
   columnsTitles?: ReactNode[];
+  rowTitleClassName?: string;
   data: (
     | {
         rowTitle: ReactNode;
@@ -30,7 +34,12 @@ export default function Block({
     >
       {data.map(({ rowTitle, ...v }, i) => (
         <div className="bg-third rounded-md p-3" key={i}>
-          <p className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade">
+          <p
+            className={twMerge(
+              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
+              columnTitlesClassName,
+            )}
+          >
             {rowTitle}
           </p>
 
@@ -45,7 +54,9 @@ export default function Block({
                   className="flex flex-row justify-between items-center"
                   key={'li-' + j}
                 >
-                  {columnsTitles?.[j] && <p> {columnsTitles[j]} </p>}
+                  {columnsTitles?.[j] && (
+                    <p className={rowTitleClassName}> {columnsTitles[j]} </p>
+                  )}
                   {value}
                 </li>
               ));

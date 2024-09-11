@@ -19,8 +19,6 @@ export default function PositionSizeTooltip({
     sizeUsd: number;
     size: number;
     swapFeeUsd: number | null;
-    openPositionFeeUsd: number;
-    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
     exitFeeUsd: number;

@@ -180,7 +180,7 @@ export type Adrena = {
           isSigner: false;
           docs: [
             '#6',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ];
         },
         {
@@ -327,7 +327,7 @@ export type Adrena = {
           isSigner: false;
           docs: [
             '#10',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ];
         },
         {
@@ -390,74 +390,86 @@ export type Adrena = {
       name: 'claimVest';
       accounts: [
         {
-          name: 'owner';
-          isMut: true;
+          name: 'caller';
+          isMut: false;
           isSigner: true;
           docs: ['#1'];
+        },
+        {
+          name: 'owner';
+          isMut: false;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: false;
+          docs: ['#3'];
         },
         {
           name: 'receivingAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#2'];
+          docs: ['#4'];
         },
         {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#3'];
+          docs: ['#5'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#4'];
+          docs: ['#6'];
         },
         {
           name: 'vestRegistry';
           isMut: true;
           isSigner: false;
-          docs: ['#5'];
+          docs: ['#7'];
         },
         {
           name: 'vest';
           isMut: true;
           isSigner: false;
-          docs: ['#6'];
+          docs: ['#8'];
         },
         {
           name: 'lmTokenMint';
           isMut: true;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#9'];
         },
         {
           name: 'governanceTokenMint';
           isMut: true;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#10'];
         },
         {
           name: 'governanceRealm';
           isMut: false;
           isSigner: false;
           docs: [
-            '#9',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#11',
+            'A realm represent one project within the governance program',
           ];
         },
         {
           name: 'governanceRealmConfig';
           isMut: false;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#12'];
         },
         {
           name: 'governanceGoverningTokenHolding';
           isMut: true;
           isSigner: false;
           docs: [
-            '#11',
+            '#13',
             "Token account owned by governance program holding user's locked tokens",
           ];
         },
@@ -465,41 +477,167 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: ['#12', 'Account owned by governance storing user information'];
+          docs: ['#14', 'Account owned by governance storing user information'];
         },
         {
           name: 'governanceProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#15'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#16'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#17'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#18'];
         },
         {
           name: 'rent';
           isMut: false;
           isSigner: false;
-          docs: ['#17'];
+          docs: ['#19'];
         },
       ];
       args: [];
       returns: 'u64';
+    },
+    {
+      name: 'cancelVest';
+      accounts: [
+        {
+          name: 'admin';
+          isMut: false;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'payer';
+          isMut: true;
+          isSigner: true;
+          docs: ['#3'];
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'vestRegistry';
+          isMut: true;
+          isSigner: false;
+          docs: ['#7'];
+        },
+        {
+          name: 'vest';
+          isMut: true;
+          isSigner: false;
+          docs: ['#8'];
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#9'];
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#10'];
+        },
+        {
+          name: 'governanceRealm';
+          isMut: false;
+          isSigner: false;
+          docs: [
+            '#11',
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ];
+        },
+        {
+          name: 'governanceRealmConfig';
+          isMut: false;
+          isSigner: false;
+          docs: ['#12'];
+        },
+        {
+          name: 'governanceGoverningTokenHolding';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            '#13',
+            "Token account owned by governance program holding user's locked tokens",
+          ];
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord';
+          isMut: true;
+          isSigner: false;
+          docs: ['#14', 'Account owned by governance storing user information'];
+        },
+        {
+          name: 'governanceProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
+          name: 'adrenaProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#16'];
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#17'];
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#18'];
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+          docs: ['#19'];
+        },
+      ];
+      args: [];
     },
     {
       name: 'addPoolPartOne';
@@ -768,28 +906,40 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyTokenMint';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#8'];
         },
         {
-          name: 'systemProgram';
+          name: 'custodyTradeOracle';
           isMut: false;
           isSigner: false;
           docs: ['#9'];
         },
         {
-          name: 'tokenProgram';
+          name: 'custodyTokenMint';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
         },
         {
-          name: 'rent';
+          name: 'systemProgram';
           isMut: false;
           isSigner: false;
           docs: ['#11'];
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#12'];
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+          docs: ['#13'];
         },
       ];
       args: [
@@ -1076,62 +1226,6 @@ export type Adrena = {
       ];
     },
     {
-      name: 'setTestOraclePrice';
-      accounts: [
-        {
-          name: 'admin';
-          isMut: false;
-          isSigner: true;
-          docs: ['#1'];
-        },
-        {
-          name: 'payer';
-          isMut: true;
-          isSigner: true;
-          docs: ['#2'];
-        },
-        {
-          name: 'cortex';
-          isMut: false;
-          isSigner: false;
-          docs: ['#3'];
-        },
-        {
-          name: 'pool';
-          isMut: false;
-          isSigner: false;
-          docs: ['#4'];
-        },
-        {
-          name: 'custody';
-          isMut: false;
-          isSigner: false;
-          docs: ['#5'];
-        },
-        {
-          name: 'oracleAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#6'];
-        },
-        {
-          name: 'systemProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
-        },
-      ];
-      args: [
-        {
-          name: 'params';
-          type: {
-            defined: 'SetTestOraclePriceParams';
-          };
-        },
-      ];
-      returns: 'u8';
-    },
-    {
       name: 'testAdminRemoveCollateral';
       accounts: [
         {
@@ -1183,7 +1277,7 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#9'];
@@ -1195,7 +1289,7 @@ export type Adrena = {
           docs: ['#10'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#11'];
@@ -1286,7 +1380,7 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
@@ -1304,7 +1398,7 @@ export type Adrena = {
           docs: ['#12'];
         },
         {
-          name: 'receivingCustodyOracleAccount';
+          name: 'receivingCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#13'];
@@ -1322,7 +1416,7 @@ export type Adrena = {
           docs: ['#15'];
         },
         {
-          name: 'dispensingCustodyOracleAccount';
+          name: 'dispensingCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#16'];
@@ -1405,7 +1499,9 @@ export type Adrena = {
           name: 'lpTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#3'];
+          docs: [
+            '#3 Front end will target the owner account, but not limited to',
+          ];
         },
         {
           name: 'transferAuthority';
@@ -1444,7 +1540,7 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
@@ -1462,7 +1558,7 @@ export type Adrena = {
           docs: ['#12'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#13'];
@@ -1589,7 +1685,7 @@ export type Adrena = {
           docs: ['#10'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#11'];
@@ -1624,7 +1720,7 @@ export type Adrena = {
           isSigner: false;
           docs: [
             '#16',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ];
         },
         {
@@ -1694,6 +1790,7 @@ export type Adrena = {
           name: 'genesisLock';
           isMut: true;
           isSigner: false;
+          docs: ['#28'];
         },
       ];
       args: [
@@ -1718,7 +1815,9 @@ export type Adrena = {
           name: 'receivingAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#2'];
+          docs: [
+            '#2 Front end will target the owner account, but not limited to',
+          ];
         },
         {
           name: 'lpTokenAccount';
@@ -1763,7 +1862,7 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
@@ -1781,7 +1880,7 @@ export type Adrena = {
           docs: ['#12'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#13'];
@@ -1866,119 +1965,71 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'lmStaking';
+          name: 'cortex';
           isMut: true;
           isSigner: false;
           docs: ['#5'];
         },
         {
-          name: 'lpStaking';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#6'];
         },
         {
-          name: 'cortex';
+          name: 'position';
           isMut: true;
           isSigner: false;
           docs: ['#7'];
         },
         {
-          name: 'pool';
+          name: 'custody';
           isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
         {
-          name: 'position';
-          isMut: true;
+          name: 'custodyOracle';
+          isMut: false;
           isSigner: false;
           docs: ['#9'];
         },
         {
-          name: 'stakingRewardTokenCustody';
-          isMut: true;
+          name: 'custodyTradeOracle';
+          isMut: false;
           isSigner: false;
           docs: ['#10'];
-        },
-        {
-          name: 'stakingRewardTokenCustodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#11'];
-        },
-        {
-          name: 'stakingRewardTokenCustodyTokenAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
-          name: 'custody';
-          isMut: true;
-          isSigner: false;
-          docs: ['#13'];
-        },
-        {
-          name: 'custodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#14'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#15'];
-        },
-        {
-          name: 'lmStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#16'];
-        },
-        {
-          name: 'lpStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#17'];
-        },
-        {
-          name: 'lpTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#18'];
-        },
-        {
-          name: 'protocolFeeRecipient';
-          isMut: true;
-          isSigner: false;
-          docs: ['#19'];
+          docs: ['#11'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#20'];
+          docs: ['#12'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#13'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#14'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#15'];
         },
       ];
       args: [
@@ -2018,131 +2069,77 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'lmStaking';
+          name: 'cortex';
           isMut: true;
           isSigner: false;
           docs: ['#5'];
         },
         {
-          name: 'lpStaking';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#6'];
         },
         {
-          name: 'cortex';
+          name: 'position';
           isMut: true;
           isSigner: false;
           docs: ['#7'];
         },
         {
-          name: 'pool';
+          name: 'custody';
           isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
         {
-          name: 'position';
-          isMut: true;
+          name: 'custodyTradeOracle';
+          isMut: false;
           isSigner: false;
           docs: ['#9'];
-        },
-        {
-          name: 'stakingRewardTokenCustody';
-          isMut: true;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
-          name: 'stakingRewardTokenCustodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#11'];
-        },
-        {
-          name: 'stakingRewardTokenCustodyTokenAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
-          name: 'custody';
-          isMut: true;
-          isSigner: false;
-          docs: ['#13'];
-        },
-        {
-          name: 'custodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#14'];
         },
         {
           name: 'collateralCustody';
           isMut: true;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#10'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#11'];
         },
         {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#17'];
-        },
-        {
-          name: 'lmStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#18'];
-        },
-        {
-          name: 'lpStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#19'];
-        },
-        {
-          name: 'lpTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#20'];
-        },
-        {
-          name: 'protocolFeeRecipient';
-          isMut: true;
-          isSigner: false;
-          docs: ['#21'];
+          docs: ['#12'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#22'];
+          docs: ['#13'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#14'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#24'];
+          docs: ['#15'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#25'];
+          docs: ['#16'];
         },
       ];
       args: [
@@ -2188,7 +2185,7 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'receivingCustodyOracleAccount';
+          name: 'receivingCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
@@ -2206,119 +2203,125 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'principalCustodyOracleAccount';
+          name: 'principalCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#9'];
         },
         {
+          name: 'principalCustodyTradeOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#10'];
+        },
+        {
           name: 'principalCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#11'];
         },
         {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#12'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#13'];
         },
         {
           name: 'lmStaking';
           isMut: true;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#14'];
         },
         {
           name: 'lpStaking';
           isMut: true;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#15'];
         },
         {
           name: 'pool';
           isMut: true;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#16'];
         },
         {
           name: 'position';
           isMut: true;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#17'];
         },
         {
           name: 'stakingRewardTokenCustody';
           isMut: true;
           isSigner: false;
-          docs: ['#17'];
+          docs: ['#18'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
-          docs: ['#18'];
+          docs: ['#19'];
         },
         {
           name: 'stakingRewardTokenCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#19'];
+          docs: ['#20'];
         },
         {
           name: 'lmStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#21'];
         },
         {
           name: 'lpStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#22'];
         },
         {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#23'];
         },
         {
           name: 'protocolFeeRecipient';
           isMut: true;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#24'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#24'];
+          docs: ['#25'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#25'];
+          docs: ['#26'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#26'];
+          docs: ['#27'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#27'];
+          docs: ['#28'];
         },
       ];
       args: [
@@ -2364,7 +2367,7 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'receivingCustodyOracleAccount';
+          name: 'receivingCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
@@ -2382,7 +2385,7 @@ export type Adrena = {
           docs: ['#8'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#9'];
@@ -2400,7 +2403,7 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'principalCustodyOracleAccount';
+          name: 'principalCustodyTradeOracle';
           isMut: false;
           isSigner: false;
           docs: ['#12'];
@@ -2454,7 +2457,7 @@ export type Adrena = {
           docs: ['#20'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#21'];
@@ -2570,7 +2573,7 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#8'];
@@ -2649,7 +2652,7 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#8'];
@@ -2661,7 +2664,7 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
@@ -2740,7 +2743,7 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#8'];
@@ -2819,7 +2822,7 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#8'];
@@ -2831,7 +2834,7 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
@@ -2868,131 +2871,161 @@ export type Adrena = {
       name: 'closePositionLong';
       accounts: [
         {
-          name: 'owner';
+          name: 'caller';
           isMut: true;
           isSigner: true;
           docs: ['#1'];
         },
         {
-          name: 'receivingAccount';
+          name: 'owner';
           isMut: true;
           isSigner: false;
           docs: ['#2'];
         },
         {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#3'];
+          docs: ['#4'];
         },
         {
           name: 'lmStaking';
           isMut: true;
           isSigner: false;
-          docs: ['#4'];
+          docs: ['#5'];
         },
         {
           name: 'lpStaking';
           isMut: true;
           isSigner: false;
-          docs: ['#5'];
+          docs: ['#6'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#6'];
+          docs: ['#7'];
         },
         {
           name: 'pool';
           isMut: true;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#8'];
         },
         {
           name: 'position';
           isMut: true;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#9'];
         },
         {
           name: 'stakingRewardTokenCustody';
           isMut: true;
           isSigner: false;
-          docs: ['#9'];
+          docs: ['#10'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#11'];
         },
         {
           name: 'stakingRewardTokenCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#12'];
         },
         {
           name: 'custody';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#13'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#14'];
+        },
+        {
+          name: 'custodyTradeOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#15'];
         },
         {
           name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#16'];
         },
         {
           name: 'lmStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#17'];
         },
         {
           name: 'lpStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#18'];
         },
         {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
-          docs: ['#17'];
+          docs: ['#19'];
         },
         {
           name: 'protocolFeeRecipient';
           isMut: true;
           isSigner: false;
-          docs: ['#18'];
+          docs: ['#20'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#19'];
+          docs: ['#21'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+          docs: ['#22'];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+          docs: ['#23'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#24'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#25'];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#26'];
         },
       ];
       args: [
@@ -3008,143 +3041,165 @@ export type Adrena = {
       name: 'closePositionShort';
       accounts: [
         {
-          name: 'owner';
+          name: 'caller';
           isMut: true;
           isSigner: true;
           docs: ['#1'];
         },
         {
-          name: 'receivingAccount';
+          name: 'owner';
           isMut: true;
           isSigner: false;
           docs: ['#2'];
         },
         {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
           name: 'transferAuthority';
           isMut: false;
           isSigner: false;
-          docs: ['#3'];
+          docs: ['#4'];
         },
         {
           name: 'lmStaking';
           isMut: true;
           isSigner: false;
-          docs: ['#4'];
+          docs: ['#5'];
         },
         {
           name: 'lpStaking';
           isMut: true;
           isSigner: false;
-          docs: ['#5'];
+          docs: ['#6'];
         },
         {
           name: 'cortex';
           isMut: true;
           isSigner: false;
-          docs: ['#6'];
+          docs: ['#7'];
         },
         {
           name: 'pool';
           isMut: true;
           isSigner: false;
-          docs: ['#7'];
+          docs: ['#8'];
         },
         {
           name: 'position';
           isMut: true;
           isSigner: false;
-          docs: ['#8'];
+          docs: ['#9'];
         },
         {
           name: 'stakingRewardTokenCustody';
           isMut: true;
           isSigner: false;
-          docs: ['#9'];
+          docs: ['#10'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
-          docs: ['#10'];
+          docs: ['#11'];
         },
         {
           name: 'stakingRewardTokenCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#11'];
+          docs: ['#12'];
         },
         {
           name: 'custody';
           isMut: true;
           isSigner: false;
-          docs: ['#12'];
+          docs: ['#13'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyTradeOracle';
           isMut: false;
           isSigner: false;
-          docs: ['#13'];
+          docs: ['#14'];
         },
         {
           name: 'collateralCustody';
           isMut: true;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#15'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#16'];
         },
         {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#17'];
         },
         {
           name: 'lmStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
-          docs: ['#17'];
+          docs: ['#18'];
         },
         {
           name: 'lpStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
-          docs: ['#18'];
+          docs: ['#19'];
         },
         {
           name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
-          docs: ['#19'];
+          docs: ['#20'];
         },
         {
           name: 'protocolFeeRecipient';
           isMut: true;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#21'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#21'];
+          docs: ['#22'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#25'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#26'];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#27'];
         },
       ];
       args: [
@@ -3214,7 +3269,7 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
@@ -3232,59 +3287,83 @@ export type Adrena = {
           docs: ['#12'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#13'];
         },
         {
-          name: 'custodyTokenAccount';
-          isMut: true;
+          name: 'custodyTradeOracle';
+          isMut: false;
           isSigner: false;
           docs: ['#14'];
         },
         {
-          name: 'lmStakingRewardTokenVault';
+          name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
           docs: ['#15'];
         },
         {
-          name: 'lpStakingRewardTokenVault';
+          name: 'lmStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
           docs: ['#16'];
         },
         {
-          name: 'lpTokenMint';
+          name: 'lpStakingRewardTokenVault';
           isMut: true;
           isSigner: false;
           docs: ['#17'];
         },
         {
-          name: 'protocolFeeRecipient';
+          name: 'lpTokenMint';
           isMut: true;
           isSigner: false;
           docs: ['#18'];
+        },
+        {
+          name: 'protocolFeeRecipient';
+          isMut: true;
+          isSigner: false;
+          docs: ['#19'];
         },
         {
           name: 'userProfile';
           isMut: true;
           isSigner: false;
           isOptional: true;
-          docs: ['#19'];
+          docs: ['#20'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+          docs: ['#21'];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+          docs: ['#22'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#23'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#24'];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#25'];
         },
       ];
       args: [
@@ -3354,7 +3433,7 @@ export type Adrena = {
           docs: ['#9'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'stakingRewardTokenCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#10'];
@@ -3372,7 +3451,7 @@ export type Adrena = {
           docs: ['#12'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyTradeOracle';
           isMut: false;
           isSigner: false;
           docs: ['#13'];
@@ -3384,7 +3463,7 @@ export type Adrena = {
           docs: ['#14'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#15'];
@@ -3427,16 +3506,34 @@ export type Adrena = {
           docs: ['#21'];
         },
         {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+          docs: ['#22'];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+          docs: ['#23'];
+        },
+        {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#24'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#25'];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#26'];
         },
       ];
       args: [
@@ -3495,7 +3592,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3541,7 +3638,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3587,7 +3684,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyTradeOracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3599,7 +3696,7 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
@@ -3639,7 +3736,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'receivingCustodyOracleAccount';
+          name: 'receivingCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3651,7 +3748,7 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
@@ -3663,7 +3760,7 @@ export type Adrena = {
           docs: ['#7'];
         },
         {
-          name: 'principalCustodyOracleAccount';
+          name: 'principalCustodyTradeOracle';
           isMut: false;
           isSigner: false;
           docs: ['#8'];
@@ -3715,7 +3812,7 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#5'];
@@ -3727,7 +3824,7 @@ export type Adrena = {
           docs: ['#6'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#7'];
@@ -3766,7 +3863,7 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyTradeOracle';
           isMut: false;
           isSigner: false;
           docs: ['#5'];
@@ -3778,7 +3875,7 @@ export type Adrena = {
           docs: ['#6'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#7'];
@@ -3817,22 +3914,16 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'collateralCustody';
           isMut: false;
           isSigner: false;
           docs: ['#5'];
         },
         {
-          name: 'collateralCustody';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
-        },
-        {
-          name: 'collateralCustodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
         },
       ];
       args: [
@@ -3873,7 +3964,7 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#5'];
@@ -3885,7 +3976,7 @@ export type Adrena = {
           docs: ['#6'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#7'];
@@ -3916,7 +4007,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'custodyOracleAccount';
+          name: 'custodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3947,7 +4038,7 @@ export type Adrena = {
           docs: ['#3'];
         },
         {
-          name: 'receivingCustodyOracleAccount';
+          name: 'receivingCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#4'];
@@ -3959,7 +4050,7 @@ export type Adrena = {
           docs: ['#5'];
         },
         {
-          name: 'dispensingCustodyOracleAccount';
+          name: 'dispensingCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#6'];
@@ -4066,40 +4157,52 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'lmTokenMint';
-          isMut: false;
+          name: 'pool';
+          isMut: true;
           isSigner: false;
           docs: ['#12'];
         },
         {
-          name: 'feeRedistributionMint';
-          isMut: false;
+          name: 'genesisLock';
+          isMut: true;
           isSigner: false;
           docs: ['#13'];
         },
         {
-          name: 'adrenaProgram';
+          name: 'lmTokenMint';
           isMut: false;
           isSigner: false;
           docs: ['#14'];
         },
         {
-          name: 'sablierProgram';
+          name: 'feeRedistributionMint';
           isMut: false;
           isSigner: false;
           docs: ['#15'];
         },
         {
-          name: 'systemProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
           docs: ['#16'];
         },
         {
-          name: 'tokenProgram';
+          name: 'sablierProgram';
           isMut: false;
           isSigner: false;
           docs: ['#17'];
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#18'];
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#19'];
         },
       ];
       args: [
@@ -4144,12 +4247,6 @@ export type Adrena = {
           isSigner: false;
           docs: ['#5'];
         },
-        {
-          name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#6'];
-        },
       ];
       args: [
         {
@@ -4186,12 +4283,6 @@ export type Adrena = {
           isMut: false;
           isSigner: false;
           docs: ['#4'];
-        },
-        {
-          name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#5'];
         },
       ];
       args: [
@@ -4241,12 +4332,6 @@ export type Adrena = {
           isMut: false;
           isSigner: false;
           docs: ['#6'];
-        },
-        {
-          name: 'tokenProgram';
-          isMut: false;
-          isSigner: false;
-          docs: ['#7'];
         },
       ];
       args: [];
@@ -4669,44 +4754,56 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'lmTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
-          name: 'governanceTokenMint';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#13'];
         },
         {
+          name: 'genesisLock';
+          isMut: true;
+          isSigner: false;
+          docs: ['#14'];
+        },
+        {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#16'];
+        },
+        {
           name: 'feeRedistributionMint';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#17'];
         },
         {
           name: 'governanceRealm';
           isMut: false;
           isSigner: false;
           docs: [
-            '#15',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#18',
+            'A realm represent one project within the governance program',
           ];
         },
         {
           name: 'governanceRealmConfig';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#19'];
         },
         {
           name: 'governanceGoverningTokenHolding';
           isMut: true;
           isSigner: false;
           docs: [
-            '#17',
+            '#20',
             "Token account owned by governance program holding user's locked tokens",
           ];
         },
@@ -4714,43 +4811,43 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: ['#18', 'Account owned by governance storing user information'];
+          docs: ['#21', 'Account owned by governance storing user information'];
         },
         {
           name: 'stakesClaimCronThread';
           isMut: true;
           isSigner: false;
-          docs: ['#19'];
+          docs: ['#22'];
         },
         {
           name: 'sablierProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#23'];
         },
         {
           name: 'governanceProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#24'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#25'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#26'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#24'];
+          docs: ['#27'];
         },
       ];
       args: [
@@ -4843,7 +4940,7 @@ export type Adrena = {
           isSigner: false;
           docs: [
             '#13',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ];
         },
         {
@@ -4989,44 +5086,56 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'lmTokenMint';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#12'];
         },
         {
-          name: 'governanceTokenMint';
+          name: 'genesisLock';
           isMut: true;
           isSigner: false;
           docs: ['#13'];
         },
         {
+          name: 'lmTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#14'];
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
           name: 'feeRedistributionMint';
           isMut: false;
           isSigner: false;
-          docs: ['#14'];
+          docs: ['#16'];
         },
         {
           name: 'governanceRealm';
           isMut: false;
           isSigner: false;
           docs: [
-            '#15',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#17',
+            'A realm represent one project within the governance program',
           ];
         },
         {
           name: 'governanceRealmConfig';
           isMut: false;
           isSigner: false;
-          docs: ['#16'];
+          docs: ['#18'];
         },
         {
           name: 'governanceGoverningTokenHolding';
           isMut: true;
           isSigner: false;
           docs: [
-            '#17',
+            '#19',
             "Token account owned by governance program holding user's locked tokens",
           ];
         },
@@ -5034,31 +5143,31 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: ['#18', 'Account owned by governance storing user information'];
+          docs: ['#20', 'Account owned by governance storing user information'];
         },
         {
           name: 'stakesClaimCronThread';
           isMut: true;
           isSigner: false;
-          docs: ['#19'];
+          docs: ['#21'];
         },
         {
           name: 'sablierProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#22'];
         },
         {
           name: 'governanceProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#23'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#24'];
         },
         {
           name: 'systemProgram';
@@ -5152,50 +5261,62 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'lmTokenMint';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#12'];
         },
         {
-          name: 'stakedTokenMint';
+          name: 'genesisLock';
           isMut: true;
           isSigner: false;
           docs: ['#13'];
         },
         {
-          name: 'governanceTokenMint';
+          name: 'lmTokenMint';
           isMut: true;
           isSigner: false;
           docs: ['#14'];
         },
         {
+          name: 'stakedTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
+          name: 'governanceTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#16'];
+        },
+        {
           name: 'feeRedistributionMint';
           isMut: false;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#17'];
         },
         {
           name: 'governanceRealm';
           isMut: false;
           isSigner: false;
           docs: [
-            '#16',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#18',
+            'A realm represent one project within the governance program',
           ];
         },
         {
           name: 'governanceRealmConfig';
           isMut: false;
           isSigner: false;
-          docs: ['#17'];
+          docs: ['#19'];
         },
         {
           name: 'governanceGoverningTokenHolding';
           isMut: true;
           isSigner: false;
           docs: [
-            '#18',
+            '#20',
             "Token account owned by governance program holding user's locked tokens",
           ];
         },
@@ -5203,43 +5324,43 @@ export type Adrena = {
           name: 'governanceGoverningTokenOwnerRecord';
           isMut: true;
           isSigner: false;
-          docs: ['#19', 'Account owned by governance storing user information'];
+          docs: ['#21', 'Account owned by governance storing user information'];
         },
         {
           name: 'stakesClaimCronThread';
           isMut: true;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#22'];
         },
         {
           name: 'sablierProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#23'];
         },
         {
           name: 'governanceProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#24'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#25'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#24'];
+          docs: ['#26'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#25'];
+          docs: ['#27'];
         },
       ];
       args: [
@@ -5321,34 +5442,46 @@ export type Adrena = {
           docs: ['#11'];
         },
         {
-          name: 'lmTokenMint';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#12'];
         },
         {
-          name: 'feeRedistributionMint';
-          isMut: false;
+          name: 'genesisLock';
+          isMut: true;
           isSigner: false;
           docs: ['#13'];
         },
         {
-          name: 'adrenaProgram';
-          isMut: false;
+          name: 'lmTokenMint';
+          isMut: true;
           isSigner: false;
           docs: ['#14'];
         },
         {
-          name: 'systemProgram';
+          name: 'feeRedistributionMint';
           isMut: false;
           isSigner: false;
           docs: ['#15'];
         },
         {
-          name: 'tokenProgram';
+          name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
           docs: ['#16'];
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#17'];
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#18'];
         },
       ];
       args: [];
@@ -5489,7 +5622,7 @@ export type Adrena = {
           isSigner: false;
           docs: [
             '#9',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ];
         },
         {
@@ -5746,112 +5879,64 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'lmStaking';
+          name: 'cortex';
           isMut: true;
           isSigner: false;
           docs: ['#5'];
         },
         {
-          name: 'lpStaking';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#6'];
         },
         {
-          name: 'cortex';
+          name: 'position';
           isMut: true;
           isSigner: false;
           docs: ['#7'];
         },
         {
-          name: 'pool';
+          name: 'custody';
           isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
         {
-          name: 'position';
+          name: 'custodyTokenAccount';
           isMut: true;
           isSigner: false;
           docs: ['#9'];
         },
         {
-          name: 'stakingRewardTokenCustody';
-          isMut: true;
+          name: 'custodyOracle';
+          isMut: false;
           isSigner: false;
           docs: ['#10'];
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount';
+          name: 'custodyTradeOracle';
           isMut: false;
           isSigner: false;
           docs: ['#11'];
         },
         {
-          name: 'stakingRewardTokenCustodyTokenAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
-          name: 'custody';
-          isMut: true;
-          isSigner: false;
-          docs: ['#13'];
-        },
-        {
-          name: 'custodyTokenAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#14'];
-        },
-        {
-          name: 'custodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#15'];
-        },
-        {
-          name: 'lmStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#16'];
-        },
-        {
-          name: 'lpStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#17'];
-        },
-        {
-          name: 'lpTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#18'];
-        },
-        {
-          name: 'protocolFeeRecipient';
-          isMut: true;
-          isSigner: false;
-          docs: ['#19'];
-        },
-        {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#20'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#21'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -5891,73 +5976,43 @@ export type Adrena = {
           docs: ['#4'];
         },
         {
-          name: 'lmStaking';
+          name: 'cortex';
           isMut: true;
           isSigner: false;
           docs: ['#5'];
         },
         {
-          name: 'lpStaking';
+          name: 'pool';
           isMut: true;
           isSigner: false;
           docs: ['#6'];
         },
         {
-          name: 'cortex';
+          name: 'position';
           isMut: true;
           isSigner: false;
           docs: ['#7'];
         },
         {
-          name: 'pool';
+          name: 'custody';
           isMut: true;
           isSigner: false;
           docs: ['#8'];
         },
         {
-          name: 'position';
-          isMut: true;
+          name: 'custodyTradeOracle';
+          isMut: false;
           isSigner: false;
           docs: ['#9'];
-        },
-        {
-          name: 'stakingRewardTokenCustody';
-          isMut: true;
-          isSigner: false;
-          docs: ['#10'];
-        },
-        {
-          name: 'stakingRewardTokenCustodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#11'];
-        },
-        {
-          name: 'stakingRewardTokenCustodyTokenAccount';
-          isMut: true;
-          isSigner: false;
-          docs: ['#12'];
-        },
-        {
-          name: 'custody';
-          isMut: true;
-          isSigner: false;
-          docs: ['#13'];
-        },
-        {
-          name: 'custodyOracleAccount';
-          isMut: false;
-          isSigner: false;
-          docs: ['#14'];
         },
         {
           name: 'collateralCustody';
           isMut: true;
           isSigner: false;
-          docs: ['#15'];
+          docs: ['#10'];
         },
         {
-          name: 'collateralCustodyOracleAccount';
+          name: 'collateralCustodyOracle';
           isMut: false;
           isSigner: false;
           docs: ['#16'];
@@ -5966,49 +6021,25 @@ export type Adrena = {
           name: 'collateralCustodyTokenAccount';
           isMut: true;
           isSigner: false;
-          docs: ['#17'];
-        },
-        {
-          name: 'lmStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#18'];
-        },
-        {
-          name: 'lpStakingRewardTokenVault';
-          isMut: true;
-          isSigner: false;
-          docs: ['#19'];
-        },
-        {
-          name: 'lpTokenMint';
-          isMut: true;
-          isSigner: false;
-          docs: ['#20'];
-        },
-        {
-          name: 'protocolFeeRecipient';
-          isMut: true;
-          isSigner: false;
-          docs: ['#21'];
+          docs: ['#11'];
         },
         {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#22'];
+          docs: ['#12'];
         },
         {
           name: 'tokenProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#23'];
+          docs: ['#13'];
         },
         {
           name: 'adrenaProgram';
           isMut: false;
           isSigner: false;
-          docs: ['#24'];
+          docs: ['#14'];
         },
       ];
       args: [
@@ -6113,6 +6144,828 @@ export type Adrena = {
         },
       ];
     },
+    {
+      name: 'setTakeProfitLong';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+          docs: ['#7'];
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+          docs: ['#8'];
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#9'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#10'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#11'];
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#12'];
+        },
+        {
+          name: 'custodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#13'];
+        },
+        {
+          name: 'custodyTradeOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#14'];
+        },
+        {
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#16'];
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#17'];
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#18'];
+        },
+        {
+          name: 'protocolFeeRecipient';
+          isMut: true;
+          isSigner: false;
+          docs: ['#19'];
+        },
+        {
+          name: 'userProfile';
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
+          docs: ['#20'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            '#21',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            '#22',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#23'];
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#24'];
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#25'];
+        },
+        {
+          name: 'adrenaProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#26'];
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'SetTakeProfitLongParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'setStopLossLong';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+          docs: ['#7'];
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+          docs: ['#8'];
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#9'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#10'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#11'];
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#12'];
+        },
+        {
+          name: 'custodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#13'];
+        },
+        {
+          name: 'custodyTradeOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#14'];
+        },
+        {
+          name: 'custodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#16'];
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#17'];
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#18'];
+        },
+        {
+          name: 'protocolFeeRecipient';
+          isMut: true;
+          isSigner: false;
+          docs: ['#19'];
+        },
+        {
+          name: 'userProfile';
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
+          docs: ['#20'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            '#21',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            '#22',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#23'];
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#24'];
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#25'];
+        },
+        {
+          name: 'adrenaProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#26'];
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'SetStopLossLongParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'setTakeProfitShort';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+          docs: ['#7'];
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+          docs: ['#8'];
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#9'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#10'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#11'];
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#12'];
+        },
+        {
+          name: 'custodyTradeOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#13'];
+        },
+        {
+          name: 'collateralCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#14'];
+        },
+        {
+          name: 'collateralCustodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#16'];
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#17'];
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#18'];
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#19'];
+        },
+        {
+          name: 'protocolFeeRecipient';
+          isMut: true;
+          isSigner: false;
+          docs: ['#20'];
+        },
+        {
+          name: 'userProfile';
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
+          docs: ['#21'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#26'];
+        },
+        {
+          name: 'adrenaProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#27'];
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'SetTakeProfitShortParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'setStopLossShort';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'receivingAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'lmStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'lpStaking';
+          isMut: true;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'cortex';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'pool';
+          isMut: true;
+          isSigner: false;
+          docs: ['#7'];
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+          docs: ['#8'];
+        },
+        {
+          name: 'stakingRewardTokenCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#9'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#10'];
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#11'];
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#12'];
+        },
+        {
+          name: 'custodyTradeOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#13'];
+        },
+        {
+          name: 'collateralCustody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#14'];
+        },
+        {
+          name: 'collateralCustodyOracle';
+          isMut: false;
+          isSigner: false;
+          docs: ['#15'];
+        },
+        {
+          name: 'collateralCustodyTokenAccount';
+          isMut: true;
+          isSigner: false;
+          docs: ['#16'];
+        },
+        {
+          name: 'lmStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#17'];
+        },
+        {
+          name: 'lpStakingRewardTokenVault';
+          isMut: true;
+          isSigner: false;
+          docs: ['#18'];
+        },
+        {
+          name: 'lpTokenMint';
+          isMut: true;
+          isSigner: false;
+          docs: ['#19'];
+        },
+        {
+          name: 'protocolFeeRecipient';
+          isMut: true;
+          isSigner: false;
+          docs: ['#20'];
+        },
+        {
+          name: 'userProfile';
+          isMut: true;
+          isSigner: false;
+          isOptional: true;
+          docs: ['#21'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ];
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#26'];
+        },
+        {
+          name: 'adrenaProgram';
+          isMut: false;
+          isSigner: false;
+          docs: ['#27'];
+        },
+      ];
+      args: [
+        {
+          name: 'params';
+          type: {
+            defined: 'SetStopLossShortParams';
+          };
+        },
+      ];
+    },
+    {
+      name: 'cancelTakeProfit';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'cortex';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'takeProfitThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+    },
+    {
+      name: 'cancelStopLoss';
+      accounts: [
+        {
+          name: 'owner';
+          isMut: true;
+          isSigner: true;
+          docs: ['#1'];
+        },
+        {
+          name: 'transferAuthority';
+          isMut: false;
+          isSigner: false;
+          docs: ['#2'];
+        },
+        {
+          name: 'cortex';
+          isMut: false;
+          isSigner: false;
+          docs: ['#3'];
+        },
+        {
+          name: 'pool';
+          isMut: false;
+          isSigner: false;
+          docs: ['#4'];
+        },
+        {
+          name: 'position';
+          isMut: true;
+          isSigner: false;
+          docs: ['#5'];
+        },
+        {
+          name: 'custody';
+          isMut: true;
+          isSigner: false;
+          docs: ['#6'];
+        },
+        {
+          name: 'stopLossThread';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'sablierProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+    },
   ];
   accounts: [
     {
@@ -6149,6 +7002,10 @@ export type Adrena = {
             type: {
               array: ['u8', 2];
             };
+          },
+          {
+            name: 'lmTokenMint';
+            type: 'publicKey';
           },
           {
             name: 'inceptionTime';
@@ -6236,6 +7093,10 @@ export type Adrena = {
             name: 'genesisLiquidityAlpAmount';
             type: 'u64';
           },
+          {
+            name: 'uniquePositionAutomationThreadIdCounter';
+            type: 'u64';
+          },
         ];
       };
     },
@@ -6288,9 +7149,11 @@ export type Adrena = {
           },
           {
             name: 'oracle';
-            type: {
-              defined: 'OracleParams';
-            };
+            type: 'publicKey';
+          },
+          {
+            name: 'tradeOracle';
+            type: 'publicKey';
           },
           {
             name: 'pricing';
@@ -6405,42 +7268,18 @@ export type Adrena = {
           {
             name: 'reservedGrantOwners';
             type: {
-              array: ['publicKey', 17];
+              array: ['publicKey', 30];
             };
           },
           {
             name: 'reservedGrantAmounts';
             type: {
-              array: ['u64', 17];
+              array: ['u64', 30];
             };
           },
           {
             name: 'finalizeGenesisLockCampaignThreadId';
             type: 'u64';
-          },
-        ];
-      };
-    },
-    {
-      name: 'customOracle';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'price';
-            type: 'u64';
-          },
-          {
-            name: 'expo';
-            type: 'i32';
-          },
-          {
-            name: 'conf';
-            type: 'u64';
-          },
-          {
-            name: 'publishTime';
-            type: 'i64';
           },
         ];
       };
@@ -6536,9 +7375,17 @@ export type Adrena = {
             type: 'u8';
           },
           {
+            name: 'takeProfitThreadIsSet';
+            type: 'u8';
+          },
+          {
+            name: 'stopLossThreadIsSet';
+            type: 'u8';
+          },
+          {
             name: 'padding';
             type: {
-              array: ['u8', 6];
+              array: ['u8', 4];
             };
           },
           {
@@ -6600,15 +7447,31 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'entryFeeUsd';
-            type: 'u64';
-          },
-          {
             name: 'exitFeeUsd';
             type: 'u64';
           },
           {
             name: 'liquidationFeeUsd';
+            type: 'u64';
+          },
+          {
+            name: 'takeProfitThreadId';
+            type: 'u64';
+          },
+          {
+            name: 'takeProfitLimitPrice';
+            type: 'u64';
+          },
+          {
+            name: 'stopLossThreadId';
+            type: 'u64';
+          },
+          {
+            name: 'stopLossLimitPrice';
+            type: 'u64';
+          },
+          {
+            name: 'stopLossClosePositionPrice';
             type: 'u64';
           },
         ];
@@ -6874,10 +7737,18 @@ export type Adrena = {
             type: 'u8';
           },
           {
+            name: 'cancelled';
+            type: 'u8';
+          },
+          {
             name: 'padding';
             type: {
-              array: ['u8', 6];
+              array: ['u8', 1];
             };
+          },
+          {
+            name: 'voteMultiplier';
+            type: 'u32';
           },
           {
             name: 'amount';
@@ -6948,12 +7819,6 @@ export type Adrena = {
           {
             name: 'isStable';
             type: 'bool';
-          },
-          {
-            name: 'oracle';
-            type: {
-              defined: 'OracleParams';
-            };
           },
           {
             name: 'pricing';
@@ -7049,9 +7914,11 @@ export type Adrena = {
           },
           {
             name: 'oracle';
-            type: {
-              defined: 'OracleParams';
-            };
+            type: 'publicKey';
+          },
+          {
+            name: 'tradeOracle';
+            type: 'publicKey';
           },
           {
             name: 'pricing';
@@ -7170,6 +8037,12 @@ export type Adrena = {
             name: 'finalizeGenesisLockCampaignThreadId';
             type: 'u64';
           },
+          {
+            name: 'reservedSpots';
+            type: {
+              defined: 'ReservedSpots';
+            };
+          },
         ];
       };
     },
@@ -7217,30 +8090,6 @@ export type Adrena = {
           {
             name: 'liquidityState';
             type: 'u8';
-          },
-        ];
-      };
-    },
-    {
-      name: 'SetTestOraclePriceParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'price';
-            type: 'u64';
-          },
-          {
-            name: 'expo';
-            type: 'i32';
-          },
-          {
-            name: 'conf';
-            type: 'u64';
-          },
-          {
-            name: 'publishTime';
-            type: 'i64';
           },
         ];
       };
@@ -7386,13 +8235,75 @@ export type Adrena = {
       };
     },
     {
+      name: 'SetStopLossLongParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'stopLossLimitPrice';
+            type: 'u64';
+          },
+          {
+            name: 'closePositionPrice';
+            type: {
+              option: 'u64';
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'SetStopLossShortParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'stopLossLimitPrice';
+            type: 'u64';
+          },
+          {
+            name: 'closePositionPrice';
+            type: {
+              option: 'u64';
+            };
+          },
+        ];
+      };
+    },
+    {
+      name: 'SetTakeProfitLongParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'takeProfitLimitPrice';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'SetTakeProfitShortParams';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'takeProfitLimitPrice';
+            type: 'u64';
+          },
+        ];
+      };
+    },
+    {
       name: 'ClosePositionLongParams';
       type: {
         kind: 'struct';
         fields: [
           {
             name: 'price';
-            type: 'u64';
+            type: {
+              option: 'u64';
+            };
           },
         ];
       };
@@ -7404,7 +8315,9 @@ export type Adrena = {
         fields: [
           {
             name: 'price';
-            type: 'u64';
+            type: {
+              option: 'u64';
+            };
           },
         ];
       };
@@ -7676,6 +8589,10 @@ export type Adrena = {
             name: 'unlockEndTimestamp';
             type: 'i64';
           },
+          {
+            name: 'voteMultiplier';
+            type: 'u32';
+          },
         ];
       };
     },
@@ -7829,10 +8746,6 @@ export type Adrena = {
             type: 'u64';
           },
           {
-            name: 'entryFee';
-            type: 'u64';
-          },
-          {
             name: 'exitFee';
             type: 'u64';
           },
@@ -7866,10 +8779,6 @@ export type Adrena = {
           },
           {
             name: 'swapFeeOut';
-            type: 'u64';
-          },
-          {
-            name: 'openPositionFee';
             type: 'u64';
           },
           {
@@ -7911,10 +8820,6 @@ export type Adrena = {
       name: 'ProfitAndLoss';
       docs: [
         'Specific to the codebase, this struct is used to store the profit and loss of a position.',
-        'Specific because entry fees are paid right away at position opening and on top of the requested size/leverage (to match it exactly).',
-        'As such, the profit and loss are calculated with the entry fees already paid (and out of these two numbers).',
-        'To get the "real overall" profit and loss, one must add the entry fees back to the profit and loss.',
-        'And to get the "pure" profit and loss, one must subtract the exit and paid_interests (borrow interests) from the profit and loss.',
       ];
       type: {
         kind: 'struct';
@@ -7925,10 +8830,6 @@ export type Adrena = {
           },
           {
             name: 'lossUsd';
-            type: 'u64';
-          },
-          {
-            name: 'entryFeeUsd';
             type: 'u64';
           },
           {
@@ -7976,10 +8877,6 @@ export type Adrena = {
             type: 'u16';
           },
           {
-            name: 'openPosition';
-            type: 'u16';
-          },
-          {
             name: 'closePosition';
             type: 'u16';
           },
@@ -7998,7 +8895,7 @@ export type Adrena = {
           {
             name: 'padding';
             type: {
-              array: ['u8', 2];
+              array: ['u8', 4];
             };
           },
           {
@@ -8023,10 +8920,6 @@ export type Adrena = {
           },
           {
             name: 'removeLiquidityUsd';
-            type: 'u64';
-          },
-          {
-            name: 'openPositionUsd';
             type: 'u64';
           },
           {
@@ -8281,30 +9174,8 @@ export type Adrena = {
             type: 'i32';
           },
           {
-            name: 'conf';
+            name: 'confidence';
             type: 'u64';
-          },
-        ];
-      };
-    },
-    {
-      name: 'OracleParams';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'oracleAccount';
-            type: 'publicKey';
-          },
-          {
-            name: 'oracleType';
-            type: 'u8';
-          },
-          {
-            name: 'padding';
-            type: {
-              array: ['u8', 15];
-            };
           },
         ];
       };
@@ -8342,6 +9213,10 @@ export type Adrena = {
         fields: [
           {
             name: 'startTime';
+            type: 'i64';
+          },
+          {
+            name: 'endTime';
             type: 'i64';
           },
           {
@@ -8450,6 +9325,10 @@ export type Adrena = {
           },
           {
             name: 'claimTime';
+            type: 'i64';
+          },
+          {
+            name: 'endTime';
             type: 'i64';
           },
           {
@@ -8582,6 +9461,30 @@ export type Adrena = {
       };
     },
     {
+      name: 'ReservedSpots';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'None';
+          },
+          {
+            name: 'Test';
+            fields: [
+              {
+                name: 'firstReservedSpot';
+                type: 'publicKey';
+              },
+              {
+                name: 'secondReservedSpot';
+                type: 'publicKey';
+              },
+            ];
+          },
+        ];
+      };
+    },
+    {
       name: 'CortexInitializationStep';
       type: {
         kind: 'enum';
@@ -8600,23 +9503,6 @@ export type Adrena = {
           },
           {
             name: 'Initialized';
-          },
-        ];
-      };
-    },
-    {
-      name: 'OracleType';
-      type: {
-        kind: 'enum';
-        variants: [
-          {
-            name: 'None';
-          },
-          {
-            name: 'Custom';
-          },
-          {
-            name: 'Pyth';
           },
         ];
       };
@@ -8737,11 +9623,6 @@ export type Adrena = {
           type: 'u32';
           index: false;
         },
-        {
-          name: 'feeUsd';
-          type: 'u64';
-          index: false;
-        },
       ];
     },
     {
@@ -8785,11 +9666,6 @@ export type Adrena = {
         {
           name: 'leverage';
           type: 'u32';
-          index: false;
-        },
-        {
-          name: 'feeUsd';
-          type: 'u64';
           index: false;
         },
       ];
@@ -9301,6 +10177,31 @@ export type Adrena = {
       name: 'InvalidBucketName';
       msg: 'Invalid bucket name';
     },
+    {
+      code: 6062;
+      name: 'InvalidThreadId';
+      msg: 'The provided Sablier thread does not have the expected ID';
+    },
+    {
+      code: 6063;
+      name: 'PythPriceExponentTooLargeIncurringPrecisionLoss';
+      msg: 'The exponent used for pyth price lead to high precision loss';
+    },
+    {
+      code: 6064;
+      name: 'MissingClosePositionPrice';
+      msg: 'The close position price is mandatory';
+    },
+    {
+      code: 6065;
+      name: 'InvalidVoteMultiplier';
+      msg: 'Invalid vote multiplier';
+    },
+    {
+      code: 6066;
+      name: 'PositionTooYoung';
+      msg: 'A position cannot be close right after open, a slight delay is enforced';
+    },
   ];
 };
 
@@ -9486,7 +10387,7 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: [
             '#6',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ],
         },
         {
@@ -9633,7 +10534,7 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: [
             '#10',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ],
         },
         {
@@ -9696,74 +10597,86 @@ export const IDL: Adrena = {
       name: 'claimVest',
       accounts: [
         {
-          name: 'owner',
-          isMut: true,
+          name: 'caller',
+          isMut: false,
           isSigner: true,
           docs: ['#1'],
+        },
+        {
+          name: 'owner',
+          isMut: false,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: false,
+          docs: ['#3'],
         },
         {
           name: 'receivingAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#2'],
+          docs: ['#4'],
         },
         {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#3'],
+          docs: ['#5'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#4'],
+          docs: ['#6'],
         },
         {
           name: 'vestRegistry',
           isMut: true,
           isSigner: false,
-          docs: ['#5'],
+          docs: ['#7'],
         },
         {
           name: 'vest',
           isMut: true,
           isSigner: false,
-          docs: ['#6'],
+          docs: ['#8'],
         },
         {
           name: 'lmTokenMint',
           isMut: true,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#9'],
         },
         {
           name: 'governanceTokenMint',
           isMut: true,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#10'],
         },
         {
           name: 'governanceRealm',
           isMut: false,
           isSigner: false,
           docs: [
-            '#9',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#11',
+            'A realm represent one project within the governance program',
           ],
         },
         {
           name: 'governanceRealmConfig',
           isMut: false,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#12'],
         },
         {
           name: 'governanceGoverningTokenHolding',
           isMut: true,
           isSigner: false,
           docs: [
-            '#11',
+            '#13',
             "Token account owned by governance program holding user's locked tokens",
           ],
         },
@@ -9771,41 +10684,167 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: ['#12', 'Account owned by governance storing user information'],
+          docs: ['#14', 'Account owned by governance storing user information'],
         },
         {
           name: 'governanceProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#15'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#16'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#17'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#18'],
         },
         {
           name: 'rent',
           isMut: false,
           isSigner: false,
-          docs: ['#17'],
+          docs: ['#19'],
         },
       ],
       args: [],
       returns: 'u64',
+    },
+    {
+      name: 'cancelVest',
+      accounts: [
+        {
+          name: 'admin',
+          isMut: false,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'payer',
+          isMut: true,
+          isSigner: true,
+          docs: ['#3'],
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'vestRegistry',
+          isMut: true,
+          isSigner: false,
+          docs: ['#7'],
+        },
+        {
+          name: 'vest',
+          isMut: true,
+          isSigner: false,
+          docs: ['#8'],
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#9'],
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#10'],
+        },
+        {
+          name: 'governanceRealm',
+          isMut: false,
+          isSigner: false,
+          docs: [
+            '#11',
+            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+          ],
+        },
+        {
+          name: 'governanceRealmConfig',
+          isMut: false,
+          isSigner: false,
+          docs: ['#12'],
+        },
+        {
+          name: 'governanceGoverningTokenHolding',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            '#13',
+            "Token account owned by governance program holding user's locked tokens",
+          ],
+        },
+        {
+          name: 'governanceGoverningTokenOwnerRecord',
+          isMut: true,
+          isSigner: false,
+          docs: ['#14', 'Account owned by governance storing user information'],
+        },
+        {
+          name: 'governanceProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
+          name: 'adrenaProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#16'],
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#17'],
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#18'],
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+          docs: ['#19'],
+        },
+      ],
+      args: [],
     },
     {
       name: 'addPoolPartOne',
@@ -10074,28 +11113,40 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyTokenMint',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#8'],
         },
         {
-          name: 'systemProgram',
+          name: 'custodyTradeOracle',
           isMut: false,
           isSigner: false,
           docs: ['#9'],
         },
         {
-          name: 'tokenProgram',
+          name: 'custodyTokenMint',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
         },
         {
-          name: 'rent',
+          name: 'systemProgram',
           isMut: false,
           isSigner: false,
           docs: ['#11'],
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#12'],
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+          docs: ['#13'],
         },
       ],
       args: [
@@ -10382,62 +11433,6 @@ export const IDL: Adrena = {
       ],
     },
     {
-      name: 'setTestOraclePrice',
-      accounts: [
-        {
-          name: 'admin',
-          isMut: false,
-          isSigner: true,
-          docs: ['#1'],
-        },
-        {
-          name: 'payer',
-          isMut: true,
-          isSigner: true,
-          docs: ['#2'],
-        },
-        {
-          name: 'cortex',
-          isMut: false,
-          isSigner: false,
-          docs: ['#3'],
-        },
-        {
-          name: 'pool',
-          isMut: false,
-          isSigner: false,
-          docs: ['#4'],
-        },
-        {
-          name: 'custody',
-          isMut: false,
-          isSigner: false,
-          docs: ['#5'],
-        },
-        {
-          name: 'oracleAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#6'],
-        },
-        {
-          name: 'systemProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
-        },
-      ],
-      args: [
-        {
-          name: 'params',
-          type: {
-            defined: 'SetTestOraclePriceParams',
-          },
-        },
-      ],
-      returns: 'u8',
-    },
-    {
       name: 'testAdminRemoveCollateral',
       accounts: [
         {
@@ -10489,7 +11484,7 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#9'],
@@ -10501,7 +11496,7 @@ export const IDL: Adrena = {
           docs: ['#10'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#11'],
@@ -10592,7 +11587,7 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
@@ -10610,7 +11605,7 @@ export const IDL: Adrena = {
           docs: ['#12'],
         },
         {
-          name: 'receivingCustodyOracleAccount',
+          name: 'receivingCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#13'],
@@ -10628,7 +11623,7 @@ export const IDL: Adrena = {
           docs: ['#15'],
         },
         {
-          name: 'dispensingCustodyOracleAccount',
+          name: 'dispensingCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#16'],
@@ -10711,7 +11706,9 @@ export const IDL: Adrena = {
           name: 'lpTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#3'],
+          docs: [
+            '#3 Front end will target the owner account, but not limited to',
+          ],
         },
         {
           name: 'transferAuthority',
@@ -10750,7 +11747,7 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
@@ -10768,7 +11765,7 @@ export const IDL: Adrena = {
           docs: ['#12'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#13'],
@@ -10895,7 +11892,7 @@ export const IDL: Adrena = {
           docs: ['#10'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#11'],
@@ -10930,7 +11927,7 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: [
             '#16',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ],
         },
         {
@@ -11000,6 +11997,7 @@ export const IDL: Adrena = {
           name: 'genesisLock',
           isMut: true,
           isSigner: false,
+          docs: ['#28'],
         },
       ],
       args: [
@@ -11024,7 +12022,9 @@ export const IDL: Adrena = {
           name: 'receivingAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#2'],
+          docs: [
+            '#2 Front end will target the owner account, but not limited to',
+          ],
         },
         {
           name: 'lpTokenAccount',
@@ -11069,7 +12069,7 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
@@ -11087,7 +12087,7 @@ export const IDL: Adrena = {
           docs: ['#12'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#13'],
@@ -11172,119 +12172,71 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'lmStaking',
+          name: 'cortex',
           isMut: true,
           isSigner: false,
           docs: ['#5'],
         },
         {
-          name: 'lpStaking',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#6'],
         },
         {
-          name: 'cortex',
+          name: 'position',
           isMut: true,
           isSigner: false,
           docs: ['#7'],
         },
         {
-          name: 'pool',
+          name: 'custody',
           isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
         {
-          name: 'position',
-          isMut: true,
+          name: 'custodyOracle',
+          isMut: false,
           isSigner: false,
           docs: ['#9'],
         },
         {
-          name: 'stakingRewardTokenCustody',
-          isMut: true,
+          name: 'custodyTradeOracle',
+          isMut: false,
           isSigner: false,
           docs: ['#10'],
-        },
-        {
-          name: 'stakingRewardTokenCustodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#11'],
-        },
-        {
-          name: 'stakingRewardTokenCustodyTokenAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
-          name: 'custody',
-          isMut: true,
-          isSigner: false,
-          docs: ['#13'],
-        },
-        {
-          name: 'custodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#14'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#15'],
-        },
-        {
-          name: 'lmStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#16'],
-        },
-        {
-          name: 'lpStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#17'],
-        },
-        {
-          name: 'lpTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#18'],
-        },
-        {
-          name: 'protocolFeeRecipient',
-          isMut: true,
-          isSigner: false,
-          docs: ['#19'],
+          docs: ['#11'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#20'],
+          docs: ['#12'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#13'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#14'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#15'],
         },
       ],
       args: [
@@ -11324,131 +12276,77 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'lmStaking',
+          name: 'cortex',
           isMut: true,
           isSigner: false,
           docs: ['#5'],
         },
         {
-          name: 'lpStaking',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#6'],
         },
         {
-          name: 'cortex',
+          name: 'position',
           isMut: true,
           isSigner: false,
           docs: ['#7'],
         },
         {
-          name: 'pool',
+          name: 'custody',
           isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
         {
-          name: 'position',
-          isMut: true,
+          name: 'custodyTradeOracle',
+          isMut: false,
           isSigner: false,
           docs: ['#9'],
-        },
-        {
-          name: 'stakingRewardTokenCustody',
-          isMut: true,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
-          name: 'stakingRewardTokenCustodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#11'],
-        },
-        {
-          name: 'stakingRewardTokenCustodyTokenAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
-          name: 'custody',
-          isMut: true,
-          isSigner: false,
-          docs: ['#13'],
-        },
-        {
-          name: 'custodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#14'],
         },
         {
           name: 'collateralCustody',
           isMut: true,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#10'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#11'],
         },
         {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#17'],
-        },
-        {
-          name: 'lmStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#18'],
-        },
-        {
-          name: 'lpStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#19'],
-        },
-        {
-          name: 'lpTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#20'],
-        },
-        {
-          name: 'protocolFeeRecipient',
-          isMut: true,
-          isSigner: false,
-          docs: ['#21'],
+          docs: ['#12'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#22'],
+          docs: ['#13'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#14'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#24'],
+          docs: ['#15'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#25'],
+          docs: ['#16'],
         },
       ],
       args: [
@@ -11494,7 +12392,7 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'receivingCustodyOracleAccount',
+          name: 'receivingCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
@@ -11512,119 +12410,125 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'principalCustodyOracleAccount',
+          name: 'principalCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#9'],
         },
         {
+          name: 'principalCustodyTradeOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#10'],
+        },
+        {
           name: 'principalCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#11'],
         },
         {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#12'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#13'],
         },
         {
           name: 'lmStaking',
           isMut: true,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#14'],
         },
         {
           name: 'lpStaking',
           isMut: true,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#15'],
         },
         {
           name: 'pool',
           isMut: true,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#16'],
         },
         {
           name: 'position',
           isMut: true,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#17'],
         },
         {
           name: 'stakingRewardTokenCustody',
           isMut: true,
           isSigner: false,
-          docs: ['#17'],
+          docs: ['#18'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
-          docs: ['#18'],
+          docs: ['#19'],
         },
         {
           name: 'stakingRewardTokenCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#19'],
+          docs: ['#20'],
         },
         {
           name: 'lmStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#21'],
         },
         {
           name: 'lpStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#22'],
         },
         {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#23'],
         },
         {
           name: 'protocolFeeRecipient',
           isMut: true,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#24'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#24'],
+          docs: ['#25'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#25'],
+          docs: ['#26'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#26'],
+          docs: ['#27'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#27'],
+          docs: ['#28'],
         },
       ],
       args: [
@@ -11670,7 +12574,7 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'receivingCustodyOracleAccount',
+          name: 'receivingCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
@@ -11688,7 +12592,7 @@ export const IDL: Adrena = {
           docs: ['#8'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#9'],
@@ -11706,7 +12610,7 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'principalCustodyOracleAccount',
+          name: 'principalCustodyTradeOracle',
           isMut: false,
           isSigner: false,
           docs: ['#12'],
@@ -11760,7 +12664,7 @@ export const IDL: Adrena = {
           docs: ['#20'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#21'],
@@ -11876,7 +12780,7 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#8'],
@@ -11955,7 +12859,7 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#8'],
@@ -11967,7 +12871,7 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
@@ -12046,7 +12950,7 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#8'],
@@ -12125,7 +13029,7 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#8'],
@@ -12137,7 +13041,7 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
@@ -12174,131 +13078,161 @@ export const IDL: Adrena = {
       name: 'closePositionLong',
       accounts: [
         {
-          name: 'owner',
+          name: 'caller',
           isMut: true,
           isSigner: true,
           docs: ['#1'],
         },
         {
-          name: 'receivingAccount',
+          name: 'owner',
           isMut: true,
           isSigner: false,
           docs: ['#2'],
         },
         {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#3'],
+          docs: ['#4'],
         },
         {
           name: 'lmStaking',
           isMut: true,
           isSigner: false,
-          docs: ['#4'],
+          docs: ['#5'],
         },
         {
           name: 'lpStaking',
           isMut: true,
           isSigner: false,
-          docs: ['#5'],
+          docs: ['#6'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#6'],
+          docs: ['#7'],
         },
         {
           name: 'pool',
           isMut: true,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#8'],
         },
         {
           name: 'position',
           isMut: true,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#9'],
         },
         {
           name: 'stakingRewardTokenCustody',
           isMut: true,
           isSigner: false,
-          docs: ['#9'],
+          docs: ['#10'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#11'],
         },
         {
           name: 'stakingRewardTokenCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#12'],
         },
         {
           name: 'custody',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#13'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#14'],
+        },
+        {
+          name: 'custodyTradeOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#15'],
         },
         {
           name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#16'],
         },
         {
           name: 'lmStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#17'],
         },
         {
           name: 'lpStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#18'],
         },
         {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
-          docs: ['#17'],
+          docs: ['#19'],
         },
         {
           name: 'protocolFeeRecipient',
           isMut: true,
           isSigner: false,
-          docs: ['#18'],
+          docs: ['#20'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#19'],
+          docs: ['#21'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+          docs: ['#22'],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+          docs: ['#23'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#24'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#25'],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#26'],
         },
       ],
       args: [
@@ -12314,143 +13248,165 @@ export const IDL: Adrena = {
       name: 'closePositionShort',
       accounts: [
         {
-          name: 'owner',
+          name: 'caller',
           isMut: true,
           isSigner: true,
           docs: ['#1'],
         },
         {
-          name: 'receivingAccount',
+          name: 'owner',
           isMut: true,
           isSigner: false,
           docs: ['#2'],
         },
         {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
           name: 'transferAuthority',
           isMut: false,
           isSigner: false,
-          docs: ['#3'],
+          docs: ['#4'],
         },
         {
           name: 'lmStaking',
           isMut: true,
           isSigner: false,
-          docs: ['#4'],
+          docs: ['#5'],
         },
         {
           name: 'lpStaking',
           isMut: true,
           isSigner: false,
-          docs: ['#5'],
+          docs: ['#6'],
         },
         {
           name: 'cortex',
           isMut: true,
           isSigner: false,
-          docs: ['#6'],
+          docs: ['#7'],
         },
         {
           name: 'pool',
           isMut: true,
           isSigner: false,
-          docs: ['#7'],
+          docs: ['#8'],
         },
         {
           name: 'position',
           isMut: true,
           isSigner: false,
-          docs: ['#8'],
+          docs: ['#9'],
         },
         {
           name: 'stakingRewardTokenCustody',
           isMut: true,
           isSigner: false,
-          docs: ['#9'],
+          docs: ['#10'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
-          docs: ['#10'],
+          docs: ['#11'],
         },
         {
           name: 'stakingRewardTokenCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#11'],
+          docs: ['#12'],
         },
         {
           name: 'custody',
           isMut: true,
           isSigner: false,
-          docs: ['#12'],
+          docs: ['#13'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyTradeOracle',
           isMut: false,
           isSigner: false,
-          docs: ['#13'],
+          docs: ['#14'],
         },
         {
           name: 'collateralCustody',
           isMut: true,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#15'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#16'],
         },
         {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#17'],
         },
         {
           name: 'lmStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
-          docs: ['#17'],
+          docs: ['#18'],
         },
         {
           name: 'lpStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
-          docs: ['#18'],
+          docs: ['#19'],
         },
         {
           name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
-          docs: ['#19'],
+          docs: ['#20'],
         },
         {
           name: 'protocolFeeRecipient',
           isMut: true,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#21'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#21'],
+          docs: ['#22'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#25'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#26'],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#27'],
         },
       ],
       args: [
@@ -12520,7 +13476,7 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
@@ -12538,59 +13494,83 @@ export const IDL: Adrena = {
           docs: ['#12'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#13'],
         },
         {
-          name: 'custodyTokenAccount',
-          isMut: true,
+          name: 'custodyTradeOracle',
+          isMut: false,
           isSigner: false,
           docs: ['#14'],
         },
         {
-          name: 'lmStakingRewardTokenVault',
+          name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
           docs: ['#15'],
         },
         {
-          name: 'lpStakingRewardTokenVault',
+          name: 'lmStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
           docs: ['#16'],
         },
         {
-          name: 'lpTokenMint',
+          name: 'lpStakingRewardTokenVault',
           isMut: true,
           isSigner: false,
           docs: ['#17'],
         },
         {
-          name: 'protocolFeeRecipient',
+          name: 'lpTokenMint',
           isMut: true,
           isSigner: false,
           docs: ['#18'],
+        },
+        {
+          name: 'protocolFeeRecipient',
+          isMut: true,
+          isSigner: false,
+          docs: ['#19'],
         },
         {
           name: 'userProfile',
           isMut: true,
           isSigner: false,
           isOptional: true,
-          docs: ['#19'],
+          docs: ['#20'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+          docs: ['#21'],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+          docs: ['#22'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#23'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#24'],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#25'],
         },
       ],
       args: [
@@ -12660,7 +13640,7 @@ export const IDL: Adrena = {
           docs: ['#9'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'stakingRewardTokenCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#10'],
@@ -12678,7 +13658,7 @@ export const IDL: Adrena = {
           docs: ['#12'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyTradeOracle',
           isMut: false,
           isSigner: false,
           docs: ['#13'],
@@ -12690,7 +13670,7 @@ export const IDL: Adrena = {
           docs: ['#14'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#15'],
@@ -12733,16 +13713,34 @@ export const IDL: Adrena = {
           docs: ['#21'],
         },
         {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+          docs: ['#22'],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+          docs: ['#23'],
+        },
+        {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#24'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#25'],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#26'],
         },
       ],
       args: [
@@ -12801,7 +13799,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -12847,7 +13845,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -12893,7 +13891,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyTradeOracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -12905,7 +13903,7 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
@@ -12945,7 +13943,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'receivingCustodyOracleAccount',
+          name: 'receivingCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -12957,7 +13955,7 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
@@ -12969,7 +13967,7 @@ export const IDL: Adrena = {
           docs: ['#7'],
         },
         {
-          name: 'principalCustodyOracleAccount',
+          name: 'principalCustodyTradeOracle',
           isMut: false,
           isSigner: false,
           docs: ['#8'],
@@ -13021,7 +14019,7 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#5'],
@@ -13033,7 +14031,7 @@ export const IDL: Adrena = {
           docs: ['#6'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#7'],
@@ -13072,7 +14070,7 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyTradeOracle',
           isMut: false,
           isSigner: false,
           docs: ['#5'],
@@ -13084,7 +14082,7 @@ export const IDL: Adrena = {
           docs: ['#6'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#7'],
@@ -13123,22 +14121,16 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'collateralCustody',
           isMut: false,
           isSigner: false,
           docs: ['#5'],
         },
         {
-          name: 'collateralCustody',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
-        },
-        {
-          name: 'collateralCustodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
         },
       ],
       args: [
@@ -13179,7 +14171,7 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#5'],
@@ -13191,7 +14183,7 @@ export const IDL: Adrena = {
           docs: ['#6'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#7'],
@@ -13222,7 +14214,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'custodyOracleAccount',
+          name: 'custodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -13253,7 +14245,7 @@ export const IDL: Adrena = {
           docs: ['#3'],
         },
         {
-          name: 'receivingCustodyOracleAccount',
+          name: 'receivingCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#4'],
@@ -13265,7 +14257,7 @@ export const IDL: Adrena = {
           docs: ['#5'],
         },
         {
-          name: 'dispensingCustodyOracleAccount',
+          name: 'dispensingCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#6'],
@@ -13372,40 +14364,52 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'lmTokenMint',
-          isMut: false,
+          name: 'pool',
+          isMut: true,
           isSigner: false,
           docs: ['#12'],
         },
         {
-          name: 'feeRedistributionMint',
-          isMut: false,
+          name: 'genesisLock',
+          isMut: true,
           isSigner: false,
           docs: ['#13'],
         },
         {
-          name: 'adrenaProgram',
+          name: 'lmTokenMint',
           isMut: false,
           isSigner: false,
           docs: ['#14'],
         },
         {
-          name: 'sablierProgram',
+          name: 'feeRedistributionMint',
           isMut: false,
           isSigner: false,
           docs: ['#15'],
         },
         {
-          name: 'systemProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
           docs: ['#16'],
         },
         {
-          name: 'tokenProgram',
+          name: 'sablierProgram',
           isMut: false,
           isSigner: false,
           docs: ['#17'],
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#18'],
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#19'],
         },
       ],
       args: [
@@ -13450,12 +14454,6 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: ['#5'],
         },
-        {
-          name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#6'],
-        },
       ],
       args: [
         {
@@ -13492,12 +14490,6 @@ export const IDL: Adrena = {
           isMut: false,
           isSigner: false,
           docs: ['#4'],
-        },
-        {
-          name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#5'],
         },
       ],
       args: [
@@ -13547,12 +14539,6 @@ export const IDL: Adrena = {
           isMut: false,
           isSigner: false,
           docs: ['#6'],
-        },
-        {
-          name: 'tokenProgram',
-          isMut: false,
-          isSigner: false,
-          docs: ['#7'],
         },
       ],
       args: [],
@@ -13975,44 +14961,56 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'lmTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
-          name: 'governanceTokenMint',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#13'],
         },
         {
+          name: 'genesisLock',
+          isMut: true,
+          isSigner: false,
+          docs: ['#14'],
+        },
+        {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#16'],
+        },
+        {
           name: 'feeRedistributionMint',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#17'],
         },
         {
           name: 'governanceRealm',
           isMut: false,
           isSigner: false,
           docs: [
-            '#15',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#18',
+            'A realm represent one project within the governance program',
           ],
         },
         {
           name: 'governanceRealmConfig',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#19'],
         },
         {
           name: 'governanceGoverningTokenHolding',
           isMut: true,
           isSigner: false,
           docs: [
-            '#17',
+            '#20',
             "Token account owned by governance program holding user's locked tokens",
           ],
         },
@@ -14020,43 +15018,43 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: ['#18', 'Account owned by governance storing user information'],
+          docs: ['#21', 'Account owned by governance storing user information'],
         },
         {
           name: 'stakesClaimCronThread',
           isMut: true,
           isSigner: false,
-          docs: ['#19'],
+          docs: ['#22'],
         },
         {
           name: 'sablierProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#23'],
         },
         {
           name: 'governanceProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#24'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#25'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#26'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#24'],
+          docs: ['#27'],
         },
       ],
       args: [
@@ -14149,7 +15147,7 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: [
             '#13',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ],
         },
         {
@@ -14295,44 +15293,56 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'lmTokenMint',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#12'],
         },
         {
-          name: 'governanceTokenMint',
+          name: 'genesisLock',
           isMut: true,
           isSigner: false,
           docs: ['#13'],
         },
         {
+          name: 'lmTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#14'],
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
           name: 'feeRedistributionMint',
           isMut: false,
           isSigner: false,
-          docs: ['#14'],
+          docs: ['#16'],
         },
         {
           name: 'governanceRealm',
           isMut: false,
           isSigner: false,
           docs: [
-            '#15',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#17',
+            'A realm represent one project within the governance program',
           ],
         },
         {
           name: 'governanceRealmConfig',
           isMut: false,
           isSigner: false,
-          docs: ['#16'],
+          docs: ['#18'],
         },
         {
           name: 'governanceGoverningTokenHolding',
           isMut: true,
           isSigner: false,
           docs: [
-            '#17',
+            '#19',
             "Token account owned by governance program holding user's locked tokens",
           ],
         },
@@ -14340,31 +15350,31 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: ['#18', 'Account owned by governance storing user information'],
+          docs: ['#20', 'Account owned by governance storing user information'],
         },
         {
           name: 'stakesClaimCronThread',
           isMut: true,
           isSigner: false,
-          docs: ['#19'],
+          docs: ['#21'],
         },
         {
           name: 'sablierProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#22'],
         },
         {
           name: 'governanceProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#23'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#24'],
         },
         {
           name: 'systemProgram',
@@ -14458,50 +15468,62 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'lmTokenMint',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#12'],
         },
         {
-          name: 'stakedTokenMint',
+          name: 'genesisLock',
           isMut: true,
           isSigner: false,
           docs: ['#13'],
         },
         {
-          name: 'governanceTokenMint',
+          name: 'lmTokenMint',
           isMut: true,
           isSigner: false,
           docs: ['#14'],
         },
         {
+          name: 'stakedTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
+          name: 'governanceTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#16'],
+        },
+        {
           name: 'feeRedistributionMint',
           isMut: false,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#17'],
         },
         {
           name: 'governanceRealm',
           isMut: false,
           isSigner: false,
           docs: [
-            '#16',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            '#18',
+            'A realm represent one project within the governance program',
           ],
         },
         {
           name: 'governanceRealmConfig',
           isMut: false,
           isSigner: false,
-          docs: ['#17'],
+          docs: ['#19'],
         },
         {
           name: 'governanceGoverningTokenHolding',
           isMut: true,
           isSigner: false,
           docs: [
-            '#18',
+            '#20',
             "Token account owned by governance program holding user's locked tokens",
           ],
         },
@@ -14509,43 +15531,43 @@ export const IDL: Adrena = {
           name: 'governanceGoverningTokenOwnerRecord',
           isMut: true,
           isSigner: false,
-          docs: ['#19', 'Account owned by governance storing user information'],
+          docs: ['#21', 'Account owned by governance storing user information'],
         },
         {
           name: 'stakesClaimCronThread',
           isMut: true,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#22'],
         },
         {
           name: 'sablierProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#23'],
         },
         {
           name: 'governanceProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#24'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#25'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#24'],
+          docs: ['#26'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#25'],
+          docs: ['#27'],
         },
       ],
       args: [
@@ -14627,34 +15649,46 @@ export const IDL: Adrena = {
           docs: ['#11'],
         },
         {
-          name: 'lmTokenMint',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#12'],
         },
         {
-          name: 'feeRedistributionMint',
-          isMut: false,
+          name: 'genesisLock',
+          isMut: true,
           isSigner: false,
           docs: ['#13'],
         },
         {
-          name: 'adrenaProgram',
-          isMut: false,
+          name: 'lmTokenMint',
+          isMut: true,
           isSigner: false,
           docs: ['#14'],
         },
         {
-          name: 'systemProgram',
+          name: 'feeRedistributionMint',
           isMut: false,
           isSigner: false,
           docs: ['#15'],
         },
         {
-          name: 'tokenProgram',
+          name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
           docs: ['#16'],
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#17'],
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#18'],
         },
       ],
       args: [],
@@ -14795,7 +15829,7 @@ export const IDL: Adrena = {
           isSigner: false,
           docs: [
             '#9',
-            'A realm represent one project (ADRENA, MANGO etc.) within the governance program',
+            'A realm represent one project within the governance program',
           ],
         },
         {
@@ -15052,112 +16086,64 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'lmStaking',
+          name: 'cortex',
           isMut: true,
           isSigner: false,
           docs: ['#5'],
         },
         {
-          name: 'lpStaking',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#6'],
         },
         {
-          name: 'cortex',
+          name: 'position',
           isMut: true,
           isSigner: false,
           docs: ['#7'],
         },
         {
-          name: 'pool',
+          name: 'custody',
           isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
         {
-          name: 'position',
+          name: 'custodyTokenAccount',
           isMut: true,
           isSigner: false,
           docs: ['#9'],
         },
         {
-          name: 'stakingRewardTokenCustody',
-          isMut: true,
+          name: 'custodyOracle',
+          isMut: false,
           isSigner: false,
           docs: ['#10'],
         },
         {
-          name: 'stakingRewardTokenCustodyOracleAccount',
+          name: 'custodyTradeOracle',
           isMut: false,
           isSigner: false,
           docs: ['#11'],
         },
         {
-          name: 'stakingRewardTokenCustodyTokenAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
-          name: 'custody',
-          isMut: true,
-          isSigner: false,
-          docs: ['#13'],
-        },
-        {
-          name: 'custodyTokenAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#14'],
-        },
-        {
-          name: 'custodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#15'],
-        },
-        {
-          name: 'lmStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#16'],
-        },
-        {
-          name: 'lpStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#17'],
-        },
-        {
-          name: 'lpTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#18'],
-        },
-        {
-          name: 'protocolFeeRecipient',
-          isMut: true,
-          isSigner: false,
-          docs: ['#19'],
-        },
-        {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#20'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#21'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -15197,73 +16183,43 @@ export const IDL: Adrena = {
           docs: ['#4'],
         },
         {
-          name: 'lmStaking',
+          name: 'cortex',
           isMut: true,
           isSigner: false,
           docs: ['#5'],
         },
         {
-          name: 'lpStaking',
+          name: 'pool',
           isMut: true,
           isSigner: false,
           docs: ['#6'],
         },
         {
-          name: 'cortex',
+          name: 'position',
           isMut: true,
           isSigner: false,
           docs: ['#7'],
         },
         {
-          name: 'pool',
+          name: 'custody',
           isMut: true,
           isSigner: false,
           docs: ['#8'],
         },
         {
-          name: 'position',
-          isMut: true,
+          name: 'custodyTradeOracle',
+          isMut: false,
           isSigner: false,
           docs: ['#9'],
-        },
-        {
-          name: 'stakingRewardTokenCustody',
-          isMut: true,
-          isSigner: false,
-          docs: ['#10'],
-        },
-        {
-          name: 'stakingRewardTokenCustodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#11'],
-        },
-        {
-          name: 'stakingRewardTokenCustodyTokenAccount',
-          isMut: true,
-          isSigner: false,
-          docs: ['#12'],
-        },
-        {
-          name: 'custody',
-          isMut: true,
-          isSigner: false,
-          docs: ['#13'],
-        },
-        {
-          name: 'custodyOracleAccount',
-          isMut: false,
-          isSigner: false,
-          docs: ['#14'],
         },
         {
           name: 'collateralCustody',
           isMut: true,
           isSigner: false,
-          docs: ['#15'],
+          docs: ['#10'],
         },
         {
-          name: 'collateralCustodyOracleAccount',
+          name: 'collateralCustodyOracle',
           isMut: false,
           isSigner: false,
           docs: ['#16'],
@@ -15272,49 +16228,25 @@ export const IDL: Adrena = {
           name: 'collateralCustodyTokenAccount',
           isMut: true,
           isSigner: false,
-          docs: ['#17'],
-        },
-        {
-          name: 'lmStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#18'],
-        },
-        {
-          name: 'lpStakingRewardTokenVault',
-          isMut: true,
-          isSigner: false,
-          docs: ['#19'],
-        },
-        {
-          name: 'lpTokenMint',
-          isMut: true,
-          isSigner: false,
-          docs: ['#20'],
-        },
-        {
-          name: 'protocolFeeRecipient',
-          isMut: true,
-          isSigner: false,
-          docs: ['#21'],
+          docs: ['#11'],
         },
         {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#22'],
+          docs: ['#12'],
         },
         {
           name: 'tokenProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#23'],
+          docs: ['#13'],
         },
         {
           name: 'adrenaProgram',
           isMut: false,
           isSigner: false,
-          docs: ['#24'],
+          docs: ['#14'],
         },
       ],
       args: [
@@ -15419,6 +16351,828 @@ export const IDL: Adrena = {
         },
       ],
     },
+    {
+      name: 'setTakeProfitLong',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+          docs: ['#7'],
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+          docs: ['#8'],
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#9'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#10'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#11'],
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#12'],
+        },
+        {
+          name: 'custodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#13'],
+        },
+        {
+          name: 'custodyTradeOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#14'],
+        },
+        {
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#16'],
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#17'],
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#18'],
+        },
+        {
+          name: 'protocolFeeRecipient',
+          isMut: true,
+          isSigner: false,
+          docs: ['#19'],
+        },
+        {
+          name: 'userProfile',
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+          docs: ['#20'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            '#21',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            '#22',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#23'],
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#24'],
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#25'],
+        },
+        {
+          name: 'adrenaProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#26'],
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'SetTakeProfitLongParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'setStopLossLong',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+          docs: ['#7'],
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+          docs: ['#8'],
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#9'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#10'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#11'],
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#12'],
+        },
+        {
+          name: 'custodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#13'],
+        },
+        {
+          name: 'custodyTradeOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#14'],
+        },
+        {
+          name: 'custodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#16'],
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#17'],
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#18'],
+        },
+        {
+          name: 'protocolFeeRecipient',
+          isMut: true,
+          isSigner: false,
+          docs: ['#19'],
+        },
+        {
+          name: 'userProfile',
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+          docs: ['#20'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            '#21',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            '#22',
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#23'],
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#24'],
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#25'],
+        },
+        {
+          name: 'adrenaProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#26'],
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'SetStopLossLongParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'setTakeProfitShort',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+          docs: ['#7'],
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+          docs: ['#8'],
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#9'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#10'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#11'],
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#12'],
+        },
+        {
+          name: 'custodyTradeOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#13'],
+        },
+        {
+          name: 'collateralCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#14'],
+        },
+        {
+          name: 'collateralCustodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#16'],
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#17'],
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#18'],
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#19'],
+        },
+        {
+          name: 'protocolFeeRecipient',
+          isMut: true,
+          isSigner: false,
+          docs: ['#20'],
+        },
+        {
+          name: 'userProfile',
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+          docs: ['#21'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#26'],
+        },
+        {
+          name: 'adrenaProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#27'],
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'SetTakeProfitShortParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'setStopLossShort',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'receivingAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'lmStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'lpStaking',
+          isMut: true,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'cortex',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'pool',
+          isMut: true,
+          isSigner: false,
+          docs: ['#7'],
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+          docs: ['#8'],
+        },
+        {
+          name: 'stakingRewardTokenCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#9'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#10'],
+        },
+        {
+          name: 'stakingRewardTokenCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#11'],
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#12'],
+        },
+        {
+          name: 'custodyTradeOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#13'],
+        },
+        {
+          name: 'collateralCustody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#14'],
+        },
+        {
+          name: 'collateralCustodyOracle',
+          isMut: false,
+          isSigner: false,
+          docs: ['#15'],
+        },
+        {
+          name: 'collateralCustodyTokenAccount',
+          isMut: true,
+          isSigner: false,
+          docs: ['#16'],
+        },
+        {
+          name: 'lmStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#17'],
+        },
+        {
+          name: 'lpStakingRewardTokenVault',
+          isMut: true,
+          isSigner: false,
+          docs: ['#18'],
+        },
+        {
+          name: 'lpTokenMint',
+          isMut: true,
+          isSigner: false,
+          docs: ['#19'],
+        },
+        {
+          name: 'protocolFeeRecipient',
+          isMut: true,
+          isSigner: false,
+          docs: ['#20'],
+        },
+        {
+          name: 'userProfile',
+          isMut: true,
+          isSigner: false,
+          isOptional: true,
+          docs: ['#21'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+          docs: [
+            'User can use only TP or only SL. We check the account later in the CPI.',
+          ],
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#26'],
+        },
+        {
+          name: 'adrenaProgram',
+          isMut: false,
+          isSigner: false,
+          docs: ['#27'],
+        },
+      ],
+      args: [
+        {
+          name: 'params',
+          type: {
+            defined: 'SetStopLossShortParams',
+          },
+        },
+      ],
+    },
+    {
+      name: 'cancelTakeProfit',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'cortex',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'takeProfitThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: 'cancelStopLoss',
+      accounts: [
+        {
+          name: 'owner',
+          isMut: true,
+          isSigner: true,
+          docs: ['#1'],
+        },
+        {
+          name: 'transferAuthority',
+          isMut: false,
+          isSigner: false,
+          docs: ['#2'],
+        },
+        {
+          name: 'cortex',
+          isMut: false,
+          isSigner: false,
+          docs: ['#3'],
+        },
+        {
+          name: 'pool',
+          isMut: false,
+          isSigner: false,
+          docs: ['#4'],
+        },
+        {
+          name: 'position',
+          isMut: true,
+          isSigner: false,
+          docs: ['#5'],
+        },
+        {
+          name: 'custody',
+          isMut: true,
+          isSigner: false,
+          docs: ['#6'],
+        },
+        {
+          name: 'stopLossThread',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'sablierProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
   ],
   accounts: [
     {
@@ -15455,6 +17209,10 @@ export const IDL: Adrena = {
             type: {
               array: ['u8', 2],
             },
+          },
+          {
+            name: 'lmTokenMint',
+            type: 'publicKey',
           },
           {
             name: 'inceptionTime',
@@ -15542,6 +17300,10 @@ export const IDL: Adrena = {
             name: 'genesisLiquidityAlpAmount',
             type: 'u64',
           },
+          {
+            name: 'uniquePositionAutomationThreadIdCounter',
+            type: 'u64',
+          },
         ],
       },
     },
@@ -15594,9 +17356,11 @@ export const IDL: Adrena = {
           },
           {
             name: 'oracle',
-            type: {
-              defined: 'OracleParams',
-            },
+            type: 'publicKey',
+          },
+          {
+            name: 'tradeOracle',
+            type: 'publicKey',
           },
           {
             name: 'pricing',
@@ -15711,42 +17475,18 @@ export const IDL: Adrena = {
           {
             name: 'reservedGrantOwners',
             type: {
-              array: ['publicKey', 17],
+              array: ['publicKey', 30],
             },
           },
           {
             name: 'reservedGrantAmounts',
             type: {
-              array: ['u64', 17],
+              array: ['u64', 30],
             },
           },
           {
             name: 'finalizeGenesisLockCampaignThreadId',
             type: 'u64',
-          },
-        ],
-      },
-    },
-    {
-      name: 'customOracle',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'price',
-            type: 'u64',
-          },
-          {
-            name: 'expo',
-            type: 'i32',
-          },
-          {
-            name: 'conf',
-            type: 'u64',
-          },
-          {
-            name: 'publishTime',
-            type: 'i64',
           },
         ],
       },
@@ -15842,9 +17582,17 @@ export const IDL: Adrena = {
             type: 'u8',
           },
           {
+            name: 'takeProfitThreadIsSet',
+            type: 'u8',
+          },
+          {
+            name: 'stopLossThreadIsSet',
+            type: 'u8',
+          },
+          {
             name: 'padding',
             type: {
-              array: ['u8', 6],
+              array: ['u8', 4],
             },
           },
           {
@@ -15906,15 +17654,31 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'entryFeeUsd',
-            type: 'u64',
-          },
-          {
             name: 'exitFeeUsd',
             type: 'u64',
           },
           {
             name: 'liquidationFeeUsd',
+            type: 'u64',
+          },
+          {
+            name: 'takeProfitThreadId',
+            type: 'u64',
+          },
+          {
+            name: 'takeProfitLimitPrice',
+            type: 'u64',
+          },
+          {
+            name: 'stopLossThreadId',
+            type: 'u64',
+          },
+          {
+            name: 'stopLossLimitPrice',
+            type: 'u64',
+          },
+          {
+            name: 'stopLossClosePositionPrice',
             type: 'u64',
           },
         ],
@@ -16180,10 +17944,18 @@ export const IDL: Adrena = {
             type: 'u8',
           },
           {
+            name: 'cancelled',
+            type: 'u8',
+          },
+          {
             name: 'padding',
             type: {
-              array: ['u8', 6],
+              array: ['u8', 1],
             },
+          },
+          {
+            name: 'voteMultiplier',
+            type: 'u32',
           },
           {
             name: 'amount',
@@ -16254,12 +18026,6 @@ export const IDL: Adrena = {
           {
             name: 'isStable',
             type: 'bool',
-          },
-          {
-            name: 'oracle',
-            type: {
-              defined: 'OracleParams',
-            },
           },
           {
             name: 'pricing',
@@ -16355,9 +18121,11 @@ export const IDL: Adrena = {
           },
           {
             name: 'oracle',
-            type: {
-              defined: 'OracleParams',
-            },
+            type: 'publicKey',
+          },
+          {
+            name: 'tradeOracle',
+            type: 'publicKey',
           },
           {
             name: 'pricing',
@@ -16476,6 +18244,12 @@ export const IDL: Adrena = {
             name: 'finalizeGenesisLockCampaignThreadId',
             type: 'u64',
           },
+          {
+            name: 'reservedSpots',
+            type: {
+              defined: 'ReservedSpots',
+            },
+          },
         ],
       },
     },
@@ -16523,30 +18297,6 @@ export const IDL: Adrena = {
           {
             name: 'liquidityState',
             type: 'u8',
-          },
-        ],
-      },
-    },
-    {
-      name: 'SetTestOraclePriceParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'price',
-            type: 'u64',
-          },
-          {
-            name: 'expo',
-            type: 'i32',
-          },
-          {
-            name: 'conf',
-            type: 'u64',
-          },
-          {
-            name: 'publishTime',
-            type: 'i64',
           },
         ],
       },
@@ -16692,13 +18442,75 @@ export const IDL: Adrena = {
       },
     },
     {
+      name: 'SetStopLossLongParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'stopLossLimitPrice',
+            type: 'u64',
+          },
+          {
+            name: 'closePositionPrice',
+            type: {
+              option: 'u64',
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'SetStopLossShortParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'stopLossLimitPrice',
+            type: 'u64',
+          },
+          {
+            name: 'closePositionPrice',
+            type: {
+              option: 'u64',
+            },
+          },
+        ],
+      },
+    },
+    {
+      name: 'SetTakeProfitLongParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'takeProfitLimitPrice',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'SetTakeProfitShortParams',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'takeProfitLimitPrice',
+            type: 'u64',
+          },
+        ],
+      },
+    },
+    {
       name: 'ClosePositionLongParams',
       type: {
         kind: 'struct',
         fields: [
           {
             name: 'price',
-            type: 'u64',
+            type: {
+              option: 'u64',
+            },
           },
         ],
       },
@@ -16710,7 +18522,9 @@ export const IDL: Adrena = {
         fields: [
           {
             name: 'price',
-            type: 'u64',
+            type: {
+              option: 'u64',
+            },
           },
         ],
       },
@@ -16982,6 +18796,10 @@ export const IDL: Adrena = {
             name: 'unlockEndTimestamp',
             type: 'i64',
           },
+          {
+            name: 'voteMultiplier',
+            type: 'u32',
+          },
         ],
       },
     },
@@ -17135,10 +18953,6 @@ export const IDL: Adrena = {
             type: 'u64',
           },
           {
-            name: 'entryFee',
-            type: 'u64',
-          },
-          {
             name: 'exitFee',
             type: 'u64',
           },
@@ -17172,10 +18986,6 @@ export const IDL: Adrena = {
           },
           {
             name: 'swapFeeOut',
-            type: 'u64',
-          },
-          {
-            name: 'openPositionFee',
             type: 'u64',
           },
           {
@@ -17217,10 +19027,6 @@ export const IDL: Adrena = {
       name: 'ProfitAndLoss',
       docs: [
         'Specific to the codebase, this struct is used to store the profit and loss of a position.',
-        'Specific because entry fees are paid right away at position opening and on top of the requested size/leverage (to match it exactly).',
-        'As such, the profit and loss are calculated with the entry fees already paid (and out of these two numbers).',
-        'To get the "real overall" profit and loss, one must add the entry fees back to the profit and loss.',
-        'And to get the "pure" profit and loss, one must subtract the exit and paid_interests (borrow interests) from the profit and loss.',
       ],
       type: {
         kind: 'struct',
@@ -17231,10 +19037,6 @@ export const IDL: Adrena = {
           },
           {
             name: 'lossUsd',
-            type: 'u64',
-          },
-          {
-            name: 'entryFeeUsd',
             type: 'u64',
           },
           {
@@ -17282,10 +19084,6 @@ export const IDL: Adrena = {
             type: 'u16',
           },
           {
-            name: 'openPosition',
-            type: 'u16',
-          },
-          {
             name: 'closePosition',
             type: 'u16',
           },
@@ -17304,7 +19102,7 @@ export const IDL: Adrena = {
           {
             name: 'padding',
             type: {
-              array: ['u8', 2],
+              array: ['u8', 4],
             },
           },
           {
@@ -17329,10 +19127,6 @@ export const IDL: Adrena = {
           },
           {
             name: 'removeLiquidityUsd',
-            type: 'u64',
-          },
-          {
-            name: 'openPositionUsd',
             type: 'u64',
           },
           {
@@ -17587,30 +19381,8 @@ export const IDL: Adrena = {
             type: 'i32',
           },
           {
-            name: 'conf',
+            name: 'confidence',
             type: 'u64',
-          },
-        ],
-      },
-    },
-    {
-      name: 'OracleParams',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'oracleAccount',
-            type: 'publicKey',
-          },
-          {
-            name: 'oracleType',
-            type: 'u8',
-          },
-          {
-            name: 'padding',
-            type: {
-              array: ['u8', 15],
-            },
           },
         ],
       },
@@ -17648,6 +19420,10 @@ export const IDL: Adrena = {
         fields: [
           {
             name: 'startTime',
+            type: 'i64',
+          },
+          {
+            name: 'endTime',
             type: 'i64',
           },
           {
@@ -17756,6 +19532,10 @@ export const IDL: Adrena = {
           },
           {
             name: 'claimTime',
+            type: 'i64',
+          },
+          {
+            name: 'endTime',
             type: 'i64',
           },
           {
@@ -17888,6 +19668,30 @@ export const IDL: Adrena = {
       },
     },
     {
+      name: 'ReservedSpots',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'None',
+          },
+          {
+            name: 'Test',
+            fields: [
+              {
+                name: 'firstReservedSpot',
+                type: 'publicKey',
+              },
+              {
+                name: 'secondReservedSpot',
+                type: 'publicKey',
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
       name: 'CortexInitializationStep',
       type: {
         kind: 'enum',
@@ -17906,23 +19710,6 @@ export const IDL: Adrena = {
           },
           {
             name: 'Initialized',
-          },
-        ],
-      },
-    },
-    {
-      name: 'OracleType',
-      type: {
-        kind: 'enum',
-        variants: [
-          {
-            name: 'None',
-          },
-          {
-            name: 'Custom',
-          },
-          {
-            name: 'Pyth',
           },
         ],
       },
@@ -18043,11 +19830,6 @@ export const IDL: Adrena = {
           type: 'u32',
           index: false,
         },
-        {
-          name: 'feeUsd',
-          type: 'u64',
-          index: false,
-        },
       ],
     },
     {
@@ -18091,11 +19873,6 @@ export const IDL: Adrena = {
         {
           name: 'leverage',
           type: 'u32',
-          index: false,
-        },
-        {
-          name: 'feeUsd',
-          type: 'u64',
           index: false,
         },
       ],
@@ -18606,6 +20383,31 @@ export const IDL: Adrena = {
       code: 6061,
       name: 'InvalidBucketName',
       msg: 'Invalid bucket name',
+    },
+    {
+      code: 6062,
+      name: 'InvalidThreadId',
+      msg: 'The provided Sablier thread does not have the expected ID',
+    },
+    {
+      code: 6063,
+      name: 'PythPriceExponentTooLargeIncurringPrecisionLoss',
+      msg: 'The exponent used for pyth price lead to high precision loss',
+    },
+    {
+      code: 6064,
+      name: 'MissingClosePositionPrice',
+      msg: 'The close position price is mandatory',
+    },
+    {
+      code: 6065,
+      name: 'InvalidVoteMultiplier',
+      msg: 'Invalid vote multiplier',
+    },
+    {
+      code: 6066,
+      name: 'PositionTooYoung',
+      msg: 'A position cannot be close right after open, a slight delay is enforced',
     },
   ],
 };
