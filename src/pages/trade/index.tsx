@@ -1,5 +1,6 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -13,6 +14,8 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
+
+import midImage from '../../../public/images/mid-monster.png';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -216,6 +219,7 @@ export default function Trade({
             })
           }
           className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
+          imageClassName="absolute w-[500px] bottom-0 left-[-10vh] scale-x-[-1]"
         />
 
         <RiveAnimation
@@ -227,6 +231,7 @@ export default function Trade({
             })
           }
           className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
+          imageClassName="absolute w-[500px] top-0 right-0 -z-10"
         />
       </div>
 

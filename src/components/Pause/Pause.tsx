@@ -20,6 +20,7 @@ export default function Pause(): JSX.Element {
           layout={new Layout({ fit: Fit.Cover, alignment: Alignment.Center })}
           className={'absolute top-0 left-0 w-full h-full'}
           automaticallyHandleEvents={true}
+          imageClassName="absolute top-0 left-0 w-full h-full object-cover"
         />
       </div>
 
