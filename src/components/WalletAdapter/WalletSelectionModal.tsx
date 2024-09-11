@@ -13,8 +13,9 @@ import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 
 import backpackLogo from '../../../public/images/backpack.png';
+import coinbaseLogo from '../../../public/images/coinbase.png';
 import phantomLogo from '../../../public/images/phantom.png';
-import walletConnectLogo from '../../../public/images/wallet-connect.png';
+import solflareLogo from '../../../public/images/solflare.png';
 import Modal from '../common/Modal/Modal';
 import GeoBlockedModal from '../GeoBlockedModal/GeoBlockedModal';
 
@@ -41,7 +42,7 @@ export default function WalletSelectionModal() {
           <div className="text-3xl opacity-80 font-special text-center mb-6">
             Pick a wallet
           </div>
-          <div className="flex flex-col justify-center items-center gap-3 sm:flex-row">
+          <div className="flex flex-col justify-center items-center gap-3">
             <WalletBlock
               name="Phantom"
               logo={phantomLogo}
@@ -63,13 +64,23 @@ export default function WalletSelectionModal() {
             />
 
             <WalletBlock
-              name="WalletConnect"
-              logo={walletConnectLogo}
+              name="Coinbase"
+              logo={coinbaseLogo}
               onClick={() => {
-                dispatch(connectWalletAction('walletConnect'));
+                dispatch(connectWalletAction('coinbase'));
                 dispatch(openCloseConnectionModalAction(false));
               }}
-              readyState={walletAdapters['walletConnect'].readyState}
+              readyState={walletAdapters['coinbase'].readyState}
+            />
+
+            <WalletBlock
+              name="Solflare"
+              logo={solflareLogo}
+              onClick={() => {
+                dispatch(connectWalletAction('solflare'));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+              readyState={walletAdapters['solflare'].readyState}
             />
           </div>
         </Modal>
@@ -93,13 +104,12 @@ const WalletBlock = ({
   readyState: WalletReadyState;
   className?: string;
 }) => {
-  const disabled =
-    readyState !== WalletReadyState.Installed || name === 'WalletConnect';
+  const disabled = readyState !== WalletReadyState.Installed;
 
   const walletBlock = (
     <div
       className={twMerge(
-        'flex flex-row sm:flex-col gap-3 items-center justify-center p-3 border rounded-lg w-[300px] h-[50px] sm:h-40 sm:w-40 relative',
+        'flex flex-row gap-3 items-center justify-between p-3 border rounded-lg w-[300px] h-[50px]',
         disabled
           ? 'cursor-not-allowed opacity-40'
           : 'cursor-pointer hover:bg-bcolor duration-300',
@@ -111,40 +121,45 @@ const WalletBlock = ({
         onClick();
       }}
     >
-      <Image src={logo} alt={`${name} icon`} className="w-[20px] sm:w-[50px]" />
+      <div className="flex flex-row items-center gap-3">
+        <Image src={logo} alt={`${name} icon`} className="w-[30px]" />
+        <p className="text-base font-semibold">{name}</p>
+      </div>
 
-      <p className="sm:mt-6">{name}</p>
-
-      <div className="hidden sm:block h-1 w-32 bg-bcolor right-3 absolute sm:bottom-2 sm:right-auto"></div>
+      <div
+        className={twMerge(
+          'px-2 py-1 rounded-md',
+          readyState === WalletReadyState.Installed && 'bg-green/10',
+          readyState === WalletReadyState.NotDetected && 'bg-orange/10',
+          readyState === WalletReadyState.Unsupported && 'bg-red/10',
+          readyState === WalletReadyState.Loadable && 'bg-blue-400/10',
+        )}
+      >
+        <p
+          className={twMerge(
+            'text-xs font-semibold font-mono',
+            readyState === WalletReadyState.Installed && 'text-green',
+            readyState === WalletReadyState.NotDetected && 'text-orange',
+            readyState === WalletReadyState.Unsupported && 'text-red',
+            readyState === WalletReadyState.Loadable && 'text-blue-400',
+          )}
+        >
+          {(() => {
+            return (
+              {
+                [WalletReadyState.NotDetected]: 'Not installed',
+                [WalletReadyState.Loadable]: 'Not loaded yet',
+                [WalletReadyState.Unsupported]: 'Not supported',
+                [WalletReadyState.Installed]: 'Installed',
+              }[readyState.toString()] ?? 'Cannot connect'
+            );
+          })()}
+        </p>
+      </div>
     </div>
   );
 
-  if (disabled) {
-    return (
-      <Tippy
-        content={
-          <div className="text-sm w-auto flex flex-col justify-between">
-            {(() => {
-              if (name == 'WalletConnect') {
-                return 'Support coming soon';
-              }
-
-              return (
-                {
-                  [WalletReadyState.NotDetected]: 'Wallet is not installed',
-                  [WalletReadyState.Loadable]: 'Wallet is not loaded yet',
-                  [WalletReadyState.Unsupported]: 'Wallet is not supported',
-                }[readyState.toString()] ?? 'Cannot connect wallet'
-              );
-            })()}
-          </div>
-        }
-        placement="bottom"
-      >
-        {walletBlock}
-      </Tippy>
-    );
-  }
+  console.log(name, readyState);
 
   return walletBlock;
 };

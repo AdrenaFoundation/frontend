@@ -7,9 +7,11 @@ export default function Block({
   columnsTitles,
   className,
   rowTitleClassName,
+  columnTitlesClassName,
   data,
 }: {
   className?: string;
+  columnTitlesClassName?: string;
   columnsTitles?: ReactNode[];
   rowTitleClassName?: string;
   data: (
@@ -32,7 +34,12 @@ export default function Block({
     >
       {data.map(({ rowTitle, ...v }, i) => (
         <div className="bg-third rounded-md p-3" key={i}>
-          <p className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade">
+          <p
+            className={twMerge(
+              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
+              columnTitlesClassName,
+            )}
+          >
             {rowTitle}
           </p>
 

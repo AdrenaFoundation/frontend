@@ -80,7 +80,7 @@ export default function Table({
             return values.map((value, j) => (
               <div
                 key={j}
-                className="p-[0.3em] text-txtfade flex grow flex-shrink-0 basis-0"
+                className="p-[0.3em]  flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well
                   maxWidth: `calc(100% - ${rowTitleWidth ?? '150px'})`,
@@ -96,6 +96,7 @@ export default function Table({
   ) : (
     <Block
       data={data}
+      columnTitlesClassName={columnTitlesClassName}
       rowTitleClassName={rowTitleClassName}
       columnsTitles={columnsTitles}
       className={className}

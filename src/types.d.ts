@@ -46,7 +46,12 @@ declare global {
   }
 }
 
-export type WalletAdapterName = 'phantom' | 'backpack' | 'walletConnect';
+export type WalletAdapterName =
+  | 'phantom'
+  | 'backpack'
+  | 'walletConnect'
+  | 'coinbase'
+  | 'solflare';
 
 export type PageProps = {
   mainPool: PoolExtended | null;

@@ -1,7 +1,9 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   BackpackWalletAdapter,
+  CoinbaseWalletAdapter,
   PhantomWalletAdapter,
+  SolflareWalletAdapter,
   WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
@@ -13,10 +15,14 @@ export const walletAdapters: Record<
   WalletAdapterName,
   | PhantomWalletAdapter
   | BackpackWalletAdapter
+  | CoinbaseWalletAdapter
+  | SolflareWalletAdapter
   | WalletConnectWalletAdapter /* | ... */
 > = {
   phantom: new PhantomWalletAdapter(),
   backpack: new BackpackWalletAdapter(),
+  coinbase: new CoinbaseWalletAdapter(),
+  solflare: new SolflareWalletAdapter(),
   walletConnect: new WalletConnectWalletAdapter({
     network: WalletAdapterNetwork.Devnet,
     options: {
