@@ -347,7 +347,7 @@ export default function PositionBlock({
         <Button
           size="xs"
           className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] grow w-[16em] h-8"
-          title="Stop Loss & Take Profit"
+          title="Take Profit & Stop Loss"
           rounded={false}
           variant="outline"
           onClick={() => {
