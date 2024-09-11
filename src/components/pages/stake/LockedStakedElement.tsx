@@ -4,7 +4,6 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { LockedStakeExtended, Token } from '@/types';
 import {
   formatMilliseconds,

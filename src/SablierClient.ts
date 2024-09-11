@@ -152,7 +152,7 @@ export default class SablierClient {
       },
     ]);
 
-    // Make sure we only load the threads that are related to our program, in the infortunate case
+    // Make sure we only load the threads that are related to our program, in the unfortunate case
     // there are threads of the same size that wouldn't belong to us
     const filteredThreads = threads.filter((thread) =>
       thread.account.authority.equals(AdrenaClient.transferAuthorityAddress),

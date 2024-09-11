@@ -72,6 +72,10 @@ export default class MainnetConfiguration implements IConfiguration {
     },
   };
 
+  public readonly solPythPriceUpdateV2: PublicKey = new PublicKey(
+    '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
+  );
+
   public readonly governanceProgram: PublicKey = new PublicKey(
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   );
@@ -140,6 +144,6 @@ export default class MainnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '2buhqUduNw7wNhZ1ixFxfvLRX3gAZkGmg8G1Rv5SEur7',
+    '6d9FSQL3t4RyHFHMtx4xUU3TXQiFJwvNebCdfg4cRmpJ',
   );
 }

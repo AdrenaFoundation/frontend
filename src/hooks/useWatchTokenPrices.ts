@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { setTokenPriceAction } from '@/actions/tokenPricesActions';
 import { USD_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
+import { Token } from '@/types';
 import { nativeToUi } from '@/utils';
 
 let pythPriceInterval: NodeJS.Timeout | null = null;
@@ -34,7 +35,16 @@ export default function useWatchTokenPrices() {
   const loadPythPrices = useCallback(async () => {
     if (!pythSolanaReceiver || !dispatch) return;
 
-    const priceUpdateV2List: PublicKey[] = window.adrena.client.tokens.map(
+    const tokens: Token[] = [
+      ...window.adrena.client.tokens,
+      // Add SOL token here to handle jitoSOL traded as SOL price
+      {
+        symbol: 'SOL',
+        pythPriceUpdateV2: window.adrena.config.solPythPriceUpdateV2,
+      } as unknown as Token, // Force type as we only need symbol and pythPriceUpdateV2 pubkey
+    ];
+
+    const priceUpdateV2List: PublicKey[] = tokens.map(
       (token) => token.pythPriceUpdateV2 as PublicKey,
     );
 
@@ -46,16 +56,13 @@ export default function useWatchTokenPrices() {
     // Store the prices in Store
     priceUpdateV2Accounts.map((priceUpdateV2Account, index) => {
       if (!priceUpdateV2Account) {
-        console.warn(
-          'Price not found for token',
-          window.adrena.client.tokens[index].symbol,
-        );
+        console.warn('Price not found for token', tokens[index].symbol);
         return;
       }
 
       dispatch(
         setTokenPriceAction(
-          window.adrena.client.tokens[index].symbol,
+          tokens[index].symbol,
           nativeToUi(
             priceUpdateV2Account.priceMessage.price,
             -priceUpdateV2Account.priceMessage.exponent,
@@ -87,7 +94,8 @@ export default function useWatchTokenPrices() {
       clearInterval(pythPriceInterval);
       pythPriceInterval = null;
     };
-    // Manually handle dependencies to avoid unwanted refreshs
+
+    // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadPythPrices]);
 

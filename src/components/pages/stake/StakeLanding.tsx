@@ -4,7 +4,6 @@ import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
-import TabSelect from '@/components/common/TabSelect/TabSelect';
 import {
   ADX_LOCK_PERIODS,
   ADX_STAKE_MULTIPLIERS,
@@ -13,14 +12,11 @@ import {
 } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useDispatch } from '@/store/store';
-import { AdxLockPeriod, AlpLockPeriod } from '@/types';
 
-import lockIcon from '../../../../public/images//Icons/lock.svg';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxMonster from '../../../../public/images/ADX_monster.png';
 import alpMonster from '../../../../public/images/ALP_monster.png';
-import dollarIcon from '../../../../public/images/currency_dollar.svg';
 import governanceIcon from '../../../../public/images/governance.svg';
 import Table from '../monitoring/Table';
 
