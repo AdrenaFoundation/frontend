@@ -303,7 +303,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={position.takeProfitLimitPrice}
                 format="currency"
-                className="text-xs text-green"
+                className="text-xs text-blue"
               />
             ) : (
               <div className="flex text-xs">-</div>
@@ -323,7 +323,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={position.stopLossLimitPrice}
                 format="currency"
-                className="text-xs text-redbright"
+                className="text-xs text-orange"
               />
             ) : (
               <div className="flex text-xs">-</div>

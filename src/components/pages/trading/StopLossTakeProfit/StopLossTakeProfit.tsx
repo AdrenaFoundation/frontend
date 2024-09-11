@@ -173,7 +173,7 @@ export default function StopLossTakeProfit({
       )}
     >
       <div className="w-[90%] ml-auto mr-auto">
-        <StyledSubSubContainer className="flex-col items-center justify-center gap-1 text-sm w-full p-6">
+        <StyledSubSubContainer className="flex-col items-center justify-center gap-1 text-sm w-full p-4">
           <div className="flex w-full justify-between">
             <div>Mark Price</div>
             <div>{formatPriceInfo(markPrice)}</div>
@@ -181,7 +181,9 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <div>Liquidation Price</div>
-            <div>{formatPriceInfo(position.liquidationPrice)}</div>
+            <div className="text-redbright">
+              {formatPriceInfo(position.liquidationPrice)}
+            </div>
           </div>
 
           <div className="flex w-full justify-between">
@@ -191,12 +193,16 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <div>Take Profit</div>
-            <div>{formatPriceInfo(takeProfitInput)}</div>
+            <div className={takeProfitInput !== null ? 'text-blue' : ''}>
+              {formatPriceInfo(takeProfitInput)}
+            </div>
           </div>
 
           <div className="flex w-full justify-between">
             <div>Stop Loss</div>
-            <div>{formatPriceInfo(stopLossInput)}</div>
+            <div className={stopLossInput !== null ? 'text-orange' : ''}>
+              {formatPriceInfo(stopLossInput)}
+            </div>
           </div>
 
           <div className="flex w-full justify-between">

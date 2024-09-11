@@ -23,6 +23,8 @@ const greenColor = '#07956be6';
 const redColor = '#c9243ae6';
 const greyColor = '#78828e';
 const whiteColor = '#ffffff';
+const orangeColor = '#f77f00';
+const blueColor = '#3a86ff';
 
 function createEntryPositionLine(
   chart: IChartWidgetApi,
@@ -67,6 +69,52 @@ function createLiquidationPositionLine(
   );
 }
 
+function createTakeProfitPositionLine(
+  chart: IChartWidgetApi,
+  position: PositionExtended,
+): IPositionLineAdapter {
+  return (
+    chart
+      .createPositionLine({})
+      .setText(`${position.side === 'long' ? 'Long' : 'Short'} Take Profit`)
+      .setLineLength(3)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .setQuantity(formatNumber(position.takeProfitLimitPrice!, 2)) // Price is checked before calling function
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .setPrice(position.takeProfitLimitPrice!) // Price is checked before calling function
+      .setLineColor(blueColor)
+      .setLineStyle(2)
+      .setQuantityBackgroundColor(blueColor)
+      .setQuantityBorderColor(blueColor)
+      .setBodyBorderColor(blueColor)
+      .setBodyBackgroundColor(blueColor)
+      .setBodyTextColor(whiteColor)
+  );
+}
+
+function createStopLossPositionLine(
+  chart: IChartWidgetApi,
+  position: PositionExtended,
+): IPositionLineAdapter {
+  return (
+    chart
+      .createPositionLine({})
+      .setText(`${position.side === 'long' ? 'Long' : 'Short'} Stop Loss`)
+      .setLineLength(3)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .setQuantity(formatNumber(position.stopLossLimitPrice!, 2)) // Price is checked before calling function
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      .setPrice(position.stopLossLimitPrice!) // Price is checked before calling function
+      .setLineColor(orangeColor)
+      .setLineStyle(2)
+      .setQuantityBackgroundColor(orangeColor)
+      .setQuantityBorderColor(orangeColor)
+      .setBodyBorderColor(orangeColor)
+      .setBodyBackgroundColor(orangeColor)
+      .setBodyTextColor(whiteColor)
+  );
+}
+
 export default function TradingChart({
   token,
   positions,
@@ -83,6 +131,8 @@ export default function TradingChart({
     position: PublicKey;
     liquidation?: IPositionLineAdapter;
     entry: IPositionLineAdapter;
+    stopLoss?: IPositionLineAdapter;
+    takeProfit?: IPositionLineAdapter;
   };
 
   const [positionLines, setPositionLines] = useState<{
@@ -253,6 +303,10 @@ export default function TradingChart({
     positionLines?.short?.entry.remove();
     positionLines?.long?.liquidation?.remove();
     positionLines?.short?.liquidation?.remove();
+    positionLines?.long?.takeProfit?.remove();
+    positionLines?.short?.takeProfit?.remove();
+    positionLines?.long?.stopLoss?.remove();
+    positionLines?.short?.stopLoss?.remove();
 
     setPositionLines(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -276,6 +330,7 @@ export default function TradingChart({
               position.token.symbol === token.symbol &&
               position.side === 'long',
           ) ?? null;
+
         const shortPosition =
           positions.find(
             (position) =>
@@ -294,12 +349,30 @@ export default function TradingChart({
                 ? createLiquidationPositionLine(chart, longPosition)
                 : undefined,
               position: longPosition.pubkey,
+              takeProfit:
+                longPosition.takeProfitThreadIsSet &&
+                longPosition.takeProfitLimitPrice &&
+                longPosition.takeProfitLimitPrice > 0
+                  ? createTakeProfitPositionLine(chart, longPosition)
+                  : undefined,
+              stopLoss:
+                longPosition.stopLossThreadIsSet &&
+                longPosition.stopLossLimitPrice &&
+                longPosition.stopLossLimitPrice > 0
+                  ? createStopLossPositionLine(chart, longPosition)
+                  : undefined,
             };
           }
         } else if (newPositionLines.long) {
           newPositionLines.long.entry.remove();
+
           if (newPositionLines.long.liquidation)
             newPositionLines.long.liquidation.remove();
+          if (newPositionLines.long.takeProfit)
+            newPositionLines.long.takeProfit.remove();
+          if (newPositionLines.long.stopLoss)
+            newPositionLines.long.stopLoss.remove();
+
           newPositionLines.long = null;
         }
 
@@ -314,12 +387,30 @@ export default function TradingChart({
                 ? createLiquidationPositionLine(chart, shortPosition)
                 : undefined,
               position: shortPosition.pubkey,
+              takeProfit:
+                shortPosition.takeProfitThreadIsSet &&
+                shortPosition.takeProfitLimitPrice &&
+                shortPosition.takeProfitLimitPrice > 0
+                  ? createTakeProfitPositionLine(chart, shortPosition)
+                  : undefined,
+              stopLoss:
+                shortPosition.stopLossThreadIsSet &&
+                shortPosition.stopLossLimitPrice &&
+                shortPosition.stopLossLimitPrice > 0
+                  ? createStopLossPositionLine(chart, shortPosition)
+                  : undefined,
             };
           }
         } else if (newPositionLines.short) {
           newPositionLines.short.entry.remove();
+
           if (newPositionLines.short.liquidation)
             newPositionLines.short.liquidation.remove();
+          if (newPositionLines.short.takeProfit)
+            newPositionLines.short.takeProfit.remove();
+          if (newPositionLines.short.stopLoss)
+            newPositionLines.short.stopLoss.remove();
+
           newPositionLines.short = null;
         }
       }
