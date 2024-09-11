@@ -258,6 +258,7 @@ export default function MyDashboard({
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               title="Opened Positions"
+              userProfile={userProfile}
             />
 
             <StakesStats
