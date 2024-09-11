@@ -85,7 +85,7 @@ export default function Modal({
 
         <motion.div
           className={twMerge(
-            'min-w-20 min-h-20 z-[102] rounded-lg border bg-secondary  overflow-hidden',
+            'min-w-20 min-h-20 z-[102] rounded-lg border bg-secondary  overflow-hidden flex flex-col items-center',
             !isMobile ? '-mt-[8%] mx-4' : 'mt-auto rounded-b-none w-full',
           )}
           role="dialog"

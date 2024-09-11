@@ -106,6 +106,11 @@ export type PositionExtended = {
   collateralAmount: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
+  stopLossClosePositionPrice?: number | null;
+  stopLossLimitPrice?: number | null;
+  stopLossThreadIsSet: boolean;
+  takeProfitLimitPrice?: number | null;
+  takeProfitThreadIsSet: boolean;
 
   // Onchain data
   nativeObject: Position;
