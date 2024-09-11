@@ -152,17 +152,63 @@ export default function TradingChart({
 
     // if liquidationPrice is not set, remove liquidation directly
     if (!position.liquidationPrice) {
-      if (positionLine.liquidation) positionLine.liquidation.remove();
-      return;
-    }
-
-    // if liquidation is set, update it
-    if (positionLine.liquidation) {
+      if (positionLine.liquidation) {
+        positionLine.liquidation.remove();
+        // Make sure the key is gone
+        positionLine.liquidation = undefined;
+        delete positionLine.liquidation;
+      }
+    } else if (positionLine.liquidation) {
+      // if liquidation is set, update it
       positionLine.liquidation.setPrice(position.liquidationPrice);
       positionLine.liquidation.setQuantity(
         formatNumber(position.liquidationPrice, 2),
       );
     } else createLiquidationPositionLine(chart, position);
+
+    // if takeProfit is not set, remove takeProfit directly
+    if (
+      !position.takeProfitThreadIsSet ||
+      typeof position.takeProfitLimitPrice === 'undefined' ||
+      position.takeProfitLimitPrice === null ||
+      position.takeProfitLimitPrice === 0
+    ) {
+      if (positionLine.takeProfit) {
+        positionLine.takeProfit.remove();
+        // Make sure the key is gone
+        positionLine.takeProfit = undefined;
+        delete positionLine.takeProfit;
+      }
+    } else if (positionLine.takeProfit) {
+      // if takeProfit is set, update it
+      positionLine.takeProfit.setPrice(position.takeProfitLimitPrice);
+      positionLine.takeProfit.setQuantity(
+        formatNumber(position.takeProfitLimitPrice, 2),
+      );
+    } else {
+      createTakeProfitPositionLine(chart, position);
+    }
+
+    // if stopLoss is not set, remove stopLoss directly
+    if (
+      !position.stopLossThreadIsSet ||
+      typeof position.stopLossLimitPrice === 'undefined' ||
+      position.stopLossLimitPrice === null ||
+      position.stopLossLimitPrice === 0
+    ) {
+      if (positionLine.stopLoss) {
+        positionLine.stopLoss.remove();
+        // Make sure the key is gone
+        positionLine.stopLoss = undefined;
+        delete positionLine.stopLoss;
+      }
+    } else if (positionLine.stopLoss) {
+      // if stopLoss is set, update it
+      positionLine.stopLoss.setPrice(position.stopLossLimitPrice);
+      positionLine.stopLoss.setQuantity(
+        formatNumber(position.stopLossLimitPrice, 2),
+      );
+    } else createStopLossPositionLine(chart, position);
   }
 
   useEffect(() => {
@@ -420,7 +466,13 @@ export default function TradingChart({
       // ignore error due to conflicts with charts and react effects
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [positions, token.symbol, !!widget, widgetReady]);
+  }, [
+    positions,
+    token.symbol,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!widget,
+    widgetReady,
+  ]);
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary backdrop-blur-md">
