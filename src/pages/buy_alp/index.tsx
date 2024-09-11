@@ -231,7 +231,7 @@ export default function Buy({
           />
         </div>
 
-        <div className="flex flex-col justify-center items-start z-10">
+        <div className="flex flex-col justify-center items-start z-10 -translate-y-28">
           <h1 className="text-[2.6rem] lg:text-[4rem] uppercase max-w-[640px]">
             Buy ALP, receive 70% of all revenues
           </h1>
