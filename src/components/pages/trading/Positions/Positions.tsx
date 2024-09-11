@@ -1,9 +1,8 @@
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
-import { PositionExtended } from '@/types';
+import { PositionExtended, UserProfileExtended } from '@/types';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
@@ -19,6 +18,7 @@ export default function Positions({
   triggerPositionsReload,
   triggerUserProfileReload,
   isBigScreen,
+  userProfile,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -28,6 +28,7 @@ export default function Positions({
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
+  userProfile: UserProfileExtended | null | false;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -80,7 +81,11 @@ export default function Positions({
 
         {positionToStopLossTakeProfit && (
           <Modal
-            title="SL/TP"
+            title={`${
+              positionToStopLossTakeProfit.token.symbol !== 'JITOSOL'
+                ? positionToStopLossTakeProfit.token.symbol
+                : 'SOL'
+            } ${positionToStopLossTakeProfit.side} SL/TP`}
             close={() => setPositionToStopLossTakeProfit(null)}
             className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center"
           >
@@ -91,6 +96,7 @@ export default function Positions({
               onClose={() => {
                 setPositionToStopLossTakeProfit(null);
               }}
+              userProfile={userProfile}
             />
           </Modal>
         )}

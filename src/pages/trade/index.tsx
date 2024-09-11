@@ -2,7 +2,6 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -60,6 +59,7 @@ export default function Trade({
   triggerPositionsReload,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
+  userProfile,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -87,7 +87,9 @@ export default function Trade({
     router.replace({
       query: {
         ...router.query,
-        pair: `${tokenA.symbol}_${tokenB.symbol}`,
+        pair: `${tokenA.symbol !== 'JITOSOL' ? tokenA.symbol : 'SOL'}_${
+          tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'
+        }`,
         action: selectedAction,
       },
     });
@@ -139,10 +141,14 @@ export default function Trade({
       const [tokenAName, tokenBName] = pair;
 
       const tokenA = tokenACandidate.find(
-        (token) => token.symbol === tokenAName,
+        (token) =>
+          token.symbol === tokenAName ||
+          (token.symbol === 'JITOSOL' && tokenAName === 'SOL'),
       );
       const tokenB = tokenBCandidate.find(
-        (token) => token.symbol === tokenBName,
+        (token) =>
+          token.symbol === tokenBName ||
+          (token.symbol === 'JITOSOL' && tokenBName === 'SOL'),
       );
 
       // bad URL
@@ -277,6 +283,7 @@ export default function Trade({
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               isBigScreen={isBigScreen}
+              userProfile={userProfile}
             />
           </div>
         ) : (
@@ -290,6 +297,7 @@ export default function Trade({
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               isBigScreen={isBigScreen}
+              userProfile={userProfile}
             />
 
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">

@@ -1,6 +1,6 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PositionExtended } from '@/types';
+import { PositionExtended, UserProfileExtended } from '@/types';
 
 import Positions from '../trading/Positions/Positions';
 
@@ -10,12 +10,14 @@ export default function PositionsStats({
   title,
   triggerPositionsReload,
   triggerUserProfileReload,
+  userProfile,
 }: {
   connected: boolean;
   positions: PositionExtended[] | null;
   title?: string;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
+  userProfile: UserProfileExtended | null | false;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
 
@@ -38,6 +40,7 @@ export default function PositionsStats({
         triggerPositionsReload={triggerPositionsReload}
         triggerUserProfileReload={triggerUserProfileReload}
         isBigScreen={isBigScreen}
+        userProfile={userProfile}
       />
     </StyledContainer>
   );

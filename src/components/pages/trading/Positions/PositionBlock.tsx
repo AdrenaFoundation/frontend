@@ -8,6 +8,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 
+import solLogo from '../../../../../public/images/sol.svg';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 export default function PositionBlock({
@@ -31,7 +32,10 @@ export default function PositionBlock({
   const [isSmallSize, setIsSmallSize] = useState(false);
 
   const liquidable = (() => {
-    const tokenPrice = tokenPrices[position.token.symbol];
+    const tokenPrice =
+      tokenPrices[
+        position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
+      ];
 
     if (
       tokenPrice === null ||
@@ -66,7 +70,9 @@ export default function PositionBlock({
     <div className="flex items-center justify-center h-full">
       <Image
         className="w-[1em] h-[1em] mr-1"
-        src={position.token.image}
+        src={
+          position.token.symbol !== 'JITOSOL' ? position.token.image : solLogo
+        }
         width={200}
         height={200}
         alt={`${
@@ -112,7 +118,7 @@ export default function PositionBlock({
       {position.pnl ? (
         <div className="flex">
           <FormatNumber
-            nb={position.pnl * 100000}
+            nb={position.pnl}
             format="currency"
             className={`mr-0.5 text-${
               position.pnl && position.pnl > 0 ? 'green' : 'redbright'
@@ -154,7 +160,7 @@ export default function PositionBlock({
             <NetValueTooltip position={position}>
               <span className="underline-dashed">
                 <FormatNumber
-                  nb={position.collateralUsd * 100000 + position.pnl}
+                  nb={position.collateralUsd + position.pnl}
                   format="currency"
                   className="text-md"
                 />
@@ -282,6 +288,46 @@ export default function PositionBlock({
               format="currency"
               className="text-xs"
             />
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+          <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
+            Take Profit
+          </div>
+
+          <div className="flex">
+            {position.takeProfitThreadIsSet &&
+            position.takeProfitLimitPrice &&
+            position.takeProfitLimitPrice > 0 ? (
+              <FormatNumber
+                nb={position.takeProfitLimitPrice}
+                format="currency"
+                className="text-xs text-green"
+              />
+            ) : (
+              <div className="flex text-xs">-</div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center min-w-[5em] w-[5em]">
+          <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
+            Stop Loss
+          </div>
+
+          <div className="flex">
+            {position.stopLossThreadIsSet &&
+            position.stopLossLimitPrice &&
+            position.stopLossLimitPrice > 0 ? (
+              <FormatNumber
+                nb={position.stopLossLimitPrice}
+                format="currency"
+                className="text-xs text-redbright"
+              />
+            ) : (
+              <div className="flex text-xs">-</div>
+            )}
           </div>
         </div>
       </div>

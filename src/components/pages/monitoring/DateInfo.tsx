@@ -1,4 +1,4 @@
-import BN from 'bn.js';
+import { BN } from '@coral-xyz/anchor';
 import { twMerge } from 'tailwind-merge';
 
 export default function DateInfo({
