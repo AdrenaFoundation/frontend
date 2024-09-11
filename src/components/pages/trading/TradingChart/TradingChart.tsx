@@ -23,8 +23,6 @@ const greenColor = '#07956be6';
 const redColor = '#c9243ae6';
 const greyColor = '#78828e';
 const whiteColor = '#ffffff';
-const orangeColor = '#f77f00';
-const blueColor = '#3a86ff';
 
 function createEntryPositionLine(
   chart: IChartWidgetApi,
@@ -69,52 +67,6 @@ function createLiquidationPositionLine(
   );
 }
 
-function createTakeProfitPositionLine(
-  chart: IChartWidgetApi,
-  position: PositionExtended,
-): IPositionLineAdapter {
-  return (
-    chart
-      .createPositionLine({})
-      .setText(`${position.side === 'long' ? 'Long' : 'Short'} Take Profit`)
-      .setLineLength(3)
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setQuantity(formatNumber(position.takeProfitLimitPrice!, 2)) // Price is checked before calling function
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setPrice(position.takeProfitLimitPrice!) // Price is checked before calling function
-      .setLineColor(blueColor)
-      .setLineStyle(2)
-      .setQuantityBackgroundColor(blueColor)
-      .setQuantityBorderColor(blueColor)
-      .setBodyBorderColor(blueColor)
-      .setBodyBackgroundColor(blueColor)
-      .setBodyTextColor(whiteColor)
-  );
-}
-
-function createStopLossPositionLine(
-  chart: IChartWidgetApi,
-  position: PositionExtended,
-): IPositionLineAdapter {
-  return (
-    chart
-      .createPositionLine({})
-      .setText(`${position.side === 'long' ? 'Long' : 'Short'} Stop Loss`)
-      .setLineLength(3)
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setQuantity(formatNumber(position.stopLossLimitPrice!, 2)) // Price is checked before calling function
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setPrice(position.stopLossLimitPrice!) // Price is checked before calling function
-      .setLineColor(orangeColor)
-      .setLineStyle(2)
-      .setQuantityBackgroundColor(orangeColor)
-      .setQuantityBorderColor(orangeColor)
-      .setBodyBorderColor(orangeColor)
-      .setBodyBackgroundColor(orangeColor)
-      .setBodyTextColor(whiteColor)
-  );
-}
-
 export default function TradingChart({
   token,
   positions,
@@ -131,8 +83,6 @@ export default function TradingChart({
     position: PublicKey;
     liquidation?: IPositionLineAdapter;
     entry: IPositionLineAdapter;
-    stopLoss?: IPositionLineAdapter;
-    takeProfit?: IPositionLineAdapter;
   };
 
   const [positionLines, setPositionLines] = useState<{
@@ -152,63 +102,17 @@ export default function TradingChart({
 
     // if liquidationPrice is not set, remove liquidation directly
     if (!position.liquidationPrice) {
-      if (positionLine.liquidation) {
-        positionLine.liquidation.remove();
-        // Make sure the key is gone
-        positionLine.liquidation = undefined;
-        delete positionLine.liquidation;
-      }
-    } else if (positionLine.liquidation) {
-      // if liquidation is set, update it
+      if (positionLine.liquidation) positionLine.liquidation.remove();
+      return;
+    }
+
+    // if liquidation is set, update it
+    if (positionLine.liquidation) {
       positionLine.liquidation.setPrice(position.liquidationPrice);
       positionLine.liquidation.setQuantity(
         formatNumber(position.liquidationPrice, 2),
       );
     } else createLiquidationPositionLine(chart, position);
-
-    // if takeProfit is not set, remove takeProfit directly
-    if (
-      !position.takeProfitThreadIsSet ||
-      typeof position.takeProfitLimitPrice === 'undefined' ||
-      position.takeProfitLimitPrice === null ||
-      position.takeProfitLimitPrice === 0
-    ) {
-      if (positionLine.takeProfit) {
-        positionLine.takeProfit.remove();
-        // Make sure the key is gone
-        positionLine.takeProfit = undefined;
-        delete positionLine.takeProfit;
-      }
-    } else if (positionLine.takeProfit) {
-      // if takeProfit is set, update it
-      positionLine.takeProfit.setPrice(position.takeProfitLimitPrice);
-      positionLine.takeProfit.setQuantity(
-        formatNumber(position.takeProfitLimitPrice, 2),
-      );
-    } else {
-      createTakeProfitPositionLine(chart, position);
-    }
-
-    // if stopLoss is not set, remove stopLoss directly
-    if (
-      !position.stopLossThreadIsSet ||
-      typeof position.stopLossLimitPrice === 'undefined' ||
-      position.stopLossLimitPrice === null ||
-      position.stopLossLimitPrice === 0
-    ) {
-      if (positionLine.stopLoss) {
-        positionLine.stopLoss.remove();
-        // Make sure the key is gone
-        positionLine.stopLoss = undefined;
-        delete positionLine.stopLoss;
-      }
-    } else if (positionLine.stopLoss) {
-      // if stopLoss is set, update it
-      positionLine.stopLoss.setPrice(position.stopLossLimitPrice);
-      positionLine.stopLoss.setQuantity(
-        formatNumber(position.stopLossLimitPrice, 2),
-      );
-    } else createStopLossPositionLine(chart, position);
   }
 
   useEffect(() => {
@@ -222,9 +126,7 @@ export default function TradingChart({
           width: 100,
           height: 100,
           autosize: true,
-          symbol: `Crypto.${
-            token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
-          }/USD`,
+          symbol: `Crypto.${token.symbol}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
           toolbar_bg: '#061018',
@@ -337,7 +239,7 @@ export default function TradingChart({
     setWidgetReady(false);
 
     widget?.setSymbol(
-      `Crypto.${token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
+      `Crypto.${token.symbol}/USD`,
       'D' as ResolutionString,
       () => {
         setWidgetReady(true);
@@ -349,10 +251,6 @@ export default function TradingChart({
     positionLines?.short?.entry.remove();
     positionLines?.long?.liquidation?.remove();
     positionLines?.short?.liquidation?.remove();
-    positionLines?.long?.takeProfit?.remove();
-    positionLines?.short?.takeProfit?.remove();
-    positionLines?.long?.stopLoss?.remove();
-    positionLines?.short?.stopLoss?.remove();
 
     setPositionLines(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -376,7 +274,6 @@ export default function TradingChart({
               position.token.symbol === token.symbol &&
               position.side === 'long',
           ) ?? null;
-
         const shortPosition =
           positions.find(
             (position) =>
@@ -395,30 +292,12 @@ export default function TradingChart({
                 ? createLiquidationPositionLine(chart, longPosition)
                 : undefined,
               position: longPosition.pubkey,
-              takeProfit:
-                longPosition.takeProfitThreadIsSet &&
-                longPosition.takeProfitLimitPrice &&
-                longPosition.takeProfitLimitPrice > 0
-                  ? createTakeProfitPositionLine(chart, longPosition)
-                  : undefined,
-              stopLoss:
-                longPosition.stopLossThreadIsSet &&
-                longPosition.stopLossLimitPrice &&
-                longPosition.stopLossLimitPrice > 0
-                  ? createStopLossPositionLine(chart, longPosition)
-                  : undefined,
             };
           }
         } else if (newPositionLines.long) {
           newPositionLines.long.entry.remove();
-
           if (newPositionLines.long.liquidation)
             newPositionLines.long.liquidation.remove();
-          if (newPositionLines.long.takeProfit)
-            newPositionLines.long.takeProfit.remove();
-          if (newPositionLines.long.stopLoss)
-            newPositionLines.long.stopLoss.remove();
-
           newPositionLines.long = null;
         }
 
@@ -433,30 +312,12 @@ export default function TradingChart({
                 ? createLiquidationPositionLine(chart, shortPosition)
                 : undefined,
               position: shortPosition.pubkey,
-              takeProfit:
-                shortPosition.takeProfitThreadIsSet &&
-                shortPosition.takeProfitLimitPrice &&
-                shortPosition.takeProfitLimitPrice > 0
-                  ? createTakeProfitPositionLine(chart, shortPosition)
-                  : undefined,
-              stopLoss:
-                shortPosition.stopLossThreadIsSet &&
-                shortPosition.stopLossLimitPrice &&
-                shortPosition.stopLossLimitPrice > 0
-                  ? createStopLossPositionLine(chart, shortPosition)
-                  : undefined,
             };
           }
         } else if (newPositionLines.short) {
           newPositionLines.short.entry.remove();
-
           if (newPositionLines.short.liquidation)
             newPositionLines.short.liquidation.remove();
-          if (newPositionLines.short.takeProfit)
-            newPositionLines.short.takeProfit.remove();
-          if (newPositionLines.short.stopLoss)
-            newPositionLines.short.stopLoss.remove();
-
           newPositionLines.short = null;
         }
       }
@@ -466,13 +327,7 @@ export default function TradingChart({
       // ignore error due to conflicts with charts and react effects
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    positions,
-    token.symbol,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    !!widget,
-    widgetReady,
-  ]);
+  }, [positions, token.symbol, !!widget, widgetReady]);
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary backdrop-blur-md">
@@ -489,13 +344,11 @@ export default function TradingChart({
           The chart is provided by TradingView, an advanced platform that
           provides unparalleled access to live data e.g.
           <Link
-            href={`https://www.tradingview.com/symbols/${
-              token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
-            }USD/`}
+            href={`https://www.tradingview.com/symbols/${token.symbol}USD/`}
             target="__blank"
             className="ml-1 underline"
           >
-            {token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'} USD chart
+            {token.symbol} USD chart
           </Link>
         </div>
       </div>

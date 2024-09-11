@@ -21,8 +21,6 @@ export default function Settings({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  isIcon = false,
-  isGenesis = false,
 }: {
   activeRpc: {
     name: string;
@@ -39,8 +37,6 @@ export default function Settings({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  isIcon?: boolean;
-  isGenesis?: boolean;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 500px)');
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
@@ -51,17 +47,14 @@ export default function Settings({
     <Menu
       trigger={
         <Button
-          title={!isIcon && isBigScreen ? 'Settings' : null}
+          title={isBigScreen ? 'Settings' : null}
           variant="outline"
-          leftIcon={!isIcon && isBigScreen ? null : settingsIcon}
-          className={!isIcon && isBigScreen ? '' : 'w-6 h-6 p-0'}
+          leftIcon={isBigScreen ? null : settingsIcon}
+          className={isBigScreen ? '' : 'w-6 h-6 p-0'}
           iconClassName="w-4 h-4"
         />
       }
-      openMenuClassName={twMerge(
-        'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg',
-        isGenesis ? 'sm:right-0 right-[-175px]' : 'right-0',
-      )}
+      openMenuClassName="right-0 rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg"
       disableOnClickInside={true}
       isDim={true}
     >

@@ -16,7 +16,6 @@ export default function Button({
   leftIcon,
   className,
   iconClassName,
-  loaderClassName,
   rightIconClassName,
   leftIconClassName,
   onClick,
@@ -34,7 +33,6 @@ export default function Button({
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
   className?: string;
   iconClassName?: string;
-  loaderClassName?: string;
   rightIconClassName?: string;
   leftIconClassName?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg';
@@ -57,11 +55,10 @@ export default function Button({
 
   const variants = {
     primary: `bg-highlight text-main opacity-90 hover:opacity-100 font-medium`,
-    secondary:
-      'bg-secondary text-white opacity-90 hover:opacity-100 font-medium',
+    secondary: 'bg-secondary text-white opacity-90 hover:opacity-100',
     danger: 'bg-red text-white hover:bg-red font-medium',
-    text: 'opacity-50 text-white hover:opacity-100 font-medium',
-    outline: 'border text-white hover:bg-bcolor font-medium',
+    text: 'opacity-50 text-white hover:opacity-100',
+    outline: 'border text-white hover:bg-bcolor',
   };
 
   const sizes = {
@@ -80,7 +77,7 @@ export default function Button({
         rounded ? 'rounded-full' : '',
         className,
         disabled || onClickInProgress
-          ? 'cursor-not-allowed pointer-events-none'
+          ? ' text-white cursor-not-allowed pointer-events-none'
           : null,
 
         disabled || onClickInProgress
@@ -121,11 +118,7 @@ export default function Button({
       ) : null}
 
       {onClickInProgress ? (
-        <Loader
-          height={23}
-          width={50}
-          className={twMerge('text-white', loaderClassName)}
-        />
+        <Loader height={23} width={50} className="text-white" />
       ) : null}
     </button>
   );

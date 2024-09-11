@@ -1,12 +1,13 @@
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Modal from '@/components/common/Modal/Modal';
-import { PositionExtended, UserProfileExtended } from '@/types';
+import { PositionExtended } from '@/types';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
-import StopLossTakeProfit from '../StopLossTakeProfit/StopLossTakeProfit';
+import PositionsArray from './PositionsArray';
 import PositionsBlocks from './PositionsBlocks';
 
 export default function Positions({
@@ -17,8 +18,8 @@ export default function Positions({
   positions,
   triggerPositionsReload,
   triggerUserProfileReload,
+  wrapped = true,
   isBigScreen,
-  userProfile,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -27,8 +28,8 @@ export default function Positions({
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
+  wrapped?: boolean;
   isBigScreen: boolean | null;
-  userProfile: UserProfileExtended | null | false;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -36,9 +37,6 @@ export default function Positions({
   const [positionToEdit, setPositionToEdit] = useState<PositionExtended | null>(
     null,
   );
-
-  const [positionToStopLossTakeProfit, setPositionToStopLossTakeProfit] =
-    useState<PositionExtended | null>(null);
 
   if (isBigScreen === null) return null;
 
@@ -66,7 +64,7 @@ export default function Positions({
           <Modal
             title="Edit Collateral"
             close={() => setPositionToEdit(null)}
-            className="flex flex-col items-center"
+            className={twMerge('flex flex-col items-center')}
           >
             <EditPositionCollateral
               position={positionToEdit}
@@ -78,40 +76,30 @@ export default function Positions({
             />
           </Modal>
         )}
-
-        {positionToStopLossTakeProfit && (
-          <Modal
-            title={`${
-              positionToStopLossTakeProfit.token.symbol !== 'JITOSOL'
-                ? positionToStopLossTakeProfit.token.symbol
-                : 'SOL'
-            } ${positionToStopLossTakeProfit.side} SL/TP`}
-            close={() => setPositionToStopLossTakeProfit(null)}
-            className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center"
-          >
-            <StopLossTakeProfit
-              position={positionToStopLossTakeProfit}
-              triggerPositionsReload={triggerPositionsReload}
-              triggerUserProfileReload={triggerUserProfileReload}
-              onClose={() => {
-                setPositionToStopLossTakeProfit(null);
-              }}
-              userProfile={userProfile}
-            />
-          </Modal>
-        )}
       </AnimatePresence>
 
-      <PositionsBlocks
-        bodyClassName={bodyClassName}
-        borderColor={borderColor}
-        connected={connected}
-        positions={positions}
-        className={className}
-        triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
-        triggerClosePosition={setPositionToClose}
-        triggerEditPositionCollateral={setPositionToEdit}
-      />
+      {isBigScreen ? (
+        <PositionsArray
+          bodyClassName={bodyClassName}
+          borderColor={borderColor}
+          connected={connected}
+          positions={positions}
+          className={className}
+          triggerClosePosition={setPositionToClose}
+          triggerEditPositionCollateral={setPositionToEdit}
+        />
+      ) : (
+        <PositionsBlocks
+          bodyClassName={bodyClassName}
+          borderColor={borderColor}
+          connected={connected}
+          positions={positions}
+          className={className}
+          triggerClosePosition={setPositionToClose}
+          triggerEditPositionCollateral={setPositionToEdit}
+          wrapped={wrapped}
+        />
+      )}
     </>
   );
 }

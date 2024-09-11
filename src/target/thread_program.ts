@@ -1,5 +1,5 @@
 export type ThreadProgram = {
-  version: '1.0.2';
+  version: '1.0.0-alpha.3';
   name: 'thread_program';
   docs: ['Program for creating transaction threads on Solana.'];
   constants: [
@@ -12,6 +12,13 @@ export type ThreadProgram = {
       name: 'THREAD_MINIMUM_FEE';
       type: 'u64';
       value: '1000';
+    },
+    {
+      name: 'NEXT_INSTRUCTION_SIZE';
+      type: {
+        defined: 'usize';
+      };
+      value: '1232';
     },
     {
       name: 'POOL_ID';
@@ -116,12 +123,6 @@ export type ThreadProgram = {
         {
           name: 'id';
           type: 'bytes';
-        },
-        {
-          name: 'domain';
-          type: {
-            option: 'bytes';
-          };
         },
         {
           name: 'instructions';
@@ -312,15 +313,9 @@ export type ThreadProgram = {
       accounts: [
         {
           name: 'authority';
-          isMut: false;
-          isSigner: true;
-          docs: ['The authority (owner) of the thread.'];
-        },
-        {
-          name: 'payer';
           isMut: true;
           isSigner: true;
-          docs: ['The payer of the reallocation.'];
+          docs: ['The authority (owner) of the thread.'];
         },
         {
           name: 'systemProgram';
@@ -389,7 +384,7 @@ export type ThreadProgram = {
           },
           {
             name: 'bump';
-            docs: ['The bump; used for PDA validation.'];
+            docs: ['The bump, used for PDA validation.'];
             type: 'u8';
           },
           {
@@ -397,12 +392,6 @@ export type ThreadProgram = {
             docs: ['The cluster clock at the moment the thread was created.'];
             type: {
               defined: 'ClockData';
-            };
-          },
-          {
-            name: 'domain';
-            type: {
-              option: 'bytes';
             };
           },
           {
@@ -423,7 +412,7 @@ export type ThreadProgram = {
           },
           {
             name: 'id';
-            docs: ['The id of the thread; given by the authority.'];
+            docs: ['The id of the thread, given by the authority.'];
             type: 'bytes';
           },
           {
@@ -434,6 +423,11 @@ export type ThreadProgram = {
                 defined: 'SerializableInstruction';
               };
             };
+          },
+          {
+            name: 'name';
+            docs: ['The name of the thread.'];
+            type: 'string';
           },
           {
             name: 'nextInstruction';
@@ -855,13 +849,10 @@ export type ThreadProgram = {
       msg: 'Withdrawing this amount would leave the thread with less than the minimum required SOL for rent exemption';
     },
   ];
-  metadata: {
-    address: 'sabGLGXfBiUCkwtprPMtatG6tCNxhcWWs1hjQAvDqEE';
-  };
 };
 
 export const IDL: ThreadProgram = {
-  version: '1.0.2',
+  version: '1.0.0-alpha.3',
   name: 'thread_program',
   docs: ['Program for creating transaction threads on Solana.'],
   constants: [
@@ -874,6 +865,13 @@ export const IDL: ThreadProgram = {
       name: 'THREAD_MINIMUM_FEE',
       type: 'u64',
       value: '1000',
+    },
+    {
+      name: 'NEXT_INSTRUCTION_SIZE',
+      type: {
+        defined: 'usize',
+      },
+      value: '1232',
     },
     {
       name: 'POOL_ID',
@@ -978,12 +976,6 @@ export const IDL: ThreadProgram = {
         {
           name: 'id',
           type: 'bytes',
-        },
-        {
-          name: 'domain',
-          type: {
-            option: 'bytes',
-          },
         },
         {
           name: 'instructions',
@@ -1174,15 +1166,9 @@ export const IDL: ThreadProgram = {
       accounts: [
         {
           name: 'authority',
-          isMut: false,
-          isSigner: true,
-          docs: ['The authority (owner) of the thread.'],
-        },
-        {
-          name: 'payer',
           isMut: true,
           isSigner: true,
-          docs: ['The payer of the reallocation.'],
+          docs: ['The authority (owner) of the thread.'],
         },
         {
           name: 'systemProgram',
@@ -1251,7 +1237,7 @@ export const IDL: ThreadProgram = {
           },
           {
             name: 'bump',
-            docs: ['The bump; used for PDA validation.'],
+            docs: ['The bump, used for PDA validation.'],
             type: 'u8',
           },
           {
@@ -1259,12 +1245,6 @@ export const IDL: ThreadProgram = {
             docs: ['The cluster clock at the moment the thread was created.'],
             type: {
               defined: 'ClockData',
-            },
-          },
-          {
-            name: 'domain',
-            type: {
-              option: 'bytes',
             },
           },
           {
@@ -1285,7 +1265,7 @@ export const IDL: ThreadProgram = {
           },
           {
             name: 'id',
-            docs: ['The id of the thread; given by the authority.'],
+            docs: ['The id of the thread, given by the authority.'],
             type: 'bytes',
           },
           {
@@ -1296,6 +1276,11 @@ export const IDL: ThreadProgram = {
                 defined: 'SerializableInstruction',
               },
             },
+          },
+          {
+            name: 'name',
+            docs: ['The name of the thread.'],
+            type: 'string',
           },
           {
             name: 'nextInstruction',
@@ -1717,7 +1702,4 @@ export const IDL: ThreadProgram = {
       msg: 'Withdrawing this amount would leave the thread with less than the minimum required SOL for rent exemption',
     },
   ],
-  metadata: {
-    address: 'sabGLGXfBiUCkwtprPMtatG6tCNxhcWWs1hjQAvDqEE',
-  },
 };

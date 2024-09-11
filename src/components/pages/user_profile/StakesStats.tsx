@@ -1,5 +1,4 @@
 import Button from '@/components/common/Button/Button';
-import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -23,31 +22,40 @@ export default function StakesStats({
 }) {
   return (
     <StyledContainer title="Ongoing Stakes" titleClassName="text-2xl">
-      <div className="flex flex-col sm:flex-row gap-3">
-        <NumberDisplay
-          title="Liquid Staked ADX"
-          nb={liquidStakedADX}
-          precision={window.adrena.client.adxToken.decimals}
-          placeholder="0 ADX"
-          suffix=" ADX"
-        />
+      <StyledSubSubContainer className="flex-col">
+        <div className="flex w-full items-center justify-between">
+          <div className="text-sm">Liquid Staked ADX</div>
 
-        <NumberDisplay
-          title="Locked Staked ADX"
-          nb={lockedStakedADX}
-          precision={window.adrena.client.adxToken.decimals}
-          placeholder="0 ADX"
-          suffix=" ADX"
-        />
+          <FormatNumber
+            nb={liquidStakedADX}
+            precision={window.adrena.client.adxToken.decimals}
+            placeholder="–"
+            suffix=" ADX"
+          />
+        </div>
 
-        <NumberDisplay
-          title="Locked Staked ALP"
-          nb={lockedStakedALP}
-          precision={window.adrena.client.alpToken.decimals}
-          placeholder="0 ALP"
-          suffix=" ALP"
-        />
-      </div>
+        <div className="flex w-full items-center justify-between">
+          <div className="text-sm">Locked Staked ADX</div>
+
+          <FormatNumber
+            nb={lockedStakedADX}
+            precision={window.adrena.client.adxToken.decimals}
+            placeholder="–"
+            suffix=" ADX"
+          />
+        </div>
+
+        <div className="flex w-full items-center justify-between">
+          <div className="text-sm">Locked Staked ALP</div>
+
+          <FormatNumber
+            nb={lockedStakedALP}
+            precision={window.adrena.client.alpToken.decimals}
+            placeholder="–"
+            suffix=" ALP"
+          />
+        </div>
+      </StyledSubSubContainer>
 
       {lockedStakes?.length ? (
         <div className="mt-2">
@@ -56,7 +64,7 @@ export default function StakesStats({
             Stakes
           </span>
 
-          <div className="flex flex-row flex-wrap mt-2 gap-3">
+          <div className="flex flex-col mt-2 gap-y-2">
             {lockedStakes ? (
               lockedStakes.map((lockedStake, i) => (
                 <LockedStakedElement

@@ -20,7 +20,7 @@ export default function TradingStatsBloc({
     >
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Opened Positions Count</div>
+          <div className="text-sm">Opened Position Count</div>
 
           <FormatNumber
             nb={
@@ -44,7 +44,7 @@ export default function TradingStatsBloc({
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <div className="text-sm">All time volume</div>
+          <div className="text-sm">Opening Size</div>
 
           <FormatNumber
             nb={
@@ -57,18 +57,44 @@ export default function TradingStatsBloc({
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Account PnL</div>
+          <div className="text-sm">Profits</div>
 
-          <FormatNumber
-            nb={
-              userProfile.longStats.profitsUsd +
-              userProfile.shortStats.profitsUsd +
-              (userProfile.longStats.lossesUsd +
-                userProfile.shortStats.lossesUsd)
-            }
-            format="currency"
-            precision={3}
-          />
+          {userProfile.longStats.profitsUsd +
+            userProfile.shortStats.profitsUsd ===
+          0 ? (
+            <span className="font-mono">$0</span>
+          ) : (
+            <FormatNumber
+              nb={
+                userProfile.longStats.profitsUsd +
+                userProfile.shortStats.profitsUsd
+              }
+              format="currency"
+              precision={3}
+              className="text-green"
+            />
+          )}
+        </div>
+
+        <div className="flex w-full items-center justify-between">
+          <div className="text-sm">Losses</div>
+
+          {userProfile.longStats.lossesUsd +
+            userProfile.shortStats.lossesUsd ===
+          0 ? (
+            <span className="font-mono">$0</span>
+          ) : (
+            <FormatNumber
+              nb={
+                userProfile.longStats.lossesUsd +
+                userProfile.shortStats.lossesUsd
+              }
+              format="currency"
+              precision={3}
+              className="text-red"
+              prefix="-"
+            />
+          )}
         </div>
 
         <div className="flex w-full items-center justify-between">

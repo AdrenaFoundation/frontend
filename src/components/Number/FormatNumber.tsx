@@ -15,7 +15,6 @@ interface FormatNumberProps {
   isDecimalDimmed?: boolean;
   minimumFractionDigits?: number;
   precisionIfPriceDecimalsBelow?: number;
-  isLoading?: boolean;
 }
 
 const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
@@ -32,21 +31,9 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       isDecimalDimmed = true,
       minimumFractionDigits = 0,
       precisionIfPriceDecimalsBelow = 6,
-      isLoading = false,
     },
     ref,
   ) => {
-    if (isLoading) {
-      return (
-        <div
-          className={twMerge(
-            'top-0 left-0 h-full w-[100px] p-3 bg-third rounded-lg z-10 transition-opacity duration-300',
-            isLoading ? 'animate-pulse opacity-100' : 'opacity-0',
-          )}
-        />
-      );
-    }
-
     if (nb === null || typeof nb === 'undefined') {
       return (
         <p

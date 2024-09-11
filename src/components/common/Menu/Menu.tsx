@@ -97,7 +97,7 @@ export default function Menu({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="absolute top-0 left-0 w-full h-full bg-black/75 z-30"
+          className="absolute top-0 left-0 w-full h-full bg-black/75"
         />
       )}
     </>

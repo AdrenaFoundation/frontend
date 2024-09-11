@@ -12,16 +12,10 @@ export default function Table({
   columnsTitles,
   data,
   rowTitleWidth,
-  columnTitlesClassName,
-  rowTitleClassName,
-  columnWrapperClassName,
 }: {
   breakpoint?: string | null;
   className?: string;
   columnsTitles?: ReactNode[];
-  columnTitlesClassName?: string;
-  rowTitleClassName?: string;
-  columnWrapperClassName?: string;
   data: (
     | {
         rowTitle: ReactNode;
@@ -42,7 +36,7 @@ export default function Table({
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
       <div className="flex pb-2">
         <div
-          className={twMerge('flex shrink-0 ml-2', columnWrapperClassName)}
+          className="flex shrink-0 ml-2"
           style={{
             width: rowTitleWidth ?? '150px',
           }}
@@ -51,10 +45,7 @@ export default function Table({
         {(columnsTitles ?? []).map((title, i) => (
           <div
             key={i}
-            className={twMerge(
-              'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
-              columnTitlesClassName,
-            )}
+            className="text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade"
           >
             {title}
           </div>
@@ -64,7 +55,7 @@ export default function Table({
       {data.map(({ rowTitle, ...v }, i) => (
         <div key={i} className="flex w-full border-b last:border-b-0 text-base">
           <div
-            className={twMerge('flex shrink-0 items-center', rowTitleClassName)}
+            className="flex shrink-0 items-center"
             style={{
               width: rowTitleWidth ?? '150px',
             }}
@@ -80,7 +71,7 @@ export default function Table({
             return values.map((value, j) => (
               <div
                 key={j}
-                className="p-[0.3em]  flex grow flex-shrink-0 basis-0"
+                className="p-[0.3em] text-txtfade flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well
                   maxWidth: `calc(100% - ${rowTitleWidth ?? '150px'})`,
@@ -94,12 +85,6 @@ export default function Table({
       ))}
     </StyledSubSubContainer>
   ) : (
-    <Block
-      data={data}
-      columnTitlesClassName={columnTitlesClassName}
-      rowTitleClassName={rowTitleClassName}
-      columnsTitles={columnsTitles}
-      className={className}
-    />
+    <Block data={data} columnsTitles={columnsTitles} />
   );
 }

@@ -2,7 +2,7 @@ import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -23,13 +23,11 @@ import {
   AdrenaTransactionError,
   formatNumber,
   formatPriceInfo,
-  nativeToUi,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
 
 import errorImg from '../../../../../public/images/Icons/error.svg';
-import solLogo from '../../../../../public/images/sol.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
@@ -73,67 +71,6 @@ export default function LongShortTradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  /** Resize handling for component max button display **/
-  const [componentWidth, setComponentWidth] = useState(0);
-  const componentRef = useRef<HTMLDivElement>(null);
-
-  const updateComponentWidth = () => {
-    if (componentRef.current) {
-      setComponentWidth(componentRef.current.offsetWidth);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('resize', updateComponentWidth);
-    updateComponentWidth();
-    return () => {
-      window.removeEventListener('resize', updateComponentWidth);
-    };
-  }, []);
-
-  const calculateMax = async () => {
-    if (!walletTokenBalances || !tokenA) return;
-
-    // Pick up the maximum amount the user can use, considering:
-    // the custody liquidity, the max position size and the user wallet amount
-    const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
-
-    const tokenPriceA = tokenPrices[tokenA.symbol];
-
-    if (custody && tokenPriceB && tokenPriceA) {
-      const latestCustody = await window.adrena.client
-        .getReadonlyAdrenaProgram()
-        .account.custody.fetch(custody.pubkey);
-
-      const latestAvailableLiquidity = nativeToUi(
-        latestCustody.assets.owned.sub(latestCustody.assets.locked),
-        latestCustody.decimals,
-      );
-
-      const availableCustodyLiquidity = Number(
-        (
-          (latestAvailableLiquidity * tokenPriceB) /
-          tokenPriceA /
-          leverage
-        ).toFixed(tokenA.decimals),
-      );
-
-      const maxPositionSize = Number(
-        (
-          (custody.maxPositionLockedUsd - (openedPosition?.sizeUsd ?? 0)) /
-          tokenPriceA /
-          leverage
-        ).toFixed(tokenA.decimals),
-      );
-
-      return handleInputAChange(
-        Math.min(userWalletAmount, availableCustodyLiquidity, maxPositionSize),
-      );
-    }
-
-    handleInputAChange(userWalletAmount);
-  };
-
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   const [inputA, setInputA] = useState<number | null>(null);
@@ -159,6 +96,8 @@ export default function LongShortTradingInputs({
     sizeUsd: number;
     size: number;
     swapFeeUsd: number | null;
+    openPositionFeeUsd: number;
+    totalOpenPositionFeeUsd: number;
     entryPrice: number;
     liquidationPrice: number;
     exitFeeUsd: number;
@@ -355,32 +294,19 @@ export default function LongShortTradingInputs({
     // Use positionInfos only
     if (positionInfos) {
       let priceUsd = positionInfos.sizeUsd;
+      let size = positionInfos.size;
 
       // Add current position
       if (openedPosition) {
+        size += openedPosition.sizeUsd / tokenPriceB;
         priceUsd += openedPosition.sizeUsd;
       }
 
+      // Round to token decimals
+      size = Number(size.toFixed(tokenB.decimals));
+
       setPriceB(priceUsd);
-
-      const solPrice = tokenPrices['SOL'];
-
-      // Cannot calculate size because we don't have SOL price
-      if (
-        tokenB.symbol === 'JITOSOL' &&
-        (solPrice === null || solPrice === 0)
-      ) {
-        return setInputB(null);
-      }
-
-      const size =
-        priceUsd /
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        (tokenB.symbol !== 'JITOSOL' ? tokenPriceB : solPrice!);
-
-      setInputB(
-        Number(size.toFixed(tokenB.symbol !== 'JITOSOL' ? tokenB.decimals : 9)),
-      );
+      setInputB(size);
     } else {
       setPriceB(null);
       setInputB(null);
@@ -438,10 +364,7 @@ export default function LongShortTradingInputs({
   };
 
   return (
-    <div
-      className={twMerge('relative flex flex-col sm:pb-2', className)}
-      ref={componentRef}
-    >
+    <div className={twMerge('relative flex flex-col sm:pb-2', className)}>
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
 
@@ -454,15 +377,6 @@ export default function LongShortTradingInputs({
 
           return (
             <div className="text-sm flex items-center justify-end h-6">
-              {connected && componentWidth < 350 ? (
-                <Button
-                  title="MAX"
-                  variant="text"
-                  className="text-sm h-6 opacity-70"
-                  size="xs"
-                  onClick={calculateMax}
-                />
-              ) : null}
               <Image
                 className="mr-1 opacity-60 relative"
                 src={walletImg}
@@ -497,18 +411,22 @@ export default function LongShortTradingInputs({
             subText={
               priceA ? (
                 <div className="text-sm text-txtfade font-mono">
-                  {priceA > 500000000
-                    ? `> ${formatPriceInfo(500000000)}`
-                    : formatPriceInfo(priceA)}
+                  {formatPriceInfo(priceA)}
                 </div>
               ) : null
             }
-            maxButton={connected && componentWidth >= 350}
+            maxButton={connected}
             selectedToken={tokenA}
             tokenList={allowedTokenA}
             onTokenSelect={setTokenA}
             onChange={handleInputAChange}
-            onMaxButtonClick={calculateMax}
+            onMaxButtonClick={() => {
+              if (!walletTokenBalances || !tokenA) return;
+
+              const amount = walletTokenBalances[tokenA.symbol];
+
+              handleInputAChange(amount);
+            }}
           />
 
           <LeverageSlider
@@ -528,19 +446,15 @@ export default function LongShortTradingInputs({
             selectedClassName="w-14"
             menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
             menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
-            selected={tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'}
+            selected={tokenB.symbol}
             options={allowedTokenB.map((token) => ({
-              title: token.symbol !== 'JITOSOL' ? token.symbol : 'SOL',
-              img: token.symbol !== 'JITOSOL' ? token.image : solLogo,
+              title: token.symbol,
+              img: token.image,
             }))}
             onSelect={(name) => {
               // Force linting, you cannot not find the token in the list
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const token = allowedTokenB.find(
-                (t) =>
-                  t.symbol === name ||
-                  (t.symbol === 'JITOSOL' && name === 'SOL'),
-              )!;
+              const token = allowedTokenB.find((t) => t.symbol === name)!;
               setTokenB(token);
 
               // if the prev value has more decimals than the new token, we need to adjust the value
@@ -755,6 +669,7 @@ export default function LongShortTradingInputs({
                     >
                       <FormatNumber
                         nb={
+                          openedPosition.entryFeeUsd +
                           openedPosition.exitFeeUsd +
                           (openedPosition.borrowFeeUsd ?? 0)
                         }
@@ -772,7 +687,14 @@ export default function LongShortTradingInputs({
                   className="flex-col mt-3"
                 >
                   <FormatNumber
-                    nb={positionInfos.exitFeeUsd}
+                    nb={
+                      typeof positionInfos?.totalOpenPositionFeeUsd !==
+                        'undefined' &&
+                      typeof positionInfos?.exitFeeUsd !== 'undefined'
+                        ? positionInfos.totalOpenPositionFeeUsd +
+                          positionInfos.exitFeeUsd
+                        : undefined
+                    }
                     format="currency"
                     className="text-lg"
                   />
@@ -787,7 +709,6 @@ export default function LongShortTradingInputs({
                   <FormatNumber
                     nb={custody && tokenB && custody.borrowFee}
                     precision={RATE_DECIMALS}
-                    minimumFractionDigits={4}
                     suffix="%/hr"
                     isDecimalDimmed={false}
                     className="text-lg"

@@ -318,20 +318,14 @@ export function addFailedTxNotification({
   });
 }
 
+// TODO: handle devnet/mainnet
 export function getTxExplorer(txHash: string): string {
-  const cluster = window.adrena.cluster;
-
-  return `https://explorer.solana.com/tx/${txHash}${
-    cluster === 'devnet' ? '?cluster=devnet' : ''
-  }`;
+  return `https://explorer.solana.com/tx/${txHash}?cluster=devnet`;
 }
 
+// TODO: handle devnet/mainnet
 export function getAccountExplorer(address: PublicKey): string {
-  const cluster = window.adrena.cluster;
-
-  return `https://explorer.solana.com/address/${address}${
-    cluster === 'devnet' ? '?cluster=devnet' : ''
-  }`;
+  return `https://explorer.solana.com/address/${address}?cluster=devnet`;
 }
 
 // Thrown as error when a transaction fails

@@ -14,7 +14,6 @@ import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 
-import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
@@ -110,7 +109,7 @@ export default function UsageOverview({
       subTitle="Is the pool capital efficient?"
       className={className}
     >
-      <div>
+      <StyledSubContainer>
         <div className="flex items-center">
           <InfoAnnotation
             text="Positions currently opened using the pool's capital."
@@ -118,16 +117,20 @@ export default function UsageOverview({
             title="Positions"
           />
         </div>
-        <div className="flex flex-row gap-3 mt-3">
-          <NumberDisplay title="Count" nb={numberOpenedPositions} />
 
-          <NumberDisplay
-            title="Open Interest"
-            nb={totalPositionsValue}
-            format="currency"
-          />
-        </div>
-      </div>
+        <StyledSubSubContainer className="flex-col mt-4">
+          <div className="flex w-full items-center justify-between">
+            <div className="text-sm">Count</div>
+            <FormatNumber nb={numberOpenedPositions} precision={1} />
+          </div>
+
+          <div className="flex w-full items-center justify-between">
+            <div className="text-sm">Total Value</div>
+
+            <FormatNumber nb={totalPositionsValue} format="currency" />
+          </div>
+        </StyledSubSubContainer>
+      </StyledSubContainer>
 
       <StyledSubContainer className="h-auto">
         <div className="flex items-center">

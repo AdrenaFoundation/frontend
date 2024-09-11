@@ -2,6 +2,7 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -18,9 +19,7 @@ export type Action = 'long' | 'short' | 'swap';
 function pickDefaultToken(positions: PositionExtended[] | null): Token {
   const tokens = window.adrena.client.tokens.filter((t) => !t.isStable);
 
-  const solToken = tokens.find(
-    (t) => t.symbol === 'JITOSOL' || t.symbol === 'SOL',
-  );
+  const solToken = tokens.find((t) => t.symbol === 'SOL');
 
   if (!solToken) throw new Error('SOL token not found');
 
@@ -59,7 +58,6 @@ export default function Trade({
   triggerPositionsReload,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
-  userProfile,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -87,9 +85,7 @@ export default function Trade({
     router.replace({
       query: {
         ...router.query,
-        pair: `${tokenA.symbol !== 'JITOSOL' ? tokenA.symbol : 'SOL'}_${
-          tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'
-        }`,
+        pair: `${tokenA.symbol}_${tokenB.symbol}`,
         action: selectedAction,
       },
     });
@@ -141,14 +137,10 @@ export default function Trade({
       const [tokenAName, tokenBName] = pair;
 
       const tokenA = tokenACandidate.find(
-        (token) =>
-          token.symbol === tokenAName ||
-          (token.symbol === 'JITOSOL' && tokenAName === 'SOL'),
+        (token) => token.symbol === tokenAName,
       );
       const tokenB = tokenBCandidate.find(
-        (token) =>
-          token.symbol === tokenBName ||
-          (token.symbol === 'JITOSOL' && tokenBName === 'SOL'),
+        (token) => token.symbol === tokenBName,
       );
 
       // bad URL
@@ -276,31 +268,37 @@ export default function Trade({
 
         {isBigScreen ? (
           <div className="flex flex-col w-full">
-            <Positions
-              className="mt-4"
-              connected={connected}
-              positions={positions}
-              triggerPositionsReload={triggerPositionsReload}
-              triggerUserProfileReload={triggerUserProfileReload}
-              isBigScreen={isBigScreen}
-              userProfile={userProfile}
-            />
+            <div
+              className={twMerge(
+                'flex z-30 overflow-hidden bg-main/90 xl:pl-3 xl:pr-3 border rounded-lg mt-4',
+                !positions?.length
+                  ? 'min-h-[15em] items-center justify-center'
+                  : null,
+              )}
+            >
+              <Positions
+                bodyClassName={'mt-3'}
+                connected={connected}
+                positions={positions}
+                triggerPositionsReload={triggerPositionsReload}
+                triggerUserProfileReload={triggerUserProfileReload}
+                isBigScreen={isBigScreen}
+              />
+            </div>
           </div>
         ) : (
           <div className="flex flex-row">
             <Positions
               className={
-                'mt-4 sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full'
+                'sm:w-1/2 sm:mr-4 lg:mr-0 lg:mt-4 md:w-[57%] lg:w-[65%] h-full'
               }
               connected={connected}
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               isBigScreen={isBigScreen}
-              userProfile={userProfile}
             />
-
-            <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
+            <div className="flex sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
                 setSelectedAction={setSelectedAction}
@@ -325,7 +323,7 @@ export default function Trade({
       <>
         {isBigScreen ? (
           <TradeComp
-            className="lg:max-h-[50em] hidden sm:flex lg:ml-4 lg:min-w-[25%]"
+            className="lg:max-h-[50em] hidden sm:flex lg:ml-4"
             selectedAction={selectedAction}
             setSelectedAction={setSelectedAction}
             tokenA={tokenA}
@@ -369,7 +367,7 @@ export default function Trade({
             </li>
             <li>
               <Button
-                className="bg-transparent font-boldy border-white text-white"
+                className="bg-transparent text-black font-boldy border-white text-white"
                 title="Swap"
                 variant="outline"
                 size="lg"

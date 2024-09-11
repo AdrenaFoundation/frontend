@@ -175,19 +175,6 @@ export default function AdrenaAccounts({
               />
             ),
           },
-          {
-            rowTitle: (
-              <div className="flex items-center font-boldy">
-                Genesis Lock <TitleAnnotation text="PDA" />
-              </div>
-            ),
-            value: (
-              <OnchainAccountInfo
-                className="md:ml-auto"
-                address={window.adrena.client.getGenesisLockPda()}
-              />
-            ),
-          },
         ]}
       />
     </StyledContainer>
