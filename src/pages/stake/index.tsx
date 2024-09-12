@@ -22,9 +22,7 @@ import {
   PageProps,
 } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
   getLockedStakeRemainingTime,
