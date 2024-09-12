@@ -125,6 +125,7 @@ export type PoolExtended = {
   pubkey: PublicKey;
 
   // Formatted data
+  aumSoftCapUsd: number;
   totalFeeCollected: number;
   profitsUsd: number;
   lossUsd: number;

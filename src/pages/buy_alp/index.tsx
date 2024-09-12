@@ -11,7 +11,6 @@ import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import RewardsAnimation from '@/components/pages/buy_alp_adx/RewardsAnimation/RewardsAnimation';
 import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import { alpLiquidityCap } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
@@ -36,6 +35,7 @@ export type FeesAndAmountsType = {
 export default function Buy({
   connected,
   triggerWalletTokenBalancesReload,
+  mainPool,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [collateralInput, setCollateralInput] = useState<number | null>(null);
@@ -56,7 +56,10 @@ export default function Buy({
     1000,
   );
   const aumUsd = useAssetsUnderManagement();
-  const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
+  const aumLiquidityRatio =
+    mainPool && mainPool.aumSoftCapUsd > 0 && aumUsd !== null
+      ? Math.round((aumUsd * 100) / mainPool.aumSoftCapUsd)
+      : 0;
 
   const getFeesAndAmounts = useCallback(async () => {
     const localLoadingCounter = ++loadingCounter;
@@ -262,7 +265,7 @@ export default function Buy({
                 /
               </span>
               <FormatNumber
-                nb={alpLiquidityCap}
+                nb={mainPool?.aumSoftCapUsd ?? null}
                 format="currency"
                 className="text-[1.2rem] sm:text-[2rem] font-bold opacity-50"
               />

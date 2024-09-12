@@ -449,6 +449,7 @@ export class AdrenaClient {
     const mainPoolExtended: PoolExtended = {
       pubkey: config.mainPool,
       aumUsd: nativeToUi(u128SplitToBN(mainPool.aumUsd), USD_DECIMALS),
+      aumSoftCapUsd: nativeToUi(mainPool.aumSoftCapUsd, USD_DECIMALS),
       totalFeeCollected: custodies.reduce(
         (tmp, custody) =>
           tmp +

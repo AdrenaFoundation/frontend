@@ -136,8 +136,6 @@ export const SUPPORTED_RESOLUTIONS = [
   '1D',
 ] as ResolutionString[];
 
-export const alpLiquidityCap = 10000000;
-
 export const VEST_BUCKETS = [
   'Core Contributor',
   'Dao Treasury',
