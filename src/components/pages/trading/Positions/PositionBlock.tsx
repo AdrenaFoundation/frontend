@@ -94,14 +94,14 @@ export default function PositionBlock({
           </div>
         </Link>
       ) : (
-        <div className="uppercase font-boldy text-sm lg:text-xl">
+        <div className="uppercase font-boldy text-sm lg:text-lg">
           {position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'}
         </div>
       )}
 
       <div
         className={twMerge(
-          'uppercase font-boldy text-sm lg:text-xl ml-1',
+          'uppercase font-boldy text-sm lg:text-lg ml-1',
           position.side === 'long' ? 'text-green' : 'text-red',
         )}
       >
