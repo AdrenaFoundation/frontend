@@ -1,5 +1,5 @@
+import { BN } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
-import BN from 'bn.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -214,6 +214,7 @@ export default function Genesis({
         owner: new PublicKey(wallet.walletAddress),
         stakedTokenMint: window.adrena.client.alpToken.mint,
         threadId: new BN(Date.now()),
+        notification: undefined as any, // TODO: handle it
       });
 
       triggerWalletTokenBalancesReload();

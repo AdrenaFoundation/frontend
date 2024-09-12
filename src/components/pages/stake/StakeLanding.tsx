@@ -155,14 +155,21 @@ export default function StakeLanding({
           ))}
         </ul>
 
-        <div className="bg-third rounded-lg border p-1 mt-10">
+        <div
+          className={twMerge(
+            'bg-secondary rounded-lg border p-1 mt-10',
+            token.name === 'ALP'
+              ? 'border-double border-[#3c2ed25f]'
+              : 'border-double border-[#da1a305f]',
+          )}
+        >
           <Table
             className="bg-transparent border-none"
             columnsTitles={token.days.map((d) =>
               d === 0 ? 'liquid' : `${d}d`,
             )}
-            columnTitlesClassName="text-base text-white"
-            rowTitleClassName="text-lg text-white uppercase font-boldy"
+            columnTitlesClassName="text-lg sm:text-sm text-white sm:opacity-50"
+            rowTitleClassName="text-base sm:text-sm text-white opacity-50 uppercase font-boldy"
             columnWrapperClassName="ml-1"
             data={[
               {
@@ -176,7 +183,7 @@ export default function StakeLanding({
             ].concat(
               token.name === 'ADX'
                 ? {
-                    rowTitle: 'Base voting power multiplier',
+                    rowTitle: 'Voting power',
                     values: Object.values(ADX_STAKE_MULTIPLIERS).map(
                       (v) => `${v.votes}x`,
                     ),

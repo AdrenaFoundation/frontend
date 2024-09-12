@@ -70,7 +70,6 @@ export default function useWatchWalletBalance(): {
           return balance.value.uiAmount;
         } catch {
           // Cannot find ATA
-          console.log('cannot find ATA for', mint.toString());
           return null;
         }
       }),

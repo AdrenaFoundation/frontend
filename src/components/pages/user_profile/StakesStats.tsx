@@ -1,4 +1,5 @@
 import Button from '@/components/common/Button/Button';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -22,40 +23,31 @@ export default function StakesStats({
 }) {
   return (
     <StyledContainer title="Ongoing Stakes" titleClassName="text-2xl">
-      <StyledSubSubContainer className="flex-col">
-        <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Liquid Staked ADX</div>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <NumberDisplay
+          title="Liquid Staked ADX"
+          nb={liquidStakedADX}
+          precision={window.adrena.client.adxToken.decimals}
+          placeholder="0 ADX"
+          suffix=" ADX"
+        />
 
-          <FormatNumber
-            nb={liquidStakedADX}
-            precision={window.adrena.client.adxToken.decimals}
-            placeholder="–"
-            suffix=" ADX"
-          />
-        </div>
+        <NumberDisplay
+          title="Locked Staked ADX"
+          nb={lockedStakedADX}
+          precision={window.adrena.client.adxToken.decimals}
+          placeholder="0 ADX"
+          suffix=" ADX"
+        />
 
-        <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Locked Staked ADX</div>
-
-          <FormatNumber
-            nb={lockedStakedADX}
-            precision={window.adrena.client.adxToken.decimals}
-            placeholder="–"
-            suffix=" ADX"
-          />
-        </div>
-
-        <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Locked Staked ALP</div>
-
-          <FormatNumber
-            nb={lockedStakedALP}
-            precision={window.adrena.client.alpToken.decimals}
-            placeholder="–"
-            suffix=" ALP"
-          />
-        </div>
-      </StyledSubSubContainer>
+        <NumberDisplay
+          title="Locked Staked ALP"
+          nb={lockedStakedALP}
+          precision={window.adrena.client.alpToken.decimals}
+          placeholder="0 ALP"
+          suffix=" ALP"
+        />
+      </div>
 
       {lockedStakes?.length ? (
         <div className="mt-2">

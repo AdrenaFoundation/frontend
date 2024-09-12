@@ -20,6 +20,8 @@ import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 
+import Button from '@/components/common/Button/Button';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
@@ -176,16 +178,11 @@ export default function GlobalHealthOverview({
       subTitle="Are the pool ratios on target?"
       className={className}
     >
-      <StyledSubContainer>
-        <h3>Assets Under Management</h3>
+      <div>
+        <h3 className="mb-3">Assets Under Management</h3>
 
-        <StyledSubSubContainer className="mt-4">
-          <div className="flex w-full items-center justify-between">
-            <div className="text-sm">Value</div>
-            <FormatNumber nb={aumUsd} format="currency" />
-          </div>
-        </StyledSubSubContainer>
-      </StyledSubContainer>
+        <NumberDisplay title="Value" nb={aumUsd} format="currency" />
+      </div>
 
       <StyledSubContainer className="h-auto">
         <div className="flex items-center">

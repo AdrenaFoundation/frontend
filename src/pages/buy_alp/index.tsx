@@ -18,6 +18,7 @@ import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
 import infoIcon from '../../../public/images/Icons/info.png';
+import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -34,7 +35,6 @@ export type FeesAndAmountsType = {
 
 export default function Buy({
   connected,
-  mainPool,
   triggerWalletTokenBalancesReload,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -55,7 +55,7 @@ export default function Buy({
     selectedAction === 'buy' ? collateralInput : alpInput,
     1000,
   );
-  const aumUsd = mainPool?.aumUsd;
+  const aumUsd = useAssetsUnderManagement();
   const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
 
   const getFeesAndAmounts = useCallback(async () => {
@@ -205,7 +205,7 @@ export default function Buy({
   if (allowedCollateralTokens === null) return <Loader />;
 
   return (
-    <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10 mt-[50px]">
+    <div className="flex flex-col gap-[150px] sm:gap-[250px] mx-5 sm:mx-10 mt-[150px] lg:mt-[50px]">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-4 p-4 lg:h-[800px]">
         <div className="absolute w-full h-full left-0 top-0 opacity-20">
           <RiveAnimation
@@ -217,6 +217,7 @@ export default function Buy({
               })
             }
             className="absolute top-0 left-0 h-full w-full scale-x-[-1]"
+            imageClassName="absolute top-0 left-0 w-full scale-x-[-1]"
           />
 
           <RiveAnimation
@@ -228,10 +229,11 @@ export default function Buy({
               })
             }
             className="absolute top-0 right-0 w-full h-full scale-y-[-1.2]"
+            imageClassName="absolute top-0 right-0 w-full"
           />
         </div>
 
-        <div className="flex flex-col justify-center items-start z-10">
+        <div className="flex flex-col justify-center items-start z-10 -translate-y-28">
           <h1 className="text-[2.6rem] lg:text-[4rem] uppercase max-w-[640px]">
             Buy ALP, receive 70% of all revenues
           </h1>

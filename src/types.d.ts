@@ -46,7 +46,12 @@ declare global {
   }
 }
 
-export type WalletAdapterName = 'phantom' | 'backpack' | 'walletConnect';
+export type WalletAdapterName =
+  | 'phantom'
+  | 'backpack'
+  | 'walletConnect'
+  | 'coinbase'
+  | 'solflare';
 
 export type PageProps = {
   mainPool: PoolExtended | null;
@@ -106,6 +111,11 @@ export type PositionExtended = {
   collateralAmount: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
+  stopLossClosePositionPrice?: number | null;
+  stopLossLimitPrice?: number | null;
+  stopLossThreadIsSet: boolean;
+  takeProfitLimitPrice?: number | null;
+  takeProfitThreadIsSet: boolean;
 
   // Onchain data
   nativeObject: Position;
