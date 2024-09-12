@@ -18,6 +18,7 @@ import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
 import infoIcon from '../../../public/images/Icons/info.png';
+import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -34,7 +35,6 @@ export type FeesAndAmountsType = {
 
 export default function Buy({
   connected,
-  mainPool,
   triggerWalletTokenBalancesReload,
 }: PageProps) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -55,7 +55,7 @@ export default function Buy({
     selectedAction === 'buy' ? collateralInput : alpInput,
     1000,
   );
-  const aumUsd = mainPool?.aumUsd;
+  const aumUsd = useAssetsUnderManagement();
   const aumLiquidityRatio = Math.round(((aumUsd ?? 0) * 100) / alpLiquidityCap);
 
   const getFeesAndAmounts = useCallback(async () => {
