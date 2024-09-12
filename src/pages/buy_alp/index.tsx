@@ -11,13 +11,13 @@ import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import RewardsAnimation from '@/components/pages/buy_alp_adx/RewardsAnimation/RewardsAnimation';
 import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
 import infoIcon from '../../../public/images/Icons/info.png';
-import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information

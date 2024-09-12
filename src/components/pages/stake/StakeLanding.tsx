@@ -98,7 +98,7 @@ export default function StakeLanding({
   const LANDING = (token: (typeof TOKENS)[0]) => {
     return (
       <div
-        className="flex-1 p-[30px] sm:px-[50px] sm:py-0 z-20 h-full"
+        className="flex-1 p-[30px] lg:px-[50px] z-20 h-full"
         style={
           isMobile
             ? {
@@ -120,7 +120,14 @@ export default function StakeLanding({
               className="w-10 h-10 opacity-10"
             />
           </div>
-          <p className="text-base">{token.desc}</p>
+          <p
+            className={twMerge(
+              'text-base',
+              token.name === 'ALP' && 'mb-[41px]',
+            )}
+          >
+            {token.desc}
+          </p>
         </div>
 
         <Button
