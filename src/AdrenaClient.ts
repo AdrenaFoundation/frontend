@@ -3144,8 +3144,6 @@ export class AdrenaClient {
     minLpAmountOut: BN;
     notification?: MultiStepNotification;
   }) {
-    const preInstructions: TransactionInstruction[] = [];
-
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
@@ -3239,7 +3237,6 @@ export class AdrenaClient {
         genesisLock,
       })
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
-      .preInstructions(preInstructions)
       .transaction();
 
     return this.signAndExecuteTx(transaction, notification);

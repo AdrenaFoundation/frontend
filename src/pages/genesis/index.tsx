@@ -16,7 +16,7 @@ import TradingInput from '@/components/pages/trading/TradingInput/TradingInput';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import Settings from '@/components/Settings/Settings';
 import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
-import { GENESIS_REWARD_SHARE_OF_TOTAL_ADX_SUPPLY } from '@/constant';
+import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
@@ -83,27 +83,11 @@ export default function Genesis({
   const totalADXSupply = useADXTotalSupply();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isGenesisLoading, setIsGenesisLoading] = useState(false);
-  const [isUserStakingAccountInit, setIsUserStakingAccountFound] =
-    useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const genesisReward = totalADXSupply
-    ? totalADXSupply * GENESIS_REWARD_SHARE_OF_TOTAL_ADX_SUPPLY
-    : null;
-
-  const adxPerUSDC =
-    genesis?.publicAmount && usdc?.decimals && genesisReward
-      ? genesisReward / nativeToUi(genesis.publicAmountClaimed, usdc.decimals)
-      : null;
 
   useEffect(() => {
     getAlpAmount();
   }, [fundsAmountDebounced]);
-
-  useEffect(() => {
-    getUserStakingAccount();
-  }, [connected]);
 
   useEffect(() => {
     getGenesis();
@@ -122,7 +106,9 @@ export default function Genesis({
 
       if (isRebalancing) return setCurrentStep(3);
 
-      if (genesis.hasTransitionedToFullyPublic) return setCurrentStep(2);
+      if (daysElapsed >= 3) return setCurrentStep(2);
+
+      if (daysElapsed >= 2) return setCurrentStep(1);
 
       setCurrentStep(0);
     }
@@ -133,8 +119,6 @@ export default function Genesis({
       return;
     }
 
-    setIsGenesisLoading(true);
-
     try {
       const genesis = await window.adrena.client.getGensisLock();
 
@@ -143,10 +127,8 @@ export default function Genesis({
       }
 
       setGenesis(genesis as GenesisLock);
-      setIsGenesisLoading(false);
     } catch (error) {
       console.log('error fetching genesis', error);
-      setIsGenesisLoading(false);
     }
   };
 
@@ -162,7 +144,6 @@ export default function Genesis({
     if (!wallet) return;
 
     try {
-      // drop view and call instruction
       const alp = await window.adrena.client.getAddLiquidityAmountAndFee({
         amountIn: uiToNative(fundsAmount, usdc.decimals),
         token: usdc,
@@ -187,64 +168,36 @@ export default function Genesis({
     }
   };
 
-  const getUserStakingAccount = async () => {
-    if (!connected || !wallet) {
-      return;
-    }
-
-    try {
-      const userStaking = await window.adrena.client.getUserStakingAccount({
-        owner: new PublicKey(wallet.walletAddress),
-        stakedTokenMint: window.adrena.client.alpToken.mint,
-      });
-
-      if (!userStaking) {
-        setIsUserStakingAccountFound(false);
-      }
-    } catch (error) {
-      console.log('error fetching user staking', error);
-    }
-  };
-
-  const initUserStakingAccount = async () => {
-    if (!wallet) return;
-
-    try {
-      const txHash = await window.adrena.client.initUserStaking({
-        owner: new PublicKey(wallet.walletAddress),
-        stakedTokenMint: window.adrena.client.alpToken.mint,
-        threadId: new BN(Date.now()),
-        notification: undefined as any, // TODO: handle it
-      });
-
-      triggerWalletTokenBalancesReload();
-      setIsUserStakingAccountFound(true);
-      return addSuccessTxNotification({
-        title: 'Successful Transaction',
-        txHash,
-      });
-    } catch (error) {
-      console.log('error', error);
-      setErrorMsg('Error initializing user staking account');
-
-      return addFailedTxNotification({
-        title: 'Error Initializing User Staking Account',
-        error,
-      });
-    }
-  };
-
   const addGenesisLiquidity = async () => {
-    if (!fundsAmount) {
+    if (!fundsAmount || !usdc || !wallet) {
       return;
     }
 
-    if (!isUserStakingAccountInit) {
-      await initUserStakingAccount();
+    const userStaking = await window.adrena.client.getUserStakingAccount({
+      owner: new PublicKey(wallet.walletAddress),
+      stakedTokenMint: window.adrena.client.alpToken.mint,
+    });
+
+    if (!userStaking) {
+      const notification =
+        MultiStepNotification.newForRegularTransaction('Stake ALP 1/2').fire();
+
+      try {
+        await window.adrena.client.initUserStaking({
+          owner: new PublicKey(wallet.walletAddress),
+          stakedTokenMint: window.adrena.client.alpToken.mint,
+          threadId: new BN(Date.now()),
+          notification,
+        });
+      } catch (error) {
+        console.error('error', error);
+        return;
+      }
     }
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Buying ALP').fire();
+    const notification = MultiStepNotification.newForRegularTransaction(
+      !userStaking ? `Stake ALP (2/2)` : `Stake ALP`,
+    ).fire();
 
     try {
       if (!wallet) return;
@@ -291,7 +244,13 @@ export default function Genesis({
   const url = 'https://www.adrena.xyz/';
   const text = `Just bought some ALP locked and staked for 180 days`;
 
-  const MAX_USDC_AMOUNT = 500_000;
+  const MAX_USDC_AMOUNT = 250_000;
+
+  const maxAmount = walletTokenABalance
+    ? walletTokenABalance >= MAX_USDC_AMOUNT
+      ? MAX_USDC_AMOUNT
+      : walletTokenABalance
+    : null;
 
   const reservedGrantOwnerLeftAmount = reservedGrantOwners?.find(
     (owner) => owner.walletAddress === wallet?.walletAddress,
@@ -581,11 +540,11 @@ export default function Genesis({
                     selectedToken={usdc}
                     tokenList={[usdc]}
                     onMaxButtonClick={() => {
-                      setFundsAmount(walletTokenABalance ?? null);
+                      setFundsAmount(maxAmount);
                     }}
                     onChange={(e) => {
                       if (e !== null && e >= MAX_USDC_AMOUNT) {
-                        setErrorMsg('Max amount is 500,000 USDC');
+                        setFundsAmount(MAX_USDC_AMOUNT);
                         return;
                       }
                       setIsLoading(true);
@@ -642,9 +601,11 @@ export default function Genesis({
                 title="Provide Liquidity"
                 className="w-full mt-3 py-3"
                 disabled={
-                  !connected || !usdc || isLoading
-                  // !fundsAmount ||
-                  // !feeAndAmount?.amount
+                  !connected ||
+                  !usdc ||
+                  isLoading ||
+                  !fundsAmount ||
+                  !feeAndAmount?.amount
                 }
                 onClick={() => addGenesisLiquidity()}
               />
@@ -698,11 +659,10 @@ export default function Genesis({
 
                     <FormatNumber
                       nb={
-                        genesis && adxPerUSDC !== null && feeAndAmount?.amount
-                          ? feeAndAmount.amount * adxPerUSDC
+                        fundsAmount
+                          ? fundsAmount * GENESIS_REWARD_ADX_PER_USDC
                           : null
                       }
-                      isLoading={isLoading}
                       className="font-medium font-mono text-sm sm:text-lg"
                       suffix=" ADX"
                     />
