@@ -3025,10 +3025,12 @@ export class AdrenaClient {
     owner,
     stakedTokenMint,
     threadId,
+    notification,
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
     threadId: BN;
+    notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3121,7 +3123,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(instruction);
+    return this.signAndExecuteTx(instruction, notification);
   }
 
   public async getGensisLock(): Promise<GenesisLock | null> {

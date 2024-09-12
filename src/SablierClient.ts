@@ -148,7 +148,7 @@ export default class SablierClient {
 
     const threads = await this.readonlySablierThreadProgram.account.thread.all([
       {
-        dataSize: 2266, // Hardcoded size of the thread account containing the FinalizeLockedStaked ix
+        dataSize: 1489, // Hardcoded size of the thread account containing the FinalizeLockedStaked ix
       },
     ]);
 

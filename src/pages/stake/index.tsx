@@ -58,8 +58,6 @@ export default function Stake({
 }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [isUserStakingAccountInit, setIsUserStakingAccountFound] =
-    useState(true);
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -147,17 +145,39 @@ export default function Stake({
 
     if (!activeStakingToken) return;
 
-    if (!isUserStakingAccountInit) {
-      await initUserStakingAccount();
-    }
-
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Stake').fire();
-
     const stakedTokenMint =
       activeStakingToken === 'ADX'
         ? window.adrena.client.adxToken.mint
         : window.adrena.client.alpToken.mint;
+
+    const userStaking = await window.adrena.client.getUserStakingAccount({
+      owner,
+      stakedTokenMint,
+    });
+
+    if (!userStaking) {
+      const notification = MultiStepNotification.newForRegularTransaction(
+        `Stake ${activeStakingToken} (1/2)`,
+      ).fire();
+
+      try {
+        await window.adrena.client.initUserStaking({
+          owner: owner,
+          stakedTokenMint,
+          threadId: new BN(Date.now()),
+          notification,
+        });
+      } catch (error) {
+        console.error('error', error);
+        return;
+      }
+    }
+
+    const notification = MultiStepNotification.newForRegularTransaction(
+      !userStaking
+        ? `Stake ${activeStakingToken} (2/2)`
+        : `Stake ${activeStakingToken}`,
+    ).fire();
 
     try {
       lockPeriod === 0
@@ -440,56 +460,6 @@ export default function Stake({
     getTotalStaked,
     wallet,
   ]);
-
-  useEffect(() => {
-    getUserStakingAccount();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected]);
-
-  const getUserStakingAccount = async () => {
-    if (!connected || !wallet) {
-      return;
-    }
-
-    try {
-      const userStaking = await window.adrena.client.getUserStakingAccount({
-        owner: new PublicKey(wallet.walletAddress),
-        stakedTokenMint: window.adrena.client.alpToken.mint,
-      });
-
-      if (!userStaking) {
-        setIsUserStakingAccountFound(false);
-      }
-    } catch (error) {
-      console.log('error fetching user staking', error);
-    }
-  };
-
-  const initUserStakingAccount = async () => {
-    if (!wallet) return;
-
-    try {
-      const txHash = await window.adrena.client.initUserStaking({
-        owner: new PublicKey(wallet.walletAddress),
-        stakedTokenMint: window.adrena.client.alpToken.mint,
-        threadId: new BN(Date.now()),
-      });
-
-      triggerWalletTokenBalancesReload();
-      setIsUserStakingAccountFound(true);
-      return addSuccessTxNotification({
-        title: 'Successful Transaction',
-        txHash,
-      });
-    } catch (error) {
-      console.log('error', error);
-
-      return addFailedTxNotification({
-        title: 'Error Initializing User Staking Account',
-        error,
-      });
-    }
-  };
 
   const modal = activeStakingToken && (
     <Modal
