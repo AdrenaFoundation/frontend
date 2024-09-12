@@ -326,8 +326,6 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(user);
 
-    console.log('User profile Pda', userProfilePda.toBase58());
-
     const p = await (
       this.readonlyAdrenaProgram || this.adrenaProgram
     ).account.userProfile.fetchNullable(userProfilePda, 'processed');
