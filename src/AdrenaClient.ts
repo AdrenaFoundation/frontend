@@ -4253,20 +4253,36 @@ export class AdrenaClient {
         };
       }),
 
-      ...custodiesAddresses.map((pubkey) => {
-        const custody = this.custodies.find((custody) =>
-          custody.pubkey.equals(pubkey),
-        );
+      // Only keep the ones that have a trade oracle different from oracle
+      ...custodiesAddresses.reduce(
+        (metadataArr, pubkey) => {
+          const custody = this.custodies.find((custody) =>
+            custody.pubkey.equals(pubkey),
+          );
 
-        // Should never happens
-        if (!custody) throw new Error('Custody not found');
+          // Should never happens
+          if (!custody) throw new Error('Custody not found');
 
-        return {
-          pubkey: custody.nativeObject.tradeOracle,
-          isSigner: false,
-          isWritable: false,
-        };
-      }),
+          if (
+            custody.nativeObject.oracle.equals(custody.nativeObject.tradeOracle)
+          )
+            return metadataArr;
+
+          return [
+            ...metadataArr,
+            {
+              pubkey: custody.nativeObject.tradeOracle,
+              isSigner: false,
+              isWritable: false,
+            },
+          ];
+        },
+        [] as {
+          pubkey: PublicKey;
+          isSigner: boolean;
+          isWritable: boolean;
+        }[],
+      ),
     ];
   }
 
