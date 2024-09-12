@@ -3157,7 +3157,6 @@ export class AdrenaClient {
       .publicKey;
     const fundingAccount = findATAAddressSync(owner, usdc.mint);
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
-    const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
     const lpStaking = this.getStakingPda(this.lpTokenMint);
     const lpUserStaking = this.getUserStakingPda(owner, lpStaking);
     const cortex = AdrenaClient.cortexPda;
@@ -3210,7 +3209,6 @@ export class AdrenaClient {
       .accountsStrict({
         owner,
         fundingAccount,
-        lpTokenAccount,
         transferAuthority,
         lpUserStaking,
         lpStaking,

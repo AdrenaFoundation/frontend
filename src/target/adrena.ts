@@ -2080,19 +2080,11 @@ export type Adrena = {
           ]
         },
         {
-          "name": "lpTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#3"
           ]
         },
         {
@@ -2100,7 +2092,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#4"
           ]
         },
         {
@@ -2108,7 +2100,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#5"
           ]
         },
         {
@@ -2116,7 +2108,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#6"
           ]
         },
         {
@@ -2124,7 +2116,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#7"
           ]
         },
         {
@@ -2132,7 +2124,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#8"
           ]
         },
         {
@@ -2140,7 +2132,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#9"
           ]
         },
         {
@@ -2148,7 +2140,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#10"
           ]
         },
         {
@@ -2156,7 +2148,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#11"
           ]
         },
         {
@@ -2164,7 +2156,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#12"
           ]
         },
         {
@@ -2172,7 +2164,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -2180,7 +2172,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -2188,7 +2180,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16",
+            "#15",
             "A realm represent one project within the governance program"
           ]
         },
@@ -2197,7 +2189,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#16"
           ]
         },
         {
@@ -2205,7 +2197,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18",
+            "#17",
             "Token account owned by governance program holding user's locked tokens"
           ]
         },
@@ -2214,7 +2206,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#19",
+            "#18",
             "Account owned by governance storing user information"
           ]
         },
@@ -2223,7 +2215,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#19"
           ]
         },
         {
@@ -2231,7 +2223,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#20"
           ]
         },
         {
@@ -2239,7 +2231,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#21"
           ]
         },
         {
@@ -2247,7 +2239,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#22"
           ]
         },
         {
@@ -2255,7 +2247,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#25"
+            "#23"
           ]
         },
         {
@@ -2263,7 +2255,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#26"
+            "#24"
           ]
         },
         {
@@ -2271,7 +2263,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#25"
           ]
         },
         {
@@ -2279,7 +2271,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#26"
           ]
         }
       ],
@@ -14273,19 +14265,11 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "lpTokenAccount",
-          "isMut": true,
-          "isSigner": false,
-          "docs": [
-            "#3"
-          ]
-        },
-        {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#3"
           ]
         },
         {
@@ -14293,7 +14277,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#4"
           ]
         },
         {
@@ -14301,7 +14285,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#5"
           ]
         },
         {
@@ -14309,7 +14293,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#6"
           ]
         },
         {
@@ -14317,7 +14301,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#7"
           ]
         },
         {
@@ -14325,7 +14309,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#8"
           ]
         },
         {
@@ -14333,7 +14317,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#9"
           ]
         },
         {
@@ -14341,7 +14325,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#10"
           ]
         },
         {
@@ -14349,7 +14333,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#11"
           ]
         },
         {
@@ -14357,7 +14341,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#12"
           ]
         },
         {
@@ -14365,7 +14349,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#13"
           ]
         },
         {
@@ -14373,7 +14357,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#14"
           ]
         },
         {
@@ -14381,7 +14365,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16",
+            "#15",
             "A realm represent one project within the governance program"
           ]
         },
@@ -14390,7 +14374,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#16"
           ]
         },
         {
@@ -14398,7 +14382,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18",
+            "#17",
             "Token account owned by governance program holding user's locked tokens"
           ]
         },
@@ -14407,7 +14391,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#19",
+            "#18",
             "Account owned by governance storing user information"
           ]
         },
@@ -14416,7 +14400,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#19"
           ]
         },
         {
@@ -14424,7 +14408,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#20"
           ]
         },
         {
@@ -14432,7 +14416,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#21"
           ]
         },
         {
@@ -14440,7 +14424,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#22"
           ]
         },
         {
@@ -14448,7 +14432,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#25"
+            "#23"
           ]
         },
         {
@@ -14456,7 +14440,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#26"
+            "#24"
           ]
         },
         {
@@ -14464,7 +14448,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#27"
+            "#25"
           ]
         },
         {
@@ -14472,7 +14456,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#28"
+            "#26"
           ]
         }
       ],
