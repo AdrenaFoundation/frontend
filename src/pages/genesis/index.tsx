@@ -214,6 +214,7 @@ export default function Genesis({
         owner: new PublicKey(wallet.walletAddress),
         stakedTokenMint: window.adrena.client.alpToken.mint,
         threadId: new BN(Date.now()),
+        notification: undefined as any, // TODO: handle it
       });
 
       triggerWalletTokenBalancesReload();
