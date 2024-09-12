@@ -121,7 +121,7 @@ export default function StopLossTakeProfitInput({
       </div>
 
       <div className="flex flex-col items-center justify-center w-full pl-6 pr-6 gap-4">
-        <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 grow text-sm w-full">
+        <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 grow text-sm w-full relative">
           <InputNumber
             value={input === null ? undefined : input}
             placeholder="price"
@@ -129,6 +129,13 @@ export default function StopLossTakeProfitInput({
             onChange={setInput}
             inputFontSize="1em"
           />
+
+          <div
+            className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
+            onClick={() => setInput(null)}
+          >
+            delete
+          </div>
         </div>
 
         <div className="flex">
