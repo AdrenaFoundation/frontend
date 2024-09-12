@@ -344,6 +344,7 @@ export default function EditPositionCollateral({
                     nb={balance}
                     precision={position.collateralToken.decimals}
                     className="text-txtfade"
+                    isDecimalDimmed={false}
                   />
                   <span className="text-sm text-txtfade ml-1">
                     {position.collateralToken.symbol} in wallet
@@ -378,6 +379,7 @@ export default function EditPositionCollateral({
               nb={position.collateralUsd}
               format="currency"
               className="inline"
+              isDecimalDimmed={false}
             />{' '}
             of collateral in the position
           </div>

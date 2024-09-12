@@ -277,8 +277,6 @@ export default function LongShortTradingInputs({
   ]);
 
   useEffect(() => {
-    console.log('Trigger recalculation');
-
     if (!tokenA || !tokenB || !inputA) {
       setPositionInfos(null);
       return;
