@@ -66,8 +66,10 @@ export default function Settings({
       isDim={true}
     >
       <div className="flex mb-3">
-        <h2 className="text-blue-500">Devnet</h2>
-        <h2 className="flex ml-1">RPC endpoints</h2>
+        {window.adrena.cluster === 'devnet' ? (
+          <h2 className="text-blue-500 pr-1">Devnet</h2>
+        ) : null}
+        <h2 className="flex">RPC endpoints</h2>
       </div>
 
       <div className="flex flex-row justify-between items-center">
