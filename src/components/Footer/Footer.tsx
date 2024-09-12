@@ -28,10 +28,7 @@ export default function Footer({ className }: { className?: string }) {
           />
         </Link>
 
-        <Link
-          href="https://github.com/orgs/AdrenaDEX/repositories"
-          target="_blank"
-        >
+        <Link href="https://github.com/orgs/AdrenaFoundation" target="_blank">
           <Image
             className="hover:opacity-100 opacity-50 cursor-pointer h-5 w-auto"
             src={githubLogo}
