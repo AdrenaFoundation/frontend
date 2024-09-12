@@ -414,9 +414,19 @@ export default function LongShortTradingInputs({
 
     const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
-    if (tokenPriceB !== null)
-      if (inputB * tokenPriceB > custody.maxPositionLockedUsd)
+    const solPrice = tokenPrices['SOL'];
+
+    if (tokenPriceB !== null) {
+      if (tokenB.symbol === 'JITOSOL') {
+        if (solPrice === null) {
+          return setErrorMessage(`Missing SOL price`);
+        }
+
+        if (inputB * solPrice > custody.maxPositionLockedUsd)
+          return setErrorMessage(`Position Exceeds Max Size`);
+      } else if (inputB * tokenPriceB > custody.maxPositionLockedUsd)
         return setErrorMessage(`Position Exceeds Max Size`);
+    }
 
     // If user wallet balance doesn't have enough tokens, tell user
     if (inputB > custody.liquidity)
