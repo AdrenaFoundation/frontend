@@ -3819,7 +3819,7 @@ export class AdrenaClient {
         pool: this.mainPool.pubkey,
         position: position.pubkey,
         custody: position.custody,
-        custodyOracle: custody.nativeObject.oracle,
+        custodyTradeOracle: custody.nativeObject.tradeOracle,
         collateralCustody: position.collateralCustody,
         collateralCustodyOracle: collateralCustody.nativeObject.oracle,
       },
