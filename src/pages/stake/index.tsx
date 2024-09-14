@@ -505,7 +505,7 @@ export default function Stake({
     </Modal>
   );
 
-  if (!isStakeLoaded) {
+  if (!isStakeLoaded && connected) {
     return (
       <div className="m-auto">
         <Loader />
