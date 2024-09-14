@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
@@ -28,7 +29,6 @@ import {
   getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
-import Loader from '@/components/Loader/Loader';
 
 export type ADXTokenDetails = {
   balance: number | null;

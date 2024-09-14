@@ -1,6 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
+import Head from 'next/head';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -36,7 +37,6 @@ import errorImg from '../../../public/images/Icons/error.svg';
 import lockIcon from '../../../public/images/Icons/lock.svg';
 import logo from '../../../public/images/logo.png';
 import xIcon from '../../../public/images/x-black-bg.png';
-import Head from 'next/head';
 
 export default function Genesis({
   connected,
