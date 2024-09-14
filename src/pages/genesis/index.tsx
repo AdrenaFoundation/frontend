@@ -36,6 +36,7 @@ import errorImg from '../../../public/images/Icons/error.svg';
 import lockIcon from '../../../public/images/Icons/lock.svg';
 import logo from '../../../public/images/logo.png';
 import xIcon from '../../../public/images/x-black-bg.png';
+import Head from 'next/head';
 
 export default function Genesis({
   connected,
@@ -256,8 +257,36 @@ export default function Genesis({
     (owner) => owner.walletAddress === wallet?.walletAddress,
   )?.maxAmount;
 
+  const OGIMage =
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-71fvOlnr2vEoiWIDHX6XH4jNdZWNdb.jpg';
   return (
     <>
+      <Head>
+        <title>Genesis Lock</title>
+        <meta
+          name="description"
+          content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
+        />
+        <meta property="og:title" content="Adrena Genesis Lock" />
+        <meta
+          property="og:description"
+          content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
+        />
+        <meta property="og:image" content={OGIMage} />
+        <meta property="og:url" content="https://app.adrena.xyz/genesis" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Adrena" />
+
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:creator" content="@AdrenaProtocol" />
+        <meta name="twitter:title" content="Adrena Genesis Lock" />
+        <meta
+          name="twitter:description"
+          content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
+        />
+        <meta name="twitter:image" content={OGIMage} />
+        <meta name="twitter:url" content="https://app.adrena.xyz/genesis" />
+      </Head>
       <ProgressBar currentStep={currentStep} genesis={genesis} />
 
       <div className="relative p-4 m-auto max-w-[1150px]">
