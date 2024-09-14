@@ -188,7 +188,7 @@ export default function VestStats({
                   data: [claimedAmount, claimableAmount, amount],
                   type: 'doughnut',
                   borderWidth: 0,
-                  backgroundColor: ['#501FDA', '#181349', '#192128'],
+                  backgroundColor: ['#9F8CAE', '#5C576B', '#192128'],
                 },
               ],
             }}

@@ -28,6 +28,7 @@ import {
   getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
+import Loader from '@/components/Loader/Loader';
 
 export type ADXTokenDetails = {
   balance: number | null;
@@ -106,6 +107,7 @@ export default function Stake({
 
   const [amount, setAmount] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isStakeLoaded, setIsStakeLoaded] = useState<boolean>(false);
 
   const adxBalance: number | null =
     walletTokenBalances?.[window.adrena.client.adxToken.symbol] ?? null;
@@ -446,6 +448,11 @@ export default function Stake({
       totalRedeemableStakeUSD:
         wallet && alpPrice ? alpPrice * getTotalRedeemableStake('ALP') : null,
     });
+
+    setTimeout(() => {
+      setIsStakeLoaded(true);
+    }, 500);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     adxBalance,
@@ -497,6 +504,14 @@ export default function Stake({
       )}
     </Modal>
   );
+
+  if (!isStakeLoaded) {
+    return (
+      <div className="m-auto">
+        <Loader />
+      </div>
+    );
+  }
 
   if (
     !connected ||
