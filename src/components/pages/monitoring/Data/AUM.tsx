@@ -1,16 +1,16 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import { PoolInfo } from '@/hooks/usePoolInfo';
+import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { formatPriceInfo } from '@/utils';
 
 export default function AUM({
-  poolInfo,
   titleClassName,
   bodyClassName,
 }: {
-  poolInfo: PoolInfo | null;
   titleClassName?: string;
   bodyClassName?: string;
 }) {
+  const aumUsd = useAssetsUnderManagement();
+
   return (
     <StyledContainer
       title="AUM"
@@ -19,7 +19,7 @@ export default function AUM({
       titleClassName={titleClassName}
     >
       <div className={bodyClassName}>
-        {poolInfo ? formatPriceInfo(poolInfo.aumUsd, 0) : '-'}
+        {aumUsd !== null ? formatPriceInfo(aumUsd, 0) : '-'}
       </div>
     </StyledContainer>
   );
