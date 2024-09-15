@@ -3126,13 +3126,13 @@ export class AdrenaClient {
   }
 
   public async getGensisLock(): Promise<GenesisLock | null> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram.views) {
       throw new Error('adrena program not ready');
     }
 
     const genesisLockPda = this.getGenesisLockPda();
 
-    return this.adrenaProgram?.account.genesisLock.fetch(genesisLockPda);
+    return this.readonlyAdrenaProgram.account.genesisLock.fetch(genesisLockPda);
   }
 
   public async addGenesisLiquidity({
