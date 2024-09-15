@@ -409,6 +409,7 @@ export function parseTransactionError(
     if (errName && errMessage) return `${errName}: ${errMessage}`;
     if (errName) return `Error name: ${errName}`;
     if (errCodeHex) return `Error code: ${errCodeHex}`;
+    if (errCodeDecimals === 1) return `Insufficient SOL`;
     if (errCodeDecimals) return `Error code: ${errCodeDecimals}`;
 
     return 'Unknown error';
