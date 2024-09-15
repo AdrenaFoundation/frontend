@@ -33,12 +33,12 @@ export default function Tokenomics({
 }: {
   titleClassName?: string;
 }) {
-  const bucketsLabels = ['Core Contrib.', 'DAO Treasury', 'POL', 'Ecosystem'];
-  const bucketColors = ['#9f8cae', '#edb40e', '#eb6672', '#7fd7c1'];
+  const bucketsLabels = ['Core Contrib.', 'Foundation', 'Ecosystem'];
+  const bucketColors = ['#9f8cae', '#eb6672', '#7fd7c1'];
 
   return (
     <StyledContainer
-      title="TOKENOMIC"
+      title="ADX TOKENOMIC"
       headerClassName="ml-auto mr-auto"
       className="grow max-w-[40em] w-[30em]"
       titleClassName={titleClassName}
@@ -61,7 +61,7 @@ export default function Tokenomics({
         <Pie
           color="#ffffff"
           options={{
-            cutout: '80%',
+            cutout: '30%',
             responsive: true,
             plugins: {
               legend: {
@@ -83,43 +83,39 @@ export default function Tokenomics({
               'Launch Team',
               'Investors',
 
-              // DAO Treasury Reserves
-              'DAO Treasury Reserves',
-
-              // POL
-              'Liquidity Provision',
+              // Foundation
+              'Foundation Development',
+              'CEX/DEX Liquidity',
 
               // Ecosystem
+              'DAO Treasury Reserves',
               'Community Grants',
-              'Partnerships/Marketing/Airdrop',
-              'LM - Staked ADX',
-              'LM - ALP',
-              'LM - Genesis',
-              'Development Fund',
+              'Partnerships/Marketing',
+              'Genesis Liquidity Program',
+              'Liquidity Mining - ALP Staking',
+              'Liquidity Mining - ADX Staking',
             ],
             datasets: [
               {
                 label: '%',
-                data: [21.33, 14.67, 10, 8, 10, 10, 15, 5, 2, 4],
+                data: [21.333333333, 14.666666667, 5, 4, 7, 8, 10, 5, 15, 10],
                 borderWidth: 2,
                 backgroundColor: [
                   // Core contributors
                   bucketColors[0],
                   bucketColors[0],
 
-                  // DAO Treasury Reserves
+                  // Foundation
+                  bucketColors[1],
                   bucketColors[1],
 
-                  // POL
-                  bucketColors[2],
-
                   // Ecosystem
-                  bucketColors[3],
-                  bucketColors[3],
-                  bucketColors[3],
-                  bucketColors[3],
-                  bucketColors[3],
-                  bucketColors[3],
+                  bucketColors[2],
+                  bucketColors[2],
+                  bucketColors[2],
+                  bucketColors[2],
+                  bucketColors[2],
+                  bucketColors[2],
                 ],
               },
             ],

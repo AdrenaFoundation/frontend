@@ -138,7 +138,6 @@ export const SUPPORTED_RESOLUTIONS = [
 
 export const VEST_BUCKETS = [
   'Core Contributor',
-  'Dao Treasury',
-  'PoL',
+  'Foundation',
   'Ecosystem',
 ] as const;
