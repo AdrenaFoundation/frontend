@@ -212,7 +212,6 @@ export default function Genesis({
     } catch (error) {
       console.log('error', error);
       setErrorMsg('Error buying ALP');
-
       return;
     }
   };
