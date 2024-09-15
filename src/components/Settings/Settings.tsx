@@ -52,9 +52,9 @@ export default function Settings({
       trigger={
         <Button
           title={!isIcon && isBigScreen ? 'Settings' : null}
-          variant="outline"
+          variant={isGenesis ? 'text' : 'outline'}
           leftIcon={!isIcon && isBigScreen ? null : settingsIcon}
-          className={!isIcon && isBigScreen ? '' : 'w-6 h-6 p-0'}
+          className={!isIcon && isBigScreen ? 'h-[2.5em]' : 'w-6 h-[2.5em] p-0'}
           iconClassName="w-4 h-4"
         />
       }
@@ -66,8 +66,10 @@ export default function Settings({
       isDim={true}
     >
       <div className="flex mb-3">
-        <h2 className="text-blue-500">Devnet</h2>
-        <h2 className="flex ml-1">RPC endpoints</h2>
+        {window.adrena.cluster === 'devnet' ? (
+          <h2 className="text-blue-500 pr-1">Devnet</h2>
+        ) : null}
+        <h2 className="flex">RPC endpoints</h2>
       </div>
 
       <div className="flex flex-row justify-between items-center">

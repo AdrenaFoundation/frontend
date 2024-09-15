@@ -22,6 +22,8 @@ export const metadata = {
 } as const;
 
 export default function Document() {
+  const isMainnet = process.env.NEXT_PUBLIC_DEV_CLUSTER === 'mainnet';
+
   return (
     <Html lang="en">
       <Head>
@@ -69,14 +71,15 @@ export default function Document() {
           strategy="lazyOnload"
         ></Script>
 
-        <Script
-          id="hotjar-script"
-          type="text/javascript"
-          strategy="beforeInteractive"
-          async={false}
-          defer={false}
-          dangerouslySetInnerHTML={{
-            __html: `(function(h,o,t,j,a,r){
+        {isMainnet ? (
+          <Script
+            id="hotjar-script"
+            type="text/javascript"
+            strategy="beforeInteractive"
+            async={false}
+            defer={false}
+            dangerouslySetInnerHTML={{
+              __html: `(function(h,o,t,j,a,r){
             h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
             h._hjSettings={hjid:4990246,hjsv:6};
             a=o.getElementsByTagName('head')[0];
@@ -84,8 +87,9 @@ export default function Document() {
             r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
             a.appendChild(r);
           })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');`,
-          }}
-        />
+            }}
+          />
+        ) : null}
 
         <NextScript />
       </body>

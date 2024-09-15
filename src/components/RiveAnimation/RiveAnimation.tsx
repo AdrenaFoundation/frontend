@@ -4,15 +4,18 @@ import {
   Layout,
   useRive,
 } from '@rive-app/react-canvas';
+import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useResize from '@/hooks/useResize';
 
 export default function RiveAnimation({
   animation,
   layout,
   className,
+  imageClassName,
   automaticallyHandleEvents = false,
   stateMachines,
 }: {
@@ -26,8 +29,10 @@ export default function RiveAnimation({
   className?: string;
   automaticallyHandleEvents?: boolean;
   stateMachines?: string;
+  imageClassName: string;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const [assetsLoaded, setAssetsLoaded] = useState(0);
   const [size] = useResize();
@@ -122,17 +127,35 @@ export default function RiveAnimation({
     },
   });
 
+  const isMobile = useBetterMediaQuery('(max-width: 600px)');
+
   const Comp = useMemo(() => {
     return (
-      <RiveComponent
-        className={twMerge(
-          isLoaded ? 'opacity-100' : 'opacity-0',
-          className,
-          'transition-opacity duration-300',
-        )}
-      />
+      <>
+        <RiveComponent
+          className={twMerge(
+            isLoaded ? 'opacity-100' : 'opacity-0',
+            className,
+            'transition-opacity duration-300',
+            isMobile ? 'hidden' : '',
+          )}
+        />
+
+        <Image
+          className={twMerge(
+            'transition-opacity duration-300',
+            isImageLoaded ? 'opacity-100' : 'opacity-0',
+            imageClassName,
+            isMobile ? '' : 'hidden',
+          )}
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          src={require(`../../../public/images/${animation}.png`).default}
+          alt={'monsters'}
+          onLoad={() => setIsImageLoaded(true)}
+        />
+      </>
     );
-  }, [RiveComponent, isLoaded, className]);
+  }, [RiveComponent, isLoaded, className, isImageLoaded, isMobile]);
 
   return Comp;
 }

@@ -1,7 +1,9 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   BackpackWalletAdapter,
+  CoinbaseWalletAdapter,
   PhantomWalletAdapter,
+  SolflareWalletAdapter,
   WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
@@ -13,10 +15,14 @@ export const walletAdapters: Record<
   WalletAdapterName,
   | PhantomWalletAdapter
   | BackpackWalletAdapter
+  | CoinbaseWalletAdapter
+  | SolflareWalletAdapter
   | WalletConnectWalletAdapter /* | ... */
 > = {
   phantom: new PhantomWalletAdapter(),
   backpack: new BackpackWalletAdapter(),
+  coinbase: new CoinbaseWalletAdapter(),
+  solflare: new SolflareWalletAdapter(),
   walletConnect: new WalletConnectWalletAdapter({
     network: WalletAdapterNetwork.Devnet,
     options: {
@@ -40,7 +46,7 @@ export const SOL_DECIMALS = 9;
 
 export const BPS = 10_000;
 
-export const GENESIS_REWARD_SHARE_OF_TOTAL_ADX_SUPPLY = 0.05;
+export const GENESIS_REWARD_ADX_PER_USDC = 5;
 
 // FL4KKyvANrRFsm8kRRCoUW9QJY5LixttpdFxEBEm7ufW
 export const devnetFaucetBankWallet = Keypair.fromSecretKey(
@@ -64,25 +70,25 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
 export const ALP_STAKE_MULTIPLIERS: {
   [K in AlpLockPeriod]: { usdc: number; adx: number };
 } = {
+  90: {
+    usdc: 0.75,
+    adx: 1.0,
+  },
   180: {
-    usdc: 1.75,
+    usdc: 1.5,
     adx: 1.75,
   },
   360: {
-    usdc: 2.5,
+    usdc: 2.25,
     adx: 2.5,
   },
   540: {
-    usdc: 3.25,
+    usdc: 3.0,
     adx: 3.25,
-  },
-  720: {
-    usdc: 4,
-    adx: 4,
   },
 } as const;
 
-export const ALP_LOCK_PERIODS: AlpLockPeriod[] = [180, 360, 540, 720];
+export const ALP_LOCK_PERIODS: AlpLockPeriod[] = [90, 180, 360, 540];
 
 export const ADX_STAKE_MULTIPLIERS: {
   [K in AdxLockPeriod]: { usdc: number; adx: number; votes: number };
@@ -92,29 +98,29 @@ export const ADX_STAKE_MULTIPLIERS: {
     adx: 0,
     votes: 1,
   },
-  180: {
+  90: {
     usdc: 1.75,
-    adx: 1.75,
+    adx: 1.0,
     votes: 1.75,
   },
-  360: {
+  180: {
     usdc: 2.5,
-    adx: 2.5,
+    adx: 1.75,
     votes: 2.5,
   },
-  540: {
+  360: {
     usdc: 3.25,
-    adx: 3.25,
+    adx: 2.5,
     votes: 3.25,
   },
-  720: {
-    usdc: 4,
-    adx: 4,
-    votes: 4,
+  540: {
+    usdc: 4.0,
+    adx: 3.25,
+    votes: 4.0,
   },
 } as const;
 
-export const ADX_LOCK_PERIODS: AdxLockPeriod[] = [0, 180, 360, 540, 720];
+export const ADX_LOCK_PERIODS: AdxLockPeriod[] = [0, 90, 180, 360, 540];
 
 export const ROUND_MIN_DURATION_SECONDS = 3_600 * 6;
 
@@ -130,11 +136,8 @@ export const SUPPORTED_RESOLUTIONS = [
   '1D',
 ] as ResolutionString[];
 
-export const alpLiquidityCap = 10000000;
-
 export const VEST_BUCKETS = [
   'Core Contributor',
-  'Dao Treasury',
-  'PoL',
+  'Foundation',
   'Ecosystem',
 ] as const;

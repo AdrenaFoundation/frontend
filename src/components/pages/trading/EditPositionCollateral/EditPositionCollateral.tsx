@@ -82,7 +82,9 @@ export default function EditPositionCollateral({
       return 'Leverage over limit';
     }
 
-    return selectedAction === 'deposit' ? 'Deposit' : 'Withdraw';
+    return selectedAction === 'deposit'
+      ? 'Deposit'
+      : `Withdraw ${position.collateralToken.symbol}`;
   })();
 
   useEffect(() => {
@@ -311,7 +313,7 @@ export default function EditPositionCollateral({
         <>
           <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
             <TradingInput
-              className="text-md"
+              className="text-sm"
               inputClassName="border-0 bg-inputcolor"
               value={input}
               maxButton={true}
@@ -344,6 +346,7 @@ export default function EditPositionCollateral({
                     nb={balance}
                     precision={position.collateralToken.decimals}
                     className="text-txtfade"
+                    isDecimalDimmed={false}
                   />
                   <span className="text-sm text-txtfade ml-1">
                     {position.collateralToken.symbol} in wallet
@@ -357,7 +360,7 @@ export default function EditPositionCollateral({
         <>
           <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
             <TradingInput
-              className="text-md"
+              className="text-sm"
               inputClassName="border-0 bg-inputcolor"
               value={input}
               selectedToken={
@@ -378,6 +381,7 @@ export default function EditPositionCollateral({
               nb={position.collateralUsd}
               format="currency"
               className="inline"
+              isDecimalDimmed={false}
             />{' '}
             of collateral in the position
           </div>
@@ -523,7 +527,9 @@ export default function EditPositionCollateral({
         className="mt-4 rounded-none font-boldy text-lg"
         size="lg"
         title={executeBtnText}
-        disabled={executeBtnText !== 'Deposit' && executeBtnText !== 'Withdraw'}
+        disabled={
+          executeBtnText !== 'Deposit' && !executeBtnText.startsWith('Withdraw')
+        }
         onClick={() => handleExecute()}
       />
     </div>

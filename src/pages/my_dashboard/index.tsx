@@ -200,6 +200,7 @@ export default function MyDashboard({
             })
           }
           className={'absolute top-0 md:top-[-50px] left-0 w-[700px] h-full'}
+          imageClassName="absolute top-0 left-0 w-[700px]"
         />
 
         <RiveAnimation
@@ -211,6 +212,7 @@ export default function MyDashboard({
             })
           }
           className={'absolute right-0 w-[1500px] h-full'}
+          imageClassName="hidden"
         />
       </div>
 
@@ -258,6 +260,7 @@ export default function MyDashboard({
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               title="Opened Positions"
+              userProfile={userProfile}
             />
 
             <StakesStats

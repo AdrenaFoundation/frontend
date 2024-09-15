@@ -73,11 +73,6 @@ export default class SablierClient {
       return null;
     }
 
-    console.log(
-      'lpStakingResolveRoundCronThreadAccount',
-      lpStakingResolveRoundCronThreadAccount,
-    );
-
     const format = async (pubkey: PublicKey, info: SablierThread) => {
       const lastExecutionSlot: number | null =
         info.execContext?.lastExecAt.toNumber() ?? null;
@@ -148,7 +143,7 @@ export default class SablierClient {
 
     const threads = await this.readonlySablierThreadProgram.account.thread.all([
       {
-        dataSize: 2266, // Hardcoded size of the thread account containing the FinalizeLockedStaked ix
+        dataSize: 1597, // Hardcoded size of the thread account containing the FinalizeLockedStaked ix
       },
     ]);
 

@@ -1,5 +1,5 @@
+import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
-import BN from 'bn.js';
 import { useEffect, useState } from 'react';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';

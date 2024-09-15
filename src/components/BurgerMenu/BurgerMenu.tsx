@@ -192,7 +192,7 @@ export default function BurgerMenu({
 
               <div className="flex w-full justify-center gap-5 items-center">
                 <Link
-                  href="https://github.com/orgs/AdrenaDEX/repositories"
+                  href="https://github.com/orgs/AdrenaFoundation"
                   target="_blank"
                 >
                   <Image

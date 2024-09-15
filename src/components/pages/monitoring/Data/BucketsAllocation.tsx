@@ -46,13 +46,8 @@ export default function BucketsAllocation({
   cortex: Cortex;
   titleClassName?: string;
 }) {
-  const bucketNames = [
-    'coreContributor',
-    'daoTreasury',
-    'pol',
-    'ecosystem',
-  ] as const;
-  const bucketsLabels = ['Core Contrib.', 'DAO Treasury', 'POL', 'Ecosystem'];
+  const bucketNames = ['coreContributor', 'foundation', 'ecosystem'] as const;
+  const bucketsLabels = ['Core Contrib.', 'Foundation', 'Ecosystem'];
   const isBreakpoint = useBetterMediaQuery('(max-width: 500px)');
 
   return (

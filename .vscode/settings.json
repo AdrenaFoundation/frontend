@@ -3,10 +3,13 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "cSpell.words": [
     "adrena",
+    "bcolor",
+    "Blockhash",
     "boldy",
     "Cooldown",
     "devnet",
     "Helius",
+    "inputcolor",
     "Jito",
     "JITOSOL",
     "pyth",
@@ -15,6 +18,7 @@
     "sablier",
     "Solana",
     "Tokenomics",
+    "txtfade",
     "WSOL"
   ]
 }

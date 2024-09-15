@@ -137,6 +137,7 @@ export default function ClosePosition({
                 }
                 precision={position.collateralToken.decimals}
                 className="text-lg inline-block"
+                isDecimalDimmed={false}
               />
 
               <span className="text-lg ml-1">
@@ -155,6 +156,7 @@ export default function ClosePosition({
               }
               format="currency"
               className="text-txtfade text-sm"
+              isDecimalDimmed={false}
             />
           </div>
         </div>

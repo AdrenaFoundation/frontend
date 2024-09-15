@@ -72,6 +72,7 @@ export default function Monitoring(pageProps: PageProps) {
             })
           }
           className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
+          imageClassName="absolute w-[500px] bottom-0 left-[-10vh] scale-x-[-1] -z-10"
         />
 
         <RiveAnimation
@@ -83,6 +84,7 @@ export default function Monitoring(pageProps: PageProps) {
             })
           }
           className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
+          imageClassName="absolute w-[500px] top-0 right-0 -z-10"
         />
       </div>
 

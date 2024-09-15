@@ -1,8 +1,8 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -13,6 +13,8 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
+
+import midImage from '../../../public/images/mid-monster.png';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -60,6 +62,7 @@ export default function Trade({
   triggerPositionsReload,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
+  userProfile,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -87,7 +90,9 @@ export default function Trade({
     router.replace({
       query: {
         ...router.query,
-        pair: `${tokenA.symbol}_${tokenB.symbol}`,
+        pair: `${tokenA.symbol !== 'JITOSOL' ? tokenA.symbol : 'SOL'}_${
+          tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'
+        }`,
         action: selectedAction,
       },
     });
@@ -139,10 +144,14 @@ export default function Trade({
       const [tokenAName, tokenBName] = pair;
 
       const tokenA = tokenACandidate.find(
-        (token) => token.symbol === tokenAName,
+        (token) =>
+          token.symbol === tokenAName ||
+          (token.symbol === 'JITOSOL' && tokenAName === 'SOL'),
       );
       const tokenB = tokenBCandidate.find(
-        (token) => token.symbol === tokenBName,
+        (token) =>
+          token.symbol === tokenBName ||
+          (token.symbol === 'JITOSOL' && tokenBName === 'SOL'),
       );
 
       // bad URL
@@ -218,6 +227,7 @@ export default function Trade({
             })
           }
           className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
+          imageClassName="absolute w-[500px] bottom-0 left-[-10vh] scale-x-[-1]"
         />
 
         <RiveAnimation
@@ -229,6 +239,7 @@ export default function Trade({
             })
           }
           className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
+          imageClassName="absolute w-[500px] top-0 right-0 -z-10"
         />
       </div>
 
@@ -270,36 +281,30 @@ export default function Trade({
 
         {isBigScreen ? (
           <div className="flex flex-col w-full">
-            <div
-              className={twMerge(
-                'flex z-30 overflow-hidden bg-main/90 xl:pl-3 xl:pr-3 border rounded-lg mt-4',
-                !positions?.length
-                  ? 'min-h-[15em] items-center justify-center'
-                  : null,
-              )}
-            >
-              <Positions
-                bodyClassName={'mt-3'}
-                connected={connected}
-                positions={positions}
-                triggerPositionsReload={triggerPositionsReload}
-                triggerUserProfileReload={triggerUserProfileReload}
-                isBigScreen={isBigScreen}
-              />
-            </div>
+            <Positions
+              className="mt-4"
+              connected={connected}
+              positions={positions}
+              triggerPositionsReload={triggerPositionsReload}
+              triggerUserProfileReload={triggerUserProfileReload}
+              isBigScreen={isBigScreen}
+              userProfile={userProfile}
+            />
           </div>
         ) : (
           <div className="flex flex-row">
             <Positions
               className={
-                'sm:w-1/2 sm:mr-4 lg:mr-0 lg:mt-4 md:w-[57%] lg:w-[65%] h-full'
+                'mt-4 sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full'
               }
               connected={connected}
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               isBigScreen={isBigScreen}
+              userProfile={userProfile}
             />
+
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
@@ -325,7 +330,7 @@ export default function Trade({
       <>
         {isBigScreen ? (
           <TradeComp
-            className="lg:max-h-[50em] hidden sm:flex lg:ml-4"
+            className="lg:max-h-[50em] hidden sm:flex lg:ml-4 lg:min-w-[25%]"
             selectedAction={selectedAction}
             setSelectedAction={setSelectedAction}
             tokenA={tokenA}

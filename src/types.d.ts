@@ -46,7 +46,12 @@ declare global {
   }
 }
 
-export type WalletAdapterName = 'phantom' | 'backpack' | 'walletConnect';
+export type WalletAdapterName =
+  | 'phantom'
+  | 'backpack'
+  | 'walletConnect'
+  | 'coinbase'
+  | 'solflare';
 
 export type PageProps = {
   mainPool: PoolExtended | null;
@@ -106,6 +111,11 @@ export type PositionExtended = {
   collateralAmount: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
+  stopLossClosePositionPrice?: number | null;
+  stopLossLimitPrice?: number | null;
+  stopLossThreadIsSet: boolean;
+  takeProfitLimitPrice?: number | null;
+  takeProfitThreadIsSet: boolean;
 
   // Onchain data
   nativeObject: Position;
@@ -115,6 +125,7 @@ export type PoolExtended = {
   pubkey: PublicKey;
 
   // Formatted data
+  aumSoftCapUsd: number;
   totalFeeCollected: number;
   profitsUsd: number;
   lossUsd: number;
@@ -331,5 +342,5 @@ export type AdrenaProgram = Program<Adrena>;
 // Constants
 //
 
-export type AdxLockPeriod = 0 | 180 | 360 | 540 | 720;
-export type AlpLockPeriod = 180 | 360 | 540 | 720;
+export type AdxLockPeriod = 0 | 90 | 180 | 360 | 540;
+export type AlpLockPeriod = 90 | 180 | 360 | 540;

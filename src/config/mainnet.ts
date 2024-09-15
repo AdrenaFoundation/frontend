@@ -1,11 +1,10 @@
-import { NATIVE_MINT } from '@solana/spl-token';
 import { PublicKey } from '@solana/web3.js';
 
 import { ImageRef } from '@/types';
 
 import bonkLogo from '../../public/images/bonk.png';
 import btcLogo from '../../public/images/btc.svg';
-import solLogo from '../../public/images/sol.svg';
+import jitosolLogo from '../../public/images/jitosol.png';
 import usdcLogo from '../../public/images/usdc.svg';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
@@ -59,15 +58,15 @@ export default class MainnetConfiguration implements IConfiguration {
         '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
     },
-    [NATIVE_MINT.toBase58()]: {
-      name: 'Solana',
-      color: '#9945FF',
-      symbol: 'SOL',
-      image: solLogo,
+    J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn: {
+      name: 'Jito Staked SOL',
+      color: '#84CC90',
+      symbol: 'JITOSOL',
+      image: jitosolLogo,
       coingeckoId: 'solana',
       decimals: 9,
       pythPriceUpdateV2: new PublicKey(
-        '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
+        'AxaxyeDT8JnWERSaTKvFXvPKkEdxnamKSqpWbsSjYg1g',
       ),
     },
   };
@@ -92,7 +91,7 @@ export default class MainnetConfiguration implements IConfiguration {
     'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
   );
 
-  public readonly governanceRealmName = 'AdrenaTestrun';
+  public readonly governanceRealmName = 'AdrenaTest';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
     ? [
@@ -144,6 +143,6 @@ export default class MainnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '6d9FSQL3t4RyHFHMtx4xUU3TXQiFJwvNebCdfg4cRmpJ',
+    '9ZR8hzuQiHA1Ye7mbq42dfXV4k4pQwGBPDmTbtA5kWBH',
   );
 }

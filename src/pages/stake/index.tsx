@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
@@ -22,9 +23,7 @@ import {
   PageProps,
 } from '@/types';
 import {
-  addFailedTxNotification,
   addNotification,
-  addSuccessTxNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
   getLockedStakeRemainingTime,
@@ -58,8 +57,6 @@ export default function Stake({
 }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const [isUserStakingAccountInit, setIsUserStakingAccountFound] =
-    useState(true);
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -110,6 +107,7 @@ export default function Stake({
 
   const [amount, setAmount] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isStakeLoaded, setIsStakeLoaded] = useState<boolean>(false);
 
   const adxBalance: number | null =
     walletTokenBalances?.[window.adrena.client.adxToken.symbol] ?? null;
@@ -147,17 +145,39 @@ export default function Stake({
 
     if (!activeStakingToken) return;
 
-    if (!isUserStakingAccountInit) {
-      await initUserStakingAccount();
-    }
-
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Stake').fire();
-
     const stakedTokenMint =
       activeStakingToken === 'ADX'
         ? window.adrena.client.adxToken.mint
         : window.adrena.client.alpToken.mint;
+
+    const userStaking = await window.adrena.client.getUserStakingAccount({
+      owner,
+      stakedTokenMint,
+    });
+
+    if (!userStaking) {
+      const notification = MultiStepNotification.newForRegularTransaction(
+        `Stake ${activeStakingToken} (1/2)`,
+      ).fire();
+
+      try {
+        await window.adrena.client.initUserStaking({
+          owner: owner,
+          stakedTokenMint,
+          threadId: new BN(Date.now()),
+          notification,
+        });
+      } catch (error) {
+        console.error('error', error);
+        return;
+      }
+    }
+
+    const notification = MultiStepNotification.newForRegularTransaction(
+      !userStaking
+        ? `Stake ${activeStakingToken} (2/2)`
+        : `Stake ${activeStakingToken}`,
+    ).fire();
 
     try {
       lockPeriod === 0
@@ -428,6 +448,11 @@ export default function Stake({
       totalRedeemableStakeUSD:
         wallet && alpPrice ? alpPrice * getTotalRedeemableStake('ALP') : null,
     });
+
+    setTimeout(() => {
+      setIsStakeLoaded(true);
+    }, 500);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     adxBalance,
@@ -440,56 +465,6 @@ export default function Stake({
     getTotalStaked,
     wallet,
   ]);
-
-  useEffect(() => {
-    getUserStakingAccount();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected]);
-
-  const getUserStakingAccount = async () => {
-    if (!connected || !wallet) {
-      return;
-    }
-
-    try {
-      const userStaking = await window.adrena.client.getUserStakingAccount({
-        owner: new PublicKey(wallet.walletAddress),
-        stakedTokenMint: window.adrena.client.alpToken.mint,
-      });
-
-      if (!userStaking) {
-        setIsUserStakingAccountFound(false);
-      }
-    } catch (error) {
-      console.log('error fetching user staking', error);
-    }
-  };
-
-  const initUserStakingAccount = async () => {
-    if (!wallet) return;
-
-    try {
-      const txHash = await window.adrena.client.initUserStaking({
-        owner: new PublicKey(wallet.walletAddress),
-        stakedTokenMint: window.adrena.client.alpToken.mint,
-        threadId: new BN(Date.now()),
-      });
-
-      triggerWalletTokenBalancesReload();
-      setIsUserStakingAccountFound(true);
-      return addSuccessTxNotification({
-        title: 'Successful Transaction',
-        txHash,
-      });
-    } catch (error) {
-      console.log('error', error);
-
-      return addFailedTxNotification({
-        title: 'Error Initializing User Staking Account',
-        error,
-      });
-    }
-  };
 
   const modal = activeStakingToken && (
     <Modal
@@ -530,6 +505,14 @@ export default function Stake({
     </Modal>
   );
 
+  if (!isStakeLoaded && connected) {
+    return (
+      <div className="m-auto">
+        <Loader />
+      </div>
+    );
+  }
+
   if (
     !connected ||
     (adxDetails.totalStaked === 0 && alpDetails.totalLockedStake === 0)
@@ -564,6 +547,7 @@ export default function Stake({
             })
           }
           className="absolute top-0 left-[-10vh] h-[85vh] w-[110vh] scale-x-[-1]"
+          imageClassName="absolute w-[500px] top-0 right-0 scale-x-[-1]"
         />
 
         <RiveAnimation
@@ -575,6 +559,7 @@ export default function Stake({
             })
           }
           className="absolute hidden md:block bottom-0 right-[-20vh] h-[50vh] w-[80vh] scale-y-[-1] -z-10"
+          imageClassName="absolute w-[500px] bottom-0 right-0 scale-y-[-1]"
         />
       </div>
       <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[1300px] m-auto">

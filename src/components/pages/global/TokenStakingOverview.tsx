@@ -55,7 +55,7 @@ function createTooltip(
   ];
 }
 
-function generateBarChat(
+function generateBarChart(
   chartData: ChartData<'bar'>,
   title: string,
   totalSupply: number | null,
@@ -148,13 +148,13 @@ export default function TokenStakingOverview({
     >
       <StyledSubContainer className="w-full sm:w-[calc(50%-1em)]">
         {alpChart
-          ? generateBarChat(alpChart, 'ALP', alpTotalSupply, alpPrice)
+          ? generateBarChart(alpChart, 'ALP', alpTotalSupply, alpPrice)
           : null}
       </StyledSubContainer>
 
       <StyledSubContainer className="w-full sm:w-[calc(50%-1em)]">
         {adxChart
-          ? generateBarChat(adxChart, 'ADX', adxTotalSupply, adxPrice)
+          ? generateBarChart(adxChart, 'ADX', adxTotalSupply, adxPrice)
           : null}
       </StyledSubContainer>
     </StyledContainer>

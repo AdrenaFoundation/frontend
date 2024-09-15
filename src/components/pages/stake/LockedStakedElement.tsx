@@ -156,9 +156,9 @@ export default function LockedStakedElement({
             return (
               <Button
                 variant="outline"
-                size="md"
+                size="xs"
                 title="Early Exit"
-                className="rounded-lg rounded-t-none border-none py-3 w-full"
+                className="rounded-lg rounded-t-none border-none py-3 w-full text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
                 onClick={() =>
                   handleClickOnFinalizeLockedRedeem(lockedStake, true)
                 }
