@@ -60,7 +60,9 @@ export default function VestStats({
       : vest.lastClaimTimestamp.toNumber()) *
       1000;
 
-  const claimableAmount = nbSecondsSinceLastClaim * amountPerSecond;
+  const claimableAmount = hasVestStarted
+    ? nbSecondsSinceLastClaim * amountPerSecond
+    : 0;
 
   const unlockEndDate = new Date(vest.unlockEndTimestamp.toNumber() * 1000);
   const now = new Date();
@@ -152,7 +154,7 @@ export default function VestStats({
           <p className="text-sm">Claimable</p>
 
           <FormatNumber
-            nb={hasVestStarted ? claimableAmount : 0}
+            nb={claimableAmount}
             placeholder="0"
             suffix=" ADX"
             precision={3}
