@@ -111,7 +111,7 @@ export default function Monitoring(pageProps: PageProps) {
               setDetailedDisplay(false);
             }}
           >
-            Lite View
+            Lite
           </span>
 
           <span className="opacity-20 text-2xl">/</span>
@@ -131,7 +131,7 @@ export default function Monitoring(pageProps: PageProps) {
               setDetailedDisplay(true);
             }}
           >
-            Detailed View
+            Full
           </span>
         </div>
 

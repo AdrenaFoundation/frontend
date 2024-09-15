@@ -17,11 +17,7 @@ import { Bar } from 'react-chartjs-2';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import FormatNumber from '@/components/Number/FormatNumber';
 import { getDatasetBackgroundColor, getFontSizeWeight } from '@/utils';
-
-import InfoAnnotation from '../monitoring/InfoAnnotation';
 
 ChartJS.register(
   ArcElement,
@@ -109,17 +105,11 @@ export default function UsageOverview({
       title="Current Pool utilization"
       subTitle="Is the pool capital efficient?"
       className={className}
+      titleClassName="text-xxl opacity-50 font-boldy"
     >
       <div>
-        <div className="flex items-center">
-          <InfoAnnotation
-            text="Positions currently opened using the pool's capital."
-            className="mr-1"
-            title="Positions"
-          />
-        </div>
         <div className="flex flex-row gap-3 mt-3">
-          <NumberDisplay title="Count" nb={numberOpenedPositions} />
+          <NumberDisplay title="Positions" nb={numberOpenedPositions} />
 
           <NumberDisplay
             title="Open Interest"
@@ -130,13 +120,9 @@ export default function UsageOverview({
       </div>
 
       <StyledSubContainer className="h-auto">
-        <div className="flex items-center">
-          <InfoAnnotation
-            text="How much of the pool's capital is utilized?"
-            className="mr-1"
-            title="Utilization"
-          />
-        </div>
+        <h1 className="flex justify-center text-base sm:text-lg items-center mr-1 text-xxl opacity-50 font-boldy">
+          Utilization
+        </h1>
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
           {utilizationChartData ? (
             <>
