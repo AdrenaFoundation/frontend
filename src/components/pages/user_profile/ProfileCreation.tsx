@@ -1,8 +1,6 @@
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 
-import InfoAnnotation from '../monitoring/InfoAnnotation';
-
 export default function ProfileCreation({
   initUserProfile,
   nickname,
@@ -16,15 +14,16 @@ export default function ProfileCreation({
     <>
       <div className="flex flex-col w-full z-20 border bg-secondary p-7 self-center rounded-lg">
         <div className="flex">
-          <h2>Create my profile (optional)</h2>
-          <InfoAnnotation
-            text="Profile's optional – no need for trading, swapping, or staking.
-          Handy for tracking your stats: average leverage, PnL, fees, and more."
-            className="mr-1"
-          />
+          <h2>Trader profile</h2>
         </div>
 
-        <div className="flex flex-col mt-4">
+        <div className="flex flex-col mt-2">
+          <h5 className="flex flex-col text-base text-sm mb-3 opacity-50">
+            The trader profile is optional. It is not mandatory to use the
+            platform. If you choose to create one, it will provide detailled
+            stats about your trading activity: average leverage, PnL, fees, and
+            more.
+          </h5>
           <h5 className="flex flex-col text-fade mb-3">Nickname</h5>
           <div className="flex">
             <InputString
