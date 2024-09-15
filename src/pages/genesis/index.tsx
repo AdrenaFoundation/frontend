@@ -242,7 +242,7 @@ export default function Genesis({
       (owner) => owner.walletAddress === wallet.walletAddress,
     );
 
-  const url = 'https://www.adrena.xyz/';
+  const url = 'https://app.adrena.xyz/genesis';
   const text = `Just bought some ALP locked and staked for 180 days`;
 
   const MAX_USDC_AMOUNT = 250_000;
@@ -258,7 +258,8 @@ export default function Genesis({
   )?.maxAmount;
 
   const OGIMage =
-    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-71fvOlnr2vEoiWIDHX6XH4jNdZWNdb.jpg';
+    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg';
+
   return (
     <>
       <Head>
@@ -273,7 +274,7 @@ export default function Genesis({
           content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
         />
         <meta property="og:image" content={OGIMage} />
-        <meta property="og:url" content="https://app.adrena.xyz/genesis" />
+        <meta property="og:url" content={url} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Adrena" />
 
@@ -285,7 +286,7 @@ export default function Genesis({
           content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
         />
         <meta name="twitter:image" content={OGIMage} />
-        <meta name="twitter:url" content="https://app.adrena.xyz/genesis" />
+        <meta name="twitter:url" content={url} />
       </Head>
       <ProgressBar currentStep={currentStep} genesis={genesis} />
 
