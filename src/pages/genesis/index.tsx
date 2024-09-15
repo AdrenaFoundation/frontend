@@ -22,13 +22,7 @@ import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { GenesisLock, PageProps } from '@/types';
-import {
-  addFailedTxNotification,
-  addSuccessTxNotification,
-  formatPriceInfo,
-  nativeToUi,
-  uiToNative,
-} from '@/utils';
+import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
 import alpIcon from '../../../public/images/alp.svg';
@@ -213,11 +207,12 @@ export default function Genesis({
 
       triggerWalletTokenBalancesReload();
       setFundsAmount(null);
-      return setIsSuccess(true);
+      setIsSuccess(true);
+      return;
     } catch (error) {
       console.log('error', error);
-
-      return setErrorMsg('Error buying ALP');
+      setErrorMsg('Error buying ALP');
+      return;
     }
   };
 
