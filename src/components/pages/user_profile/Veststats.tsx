@@ -43,6 +43,11 @@ export default function VestStats({
     (vest.unlockEndTimestamp.toNumber() * 1000 -
       vest.unlockStartTimestamp.toNumber() * 1000);
 
+  const hasVestStarted =
+    new Date(vest.unlockStartTimestamp.toNumber() * 1000) <= new Date();
+
+  const vestStartDate = new Date(vest.unlockStartTimestamp.toNumber() * 1000);
+
   const vestPeriod =
     new Date(vest.unlockEndTimestamp.toNumber() * 1000).getFullYear() -
     new Date(vest.unlockStartTimestamp.toNumber() * 1000).getFullYear();
@@ -55,7 +60,9 @@ export default function VestStats({
       : vest.lastClaimTimestamp.toNumber()) *
       1000;
 
-  const claimableAmount = nbSecondsSinceLastClaim * amountPerSecond;
+  const claimableAmount = hasVestStarted
+    ? nbSecondsSinceLastClaim * amountPerSecond
+    : 0;
 
   const unlockEndDate = new Date(vest.unlockEndTimestamp.toNumber() * 1000);
   const now = new Date();
@@ -93,7 +100,14 @@ export default function VestStats({
 
           <p className="font-mono">
             {vestPeriod.toLocaleString()} years{' '}
-            <span className="font-mono opacity-50"> ({timeLeft})</span>
+            {hasVestStarted ? (
+              <span className="font-mono opacity-50"> ({timeLeft})</span>
+            ) : (
+              <span className="font-mono opacity-50">
+                {' '}
+                (vest starts {vestStartDate.toLocaleDateString()})
+              </span>
+            )}
           </p>
         </div>
         <div className="w-full h-[1px] bg-third my-1" />

@@ -197,7 +197,7 @@ export default function Genesis({
     try {
       if (!wallet) return;
 
-      const txHash = await window.adrena.client.addGenesisLiquidity({
+      await window.adrena.client.addGenesisLiquidity({
         amountIn: fundsAmount,
 
         // TODO: Apply proper slippage
