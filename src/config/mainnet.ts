@@ -58,7 +58,7 @@ export default class MainnetConfiguration implements IConfiguration {
         '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
     },
-    DmfSVHxadyJU4HJXT4pvXMzVfBHDiyS32NRKSAdxkzEy: {
+    J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn: {
       name: 'Jito Staked SOL',
       color: '#84CC90',
       symbol: 'JITOSOL',
@@ -91,7 +91,7 @@ export default class MainnetConfiguration implements IConfiguration {
     'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
   );
 
-  public readonly governanceRealmName = 'AdrenaTestrun';
+  public readonly governanceRealmName = 'AdrenaTest';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
     ? [
@@ -143,6 +143,6 @@ export default class MainnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '6d9FSQL3t4RyHFHMtx4xUU3TXQiFJwvNebCdfg4cRmpJ',
+    '9ZR8hzuQiHA1Ye7mbq42dfXV4k4pQwGBPDmTbtA5kWBH',
   );
 }
