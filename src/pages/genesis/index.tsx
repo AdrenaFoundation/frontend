@@ -203,7 +203,7 @@ export default function Genesis({
     try {
       if (!wallet) return;
 
-      const txHash = await window.adrena.client.addGenesisLiquidity({
+      await window.adrena.client.addGenesisLiquidity({
         amountIn: fundsAmount,
 
         // TODO: Apply proper slippage
@@ -213,19 +213,11 @@ export default function Genesis({
 
       triggerWalletTokenBalancesReload();
       setFundsAmount(null);
-      setIsSuccess(true);
-      return addSuccessTxNotification({
-        title: 'Successful Transaction',
-        txHash,
-      });
+      return setIsSuccess(true);
     } catch (error) {
       console.log('error', error);
-      setErrorMsg('Error buying ALP');
 
-      return addFailedTxNotification({
-        title: 'Error Buying ALP',
-        error,
-      });
+      return setErrorMsg('Error buying ALP');
     }
   };
 
