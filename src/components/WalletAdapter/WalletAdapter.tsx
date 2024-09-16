@@ -10,6 +10,11 @@ import {
 import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
+import {
+  getAbbrevNickname,
+  getAbbrevWalletAddress,
+  getAccountExplorer,
+} from '@/utils';
 
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
@@ -20,6 +25,7 @@ import WalletSelectionModal from './WalletSelectionModal';
 
 export default function WalletAdapter({
   className,
+  userProfile,
 }: {
   className?: string;
   userProfile: UserProfileExtended | null | false;
@@ -80,8 +86,6 @@ export default function WalletAdapter({
               variant="secondary"
               height={17}
               width={17}
-              href={`https://explorer.solana.com/address/${wallet.walletAddress}`}
-              isOpenLinkInNewTab={true}
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}
@@ -91,12 +95,20 @@ export default function WalletAdapter({
         >
           <MenuItems>
             <MenuItem
+              href={getAccountExplorer(new PublicKey(wallet.walletAddress))}
+              target="_blank"
+            >
+              <div className="underline text-blue">
+                {userProfile
+                  ? getAbbrevNickname(userProfile.nickname)
+                  : getAbbrevWalletAddress(wallet.walletAddress)}
+              </div>
+            </MenuItem>
+            <MenuItem
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
 
                 if (!connected) return;
-
-                console.log('Disconnect wallet');
 
                 dispatch(disconnectWalletAction(wallet.adapterName));
                 dispatch(openCloseConnectionModalAction(false));
