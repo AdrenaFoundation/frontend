@@ -30,8 +30,8 @@ export default function ProgressBar({
       // two days after the start
       date: genesis
         ? new Date(
-            genesis?.campaignStartDate.toNumber() * 1000 +
-              2 * (24 * 60 * 60) * 1000,
+            genesis.campaignStartDate.toNumber() * 1000 +
+              genesis.reservedGrantDuration.toNumber() * 1000,
           )
         : null,
     },
@@ -40,8 +40,8 @@ export default function ProgressBar({
       // three days after the start
       date: genesis
         ? new Date(
-            genesis?.campaignStartDate.toNumber() * 1000 +
-              3 * (24 * 60 * 60) * 1000,
+            genesis.campaignStartDate.toNumber() * 1000 +
+              genesis.campaignDuration.toNumber() * 1000,
           )
         : null,
     },
@@ -136,7 +136,7 @@ export default function ProgressBar({
             <div className="flex flex-row w-full">
               <div>
                 <p className="font-bold text-center">{steps[0].title}</p>
-                <p className="text-center text-sm opacity-50">
+                <p className="text-center text-sm opacity-50 font-mono">
                   {steps[0].date?.toLocaleDateString()}
                 </p>
               </div>
@@ -144,10 +144,8 @@ export default function ProgressBar({
 
             <div className="flex flex-row w-full">
               <div>
-                <p className="font-bold text-center opacity-50">
-                  {steps[1].title}
-                </p>
-                <p className="text-center text-sm opacity-50">
+                <p className="font-bold text-center">{steps[1].title}</p>
+                <p className="text-center text-sm opacity-50 font-mono">
                   {steps[1].date?.toLocaleDateString()}
                 </p>
               </div>
@@ -155,10 +153,8 @@ export default function ProgressBar({
 
             <div className="flex flex-row w-full">
               <div>
-                <p className="font-bold text-center opacity-50">
-                  {steps[2].title}
-                </p>
-                <p className="text-center text-sm opacity-50">
+                <p className="font-bold text-center">{steps[2].title}</p>
+                <p className="text-center text-sm opacity-50 font-mono">
                   {steps[2].date?.toLocaleDateString()}
                 </p>
               </div>
@@ -166,16 +162,12 @@ export default function ProgressBar({
 
             <div className="flex flex-row w-full">
               <div>
-                <p className="font-bold text-center opacity-50">
-                  {steps[3].title}
-                </p>
+                <p className="font-bold text-center">{steps[3].title}</p>
               </div>
             </div>
 
             <div className="flex-none">
-              <p className="font-bold text-center opacity-50">
-                {steps[4].title}
-              </p>
+              <p className="font-bold text-center">{steps[4].title}</p>
             </div>
           </div>
         </div>
