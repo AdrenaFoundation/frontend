@@ -33,6 +33,7 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
   }, [stakingAccounts, connected]);
 
   const url = 'https://app.adrena.xyz/genesis';
+
   const text =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected ? (
       <p className="text-center mt-1 text-base max-w-[400px] font-mono font-semibold">
@@ -72,7 +73,9 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
         title="Share on"
         className="w-full mt-10 py-3 text-base"
         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          `I just bought ${totalStakedAmount} ALP locked and staked for 180 days!`,
+          totalStakedAmount !== null && totalStakedAmount > 0
+            ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days!`
+            : 'Check out Adrena, the new DeFi platform on Solana!',
         )}&url=${encodeURIComponent(url)}`}
         isOpenLinkInNewTab
         rightIcon={xIcon}
