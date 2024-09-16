@@ -37,8 +37,6 @@ export default function useCountDown(from: Date, to: Date) {
     },
   );
 
-  console.log({ days, hours, minutes, seconds });
-
   return {
     diffMs,
     days,
