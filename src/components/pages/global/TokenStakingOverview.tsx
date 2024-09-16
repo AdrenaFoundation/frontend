@@ -145,6 +145,7 @@ export default function TokenStakingOverview({
       subTitle="How much of the token supply is staked?"
       className={className}
       bodyClassName="flex-col sm:flex-row justify-evenly"
+      titleClassName="text-xxl opacity-50 font-boldy"
     >
       <StyledSubContainer className="w-full sm:w-[calc(50%-1em)]">
         {alpChart

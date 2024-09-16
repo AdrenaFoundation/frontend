@@ -8,6 +8,7 @@ import { AdxLockPeriod } from '@/types';
 import { formatNumber } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
+import walletImg from '../../../../public/images/wallet-icon.svg';
 
 export default function ADXStakeToken({
   balance,
@@ -37,16 +38,24 @@ export default function ADXStakeToken({
     <div className="flex flex-col sm:flex-row lg:flex-col rounded-lg sm:min-w-[400px] h-fit">
       <div className="flex flex-col gap-5 justify-between w-full px-5">
         <div className="mt-4">
-          <div className="flex flex-row justify-between mb-2">
-            <p className="text-sm opacity-50 font-medium"> Enter Amount</p>
+          <div className="flex flex-row justify-between mb-1">
+            <h5 className="ml-4"> Amount</h5>
 
-            <p className="text-sm font-medium">
-              <span className="opacity-50"> Balance · </span>
-              {balance !== null ? `${formatNumber(balance, 2)} ADX` : '–'}
-            </p>
+            <div className="text-sm flex items-center justify-end h-6">
+              <Image
+                className="mr-1 opacity-60 relative"
+                src={walletImg}
+                height={18}
+                width={18}
+                alt="Wallet icon"
+              />
+              <span className="text-txtfade font-mono text-xs mr-1">
+                {balance !== null ? `${formatNumber(balance, 2)} ADX` : '–'}
+              </span>
+            </div>
           </div>
 
-          <div className="relative flex flex-row w-full mt-2">
+          <div className="relative flex flex-row w-full">
             <div className="flex items-center bg-bcolor border rounded-l-xl px-3  border-r-none">
               <p className="opacity-50 font-mono text-sm">ADX</p>
             </div>
@@ -75,11 +84,15 @@ export default function ADXStakeToken({
         </div>
 
         <div>
-          <div className="flex flex-row gap-1 mb-2">
-            <Image src={lockIcon} width={14} height={14} alt="lock icon" />
-            <p className="text-sm opacity-50 font-medium ">
-              Choose a lock period (days)
-            </p>
+          <div className="flex flex-row gap-1 mb-2 ml-4">
+            <Image
+              className="relative"
+              src={lockIcon}
+              width={14}
+              height={18}
+              alt="lock icon"
+            />
+            <h5 className="text-sm font-medium ">Lock duration (days)</h5>
           </div>
 
           <TabSelect

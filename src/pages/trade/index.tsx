@@ -1,6 +1,5 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
@@ -13,8 +12,6 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
-
-import midImage from '../../../public/images/mid-monster.png';
 
 export type Action = 'long' | 'short' | 'swap';
 

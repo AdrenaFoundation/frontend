@@ -20,12 +20,9 @@ import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 
-import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import FormatNumber from '@/components/Number/FormatNumber';
 import { PoolComposition, TokenInfo } from '@/hooks/usePoolInfo';
 import {
   formatNumber,
@@ -33,8 +30,6 @@ import {
   getDatasetBackgroundColor,
   getFontSizeWeight,
 } from '@/utils';
-
-import InfoAnnotation from '../monitoring/InfoAnnotation';
 
 ChartJS.register(
   ArcElement,
@@ -177,12 +172,11 @@ export default function GlobalHealthOverview({
       title="Pool Composition"
       subTitle="Are the pool ratios on target?"
       className={className}
+      titleClassName="text-xxl opacity-50 font-boldy"
     >
       <div>
-        <h3 className="mb-3">Assets Under Management</h3>
-
         <NumberDisplay
-          title="Value"
+          title="ASSETS UNDER MANAGEMENT"
           nb={aumUsd}
           format="currency"
           precision={0}
@@ -190,13 +184,9 @@ export default function GlobalHealthOverview({
       </div>
 
       <StyledSubContainer className="h-auto">
-        <div className="flex items-center">
-          <InfoAnnotation
-            text="White lines indicates target ratios."
-            className="mr-1"
-            title="Composition"
-          />
-        </div>
+        <h1 className="flex justify-center text-base sm:text-lg items-center mr-1 text-xxl opacity-50 font-boldy">
+          Composition
+        </h1>
 
         <div className="relative flex flex-col p-4 items-center justify-center mx-auto w-full">
           {compositionChartData ? (

@@ -24,6 +24,8 @@ export default function Button({
   disabled,
   rounded = true,
   isOpenLinkInNewTab = false,
+  height = 12,
+  width = 12,
   // isLoading,
   ...rest
 }: {
@@ -43,6 +45,8 @@ export default function Button({
   rounded?: boolean;
   href?: Url;
   isOpenLinkInNewTab?: boolean;
+  height?: number;
+  width?: number;
   // isLoading?: boolean;
 }) {
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
@@ -102,8 +106,8 @@ export default function Button({
         <Image
           src={leftIcon}
           alt={alt}
-          width="12"
-          height="12"
+          width={width ? width : '12'}
+          height={height ? height : '12'}
           className={twMerge(iconClassName, leftIconClassName)}
         />
       ) : null}
@@ -114,8 +118,8 @@ export default function Button({
         <Image
           src={rightIcon}
           alt={alt}
-          width="12"
-          height="12"
+          width={width ? width : '12'}
+          height={height ? height : '12'}
           className={twMerge(iconClassName, rightIconClassName)}
         />
       ) : null}
