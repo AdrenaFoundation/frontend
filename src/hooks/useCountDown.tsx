@@ -14,13 +14,30 @@ export default function useCountDown(from: Date, to: Date) {
   }, [from, to]);
 
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
   const hours = Math.floor(
     (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-  ).toPrecision(2);
+  ).toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+
   const minutes = Math.round(
     (diffMs % (1000 * 60 * 60)) / (1000 * 60),
-  ).toPrecision(2);
-  const seconds = Math.round((diffMs % (1000 * 60)) / 1000).toPrecision(2);
+  ).toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+
+  const seconds = Math.round((diffMs % (1000 * 60)) / 1000).toLocaleString(
+    'en-US',
+    {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    },
+  );
+
+  console.log({ days, hours, minutes, seconds });
 
   return {
     diffMs,
