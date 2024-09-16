@@ -10,7 +10,7 @@ import { getAlpLockedStakes, nativeToUi } from '@/utils';
 import adrenaMonsters from '../../../../public/images/adrena-monsters.png';
 import xIcon from '../../../../public/images/x-black-bg.png';
 
-export default function GenesisEndView() {
+export default function GenesisEndView({ connected }: { connected: boolean }) {
   const { stakingAccounts } = useWalletStakingAccounts();
   const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
     null,
@@ -30,11 +30,11 @@ export default function GenesisEndView() {
     }, 0);
 
     setTotalStakedAmount(totalALP);
-  }, [stakingAccounts]);
+  }, [stakingAccounts, connected]);
 
   const url = 'https://app.adrena.xyz/genesis';
   const text =
-    totalStakedAmount !== null && totalStakedAmount > 0 ? (
+    totalStakedAmount !== null && totalStakedAmount > 0 && connected ? (
       <p className="text-center mt-1 text-base max-w-[400px] font-mono font-semibold">
         <span className="font-mono font-light text-base opacity-50">
           You have bought{' '}
@@ -46,7 +46,9 @@ export default function GenesisEndView() {
         180 days!
       </p>
     ) : (
-      <p>Genesis Program has concluded, and Adrena will launch soon!</p>
+      <p className="text-center mt-1 max-w-[400px] ont-mono font-light text-base opacity-50">
+        Genesis Program has concluded, and Adrena will launch soon!
+      </p>
     );
 
   return (
