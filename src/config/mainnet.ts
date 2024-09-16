@@ -118,10 +118,6 @@ export default class MainnetConfiguration implements IConfiguration {
           name: 'Helius RPC',
           url: 'https://mainnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
         },
-        {
-          name: 'Solana RPC',
-          url: 'https://api.mainnet-beta.solana.com',
-        },
       ];
 
   public readonly pythnetRpc: RpcOption = {
