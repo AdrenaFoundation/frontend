@@ -12,6 +12,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { Congrats } from '@/components/Congrats/Congrats';
 import ProgressBar from '@/components/Genesis/ProgressBar';
+import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
 import GenesisEndView from '@/components/pages/genesis/GenesisEndView';
 import TradingInput from '@/components/pages/trading/TradingInput/TradingInput';
@@ -19,7 +20,7 @@ import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import Settings from '@/components/Settings/Settings';
 import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
-import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { GenesisLock, PageProps } from '@/types';
@@ -28,6 +29,7 @@ import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
 import alpIcon from '../../../public/images/alp.svg';
 import capsuleMonster from '../../../public/images/capsule.png';
+import timerBg from '../../../public/images/genesis-timer-bg.png';
 import errorImg from '../../../public/images/Icons/error.svg';
 import lockIcon from '../../../public/images/Icons/lock.svg';
 import logo from '../../../public/images/logo.png';
@@ -76,10 +78,24 @@ export default function Genesis({
   const [genesis, setGenesis] = useState<GenesisLock | null>(null);
   const [currentStep, setCurrentStep] = useState(2);
   const fundsAmountDebounced = useDebounce(fundsAmount, 500);
-  const totalADXSupply = useADXTotalSupply();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isGenesisLoading, setIsGenesisLoading] = useState(true);
+  const [hasReservedCampaignEnded, setHasReservedCampaignEnded] =
+    useState(false);
+  const [hasCampaignEnded, setHasCampaignEnded] = useState(false);
+
+  const from = new Date();
+
+  const campaignEndDate = genesis
+    ? new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.campaignDuration.toNumber() * 1000,
+      )
+    : new Date();
+
+  const { days, hours, minutes, seconds } = useCountDown(from, campaignEndDate);
 
   useEffect(() => {
     getAlpAmount();
@@ -87,34 +103,31 @@ export default function Genesis({
 
   useEffect(() => {
     getGenesis();
+
+    setTimeout(() => {
+      setIsGenesisLoading(false);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getGenesis();
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [connected, isSuccess]);
 
   useEffect(() => {
     const isRebalancing = process.env.NEXT_PUBLIC_IS_REBALANCING === 'true';
 
-    if (genesis) {
-      const daysElapsed = Math.floor(
-        (Date.now() - genesis.campaignStartDate.toNumber() * 1000) /
-          (1000 * 60 * 60 * 24),
-      );
+    if (isRebalancing) return setCurrentStep(3);
+    if (hasReservedCampaignEnded && hasCampaignEnded) return setCurrentStep(2);
+    if (hasReservedCampaignEnded) return setCurrentStep(1);
 
-      if (!isRebalancing && daysElapsed >= 4) return setCurrentStep(3);
-
-      if (isRebalancing) return setCurrentStep(3);
-
-      if (daysElapsed >= 3) return setCurrentStep(2);
-
-      if (daysElapsed >= 2) return setCurrentStep(1);
-
-      setCurrentStep(0);
-    }
-  }, [genesis]);
+    setCurrentStep(0);
+  }, [hasCampaignEnded, hasReservedCampaignEnded]);
 
   const getGenesis = async () => {
-    if (!connected) {
-      return;
-    }
-
     try {
       const genesis = await window.adrena.client.getGensisLock();
 
@@ -122,6 +135,18 @@ export default function Genesis({
         return;
       }
 
+      const campaignEndDate = new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.campaignDuration.toNumber() * 1000,
+      );
+
+      const resrevedCampaignEndDate = new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.reservedGrantDuration.toNumber() * 1000,
+      );
+
+      setHasCampaignEnded(new Date() >= campaignEndDate);
+      setHasReservedCampaignEnded(new Date() >= resrevedCampaignEndDate);
       setGenesis(genesis as GenesisLock);
     } catch (error) {
       console.log('error fetching genesis', error);
@@ -249,6 +274,14 @@ export default function Genesis({
   const OGIMage =
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg';
 
+  if (isGenesisLoading) {
+    return (
+      <div className="m-auto">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -277,6 +310,7 @@ export default function Genesis({
         <meta name="twitter:image" content={OGIMage} />
         <meta name="twitter:url" content={url} />
       </Head>
+
       <ProgressBar currentStep={currentStep} genesis={genesis} />
 
       <div className="relative p-4 m-auto max-w-[1150px]">
@@ -292,6 +326,18 @@ export default function Genesis({
           className="fixed top-0 object-contain right-[-250px] h-full w-[650px] opacity-10 -scale-x-[1]"
         />
 
+        <div className="flex items-center justify-center relative">
+          <p className="absolute font-mono translate-y-[7px] z-10">
+            {!hasCampaignEnded
+              ? `${days}d ${hours}h ${minutes}m ${seconds}s left`
+              : 'Campaign has ended'}
+          </p>
+          <Image
+            src={timerBg}
+            alt="background graphic"
+            className="w-[300px] translate-y-1"
+          />
+        </div>
         <div className="relative items-center border rounded-lg w-full p-2 shadow-2xl bg-[#050D14]">
           <div className="flex flex-col md:flex-row gap-2 m-auto z-20">
             <div className="sm:hidden h-full bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
@@ -548,7 +594,7 @@ export default function Genesis({
                 <WalletAdapter userProfile={userProfile} />
               </div>
 
-              {currentStep >= 2 ? (
+              {hasCampaignEnded ? (
                 <GenesisEndView />
               ) : (
                 <>

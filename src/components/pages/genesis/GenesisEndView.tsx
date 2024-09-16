@@ -34,9 +34,20 @@ export default function GenesisEndView() {
 
   const url = 'https://app.adrena.xyz/genesis';
   const text =
-    totalStakedAmount !== null && totalStakedAmount > 0
-      ? `You have bought ${totalStakedAmount} ALP locked and staked for 180 days!`
-      : 'Genesis Program has concluded, and Adrena will launch soon!';
+    totalStakedAmount !== null && totalStakedAmount > 0 ? (
+      <p className="text-center mt-1 text-base max-w-[400px] font-mono font-semibold">
+        <span className="font-mono font-light text-base opacity-50">
+          You have bought{' '}
+        </span>{' '}
+        {totalStakedAmount} ALP{' '}
+        <span className="font-mono font-light text-base opacity-50">
+          locked and staked for
+        </span>{' '}
+        180 days!
+      </p>
+    ) : (
+      <p>Genesis Program has concluded, and Adrena will launch soon!</p>
+    );
 
   return (
     <div className="relative p-3">
@@ -53,15 +64,13 @@ export default function GenesisEndView() {
       </div>
 
       <h1 className="text-center mt-6">Welcome to Adrena!</h1>
-      <p className="text-center mt-1 text-base opacity-50 max-w-[400px]">
-        {text}
-      </p>
+      {text}
       <Button
         size="lg"
         title="Share on"
         className="w-full mt-10 py-3 text-base"
         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          text,
+          `I just bought ${totalStakedAmount} ALP locked and staked for 180 days!`,
         )}&url=${encodeURIComponent(url)}`}
         isOpenLinkInNewTab
         rightIcon={xIcon}
