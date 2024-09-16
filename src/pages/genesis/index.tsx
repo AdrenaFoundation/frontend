@@ -717,7 +717,7 @@ export default function Genesis({
                       <li className="flex flex-col items-center">
                         <p className="text-sm">USDC Yield</p>
                         <p className="font-medium font-mono text-sm sm:text-lg">
-                          1.75x
+                          1.5x
                         </p>
                       </li>
 
