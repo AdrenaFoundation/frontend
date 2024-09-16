@@ -75,7 +75,6 @@ export default function Genesis({
   const [genesis, setGenesis] = useState<GenesisLock | null>(null);
   const [currentStep, setCurrentStep] = useState(2);
   const fundsAmountDebounced = useDebounce(fundsAmount, 500);
-  const totalADXSupply = useADXTotalSupply();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -525,6 +524,7 @@ export default function Genesis({
             <div className="bg-gradient-to-tr from-[#07111A] to-[#0B1722] w-full md:w-[400px] rounded-lg p-5 shadow-lg border border-bcolor order-1 md:order-2 flex-none">
               <div className="flex flex-row gap-3 justify-end items-center">
                 <RefreshButton />
+                <WalletAdapter userProfile={userProfile} />
                 <Settings
                   activeRpc={activeRpc}
                   rpcInfos={rpcInfos}
@@ -538,7 +538,6 @@ export default function Genesis({
                   isIcon
                   isGenesis
                 />
-                <WalletAdapter userProfile={userProfile} />
               </div>
               <div className="w-full">
                 <p className="opacity-50 text-sm mb-3">Pay</p>

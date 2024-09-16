@@ -10,9 +10,7 @@ import {
 import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
-import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
-import threeDotsIcon from '../../../public/images/three-dots.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -22,7 +20,6 @@ import WalletSelectionModal from './WalletSelectionModal';
 
 export default function WalletAdapter({
   className,
-  userProfile,
 }: {
   className?: string;
   userProfile: UserProfileExtended | null | false;
@@ -78,16 +75,13 @@ export default function WalletAdapter({
           trigger={
             <Button
               className={twMerge(className, 'gap-2 h-0 px-0 py-0')}
-              title={
-                userProfile
-                  ? getAbbrevNickname(userProfile.nickname)
-                  : getAbbrevWalletAddress(wallet.walletAddress)
-              }
-              rightIcon={threeDotsIcon}
+              rightIcon={walletIcon}
               alt="wallet icon"
               variant="secondary"
               height={17}
               width={17}
+              href={`https://explorer.solana.com/address/${wallet.walletAddress}`}
+              isOpenLinkInNewTab={true}
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}
