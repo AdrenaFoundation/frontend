@@ -9,7 +9,6 @@ import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { IDL as SABLIER_THREAD_IDL } from '@/target/thread_program';
 
 import SablierClient from './SablierClient';
-import { GeoBlockingData } from './types';
 
 export function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
@@ -87,12 +86,6 @@ export function createReadOnlySablierThreadProgram(connection: Connection) {
   );
 }
 
-async function fetchGeoBlockingData(): Promise<GeoBlockingData> {
-  const res = await fetch(`https://api.adrena.xyz/api/geoapi`);
-
-  return res.json();
-}
-
 // Initialize all objects that are required to launch the app
 // theses objects doesn't change on the way
 // for changing objects, use hooks like useCustodies/usePositions etc.
@@ -105,10 +98,7 @@ export default async function initializeApp(
   const readOnlySablierThreadProgram =
     createReadOnlySablierThreadProgram(mainConnection);
 
-  const [client, geoBlockingData] = await Promise.all([
-    AdrenaClient.initialize(readOnlyAdrenaProgram, config),
-    fetchGeoBlockingData(),
-  ]);
+  const client = await AdrenaClient.initialize(readOnlyAdrenaProgram, config);
 
   const sablierClient = new SablierClient(readOnlySablierThreadProgram);
 
@@ -121,6 +111,5 @@ export default async function initializeApp(
     mainConnection,
     pythConnection,
     cluster: config.cluster,
-    geoBlockingData,
   };
 }

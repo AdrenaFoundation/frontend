@@ -30,7 +30,6 @@ export type AdrenaGlobal = {
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
-  geoBlockingData: GeoBlockingData;
 };
 
 // Rive doesn't expose the type

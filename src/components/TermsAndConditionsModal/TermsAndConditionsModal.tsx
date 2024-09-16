@@ -41,42 +41,13 @@ export default function TermsAndConditionsModal({
         'flex-col',
         'items-center',
         'p-4',
+        'w-[40em]',
         'max-w-[40em]',
         'max-h-[40em]',
       )}
     >
-      <div className="h-full max-h-full overflow-auto flex flex-col">
-        <span className="text-sm">
-          Welcome to Adrena! Our full Terms and Conditions are being carefully
-          drafted.
-        </span>
-        <span className="mt-4 text-sm">
-          By using our service, you agree to engage in good faith, understanding
-          that formal terms will follow.
-        </span>
-        <span className="mt-2 text-sm">
-          In the meantime, please note: Due to regulatory concerns, Adrena is
-          not available in certain regions, including:
-        </span>
-        <ul className="mt-2 text-sm">
-          {/*<li>- The United States</li> temporarily waived for devnet until further feedback from legal*/}
-          <li>- China</li>
-          <li>- India</li>
-          <li>- Russia</li>
-          <li>- Turkey</li>
-          <li>- Bangladesh</li>
-          <li>- Vietnam</li>
-        </ul>
-        <span className="mt-2 text-sm">We appreciate your understanding.</span>
-        <span className="mt-4 text-sm">
-          Adrena is in early access on Devnet, and we are thrilled to have you
-          on board! Your feedback is invaluable to us, so please share your
-          thoughts.
-        </span>
-        <span className="mt-4 text-sm">
-          Thank you for your patience and support. Lets participate on the
-          future of DeFi together!
-        </span>
+      <div className="h-[20em] w-full overflow-auto flex flex-col">
+        <iframe src="/terms.html" style={{ width: '100%', height: '100vh' }} />
       </div>
 
       <div className="flex w-full flex-row gap-3  pt-6 mt-6 border-t border-grey">

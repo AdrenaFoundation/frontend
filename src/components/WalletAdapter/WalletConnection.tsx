@@ -21,11 +21,7 @@ export default function WalletConnection({
   return (
     <div className="flex flex-col h-full items-center justify-center">
       <Button
-        title={
-          !window.adrena.geoBlockingData.allowed
-            ? 'Geo-Restricted Access'
-            : 'Connect wallet'
-        }
+        title="Connect wallet"
         variant="secondary"
         rightIcon={phantomLogo}
         className="mb-2"

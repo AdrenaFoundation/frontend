@@ -129,11 +129,6 @@ export default function ALPSwap({
 
   useEffect(() => {
     const newButtonTitle = () => {
-      if (!connected && !window.adrena.geoBlockingData.allowed) {
-        setIsDisabledButton(true);
-        return 'Geo-Restricted Access';
-      }
-
       // If wallet not connected, then user need to connect wallet
       if (!connected) {
         setIsDisabledButton(false);

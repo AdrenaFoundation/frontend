@@ -73,7 +73,6 @@ export default function ADXStakeOverview({
             variant="primary"
             size="lg"
             title={totalLiquidStaked !== 0 ? 'Stake More' : 'Stake'}
-            disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() => handleClickOnStakeMore(0)}
           />
 
@@ -83,7 +82,6 @@ export default function ADXStakeOverview({
               variant="outline"
               size="lg"
               title="Redeem"
-              disabled={!window.adrena.geoBlockingData.allowed}
               onClick={() => handleClickOnRedeem()}
             />
           ) : null}
@@ -177,7 +175,6 @@ export default function ADXStakeOverview({
             variant="primary"
             size="lg"
             title={totalLockedStake !== 0 ? 'Stake More' : 'Stake'}
-            disabled={!window.adrena.geoBlockingData.allowed}
             onClick={() =>
               handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
             }
@@ -188,7 +185,6 @@ export default function ADXStakeOverview({
               return (
                 <Button
                   className="w-full mt-4"
-                  disabled={!window.adrena.geoBlockingData.allowed}
                   variant="outline"
                   size="lg"
                   title="Claim Rewards *"
