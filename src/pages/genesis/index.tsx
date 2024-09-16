@@ -12,13 +12,15 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { Congrats } from '@/components/Congrats/Congrats';
 import ProgressBar from '@/components/Genesis/ProgressBar';
+import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
+import GenesisEndView from '@/components/pages/genesis/GenesisEndView';
 import TradingInput from '@/components/pages/trading/TradingInput/TradingInput';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import Settings from '@/components/Settings/Settings';
 import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
-import useADXTotalSupply from '@/hooks/useADXTotalSupply';
+import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { GenesisLock, PageProps } from '@/types';
@@ -27,6 +29,7 @@ import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
 import alpIcon from '../../../public/images/alp.svg';
 import capsuleMonster from '../../../public/images/capsule.png';
+import timerBg from '../../../public/images/genesis-timer-bg.png';
 import errorImg from '../../../public/images/Icons/error.svg';
 import lockIcon from '../../../public/images/Icons/lock.svg';
 import logo from '../../../public/images/logo.png';
@@ -78,6 +81,21 @@ export default function Genesis({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isGenesisLoading, setIsGenesisLoading] = useState(true);
+  const [hasReservedCampaignEnded, setHasReservedCampaignEnded] =
+    useState(false);
+  const [hasCampaignEnded, setHasCampaignEnded] = useState(false);
+
+  const from = new Date();
+
+  const campaignEndDate = genesis
+    ? new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.campaignDuration.toNumber() * 1000,
+      )
+    : new Date();
+
+  const { days, hours, minutes, seconds } = useCountDown(from, campaignEndDate);
 
   useEffect(() => {
     getAlpAmount();
@@ -85,34 +103,31 @@ export default function Genesis({
 
   useEffect(() => {
     getGenesis();
+
+    setTimeout(() => {
+      setIsGenesisLoading(false);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getGenesis();
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [connected, isSuccess]);
 
   useEffect(() => {
     const isRebalancing = process.env.NEXT_PUBLIC_IS_REBALANCING === 'true';
 
-    if (genesis) {
-      const daysElapsed = Math.floor(
-        (Date.now() - genesis.campaignStartDate.toNumber() * 1000) /
-          (1000 * 60 * 60 * 24),
-      );
+    if (isRebalancing) return setCurrentStep(3);
+    if (hasReservedCampaignEnded && hasCampaignEnded) return setCurrentStep(2);
+    if (hasReservedCampaignEnded) return setCurrentStep(1);
 
-      if (!isRebalancing && daysElapsed >= 4) return setCurrentStep(3);
-
-      if (isRebalancing) return setCurrentStep(3);
-
-      if (daysElapsed >= 3) return setCurrentStep(2);
-
-      if (daysElapsed >= 2) return setCurrentStep(1);
-
-      setCurrentStep(0);
-    }
-  }, [genesis]);
+    setCurrentStep(0);
+  }, [hasCampaignEnded, hasReservedCampaignEnded]);
 
   const getGenesis = async () => {
-    if (!connected) {
-      return;
-    }
-
     try {
       const genesis = await window.adrena.client.getGensisLock();
 
@@ -120,6 +135,18 @@ export default function Genesis({
         return;
       }
 
+      const campaignEndDate = new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.campaignDuration.toNumber() * 1000,
+      );
+
+      const resrevedCampaignEndDate = new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.reservedGrantDuration.toNumber() * 1000,
+      );
+
+      setHasCampaignEnded(new Date() >= campaignEndDate);
+      setHasReservedCampaignEnded(new Date() >= resrevedCampaignEndDate);
       setGenesis(genesis as GenesisLock);
     } catch (error) {
       console.log('error fetching genesis', error);
@@ -229,7 +256,9 @@ export default function Genesis({
     );
 
   const url = 'https://app.adrena.xyz/genesis';
-  const text = `Just bought some ALP locked and staked for 180 days`;
+  const text = `Just bought ${feeAndAmount?.amount.toFixed(
+    2,
+  )} ALP locked and staked for 180 days`;
 
   const MAX_USDC_AMOUNT = 250_000;
 
@@ -245,6 +274,14 @@ export default function Genesis({
 
   const OGIMage =
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg';
+
+  if (isGenesisLoading) {
+    return (
+      <div className="m-auto">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -274,6 +311,7 @@ export default function Genesis({
         <meta name="twitter:image" content={OGIMage} />
         <meta name="twitter:url" content={url} />
       </Head>
+
       <ProgressBar currentStep={currentStep} genesis={genesis} />
 
       <div className="relative p-4 m-auto max-w-[1150px]">
@@ -289,6 +327,18 @@ export default function Genesis({
           className="fixed top-0 object-contain right-[-250px] h-full w-[650px] opacity-10 -scale-x-[1]"
         />
 
+        <div className="flex items-center justify-center relative">
+          <p className="absolute font-mono translate-y-[7px] z-10">
+            {!hasCampaignEnded
+              ? `${days}d ${hours}h ${minutes}m ${seconds}s left`
+              : 'Campaign has ended'}
+          </p>
+          <Image
+            src={timerBg}
+            alt="background graphic"
+            className="w-[300px] translate-y-1"
+          />
+        </div>
         <div className="relative items-center border rounded-lg w-full p-2 shadow-2xl bg-[#050D14]">
           <div className="flex flex-col md:flex-row gap-2 m-auto z-20">
             <div className="sm:hidden h-full bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
@@ -521,8 +571,13 @@ export default function Genesis({
               </div>
             </div>
 
-            <div className="bg-gradient-to-tr from-[#07111A] to-[#0B1722] w-full md:w-[400px] rounded-lg p-5 shadow-lg border border-bcolor order-1 md:order-2 flex-none">
-              <div className="flex flex-row gap-3 justify-end items-center">
+            <div
+              className={twMerge(
+                'bg-gradient-to-tr from-[#07111A] to-[#0B1722] w-full md:w-[400px] rounded-lg p-5 shadow-lg border border-bcolor order-1 md:order-2 flex-none',
+                currentStep >= 2 && 'from-secondary to-secondary',
+              )}
+            >
+              <div className="flex flex-row gap-1 justify-end items-center">
                 <RefreshButton />
                 <WalletAdapter userProfile={userProfile} />
                 <Settings
@@ -539,152 +594,162 @@ export default function Genesis({
                   isGenesis
                 />
               </div>
-              <div className="w-full">
-                <p className="opacity-50 text-sm mb-3">Pay</p>
-                {usdc && (
-                  <TradingInput
-                    className="text-sm rounded-full"
-                    inputClassName={'bg-inputcolor'}
-                    tokenListClassName={twMerge(
-                      'rounded-tr-lg rounded-br-lg border-l border-l-inputcolor bg-inputcolor',
+
+              {hasCampaignEnded ? (
+                <GenesisEndView />
+              ) : (
+                <>
+                  <div className="w-full">
+                    <p className="opacity-50 text-sm mb-3">Pay</p>
+                    {usdc && (
+                      <TradingInput
+                        className="text-sm rounded-full"
+                        inputClassName={'bg-inputcolor'}
+                        tokenListClassName={twMerge(
+                          'rounded-tr-lg rounded-br-lg border-l border-l-inputcolor bg-inputcolor',
+                        )}
+                        menuClassName="shadow-none justify-end mr-2"
+                        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
+                        value={fundsAmount}
+                        maxButton={connected}
+                        maxClassName="relative ml-auto"
+                        selectedToken={usdc}
+                        tokenList={[usdc]}
+                        onMaxButtonClick={() => {
+                          setFundsAmount(maxAmount);
+                        }}
+                        onChange={(e) => {
+                          if (e !== null && e >= MAX_USDC_AMOUNT) {
+                            setFundsAmount(MAX_USDC_AMOUNT);
+                            return;
+                          }
+                          setIsLoading(true);
+                          setErrorMsg(null);
+                          setFundsAmount(e);
+                        }}
+                      />
                     )}
-                    menuClassName="shadow-none justify-end mr-2"
-                    menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
-                    value={fundsAmount}
-                    maxButton={connected}
-                    maxClassName="relative ml-auto"
-                    selectedToken={usdc}
-                    tokenList={[usdc]}
-                    onMaxButtonClick={() => {
-                      setFundsAmount(maxAmount);
-                    }}
-                    onChange={(e) => {
-                      if (e !== null && e >= MAX_USDC_AMOUNT) {
-                        setFundsAmount(MAX_USDC_AMOUNT);
-                        return;
-                      }
-                      setIsLoading(true);
-                      setErrorMsg(null);
-                      setFundsAmount(e);
-                    }}
-                  />
-                )}
 
-                <span className="flex flex-row justify-end items-center gap-1 mt-3 w-full text-right">
-                  <p className="opacity-50 inline">Wallet · </p>
-                  <FormatNumber nb={walletTokenABalance} suffix=" USDC" />
-                </span>
-              </div>
-
-              <div
-                className={twMerge('w-full transition-opacity duration-300')}
-              >
-                <p className="opacity-50 text-sm mb-3">Receive</p>
-                <StyledSubContainer className="bg-transparent">
-                  <div>
-                    <div className="relative flex flex-row gap-2 items-center transition-opacity duration-300">
-                      <Image
-                        src={window.adrena.client.alpToken.image}
-                        width={16}
-                        height={16}
-                        alt="ALP logo"
-                      />
-                      <FormatNumber
-                        nb={feeAndAmount?.amount}
-                        suffix=" ALP"
-                        placeholder="0.00 ALP"
-                        placeholderClassName="opacity-50"
-                        className="text-lg"
-                        isLoading={isLoading}
-                      />
-                    </div>
-                    <div className="flex flex-row gap-1 items-center mt-3">
-                      <Image
-                        src={lockIcon}
-                        width={12}
-                        height={12}
-                        alt="ALP logo"
-                        className="opacity-50"
-                      />
-                      <p>Immediately staked and locked for 180 days</p>
-                    </div>
+                    <span className="flex flex-row justify-end items-center gap-1 mt-3 w-full text-right">
+                      <p className="opacity-50 inline">Wallet · </p>
+                      <FormatNumber nb={walletTokenABalance} suffix=" USDC" />
+                    </span>
                   </div>
-                </StyledSubContainer>
-              </div>
 
-              <Button
-                size="lg"
-                title="Provide Liquidity"
-                className="w-full mt-3 py-3"
-                disabled={
-                  !connected ||
-                  !usdc ||
-                  isLoading ||
-                  !fundsAmount ||
-                  !feeAndAmount?.amount
-                }
-                onClick={() => addGenesisLiquidity()}
-              />
-
-              {errorMsg !== null ? (
-                <AnimatePresence>
-                  <motion.div
-                    className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 my-4 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
-                    initial={{ opacity: 0, scaleY: 0 }}
-                    animate={{ opacity: 1, scaleY: 1 }}
-                    exit={{ opacity: 0, scaleY: 0 }}
-                    transition={{ duration: 0.5 }}
-                    style={{ originY: 0 }}
+                  <div
+                    className={twMerge(
+                      'w-full transition-opacity duration-300',
+                    )}
                   >
-                    <Image
-                      className="absolute left-[0.5em]"
-                      src={errorImg}
-                      width={16}
-                      alt="Error icon"
-                    />
+                    <p className="opacity-50 text-sm mb-3">Receive</p>
+                    <StyledSubContainer className="bg-transparent">
+                      <div>
+                        <div className="relative flex flex-row gap-2 items-center transition-opacity duration-300">
+                          <Image
+                            src={window.adrena.client.alpToken.image}
+                            width={16}
+                            height={16}
+                            alt="ALP logo"
+                          />
+                          <FormatNumber
+                            nb={feeAndAmount?.amount}
+                            suffix=" ALP"
+                            placeholder="0.00 ALP"
+                            placeholderClassName="opacity-50"
+                            className="text-lg"
+                            isLoading={isLoading}
+                          />
+                        </div>
+                        <div className="flex flex-row gap-1 items-center mt-3">
+                          <Image
+                            src={lockIcon}
+                            width={12}
+                            height={12}
+                            alt="ALP logo"
+                            className="opacity-50"
+                          />
+                          <p>Immediately staked and locked for 180 days</p>
+                        </div>
+                      </div>
+                    </StyledSubContainer>
+                  </div>
 
-                    <div className="items-center justify-center">
-                      <div className="text-sm">{errorMsg}</div>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              ) : null}
-              <div className="w-full mt-6">
-                <p className="opacity-50 text-sm mb-3">Rewards</p>
-                <ul className="flex gap-1 sm:gap-3 items-center flex-wrap justify-evenly p-1 py-2 sm:p-3 rounded-lg border border-bcolor">
-                  <li className="flex flex-col items-center">
-                    <p className="text-sm">USDC Yield</p>
-                    <p className="font-medium font-mono text-sm sm:text-lg">
-                      1.75x
-                    </p>
-                  </li>
+                  <Button
+                    size="lg"
+                    title="Provide Liquidity"
+                    className="w-full mt-3 py-3"
+                    disabled={
+                      !connected ||
+                      !usdc ||
+                      isLoading ||
+                      !fundsAmount ||
+                      !feeAndAmount?.amount
+                    }
+                    onClick={() => addGenesisLiquidity()}
+                  />
 
-                  <li className="h-[40px] w-[1px] bg-bcolor" />
+                  {errorMsg !== null ? (
+                    <AnimatePresence>
+                      <motion.div
+                        className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 my-4 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
+                        initial={{ opacity: 0, scaleY: 0 }}
+                        animate={{ opacity: 1, scaleY: 1 }}
+                        exit={{ opacity: 0, scaleY: 0 }}
+                        transition={{ duration: 0.5 }}
+                        style={{ originY: 0 }}
+                      >
+                        <Image
+                          className="absolute left-[0.5em]"
+                          src={errorImg}
+                          width={16}
+                          alt="Error icon"
+                        />
 
-                  <li className="flex flex-col items-center">
-                    <p className="text-sm">ADX rewards</p>
-                    <p className="font-medium font-mono text-sm sm:text-lg">
-                      1.75x
-                    </p>
-                  </li>
+                        <div className="items-center justify-center">
+                          <div className="text-sm">{errorMsg}</div>
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  ) : null}
 
-                  <li className="h-[40px] w-[1px] bg-bcolor" />
+                  <div className="w-full mt-6">
+                    <p className="opacity-50 text-sm mb-3">Rewards</p>
+                    <ul className="flex gap-1 sm:gap-3 items-center flex-wrap justify-evenly p-1 py-2 sm:p-3 rounded-lg border border-bcolor">
+                      <li className="flex flex-col items-center">
+                        <p className="text-sm">USDC Yield</p>
+                        <p className="font-medium font-mono text-sm sm:text-lg">
+                          1.75x
+                        </p>
+                      </li>
 
-                  <li className="flex flex-col items-center">
-                    <p className="text-sm">Bonus ADX</p>
+                      <li className="h-[40px] w-[1px] bg-bcolor" />
 
-                    <FormatNumber
-                      nb={
-                        fundsAmount
-                          ? fundsAmount * GENESIS_REWARD_ADX_PER_USDC
-                          : null
-                      }
-                      className="font-medium font-mono text-sm sm:text-lg"
-                      suffix=" ADX"
-                    />
-                  </li>
-                </ul>
-              </div>
+                      <li className="flex flex-col items-center">
+                        <p className="text-sm">ADX rewards</p>
+                        <p className="font-medium font-mono text-sm sm:text-lg">
+                          1.75x
+                        </p>
+                      </li>
+
+                      <li className="h-[40px] w-[1px] bg-bcolor" />
+
+                      <li className="flex flex-col items-center">
+                        <p className="text-sm">Bonus ADX</p>
+
+                        <FormatNumber
+                          nb={
+                            fundsAmount
+                              ? fundsAmount * GENESIS_REWARD_ADX_PER_USDC
+                              : null
+                          }
+                          className="font-medium font-mono text-sm sm:text-lg"
+                          suffix=" ADX"
+                        />
+                      </li>
+                    </ul>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -708,8 +773,7 @@ export default function Genesis({
 
               <h1 className="text-center mt-6">Welcome to Adrena!</h1>
               <p className="text-center mt-1 text-base opacity-50 max-w-[400px]">
-                You have bought {feeAndAmount?.amount.toFixed(2)} ALP locked and
-                staked for 6 months
+                {text}
               </p>
               <Button
                 size="lg"

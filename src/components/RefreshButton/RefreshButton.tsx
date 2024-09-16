@@ -23,7 +23,7 @@ export default function RefreshButton({ className }: { className?: string }) {
     <div
       onClick={handleReload}
       className={twMerge(
-        'flex items-center justify-center w-6 h-6 p-1 rounded-full border border-fourth cursor-pointer hover:bg-white hover:bg-opacity-10 transition duration-300',
+        'flex items-center justify-center w-6 h-6 p-1 rounded-full cursor-pointer opacity-50 hover:opacity-100 transition duration-300',
         className,
       )}
     >
