@@ -102,7 +102,6 @@ export default function StakeOverview({
                     title="Redeem"
                     className="px-5"
                     onClick={handleClickOnRedeem}
-                    disabled={!window.adrena.geoBlockingData.allowed}
                   />
                 </div>
               </div>
@@ -148,7 +147,6 @@ export default function StakeOverview({
               variant="primary"
               size="lg"
               title={totalLockedStake !== 0 ? 'Stake More' : 'Stake'}
-              disabled={!window.adrena.geoBlockingData.allowed}
               onClick={() =>
                 handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
               }
@@ -159,7 +157,6 @@ export default function StakeOverview({
                 return (
                   <Button
                     className="w-full mt-4"
-                    disabled={!window.adrena.geoBlockingData.allowed}
                     variant="outline"
                     size="lg"
                     title="Claim Rewards *"

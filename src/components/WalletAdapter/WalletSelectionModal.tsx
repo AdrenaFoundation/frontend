@@ -1,5 +1,4 @@
 import { WalletReadyState } from '@solana/wallet-adapter-base';
-import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image, { StaticImageData } from 'next/image';
 import React from 'react';
@@ -17,20 +16,10 @@ import coinbaseLogo from '../../../public/images/coinbase.png';
 import phantomLogo from '../../../public/images/phantom.png';
 import solflareLogo from '../../../public/images/solflare.png';
 import Modal from '../common/Modal/Modal';
-import GeoBlockedModal from '../GeoBlockedModal/GeoBlockedModal';
 
 export default function WalletSelectionModal() {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
-
-  if (!window.adrena.geoBlockingData.allowed) {
-    return (
-      <GeoBlockedModal
-        isOpen={modalIsOpen}
-        closeTrigger={() => dispatch(openCloseConnectionModalAction(false))}
-      />
-    );
-  }
 
   return (
     <AnimatePresence>
