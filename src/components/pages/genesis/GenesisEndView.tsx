@@ -64,7 +64,7 @@ export default function GenesisEndView() {
       </div>
 
       <h1 className="text-center mt-6">Welcome to Adrena!</h1>
-      <p className="">{text}</p>
+      {text}
       <Button
         size="lg"
         title="Share on"
