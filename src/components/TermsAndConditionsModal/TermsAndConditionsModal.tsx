@@ -1,10 +1,10 @@
+import Link from 'next/link';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '../common/Button/Button';
 import Checkbox from '../common/Checkbox/Checkbox';
 import Modal from '../common/Modal/Modal';
-import Link from 'next/link';
 
 export default function TermsAndConditionsModal({
   className,
