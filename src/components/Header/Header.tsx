@@ -105,8 +105,6 @@ export default function Header({
           />
         </Link>
 
-        <WalletAdapter userProfile={userProfile} />
-
         <Settings
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}
@@ -118,6 +116,8 @@ export default function Header({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
         />
+
+        <WalletAdapter userProfile={userProfile} />
 
         {clusterSwitchEnabled ? (
           <Menu

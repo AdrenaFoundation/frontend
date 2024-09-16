@@ -90,7 +90,6 @@ export default function BurgerMenu({
             onClick={() => setIsOpen(false)}
           />
 
-          <WalletAdapter className="w-full" userProfile={userProfile} />
           <Settings
             activeRpc={activeRpc}
             rpcInfos={rpcInfos}
@@ -102,6 +101,7 @@ export default function BurgerMenu({
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
           />
+          <WalletAdapter className="w-full" userProfile={userProfile} />
         </div>
       </div>
 

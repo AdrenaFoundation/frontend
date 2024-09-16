@@ -77,11 +77,7 @@ export default function WalletAdapter({
         <Menu
           trigger={
             <Button
-              className={twMerge(
-                // use monster font when displaying the nickname only
-                userProfile ? 'font-special text-md' : '',
-                className,
-              )}
+              className={twMerge(className, 'gap-2 h-0 px-0 py-0')}
               title={
                 userProfile
                   ? getAbbrevNickname(userProfile.nickname)
@@ -90,6 +86,8 @@ export default function WalletAdapter({
               rightIcon={threeDotsIcon}
               alt="wallet icon"
               variant="secondary"
+              height={17}
+              width={17}
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}
