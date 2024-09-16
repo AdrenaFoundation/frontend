@@ -181,7 +181,12 @@ export default function GlobalHealthOverview({
       <div>
         <h3 className="mb-3">Assets Under Management</h3>
 
-        <NumberDisplay title="Value" nb={aumUsd} format="currency" />
+        <NumberDisplay
+          title="Value"
+          nb={aumUsd}
+          format="currency"
+          precision={0}
+        />
       </div>
 
       <StyledSubContainer className="h-auto">

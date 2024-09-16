@@ -98,7 +98,11 @@ export default function Header({
 
       <div className="flex flex-row items-center gap-2 sm:gap-3">
         <Link href="/trade">
-          <Button title="Trade now" disabled={pathname === '/trade'} />
+          <Button
+            title="Trade now"
+            disabled={pathname === '/trade'}
+            className="h-7"
+          />
         </Link>
 
         <WalletAdapter userProfile={userProfile} />

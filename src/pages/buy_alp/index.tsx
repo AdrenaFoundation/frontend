@@ -259,8 +259,8 @@ export default function Buy({
                 nb={aumUsd}
                 format="currency"
                 className="text-[1.2rem] sm:text-[2.4rem] font-bold"
-                isDecimalDimmed={false}
-              />{' '}
+                precision={0}
+              />
               <span className="text-[1.2rem] sm:text-[2rem] font-bold opacity-50">
                 /
               </span>

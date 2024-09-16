@@ -6,6 +6,7 @@ import TokenStakingOverview from '@/components/pages/global/TokenStakingOverview
 import UsageOverview from '@/components/pages/global/UsageOverview';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
+import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import { useSelector } from '@/store/store';
@@ -20,6 +21,7 @@ export default function BasicMonitoring({
 }: PageProps & {
   poolInfo: PoolInfo | null;
 }) {
+  const aumUsd = useAssetsUnderManagement();
   const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
   const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
   const alpPrice =
@@ -149,7 +151,7 @@ export default function BasicMonitoring({
       {alpChartData ? (
         <GlobalHealthOverview
           compositionChartData={alpChartData}
-          aumUsd={poolInfo?.aumUsd ?? null}
+          aumUsd={aumUsd}
           composition={poolInfo?.composition ?? []}
           className="max-w-[30em]"
         />

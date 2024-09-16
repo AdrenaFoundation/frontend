@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
@@ -106,6 +107,7 @@ export default function Stake({
 
   const [amount, setAmount] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isStakeLoaded, setIsStakeLoaded] = useState<boolean>(false);
 
   const adxBalance: number | null =
     walletTokenBalances?.[window.adrena.client.adxToken.symbol] ?? null;
@@ -446,6 +448,11 @@ export default function Stake({
       totalRedeemableStakeUSD:
         wallet && alpPrice ? alpPrice * getTotalRedeemableStake('ALP') : null,
     });
+
+    setTimeout(() => {
+      setIsStakeLoaded(true);
+    }, 500);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     adxBalance,
@@ -497,6 +504,14 @@ export default function Stake({
       )}
     </Modal>
   );
+
+  if (!isStakeLoaded && connected) {
+    return (
+      <div className="m-auto">
+        <Loader />
+      </div>
+    );
+  }
 
   if (
     !connected ||

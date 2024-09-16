@@ -52,9 +52,9 @@ export default function Settings({
       trigger={
         <Button
           title={!isIcon && isBigScreen ? 'Settings' : null}
-          variant="outline"
+          variant={isGenesis ? 'text' : 'outline'}
           leftIcon={!isIcon && isBigScreen ? null : settingsIcon}
-          className={!isIcon && isBigScreen ? '' : 'w-6 h-6 p-0'}
+          className={!isIcon && isBigScreen ? 'h-[2.5em]' : 'w-6 h-[2.5em] p-0'}
           iconClassName="w-4 h-4"
         />
       }

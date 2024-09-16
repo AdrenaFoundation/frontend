@@ -3126,13 +3126,13 @@ export class AdrenaClient {
   }
 
   public async getGensisLock(): Promise<GenesisLock | null> {
-    if (!this.adrenaProgram || !this.connection) {
+    if (!this.readonlyAdrenaProgram.views) {
       throw new Error('adrena program not ready');
     }
 
     const genesisLockPda = this.getGenesisLockPda();
 
-    return this.adrenaProgram?.account.genesisLock.fetch(genesisLockPda);
+    return this.readonlyAdrenaProgram.account.genesisLock.fetch(genesisLockPda);
   }
 
   public async addGenesisLiquidity({
@@ -3157,7 +3157,6 @@ export class AdrenaClient {
       .publicKey;
     const fundingAccount = findATAAddressSync(owner, usdc.mint);
     const transferAuthority = AdrenaClient.transferAuthorityAddress;
-    const lpTokenAccount = findATAAddressSync(owner, this.lpTokenMint);
     const lpStaking = this.getStakingPda(this.lpTokenMint);
     const lpUserStaking = this.getUserStakingPda(owner, lpStaking);
     const cortex = AdrenaClient.cortexPda;
@@ -3210,7 +3209,6 @@ export class AdrenaClient {
       .accountsStrict({
         owner,
         fundingAccount,
-        lpTokenAccount,
         transferAuthority,
         lpUserStaking,
         lpStaking,
@@ -4253,20 +4251,36 @@ export class AdrenaClient {
         };
       }),
 
-      ...custodiesAddresses.map((pubkey) => {
-        const custody = this.custodies.find((custody) =>
-          custody.pubkey.equals(pubkey),
-        );
+      // Only keep the ones that have a trade oracle different from oracle
+      ...custodiesAddresses.reduce(
+        (metadataArr, pubkey) => {
+          const custody = this.custodies.find((custody) =>
+            custody.pubkey.equals(pubkey),
+          );
 
-        // Should never happens
-        if (!custody) throw new Error('Custody not found');
+          // Should never happens
+          if (!custody) throw new Error('Custody not found');
 
-        return {
-          pubkey: custody.nativeObject.tradeOracle,
-          isSigner: false,
-          isWritable: false,
-        };
-      }),
+          if (
+            custody.nativeObject.oracle.equals(custody.nativeObject.tradeOracle)
+          )
+            return metadataArr;
+
+          return [
+            ...metadataArr,
+            {
+              pubkey: custody.nativeObject.tradeOracle,
+              isSigner: false,
+              isWritable: false,
+            },
+          ];
+        },
+        [] as {
+          pubkey: PublicKey;
+          isSigner: boolean;
+          isWritable: boolean;
+        }[],
+      ),
     ];
   }
 

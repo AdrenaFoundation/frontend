@@ -74,7 +74,7 @@ export default function Button({
   const styledButton = (
     <button
       className={twMerge(
-        'flex flex-row items-center justify-center gap-3 font-mono',
+        'flex flex-row items-center justify-center gap-3 font-mono h-[2.5em]',
         sizes[size],
         variants[variant],
         rounded ? 'rounded-full' : '',
