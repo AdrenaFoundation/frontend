@@ -1,6 +1,6 @@
 //Create a useCountDown hook that takes a from and a to date and returns the remaining time in seconds.
 
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function useCountDown(from: Date, to: Date) {
   const [diffMs, setDiffMs] = useState<number>(to.getTime() - from.getTime());
@@ -8,7 +8,7 @@ export default function useCountDown(from: Date, to: Date) {
   useEffect(() => {
     const interval = setInterval(() => {
       setDiffMs(to.getTime() - new Date().getTime());
-    }, 1000);
+    }, 500);
 
     return () => clearInterval(interval);
   }, [from, to]);
