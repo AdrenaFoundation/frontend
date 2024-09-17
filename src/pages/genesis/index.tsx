@@ -287,6 +287,8 @@ export default function Genesis({
       genesis.reservedGrantDuration.toNumber() * 1000,
   );
 
+  const points = {};
+
   return (
     <>
       <Head>
@@ -357,26 +359,42 @@ export default function Genesis({
               </div>
 
               <ul className="mb-4 ml-4">
-                <li className="text-base font-mono opacity-75 list-disc mb-3">
-                  Deposits will first open to whitelisted early supporters and
-                  contributors for a period of 48h, then the remainder to the
-                  public on {endDate.toLocaleDateString()},
+                <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                  Deposits will open for everyone (both reserved and public) at
+                  1200 UTC Sep 17th.
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc mb-3">
-                  Deposits are capped at $10mm
+                  After 24 hours any amount that is not claimed from the
+                  reserved allocation will move into the public allocation
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc">
-                  Depositors receive Locked ALP tokens, which earn base $ADX
-                  rewards in addition to Genesis Lock bonus $ADX rewards
+                  The total amount for Genesis Liquidity will be capped at $10M
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  Individual transactions are capped at $250k per wallet to
+                  promote distribution
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  Depositors receive ALP tokens that are automatically locked
+                  for 180D. You will be able to track your position at 'My
+                  Dashboard' once the app goes live.
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  $ADX rewards for locked ALP will start once the program is
+                  live. Rewards accrue every 6 hours and can be claimed.
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  Be sure to re-stake your $ADX for additional yield and
+                  additional $ADX rewards!
                 </li>
               </ul>
             </div>
 
             <div className="flex flex-col gap-2 order-2 md:order-1">
               <div className="hidden sm:block h-full bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
-                <Image src={logo} alt="Adrena logo" width={100} />
+                <Image src={logo} alt="Adrena logo" width={60} />
                 <div className="flex flex-row gap-3 mb-3">
-                  <h1 className="text-[44px]">Genesis Lock</h1>
+                  <h1 className="text-[24px]">Genesis Lock</h1>
                   <Image
                     src={alpIcon}
                     alt="ALP logo"
@@ -385,17 +403,34 @@ export default function Genesis({
                 </div>
 
                 <ul className="mb-4 ml-4">
-                  <li className="text-base font-mono opacity-75 list-disc mb-3">
-                    Deposits will first open to whitelisted early supporters and
-                    contributors for a period of 48h, then the remainder to the
-                    public on {endDate.toLocaleDateString()},
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    Deposits will open for everyone (both reserved and public)
+                    at 1200 UTC Sep 17th.
                   </li>
-                  <li className="text-base font-mono opacity-75 list-disc mb-3">
-                    Deposits are capped at $10mm
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    After 24 hours any amount that is not claimed from the
+                    reserved allocation will move into the public allocation
                   </li>
-                  <li className="text-base font-mono opacity-75 list-disc">
-                    Depositors receive Locked ALP tokens, which earn base $ADX
-                    rewards in addition to Genesis Lock bonus $ADX rewards
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    The total amount for Genesis Liquidity will be capped at
+                    $10M
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    Individual transactions are capped at $250k per wallet to
+                    promote distribution
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    Depositors receive ALP tokens that are automatically locked
+                    for 180D. You will be able to track your position at 'My
+                    Dashboard' once the app goes live.
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    $ADX rewards for locked ALP will start once the program is
+                    live. Rewards accrue every 6 hours and can be claimed.
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc">
+                    Be sure to re-stake your $ADX for additional yield and
+                    additional $ADX rewards!
                   </li>
                 </ul>
               </div>
@@ -426,14 +461,7 @@ export default function Genesis({
                         </span>
                       </p>
 
-                      <div
-                        className={twMerge(
-                          'flex-start flex h-3 w-full overflow-hidden rounded-full bg-bcolor mt-3 p-1 pl-0',
-                          genesis.hasTransitionedToFullyPublic
-                            ? ''
-                            : 'scale-[-1] rounded-l-none',
-                        )}
-                      >
+                      <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0 scale-[-1]">
                         <motion.div
                           initial={{ width: '0%' }}
                           animate={{
@@ -455,79 +483,80 @@ export default function Genesis({
                       </div>
                     </div>
 
-                    {!genesis.hasTransitionedToFullyPublic && (
-                      <div className="relative flex items-center justify-center bg-bcolor h-[60px] w-[4px] z-1 mt-auto">
-                        <div className="absolute top-0 w-2 h-2 rounded-full bg-bcolor" />
-                      </div>
-                    )}
+                    <div className="relative flex items-center justify-center bg-bcolor h-[60px] w-[4px] z-1 mt-auto">
+                      <div className="absolute top-0 w-2 h-2 rounded-full bg-bcolor" />
+                    </div>
 
-                    {!genesis.hasTransitionedToFullyPublic && (
-                      <div className="w-full">
-                        <p className="opacity-50 text-right text-sm sm:text-base mb-1">
-                          Reserved liquidity
-                        </p>
-                        {genesis?.reservedAmount &&
-                          genesis?.reservedAmountClaimed &&
-                          usdc?.decimals && (
-                            <p className="text-base sm:text-lg font-mono text-right">
-                              {usdc.decimals &&
-                                formatPriceInfo(
-                                  nativeToUi(
-                                    genesis?.reservedAmountClaimed,
-                                    usdc?.decimals,
-                                  ),
-                                )}{' '}
-                              <span className="text-base sm:text-lg font-mono opacity-50">
-                                /{' '}
-                                {formatPriceInfo(
-                                  nativeToUi(
-                                    genesis.reservedAmount,
-                                    usdc.decimals,
-                                  ),
-                                )}
-                              </span>
-                            </p>
-                          )}
-
-                        {isReserved && reservedGrantOwnerLeftAmount && (
-                          <p className="hidden sm:block opacity-50 text-right font-mono">
-                            Reserved amount left:{' '}
-                            <FormatNumber
-                              nb={nativeToUi(
-                                reservedGrantOwnerLeftAmount,
-                                usdc.decimals,
+                    <div
+                      className={twMerge(
+                        'w-full mt-auto',
+                        genesis.hasTransitionedToFullyPublic && 'opacity-50',
+                      )}
+                    >
+                      <p className="opacity-50 text-right text-sm sm:text-base mb-1">
+                        Reserved liquidity
+                      </p>
+                      {genesis?.reservedAmount &&
+                        genesis?.reservedAmountClaimed &&
+                        usdc?.decimals && (
+                          <p className="text-base sm:text-lg font-mono text-right">
+                            {usdc.decimals &&
+                              formatPriceInfo(
+                                nativeToUi(
+                                  genesis?.reservedAmountClaimed,
+                                  usdc?.decimals,
+                                ),
+                              )}{' '}
+                            <span className="text-base sm:text-lg font-mono opacity-50">
+                              /{' '}
+                              {formatPriceInfo(
+                                nativeToUi(
+                                  genesis.reservedAmount,
+                                  usdc.decimals,
+                                ),
                               )}
-                              suffix=" USDC"
-                              className="inline-block"
-                            />
+                            </span>
                           </p>
                         )}
-                        {genesis?.reservedAmountClaimed &&
-                          genesis?.reservedAmount &&
-                          usdc && (
-                            <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0">
-                              <motion.div
-                                initial={{ width: '0%' }}
-                                animate={{
-                                  width: `${
-                                    (nativeToUi(
-                                      genesis.reservedAmountClaimed,
+
+                      {isReserved && reservedGrantOwnerLeftAmount && (
+                        <p className="hidden sm:block opacity-50 text-right font-mono">
+                          Reserved amount left:{' '}
+                          <FormatNumber
+                            nb={nativeToUi(
+                              reservedGrantOwnerLeftAmount,
+                              usdc.decimals,
+                            )}
+                            suffix=" USDC"
+                            className="inline-block"
+                          />
+                        </p>
+                      )}
+                      {genesis?.reservedAmountClaimed &&
+                        genesis?.reservedAmount &&
+                        usdc && (
+                          <div className="flex-start flex h-3 w-full overflow-hidden rounded-full rounded-l-none bg-bcolor mt-3 p-1 pl-0">
+                            <motion.div
+                              initial={{ width: '0%' }}
+                              animate={{
+                                width: `${
+                                  (nativeToUi(
+                                    genesis.reservedAmountClaimed,
+                                    usdc.decimals,
+                                  ) /
+                                    nativeToUi(
+                                      genesis.reservedAmount,
                                       usdc.decimals,
-                                    ) /
-                                      nativeToUi(
-                                        genesis.reservedAmount,
-                                        usdc.decimals,
-                                      )) *
-                                    100
-                                  }%`,
-                                }}
-                                transition={{ duration: 0.5, delay: 0.5 }}
-                                className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#6D1324] to-[#A33D50] rounded-full"
-                              ></motion.div>
-                            </div>
-                          )}
-                      </div>
-                    )}
+                                    )) *
+                                  100
+                                }%`,
+                              }}
+                              transition={{ duration: 0.5, delay: 0.5 }}
+                              className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#6D1324] to-[#A33D50] rounded-full"
+                            ></motion.div>
+                          </div>
+                        )}
+                    </div>
                   </div>
                 ) : (
                   <p className="font-mono animate-pulse">Loading</p>

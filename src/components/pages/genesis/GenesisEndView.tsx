@@ -52,6 +52,11 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
       </p>
     );
 
+  const twitterText =
+    totalStakedAmount !== null && totalStakedAmount > 0 && connected
+      ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days!`
+      : 'Check out Adrena, the new DeFi platform on Solana!';
+
   return (
     <div className="relative p-3">
       <div className="absolute top-0 w-[300px]">
@@ -73,9 +78,7 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
         title="Share on"
         className="w-full mt-10 py-3 text-base"
         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          totalStakedAmount !== null && totalStakedAmount > 0
-            ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days!`
-            : 'Check out Adrena, the new DeFi platform on Solana!',
+          twitterText,
         )}&url=${encodeURIComponent(url)}`}
         isOpenLinkInNewTab
         rightIcon={xIcon}
