@@ -1,10 +1,9 @@
-import { differenceInHours, differenceInSeconds } from 'date-fns';
+import { differenceInSeconds } from 'date-fns';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useCountDown from '@/hooks/useCountDown';
 import { GenesisLock } from '@/types';
 
 import chevronIcon from '../../../public/images/chevron-down.svg';
@@ -37,12 +36,23 @@ export default function ProgressBar({
 
   const diffInHoursPublic = differenceInSeconds(campaignEndDate, new Date());
 
-  const percentToReserved =
-    100 -
-    (diffInHoursReserved / genesis.reservedGrantDuration.toNumber()) * 100;
+  const getPercent = (diffInHours: number, duration: number) => {
+    const percent = 100 - (diffInHours / duration) * 100;
+    if (percent < 0) {
+      return 0;
+    }
+    return percent;
+  };
 
-  const percentToPublic =
-    100 - (diffInHoursPublic / genesis.campaignDuration.toNumber()) * 100;
+  const percentToReserved = getPercent(
+    diffInHoursReserved,
+    genesis.reservedGrantDuration.toNumber(),
+  );
+
+  const percentToPublic = getPercent(
+    diffInHoursPublic,
+    genesis.campaignDuration.toNumber(),
+  );
 
   const steps = [
     {
@@ -51,7 +61,6 @@ export default function ProgressBar({
     },
     {
       title: 'Reserved Period Ends',
-      // two days after the start
       date: new Date(
         genesis.campaignStartDate.toNumber() * 1000 +
           genesis.reservedGrantDuration.toNumber() * 1000,
@@ -59,7 +68,6 @@ export default function ProgressBar({
     },
     {
       title: 'Campaign Ends',
-      // three days after the start
       date: new Date(
         genesis.campaignStartDate.toNumber() * 1000 +
           genesis.campaignDuration.toNumber() * 1000,

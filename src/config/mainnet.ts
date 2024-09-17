@@ -47,17 +47,17 @@ export default class MainnetConfiguration implements IConfiguration {
         'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
     },
-    '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E': {
-      name: 'Bitcoin',
-      color: '#f7931a',
-      symbol: 'BTC',
-      image: btcLogo,
-      coingeckoId: 'bitcoin',
-      decimals: 6,
-      pythPriceUpdateV2: new PublicKey(
-        '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
-      ),
-    },
+    // '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E': {
+    //   name: 'Bitcoin',
+    //   color: '#f7931a',
+    //   symbol: 'BTC',
+    //   image: btcLogo,
+    //   coingeckoId: 'bitcoin',
+    //   decimals: 6,
+    //   pythPriceUpdateV2: new PublicKey(
+    //     '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
+    //   ),
+    // },
     J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn: {
       name: 'Jito Staked SOL',
       color: '#84CC90',
@@ -91,7 +91,7 @@ export default class MainnetConfiguration implements IConfiguration {
     'rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ',
   );
 
-  public readonly governanceRealmName = 'AdrenaTest';
+  public readonly governanceRealmName = 'AdrenaDAO';
 
   public readonly rpcOptions: RpcOption[] = this.devMode
     ? [
@@ -139,6 +139,6 @@ export default class MainnetConfiguration implements IConfiguration {
   };
 
   public readonly mainPool: PublicKey = new PublicKey(
-    '9ZR8hzuQiHA1Ye7mbq42dfXV4k4pQwGBPDmTbtA5kWBH',
+    '4bQRutgDJs6vuh6ZcWaPVXiQaBzbHketjbCDjL4oRN34',
   );
 }

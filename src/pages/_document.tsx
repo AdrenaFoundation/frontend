@@ -2,7 +2,7 @@ import { Head, Html, Main, NextScript } from 'next/document';
 import Script from 'next/script';
 
 export const metadata = {
-  metadataBase: new URL('https://alpha.adrena.xyz/'),
+  metadataBase: new URL('https://app.adrena.xyz/'),
   title: 'Adrena',
   description: 'Trade at the speed of light with up to 100x leverage',
   openGraph: {
