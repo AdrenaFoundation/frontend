@@ -1,8 +1,10 @@
+import { differenceInHours, differenceInSeconds } from 'date-fns';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import useCountDown from '@/hooks/useCountDown';
 import { GenesisLock } from '@/types';
 
 import chevronIcon from '../../../public/images/chevron-down.svg';
@@ -14,36 +16,54 @@ export default function ProgressBar({
   genesis,
 }: {
   currentStep: number;
-  genesis: GenesisLock | null;
+  genesis: GenesisLock;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const campaignEndDate = new Date(
+    genesis.campaignStartDate.toNumber() * 1000 +
+      genesis.campaignDuration.toNumber() * 1000,
+  );
+
+  const reservedCampaignEndDate = new Date(
+    genesis.campaignStartDate.toNumber() * 1000 +
+      genesis.reservedGrantDuration.toNumber() * 1000,
+  );
+
+  const diffInHoursReserved = differenceInSeconds(
+    reservedCampaignEndDate,
+    new Date(),
+  );
+
+  const diffInHoursPublic = differenceInSeconds(campaignEndDate, new Date());
+
+  const percentToReserved =
+    100 -
+    (diffInHoursReserved / genesis.reservedGrantDuration.toNumber()) * 100;
+
+  const percentToPublic =
+    100 - (diffInHoursPublic / genesis.campaignDuration.toNumber()) * 100;
 
   const steps = [
     {
       title: 'Campaign Starts',
-      date: genesis
-        ? new Date(genesis?.campaignStartDate.toNumber() * 1000)
-        : null,
+      date: new Date(genesis?.campaignStartDate.toNumber() * 1000),
     },
     {
       title: 'Reserved Period Ends',
       // two days after the start
-      date: genesis
-        ? new Date(
-            genesis.campaignStartDate.toNumber() * 1000 +
-              genesis.reservedGrantDuration.toNumber() * 1000,
-          )
-        : null,
+      date: new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.reservedGrantDuration.toNumber() * 1000,
+      ),
     },
     {
       title: 'Campaign Ends',
       // three days after the start
-      date: genesis
-        ? new Date(
-            genesis.campaignStartDate.toNumber() * 1000 +
-              genesis.campaignDuration.toNumber() * 1000,
-          )
-        : null,
+      date: new Date(
+        genesis.campaignStartDate.toNumber() * 1000 +
+          genesis.campaignDuration.toNumber() * 1000,
+      ),
     },
     {
       title: 'Pool Rebalancing',
@@ -78,11 +98,25 @@ export default function ProgressBar({
                     )}
                   />
 
-                  <div
-                    className={`${
-                      currentStep <= index ? 'bg-bcolor' : 'bg-white'
-                    } w-full h-[2px]`}
-                  />
+                  <div className="bg-bcolor w-full h-[2px]">
+                    {currentStep >= index && (
+                      <div
+                        className="bg-white w-full h-[2px] rounded-full"
+                        style={{
+                          width: `${
+                            // TODO: redo this
+                            index === 0 && currentStep === 0
+                              ? percentToReserved
+                              : index === 1 && currentStep === 1
+                              ? percentToPublic
+                              : currentStep <= index
+                              ? 0
+                              : 100
+                          }%`,
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div
