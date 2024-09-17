@@ -89,7 +89,6 @@ export default function BurgerMenu({
             href={'/trade'}
             onClick={() => setIsOpen(false)}
           />
-
           <WalletAdapter className="w-full" userProfile={userProfile} />
           <Settings
             activeRpc={activeRpc}

@@ -10,9 +10,12 @@ import {
 import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
-import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
+import {
+  getAbbrevNickname,
+  getAbbrevWalletAddress,
+  getAccountExplorer,
+} from '@/utils';
 
-import threeDotsIcon from '../../../public/images/three-dots.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -76,19 +79,12 @@ export default function WalletAdapter({
         <Menu
           trigger={
             <Button
-              className={twMerge(
-                // use monster font when displaying the nickname only
-                userProfile ? 'font-special text-md' : '',
-                className,
-              )}
-              title={
-                userProfile
-                  ? getAbbrevNickname(userProfile.nickname)
-                  : getAbbrevWalletAddress(wallet.walletAddress)
-              }
-              rightIcon={threeDotsIcon}
+              className={twMerge(className, 'gap-2 h-0 px-0 py-0')}
+              rightIcon={walletIcon}
               alt="wallet icon"
               variant="secondary"
+              height={17}
+              width={17}
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}
@@ -98,12 +94,20 @@ export default function WalletAdapter({
         >
           <MenuItems>
             <MenuItem
+              href={getAccountExplorer(new PublicKey(wallet.walletAddress))}
+              target="_blank"
+            >
+              <div className="underline text-blue">
+                {userProfile
+                  ? getAbbrevNickname(userProfile.nickname)
+                  : getAbbrevWalletAddress(wallet.walletAddress)}
+              </div>
+            </MenuItem>
+            <MenuItem
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
 
                 if (!connected) return;
-
-                console.log('Disconnect wallet');
 
                 dispatch(disconnectWalletAction(wallet.adapterName));
                 dispatch(openCloseConnectionModalAction(false));

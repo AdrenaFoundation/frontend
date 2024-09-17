@@ -262,9 +262,11 @@ export default function SwapTradingInputs({
   }, [inputA, inputB, connected, tokenA, wallet, walletTokenBalances]);
 
   return (
-    <div className={twMerge('relative flex flex-col h-full mt-2', className)}>
+    <div
+      className={twMerge('relative flex flex-col h-full sm:pb-2', className)}
+    >
       {/* Input A */}
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between flex w-full items-center sm:mt-1 sm:mb-1">
         <h5 className="flex items-center ml-4">
           Pay
           <InfoAnnotation
@@ -276,7 +278,7 @@ export default function SwapTradingInputs({
       </div>
 
       <TradingInput
-        className="mt-2 text-sm rounded-full"
+        className="text-sm rounded-full"
         inputClassName="tr-rounded-lg bg-inputcolor"
         tokenListClassName="border-none bg-inputcolor rounded-tr-lg rounded-br-lg"
         menuClassName="shadow-none"

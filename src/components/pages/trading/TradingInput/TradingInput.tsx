@@ -95,55 +95,57 @@ export default function TradingInput({
                 </div>
               </>
             )}
-
-            {maxButton ? (
-              <div className="mr-1">
-                <Button
-                  title="MAX"
-                  variant="primary"
-                  className={twMerge('text-sm h-6 w-14', maxClassName)}
-                  onClick={() => onMaxButtonClick?.()}
-                  loaderClassName="w-14"
-                />
-              </div>
-            ) : null}
           </div>
         </div>
 
-        {tokenList.length ? (
-          <Select
-            className={twMerge(
-              'shrink-0 bg-third h-full flex items-center w-[9em] rounded-tr-lg',
-              tokenList.length > 1 ? 'justify-end' : 'justify-center',
-              tokenListClassName,
-            )}
-            menuClassName={menuClassName}
-            menuOpenBorderClassName={menuOpenBorderClassName}
-            selected={selectedToken?.symbol ?? ''}
-            options={tokenList.map((token) => ({
-              title: token.symbol,
-              img: token.image,
-            }))}
-            onSelect={(name) => {
-              // Force linting, you cannot not find the token in the list
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              const token = tokenList.find((t) => t.symbol === name)!;
-              onTokenSelect?.(token);
+        <div className="flex flex-row gap-3 items-center">
+          {maxButton ? (
+            <div className="mr-1">
+              <Button
+                title="MAX"
+                variant="primary"
+                className={twMerge('text-sm h-6 w-14', maxClassName)}
+                onClick={() => onMaxButtonClick?.()}
+                loaderClassName="w-14"
+              />
+            </div>
+          ) : null}
 
-              // if the prev value has more decimals than the new token, we need to adjust the value
-              const newTokenDecimals = token.decimals ?? 18;
-              const decimals = value?.toString().split('.')[1]?.length;
+          {tokenList.length ? (
+            <Select
+              className={twMerge(
+                'shrink-0 bg-third h-full flex items-center w-[9em] rounded-tr-lg',
+                tokenList.length > 1 ? 'justify-end' : 'justify-center',
+                tokenListClassName,
+              )}
+              menuClassName={menuClassName}
+              menuOpenBorderClassName={menuOpenBorderClassName}
+              selected={selectedToken?.symbol ?? ''}
+              options={tokenList.map((token) => ({
+                title: token.symbol,
+                img: token.image,
+              }))}
+              onSelect={(name) => {
+                // Force linting, you cannot not find the token in the list
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                const token = tokenList.find((t) => t.symbol === name)!;
+                onTokenSelect?.(token);
 
-              if (Number(decimals) > Number(newTokenDecimals)) {
-                onChange(Number(value?.toFixed(newTokenDecimals)));
-              }
-            }}
-          />
-        ) : (
-          <div className="flex items-center mr-4">
-            {selectedToken?.symbol ?? '-'}
-          </div>
-        )}
+                // if the prev value has more decimals than the new token, we need to adjust the value
+                const newTokenDecimals = token.decimals ?? 18;
+                const decimals = value?.toString().split('.')[1]?.length;
+
+                if (Number(decimals) > Number(newTokenDecimals)) {
+                  onChange(Number(value?.toFixed(newTokenDecimals)));
+                }
+              }}
+            />
+          ) : (
+            <div className="flex items-center mr-4">
+              {selectedToken?.symbol ?? '-'}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

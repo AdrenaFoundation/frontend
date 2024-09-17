@@ -22,6 +22,7 @@ import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
+import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { GenesisLock, PageProps } from '@/types';
 import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
@@ -85,7 +86,9 @@ export default function Genesis({
   const [hasReservedCampaignEnded, setHasReservedCampaignEnded] =
     useState(false);
   const [hasCampaignEnded, setHasCampaignEnded] = useState(false);
-
+  const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
+    null,
+  );
   const from = new Date();
 
   const campaignEndDate = genesis
@@ -96,6 +99,8 @@ export default function Genesis({
     : new Date();
 
   const { days, hours, minutes, seconds } = useCountDown(from, campaignEndDate);
+  const { stakingAccounts, triggerWalletStakingAccountsReload } =
+    useWalletStakingAccounts();
 
   useEffect(() => {
     getAlpAmount();
@@ -126,6 +131,25 @@ export default function Genesis({
 
     setCurrentStep(0);
   }, [hasCampaignEnded, hasReservedCampaignEnded]);
+
+  useEffect(() => {
+    getTotalLockedStake();
+  }, [stakingAccounts, connected]);
+
+  const getTotalLockedStake = () => {
+    if (!stakingAccounts || !stakingAccounts['ALP'] || !connected) {
+      setTotalStakedAmount(null);
+      return;
+    }
+
+    const total = stakingAccounts['ALP'].lockedStakes.reduce(
+      (acc, stake) =>
+        acc + nativeToUi(stake.amount, window.adrena.client.alpToken.decimals),
+      0,
+    );
+
+    setTotalStakedAmount(total);
+  };
 
   const getGenesis = async () => {
     try {
@@ -232,12 +256,14 @@ export default function Genesis({
       });
 
       triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
       setFundsAmount(null);
-      return setIsSuccess(true);
+      setIsSuccess(true);
+      return;
     } catch (error) {
       console.log('error', error);
-
-      return setErrorMsg('Error buying ALP');
+      setErrorMsg('Error buying ALP');
+      return;
     }
   };
 
@@ -274,7 +300,7 @@ export default function Genesis({
   const OGIMage =
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg';
 
-  if (isGenesisLoading) {
+  if (isGenesisLoading || !genesis) {
     return (
       <div className="m-auto">
         <Loader />
@@ -290,7 +316,7 @@ export default function Genesis({
           name="description"
           content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
         />
-        <meta property="og:title" content="Adrena Genesis Lock" />
+        <meta property="og:title" content="Adrena Genesis Liquidity Program" />
         <meta
           property="og:description"
           content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
@@ -300,9 +326,9 @@ export default function Genesis({
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="Adrena" />
 
-        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:creator" content="@AdrenaProtocol" />
-        <meta name="twitter:title" content="Adrena Genesis Lock" />
+        <meta name="twitter:title" content="Adrena Genesis Liquidity Program" />
         <meta
           name="twitter:description"
           content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
@@ -350,38 +376,37 @@ export default function Genesis({
                   className="opacity-10 w-[30px]"
                 />
               </div>
-              <p className="text-sm lg:text-base font-mono opacity-75 mb-4">
-                Kickstart protocol liquidity and get rewarded for your support.
-                The Genesis Lock campaign has for goal to seed initial
-                liquidities to the platform, filling the first 10m TVL cap.
-                Special rewards are granted for the participants, in the form of
-                boosted ALP Locked Stake rewards:
-              </p>
 
               <ul className="mb-4 ml-4">
-                <li className="text-sm font-mono opacity-75 list-disc">
-                  participate today and start accruing extra ADX rewards, this
-                  is a one time opportunity
+                <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                  Deposits will open for everyone (both reserved and public) at
+                  1200 UTC Sep 17th.
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                  After 24 hours any amount that is not claimed from the
+                  reserved allocation will move into the public allocation
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc">
-                  receive Locked ALP tokens, details about the base rewards{' '}
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline"
-                  >
-                    here
-                  </a>
+                  The total amount for Genesis Liquidity will be capped at $10M
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  Individual transactions are capped at $250k per wallet to
+                  promote distribution
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  Depositors receive ALP tokens that are automatically locked
+                  for 180D. You will be able to track your position at &apos;My
+                  Dashboard&apos; once the app goes live.
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  $ADX rewards for locked ALP will start once the program is
+                  live. Rewards accrue every 6 hours and can be claimed.
+                </li>
+                <li className="text-sm font-mono opacity-75 list-disc">
+                  Be sure to re-stake your $ADX for additional yield and
+                  additional $ADX rewards!
                 </li>
               </ul>
-
-              <p className="text-sm lg:text-base font-mono opacity-75">
-                The pool has a reserved component that has been whitelisted for
-                early supporters and contributors, after 24 hours if any amount
-                of the reserved pool remains un-claimed, it will move back to
-                the public allocation and become available to all.
-              </p>
             </div>
 
             <div className="flex flex-col gap-2 order-2 md:order-1">
@@ -395,38 +420,38 @@ export default function Genesis({
                     className="opacity-10 w-[30px]"
                   />
                 </div>
-                <p className="text-sm font-mono opacity-75 mb-4">
-                  Kickstart protocol liquidity and get rewarded for your
-                  support. The Genesis Lock campaign has for goal to seed
-                  initial liquidities to the platform, filling the first 10m TVL
-                  cap. Special rewards are granted for the participants, in the
-                  form of boosted ALP Locked Stake rewards:
-                </p>
 
                 <ul className="mb-4 ml-4">
-                  <li className="text-sm font-mono opacity-75 list-disc">
-                    participate today and start accruing extra ADX rewards, this
-                    is a one time opportunity
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    Deposits will open for everyone (both reserved and public)
+                    at 1200 UTC Sep 17th.
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    After 24 hours any amount that is not claimed from the
+                    reserved allocation will move into the public allocation
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    The total amount for Genesis Liquidity will be capped at
+                    $10M
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    Individual transactions are capped at $250k per wallet to
+                    promote distribution
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    Depositors receive ALP tokens that are automatically locked
+                    for 180D. You will be able to track your position at
+                    &apos;My Dashboard&apos; once the app goes live.
+                  </li>
+                  <li className="text-sm font-mono opacity-75 list-disc mb-3">
+                    $ADX rewards for locked ALP will start once the program is
+                    live. Rewards accrue every 6 hours and can be claimed.
                   </li>
                   <li className="text-sm font-mono opacity-75 list-disc">
-                    receive Locked ALP tokens, details about the base rewards{' '}
-                    <a
-                      href={`${window.location.origin}/buy_alp`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline"
-                    >
-                      here
-                    </a>
+                    Be sure to re-stake your $ADX for additional yield and
+                    additional $ADX rewards!
                   </li>
                 </ul>
-
-                <p className="text-sm font-mono opacity-75">
-                  The pool has a reserved component that has been whitelisted
-                  for early supporters and contributors, after 24 hours if any
-                  amount of the reserved pool remains un-claimed, it will move
-                  back to the public allocation and become available to all.
-                </p>
               </div>
 
               <div className="flex flex-col gap-6 justify-between flex-none min-h-[170px] bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
@@ -483,8 +508,8 @@ export default function Genesis({
 
                     <div
                       className={twMerge(
-                        'w-full',
-                        genesis?.hasTransitionedToFullyPublic && 'opacity-50',
+                        'w-full mt-auto',
+                        genesis.hasTransitionedToFullyPublic && 'opacity-50',
                       )}
                     >
                       <p className="opacity-50 text-right text-sm sm:text-base mb-1">
@@ -569,186 +594,196 @@ export default function Genesis({
                 )}
               </div>
             </div>
-
-            <div
-              className={twMerge(
-                'bg-gradient-to-tr from-[#07111A] to-[#0B1722] w-full md:w-[400px] rounded-lg p-5 shadow-lg border border-bcolor order-1 md:order-2 flex-none',
-                currentStep >= 2 && 'from-secondary to-secondary',
-              )}
-            >
-              <div className="flex flex-row gap-1 justify-end items-center">
-                <RefreshButton />
-                <Settings
-                  activeRpc={activeRpc}
-                  rpcInfos={rpcInfos}
-                  autoRpcMode={autoRpcMode}
-                  customRpcUrl={customRpcUrl}
-                  customRpcLatency={customRpcLatency}
-                  favoriteRpc={favoriteRpc}
-                  setAutoRpcMode={setAutoRpcMode}
-                  setCustomRpcUrl={setCustomRpcUrl}
-                  setFavoriteRpc={setFavoriteRpc}
-                  isIcon
-                  isGenesis
-                />
-                <WalletAdapter userProfile={userProfile} />
-              </div>
-
-              {hasCampaignEnded ? (
-                <GenesisEndView />
-              ) : (
-                <>
-                  <div className="w-full">
-                    <p className="opacity-50 text-sm mb-3">Pay</p>
-                    {usdc && (
-                      <TradingInput
-                        className="text-sm rounded-full"
-                        inputClassName={'bg-inputcolor'}
-                        tokenListClassName={twMerge(
-                          'rounded-tr-lg rounded-br-lg border-l border-l-inputcolor bg-inputcolor',
-                        )}
-                        menuClassName="shadow-none justify-end mr-2"
-                        menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
-                        value={fundsAmount}
-                        maxButton={connected}
-                        maxClassName="relative ml-auto"
-                        selectedToken={usdc}
-                        tokenList={[usdc]}
-                        onMaxButtonClick={() => {
-                          setFundsAmount(maxAmount);
-                        }}
-                        onChange={(e) => {
-                          if (e !== null && e >= MAX_USDC_AMOUNT) {
-                            setFundsAmount(MAX_USDC_AMOUNT);
-                            return;
-                          }
-                          setIsLoading(true);
-                          setErrorMsg(null);
-                          setFundsAmount(e);
-                        }}
-                      />
-                    )}
-
-                    <span className="flex flex-row justify-end items-center gap-1 mt-3 w-full text-right">
-                      <p className="opacity-50 inline">Wallet · </p>
-                      <FormatNumber nb={walletTokenABalance} suffix=" USDC" />
-                    </span>
-                  </div>
-
-                  <div
-                    className={twMerge(
-                      'w-full transition-opacity duration-300',
-                    )}
-                  >
-                    <p className="opacity-50 text-sm mb-3">Receive</p>
-                    <StyledSubContainer className="bg-transparent">
-                      <div>
-                        <div className="relative flex flex-row gap-2 items-center transition-opacity duration-300">
-                          <Image
-                            src={window.adrena.client.alpToken.image}
-                            width={16}
-                            height={16}
-                            alt="ALP logo"
-                          />
-                          <FormatNumber
-                            nb={feeAndAmount?.amount}
-                            suffix=" ALP"
-                            placeholder="0.00 ALP"
-                            placeholderClassName="opacity-50"
-                            className="text-lg"
-                            isLoading={isLoading}
-                          />
-                        </div>
-                        <div className="flex flex-row gap-1 items-center mt-3">
-                          <Image
-                            src={lockIcon}
-                            width={12}
-                            height={12}
-                            alt="ALP logo"
-                            className="opacity-50"
-                          />
-                          <p>Immediately staked and locked for 180 days</p>
-                        </div>
-                      </div>
-                    </StyledSubContainer>
-                  </div>
-
-                  <Button
-                    size="lg"
-                    title="Provide Liquidity"
-                    className="w-full mt-3 py-3"
-                    disabled={
-                      !connected ||
-                      !usdc ||
-                      isLoading ||
-                      !fundsAmount ||
-                      !feeAndAmount?.amount
-                    }
-                    onClick={() => addGenesisLiquidity()}
+            
+            <div className="flex flex-col gap-2 h-full flex-none order-1 md:order-2 ">
+              <div
+                className={twMerge(
+                  'bg-gradient-to-tr from-[#07111A] to-[#0B1722] w-full md:w-[400px] rounded-lg p-5 shadow-lg border border-bcolor',
+                  currentStep >= 2 && 'from-secondary to-secondary',
+                )}
+              >
+                <div className="flex flex-row gap-1 justify-end items-center">
+                  <RefreshButton />
+                  <Settings
+                    activeRpc={activeRpc}
+                    rpcInfos={rpcInfos}
+                    autoRpcMode={autoRpcMode}
+                    customRpcUrl={customRpcUrl}
+                    customRpcLatency={customRpcLatency}
+                    favoriteRpc={favoriteRpc}
+                    setAutoRpcMode={setAutoRpcMode}
+                    setCustomRpcUrl={setCustomRpcUrl}
+                    setFavoriteRpc={setFavoriteRpc}
+                    isIcon
+                    isGenesis
                   />
+                  <WalletAdapter userProfile={userProfile} />
+                </div>
 
-                  {errorMsg !== null ? (
-                    <AnimatePresence>
-                      <motion.div
-                        className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 my-4 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
-                        initial={{ opacity: 0, scaleY: 0 }}
-                        animate={{ opacity: 1, scaleY: 1 }}
-                        exit={{ opacity: 0, scaleY: 0 }}
-                        transition={{ duration: 0.5 }}
-                        style={{ originY: 0 }}
-                      >
-                        <Image
-                          className="absolute left-[0.5em]"
-                          src={errorImg}
-                          width={16}
-                          alt="Error icon"
+                {hasCampaignEnded ? (
+                  <GenesisEndView connected={connected} />
+                ) : (
+                  <>
+                    <div className="w-full">
+                      <p className="opacity-50 text-sm mb-3">Pay</p>
+                      {usdc && (
+                        <TradingInput
+                          className="text-sm rounded-full"
+                          inputClassName={'bg-inputcolor'}
+                          tokenListClassName={twMerge(
+                            'rounded-tr-lg rounded-br-lg border-l border-l-inputcolor bg-inputcolor',
+                          )}
+                          menuClassName="shadow-none justify-end mr-2"
+                          menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
+                          value={fundsAmount}
+                          maxButton={connected}
+                          maxClassName="relative ml-auto"
+                          selectedToken={usdc}
+                          tokenList={[usdc]}
+                          onMaxButtonClick={() => {
+                            setFundsAmount(maxAmount);
+                          }}
+                          onChange={(e) => {
+                            if (e !== null && e >= MAX_USDC_AMOUNT) {
+                              setFundsAmount(MAX_USDC_AMOUNT);
+                              return;
+                            }
+                            setIsLoading(true);
+                            setErrorMsg(null);
+                            setFundsAmount(e);
+                          }}
                         />
+                      )}
 
-                        <div className="items-center justify-center">
-                          <div className="text-sm">{errorMsg}</div>
+                      <span className="flex flex-row justify-end items-center gap-1 mt-3 w-full text-right">
+                        <p className="opacity-50 inline">Wallet · </p>
+                        <FormatNumber nb={walletTokenABalance} suffix=" USDC" />
+                      </span>
+                    </div>
+
+                    <div
+                      className={twMerge(
+                        'w-full transition-opacity duration-300',
+                      )}
+                    >
+                      <p className="opacity-50 text-sm mb-3">Receive</p>
+                      <StyledSubContainer className="bg-transparent">
+                        <div>
+                          <div className="relative flex flex-row gap-2 items-center transition-opacity duration-300">
+                            <Image
+                              src={window.adrena.client.alpToken.image}
+                              width={16}
+                              height={16}
+                              alt="ALP logo"
+                            />
+                            <FormatNumber
+                              nb={feeAndAmount?.amount}
+                              suffix=" ALP"
+                              placeholder="0.00 ALP"
+                              placeholderClassName="opacity-50"
+                              className="text-lg"
+                              isLoading={isLoading}
+                            />
+                          </div>
+                          <div className="flex flex-row gap-1 items-center mt-3">
+                            <Image
+                              src={lockIcon}
+                              width={12}
+                              height={12}
+                              alt="ALP logo"
+                              className="opacity-50"
+                            />
+                            <p>Immediately staked and locked for 180 days</p>
+                          </div>
                         </div>
-                      </motion.div>
-                    </AnimatePresence>
-                  ) : null}
+                      </StyledSubContainer>
+                    </div>
 
-                  <div className="w-full mt-6">
-                    <p className="opacity-50 text-sm mb-3">Rewards</p>
-                    <ul className="flex gap-1 sm:gap-3 items-center flex-wrap justify-evenly p-1 py-2 sm:p-3 rounded-lg border border-bcolor">
-                      <li className="flex flex-col items-center">
-                        <p className="text-sm">USDC Yield</p>
-                        <p className="font-medium font-mono text-sm sm:text-lg">
-                          1.75x
-                        </p>
-                      </li>
+                    <Button
+                      size="lg"
+                      title="Provide Liquidity"
+                      className="w-full mt-3 py-3"
+                      disabled={
+                        !connected ||
+                        !usdc ||
+                        isLoading ||
+                        !fundsAmount ||
+                        !feeAndAmount?.amount
+                      }
+                      onClick={() => addGenesisLiquidity()}
+                    />
 
-                      <li className="h-[40px] w-[1px] bg-bcolor" />
+                    {errorMsg !== null ? (
+                      <AnimatePresence>
+                        <motion.div
+                          className="flex w-full h-auto relative overflow-hidden pl-6 pt-2 pb-2 pr-2 my-4 border-2 border-[#BE3131] backdrop-blur-md z-40 items-center justify-center rounded-xl"
+                          initial={{ opacity: 0, scaleY: 0 }}
+                          animate={{ opacity: 1, scaleY: 1 }}
+                          exit={{ opacity: 0, scaleY: 0 }}
+                          transition={{ duration: 0.5 }}
+                          style={{ originY: 0 }}
+                        >
+                          <Image
+                            className="absolute left-[0.5em]"
+                            src={errorImg}
+                            width={16}
+                            alt="Error icon"
+                          />
 
-                      <li className="flex flex-col items-center">
-                        <p className="text-sm">ADX rewards</p>
-                        <p className="font-medium font-mono text-sm sm:text-lg">
-                          1.75x
-                        </p>
-                      </li>
+                          <div className="items-center justify-center">
+                            <div className="text-sm">{errorMsg}</div>
+                          </div>
+                        </motion.div>
+                      </AnimatePresence>
+                    ) : null}
 
-                      <li className="h-[40px] w-[1px] bg-bcolor" />
+                    <div className="w-full mt-6">
+                      <p className="opacity-50 text-sm mb-3">Rewards</p>
+                      <ul className="flex gap-1 sm:gap-3 items-center flex-wrap justify-evenly p-1 py-2 sm:p-3 rounded-lg border border-bcolor">
+                        <li className="flex flex-col items-center">
+                          <p className="text-sm">USDC Yield</p>
+                          <p className="font-medium font-mono text-sm sm:text-lg">
+                            1.5x
+                          </p>
+                        </li>
 
-                      <li className="flex flex-col items-center">
-                        <p className="text-sm">Bonus ADX</p>
+                        <li className="h-[40px] w-[1px] bg-bcolor" />
 
-                        <FormatNumber
-                          nb={
-                            fundsAmount
-                              ? fundsAmount * GENESIS_REWARD_ADX_PER_USDC
-                              : null
-                          }
-                          className="font-medium font-mono text-sm sm:text-lg"
-                          suffix=" ADX"
-                        />
-                      </li>
-                    </ul>
-                  </div>
-                </>
-              )}
+                        <li className="flex flex-col items-center">
+                          <p className="text-sm">ADX rewards</p>
+                          <p className="font-medium font-mono text-sm sm:text-lg">
+                            1.75x
+                          </p>
+                        </li>
+
+                        <li className="h-[40px] w-[1px] bg-bcolor" />
+
+                        <li className="flex flex-col items-center">
+                          <p className="text-sm">Bonus ADX</p>
+
+                          <FormatNumber
+                            nb={
+                              fundsAmount
+                                ? fundsAmount * GENESIS_REWARD_ADX_PER_USDC
+                                : null
+                            }
+                            className="font-medium font-mono text-sm sm:text-lg"
+                            suffix=" ADX"
+                          />
+                        </li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="flex flex-row justify-between items-center bg-gradient-to-tr from-[#07111A] to-[#0B1722] w-full h-[53px] md:w-[400px] rounded-lg p-2 px-5 shadow-lg border border-bcolor">
+                <p className="font-mono opacity-50">My Total Locked ALP </p>
+                <FormatNumber
+                  nb={totalStakedAmount}
+                  precision={4}
+                  suffix=" ALP"
+                />
+              </div>
             </div>
           </div>
         </div>

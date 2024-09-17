@@ -18,7 +18,7 @@ export default function StakeRedeem({
     <div className="p-5">
       <div>
         <div className="flex flex-row justify-between">
-          <p className="text-sm opacity-50 font-medium"> Enter Amount</p>
+          <p className="text-sm opacity-50 font-medium"> Amount</p>
           <p className="text-sm font-medium">
             <span className="opacity-50"> Total reedemable · </span>
             {totalLiquidStaked

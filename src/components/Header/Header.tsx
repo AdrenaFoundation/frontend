@@ -104,9 +104,7 @@ export default function Header({
             className="h-7"
           />
         </Link>
-
-        <WalletAdapter userProfile={userProfile} />
-
+        <WalletAdapter userProfile={userProfile} className="ml-2" />
         <Settings
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}
