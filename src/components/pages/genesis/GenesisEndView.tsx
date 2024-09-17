@@ -40,22 +40,22 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
         <span className="font-mono font-light text-base opacity-50">
           You have bought{' '}
         </span>{' '}
-        {totalStakedAmount} ALP{' '}
+        {totalStakedAmount} ALP,{' '}
         <span className="font-mono font-light text-base opacity-50">
-          locked and staked for
+          they have been locked and staked for
         </span>{' '}
         180 days!
       </p>
     ) : (
       <p className="text-center mt-1 max-w-[400px] ont-mono font-light text-base opacity-50">
-        Genesis Program has concluded, and Adrena will launch soon!
+        Genesis Program has concluded, trading will go live soon!
       </p>
     );
 
   const twitterText =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected
       ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days!`
-      : 'Check out Adrena, the new DeFi platform on Solana!';
+      : 'Check out Adrena \nThe new community owned, 100% rev share, perp dex on Solana!';
 
   return (
     <div className="relative p-3">

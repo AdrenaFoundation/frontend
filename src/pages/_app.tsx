@@ -280,16 +280,12 @@ function AppComponent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRpc.name]);
 
-  if (process.env.NEXT_PUBLIC_IS_GENESIS === 'true') {
-    return (
-      <div className="m-auto">
-        <p className="font-boldy text-[24px]">Genesis Liquidity Program</p>
-        <p className="font-mono opacity-50 text-center">
-          Launching 17 September 2024
-        </p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const isGenesis = process.env.NEXT_PUBLIC_IS_GENESIS === 'true';
+    if (window.location.pathname !== '/genesis' && isGenesis) {
+      router.push('/genesis');
+    }
+  }, [window.location.pathname]);
 
   return (
     <>

@@ -38,9 +38,8 @@ export default function WalletAdapter({
 
   // Load local storage state to auto-connect if needed
   const autoConnectAuthorized: boolean =
-    (JSON.parse(localStorage.getItem('autoConnectAuthorized') ?? 'false') ??
-      true) &&
-    window.adrena.geoBlockingData.allowed;
+    JSON.parse(localStorage.getItem('autoConnectAuthorized') ?? 'false') ??
+    true;
 
   // When component gets created, try to auto-connect to wallet
   useEffect(() => {
@@ -121,11 +120,7 @@ export default function WalletAdapter({
       ) : (
         <Button
           className={className}
-          title={
-            !window.adrena.geoBlockingData.allowed
-              ? 'Geo-Restricted Access'
-              : 'Connect wallet'
-          }
+          title="Connect wallet"
           rightIcon={walletIcon}
           alt="wallet icon"
           variant="outline"

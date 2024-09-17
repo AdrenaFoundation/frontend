@@ -281,7 +281,7 @@ export default function Genesis({
     );
 
   const url = 'https://app.adrena.xyz/genesis';
-  const text = `Just bought ${feeAndAmount?.amount.toFixed(
+  const twitterText = `I Just bought ${feeAndAmount?.amount.toFixed(
     2,
   )} ALP locked and staked for 180 days`;
 
@@ -299,6 +299,17 @@ export default function Genesis({
 
   const OGIMage =
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg';
+
+  if (process.env.NEXT_PUBLIC_IS_GENESIS === 'true') {
+    return (
+      <div className="m-auto">
+        <p className="font-boldy text-[24px]">Genesis Liquidity Program</p>
+        <p className="font-mono opacity-50 text-center">
+          Launching 17 September 2024
+        </p>
+      </div>
+    );
+  }
 
   if (isGenesisLoading || !genesis) {
     return (
@@ -380,7 +391,7 @@ export default function Genesis({
               <ul className="mb-4 ml-4">
                 <li className="text-sm font-mono opacity-75 list-disc mb-3">
                   Deposits will open for everyone (both reserved and public) at
-                  1200 UTC Sep 17th.
+                  1200 UTC Sep 17th
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc mb-3">
                   After 24 hours any amount that is not claimed from the
@@ -396,11 +407,11 @@ export default function Genesis({
                 <li className="text-sm font-mono opacity-75 list-disc">
                   Depositors receive ALP tokens that are automatically locked
                   for 180D. You will be able to track your position at &apos;My
-                  Dashboard&apos; once the app goes live.
+                  Dashboard&apos; once the app goes live
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc">
-                  $ADX rewards for locked ALP will start once the program is
-                  live. Rewards accrue every 6 hours and can be claimed.
+                  $ADX rewards for locked ALP will start once trading is live.
+                  Rewards accrue every 6 hours and can be claimed
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc">
                   Be sure to re-stake your $ADX for additional yield and
@@ -424,7 +435,7 @@ export default function Genesis({
                 <ul className="mb-4 ml-4">
                   <li className="text-sm font-mono opacity-75 list-disc mb-3">
                     Deposits will open for everyone (both reserved and public)
-                    at 1200 UTC Sep 17th.
+                    at 1200 UTC Sep 17th
                   </li>
                   <li className="text-sm font-mono opacity-75 list-disc mb-3">
                     After 24 hours any amount that is not claimed from the
@@ -441,11 +452,11 @@ export default function Genesis({
                   <li className="text-sm font-mono opacity-75 list-disc mb-3">
                     Depositors receive ALP tokens that are automatically locked
                     for 180D. You will be able to track your position at
-                    &apos;My Dashboard&apos; once the app goes live.
+                    &apos;My Dashboard&apos; once the app goes live
                   </li>
                   <li className="text-sm font-mono opacity-75 list-disc mb-3">
-                    $ADX rewards for locked ALP will start once the program is
-                    live. Rewards accrue every 6 hours and can be claimed.
+                    $ADX rewards for locked ALP will start once trading is live.
+                    Rewards accrue every 6 hours and can be claimed
                   </li>
                   <li className="text-sm font-mono opacity-75 list-disc">
                     Be sure to re-stake your $ADX for additional yield and
@@ -594,7 +605,7 @@ export default function Genesis({
                 )}
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-2 h-full flex-none order-1 md:order-2 ">
               <div
                 className={twMerge(
@@ -806,15 +817,22 @@ export default function Genesis({
               </div>
 
               <h1 className="text-center mt-6">Welcome to Adrena!</h1>
-              <p className="text-center mt-1 text-base opacity-50 max-w-[400px]">
-                {text}
+              <p className="text-center mt-1 text-base max-w-[400px] font-mono font-semibold">
+                <span className="font-mono font-light text-base opacity-50">
+                  You have bought{' '}
+                </span>{' '}
+                {feeAndAmount?.amount.toFixed(2)} ALP,{' '}
+                <span className="font-mono font-light text-base opacity-50">
+                  they have been locked and staked for
+                </span>{' '}
+                180 days!
               </p>
               <Button
                 size="lg"
                 title="Share on"
                 className="w-full mt-6 py-3 text-base"
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                  text,
+                  twitterText,
                 )}&url=${encodeURIComponent(url)}`}
                 isOpenLinkInNewTab
                 rightIcon={xIcon}

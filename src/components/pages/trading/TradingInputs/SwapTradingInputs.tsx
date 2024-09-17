@@ -239,9 +239,6 @@ export default function SwapTradingInputs({
   };
 
   useEffect(() => {
-    if (!window.adrena.geoBlockingData.allowed)
-      return setButtonTitle('Geo-Restricted Access');
-
     // If wallet not connected, then user need to connect wallet
     if (!connected) return setButtonTitle('Connect wallet');
 
