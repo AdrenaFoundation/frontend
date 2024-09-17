@@ -810,7 +810,13 @@ export default function Genesis({
                 <span className="font-mono font-light text-base opacity-50">
                   You have bought{' '}
                 </span>{' '}
-                {totalStakedAmount?.toPrecision(4)} ALP,{' '}
+                <FormatNumber
+                  nb={totalStakedAmount}
+                  precision={4}
+                  suffix=" ALP"
+                  isDecimalDimmed={false}
+                />
+                ,{' '}
                 <span className="font-mono font-light text-base opacity-50">
                   they have been locked and staked for
                 </span>{' '}
