@@ -778,11 +778,9 @@ export default function Genesis({
               </div>
               <div className="flex flex-row justify-between items-center bg-gradient-to-tr from-[#07111A] to-[#0B1722] w-full h-[53px] md:w-[400px] rounded-lg p-2 px-5 shadow-lg border border-bcolor">
                 <p className="font-mono opacity-50">My Total Locked ALP </p>
-                <FormatNumber
-                  nb={totalStakedAmount}
-                  precision={4}
-                  suffix=" ALP"
-                />
+                <p className="font-mono">
+                  {totalStakedAmount?.toPrecision(4)} ALP
+                </p>
               </div>
             </div>
           </div>
