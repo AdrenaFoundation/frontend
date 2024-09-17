@@ -814,6 +814,7 @@ export default function Genesis({
                   nb={totalStakedAmount}
                   precision={4}
                   suffix=" ALP"
+                  isDecimalDimmed={false}
                 />
                 ,{' '}
                 <span className="font-mono font-light text-base opacity-50">
