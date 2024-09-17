@@ -7744,6 +7744,44 @@ export type Adrena = {
       ]
     },
     {
+      "name": "setProtocolFeeRecipient",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "feeRedistributionMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "setCustodyMaxCumulativeShortPositionSizeUsd",
       "accounts": [
         {
@@ -9134,7 +9172,7 @@ export type Adrena = {
             "type": {
               "array": [
                 "publicKey",
-                30
+                43
               ]
             }
           },
@@ -9143,7 +9181,7 @@ export type Adrena = {
             "type": {
               "array": [
                 "u64",
-                30
+                43
               ]
             }
           },
@@ -10781,15 +10819,11 @@ export type Adrena = {
             "type": "u16"
           },
           {
-            "name": "protocolShare",
-            "type": "u16"
-          },
-          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                4
+                6
               ]
             }
           },
@@ -19872,6 +19906,44 @@ export const IDL: Adrena = {
       ]
     },
     {
+      "name": "setProtocolFeeRecipient",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "feeRedistributionMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "setCustodyMaxCumulativeShortPositionSizeUsd",
       "accounts": [
         {
@@ -21262,7 +21334,7 @@ export const IDL: Adrena = {
             "type": {
               "array": [
                 "publicKey",
-                30
+                43
               ]
             }
           },
@@ -21271,7 +21343,7 @@ export const IDL: Adrena = {
             "type": {
               "array": [
                 "u64",
-                30
+                43
               ]
             }
           },
@@ -22909,15 +22981,11 @@ export const IDL: Adrena = {
             "type": "u16"
           },
           {
-            "name": "protocolShare",
-            "type": "u16"
-          },
-          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                4
+                6
               ]
             }
           },
