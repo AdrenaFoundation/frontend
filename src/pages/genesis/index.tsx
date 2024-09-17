@@ -25,7 +25,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { GenesisLock, PageProps } from '@/types';
-import { formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
+import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
 import alpIcon from '../../../public/images/alp.svg';
@@ -280,10 +280,16 @@ export default function Genesis({
       (owner) => owner.walletAddress === wallet.walletAddress,
     );
 
+  let twitterText;
+
+  if (totalStakedAmount) {
+    twitterText = `I just bought ${formatNumber(
+      totalStakedAmount,
+      2,
+    )} ALP locked and staked for 180 days! @adrenaprotocol`;
+  }
+
   const url = 'https://app.adrena.xyz/genesis';
-  const twitterText = `I Just bought ${totalStakedAmount?.toPrecision(
-    4,
-  )} ALP locked and staked for 180 days @adrenaprotocol`;
 
   const MAX_USDC_AMOUNT = 250_000;
 
@@ -827,7 +833,9 @@ export default function Genesis({
                 title="Share on"
                 className="w-full mt-6 py-3 text-base"
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                  twitterText,
+                  twitterText
+                    ? twitterText
+                    : 'Just bought ALP on Adrena! @adrenaprotocol',
                 )}&url=${encodeURIComponent(url)}`}
                 isOpenLinkInNewTab
                 rightIcon={xIcon}
