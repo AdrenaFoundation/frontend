@@ -300,17 +300,6 @@ export default function Genesis({
   const OGIMage =
     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg';
 
-  if (process.env.NEXT_PUBLIC_IS_GENESIS === 'true') {
-    return (
-      <div className="m-auto">
-        <p className="font-boldy text-[24px]">Genesis Liquidity Program</p>
-        <p className="font-mono opacity-50 text-center">
-          Launching 17 September 2024
-        </p>
-      </div>
-    );
-  }
-
   if (isGenesisLoading || !genesis) {
     return (
       <div className="m-auto">
