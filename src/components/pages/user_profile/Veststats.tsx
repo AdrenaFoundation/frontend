@@ -93,7 +93,7 @@ export default function VestStats({
   return (
     <div className="flex flex-col sm:flex-row items-center bg-secondary  w-full border rounded-lg z-20">
       <div className="flex flex-col gap-2 w-full p-5 sm:py-0 order-2 sm:order-1">
-        <h2 className="hidden sm:block">My Vest</h2>
+        <h2 className="hidden sm:block">Ongoing Vests</h2>
 
         <div className="flex w-full items-center justify-between">
           <p className="text-sm">Vest period</p>
@@ -169,7 +169,7 @@ export default function VestStats({
         />
       </div>
       <div className="py-5 sm:py-0 w-[300px] sm:w-[400px] order-1 sm:order-2">
-        <h2 className="text-left mb-3 sm:hidden">My Vest</h2>
+        <h2 className="text-left mb-3 sm:hidden">Ongoing Vests</h2>
         <div className="flex flex-col justify-center items-center sm:border-l sm:border-third sm:p-3">
           <Doughnut
             height={100}

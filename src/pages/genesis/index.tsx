@@ -258,11 +258,12 @@ export default function Genesis({
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
       setFundsAmount(null);
-      return setIsSuccess(true);
+      setIsSuccess(true);
+      return;
     } catch (error) {
       console.log('error', error);
-
-      return setErrorMsg('Error buying ALP');
+      setErrorMsg('Error buying ALP');
+      return;
     }
   };
 
@@ -593,7 +594,7 @@ export default function Genesis({
                 )}
               </div>
             </div>
-
+            
             <div className="flex flex-col gap-2 h-full flex-none order-1 md:order-2 ">
               <div
                 className={twMerge(

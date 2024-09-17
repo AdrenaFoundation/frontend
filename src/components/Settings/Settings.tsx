@@ -2,7 +2,6 @@ import { Connection } from '@solana/web3.js';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { addNotification } from '@/utils';
 
 import settingsIcon from '../../../public/images/Icons/settings.svg';
@@ -21,7 +20,6 @@ export default function Settings({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  isIcon = false,
   isGenesis = false,
 }: {
   activeRpc: {
@@ -42,7 +40,6 @@ export default function Settings({
   isIcon?: boolean;
   isGenesis?: boolean;
 }) {
-  const isBigScreen = useBetterMediaQuery('(min-width: 500px)');
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
   );
@@ -51,10 +48,9 @@ export default function Settings({
     <Menu
       trigger={
         <Button
-          title={!isIcon && isBigScreen ? 'Settings' : null}
-          variant={isGenesis ? 'text' : 'outline'}
-          leftIcon={!isIcon && isBigScreen ? null : settingsIcon}
-          className={!isIcon && isBigScreen ? 'h-[2.5em]' : 'w-6 h-[2.5em] p-0'}
+          variant={isGenesis ? 'text' : 'secondary'}
+          leftIcon={settingsIcon}
+          className={'w-6 h-[2.5em] p-0'}
           iconClassName="w-4 h-4"
         />
       }
