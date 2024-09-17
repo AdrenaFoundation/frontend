@@ -1,15 +1,15 @@
+import { differenceInHours, differenceInSeconds } from 'date-fns';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import useCountDown from '@/hooks/useCountDown';
 import { GenesisLock } from '@/types';
 
 import chevronIcon from '../../../public/images/chevron-down.svg';
 import GensisStepsBGImg from '../../../public/images/genesis-bg.png';
 import Modal from '../common/Modal/Modal';
-import useCountDown from '@/hooks/useCountDown';
-import { differenceInHours, differenceInSeconds } from 'date-fns';
 
 export default function ProgressBar({
   currentStep,
