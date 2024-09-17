@@ -283,7 +283,7 @@ export default function Genesis({
   const url = 'https://app.adrena.xyz/genesis';
   const twitterText = `I Just bought ${totalStakedAmount?.toPrecision(
     4,
-  )} ALP locked and staked for 180 days`;
+  )} ALP locked and staked for 180 days @adrenaprotocol`;
 
   const MAX_USDC_AMOUNT = 250_000;
 

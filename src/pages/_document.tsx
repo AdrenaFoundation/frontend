@@ -4,7 +4,8 @@ import Script from 'next/script';
 export const metadata = {
   metadataBase: new URL('https://app.adrena.xyz/'),
   title: 'Adrena',
-  description: 'Trade at the speed of light with up to 100x leverage',
+  description:
+    'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
   openGraph: {
     title: 'Adrena',
     description:

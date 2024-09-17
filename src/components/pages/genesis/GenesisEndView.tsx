@@ -54,7 +54,7 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
 
   const twitterText =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected
-      ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days!`
+      ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days! @adrenaprotocol`
       : 'Check out Adrena \nThe new community owned, 100% rev share, perp dex on Solana!';
 
   return (
