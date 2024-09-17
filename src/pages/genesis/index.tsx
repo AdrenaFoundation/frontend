@@ -281,9 +281,7 @@ export default function Genesis({
     );
 
   const url = 'https://app.adrena.xyz/genesis';
-  const twitterText = `I Just bought ${feeAndAmount?.amount.toFixed(
-    2,
-  )} ALP locked and staked for 180 days`;
+  const twitterText = `I Just bought ${totalStakedAmount} ALP locked and staked for 180 days`;
 
   const MAX_USDC_AMOUNT = 250_000;
 
@@ -810,7 +808,7 @@ export default function Genesis({
                 <span className="font-mono font-light text-base opacity-50">
                   You have bought{' '}
                 </span>{' '}
-                {feeAndAmount?.amount.toFixed(2)} ALP,{' '}
+                {totalStakedAmount} ALP,{' '}
                 <span className="font-mono font-light text-base opacity-50">
                   they have been locked and staked for
                 </span>{' '}
