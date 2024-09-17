@@ -134,10 +134,11 @@ export default function Genesis({
 
   useEffect(() => {
     getTotalLockedStake();
-  }, [stakingAccounts]);
+  }, [stakingAccounts, connected]);
 
   const getTotalLockedStake = () => {
-    if (!stakingAccounts || !stakingAccounts['ALP']) {
+    if (!stakingAccounts || !stakingAccounts['ALP'] || !connected) {
+      setTotalStakedAmount(null);
       return;
     }
 
@@ -618,7 +619,7 @@ export default function Genesis({
                   <WalletAdapter userProfile={userProfile} />
                 </div>
 
-                {!hasCampaignEnded ? (
+                {hasCampaignEnded ? (
                   <GenesisEndView connected={connected} />
                 ) : (
                   <>
