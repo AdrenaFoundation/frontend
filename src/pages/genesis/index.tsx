@@ -376,8 +376,8 @@ export default function Genesis({
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc">
                   Depositors receive ALP tokens that are automatically locked
-                  for 180D. You will be able to track your position at 'My
-                  Dashboard' once the app goes live.
+                  for 180D. You will be able to track your position at &apos;My
+                  Dashboard&apos; once the app goes live.
                 </li>
                 <li className="text-sm font-mono opacity-75 list-disc">
                   $ADX rewards for locked ALP will start once the program is
@@ -421,8 +421,8 @@ export default function Genesis({
                   </li>
                   <li className="text-sm font-mono opacity-75 list-disc mb-3">
                     Depositors receive ALP tokens that are automatically locked
-                    for 180D. You will be able to track your position at 'My
-                    Dashboard' once the app goes live.
+                    for 180D. You will be able to track your position at
+                    &apos;My Dashboard&apos; once the app goes live.
                   </li>
                   <li className="text-sm font-mono opacity-75 list-disc mb-3">
                     $ADX rewards for locked ALP will start once the program is
