@@ -7,13 +7,7 @@ export default function Home() {
   // Unused page, redirect to /genesis for now
 
   useEffect(() => {
-    const isGenesis = process.env.NEXT_PUBLIC_IS_GENESIS === 'true';
-
-    if (window.location.pathname !== '/genesis' && isGenesis) {
-      router.push('/genesis');
-    } else {
-      router.push('/trade');
-    }
+    router.push('/genesis');
   }, [window.location.pathname]);
 
   return <main className="w-full h-full flex" />;
