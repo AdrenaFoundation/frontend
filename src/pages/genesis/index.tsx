@@ -512,12 +512,7 @@ export default function Genesis({
                       <div className="absolute top-0 w-2 h-2 rounded-full bg-bcolor" />
                     </div>
 
-                    <div
-                      className={twMerge(
-                        'w-full mt-auto',
-                        genesis.hasTransitionedToFullyPublic && 'opacity-50',
-                      )}
-                    >
+                    <div className="w-full mt-auto">
                       <p className="opacity-50 text-right text-sm sm:text-base mb-1">
                         Reserved liquidity
                       </p>
