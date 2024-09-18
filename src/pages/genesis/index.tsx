@@ -527,7 +527,7 @@ export default function Genesis({
                                   usdc?.decimals,
                                 ),
                               )}{' '}
-                            <span className="text-base sm:text-lg font-mono opacity-50">
+                            {/* <span className="text-base sm:text-lg font-mono opacity-50">
                               /{' '}
                               {formatPriceInfo(
                                 nativeToUi(
@@ -535,7 +535,7 @@ export default function Genesis({
                                   usdc.decimals,
                                 ),
                               )}
-                            </span>
+                            </span> */}
                           </p>
                         )}
 
