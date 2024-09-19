@@ -3,7 +3,6 @@ import { PublicKey } from '@solana/web3.js';
 import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { useEffect, useState } from 'react';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -58,7 +57,6 @@ export default function ALPSwap({
   feesAndAmounts: FeesAndAmountsType | null;
   connected: boolean;
 }) {
-  const dispatch = useDispatch();
   const { walletProvider } = useWeb3ModalProvider();
 
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -68,7 +66,7 @@ export default function ALPSwap({
 
   const handleExecuteButton = async () => {
     if (!connected) {
-      dispatch(openCloseConnectionModalAction(true));
+      // dispatch(openCloseConnectionModalAction(true));
       return;
     }
 

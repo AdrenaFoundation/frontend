@@ -1,6 +1,3 @@
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
-import { useDispatch } from '@/store/store';
-
 import phantomLogo from '../../../public/images/phantom.png';
 import Button from '../common/Button/Button';
 
@@ -9,11 +6,9 @@ export default function WalletConnection({
 }: {
   connected?: boolean;
 }) {
-  const dispatch = useDispatch();
-
   const handleClick = () => {
     if (!connected) {
-      dispatch(openCloseConnectionModalAction(true));
+      // dispatch(openCloseConnectionModalAction(true));
       return;
     }
   };

@@ -14,7 +14,6 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
 import Settings from '../Settings/Settings';
-import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
   userProfile,
