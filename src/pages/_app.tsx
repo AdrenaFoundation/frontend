@@ -250,15 +250,6 @@ function AppComponent({
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
-    console.log('walletProvider', walletProvider);
-    console.log('walletProvider B', walletProvider.signTransaction);
-
-    // (walletProvider.signTransaction as any) = async function (
-    //   transaction: any,
-    // ) {
-    //   console.log('INSIDE');
-    //   return this.signAllTransactions([transaction]);
-    // }.bind(walletProvider);
 
     window.adrena.client.setAdrenaProgram(
       new Program(
@@ -291,15 +282,6 @@ function AppComponent({
     );
 
     if (walletProvider) {
-      console.log('walletProvider', walletProvider);
-      console.log('walletProvider B', walletProvider.signTransaction);
-      // (walletProvider.signTransaction as any) = async function (
-      //   transaction: any,
-      // ) {
-      //   console.log('INSIDE');
-      //   return this.signAllTransactions([transaction]);
-      // }.bind(walletProvider);
-
       window.adrena.client.setAdrenaProgram(
         new Program(
           ADRENA_IDL,
