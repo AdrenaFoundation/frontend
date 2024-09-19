@@ -1,11 +1,12 @@
 import { BN } from '@coral-xyz/anchor';
 import { NATIVE_MINT } from '@solana/spl-token';
 import { PublicKey, RpcResponseAndContext, TokenAmount } from '@solana/web3.js';
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setWalletTokenBalancesAction } from '@/actions/walletBalancesActions';
 import { SOL_DECIMALS } from '@/constant';
-import { useDispatch, useSelector } from '@/store/store';
+import { useDispatch } from '@/store/store';
 import { TokenSymbol } from '@/types';
 import { findATAAddressSync, nativeToUi } from '@/utils';
 
@@ -15,12 +16,12 @@ export default function useWatchWalletBalance(): {
 } {
   const [trickReload, triggerReload] = useState<number>(0);
   const dispatch = useDispatch();
-  const wallet = useSelector((s) => s.walletState.wallet);
+  const { walletProvider } = useWeb3ModalProvider();
 
   const loadWalletBalances = useCallback(async () => {
     const connection = window.adrena.client.connection;
 
-    if (!wallet || !dispatch || !connection) {
+    if (!walletProvider || !dispatch || !connection) {
       dispatch(setWalletTokenBalancesAction(null));
       return;
     }
@@ -36,7 +37,7 @@ export default function useWatchWalletBalance(): {
     const balances = await Promise.all(
       tokens.map(async ({ mint }) => {
         const ata = findATAAddressSync(
-          new PublicKey(wallet.walletAddress),
+          new PublicKey(walletProvider.publicKey),
           mint,
         );
 
@@ -52,7 +53,7 @@ export default function useWatchWalletBalance(): {
                   .catch(() => resolve(null));
               }) as Promise<RpcResponseAndContext<TokenAmount> | null>,
 
-              connection.getBalance(new PublicKey(wallet.walletAddress)),
+              connection.getBalance(new PublicKey(walletProvider.publicKey)),
             ]);
 
             return (
@@ -85,7 +86,7 @@ export default function useWatchWalletBalance(): {
       ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, dispatch, trickReload, window.adrena.client.connection]);
+  }, [walletProvider, dispatch, trickReload, window.adrena.client.connection]);
 
   useEffect(() => {
     loadWalletBalances();

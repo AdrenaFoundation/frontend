@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
@@ -10,11 +11,11 @@ export default function usePositions(): {
   triggerPositionsReload: () => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
-  const wallet = useSelector((s) => s.walletState.wallet);
+  const { walletProvider } = useWeb3ModalProvider();
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
 
   const loadPositions = useCallback(async () => {
-    if (!wallet) {
+    if (!walletProvider) {
       setPositions(null);
       return;
     }
@@ -22,14 +23,14 @@ export default function usePositions(): {
     try {
       setPositions(
         await window.adrena.client.loadUserPositions(
-          new PublicKey(wallet.walletAddress),
+          new PublicKey(walletProvider.publicKey),
         ),
       );
     } catch (e) {
       console.log('Error loading positions', e, String(e));
       throw e;
     }
-  }, [wallet]);
+  }, [walletProvider]);
 
   useEffect(() => {
     loadPositions();

@@ -1,6 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -40,9 +41,9 @@ export default function MyDashboard({
   const [nickname, setNickname] = useState<string | null>(null);
   const { stakingAccounts, triggerWalletStakingAccountsReload } =
     useWalletStakingAccounts();
-  const wallet = useSelector((s) => s.walletState.wallet);
-  const owner: PublicKey | null = wallet
-    ? new PublicKey(wallet.walletAddress)
+  const { walletProvider } = useWeb3ModalProvider();
+  const owner: PublicKey | null = walletProvider
+    ? new PublicKey(walletProvider.publicKey)
     : null;
 
   const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =

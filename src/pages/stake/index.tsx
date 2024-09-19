@@ -1,6 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { AnimatePresence } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -55,7 +56,7 @@ export default function Stake({
   connected,
   triggerWalletTokenBalancesReload,
 }: PageProps) {
-  const wallet = useSelector((s) => s.walletState.wallet);
+  const { walletProvider } = useWeb3ModalProvider();
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
   const adxPrice: number | null =
@@ -115,8 +116,8 @@ export default function Stake({
   const alpBalance: number | null =
     walletTokenBalances?.[window.adrena.client.alpToken.symbol] ?? null;
 
-  const owner: PublicKey | null = wallet
-    ? new PublicKey(wallet.walletAddress)
+  const owner: PublicKey | null = walletProvider
+    ? new PublicKey(walletProvider.publicKey)
     : null;
 
   const adxLockedStakes: LockedStakeExtended[] | null =
@@ -426,27 +427,41 @@ export default function Stake({
   useEffect(() => {
     setAdxDetails({
       balance: adxBalance,
-      totalLiquidStaked: wallet ? getTotalADXLiquidStaked() : null,
+      totalLiquidStaked: walletProvider ? getTotalADXLiquidStaked() : null,
       totalLiquidStakedUSD:
-        wallet && adxPrice ? adxPrice * getTotalADXLiquidStaked() : null,
-      totalLockedStake: wallet ? getTotalLockedStake('ADX') : null,
+        walletProvider && adxPrice
+          ? adxPrice * getTotalADXLiquidStaked()
+          : null,
+      totalLockedStake: walletProvider ? getTotalLockedStake('ADX') : null,
 
       totalLockedStakeUSD:
-        wallet && adxPrice ? adxPrice * getTotalLockedStake('ADX') : null,
-      totalStaked: wallet ? getTotalStaked('ADX') : null,
-      totalRedeemableStake: wallet ? getTotalRedeemableStake('ADX') : null,
+        walletProvider && adxPrice
+          ? adxPrice * getTotalLockedStake('ADX')
+          : null,
+      totalStaked: walletProvider ? getTotalStaked('ADX') : null,
+      totalRedeemableStake: walletProvider
+        ? getTotalRedeemableStake('ADX')
+        : null,
       totalRedeemableStakeUSD:
-        wallet && adxPrice ? adxPrice * getTotalRedeemableStake('ADX') : null,
+        walletProvider && adxPrice
+          ? adxPrice * getTotalRedeemableStake('ADX')
+          : null,
     });
 
     setAlpDetails({
       balance: alpBalance,
-      totalLockedStake: wallet ? getTotalLockedStake('ALP') : null,
+      totalLockedStake: walletProvider ? getTotalLockedStake('ALP') : null,
       totalLockedStakeUSD:
-        wallet && alpPrice ? alpPrice * getTotalLockedStake('ALP') : null,
-      totalRedeemableStake: wallet ? getTotalRedeemableStake('ALP') : null,
+        walletProvider && alpPrice
+          ? alpPrice * getTotalLockedStake('ALP')
+          : null,
+      totalRedeemableStake: walletProvider
+        ? getTotalRedeemableStake('ALP')
+        : null,
       totalRedeemableStakeUSD:
-        wallet && alpPrice ? alpPrice * getTotalRedeemableStake('ALP') : null,
+        walletProvider && alpPrice
+          ? alpPrice * getTotalRedeemableStake('ALP')
+          : null,
     });
 
     setTimeout(() => {
@@ -463,7 +478,7 @@ export default function Stake({
     getTotalLockedStake,
     getTotalRedeemableStake,
     getTotalStaked,
-    wallet,
+    walletProvider,
   ]);
 
   const modal = activeStakingToken && (

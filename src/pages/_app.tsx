@@ -1,8 +1,15 @@
 import '@/styles/globals.scss';
 
-import { AnchorProvider, Program } from '@coral-xyz/anchor';
+import { AnchorProvider, Program, Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
+import { solana } from '@web3modal/solana/chains';
+import {
+  createWeb3Modal,
+  defaultSolanaConfig,
+  useWeb3ModalAccount,
+  useWeb3ModalProvider,
+} from '@web3modal/solana/react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -21,7 +28,6 @@ import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
-import useWallet from '@/hooks/useWallet';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp, {
@@ -204,7 +210,13 @@ function AppComponent({
 }) {
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
-  const wallet = useWallet();
+  const {
+    walletProvider,
+    connection,
+  }: {
+    walletProvider: Wallet | undefined;
+    connection: Connection | undefined;
+  } = useWeb3ModalProvider();
   const router = useRouter();
 
   const { positions, triggerPositionsReload } = usePositions();
@@ -218,7 +230,6 @@ function AppComponent({
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
-  const [connected, setConnected] = useState<boolean>(false);
 
   // Open the terms and conditions modal if cookies isn't set to true
   useEffect(() => {
@@ -232,24 +243,38 @@ function AppComponent({
   // 2) Set connected variable variable to true/false
   // 3) load the user profile so we can display nickname
   useEffect(() => {
-    if (!wallet) {
-      setConnected(false);
+    console.log('connection', connection);
+    console.log('walletProvider', walletProvider);
+
+    if (!connection || !walletProvider) {
       window.adrena.client.setAdrenaProgram(null);
       return;
     }
+    console.log('walletProvider', walletProvider);
+    console.log('walletProvider B', walletProvider.signTransaction);
 
-    setConnected(true);
+    // (walletProvider.signTransaction as any) = async function (
+    //   transaction: any,
+    // ) {
+    //   console.log('INSIDE');
+    //   return this.signAllTransactions([transaction]);
+    // }.bind(walletProvider);
+
     window.adrena.client.setAdrenaProgram(
       new Program(
         ADRENA_IDL,
         AdrenaClient.programId,
-        new AnchorProvider(window.adrena.mainConnection, wallet, {
-          commitment: 'processed',
-          skipPreflight: true,
-        }),
+        new AnchorProvider(
+          window.adrena.mainConnection,
+          walletProvider as unknown as Wallet,
+          {
+            commitment: 'processed',
+            skipPreflight: true,
+          },
+        ),
       ),
     );
-  }, [wallet]);
+  }, [connection, walletProvider]);
 
   //
   // When the RPC change, change the connection in the adrena client
@@ -265,15 +290,28 @@ function AppComponent({
       createReadOnlySablierThreadProgram(activeRpc.connection),
     );
 
-    if (wallet) {
+    if (walletProvider) {
+      console.log('walletProvider', walletProvider);
+      console.log('walletProvider B', walletProvider.signTransaction);
+      // (walletProvider.signTransaction as any) = async function (
+      //   transaction: any,
+      // ) {
+      //   console.log('INSIDE');
+      //   return this.signAllTransactions([transaction]);
+      // }.bind(walletProvider);
+
       window.adrena.client.setAdrenaProgram(
         new Program(
           ADRENA_IDL,
           AdrenaClient.programId,
-          new AnchorProvider(window.adrena.mainConnection, wallet, {
-            commitment: 'processed',
-            skipPreflight: true,
-          }),
+          new AnchorProvider(
+            window.adrena.mainConnection,
+            walletProvider as unknown as Wallet,
+            {
+              commitment: 'processed',
+              skipPreflight: true,
+            },
+          ),
         ),
       );
     }
@@ -286,6 +324,42 @@ function AppComponent({
       router.push('/genesis');
     }
   }, [window.location.pathname]);
+
+  // Setup wallet modal
+  useEffect(() => {
+    const chains = [solana];
+    const metadata = {
+      name: 'Adrena',
+      description: 'Perpetuals DEX for the Solana community',
+      url: 'https://app.adrena.xyz', // origin must match your domain & subdomain
+      icons: ['https://avatars.githubusercontent.com/u/179229932'],
+    };
+
+    const solanaConfig = defaultSolanaConfig({
+      metadata,
+      chains,
+      projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
+      auth: {
+        email: false,
+        phone: false,
+        socials: false,
+      },
+      enableInjected: true,
+      rpcUrl: activeRpc.connection.rpcEndpoint,
+    });
+
+    createWeb3Modal({
+      metadata: {
+        name: 'Adrena',
+        description: 'Perpetuals DEX for the Solana community',
+        url: 'https://app.adrena.xyz',
+        icons: ['https://avatars.githubusercontent.com/u/179229932'],
+      },
+      solanaConfig,
+      chains,
+      projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
+    });
+  }, []);
 
   return (
     <>
@@ -325,14 +399,14 @@ function AppComponent({
         <Component
           {...pageProps}
           userProfile={userProfile}
+          connected={!!walletProvider}
+          wallet={walletProvider}
           triggerUserProfileReload={triggerUserProfileReload}
           mainPool={mainPool}
           custodies={custodies}
-          wallet={wallet}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           positions={positions}
           triggerPositionsReload={triggerPositionsReload}
-          connected={connected}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}
           autoRpcMode={autoRpcMode}

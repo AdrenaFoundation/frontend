@@ -1,3 +1,4 @@
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
@@ -8,7 +9,7 @@ export default function useUserProfile(): {
   triggerUserProfileReload: () => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
-  const wallet = useSelector((s) => s.walletState.wallet);
+  const { walletProvider } = useWeb3ModalProvider();
 
   // null = not loaded yet
   // false = no user profile
@@ -17,13 +18,13 @@ export default function useUserProfile(): {
   >(null);
 
   const fetchUserProfile = useCallback(async () => {
-    if (!wallet) {
+    if (!walletProvider) {
       setUserProfile(null);
       return;
     }
 
     setUserProfile(await window.adrena.client.loadUserProfile());
-  }, [wallet]);
+  }, [walletProvider]);
 
   useEffect(() => {
     fetchUserProfile();

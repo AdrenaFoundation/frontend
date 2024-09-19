@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { useEffect, useState } from 'react';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -58,7 +59,7 @@ export default function ALPSwap({
   connected: boolean;
 }) {
   const dispatch = useDispatch();
-  const wallet = useSelector((s) => s.walletState.wallet);
+  const { walletProvider } = useWeb3ModalProvider();
 
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [buttonTitle, setButtonTitle] = useState<string | null>(null);
@@ -72,7 +73,7 @@ export default function ALPSwap({
     }
 
     if (
-      !wallet?.walletAddress ||
+      !walletProvider?.publicKey ||
       !collateralInput ||
       !collateralToken ||
       !alpInput
@@ -87,7 +88,7 @@ export default function ALPSwap({
     if (selectedAction === 'buy') {
       try {
         await window.adrena.client.addLiquidity({
-          owner: new PublicKey(wallet.walletAddress),
+          owner: new PublicKey(walletProvider.publicKey),
           amountIn: uiToNative(collateralInput, collateralToken.decimals),
           mint: collateralToken.mint,
 
@@ -108,7 +109,7 @@ export default function ALPSwap({
     // "sell"
     try {
       await window.adrena.client.removeLiquidity({
-        owner: new PublicKey(wallet.walletAddress),
+        owner: new PublicKey(walletProvider.publicKey),
         mint: collateralToken.mint,
         lpAmountIn: uiToNative(
           alpInput,

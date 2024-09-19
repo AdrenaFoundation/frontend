@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -18,7 +19,6 @@ import GenesisEndView from '@/components/pages/genesis/GenesisEndView';
 import TradingInput from '@/components/pages/trading/TradingInput/TradingInput';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import Settings from '@/components/Settings/Settings';
-import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -66,7 +66,7 @@ export default function Genesis({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
-  const { wallet } = useSelector((s) => s.walletState);
+  const { walletProvider } = useWeb3ModalProvider();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const usdc = window.adrena.client?.tokens.find((t) => t.symbol === 'USDC');
@@ -186,7 +186,7 @@ export default function Genesis({
 
     const price = tokenPrices[usdc?.symbol];
 
-    if (!wallet) return;
+    if (!walletProvider) return;
 
     try {
       const alp = await window.adrena.client.getAddLiquidityAmountAndFee({
@@ -214,12 +214,12 @@ export default function Genesis({
   };
 
   const addGenesisLiquidity = async () => {
-    if (!fundsAmount || !usdc || !wallet) {
+    if (!fundsAmount || !usdc || !walletProvider) {
       return;
     }
 
     const userStaking = await window.adrena.client.getUserStakingAccount({
-      owner: new PublicKey(wallet.walletAddress),
+      owner: new PublicKey(walletProvider.publicKey),
       stakedTokenMint: window.adrena.client.alpToken.mint,
     });
 
@@ -229,7 +229,7 @@ export default function Genesis({
 
       try {
         await window.adrena.client.initUserStaking({
-          owner: new PublicKey(wallet.walletAddress),
+          owner: new PublicKey(walletProvider.publicKey),
           stakedTokenMint: window.adrena.client.alpToken.mint,
           threadId: new BN(Date.now()),
           notification,
@@ -245,7 +245,7 @@ export default function Genesis({
     ).fire();
 
     try {
-      if (!wallet) return;
+      if (!walletProvider) return;
 
       await window.adrena.client.addGenesisLiquidity({
         amountIn: fundsAmount,
@@ -275,9 +275,9 @@ export default function Genesis({
   });
 
   const isReserved =
-    wallet?.walletAddress &&
+    walletProvider?.publicKey &&
     reservedGrantOwners?.find(
-      (owner) => owner.walletAddress === wallet.walletAddress,
+      (owner) => owner.walletAddress === walletProvider.publicKey,
     );
 
   let twitterText;
@@ -300,7 +300,7 @@ export default function Genesis({
     : null;
 
   const reservedGrantOwnerLeftAmount = reservedGrantOwners?.find(
-    (owner) => owner.walletAddress === wallet?.walletAddress,
+    (owner) => owner.walletAddress === walletProvider?.publicKey,
   )?.maxAmount;
 
   const OGIMage =
@@ -623,7 +623,7 @@ export default function Genesis({
                     isIcon
                     isGenesis
                   />
-                  <WalletAdapter userProfile={userProfile} />
+                  <w3m-button />
                 </div>
 
                 {hasCampaignEnded ? (

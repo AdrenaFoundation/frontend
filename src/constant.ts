@@ -1,6 +1,5 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
-  BackpackWalletAdapter,
   CoinbaseWalletAdapter,
   PhantomWalletAdapter,
   SolflareWalletAdapter,
@@ -14,20 +13,18 @@ import { AdxLockPeriod, AlpLockPeriod, WalletAdapterName } from './types';
 export const walletAdapters: Record<
   WalletAdapterName,
   | PhantomWalletAdapter
-  | BackpackWalletAdapter
   | CoinbaseWalletAdapter
   | SolflareWalletAdapter
   | WalletConnectWalletAdapter /* | ... */
 > = {
   phantom: new PhantomWalletAdapter(),
-  backpack: new BackpackWalletAdapter(),
   coinbase: new CoinbaseWalletAdapter(),
   solflare: new SolflareWalletAdapter(),
   walletConnect: new WalletConnectWalletAdapter({
-    network: WalletAdapterNetwork.Devnet,
+    network: WalletAdapterNetwork.Mainnet,
     options: {
       relayUrl: 'wss://relay.walletconnect.com',
-      projectId: '398435404513d41887c13aee450d5773',
+      projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
       metadata: {
         name: 'Adrena',
         description: 'Perpetuals DEX for the Solana community',

@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
@@ -13,7 +14,7 @@ export default function useWalletStakingAccounts(): {
   stakingAccounts: WalletStakingAccounts | null;
   triggerWalletStakingAccountsReload: () => void;
 } {
-  const wallet = useSelector((s) => s.walletState.wallet);
+  const { walletProvider } = useWeb3ModalProvider();
   const [triggerCount, setTriggerCount] = useState<number>(0);
 
   const [stakingAccounts, setStakingAccounts] = useState<{
@@ -22,11 +23,15 @@ export default function useWalletStakingAccounts(): {
   } | null>(null);
 
   const getUserStakingAccount = useCallback(async () => {
-    if (!wallet || !wallet.walletAddress || !window.adrena.client.connection) {
+    if (
+      !walletProvider ||
+      !walletProvider.publicKey ||
+      !window.adrena.client.connection
+    ) {
       return;
     }
 
-    const owner = new PublicKey(wallet.walletAddress);
+    const owner = new PublicKey(walletProvider.publicKey);
 
     const [adxStakingAccount, alpStakingAccount] = await Promise.all([
       window.adrena.client.getUserStakingAccount({
@@ -44,7 +49,7 @@ export default function useWalletStakingAccounts(): {
       ADX: adxStakingAccount,
       ALP: alpStakingAccount,
     });
-  }, [wallet]);
+  }, [walletProvider]);
 
   useEffect(() => {
     getUserStakingAccount();

@@ -1,3 +1,4 @@
+import { useWeb3ModalProvider } from '@web3modal/solana/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
@@ -8,20 +9,20 @@ export default function useUserVest(): {
   triggerUserVestReload: () => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
-  const wallet = useSelector((s) => s.walletState.wallet);
+  const { walletProvider } = useWeb3ModalProvider();
 
   // null = not loaded yet
   // false = no vest
   const [userVest, setUserVest] = useState<Vest | false | null>(null);
 
   const fetchUserVest = useCallback(async () => {
-    if (!wallet) {
+    if (!walletProvider) {
       setUserVest(null);
       return;
     }
 
     setUserVest(await window.adrena.client.loadUserVest());
-  }, [wallet]);
+  }, [walletProvider]);
 
   useEffect(() => {
     fetchUserVest();

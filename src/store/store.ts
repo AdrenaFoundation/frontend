@@ -9,10 +9,8 @@ import streamingTokenPricesReducer from '@/reducers/streamingTokenPricesReducer'
 import tokenPricesReducer from '@/reducers/tokenPricesReducer';
 
 import walletBalancesReducer from '../reducers/walletBalancesReducer';
-import walletReducer from '../reducers/walletReducer';
 
 const rootReducer = combineReducers({
-  walletState: walletReducer,
   tokenPrices: tokenPricesReducer,
   streamingTokenPrices: streamingTokenPricesReducer,
   walletTokenBalances: walletBalancesReducer,
