@@ -2,7 +2,6 @@ import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import {
   ADX_LOCK_PERIODS,
@@ -36,7 +35,8 @@ export default function StakeLanding({
 
   const handleClick = (token: 'ALP' | 'ADX') => {
     if (!connected) {
-      return dispatch(openCloseConnectionModalAction(true));
+      //return dispatch(openCloseConnectionModalAction(true));
+      return;
     }
     token === 'ADX' ? handleClickOnStakeMoreADX() : handleClickOnStakeMoreALP();
   };

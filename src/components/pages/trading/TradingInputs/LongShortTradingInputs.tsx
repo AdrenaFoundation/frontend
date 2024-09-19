@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import AutoScalableDiv from '@/components/common/AutoScalableDiv/AutoScalableDiv';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -167,7 +166,7 @@ export default function LongShortTradingInputs({
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
-      dispatch(openCloseConnectionModalAction(true));
+      // dispatch(openCloseConnectionModalAction(true));
       return;
     }
 

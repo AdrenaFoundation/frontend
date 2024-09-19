@@ -1,39 +1,7 @@
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import {
-  CoinbaseWalletAdapter,
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  WalletConnectWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
 import { Keypair } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
-import { AdxLockPeriod, AlpLockPeriod, WalletAdapterName } from './types';
-
-export const walletAdapters: Record<
-  WalletAdapterName,
-  | PhantomWalletAdapter
-  | CoinbaseWalletAdapter
-  | SolflareWalletAdapter
-  | WalletConnectWalletAdapter /* | ... */
-> = {
-  phantom: new PhantomWalletAdapter(),
-  coinbase: new CoinbaseWalletAdapter(),
-  solflare: new SolflareWalletAdapter(),
-  walletConnect: new WalletConnectWalletAdapter({
-    network: WalletAdapterNetwork.Mainnet,
-    options: {
-      relayUrl: 'wss://relay.walletconnect.com',
-      projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
-      metadata: {
-        name: 'Adrena',
-        description: 'Perpetuals DEX for the Solana community',
-        url: 'https://github.com/AdrenaDEX/adrena',
-        icons: ['https://avatars.githubusercontent.com/u/122066701?s=400&v=4'],
-      },
-    },
-  }),
-};
+import { AdxLockPeriod, AlpLockPeriod } from './types';
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;

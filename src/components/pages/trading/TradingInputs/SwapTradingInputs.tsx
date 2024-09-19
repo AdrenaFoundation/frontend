@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
@@ -207,7 +206,7 @@ export default function SwapTradingInputs({
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!dispatch || !connected || !wallet) {
-      dispatch(openCloseConnectionModalAction(true));
+      // dispatch(openCloseConnectionModalAction(true));
       return;
     }
 
