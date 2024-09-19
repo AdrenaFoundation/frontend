@@ -4383,9 +4383,6 @@ export class AdrenaClient {
     let signedTransaction: Transaction;
 
     try {
-      console.log('WALLET', wallet);
-      console.log('WALLET', (wallet as any).getActiveChain());
-
       signedTransaction = await wallet.signTransaction(transaction);
     } catch (err) {
       console.log('sign error:', err);
