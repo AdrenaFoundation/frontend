@@ -5,10 +5,11 @@ import Button from '@/components/common/Button/Button';
 import { Congrats } from '@/components/Congrats/Congrats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { LockedStakeExtended } from '@/types';
-import { getAlpLockedStakes, nativeToUi } from '@/utils';
+import { formatNumber, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import adrenaMonsters from '../../../../public/images/adrena-monsters.png';
 import xIcon from '../../../../public/images/x-black-bg.png';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function GenesisEndView({ connected }: { connected: boolean }) {
   const { stakingAccounts } = useWalletStakingAccounts();
@@ -39,8 +40,15 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
       <p className="text-center mt-1 text-base max-w-[400px] font-mono font-semibold">
         <span className="font-mono font-light text-base opacity-50">
           You have bought{' '}
-        </span>{' '}
-        {totalStakedAmount} ALP,{' '}
+        </span>
+        <FormatNumber
+          nb={totalStakedAmount}
+          precision={2}
+          suffix=" ALP"
+          isDecimalDimmed={false}
+          className="text-base"
+        />
+        ,{' '}
         <span className="font-mono font-light text-base opacity-50">
           they have been locked and staked for
         </span>{' '}
@@ -54,7 +62,10 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
 
   const twitterText =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected
-      ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days! @adrenaprotocol`
+      ? `I just bought ${formatNumber(
+          totalStakedAmount,
+          2,
+        )} ALP locked and staked for 180 days! @adrenaprotocol`
       : 'Check out Adrena \nThe new community owned, 100% rev share, perp dex on Solana!';
 
   return (
