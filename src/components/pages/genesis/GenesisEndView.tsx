@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import { Congrats } from '@/components/Congrats/Congrats';
+import FormatNumber from '@/components/Number/FormatNumber';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { LockedStakeExtended } from '@/types';
 import { formatNumber, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import adrenaMonsters from '../../../../public/images/adrena-monsters.png';
 import xIcon from '../../../../public/images/x-black-bg.png';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function GenesisEndView({ connected }: { connected: boolean }) {
   const { stakingAccounts } = useWalletStakingAccounts();
