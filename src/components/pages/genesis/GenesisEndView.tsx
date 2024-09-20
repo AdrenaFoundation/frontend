@@ -5,7 +5,7 @@ import Button from '@/components/common/Button/Button';
 import { Congrats } from '@/components/Congrats/Congrats';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { LockedStakeExtended } from '@/types';
-import { getAlpLockedStakes, nativeToUi } from '@/utils';
+import { formatNumber, getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import adrenaMonsters from '../../../../public/images/adrena-monsters.png';
 import xIcon from '../../../../public/images/x-black-bg.png';
@@ -62,7 +62,10 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
 
   const twitterText =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected
-      ? `I just bought ${totalStakedAmount} ALP locked and staked for 180 days! @adrenaprotocol`
+      ? `I just bought ${formatNumber(
+          totalStakedAmount,
+          2,
+        )} ALP locked and staked for 180 days! @adrenaprotocol`
       : 'Check out Adrena \nThe new community owned, 100% rev share, perp dex on Solana!';
 
   return (
