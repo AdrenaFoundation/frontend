@@ -19,6 +19,9 @@ export default function ProgressBar({
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const rebalancingEndDate = new Date('9/23/2024');
+  const genesisEnd = new Date('9/25/2024');
+
   const campaignEndDate = new Date(
     genesis.campaignStartDate.toNumber() * 1000 +
       genesis.campaignDuration.toNumber() * 1000,
@@ -29,10 +32,17 @@ export default function ProgressBar({
       genesis.reservedGrantDuration.toNumber() * 1000,
   );
 
-  const diffInHoursReserved = differenceInSeconds(
+  const diffInHoursSeconds = differenceInSeconds(
     reservedCampaignEndDate,
     new Date(),
   );
+
+  const diffInSecondsRebelance = differenceInSeconds(
+    rebalancingEndDate,
+    new Date(),
+  );
+
+  const diffInSecondsGenesisEnd = differenceInSeconds(genesisEnd, new Date());
 
   const diffInHoursPublic = differenceInSeconds(campaignEndDate, new Date());
 
@@ -45,7 +55,7 @@ export default function ProgressBar({
   };
 
   const percentToReserved = getPercent(
-    diffInHoursReserved,
+    diffInHoursSeconds,
     genesis.reservedGrantDuration.toNumber(),
   );
 
@@ -53,6 +63,13 @@ export default function ProgressBar({
     diffInHoursPublic,
     genesis.campaignDuration.toNumber(),
   );
+
+  const percentToRebalance = getPercent(
+    diffInSecondsRebelance,
+    genesis.campaignDuration.toNumber(),
+  );
+
+  const percentToGenesisEnd = getPercent(diffInSecondsGenesisEnd, 48 * 3600);
 
   const steps = [
     {
@@ -114,12 +131,14 @@ export default function ProgressBar({
                         className="bg-white w-full h-[2px] rounded-full"
                         style={{
                           width: `${
-                            index === 0 && currentStep === 0
-                              ? percentToReserved
-                              : index === 1 && currentStep === 1
-                              ? percentToPublic
-                              : currentStep <= index
-                              ? 0
+                            currentStep === index
+                              ? [
+                                  percentToReserved,
+                                  percentToPublic,
+                                  percentToRebalance,
+                                  percentToGenesisEnd,
+                                  0,
+                                ][currentStep]
                               : 100
                           }%`,
                         }}

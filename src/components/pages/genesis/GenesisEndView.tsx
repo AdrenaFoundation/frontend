@@ -9,6 +9,7 @@ import { getAlpLockedStakes, nativeToUi } from '@/utils';
 
 import adrenaMonsters from '../../../../public/images/adrena-monsters.png';
 import xIcon from '../../../../public/images/x-black-bg.png';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 export default function GenesisEndView({ connected }: { connected: boolean }) {
   const { stakingAccounts } = useWalletStakingAccounts();
@@ -39,8 +40,15 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
       <p className="text-center mt-1 text-base max-w-[400px] font-mono font-semibold">
         <span className="font-mono font-light text-base opacity-50">
           You have bought{' '}
-        </span>{' '}
-        {totalStakedAmount} ALP,{' '}
+        </span>
+        <FormatNumber
+          nb={totalStakedAmount}
+          precision={2}
+          suffix=" ALP"
+          isDecimalDimmed={false}
+          className="text-base"
+        />
+        ,{' '}
         <span className="font-mono font-light text-base opacity-50">
           they have been locked and staked for
         </span>{' '}
