@@ -75,9 +75,11 @@ export default function ProgressBar({
     },
     {
       title: 'Pool Rebalancing',
+      date: new Date('9/23/2024'),
     },
     {
       title: 'Trading Live',
+      date: new Date('9/25/2024'),
     },
   ];
 
@@ -112,7 +114,6 @@ export default function ProgressBar({
                         className="bg-white w-full h-[2px] rounded-full"
                         style={{
                           width: `${
-                            // TODO: redo this
                             index === 0 && currentStep === 0
                               ? percentToReserved
                               : index === 1 && currentStep === 1
@@ -205,11 +206,17 @@ export default function ProgressBar({
             <div className="flex flex-row w-full">
               <div>
                 <p className="font-bold text-center">{steps[3].title}</p>
+                <p className="text-center text-sm opacity-50 font-mono">
+                  {steps[3].date?.toLocaleDateString()}
+                </p>
               </div>
             </div>
 
             <div className="flex-none">
               <p className="font-bold text-center">{steps[4].title}</p>
+              <p className="text-center text-sm opacity-50 font-mono">
+                {steps[4].date?.toLocaleDateString()}
+              </p>
             </div>
           </div>
         </div>
