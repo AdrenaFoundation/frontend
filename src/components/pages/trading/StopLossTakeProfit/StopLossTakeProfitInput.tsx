@@ -113,6 +113,12 @@ export default function StopLossTakeProfitInput({
     }
   };
 
+  const handleSetInput = (value: number | null) => {
+    if (value !== null) {
+      setInput(value);
+    }
+  };
+
   if (!infos) return null;
 
   const { min, max, priceIsOk, priceChangePnL } = infos;
@@ -167,8 +173,9 @@ export default function StopLossTakeProfitInput({
           {min !== null ? (
             <div
               className={twMerge(
-                'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base',
+                'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
               )}
+              onClick={() => handleSetInput(Math.round(min * 100) / 100)}
             >
               <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
                 {formatPriceInfo(min)}
@@ -180,8 +187,11 @@ export default function StopLossTakeProfitInput({
           {max !== null ? (
             <div
               className={twMerge(
-                'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base',
+                'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
+                priceIsOk === 1 ? 'text-redbright' : '',
+                max === null ? 'text-txtfade' : '',
               )}
+              onClick={() => handleSetInput(Math.round(max * 100) / 100)}
             >
               <div
                 className={twMerge(
