@@ -485,9 +485,8 @@ export default function TradingChart({
         )}
       >
         <div id="chart-area" className="h-full flex flex-col rounded-b-lg" />
-        <div className="copyright text-[0.5em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
-          The chart is provided by TradingView, an advanced platform that
-          provides unparalleled access to live data e.g.
+        <div className="copyright text-[0.3em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
+        TradingView™️ 
           <Link
             href={`https://www.tradingview.com/symbols/${
               token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
@@ -495,7 +494,7 @@ export default function TradingChart({
             target="__blank"
             className="ml-1 underline"
           >
-            {token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'} USD chart
+            {token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'} USD Chart
           </Link>
         </div>
       </div>
