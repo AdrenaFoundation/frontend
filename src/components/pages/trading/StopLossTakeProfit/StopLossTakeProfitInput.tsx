@@ -24,7 +24,7 @@ export default function StopLossTakeProfitInput({
     min: number | null;
     max: number | null;
     priceIsOk: true | number;
-    outPnL: number | null;
+    priceChangePnL: number | null;
   } | null>(null);
 
   const markPrice: number | null =
@@ -33,8 +33,7 @@ export default function StopLossTakeProfitInput({
     ];
 
   useEffect(() => {
-    // collateral - fees + price_change
-    let outPnL: number | null = null;
+    let priceChangePnL: number | null = null;
 
     if (
       markPrice === null ||
@@ -44,25 +43,20 @@ export default function StopLossTakeProfitInput({
       return;
     }
 
+    const fees =
+      position.exitFeeUsd +
+      (position.borrowFeeUsd ? position.borrowFeeUsd : 0);
+
     if (input !== null) {
-      const priceChangePnL =
+      priceChangePnL =
         input > position.price
-          ? (position.sizeUsd * (input - position.price)) / position.price
-          : -((position.sizeUsd * (position.price - input)) / position.price);
-
-      const fees =
-        position.exitFeeUsd +
-        (position.borrowFeeUsd ? position.borrowFeeUsd : 0);
-
-      outPnL = position.collateralUsd - fees + priceChangePnL;
+          ? (position.sizeUsd * (input - position.price)) / position.price - fees
+          : -((position.sizeUsd * (position.price - input)) / position.price - fees);
     }
 
-    const max = type === 'Stop Loss' ? markPrice : null;
     const min = type === 'Stop Loss' ? position.liquidationPrice : markPrice;
+    const max = type === 'Stop Loss' ? markPrice : Infinity;
 
-    // 1 means price is above max
-    // -1 means price is below min
-    // true means price is ok
     const priceIsOk = (() => {
       if (input === null) return true;
 
@@ -80,8 +74,8 @@ export default function StopLossTakeProfitInput({
     setInfos({
       min,
       max,
-      outPnL,
       priceIsOk,
+      priceChangePnL,
     });
   }, [
     input,
@@ -96,9 +90,38 @@ export default function StopLossTakeProfitInput({
     type,
   ]);
 
+  const handleBlur = () => {
+    if (input !== null && infos) {
+      let newValue = input;
+
+      // Enforce min and max constraints
+      if (infos.min !== null && input < infos.min) {
+        newValue = infos.min;
+      } else if (infos.max !== null && input > infos.max) {
+        newValue = infos.max;
+      }
+
+      // Round to a maximum of two decimal places without adding trailing zeros
+      newValue = Math.round(newValue * 100) / 100;
+
+      if (newValue !== input) {
+        setInput(newValue);
+      } else {
+        // Even if the value hasn't changed, ensure it's rounded to two decimals
+        setInput(Math.round(newValue * 100) / 100);
+      }
+    }
+  };
+
   if (!infos) return null;
 
-  const { min, max, outPnL, priceIsOk } = infos;
+  const { min, max, priceIsOk, priceChangePnL } = infos;
+
+  // Determine the value and color to display based on type
+  const displayValue = priceChangePnL;
+  const isPositive = priceChangePnL != null && priceChangePnL > 0;
+
+  const displayColor = isPositive ? 'text-green' : 'text-red';
 
   return (
     <div className="flex flex-col w-full">
@@ -107,13 +130,12 @@ export default function StopLossTakeProfitInput({
       <div className="flex justify-center mt-4 pb-2 h-8 items-center gap-2">
         <h5>{type}</h5>
 
-        {priceIsOk === true && outPnL !== null ? (
+        {priceIsOk === true && displayValue !== null ? (
           <div className="flex">
             <div>(</div>
-            <div className={twMerge(outPnL > 0 ? 'text-green' : 'text-red')}>
-              {outPnL < 0 && -outPnL >= position.collateralUsd
-                ? '100% of collateral'
-                : formatPriceInfo(outPnL)}
+            <div className={twMerge(displayColor)}>
+              {isPositive ? '+' : '-'}
+              {formatPriceInfo(Math.abs(displayValue))}
             </div>
             <div>)</div>
           </div>
@@ -127,15 +149,18 @@ export default function StopLossTakeProfitInput({
             placeholder="price"
             className="font-mono border-0 outline-none bg-transparent flex text-center"
             onChange={setInput}
+            onBlur={handleBlur} // Now enforces max two decimals on blur
             inputFontSize="1em"
           />
 
-          <div
-            className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
-            onClick={() => setInput(null)}
-          >
-            delete
-          </div>
+          {input !== null && (
+            <div
+              className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
+              onClick={() => setInput(null)}
+            >
+              delete
+            </div>
+          )}
         </div>
 
         <div className="flex">

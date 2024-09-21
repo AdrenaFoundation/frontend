@@ -44,18 +44,72 @@ export default function StopLossTakeProfit({
       : null,
   );
 
-  const [isErrorStopLoss, setIsErrorStopLoss] = useState<boolean>(false);
-  const [isErrorTakeProfit, setIsErrorTakeProfit] = useState<boolean>(false);
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const markPrice: number | null =
     tokenPrices[
       position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
     ];
+  
+  const [stopLossError, setStopLossError] = useState<boolean>(false);
+  const [takeProfitError, setTakeProfitError] = useState<boolean>(false);
+
+  
+  // Validation function
+  const validateInputs = () => {
+    let isValid = true;
+
+    // Validate Stop Loss
+    if (stopLossInput !== null && markPrice !== null) {
+      if (position.side === 'long') {
+        if (stopLossInput >= markPrice) {
+          setStopLossError(true); // 'Stop Loss must be below current price for long positions'
+          isValid = false;
+        } else if (position.liquidationPrice != null && stopLossInput <= position.liquidationPrice) {
+          setStopLossError(true); // 'Stop Loss must be above liquidation price'
+          isValid = false;
+        } else {
+          setStopLossError(false);
+        }
+      } else if (position.side === 'short') {
+        if (stopLossInput <= markPrice) {
+          setStopLossError(true); // 'Stop Loss must be above current price for short positions'
+          isValid = false;
+        } else if (position.liquidationPrice != null && stopLossInput >= position.liquidationPrice) {
+          setStopLossError(true); // 'Stop Loss must be below liquidation price'
+          isValid = false;
+        } else {
+          setStopLossError(false);
+        }
+      }
+    } else {
+      setStopLossError(false);
+    }
+
+    // Validate Take Profit
+    if (takeProfitInput !== null && markPrice !== null) {
+      if (position.side === 'long' && takeProfitInput <= markPrice) {
+        setTakeProfitError(true); // 'Take Profit must be above current price for long positions'
+        isValid = false;
+      } else if (position.side === 'short' && takeProfitInput >= markPrice) {
+        setTakeProfitError(true); // 'Take Profit must be below current price for short positions'
+        isValid = false;
+      } else {
+        setTakeProfitError(false);
+      }
+    } else {
+      setTakeProfitError(false);
+    }
+
+    return isValid;
+  };
 
   // Set or Cancel SL and TP depending user inputs
   const applyConfiguration = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
     const transaction = new Transaction();
 
     // Handle Take Profit
@@ -217,7 +271,7 @@ export default function StopLossTakeProfit({
         input={takeProfitInput}
         setInput={setTakeProfitInput}
         type="Take Profit"
-        setIsError={setIsErrorTakeProfit}
+        setIsError={setStopLossError}
       />
 
       <StopLossTakeProfitInput
@@ -225,7 +279,7 @@ export default function StopLossTakeProfit({
         input={stopLossInput}
         setInput={setStopLossInput}
         type="Stop Loss"
-        setIsError={setIsErrorStopLoss}
+        setIsError={setTakeProfitError}
       />
 
       <div className="w-full mt-4 gap-4 flex pl-6 pr-6">
@@ -241,7 +295,7 @@ export default function StopLossTakeProfit({
           className="font-boldy text-xs w-[10em] grow"
           size="lg"
           title="Confirm"
-          disabled={isErrorStopLoss || isErrorTakeProfit}
+          disabled={stopLossError || takeProfitError}
           onClick={() => applyConfiguration()}
         />
       </div>
