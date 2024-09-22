@@ -16,7 +16,7 @@ export default function MintAccounts({
   return (
     <StyledContainer
       title="Mints"
-      className="w-[37em] grow min-w-[37em]"
+      className="w-[37em] grow md:min-w-[37em]"
       titleClassName={titleClassName}
     >
       <Table

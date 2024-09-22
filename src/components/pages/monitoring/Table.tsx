@@ -17,6 +17,7 @@ export default function Table({
   columnWrapperClassName,
   pagination = false,
   nbItemPerPage = 10,
+  nbItemPerPageWhenBreakpoint = 2,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -37,6 +38,7 @@ export default function Table({
   rowTitleWidth?: string;
   pagination?: boolean;
   nbItemPerPage?: number;
+  nbItemPerPageWhenBreakpoint?: number;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
@@ -58,18 +60,46 @@ export default function Table({
   >([]);
 
   useEffect(() => {
-    if (nbItemPerPage === 0) return setNbPages(1);
+    const nb = isBreakpoint ? nbItemPerPageWhenBreakpoint : nbItemPerPage;
 
-    const nbPages = Math.round(data.length / nbItemPerPage);
+    if (nb === 0) return setNbPages(1);
+
+    const nbPages = Math.round(data.length / nb);
 
     setNbPages(nbPages > 0 ? nbPages : 1);
-  }, [data.length, nbItemPerPage]);
+  }, [data.length, isBreakpoint, nbItemPerPage, nbItemPerPageWhenBreakpoint]);
 
   useEffect(() => {
     if (!pagination) return setPageData(data);
 
-    setPageData(data.slice((page - 1) * nbItemPerPage, page * nbItemPerPage));
-  }, [page, nbItemPerPage, data, pagination]);
+    const nb = isBreakpoint ? nbItemPerPageWhenBreakpoint : nbItemPerPage;
+
+    setPageData(data.slice((page - 1) * nb, page * nb));
+  }, [
+    page,
+    nbItemPerPage,
+    data,
+    pagination,
+    isBreakpoint,
+    nbItemPerPageWhenBreakpoint,
+  ]);
+
+  const paginationDiv = pagination ? (
+    <div className="flex w-full justify-center align-center gap-2 mt-4 max-w-full flex-wrap">
+      {Array.from(Array(nbPages)).map((_, i) => (
+        <div
+          key={i + 1}
+          className={twMerge(
+            'cursor-pointer',
+            page === i + 1 ? 'text-primary' : 'text-txtfade',
+          )}
+          onClick={() => setPage(i + 1)}
+        >
+          {i + 1}
+        </div>
+      ))}
+    </div>
+  ) : null;
 
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
@@ -126,30 +156,19 @@ export default function Table({
         </div>
       ))}
 
-      {pagination ? (
-        <div className="flex w-full justify-center align-center gap-2 mt-4">
-          {Array.from(Array(nbPages)).map((_, i) => (
-            <div
-              key={i + 1}
-              className={twMerge(
-                'cursor-pointer',
-                page === i + 1 ? 'text-primary' : 'text-txtfade',
-              )}
-              onClick={() => setPage(i + 1)}
-            >
-              {i + 1}
-            </div>
-          ))}
-        </div>
-      ) : null}
+      {paginationDiv}
     </StyledSubSubContainer>
   ) : (
-    <Block
-      data={data}
-      columnTitlesClassName={columnTitlesClassName}
-      rowTitleClassName={rowTitleClassName}
-      columnsTitles={columnsTitles}
-      className={className}
-    />
+    <>
+      <Block
+        data={pageData}
+        columnTitlesClassName={columnTitlesClassName}
+        rowTitleClassName={rowTitleClassName}
+        columnsTitles={columnsTitles}
+        className={className}
+      />
+
+      {paginationDiv}
+    </>
   );
 }
