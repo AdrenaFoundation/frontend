@@ -1,7 +1,8 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, Fragment } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { formatNumber, formatPriceInfo } from '@/utils';
+import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 interface FormatNumberProps {
   nb?: number | null;
@@ -16,6 +17,8 @@ interface FormatNumberProps {
   minimumFractionDigits?: number;
   precisionIfPriceDecimalsBelow?: number;
   isLoading?: boolean;
+  isAbbreviate?: boolean;
+  info?: number | string | null;
 }
 
 const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
@@ -33,6 +36,8 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       minimumFractionDigits = 0,
       precisionIfPriceDecimalsBelow = 6,
       isLoading = false,
+      isAbbreviate = false,
+      info = null,
     },
     ref,
   ) => {
@@ -78,11 +83,22 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       num = Number(nb).toFixed(precision);
     }
 
+    if (isAbbreviate) {
+      if (nb > 999_999_999) {
+        num = (nb / 1_000_000_000).toFixed(2) + 'B';
+      } else if (nb > 999_999) {
+        num = (nb / 1_000_000).toFixed(2) + 'M';
+      } else if (nb > 999) {
+        num = (nb / 1_000).toFixed(2) + 'K';
+      }
+    }
+
     const integer = num.split('.')[0];
     const decimal = num.split('.')[1];
 
-    return (
+    const nbDiv = (
       <p ref={ref} className={twMerge('font-mono inline-block', className)}>
+        {isAbbreviate && '≈ '}
         {prefix}
         {integer}
         {decimal && (
@@ -99,6 +115,17 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
         {format === 'percentage' && '%'}
         {suffix}
       </p>
+    );
+
+    if (!info) {
+      return nbDiv;
+    }
+
+    return (
+      <div className={twMerge(info && 'flex flex-row gap-1 items-center')}>
+        {nbDiv}
+        {info && <InfoAnnotation text={info.toLocaleString()} />}
+      </div>
     );
   },
 );

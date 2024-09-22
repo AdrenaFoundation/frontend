@@ -71,7 +71,9 @@ import {
 } from './utils';
 
 export class AdrenaClient {
-  public static programId = new PublicKey(AdrenaJson.metadata.address);
+  public static programId = new PublicKey(
+    process.env.NEXT_PUBLIC_PROGRAM_ID ?? AdrenaJson.metadata.address,
+  );
 
   public static transferAuthorityAddress = PublicKey.findProgramAddressSync(
     [Buffer.from('transfer_authority')],
@@ -111,6 +113,13 @@ export class AdrenaClient {
     decimals: 6,
     isStable: false,
     image: adxIcon,
+  };
+
+  public static getPoolPda = (poolName: string) => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('pool'), Buffer.from(poolName)],
+      AdrenaClient.programId,
+    )[0];
   };
 
   public getStakingPda = (stakedTokenMint: PublicKey) => {
@@ -397,9 +406,10 @@ export class AdrenaClient {
     readonlyAdrenaProgram: Program<Adrena>,
     config: IConfiguration,
   ): Promise<AdrenaClient> {
+    const poolPda = AdrenaClient.getPoolPda('main-pool');
     const [cortex, mainPool] = await Promise.all([
       AdrenaClient.loadCortex(readonlyAdrenaProgram),
-      AdrenaClient.loadMainPool(readonlyAdrenaProgram, config.mainPool),
+      AdrenaClient.loadMainPool(readonlyAdrenaProgram, poolPda),
     ]);
 
     const custodies = await AdrenaClient.loadCustodies(
@@ -447,7 +457,7 @@ export class AdrenaClient {
       .filter((token) => !!token) as Token[];
 
     const mainPoolExtended: PoolExtended = {
-      pubkey: config.mainPool,
+      pubkey: poolPda,
       aumUsd: nativeToUi(u128SplitToBN(mainPool.aumUsd), USD_DECIMALS),
       aumSoftCapUsd: nativeToUi(mainPool.aumSoftCapUsd, USD_DECIMALS),
       totalFeeCollected: custodies.reduce(
@@ -524,7 +534,7 @@ export class AdrenaClient {
     };
 
     const genesisLockPda = PublicKey.findProgramAddressSync(
-      [Buffer.from('genesis_lock'), config.mainPool.toBuffer()],
+      [Buffer.from('genesis_lock'), poolPda.toBuffer()],
       AdrenaClient.programId,
     )[0];
 

@@ -73,67 +73,6 @@ export default function LongShortTradingInputs({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
-  /** Resize handling for component max button display **/
-  const [componentWidth, setComponentWidth] = useState(0);
-  const componentRef = useRef<HTMLDivElement>(null);
-
-  const updateComponentWidth = () => {
-    if (componentRef.current) {
-      setComponentWidth(componentRef.current.offsetWidth);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('resize', updateComponentWidth);
-    updateComponentWidth();
-    return () => {
-      window.removeEventListener('resize', updateComponentWidth);
-    };
-  }, []);
-
-  const calculateMax = async () => {
-    if (!walletTokenBalances || !tokenA) return;
-
-    // Pick up the maximum amount the user can use, considering:
-    // the custody liquidity, the max position size and the user wallet amount
-    const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
-
-    const tokenPriceA = tokenPrices[tokenA.symbol];
-
-    if (custody && tokenPriceB && tokenPriceA) {
-      const latestCustody = await window.adrena.client
-        .getReadonlyAdrenaProgram()
-        .account.custody.fetch(custody.pubkey);
-
-      const latestAvailableLiquidity = nativeToUi(
-        latestCustody.assets.owned.sub(latestCustody.assets.locked),
-        latestCustody.decimals,
-      );
-
-      const availableCustodyLiquidity = Number(
-        (
-          (latestAvailableLiquidity * tokenPriceB) /
-          tokenPriceA /
-          leverage
-        ).toFixed(tokenA.decimals),
-      );
-
-      const maxPositionSize = Number(
-        (
-          (custody.maxPositionLockedUsd - (openedPosition?.sizeUsd ?? 0)) /
-          tokenPriceA /
-          leverage
-        ).toFixed(tokenA.decimals),
-      );
-
-      return handleInputAChange(
-        Math.min(userWalletAmount, availableCustodyLiquidity, maxPositionSize),
-      );
-    }
-
-    handleInputAChange(userWalletAmount);
-  };
-
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
 
   const [inputA, setInputA] = useState<number | null>(null);
@@ -442,10 +381,22 @@ export default function LongShortTradingInputs({
     setInputB(v);
   };
 
+  const handleMax = () => {
+    if (!walletTokenBalances || !tokenA) return;
+    const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
+    handleInputAChange(userWalletAmount);
+  };
+
+  const usdcMint =
+    window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
+  const usdcCustody =
+    usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
+  const usdcPrice = tokenPrices['USDC'];
+
   return (
     <div
       className={twMerge('relative flex flex-col sm:pb-2', className)}
-      ref={componentRef}
+      // ref={componentRef}
     >
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
@@ -459,15 +410,6 @@ export default function LongShortTradingInputs({
 
           return (
             <div className="text-sm flex items-center justify-end h-6">
-              {connected && componentWidth < 350 ? (
-                <Button
-                  title="MAX"
-                  variant="text"
-                  className="text-sm h-6 opacity-70"
-                  size="xs"
-                  onClick={calculateMax}
-                />
-              ) : null}
               <Image
                 className="mr-1 opacity-60 relative"
                 src={walletImg}
@@ -476,7 +418,10 @@ export default function LongShortTradingInputs({
                 alt="Wallet icon"
               />
 
-              <span className="text-txtfade font-mono text-xs">
+              <span
+                className="text-txtfade font-mono text-xs cursor-pointer"
+                onClick={handleMax}
+              >
                 {formatNumber(balance, tokenA.decimals)}
               </span>
 
@@ -508,12 +453,10 @@ export default function LongShortTradingInputs({
                 </div>
               ) : null
             }
-            maxButton={connected && componentWidth >= 350}
             selectedToken={tokenA}
             tokenList={allowedTokenA}
             onTokenSelect={setTokenA}
             onChange={handleInputAChange}
-            onMaxButtonClick={calculateMax}
           />
 
           <LeverageSlider
@@ -574,6 +517,8 @@ export default function LongShortTradingInputs({
                         nb={openedPosition.sizeUsd / tokenPriceB}
                         precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
                         className="text-txtfade"
+                        isAbbreviate={tokenB.symbol === 'BONK'}
+                        info={(openedPosition.sizeUsd / tokenPriceB).toString()}
                       />
 
                       <FormatNumber
@@ -591,6 +536,8 @@ export default function LongShortTradingInputs({
                       nb={inputB}
                       precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
                       className="text-lg"
+                      isAbbreviate={tokenB.symbol === 'BONK'}
+                      info={inputB?.toString()}
                     />
 
                     <FormatNumber
@@ -624,7 +571,13 @@ export default function LongShortTradingInputs({
 
           <div className="ml-auto sm:mb-2">
             <FormatNumber
-              nb={custody && tokenPriceB && custody.liquidity * tokenPriceB}
+              nb={
+                side === 'long'
+                  ? custody && tokenPriceB && custody.liquidity * tokenPriceB
+                  : usdcPrice &&
+                    usdcCustody &&
+                    usdcCustody.liquidity * usdcPrice
+              }
               format="currency"
               precision={0}
               className="text-txtfade text-xs"

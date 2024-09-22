@@ -23,6 +23,7 @@ import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.sv
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import SwapInfo from './SwapInfo';
+import FormatNumber from '@/components/Number/FormatNumber';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -261,12 +262,20 @@ export default function SwapTradingInputs({
     return setButtonTitle('Swap');
   }, [inputA, inputB, connected, tokenA, wallet, walletTokenBalances]);
 
+  const handleMax = () => {
+    if (!walletTokenBalances || !tokenA) return;
+
+    const amount = walletTokenBalances[tokenA.symbol];
+
+    handleInputAChange(amount);
+  };
+
   return (
     <div
       className={twMerge('relative flex flex-col h-full sm:pb-2', className)}
     >
       {/* Input A */}
-      <div className="flex flex-row justify-between flex w-full items-center sm:mt-1 sm:mb-1">
+      <div className="flex flex-row justify-between w-full items-center sm:mt-1 sm:mb-1">
         <h5 className="flex items-center ml-4">
           Pay
           <InfoAnnotation
@@ -291,18 +300,10 @@ export default function SwapTradingInputs({
             </div>
           ) : null
         }
-        maxButton={connected}
         selectedToken={tokenA}
         tokenList={allowedTokenA}
         onTokenSelect={setTokenA}
         onChange={handleInputAChange}
-        onMaxButtonClick={() => {
-          if (!walletTokenBalances || !tokenA) return;
-
-          const amount = walletTokenBalances[tokenA.symbol];
-
-          handleInputAChange(amount);
-        }}
       />
 
       {
@@ -319,7 +320,10 @@ export default function SwapTradingInputs({
 
           return (
             <div className="ml-auto mt-3 mr-4">
-              <span className="text-txtfade text-sm font-mono">
+              <span
+                className="text-txtfade text-sm font-mono cursor-pointer"
+                onClick={handleMax}
+              >
                 {balance !== null
                   ? formatNumber(balance, tokenA.decimals)
                   : '-'}{' '}
@@ -395,14 +399,12 @@ export default function SwapTradingInputs({
 
           return (
             <div className="ml-auto mt-3 mr-4">
-              <span className="text-txtfade text-sm font-mono">
-                {custodyTokenB
-                  ? formatNumber(custodyTokenB.liquidity, tokenB.decimals)
-                  : '-'}{' '}
-              </span>
-              <span className="text-txtfade text-sm">
-                {tokenB.symbol} available
-              </span>
+              <FormatNumber
+                nb={custodyTokenB.liquidity}
+                suffix={` ${tokenB.symbol} available`}
+                className="text-txtfade text-sm"
+                isDecimalDimmed={false}
+              />
             </div>
           );
         })()

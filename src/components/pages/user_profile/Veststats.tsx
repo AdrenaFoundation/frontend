@@ -165,6 +165,7 @@ export default function VestStats({
           title="Claim ADX"
           className="w-full mt-3 h-8"
           size="lg"
+          disabled={claimableAmount === 0}
           onClick={() => claimVest()}
         />
       </div>

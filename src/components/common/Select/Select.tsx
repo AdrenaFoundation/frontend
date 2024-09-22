@@ -20,6 +20,7 @@ export default function Select<T extends string>({
   options,
   onSelect,
   reversed,
+  align = 'right',
 }: {
   className?: string;
   selectedClassName?: string;
@@ -31,6 +32,7 @@ export default function Select<T extends string>({
 
   // Reverse the image position
   reversed?: boolean;
+  align?: 'right' | 'left';
 }) {
   const selectedImg = options.find((option) => option.title === selected)?.img;
 
@@ -38,13 +40,7 @@ export default function Select<T extends string>({
   const [optionHover, setOptionHover] = useState<number | null>(null);
 
   const img = selectedImg ? (
-    <Image
-      src={selectedImg}
-      className="mr-1 ml-1"
-      alt="logo"
-      width="20"
-      height="20"
-    />
+    <Image src={selectedImg} className="w-[20px] h-[20px]" alt="logo" />
   ) : null;
 
   const chevron =
@@ -71,15 +67,18 @@ export default function Select<T extends string>({
               className={twMerge(
                 'flex flex-row gap-x-1 items-center',
                 selectedClassName,
+                options.length > 1 && 'w-full pr-3',
+                align === 'right' && 'justify-between',
               )}
             >
               {reversed ? img : chevron}
+              <div className="flex flex-row gap-2 items-center">
+                <span className="text-lg font-boldy z-20 m-auto select-none">
+                  {selected}
+                </span>
 
-              <span className="text-lg font-boldy z-20 m-auto select-none">
-                {selected}
-              </span>
-
-              {reversed ? chevron : img}
+                {reversed ? chevron : img}
+              </div>
             </div>
           </div>
         }

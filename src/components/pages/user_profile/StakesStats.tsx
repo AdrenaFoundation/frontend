@@ -56,7 +56,7 @@ export default function StakesStats({
             Stakes
           </span>
 
-          <div className="flex flex-row flex-wrap mt-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 mt-2 gap-3">
             {lockedStakes ? (
               lockedStakes.map((lockedStake, i) => (
                 <LockedStakedElement
