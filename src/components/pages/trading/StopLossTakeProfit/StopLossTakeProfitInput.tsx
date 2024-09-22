@@ -116,6 +116,33 @@ export default function StopLossTakeProfitInput({
     }
   };
 
+  // Helper function to adjust the price based on type and position side
+  const getAdjustedPrice = (currentPrice: number, isMin: boolean): number => {
+    const adjustment = 0.01;
+    const isLong = position.side === 'long';
+
+    if (type === 'Stop Loss') {
+      if (isMin) {
+        // For Stop Loss, adjust min
+        return isLong ? currentPrice + adjustment : currentPrice - adjustment;
+      } else {
+        // For Stop Loss, adjust max if needed
+        return isLong ? currentPrice - adjustment : currentPrice + adjustment;
+      }
+    } else if (type === 'Take Profit') {
+      if (isMin) {
+        // For Take Profit, adjust min if applicable
+        return isLong ? currentPrice + adjustment : currentPrice - adjustment;
+      } else {
+        // For Take Profit, adjust max
+        return isLong ? currentPrice - adjustment : currentPrice + adjustment;
+      }
+    }
+
+    // Default adjustment
+    return currentPrice;
+  };
+
   if (!infos) return null;
 
   const { min, max, priceIsOk, priceChangePnL } = infos;
@@ -159,7 +186,7 @@ export default function StopLossTakeProfitInput({
               className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
               onClick={() => setInput(null)}
             >
-              delete
+              clear
             </div>
           )}
         </div>
@@ -170,7 +197,9 @@ export default function StopLossTakeProfitInput({
               className={twMerge(
                 'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
               )}
-              onClick={() => handleSetInput(Math.round(min * 100) / 100)}
+              onClick={() =>
+                handleSetInput(Math.round(getAdjustedPrice(min, true) * 100) / 100)
+              }
             >
               <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
                 {formatPriceInfo(min)}
@@ -186,7 +215,9 @@ export default function StopLossTakeProfitInput({
                 priceIsOk === 1 ? 'text-redbright' : '',
                 max === null ? 'text-txtfade' : '',
               )}
-              onClick={() => handleSetInput(Math.round(max * 100) / 100)}
+              onClick={() =>
+                handleSetInput(Math.round(getAdjustedPrice(max, false) * 100) / 100)
+              }
             >
               <div
                 className={twMerge(
