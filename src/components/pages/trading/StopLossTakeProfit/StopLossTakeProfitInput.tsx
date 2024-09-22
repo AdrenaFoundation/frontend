@@ -70,7 +70,7 @@ export default function StopLossTakeProfitInput({
         const initialCollateralUsd = nativeToUi(position.nativeObject.collateralUsd, position.token.decimals);
         const initialSizeUsd = nativeToUi(position.nativeObject.sizeUsd, position.token.decimals);
         const initialLeverage = initialSizeUsd / initialCollateralUsd;
-        min = 0 // (position.price * (1 - (1 / position.leverage) + (fee / initialLeverage *)));
+        min = position.price * (1 - (1 / initialLeverage));
       }
     }
 
@@ -82,8 +82,14 @@ export default function StopLossTakeProfitInput({
       const isTakeProfit = type === 'Take Profit';
 
       if (isTakeProfit) {
-        if (max !== null && input > max) return 1;
-        if (min !== null && input < min) return -1;
+        if (max !== null && input > max) {
+          console.log('max', max, input);
+          return 1;
+        }
+        if (min !== null && input < min) {
+          console.log('min HERE', min, input);
+          return -1;
+        }
       }
 
       return true;
@@ -110,6 +116,9 @@ export default function StopLossTakeProfitInput({
     position.leverage,
     setIsError,
     type,
+    position.token.decimals,
+    position.nativeObject.collateralUsd,
+    position.nativeObject.sizeUsd,
   ]);
 
   const handleBlur = () => {
@@ -157,7 +166,7 @@ export default function StopLossTakeProfitInput({
     } else if (type === 'Take Profit') {
       if (isMin) {
         // For Take Profit, adjust min if applicable
-        return isLong ? currentPrice + adjustment : currentPrice;
+        return isLong ? currentPrice + adjustment : currentPrice + adjustment;
       } else {
         // For Take Profit, adjust max
         return isLong ? currentPrice + adjustment : currentPrice - adjustment;
@@ -237,7 +246,7 @@ export default function StopLossTakeProfitInput({
               }
             >
               <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
-                {formatPriceInfo(min)}
+                {formatPriceInfo(Math.round(getAdjustedPrice(min, true) * 100) / 100)}
               </div>
               <div className="text-xs text-txtfade">min</div>
             </div>
@@ -260,7 +269,7 @@ export default function StopLossTakeProfitInput({
                   max === null ? 'text-txtfade' : '',
                 )}
               >
-                {formatPriceInfo(max)}
+                {formatPriceInfo(Math.round(getAdjustedPrice(max, false) * 100) / 100)}
               </div>
               <div className="text-xs text-txtfade">max</div>
             </div>
