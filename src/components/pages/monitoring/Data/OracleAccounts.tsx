@@ -19,7 +19,7 @@ export default function OracleAccounts({
     <StyledContainer
       title="Oracle Accounts"
       subTitle="Oracle on-chain accounts (PDAs)."
-      className="w-[37em] grow min-w-[37em]"
+      className="w-[37em] grow md:min-w-[37em]"
       titleClassName={titleClassName}
     >
       <Table
