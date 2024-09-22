@@ -17,7 +17,7 @@ export default function GovernanceAccounts({
     <StyledContainer
       title="Governance Accounts"
       subTitle="List on-chain accounts related to Governance."
-      className="w-auto grow min-w-[45%]"
+      className="w-[37em] grow min-w-[37em]"
       titleClassName={titleClassName}
     >
       <Table

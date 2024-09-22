@@ -1,3 +1,5 @@
+import { PublicKey } from '@solana/web3.js';
+
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { CustodyExtended } from '@/types';
 
@@ -6,7 +8,7 @@ import OnchainAccountInfo from '../OnchainAccountInfo';
 import Table from '../Table';
 import TitleAnnotation from '../TitleAnnotation';
 
-export default function MintAccounts({
+export default function OracleAccounts({
   custodies,
   titleClassName,
 }: {
@@ -15,7 +17,8 @@ export default function MintAccounts({
 }) {
   return (
     <StyledContainer
-      title="Mints"
+      title="Oracle Accounts"
+      subTitle="Oracle on-chain accounts (PDAs)."
       className="w-[37em] grow min-w-[37em]"
       titleClassName={titleClassName}
     >
@@ -26,9 +29,9 @@ export default function MintAccounts({
           {
             rowTitle: (
               <div className="flex items-center font-boldy">
-                ADX <TitleAnnotation text="Mint" />
+                Pyth Program
                 <InfoAnnotation
-                  text="Adrena's Governance token mint, can be staked for governance and revenue share access."
+                  text="Account containing the source code of the Pyth smart contract."
                   className="mr-1"
                 />
               </div>
@@ -36,42 +39,26 @@ export default function MintAccounts({
             value: (
               <OnchainAccountInfo
                 className="md:ml-auto"
-                address={window.adrena.client.lmTokenMint}
+                address={
+                  new PublicKey('rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ')
+                }
               />
             ),
           },
-          {
-            rowTitle: (
-              <div className="flex items-center font-boldy">
-                ALP <TitleAnnotation text="Mint" />
-                <InfoAnnotation
-                  text="Adrena's Liquidity Pool token mint, represents a share of the pool."
-                  className="mr-1"
-                />
-              </div>
-            ),
-            value: (
-              <OnchainAccountInfo
-                className="md:ml-auto"
-                address={window.adrena.client.lpTokenMint}
-              />
-            ),
-          },
-
           ...custodies
             .map((custody) => {
               const rows = [
                 {
                   rowTitle: (
-                    <div className="font-boldy">
-                      {custody.tokenInfo.symbol}
-                      <TitleAnnotation text="Mint" />
+                    <div className="flex items-center">
+                      {custody.tokenInfo.symbol} Oracle
+                      <TitleAnnotation text="PDA" />
                     </div>
                   ),
                   value: (
                     <OnchainAccountInfo
                       className="md:ml-auto"
-                      address={custody.mint}
+                      address={custody.nativeObject.oracle}
                     />
                   ),
                 },
@@ -80,15 +67,15 @@ export default function MintAccounts({
               if (custody.tradeTokenInfo.symbol !== custody.tokenInfo.symbol) {
                 rows.push({
                   rowTitle: (
-                    <div className="font-boldy">
-                      {custody.tradeTokenInfo.symbol}
-                      <TitleAnnotation text="Mint" />
+                    <div className="flex items-center">
+                      {custody.tradeTokenInfo.symbol} Oracle
+                      <TitleAnnotation text="PDA" />
                     </div>
                   ),
                   value: (
                     <OnchainAccountInfo
                       className="md:ml-auto"
-                      address={custody.tradeMint}
+                      address={custody.nativeObject.tradeOracle}
                     />
                   ),
                 });
