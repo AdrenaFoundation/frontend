@@ -55,7 +55,7 @@ export default function StopLossTakeProfitInput({
     }
 
     const min = type === 'Stop Loss' ? position.liquidationPrice : markPrice;
-    const max = type === 'Stop Loss' ? markPrice : Infinity;
+    const max = type === 'Stop Loss' ? markPrice : null;
 
     const priceIsOk = (() => {
       if (input === null) return true;
