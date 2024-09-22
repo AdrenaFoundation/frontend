@@ -87,6 +87,7 @@ export default function VestsBreakdown({
             />,
           ],
         }))}
+        pagination={true}
       />
     </StyledContainer>
   ) : null;

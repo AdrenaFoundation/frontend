@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
@@ -15,6 +15,8 @@ export default function Table({
   columnTitlesClassName,
   rowTitleClassName,
   columnWrapperClassName,
+  pagination = false,
+  nbItemPerPage = 10,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -33,10 +35,41 @@ export default function Table({
       }
   )[];
   rowTitleWidth?: string;
+  pagination?: boolean;
+  nbItemPerPage?: number;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
   );
+
+  const [page, setPage] = useState<number>(1);
+  const [nbPages, setNbPages] = useState<number | null>(null);
+  const [pageData, setPageData] = useState<
+    (
+      | {
+          rowTitle: ReactNode;
+          values: ReactNode[];
+        }
+      | {
+          rowTitle: ReactNode;
+          value: ReactNode;
+        }
+    )[]
+  >([]);
+
+  useEffect(() => {
+    if (nbItemPerPage === 0) return setNbPages(1);
+
+    const nbPages = Math.round(data.length / nbItemPerPage);
+
+    setNbPages(nbPages > 0 ? nbPages : 1);
+  }, [data.length, nbItemPerPage]);
+
+  useEffect(() => {
+    if (!pagination) return setPageData(data);
+
+    setPageData(data.slice((page - 1) * nbItemPerPage, page * nbItemPerPage));
+  }, [page, nbItemPerPage, data, pagination]);
 
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
@@ -61,7 +94,7 @@ export default function Table({
         ))}
       </div>
 
-      {data.map(({ rowTitle, ...v }, i) => (
+      {pageData.map(({ rowTitle, ...v }, i) => (
         <div key={i} className="flex w-full border-b last:border-b-0 text-base">
           <div
             className={twMerge('flex shrink-0 items-center', rowTitleClassName)}
@@ -92,6 +125,23 @@ export default function Table({
           })()}
         </div>
       ))}
+
+      {pagination ? (
+        <div className="flex w-full justify-center align-center gap-2 mt-4">
+          {Array.from(Array(nbPages)).map((_, i) => (
+            <div
+              key={i + 1}
+              className={twMerge(
+                'cursor-pointer',
+                page === i + 1 ? 'text-primary' : 'text-txtfade',
+              )}
+              onClick={() => setPage(i + 1)}
+            >
+              {i + 1}
+            </div>
+          ))}
+        </div>
+      ) : null}
     </StyledSubSubContainer>
   ) : (
     <Block
