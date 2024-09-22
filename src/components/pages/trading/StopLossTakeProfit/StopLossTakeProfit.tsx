@@ -238,7 +238,7 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Liquidation Price</span>
-            <div className="text-redbright">
+            <div className="text-orange">
               {formatPriceInfo(position.liquidationPrice)}
             </div>
           </div>
@@ -257,7 +257,7 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-400">Stop Loss</span>
-            <div className={stopLossInput !== null ? 'text-orange' : ''}>
+            <div className={stopLossInput !== null ? 'text-blue' : ''}>
               {formatPriceInfo(stopLossInput)}
             </div>
           </div>
@@ -271,7 +271,7 @@ export default function StopLossTakeProfit({
             <span className="text-sm text-gray-600">PnL</span>
             <div
               className={twMerge(
-                'text-sm',
+                'font-bold text-sm',
                 positionNetPnl > 0
                   ? 'text-green'
                   : positionNetPnl < 0

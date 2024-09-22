@@ -120,7 +120,7 @@ export default function PositionBlock({
           <FormatNumber
             nb={position.pnl}
             format="currency"
-            className={`mr-0.5 text-${
+            className={`mr-0.5 font-bold text-${
               position.pnl && position.pnl > 0 ? 'green' : 'redbright'
             }`}
             isDecimalDimmed={false}
@@ -213,7 +213,7 @@ export default function PositionBlock({
             <FormatNumber
               nb={position.leverage}
               format="number"
-              className="text-xs lowercase"
+              className="text-gray-400 text-xs lowercase"
               suffix="x"
               isDecimalDimmed={false}
             />
@@ -228,7 +228,7 @@ export default function PositionBlock({
             <FormatNumber
               nb={position.sizeUsd}
               format="currency"
-              className="text-xs"
+              className="text-gray-400 text-xs"
             />
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function PositionBlock({
                 ]
               }
               format="currency"
-              className="text-xs bold"
+              className="text-gray-400 text-xs bold"
             />
           </div>
         </div>
@@ -286,7 +286,7 @@ export default function PositionBlock({
             <FormatNumber
               nb={position.liquidationPrice}
               format="currency"
-              className="text-xs"
+              className="text-xs text-orange"
             />
           </div>
         </div>
@@ -323,7 +323,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={position.stopLossLimitPrice}
                 format="currency"
-                className="text-xs text-orange"
+                className="text-xs text-blue"
               />
             ) : (
               <div className="flex text-xs">-</div>

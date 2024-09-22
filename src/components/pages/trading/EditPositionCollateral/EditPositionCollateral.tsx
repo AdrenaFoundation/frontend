@@ -438,7 +438,7 @@ export default function EditPositionCollateral({
               nb={position.pnl && markPrice ? position.pnl : null}
               prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
-              className={`text-${
+              className={`font-bold text-${
                 position.pnl && position.pnl > 0 ? 'green' : 'redbright'
               }`}
               isDecimalDimmed={false}
