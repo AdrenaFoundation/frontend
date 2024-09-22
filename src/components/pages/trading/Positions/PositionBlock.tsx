@@ -110,31 +110,46 @@ export default function PositionBlock({
     </div>
   );
 
+  const [showAfterFees, setShowAfterFees] = useState(false); // State to manage fee display
+  const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
+
   const pnl = (
     <div className="flex flex-col items-center min-w-[5em] w-[5em]">
       <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
         PnL
+        <label className="flex items-center ml-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showAfterFees}
+            onChange={() => setShowAfterFees(!showAfterFees)}
+            className="hidden" // Hide the default checkbox
+          />
+          <div className={`relative w-4 h-2 rounded-full transition duration-200 ${showAfterFees ? 'bg-green' : 'bg-gray-600'}`}>
+            <div className={`absolute w-2 h-2 bg-white rounded-full shadow-md transform transition duration-200 ${showAfterFees ? 'translate-x-2' : 'translate-x-0'}`}></div>
+          </div>
+          <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">{showAfterFees ? 'w/o fees' : 'w/ fees'}</span> {/* conditional text */}
+        </label>
       </div>
       {position.pnl ? (
         <div className="flex">
           <FormatNumber
-            nb={position.pnl}
+            nb={showAfterFees ? position.pnl + fees : position.pnl} // Adjusted for fee display
             format="currency"
             className={`mr-0.5 font-bold text-${
-              position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+              (showAfterFees ? position.pnl + fees : position.pnl) > 0 ? 'green' : 'redbright'
             }`}
             isDecimalDimmed={false}
           />
 
           <FormatNumber
-            nb={(position.pnl / position.collateralUsd) * 100}
+            nb={((showAfterFees ? position.pnl + fees : position.pnl) / position.collateralUsd) * 100}
             format="percentage"
             prefix="("
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
             className={`text-${
-              position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+              (showAfterFees ? position.pnl + fees : position.pnl) > 0 ? 'green' : 'redbright'
             }`}
           />
         </div>
