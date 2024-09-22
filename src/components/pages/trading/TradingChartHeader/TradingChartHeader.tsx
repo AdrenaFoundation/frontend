@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -7,7 +8,6 @@ import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber } from '@/utils';
-import Head from 'next/head';
 
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
   return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);

@@ -2,6 +2,7 @@ import React, { forwardRef, Fragment } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { formatNumber, formatPriceInfo } from '@/utils';
+
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 interface FormatNumberProps {

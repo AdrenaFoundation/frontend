@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
@@ -23,7 +24,6 @@ import arrowDownUpIcon from '../../../../../public/images/Icons/arrow-down-up.sv
 import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import SwapInfo from './SwapInfo';
-import FormatNumber from '@/components/Number/FormatNumber';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
