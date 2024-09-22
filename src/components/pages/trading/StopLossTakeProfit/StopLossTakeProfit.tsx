@@ -220,7 +220,7 @@ export default function StopLossTakeProfit({
   };
 
   const positionNetValue = position.collateralUsd + (position.pnl ?? 0) - (position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
-  const positionNetPnl = (position.pnl ?? 0) - (position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
+  const positionNetPnl = position.pnl ?? 0;
 
   return (
     <div

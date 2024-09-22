@@ -48,10 +48,7 @@ export default function StopLossTakeProfitInput({
       (position.borrowFeeUsd ? position.borrowFeeUsd : 0);
 
     if (input !== null) {
-      priceChangePnL =
-        input > position.price
-          ? (position.sizeUsd * (input - position.price)) / position.price - fees
-          : -((position.sizeUsd * (position.price - input)) / position.price - fees);
+      priceChangePnL = ((position.sizeUsd * (input - position.price)) / markPrice) - fees;
     }
 
     const min = type === 'Stop Loss' ? position.liquidationPrice : markPrice;
@@ -138,12 +135,10 @@ export default function StopLossTakeProfitInput({
 
         {priceIsOk === true && displayValue !== null ? (
           <div className="flex">
-            <div>(</div>
-            <div className={twMerge(displayColor)}>
+            <div className={twMerge(displayColor + ' text-sm')}>
               {isPositive ? '+' : '-'}
               {formatPriceInfo(Math.abs(displayValue))}
             </div>
-            <div>)</div>
           </div>
         ) : null}
       </div>
