@@ -7,6 +7,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, UserProfileExtended } from '@/types';
@@ -219,7 +220,7 @@ export default function StopLossTakeProfit({
     }
   };
 
-  const positionNetValue = position.collateralUsd + (position.pnl ?? 0) - (position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
+  const positionNetValue = position.collateralUsd + (position.pnl ?? 0);
   const positionNetPnl = position.pnl ?? 0;
 
   return (
@@ -266,6 +267,17 @@ export default function StopLossTakeProfit({
             <span className="text-sm text-gray-600">Initial collateral</span>
             <div className="text-sm text-gray-400">{formatPriceInfo(position.collateralUsd)}</div>
           </div>
+
+          <div className="flex w-full justify-between">
+            <span className="text-sm text-gray-600">Initial Leverage</span>
+            <FormatNumber
+              nb={position.leverage}
+              suffix="x"
+              className="text-txtfade text-xs self-center"
+              isDecimalDimmed={false}
+            />
+          </div>
+
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">PnL</span>

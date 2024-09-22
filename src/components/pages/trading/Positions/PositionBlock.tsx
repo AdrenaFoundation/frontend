@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -117,21 +118,9 @@ export default function PositionBlock({
     <div className="flex flex-col items-center min-w-[5em] w-[5em]">
       <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
         PnL
-        <label className="flex items-center ml-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showAfterFees}
-            onChange={() => setShowAfterFees(!showAfterFees)}
-            className="hidden" // Hide the default checkbox
-          />
-          <div className={`relative w-4 h-2 rounded-full transition duration-200 ${showAfterFees ? 'bg-green' : 'bg-gray-600'}`}>
-            <div className={`absolute w-2 h-2 bg-white rounded-full shadow-md transform transition duration-200 ${showAfterFees ? 'translate-x-2' : 'translate-x-0'}`}></div>
-          </div>
-          <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">{showAfterFees ? 'w/o fees' : 'w/ fees'}</span> {/* conditional text */}
-        </label>
       </div>
       {position.pnl ? (
-        <div className="flex">
+        <div className="flex items-center">
           <FormatNumber
             nb={showAfterFees ? position.pnl + fees : position.pnl} // Adjusted for fee display
             format="currency"
@@ -148,10 +137,21 @@ export default function PositionBlock({
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
-            className={`text-${
+            className={`text-xs text-${
               (showAfterFees ? position.pnl + fees : position.pnl) > 0 ? 'green' : 'redbright'
             }`}
           />
+
+                  <label className="flex items-center ml-2 cursor-pointer">
+          <Switch
+            className="mr-1"
+            checked={showAfterFees}
+            onChange={() => setShowAfterFees(!showAfterFees)
+            }
+            size="small"
+          />
+          <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">{showAfterFees ? 'w/o fees' : 'w/ fees'}</span> {/* conditional text */}
+        </label>
         </div>
       ) : (
         '-'

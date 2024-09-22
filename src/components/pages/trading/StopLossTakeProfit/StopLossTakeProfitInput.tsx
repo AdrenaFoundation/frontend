@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import InputNumber from '@/components/common/InputNumber/InputNumber';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatPriceInfo } from '@/utils';
+import { formatPriceInfo, nativeToUi } from '@/utils';
 
 export default function StopLossTakeProfitInput({
   position,
@@ -48,20 +49,42 @@ export default function StopLossTakeProfitInput({
       (position.borrowFeeUsd ? position.borrowFeeUsd : 0);
 
     if (input !== null) {
-      priceChangePnL = ((position.sizeUsd * (input - position.price)) / markPrice) - fees;
+      if (position.side === 'long') {
+        priceChangePnL = ((position.sizeUsd * (input - position.price)) / markPrice) - fees;
+      } else if (position.side === 'short') {
+        priceChangePnL = ((position.sizeUsd * (position.price - input)) / markPrice) - fees;
+      }
     }
 
-    const min = type === 'Stop Loss' ? position.liquidationPrice : markPrice;
-    const max = type === 'Stop Loss' ? markPrice : null;
+    let min: number | null = type === 'Stop Loss' ? position.liquidationPrice : markPrice;
+    let max = type === 'Stop Loss' ? markPrice : null;
+
+    if (position.side === 'short') {
+      if (type === 'Stop Loss') {
+        const tmp = min;
+        min = max;
+        max = tmp;
+      } else {
+        max = markPrice;
+        // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.leverage` is equal to 100, and get that price as the min value
+        const initialCollateralUsd = nativeToUi(position.nativeObject.collateralUsd, position.token.decimals);
+        const initialSizeUsd = nativeToUi(position.nativeObject.sizeUsd, position.token.decimals);
+        const initialLeverage = initialSizeUsd / initialCollateralUsd;
+        min = 0 // (position.price * (1 - (1 / position.leverage) + (fee / initialLeverage *)));
+      }
+    }
 
     const priceIsOk = (() => {
       if (input === null) return true;
 
       if (max === null && min === null) return true;
 
-      if (max !== null && input > max) return 1;
+      const isTakeProfit = type === 'Take Profit';
 
-      if (min !== null && input < min) return -1;
+      if (isTakeProfit) {
+        if (max !== null && input > max) return 1;
+        if (min !== null && input < min) return -1;
+      }
 
       return true;
     })();
@@ -83,6 +106,8 @@ export default function StopLossTakeProfitInput({
     position.liquidationPrice,
     position.price,
     position.sizeUsd,
+    position.side,
+    position.leverage,
     setIsError,
     type,
   ]);
@@ -124,18 +149,18 @@ export default function StopLossTakeProfitInput({
     if (type === 'Stop Loss') {
       if (isMin) {
         // For Stop Loss, adjust min
-        return isLong ? currentPrice + adjustment : currentPrice - adjustment;
+        return isLong ? currentPrice + adjustment : currentPrice + adjustment;
       } else {
         // For Stop Loss, adjust max if needed
-        return isLong ? currentPrice - adjustment : currentPrice + adjustment;
+        return isLong ? currentPrice - adjustment : currentPrice - adjustment;
       }
     } else if (type === 'Take Profit') {
       if (isMin) {
         // For Take Profit, adjust min if applicable
-        return isLong ? currentPrice + adjustment : currentPrice - adjustment;
+        return isLong ? currentPrice + adjustment : currentPrice;
       } else {
         // For Take Profit, adjust max
-        return isLong ? currentPrice - adjustment : currentPrice + adjustment;
+        return isLong ? currentPrice + adjustment : currentPrice - adjustment;
       }
     }
 
@@ -161,11 +186,21 @@ export default function StopLossTakeProfitInput({
         <h5>{type}</h5>
 
         {priceIsOk === true && displayValue !== null ? (
-          <div className="flex">
-            <div className={twMerge(displayColor + ' text-sm')}>
+          <div className="flex items-center">
+            <div className={twMerge(displayColor + ' text-sm mr-1')}> {}
               {isPositive ? '+' : '-'}
               {formatPriceInfo(Math.abs(displayValue))}
             </div>
+
+            <FormatNumber
+              nb={(displayValue / position.collateralUsd) * 100}
+              format="percentage"
+              prefix="("
+              suffix=")"
+              precision={2}
+              isDecimalDimmed={false}
+              className={twMerge(displayColor + ` text-xs`)}
+            />
           </div>
         ) : null}
       </div>
@@ -174,7 +209,7 @@ export default function StopLossTakeProfitInput({
         <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 grow text-sm w-full relative">
           <InputNumber
             value={input === null ? undefined : input}
-            placeholder="price"
+            placeholder="none"
             className="font-mono border-0 outline-none bg-transparent flex text-center"
             onChange={setInput}
             onBlur={handleBlur} // Now enforces max two decimals on blur
