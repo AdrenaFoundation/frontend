@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import Loader from '@/components/Loader/Loader';
 import useSablierFinalizeLockedStakedThreads from '@/hooks/useSablierFinalizeLockedStakedThreads';
 
@@ -33,7 +31,7 @@ export default function FinalizeLockedStakedThreadsInner() {
     <div className="w-full">
       <Image
         className={twMerge(
-          'absolute w-auto h-[1.5em] top-8 right-8 opacity-40',
+          'absolute w-auto h-[1em] top-4 right-4 opacity-40',
           isLoading
             ? 'hover:opacity-40 cursor-not-allowed'
             : 'hover:opacity-100 cursor-pointer',
@@ -48,18 +46,14 @@ export default function FinalizeLockedStakedThreadsInner() {
       />
 
       <div className="flex flex-col w-full">
-        <StyledSubContainer className="items-center justify-center w-full">
-          <h2>Thread count</h2>
-
-          <StyledSubSubContainer className="mt-2 items-center justify-center">
-            <h2>{threads ? threads.length : null}</h2>
-          </StyledSubSubContainer>
-        </StyledSubContainer>
+        {threads ? <div>{threads.length} Threads</div> : null}
 
         <Table
           className="mt-4"
           rowTitleWidth="20%"
           columnsTitles={['Funding', 'Paused', 'Until call']}
+          pagination={true}
+          nbItemPerPageWhenBreakpoint={3}
           data={
             threads?.map((thread) => ({
               rowTitle: (
