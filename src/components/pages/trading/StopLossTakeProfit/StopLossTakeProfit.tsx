@@ -219,6 +219,9 @@ export default function StopLossTakeProfit({
     }
   };
 
+  const positionNetValue = position.collateralUsd + (position.pnl ?? 0) - (position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
+  const positionNetPnl = (position.pnl ?? 0) - (position.exitFeeUsd + (position.borrowFeeUsd ?? 0));
+
   return (
     <div
       className={twMerge(
@@ -229,39 +232,61 @@ export default function StopLossTakeProfit({
       <div className="w-[90%] ml-auto mr-auto">
         <StyledSubSubContainer className="flex-col items-center justify-center gap-1 text-sm w-full p-4">
           <div className="flex w-full justify-between">
-            <div>Mark Price</div>
+            <span className="text-sm text-gray-400">Mark Price</span>
             <div>{formatPriceInfo(markPrice)}</div>
           </div>
 
           <div className="flex w-full justify-between">
-            <div>Liquidation Price</div>
+            <span className="text-sm text-gray-600">Liquidation Price</span>
             <div className="text-redbright">
               {formatPriceInfo(position.liquidationPrice)}
             </div>
           </div>
 
           <div className="flex w-full justify-between">
-            <div>Entry Price</div>
-            <div>{formatPriceInfo(position.price)}</div>
+            <span className="text-sm text-gray-600">Entry Price</span>
+            <div className="text-sm text-gray-400">{formatPriceInfo(position.price)}</div>
           </div>
 
           <div className="flex w-full justify-between">
-            <div>Take Profit</div>
+            <span className="text-sm text-gray-400">Take Profit</span>
             <div className={takeProfitInput !== null ? 'text-blue' : ''}>
               {formatPriceInfo(takeProfitInput)}
             </div>
           </div>
 
           <div className="flex w-full justify-between">
-            <div>Stop Loss</div>
+            <span className="text-sm text-gray-400">Stop Loss</span>
             <div className={stopLossInput !== null ? 'text-orange' : ''}>
               {formatPriceInfo(stopLossInput)}
             </div>
           </div>
 
           <div className="flex w-full justify-between">
-            <div>Collateral</div>
-            <div>{formatPriceInfo(position.collateralUsd)}</div>
+            <span className="text-sm text-gray-600">Initial collateral</span>
+            <div className="text-sm text-gray-400">{formatPriceInfo(position.collateralUsd)}</div>
+          </div>
+
+          <div className="flex w-full justify-between">
+            <span className="text-sm text-gray-600">PnL</span>
+            <div
+              className={twMerge(
+                'text-sm',
+                positionNetPnl > 0
+                  ? 'text-green'
+                  : positionNetPnl < 0
+                  ? 'text-red'
+                  : 'text-gray-400'
+              )}
+            >
+              {positionNetPnl > 0 ? '+' : positionNetPnl < 0 ? '−' : ''}
+              {formatPriceInfo(Math.abs(positionNetPnl))}
+            </div>
+          </div>
+
+          <div className="flex w-full justify-between">
+            <span className="text-sm text-gray-400">Net Value</span>
+            <div>{formatPriceInfo(positionNetValue)}</div>
           </div>
         </StyledSubSubContainer>
       </div>
