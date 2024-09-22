@@ -67,8 +67,10 @@ export type PageProps = {
 export type CustodyExtended = {
   // Formatted data
   tokenInfo: TokenInfo;
+  tradeTokenInfo: TokenInfo;
   pubkey: PublicKey;
   mint: PublicKey;
+  tradeMint: PublicKey;
   isStable: boolean;
   decimals: number;
   maxLeverage: number;

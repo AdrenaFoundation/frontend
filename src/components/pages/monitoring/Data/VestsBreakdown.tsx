@@ -22,6 +22,8 @@ export default function VestsBreakdown({
       className="w-full grow"
       titleClassName={titleClassName}
     >
+      {vests ? <div>{vests.length} Vests</div> : null}
+
       <Table
         rowTitleWidth="0px"
         columnsTitles={[
@@ -87,6 +89,7 @@ export default function VestsBreakdown({
             />,
           ],
         }))}
+        pagination={true}
       />
     </StyledContainer>
   ) : null;

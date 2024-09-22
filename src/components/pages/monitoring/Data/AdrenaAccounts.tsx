@@ -22,7 +22,7 @@ export default function AdrenaAccounts({
     <StyledContainer
       title="Adrena Accounts"
       subTitle="Adrena Program on-chain accounts (PDAs)."
-      className="w-auto grow min-w-[45%]"
+      className="w-[37em] grow md:min-w-[37em]"
       titleClassName={titleClassName}
     >
       <Table

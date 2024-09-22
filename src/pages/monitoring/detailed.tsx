@@ -12,6 +12,7 @@ import FinalizeLockedStakedThreads from '@/components/pages/monitoring/Data/Fina
 import GovernanceAccounts from '@/components/pages/monitoring/Data/GovernanceAccounts';
 import LockedStakedADX from '@/components/pages/monitoring/Data/LockedStakedADX';
 import MintAccounts from '@/components/pages/monitoring/Data/MintsAccounts';
+import OracleAccounts from '@/components/pages/monitoring/Data/OracleAccounts';
 import PoolRatios from '@/components/pages/monitoring/Data/PoolRatios';
 import PositionsAllTime from '@/components/pages/monitoring/Data/PositionsAllTime';
 import PositionsNow from '@/components/pages/monitoring/Data/PositionsNow';
@@ -286,6 +287,10 @@ export default function DetailedMonitoring({
           mainPool={mainPool}
           custodies={custodies}
         />
+      ) : null}
+
+      {selectedTab === 'All' || selectedTab === 'Accounts' ? (
+        <OracleAccounts titleClassName={titleClassName} custodies={custodies} />
       ) : null}
 
       {selectedTab === 'All' || selectedTab === 'Accounts' ? (

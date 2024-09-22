@@ -571,15 +571,31 @@ export class AdrenaClient {
     return (result as Custody[]).map((custody, i) => {
       const ratios = mainPool.ratios[i];
 
-      if (!config.tokensInfo[custody.mint.toBase58()]) {
+      const tokenInfo = config.tokensInfo[custody.mint.toBase58()];
+
+      if (!tokenInfo) {
         console.error(
           'Cannot find token in config file that is used in custody',
           custody.mint.toBase58(),
         );
       }
 
+      const tradeMint = (() => {
+        const ret = Object.entries(config.tokensInfo).find(([_, t]) =>
+          t.pythPriceUpdateV2.equals(custody.tradeOracle),
+        );
+
+        if (!ret) return custody.mint;
+
+        return new PublicKey(ret[0]);
+      })();
+
+      const tradeTokenInfo = config.tokensInfo[tradeMint.toBase58()];
+
       return {
-        tokenInfo: config.tokensInfo[custody.mint.toBase58()],
+        tokenInfo,
+        tradeTokenInfo,
+        tradeMint,
         isStable: !!custody.isStable,
         mint: custody.mint,
         decimals: custody.decimals,
