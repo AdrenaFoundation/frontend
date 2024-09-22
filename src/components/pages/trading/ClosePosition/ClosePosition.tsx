@@ -1,13 +1,13 @@
 import { BN } from '@coral-xyz/anchor';
+import Image from 'next/image'; // Ensure correct import
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { USD_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
-import { ExitPriceAndFee, PositionExtended } from '@/types';
+import { ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 // use the counter to handle asynchronous multiple loading
@@ -20,12 +20,14 @@ export default function ClosePosition({
   triggerPositionsReload,
   triggerUserProfileReload,
   onClose,
+  tokenImage,
 }: {
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   onClose: () => void;
+  tokenImage: ImageRef;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -121,8 +123,16 @@ export default function ClosePosition({
     >
       <div className="flex items-center">
         <div className="flex border p-4 bg-third w-full justify-between items-center">
-          <div className="text-2xl tracking-wider font-special ml-4">
-            Receive
+           <div className="flex items-center"> {}
+            <Image
+              src={tokenImage}
+              width={24}
+              height={24}
+              alt="close token image"
+            />
+            <div className="text-2xl tracking-wider font-special ml-2">
+              Receive
+            </div>
           </div>
 
           <div className="flex flex-col items-end mr-4">
@@ -135,7 +145,7 @@ export default function ClosePosition({
                     position.collateralToken.decimals,
                   )
                 }
-                precision={position.collateralToken.decimals}
+                precision={4}
                 className="text-lg inline-block"
                 isDecimalDimmed={false}
               />
@@ -167,39 +177,46 @@ export default function ClosePosition({
       </div>
 
       <div className="flex flex-col border p-4 pt-2 bg-third mt-3 ml-4 mr-4 rounded-lg">
-        <div className={rowStyle}>
-          <div className="text-sm">Size</div>
 
-          <FormatNumber nb={position.sizeUsd} format="currency" />
+         <div className={rowStyle}>
+          <div className="text-sm font-bold">Mark Price</div>
+
+          <FormatNumber nb={markPrice} format="currency" className="text-sm font-bold" />
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm">Initial Collateral</div>
+          <div className="text-sm text-gray-400">Size</div>
 
-          <FormatNumber nb={position.collateralUsd} format="currency" />
+          <FormatNumber nb={position.sizeUsd} format="currency" className="text-gray-400"/>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm">Leverage</div>
+          <div className="text-sm text-gray-400">Entry Price</div>
 
-          <FormatNumber nb={position.leverage} prefix="x" />
+          <FormatNumber nb={position.price} format="currency" className="text-gray-400"/>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm">Entry Price</div>
+          <div className="text-sm text-gray-400">Liquidation Price</div>
 
-          <FormatNumber nb={position.price} format="currency" />
+          <FormatNumber nb={position.liquidationPrice ?? 0} format="currency" className="text-gray-400"/>
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm">PnL</div>
+          <div className="text-sm text-gray-400">Leverage</div>
 
-          <div className="text-sm font-mono">
+          <FormatNumber nb={position.leverage} prefix="x" className="text-gray-400"/>
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-sm">PnL <span className="test-xs text-gray-400">(after fees)</span></div>
+
+          <div className="text-sm font-mono font-bold">
             <FormatNumber
               nb={position.pnl && markPrice ? position.pnl : null}
               prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
-              className={`text-${
+              className={`font-bold text-${
                 position.pnl && position.pnl > 0 ? 'green' : 'redbright'
               }`}
               isDecimalDimmed={false}
@@ -209,25 +226,20 @@ export default function ClosePosition({
       </div>
 
       <div className="text-white text-sm mt-6 ml-4 font-boldy">
-        Exit settings
+        Fees Breakdown
       </div>
 
       <div className="flex flex-col border p-4 pt-2 bg-third mt-3 ml-4 mr-4 rounded-lg">
         <div className={rowStyle}>
-          <div className="text-sm">Exit Price</div>
+          <div className="text-sm text-gray-400">Exit Fees</div>
 
-          <FormatNumber nb={markPrice} format="currency" />
+          <FormatNumber nb={position.exitFeeUsd} format="currency" />
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm">Exit Fees</div>
+          <div className="text-sm text-gray-400">Borrow Fees</div>
 
-          <FormatNumber
-            nb={
-              exitPriceAndFee && nativeToUi(exitPriceAndFee.fee, USD_DECIMALS)
-            }
-            format="currency"
-          />
+          <FormatNumber nb={position.borrowFeeUsd} format="currency" />
         </div>
       </div>
 

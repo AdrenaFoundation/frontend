@@ -376,11 +376,11 @@ export default function EditPositionCollateral({
             />
           </div>
 
-          <div className="text-sm ml-auto mr-4">
+          <div className="text-sm text-txtfade ml-auto mr-4">
             <FormatNumber
               nb={position.collateralUsd}
               format="currency"
-              className="inline"
+              className="inline text-sm text-txtfade"
               isDecimalDimmed={false}
             />{' '}
             of collateral in the position
@@ -414,25 +414,25 @@ export default function EditPositionCollateral({
 
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
           <div className={rowStyle}>
-            <div className="text-sm">Size</div>
+            <div className="text-sm text-gray-400">Size</div>
 
-            <FormatNumber nb={position.sizeUsd} format="currency" />
+            <FormatNumber nb={position.sizeUsd} format="currency" className="text-gray-400"/>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Entry Price</div>
+            <div className="text-sm text-gray-400">Entry Price</div>
 
-            <FormatNumber nb={position.price} format="currency" />
+            <FormatNumber nb={position.price} format="currency" className="text-gray-400"/>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Mark Price</div>
+            <div className="text-sm text-gray-400">Mark Price</div>
 
-            <FormatNumber nb={markPrice} format="currency" />
+            <FormatNumber nb={markPrice} format="currency" className="text-gray-400"/>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">PnL</div>
+            <div className="text-sm text-gray-400">PnL</div>
 
             <FormatNumber
               nb={position.pnl && markPrice ? position.pnl : null}
