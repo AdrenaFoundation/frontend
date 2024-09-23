@@ -1,8 +1,10 @@
 import { Wallet } from '@coral-xyz/anchor';
-import React from 'react';
+import { Connection } from '@solana/web3.js';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token } from '@/types';
 
@@ -23,6 +25,7 @@ export default function TradeComp({
   triggerWalletTokenBalancesReload,
   className,
   isBigScreen,
+  activeRpc,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -37,7 +40,13 @@ export default function TradeComp({
   triggerWalletTokenBalancesReload: () => void;
   className?: string;
   isBigScreen?: boolean | null;
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
 }) {
+  const [isJupSwap, setIsJupSwap] = useState(true);
+
   return (
     <div
       className={twMerge(
@@ -82,19 +91,44 @@ export default function TradeComp({
                 }
               />
             ) : (
-              <SwapTradingInputs
-                allowedTokenA={window.adrena.client.tokens}
-                allowedTokenB={window.adrena.client.tokens}
-                tokenA={tokenA}
-                tokenB={tokenB}
-                setTokenA={setTokenA}
-                setTokenB={setTokenB}
-                wallet={wallet}
-                connected={connected}
-                triggerWalletTokenBalancesReload={
-                  triggerWalletTokenBalancesReload
-                }
-              />
+              <>
+                <TabSelect
+                  selected={isJupSwap ? 'Jup' : 'Adrena'}
+                  tabs={[
+                    { title: 'Jup', activeColor: 'border-white' },
+                    {
+                      title: 'Adrena',
+                      activeColor: 'border-white',
+                    },
+                  ]}
+                  onClick={(title) => {
+                    setIsJupSwap(title === 'Jup');
+                  }}
+                  className="text-sm text-center"
+                />
+
+                {isJupSwap ? (
+                  <IntegratedTerminal
+                    connected={connected}
+                    activeRpc={activeRpc}
+                    className="bg-transparent border-transparent h-[600px] min-w-[300px] w-full p-0"
+                  />
+                ) : (
+                  <SwapTradingInputs
+                    allowedTokenA={window.adrena.client.tokens}
+                    allowedTokenB={window.adrena.client.tokens}
+                    tokenA={tokenA}
+                    tokenB={tokenB}
+                    setTokenA={setTokenA}
+                    setTokenB={setTokenB}
+                    wallet={wallet}
+                    connected={connected}
+                    triggerWalletTokenBalancesReload={
+                      triggerWalletTokenBalancesReload
+                    }
+                  />
+                )}
+              </>
             )}
           </>
         )}
