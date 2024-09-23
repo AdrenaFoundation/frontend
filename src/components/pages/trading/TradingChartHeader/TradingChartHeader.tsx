@@ -67,7 +67,7 @@ export default function TradingChartHeader({
         <title>
           {streamingTokenPrices[
             selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-          ] || 0}{' '}
+          ]?.toFixed(2) || 0}{' '}
           – {selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'} / USD
         </title>
       </Head>
