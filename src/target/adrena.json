@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "adrena",
   "instructions": [
     {
@@ -2534,22 +2534,28 @@
           "docs": ["#8"]
         },
         {
+          "name": "custodyTradeOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#9"]
+        },
+        {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": ["#9"]
+          "docs": ["#10"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#10"]
+          "docs": ["#11"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#11"]
+          "docs": ["#12"]
         }
       ],
       "args": [
@@ -2607,7 +2613,7 @@
           "docs": ["#7"]
         },
         {
-          "name": "custodyOracle",
+          "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": ["#8"]
@@ -2704,22 +2710,28 @@
           "docs": ["#8"]
         },
         {
+          "name": "custodyTradeOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#9"]
+        },
+        {
           "name": "custodyTokenAccount",
           "isMut": true,
           "isSigner": false,
-          "docs": ["#9"]
+          "docs": ["#10"]
         },
         {
           "name": "adrenaProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#10"]
+          "docs": ["#11"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#11"]
+          "docs": ["#12"]
         }
       ],
       "args": [
@@ -2777,7 +2789,7 @@
           "docs": ["#7"]
         },
         {
-          "name": "custodyOracle",
+          "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": ["#8"]
@@ -3919,7 +3931,7 @@
           "docs": ["#4"]
         },
         {
-          "name": "custodyOracle",
+          "name": "custodyTradeOracle",
           "isMut": false,
           "isSigner": false,
           "docs": ["#5"]
@@ -5772,6 +5784,33 @@
       "returns": "u64"
     },
     {
+      "name": "getPoolInfoSnapshot",
+      "accounts": [
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#1"]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#2"]
+        },
+        {
+          "name": "lpTokenMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#3"]
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": "PoolInfoSnapshot"
+      }
+    },
+    {
       "name": "mintLmTokensFromBucket",
       "accounts": [
         {
@@ -6887,7 +6926,7 @@
         },
         {
           "name": "custody",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": ["#6"]
         },
@@ -6944,7 +6983,7 @@
         },
         {
           "name": "custody",
-          "isMut": true,
+          "isMut": false,
           "isSigner": false,
           "docs": ["#6"]
         },
@@ -8660,6 +8699,114 @@
           {
             "name": "side",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CustodyInfoSnapshot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "assetsValueUsd",
+            "type": "u64"
+          },
+          {
+            "name": "owned",
+            "type": "u64"
+          },
+          {
+            "name": "locked",
+            "type": "u64"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "priceConfidence",
+            "type": "u64"
+          },
+          {
+            "name": "tradePrice",
+            "type": "u64"
+          },
+          {
+            "name": "tradePriceConfidence",
+            "type": "u64"
+          },
+          {
+            "name": "shortPnl",
+            "type": "i64"
+          },
+          {
+            "name": "longPnl",
+            "type": "i64"
+          },
+          {
+            "name": "openInterestLongUsd",
+            "type": "u64"
+          },
+          {
+            "name": "openInterestShortUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeProfitUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLossUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeSwapFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidityFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeClosePositionFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeLiquidationFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "cumulativeBorrowFeeUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolInfoSnapshot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "currentTime",
+            "type": "u64"
+          },
+          {
+            "name": "aumUsd",
+            "type": "u64"
+          },
+          {
+            "name": "lpTokenPrice",
+            "type": "u64"
+          },
+          {
+            "name": "custodiesInfoSnapshot",
+            "type": {
+              "vec": {
+                "defined": "CustodyInfoSnapshot"
+              }
+            }
           }
         ]
       }
