@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from '@/store/store';
 
 import backpackLogo from '../../../public/images/backpack.png';
 import coinbaseLogo from '../../../public/images/coinbase.png';
-import phantomLogo from '../../../public/images/phantom.png';
+import phantomLogo from '../../../public/images/phantom.svg';
 import solflareLogo from '../../../public/images/solflare.png';
 import Modal from '../common/Modal/Modal';
 
