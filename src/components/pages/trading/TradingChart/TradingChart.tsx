@@ -15,7 +15,6 @@ import {
   ResolutionString,
 } from '../../../../../public/charting_library/charting_library';
 import datafeed from './datafeed';
-import { unsubscribeFromStream } from './streaming';
 
 let tvScriptLoadingPromise: Promise<unknown>;
 

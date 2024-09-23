@@ -1,8 +1,6 @@
 import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import FormatNumber from '@/components/Number/FormatNumber';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { LockedStakeExtended } from '@/types';
 

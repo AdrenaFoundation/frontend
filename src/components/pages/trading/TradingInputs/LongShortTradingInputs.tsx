@@ -2,7 +2,7 @@ import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
@@ -23,7 +23,6 @@ import {
   AdrenaTransactionError,
   formatNumber,
   formatPriceInfo,
-  nativeToUi,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';

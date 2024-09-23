@@ -1,4 +1,4 @@
-import React, { forwardRef, Fragment } from 'react';
+import React, { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { formatNumber, formatPriceInfo } from '@/utils';
