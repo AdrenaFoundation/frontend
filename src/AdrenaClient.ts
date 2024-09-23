@@ -591,7 +591,7 @@ export class AdrenaClient {
       }
 
       const tradeMint = (() => {
-        const ret = Object.entries(config.tokensInfo).find(([_, t]) =>
+        const ret = Object.entries(config.tokensInfo).find(([, t]) =>
           t.pythPriceUpdateV2.equals(custody.tradeOracle),
         );
 
@@ -2069,6 +2069,7 @@ export class AdrenaClient {
     }
 
     const custodyOracle = custody.nativeObject.oracle;
+    const custodyTradeOracle = custody.nativeObject.tradeOracle;
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
@@ -2087,6 +2088,7 @@ export class AdrenaClient {
         position: position.pubkey,
         custody: position.custody,
         custodyOracle,
+        custodyTradeOracle,
         custodyTokenAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
         cortex: AdrenaClient.cortexPda,
@@ -2121,7 +2123,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    const custodyOracle = custody.nativeObject.oracle;
+    const custodyTradeOracle = custody.nativeObject.tradeOracle;
 
     const collateralCustodyOracle = collateralCustody.nativeObject.oracle;
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
@@ -2144,7 +2146,7 @@ export class AdrenaClient {
         pool: this.mainPool.pubkey,
         position: position.pubkey,
         custody: position.custody,
-        custodyOracle,
+        custodyTradeOracle,
         collateralCustody: position.collateralCustody,
         tokenProgram: TOKEN_PROGRAM_ID,
         cortex: AdrenaClient.cortexPda,
@@ -2176,6 +2178,7 @@ export class AdrenaClient {
     }
 
     const custodyOracle = custody.nativeObject.oracle;
+    const custodyTradeOracle = custody.nativeObject.tradeOracle;
     const custodyTokenAccount = this.findCustodyTokenAccountAddress(
       custody.mint,
     );
@@ -2218,6 +2221,7 @@ export class AdrenaClient {
           position: position.pubkey,
           custody: position.custody,
           custodyOracle,
+          custodyTradeOracle,
           custodyTokenAccount,
           tokenProgram: TOKEN_PROGRAM_ID,
           cortex: AdrenaClient.cortexPda,
@@ -2259,7 +2263,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    const custodyOracle = custody.nativeObject.oracle;
+    const custodyTradeOracle = custody.nativeObject.tradeOracle;
     const collateralCustodyOracle = collateralCustody.nativeObject.oracle;
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
@@ -2305,7 +2309,7 @@ export class AdrenaClient {
           pool: this.mainPool.pubkey,
           position: position.pubkey,
           custody: position.custody,
-          custodyOracle,
+          custodyTradeOracle,
           collateralCustody: position.collateralCustody,
           collateralCustodyOracle,
           collateralCustodyTokenAccount,
