@@ -115,7 +115,7 @@ export default function StakeOverview({
             {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
           </span>
 
-          <div className="flex flex-row flex-wrap gap-4 mt-3 px-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3 px-5">
             {lockedStakes && lockedStakes.length > 0 ? (
               lockedStakes.map((lockedStake, i) => (
                 <LockedStakedElement
@@ -151,30 +151,18 @@ export default function StakeOverview({
                 handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
               }
             />
-
-            {(() => {
-              if (totalRedeemableLockedStake !== 0)
-                return (
-                  <Button
-                    className="w-full mt-4"
-                    variant="outline"
-                    size="lg"
-                    title="Claim Rewards *"
-                    onClick={() => handleClickOnClaimRewards()}
-                  />
-                );
-
-              if (lockedStakes?.length)
-                return (
-                  <Button
-                    className="w-full mt-4 opacity-70 text-opacity-70"
-                    disabled={true}
-                    variant="outline"
-                    size="lg"
-                    title="Claim Rewards *"
-                  />
-                );
-            })()}
+            <Button
+              className="w-full mt-4 opacity-70 text-opacity-70"
+              disabled={
+                !lockedStakes?.some((ls) => ls.isGenesis) ||
+                totalRedeemableLockedStake !== 0
+              }
+              variant="outline"
+              size="lg"
+              title="Claim Rewards *"
+              onClick={() => handleClickOnClaimRewards()}
+            />
+            )
           </div>
 
           <p className="opacity-25 text-center w-full p-5 pt-0">
