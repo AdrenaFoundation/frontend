@@ -79,17 +79,11 @@ export default function StopLossTakeProfitInput({
 
       if (max === null && min === null) return true;
 
-      const isTakeProfit = type === 'Take Profit';
-
-      if (isTakeProfit) {
-        if (max !== null && input > max) {
-          console.log('max', max, input);
-          return 1;
-        }
-        if (min !== null && input < min) {
-          console.log('min HERE', min, input);
-          return -1;
-        }
+      if (max !== null && input > max) {
+        return 1;
+      }
+      if (min !== null && input < min) {
+        return -1;
       }
 
       return true;
