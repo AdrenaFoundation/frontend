@@ -4,11 +4,11 @@ import { useEffect } from 'react';
 export default function Home() {
   const router = useRouter();
 
-  // Unused page, redirect to /genesis for now
-
+  // Unused page
+  // Redirect on trade
   useEffect(() => {
-    router.push('/genesis');
-  }, [window.location.pathname]);
+    router.push('/trade');
+  }, [router]);
 
   return <main className="w-full h-full flex" />;
 }

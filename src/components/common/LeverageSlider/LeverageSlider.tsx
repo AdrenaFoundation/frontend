@@ -121,7 +121,7 @@ const handleBlur = () => {
             variant="secondary"
             rounded={false}
             className={twMerge(
-              'w-[6em] opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor',
+              'w-[6em] opacity-50 hover:opacity-100 flex-grow text-xs border-r border-t border-bcolor h-full',
               // Put 0.7 e.m instead of lg because conflicts in the border handling by browser
               index === 0 ? 'rounded-bl-[0.7em]' : '',
               index === marks.length - 1 ? 'rounded-br-[0.7em] border-r-0' : '',

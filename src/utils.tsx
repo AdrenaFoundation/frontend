@@ -503,8 +503,11 @@ export function getAbbrevWalletAddress(address: string) {
 
 export function formatMilliseconds(milliseconds: number): string {
   const seconds = Math.floor((milliseconds / 1000) % 60);
+  milliseconds -= seconds * 1000;
   const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+  milliseconds -= minutes * 1000 * 60;
   const hours = Math.floor((milliseconds / (1000 * 60 * 60)) % 24);
+  milliseconds -= hours * 1000 * 60 * 60;
   const days = Math.floor(milliseconds / (1000 * 60 * 60 * 24));
 
   let formatted = '';
@@ -513,17 +516,14 @@ export function formatMilliseconds(milliseconds: number): string {
     formatted = `${days}d`;
   }
 
-  if (hours || formatted.length) {
+  if (hours || formatted.length)
     formatted = `${formatted}${formatted.length ? ' ' : ''}${hours}h`;
-  }
 
-  if (minutes || formatted.length) {
+  if (minutes || formatted.length)
     formatted = `${formatted}${formatted.length ? ' ' : ''}${minutes}m`;
-  }
 
-  if (seconds || formatted.length) {
+  if (seconds || formatted.length)
     formatted = `${formatted}${formatted.length ? ' ' : ''}${seconds}s`;
-  }
 
   return formatted;
 }

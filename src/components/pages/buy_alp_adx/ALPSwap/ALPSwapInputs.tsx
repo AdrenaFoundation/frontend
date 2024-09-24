@@ -277,13 +277,9 @@ export default function ALPSwapInputs({
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       value={alpInput}
-      maxButton={connected && actionType === 'sell'}
       maxClassName="relative left-6"
       selectedToken={alpToken}
       tokenList={[alpToken]}
-      onMaxButtonClick={() => {
-        onChangeAlpInput(walletTokenBalances?.[alpToken.symbol] ?? 0);
-      }}
       onTokenSelect={() => {
         // only one token
       }}
@@ -304,7 +300,6 @@ export default function ALPSwapInputs({
       loading={actionType === 'sell' && isLoading}
       disabled={actionType === 'sell'}
       value={collateralInput}
-      maxButton={connected && actionType === 'buy'}
       selectedToken={collateralToken}
       tokenList={allowedCollateralTokens || []}
       subText={
@@ -314,12 +309,6 @@ export default function ALPSwapInputs({
           </span>
         ) : null
       }
-      onMaxButtonClick={() => {
-        setSaveUpFees(null);
-        onChangeCollateralInput(
-          walletTokenBalances?.[collateralToken.symbol] ?? 0,
-        );
-      }}
       onTokenSelect={onCollateralTokenChange}
       onChange={(v: number | null) => {
         setSaveUpFees(null);
@@ -371,7 +360,18 @@ export default function ALPSwapInputs({
           if (balance === null) return null;
 
           return (
-            <div className="ml-auto mt-3">
+            <div
+              className="ml-auto mt-3 cursor-pointer"
+              onClick={() =>
+                actionType === 'buy'
+                  ? onChangeCollateralInput(
+                      walletTokenBalances?.[collateralToken.symbol] ?? 0,
+                    )
+                  : onChangeAlpInput(
+                      walletTokenBalances?.[alpToken.symbol] ?? 0,
+                    )
+              }
+            >
               <span className="text-txtfade text-sm font-mono">
                 {formatNumber(balance, 4)}
               </span>

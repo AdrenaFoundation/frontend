@@ -316,7 +316,6 @@ export default function EditPositionCollateral({
               className="text-sm"
               inputClassName="border-0 bg-inputcolor"
               value={input}
-              maxButton={true}
               selectedToken={
                 position.side === 'long'
                   ? position.token
@@ -327,7 +326,6 @@ export default function EditPositionCollateral({
                 // One token only
               }}
               onChange={setInput}
-              onMaxButtonClick={() => setInput(walletBalance)}
             />
           </div>
 
@@ -341,7 +339,10 @@ export default function EditPositionCollateral({
               if (balance === null) return null;
 
               return (
-                <div className="ml-auto mr-4">
+                <div
+                  className="ml-auto mr-4 cursor-pointer"
+                  onClick={() => setInput(walletBalance)}
+                >
                   <FormatNumber
                     nb={balance}
                     precision={position.collateralToken.decimals}

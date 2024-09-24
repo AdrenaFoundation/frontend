@@ -141,8 +141,4 @@ export default class DevnetConfiguration implements IConfiguration {
       return `${url}/${apiKey}`;
     })(),
   };
-
-  public readonly mainPool: PublicKey = new PublicKey(
-    '3R8cypePDQHUP9ZSreAfdFE34TdHahaCUAomPxZyN8A4',
-  );
 }

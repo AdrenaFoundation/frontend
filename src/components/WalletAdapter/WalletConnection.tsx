@@ -1,7 +1,7 @@
 import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import { useDispatch } from '@/store/store';
 
-import phantomLogo from '../../../public/images/phantom.png';
+import phantomLogo from '../../../public/images/phantom.svg';
 import Button from '../common/Button/Button';
 
 export default function WalletConnection({

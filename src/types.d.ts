@@ -40,6 +40,7 @@ declare module '*.lottie';
 
 declare global {
   interface Window {
+    Jupiter: any;
     riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;
   }
@@ -62,13 +63,19 @@ export type PageProps = {
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
   connected: boolean;
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
 };
 
 export type CustodyExtended = {
   // Formatted data
   tokenInfo: TokenInfo;
+  tradeTokenInfo: TokenInfo;
   pubkey: PublicKey;
   mint: PublicKey;
+  tradeMint: PublicKey;
   isStable: boolean;
   decimals: number;
   maxLeverage: number;
