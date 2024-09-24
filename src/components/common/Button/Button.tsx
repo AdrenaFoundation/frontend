@@ -33,7 +33,7 @@ export default function Button({
   rightIcon?: ImageRef;
   leftIcon?: ImageRef;
   alt?: string;
-  variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger';
+  variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger' | 'lightbg';
   className?: string;
   iconClassName?: string;
   loaderClassName?: string;
@@ -57,6 +57,7 @@ export default function Button({
     danger: 'bg-red/25',
     text: 'bg-transparent',
     outline: 'bg-transparent',
+    lightbg: 'bg-[#1e1e1e]',
   };
 
   const variants = {
@@ -66,6 +67,7 @@ export default function Button({
     danger: 'bg-red text-white hover:bg-red font-medium',
     text: 'opacity-50 text-white hover:opacity-100 font-medium',
     outline: 'border text-white hover:bg-bcolor font-medium',
+    lightbg: 'bg-[#1e1e1e] text-white hover:text-txt',
   };
 
   const sizes = {

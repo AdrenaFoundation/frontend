@@ -79,12 +79,16 @@ export default function WalletAdapter({
         <Menu
           trigger={
             <Button
-              className={twMerge(className, 'gap-2 h-0 px-0 py-0')}
+              className={twMerge(className, 'gap-2 pl-4 pr-3')}
+              title={
+                userProfile
+                  ? getAbbrevNickname(userProfile.nickname)
+                  : getAbbrevWalletAddress(wallet.walletAddress)
+              }
               rightIcon={walletIcon}
               alt="wallet icon"
-              variant="secondary"
-              height={17}
-              width={17}
+              rightIconClassName="w-4 h-4"
+              variant="lightbg"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
               }}
@@ -93,16 +97,6 @@ export default function WalletAdapter({
           openMenuClassName="w-[120px] right-0"
         >
           <MenuItems>
-            <MenuItem
-              href={getAccountExplorer(new PublicKey(wallet.walletAddress))}
-              target="_blank"
-            >
-              <div className="underline text-blue">
-                {userProfile
-                  ? getAbbrevNickname(userProfile.nickname)
-                  : getAbbrevWalletAddress(wallet.walletAddress)}
-              </div>
-            </MenuItem>
             <MenuItem
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);

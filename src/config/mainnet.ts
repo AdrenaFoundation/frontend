@@ -56,7 +56,7 @@ export default class MainnetConfiguration implements IConfiguration {
       symbol: 'WBTC',
       image: wbtcLogo,
       coingeckoId: 'wrapped-btc-wormhole',
-      decimals: 6,
+      decimals: 8,
       pythPriceUpdateV2: new PublicKey(
         '9gNX5vguzarZZPjTnE1hWze3s6UsZ7dsU3UnAmKPnMHG',
       ),
@@ -68,7 +68,7 @@ export default class MainnetConfiguration implements IConfiguration {
       symbol: 'BTC',
       image: btcLogo,
       coingeckoId: 'bitcoin',
-      decimals: 6,
+      decimals: 8,
       pythPriceUpdateV2: new PublicKey(
         '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
