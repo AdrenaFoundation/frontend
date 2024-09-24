@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Legend,
   Line,
@@ -35,7 +37,7 @@ function CustomToolTip(props: any) {
   return null;
 }
 
-export default function LineRechart({
+export default function RechartAum({
   title,
   data,
   labels,
@@ -65,7 +67,7 @@ export default function LineRechart({
       <h2 className="mb-3">{title}</h2>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart width={600} height={400} data={data}>
+        <AreaChart width={600} height={400} data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="name" fontSize="12" />
@@ -80,16 +82,16 @@ export default function LineRechart({
 
           {labels?.map(({ name, color }) => {
             return (
-              <Line
-                key={name}
+              <Area
                 type="monotone"
                 dataKey={name}
+                key={name}
                 stroke={color}
-                dot={false}
+                fill={color}
               />
             );
           })}
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );

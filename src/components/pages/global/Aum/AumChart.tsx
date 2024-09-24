@@ -1,7 +1,6 @@
-import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 
-import LineRechartAum from './LineRechartAum';
+import LineRechartAum from './RechartAum';
 
 export default function AumChart() {
   const [AUM, setAUM] = useState<any>(null);
