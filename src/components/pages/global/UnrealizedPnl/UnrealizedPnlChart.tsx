@@ -103,7 +103,7 @@ export default function UnrealizedPnlChart() {
 
   return (
     <LineRechartPercentage
-      title="Unrealized PnL"
+      title="Unrealized Trader PnL"
       data={infos.formattedData}
       labels={[
         { name: 'Pool', color: '#ff0000' },

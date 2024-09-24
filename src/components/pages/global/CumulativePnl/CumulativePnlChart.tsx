@@ -115,7 +115,7 @@ export default function CumulativePnlChart() {
 
   return (
     <LineRechartPercentage
-      title="Cumulative PnL"
+      title="Cumulative Trader PnL"
       data={infos.formattedData}
       labels={[
         { name: 'Pool', color: '#ff0000' },
