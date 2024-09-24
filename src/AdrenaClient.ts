@@ -3155,9 +3155,9 @@ export class AdrenaClient {
     return this.signAndExecuteTx(instruction, notification);
   }
 
-  public async getGensisLock(): Promise<GenesisLock | null> {
-    if (!this.readonlyAdrenaProgram.views) {
-      throw new Error('adrena program not ready');
+  public async getGenesisLock(): Promise<GenesisLock | null> {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+      return null;
     }
 
     const genesisLockPda = this.getGenesisLockPda();
@@ -3691,14 +3691,14 @@ export class AdrenaClient {
       );
     }
 
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
     const custodyIn = this.getCustodyByMint(tokenIn.mint);
     const custodyOut = this.getCustodyByMint(tokenOut.mint);
 
-    return this.readonlyAdrenaProgram.views.getSwapAmountAndFees(
+    return this.adrenaProgram.views.getSwapAmountAndFees(
       {
         amountIn,
       },
@@ -3728,7 +3728,7 @@ export class AdrenaClient {
     leverage: number;
     side: 'long' | 'short';
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
@@ -3752,7 +3752,7 @@ export class AdrenaClient {
 
     // Anchor is bugging when calling a view, that is making CPI calls inside
     // Need to do it manually, so we can get the correct amounts
-    const instruction = await this.readonlyAdrenaProgram.methods
+    const instruction = await this.adrenaProgram.methods
       .getOpenPositionWithSwapAmountAndFees({
         collateralAmount,
         leverage,
@@ -3796,14 +3796,14 @@ export class AdrenaClient {
       );
     }
 
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
     const custody = this.getCustodyByMint(token.mint);
     const collateralCustody = this.getCustodyByMint(collateralToken.mint);
 
-    return this.readonlyAdrenaProgram.views.getEntryPriceAndFee(
+    return this.adrenaProgram.views.getEntryPriceAndFee(
       {
         collateral: collateralAmount,
         leverage,
@@ -3829,7 +3829,7 @@ export class AdrenaClient {
   }: {
     position: PositionExtended;
   }): Promise<ExitPriceAndFee | null> {
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
@@ -3845,7 +3845,7 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    return this.readonlyAdrenaProgram.views.getExitPriceAndFee({
+    return this.adrenaProgram.views.getExitPriceAndFee({
       accounts: {
         cortex: AdrenaClient.cortexPda,
         pool: this.mainPool.pubkey,
@@ -3866,7 +3866,7 @@ export class AdrenaClient {
       'custody' | 'pubkey' | 'collateralCustody'
     >;
   }): Promise<ProfitAndLoss | null> {
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
@@ -3886,7 +3886,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    return this.readonlyAdrenaProgram.views.getPnl({
+    return this.adrenaProgram.views.getPnl({
       accounts: {
         cortex: AdrenaClient.cortexPda,
         pool: this.mainPool.pubkey,
@@ -3911,7 +3911,7 @@ export class AdrenaClient {
     addCollateral: BN;
     removeCollateral: BN;
   }): Promise<BN | null> {
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
@@ -3931,7 +3931,7 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    return this.readonlyAdrenaProgram.views.getLiquidationPrice(
+    return this.adrenaProgram.views.getLiquidationPrice(
       {
         addCollateral,
         removeCollateral,
@@ -4128,11 +4128,11 @@ export class AdrenaClient {
   }
 
   public async getAssetsUnderManagement(): Promise<BN | null> {
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
-    return this.readonlyAdrenaProgram.views.getAssetsUnderManagement({
+    return this.adrenaProgram.views.getAssetsUnderManagement({
       accounts: {
         cortex: AdrenaClient.cortexPda,
         pool: this.mainPool.pubkey,
@@ -4156,7 +4156,7 @@ export class AdrenaClient {
       );
     }
 
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
@@ -4171,7 +4171,7 @@ export class AdrenaClient {
       lpTokenMint: this.lpTokenMint.toBase58(),
     });
 
-    return this.readonlyAdrenaProgram.views.getAddLiquidityAmountAndFee(
+    return this.adrenaProgram.views.getAddLiquidityAmountAndFee(
       {
         amountIn,
       },
@@ -4203,7 +4203,7 @@ export class AdrenaClient {
       );
     }
 
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
@@ -4218,7 +4218,7 @@ export class AdrenaClient {
       lpTokenMint: this.lpTokenMint.toBase58(),
     });
 
-    return this.readonlyAdrenaProgram.views.getRemoveLiquidityAmountAndFee(
+    return this.adrenaProgram.views.getRemoveLiquidityAmountAndFee(
       {
         lpAmountIn,
       },
@@ -4236,11 +4236,11 @@ export class AdrenaClient {
   }
 
   public async getLpTokenPrice(): Promise<BN | null> {
-    if (!this.readonlyAdrenaProgram.views) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
-    return this.readonlyAdrenaProgram.views.getLpTokenPrice({
+    return this.adrenaProgram.views.getLpTokenPrice({
       accounts: {
         cortex: AdrenaClient.cortexPda,
         pool: this.mainPool.pubkey,

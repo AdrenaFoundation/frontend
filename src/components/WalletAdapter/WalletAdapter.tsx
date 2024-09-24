@@ -113,11 +113,12 @@ export default function WalletAdapter({
         </Menu>
       ) : (
         <Button
-          className={className}
+          className={twMerge(className, 'gap-2 pl-4 pr-3')}
           title="Connect wallet"
           rightIcon={walletIcon}
           alt="wallet icon"
-          variant="outline"
+          rightIconClassName="w-4 h-4"
+          variant="lightbg"
           onClick={() => {
             if (!connected) {
               dispatch(openCloseConnectionModalAction(true));

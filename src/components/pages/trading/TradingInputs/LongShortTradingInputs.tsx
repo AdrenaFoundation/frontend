@@ -225,6 +225,11 @@ export default function LongShortTradingInputs({
     setInputB(null);
     setPriceB(null);
 
+    if (!connected) {
+      setErrorMessage(null);
+      return;
+    }
+
     const localLoadingCounter = ++loadingCounter;
 
     (async () => {
@@ -262,7 +267,7 @@ export default function LongShortTradingInputs({
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedInputA, debouncedLeverage, side, tokenA, tokenB]);
+  }, [debouncedInputA, debouncedLeverage, side, tokenA, tokenB, connected]);
 
   // When price change, or position infos arrived recalculate displayed infos
   useEffect(() => {
@@ -325,7 +330,7 @@ export default function LongShortTradingInputs({
   ]);
 
   useEffect(() => {
-    if (!inputA) {
+    if (!inputA || !connected) {
       setErrorMessage(null);
       return;
     }
@@ -362,6 +367,7 @@ export default function LongShortTradingInputs({
     tokenPriceB,
     tokenPrices,
     walletTokenBalances,
+    connected,
   ]);
 
   const handleInputAChange = (v: number | null) => {

@@ -57,7 +57,7 @@ export default function Button({
     danger: 'bg-red/25',
     text: 'bg-transparent',
     outline: 'bg-transparent',
-    lightbg: 'bg-[#1e1e1e]',
+    lightbg: 'bg-[#1f2c3c]',
   };
 
   const variants = {
@@ -67,7 +67,7 @@ export default function Button({
     danger: 'bg-red text-white hover:bg-red font-medium',
     text: 'opacity-50 text-white hover:opacity-100 font-medium',
     outline: 'border text-white hover:bg-bcolor font-medium',
-    lightbg: 'bg-[#1e1e1e] text-white hover:text-txt',
+    lightbg: 'bg-[#1f2c3c] text-white hover:text-txt',
   };
 
   const sizes = {
