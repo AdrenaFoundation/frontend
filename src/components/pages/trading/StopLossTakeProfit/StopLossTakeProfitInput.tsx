@@ -5,7 +5,7 @@ import InputNumber from '@/components/common/InputNumber/InputNumber';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatPriceInfo, nativeToUi } from '@/utils';
+import { formatPriceInfo, getTokenSymbol, nativeToUi } from '@/utils';
 
 export default function StopLossTakeProfitInput({
   position,
@@ -29,9 +29,7 @@ export default function StopLossTakeProfitInput({
   } | null>(null);
 
   const markPrice: number | null =
-    tokenPrices[
-      position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
-    ];
+    tokenPrices[getTokenSymbol(position.token.symbol)];
 
   useEffect(() => {
     let priceChangePnL: number | null = null;
@@ -45,18 +43,20 @@ export default function StopLossTakeProfitInput({
     }
 
     const fees =
-      position.exitFeeUsd +
-      (position.borrowFeeUsd ? position.borrowFeeUsd : 0);
+      position.exitFeeUsd + (position.borrowFeeUsd ? position.borrowFeeUsd : 0);
 
     if (input !== null) {
       if (position.side === 'long') {
-        priceChangePnL = ((position.sizeUsd * (input - position.price)) / markPrice) - fees;
+        priceChangePnL =
+          (position.sizeUsd * (input - position.price)) / markPrice - fees;
       } else if (position.side === 'short') {
-        priceChangePnL = ((position.sizeUsd * (position.price - input)) / markPrice) - fees;
+        priceChangePnL =
+          (position.sizeUsd * (position.price - input)) / markPrice - fees;
       }
     }
 
-    let min: number | null = type === 'Stop Loss' ? position.liquidationPrice : markPrice;
+    let min: number | null =
+      type === 'Stop Loss' ? position.liquidationPrice : markPrice;
     let max = type === 'Stop Loss' ? markPrice : null;
 
     if (position.side === 'short') {
@@ -67,10 +67,16 @@ export default function StopLossTakeProfitInput({
       } else {
         max = markPrice;
         // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.leverage` is equal to 100, and get that price as the min value
-        const initialCollateralUsd = nativeToUi(position.nativeObject.collateralUsd, position.token.decimals);
-        const initialSizeUsd = nativeToUi(position.nativeObject.sizeUsd, position.token.decimals);
+        const initialCollateralUsd = nativeToUi(
+          position.nativeObject.collateralUsd,
+          position.token.decimals,
+        );
+        const initialSizeUsd = nativeToUi(
+          position.nativeObject.sizeUsd,
+          position.token.decimals,
+        );
         const initialLeverage = initialSizeUsd / initialCollateralUsd;
-        min = position.price * (1 - (1 / initialLeverage));
+        min = position.price * (1 - 1 / initialLeverage);
       }
     }
 
@@ -190,7 +196,9 @@ export default function StopLossTakeProfitInput({
 
         {priceIsOk === true && displayValue !== null ? (
           <div className="flex items-center">
-            <div className={twMerge(displayColor + ' text-sm mr-1')}> {}
+            <div className={twMerge(displayColor + ' text-sm mr-1')}>
+              {' '}
+              {}
               {isPositive ? '+' : '-'}
               {formatPriceInfo(Math.abs(displayValue))}
             </div>
@@ -236,11 +244,15 @@ export default function StopLossTakeProfitInput({
                 'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
               )}
               onClick={() =>
-                handleSetInput(Math.round(getAdjustedPrice(min, true) * 100) / 100)
+                handleSetInput(
+                  Math.round(getAdjustedPrice(min, true) * 100) / 100,
+                )
               }
             >
               <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
-                {formatPriceInfo(Math.round(getAdjustedPrice(min, true) * 100) / 100)}
+                {formatPriceInfo(
+                  Math.round(getAdjustedPrice(min, true) * 100) / 100,
+                )}
               </div>
               <div className="text-xs text-txtfade">min</div>
             </div>
@@ -254,7 +266,9 @@ export default function StopLossTakeProfitInput({
                 max === null ? 'text-txtfade' : '',
               )}
               onClick={() =>
-                handleSetInput(Math.round(getAdjustedPrice(max, false) * 100) / 100)
+                handleSetInput(
+                  Math.round(getAdjustedPrice(max, false) * 100) / 100,
+                )
               }
             >
               <div
@@ -263,7 +277,9 @@ export default function StopLossTakeProfitInput({
                   max === null ? 'text-txtfade' : '',
                 )}
               >
-                {formatPriceInfo(Math.round(getAdjustedPrice(max, false) * 100) / 100)}
+                {formatPriceInfo(
+                  Math.round(getAdjustedPrice(max, false) * 100) / 100,
+                )}
               </div>
               <div className="text-xs text-txtfade">max</div>
             </div>

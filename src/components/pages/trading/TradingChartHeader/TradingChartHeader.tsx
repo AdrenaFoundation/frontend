@@ -7,6 +7,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
   return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
@@ -33,11 +34,7 @@ export default function TradingChartHeader({
     // if streamingTokenPrices is smaller than previous value, set color to red
     if (!streamingTokenPrices) return;
 
-    const price =
-      streamingTokenPrices[
-        selected.symbol === 'WBTC' ? 'BTC' : 
-        selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-      ];
+    const price = streamingTokenPrices[getTokenSymbol(selected.symbol)];
 
     if (typeof price === 'undefined' || price === null) {
       return;
@@ -53,10 +50,7 @@ export default function TradingChartHeader({
 
   useEffect(() => {
     setPreviousTokenPrice(
-      streamingTokenPrices[
-        selected.symbol === 'WBTC' ? 'BTC' : 
-        selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-      ] || 0,
+      streamingTokenPrices[getTokenSymbol(selected.symbol)] || 0,
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,11 +60,9 @@ export default function TradingChartHeader({
     <>
       <Head>
         <title>
-          {streamingTokenPrices[
-            selected.symbol === 'WBTC' ? 'BTC' : 
-            selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-          ]?.toFixed(2) || 0}{' '}
-          – {selected.symbol === 'WBTC' ? 'BTC' : selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'} / USD
+          {streamingTokenPrices[getTokenSymbol(selected.symbol)]?.toFixed(2) ||
+            0}{' '}
+          – {getTokenSymbol(selected.symbol)} / USD
         </title>
       </Head>
       <div
@@ -83,19 +75,17 @@ export default function TradingChartHeader({
           <Select
             className="w-full"
             selectedClassName="py-1 px-2 sm:px-2"
-            selected={`${
-              selected.symbol === 'WBTC' ? 'BTC' : 
-              selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-            } / USD`}
+            selected={`${getTokenSymbol(selected.symbol)} / USD`}
             options={tokenList
-              .filter((token) => token.symbol !== selected.symbol)
+              .filter(
+                (token) =>
+                  getTokenSymbol(token.symbol) !==
+                  getTokenSymbol(selected.symbol),
+              )
               .map((token) => {
                 return {
-                  title: `${
-                    token.symbol === 'WBTC' ? 'BTC' : 
-                    token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
-                    } / USD`,
-                  img: token.image,
+                  title: `${getTokenSymbol(token.symbol)} / USD`,
+                  img: getTokenImage(token),
                 };
               })}
             onSelect={(opt: string) => {
@@ -103,10 +93,7 @@ export default function TradingChartHeader({
               // Force linting, you cannot not find the token in the list
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               const token = tokenList.find(
-                (t) =>
-                  t.symbol === selectedTokenSymbol ||
-                  (t.symbol === 'JITOSOL' && selectedTokenSymbol === 'SOL') ||
-                  (t.symbol === 'WBTC' && selectedTokenSymbol === 'BTC'),
+                (t) => getTokenSymbol(t.symbol) === selectedTokenSymbol,
               )!;
 
               if (!token) return;
@@ -117,22 +104,16 @@ export default function TradingChartHeader({
           />
         </div>
 
-        <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5"> {}
+        <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
           <FormatNumber
-            nb={
-              streamingTokenPrices[
-                selected.symbol === 'WBTC' ? 'BTC' : 
-                selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-              ]
-            }
+            nb={streamingTokenPrices[getTokenSymbol(selected.symbol)]}
             format="currency"
             minimumFractionDigits={2}
             className={twMerge('text-lg font-bold', tokenColor)}
           />
-
           <div className="flex flex-row gap-0 sm:gap-1">
             <div className="flex items-center p-1 rounded-full flex-wrap">
-              <span className="font-mono text-xs sm:text-xs text-txtfade text-right"> {}
+              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
                 24h Change
               </span>
               <span
@@ -144,16 +125,16 @@ export default function TradingChartHeader({
                 )}
               >
                 {stats
-                  ? `${(stats[selected.symbol].dailyChange).toFixed(2)}%` // Manually format to 2 decimal places
+                  ? `${stats[selected.symbol].dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
                   : '-'}
               </span>
             </div>
 
             <div className="flex items-center p-1 rounded-full flex-wrap">
-              <span className="font-mono text-xs sm:text-xs text-txtfade text-right"> {}
+              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
                 24h Volume
               </span>
-              <span className="font-mono text-xs sm:text-xs ml-1"> {}
+              <span className="font-mono text-xs sm:text-xs ml-1">
                 <FormatNumber
                   nb={stats?.[selected.symbol].dailyVolume}
                   format="currency"

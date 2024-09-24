@@ -12,6 +12,7 @@ import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/Tr
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
+import { getTokenSymbol } from '@/utils';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -88,9 +89,9 @@ export default function Trade({
     router.replace({
       query: {
         ...router.query,
-        pair: `${tokenA.symbol !== 'JITOSOL' ? tokenA.symbol : 'SOL'}_${
-          tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'
-        }`,
+        pair: `${getTokenSymbol(tokenA.symbol)}_${getTokenSymbol(
+          tokenB.symbol,
+        )}`,
         action: selectedAction,
       },
     });
@@ -142,14 +143,10 @@ export default function Trade({
       const [tokenAName, tokenBName] = pair;
 
       const tokenA = tokenACandidate.find(
-        (token) =>
-          token.symbol === tokenAName ||
-          (token.symbol === 'JITOSOL' && tokenAName === 'SOL'),
+        (token) => getTokenSymbol(token.symbol) === tokenAName,
       );
       const tokenB = tokenBCandidate.find(
-        (token) =>
-          token.symbol === tokenBName ||
-          (token.symbol === 'JITOSOL' && tokenBName === 'SOL'),
+        (token) => getTokenSymbol(token.symbol) === tokenBName,
       );
 
       // bad URL
@@ -261,16 +258,16 @@ export default function Trade({
           <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
             {/* Display trading chart for appropriate token */}
             {tokenA && tokenB ? (
-                <TradingChart
-                  token={
-                    selectedAction === 'short' || selectedAction === 'long'
-                      ? tokenB
-                      : tokenA.isStable
-                      ? tokenB
-                      : tokenA
-                  }
-                  positions={positions}
-                />
+              <TradingChart
+                token={
+                  selectedAction === 'short' || selectedAction === 'long'
+                    ? tokenB
+                    : tokenA.isStable
+                    ? tokenB
+                    : tokenA
+                }
+                positions={positions}
+              />
             ) : null}
           </div>
         </div>

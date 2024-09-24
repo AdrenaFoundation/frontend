@@ -48,10 +48,10 @@ export default function Settings({
     <Menu
       trigger={
         <Button
-          variant={isGenesis ? 'text' : 'secondary'}
+          variant={isGenesis ? 'text' : 'lightbg'}
           leftIcon={settingsIcon}
-          className={'w-6 h-[2.5em] p-0'}
-          iconClassName="w-4 h-4"
+          className={'w-7 h-7 p-0'}
+          iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
         />
       }
       openMenuClassName={twMerge(

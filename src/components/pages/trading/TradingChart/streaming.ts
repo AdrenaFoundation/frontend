@@ -68,8 +68,6 @@ function handleStreamingData(data: PythStreamingData) {
       low: Math.min(lastDailyBar.low, tradePrice),
       close: tradePrice,
     };
-
-    console.log('[stream] Update the latest bar by price', tradePrice);
   }
 
   store.dispatch(
