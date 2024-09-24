@@ -34,11 +34,11 @@ export default function FeesChart() {
       const formattedData = timeStamp.map(
         (time: number, i: string | number) => ({
           name: time,
-          ['Swap And Fee']: cumulative_swap_fee_usd[i],
-          ['Liquidity Fee']: cumulative_liquidity_fee_usd[i],
-          ['Close Position Fee']: cumulative_close_position_fee_usd[i],
-          ['Liquidation Fee']: cumulative_liquidation_fee_usd[i],
-          ['Borrow Fee']: cumulative_borrow_fee_usd[i],
+          'Swap And Fee': cumulative_swap_fee_usd[i],
+          'Liquidity Fee': cumulative_liquidity_fee_usd[i],
+          'Close Position Fee': cumulative_close_position_fee_usd[i],
+          'Liquidation Fee': cumulative_liquidation_fee_usd[i],
+          'Borrow Fee': cumulative_borrow_fee_usd[i],
         }),
       );
 

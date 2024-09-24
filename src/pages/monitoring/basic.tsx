@@ -1,6 +1,7 @@
 import React from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import ALPPriceChart from '@/components/pages/global/ALPPrice/ALPPriceChart';
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
 import CumulativePnlChart from '@/components/pages/global/CumulativePnl/CumulativePnlChart';
@@ -34,6 +35,7 @@ export default function BasicMonitoring({}: PageProps & {
 
         <div className="grid lg:grid-cols-2 gap-16 lg:h-[18em]">
           <FeesChart />
+          <ALPPriceChart />
         </div>
       </StyledContainer>
     </div>
