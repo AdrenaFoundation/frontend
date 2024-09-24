@@ -3429,7 +3429,11 @@ export class AdrenaClient {
     const custody = this.getCustodyByPubkey(position.custody);
     if (!custody) throw new Error('Cannot find custody');
 
-    const collateralCustody = this.getCustodyByMint(position.collateralCustody);
+    const collateralCustody = this.getCustodyByPubkey(
+      position.collateralCustody,
+    );
+    if (!collateralCustody) throw new Error('Cannot find collateral custody');
+
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
     );
@@ -3595,7 +3599,11 @@ export class AdrenaClient {
     const custody = this.getCustodyByPubkey(position.custody);
     if (!custody) throw new Error('Cannot find custody');
 
-    const collateralCustody = this.getCustodyByMint(position.collateralCustody);
+    const collateralCustody = this.getCustodyByPubkey(
+      position.collateralCustody,
+    );
+    if (!collateralCustody) throw new Error('Cannot find collateralCustody');
+
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
     );

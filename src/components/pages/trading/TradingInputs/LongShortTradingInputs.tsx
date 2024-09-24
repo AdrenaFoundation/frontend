@@ -658,7 +658,7 @@ export default function LongShortTradingInputs({
                 <FormatNumber
                   nb={positionInfos.liquidationPrice}
                   format="currency"
-                  className="text-lg"
+                  className="text-lg text-orange"
                 />
 
                 {openedPosition && openedPosition.liquidationPrice ? (

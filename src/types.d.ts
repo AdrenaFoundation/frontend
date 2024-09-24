@@ -163,6 +163,7 @@ export interface Token {
   color: string;
   name: TokenName;
   decimals: number;
+  // displayDecimals: number; TODO: Implement this to fix display in fields
   isStable: boolean;
   image: ImageRef;
   custody?: PublicKey;
