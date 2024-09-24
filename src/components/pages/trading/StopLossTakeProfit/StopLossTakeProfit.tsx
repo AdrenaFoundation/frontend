@@ -11,7 +11,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, UserProfileExtended } from '@/types';
-import { addNotification, formatPriceInfo } from '@/utils';
+import { addNotification, formatPriceInfo, getTokenSymbol } from '@/utils';
 
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
 
@@ -48,14 +48,11 @@ export default function StopLossTakeProfit({
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const markPrice: number | null =
-    tokenPrices[
-      position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
-    ];
-  
+    tokenPrices[getTokenSymbol(position.token.symbol)];
+
   const [stopLossError, setStopLossError] = useState<boolean>(false);
   const [takeProfitError, setTakeProfitError] = useState<boolean>(false);
 
-  
   // Validation function
   const validateInputs = () => {
     let isValid = true;
@@ -66,7 +63,10 @@ export default function StopLossTakeProfit({
         if (stopLossInput >= markPrice) {
           setStopLossError(true); // 'Stop Loss must be below current price for long positions'
           isValid = false;
-        } else if (position.liquidationPrice != null && stopLossInput <= position.liquidationPrice) {
+        } else if (
+          position.liquidationPrice != null &&
+          stopLossInput <= position.liquidationPrice
+        ) {
           setStopLossError(true); // 'Stop Loss must be above liquidation price'
           isValid = false;
         } else {
@@ -76,7 +76,10 @@ export default function StopLossTakeProfit({
         if (stopLossInput <= markPrice) {
           setStopLossError(true); // 'Stop Loss must be above current price for short positions'
           isValid = false;
-        } else if (position.liquidationPrice != null && stopLossInput >= position.liquidationPrice) {
+        } else if (
+          position.liquidationPrice != null &&
+          stopLossInput >= position.liquidationPrice
+        ) {
           setStopLossError(true); // 'Stop Loss must be below liquidation price'
           isValid = false;
         } else {
@@ -246,7 +249,9 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Entry Price</span>
-            <div className="text-sm text-gray-400">{formatPriceInfo(position.price)}</div>
+            <div className="text-sm text-gray-400">
+              {formatPriceInfo(position.price)}
+            </div>
           </div>
 
           <div className="flex w-full justify-between">
@@ -265,7 +270,9 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Initial collateral</span>
-            <div className="text-sm text-gray-400">{formatPriceInfo(position.collateralUsd)}</div>
+            <div className="text-sm text-gray-400">
+              {formatPriceInfo(position.collateralUsd)}
+            </div>
           </div>
 
           <div className="flex w-full justify-between">
@@ -278,7 +285,6 @@ export default function StopLossTakeProfit({
             />
           </div>
 
-
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">PnL</span>
             <div
@@ -288,7 +294,7 @@ export default function StopLossTakeProfit({
                   ? 'text-green'
                   : positionNetPnl < 0
                   ? 'text-red'
-                  : 'text-gray-400'
+                  : 'text-gray-400',
               )}
             >
               {positionNetPnl > 0 ? '+' : positionNetPnl < 0 ? '−' : ''}

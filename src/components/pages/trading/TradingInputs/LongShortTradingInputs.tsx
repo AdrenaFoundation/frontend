@@ -23,12 +23,13 @@ import {
   AdrenaTransactionError,
   formatNumber,
   formatPriceInfo,
+  getTokenImage,
+  getTokenSymbol,
   uiLeverageToNative,
   uiToNative,
 } from '@/utils';
 
 import errorImg from '../../../../../public/images/Icons/error.svg';
-import solLogo from '../../../../../public/images/sol.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
@@ -296,24 +297,16 @@ export default function LongShortTradingInputs({
 
       setPriceB(priceUsd);
 
-      const solPrice = tokenPrices['SOL'];
+      const tokenPriceB = tokenPrices[getTokenSymbol(tokenB.symbol)];
 
-      // Cannot calculate size because we don't have SOL price
-      if (
-        tokenB.symbol === 'JITOSOL' &&
-        (solPrice === null || solPrice === 0)
-      ) {
+      // Cannot calculate size because we don't have price
+      if (tokenPriceB === null || tokenPriceB === 0) {
         return setInputB(null);
       }
 
-      const size =
-        priceUsd /
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        (tokenB.symbol !== 'JITOSOL' ? tokenPriceB : solPrice!);
+      const size = priceUsd / tokenPriceB;
 
-      setInputB(
-        Number(size.toFixed(tokenB.symbol !== 'JITOSOL' ? tokenB.decimals : 9)),
-      );
+      setInputB(Number(size.toFixed(tokenB.decimals)));
     } else {
       setPriceB(null);
       setInputB(null);
@@ -349,17 +342,10 @@ export default function LongShortTradingInputs({
 
     const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
-    const solPrice = tokenPrices['SOL'];
+    const tokenPriceB = tokenPrices[getTokenSymbol(tokenB.symbol)];
 
     if (tokenPriceB !== null) {
-      if (tokenB.symbol === 'JITOSOL') {
-        if (solPrice === null) {
-          return setErrorMessage(`Missing SOL price`);
-        }
-
-        if (inputB * solPrice > custody.maxPositionLockedUsd)
-          return setErrorMessage(`Position Exceeds Max Size`);
-      } else if (inputB * tokenPriceB > custody.maxPositionLockedUsd)
+      if (inputB * tokenPriceB > custody.maxPositionLockedUsd)
         return setErrorMessage(`Position Exceeds Max Size`);
     }
 
@@ -368,7 +354,15 @@ export default function LongShortTradingInputs({
       return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
 
     return setErrorMessage(null);
-  }, [inputA, inputB, tokenA.symbol, tokenB, tokenPriceB, walletTokenBalances]);
+  }, [
+    inputA,
+    inputB,
+    tokenA.symbol,
+    tokenB,
+    tokenPriceB,
+    tokenPrices,
+    walletTokenBalances,
+  ]);
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
@@ -469,24 +463,22 @@ export default function LongShortTradingInputs({
       <div className="flex flex-col mt-2 sm:mt-4 transition-opacity duration-500">
         <h5 className="flex items-center ml-4">Size</h5>
 
-        <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg">
+        <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-50">
           <Select
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"
             menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
             menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
-            selected={tokenB.symbol !== 'JITOSOL' ? tokenB.symbol : 'SOL'}
+            selected={getTokenSymbol(tokenB.symbol)}
             options={allowedTokenB.map((token) => ({
-              title: token.symbol !== 'JITOSOL' ? token.symbol : 'SOL',
-              img: token.symbol !== 'JITOSOL' ? token.image : solLogo,
+              title: getTokenSymbol(token.symbol),
+              img: getTokenImage(token),
             }))}
             onSelect={(name) => {
               // Force linting, you cannot not find the token in the list
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               const token = allowedTokenB.find(
-                (t) =>
-                  t.symbol === name ||
-                  (t.symbol === 'JITOSOL' && name === 'SOL'),
+                (t) => getTokenSymbol(t.symbol) === name,
               )!;
               setTokenB(token);
 

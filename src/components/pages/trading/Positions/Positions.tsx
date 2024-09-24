@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import { PositionExtended, UserProfileExtended } from '@/types';
+import { getTokenSymbol } from '@/utils';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
@@ -82,11 +83,9 @@ export default function Positions({
 
         {positionToStopLossTakeProfit && (
           <Modal
-            title={`${
-              positionToStopLossTakeProfit.token.symbol !== 'JITOSOL'
-                ? positionToStopLossTakeProfit.token.symbol
-                : 'SOL'
-            } ${positionToStopLossTakeProfit.side} SL/TP`}
+            title={`${getTokenSymbol(
+              positionToStopLossTakeProfit.token.symbol,
+            )} ${positionToStopLossTakeProfit.side} SL/TP`}
             close={() => setPositionToStopLossTakeProfit(null)}
             className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center"
           >

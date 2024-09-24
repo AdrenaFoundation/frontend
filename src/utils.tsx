@@ -29,9 +29,17 @@ import { Adrena } from '@/target/adrena';
 import arrowDown from '../public/images/arrow-down.png';
 import arrowRightIcon from '../public/images/arrow-right.svg';
 import arrowUp from '../public/images/arrow-up.png';
+import btcLogo from '../public/images/btc.svg';
+import solLogo from '../public/images/sol.svg';
 import { ROUND_MIN_DURATION_SECONDS } from './constant';
 import { WalletStakingAccounts } from './hooks/useWalletStakingAccounts';
-import { LimitedString, LockedStakeExtended, U128Split } from './types';
+import {
+  ImageRef,
+  LimitedString,
+  LockedStakeExtended,
+  Token,
+  U128Split,
+} from './types';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
   const pxSize = 9;
@@ -123,7 +131,11 @@ export function formatPriceInfo(
   )}`;
 }
 
-export function formatNumberShort(nb: number | string, maxDecimals = 2): string { // Added maxDecimals parameter
+export function formatNumberShort(
+  nb: number | string,
+  maxDecimals = 2,
+): string {
+  // Added maxDecimals parameter
   if (typeof nb === 'string') {
     nb = Number(nb);
   }
@@ -526,6 +538,22 @@ export function formatMilliseconds(milliseconds: number): string {
     formatted = `${formatted}${formatted.length ? ' ' : ''}${seconds}s`;
 
   return formatted;
+}
+
+// Handle specific case of jitoSOL and WBTC
+export function getTokenImage(token: Token): ImageRef {
+  if (token.symbol === 'jitoSOL') return solLogo;
+  if (token.symbol === 'WBTC') return btcLogo;
+
+  return token.image;
+}
+
+// Handle specific case of jitoSOL and WBTC
+export function getTokenSymbol(symbol: string): string {
+  if (symbol === 'jitoSOL') return 'SOL';
+  if (symbol === 'WBTC') return 'BTC';
+
+  return symbol;
 }
 
 // in milliseconds
