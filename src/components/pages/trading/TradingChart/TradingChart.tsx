@@ -121,6 +121,8 @@ function createStopLossPositionLine(
   );
 }
 
+const STORAGE_KEY_RESOLUTION = 'trading_chart_resolution';
+
 export default function TradingChart({
   token,
   positions,
@@ -145,6 +147,9 @@ export default function TradingChart({
     short: PositionLine | null;
     long: PositionLine | null;
   } | null>(null);
+
+  // Retrieve saved resolution or default to 'H'
+  const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || 'H';
 
   function modifyPositionLine(
     chart: IChartWidgetApi,
@@ -205,85 +210,88 @@ export default function TradingChart({
   }
 
   useEffect(() => {
-  function createWidget() {
-    if (document.getElementById('chart-area') && 'TradingView' in window) {
-        // Force to any because we don't have access to the type of TradingView
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const widget = new window.TradingView.widget({
-        container: 'chart-area',
-        library_path: '/charting_library/',
-        width: 100,
-        height: 100,
-        autosize: true,
+    function createWidget() {
+      if (document.getElementById('chart-area') && 'TradingView' in window) {
+        const widget = new window.TradingView.widget({
+          container: 'chart-area',
+          library_path: '/charting_library/',
+          width: 100,
+          height: 100,
+          autosize: true,
           symbol: `Crypto.${token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
-        timezone: 'Etc/UTC',
-        locale: 'en',
-        toolbar_bg: '#061018',
-        datafeed,
-        loading_screen: {
-          backgroundColor: '#061018',
-          foregroundColor: '#061018',
-        },
-        favorites: {
-          intervals: [
-            '1',
-            '5',
-            '15',
-            '1h',
-            '4h',
-            'D',
-          ] as ResolutionString[],
-          chartTypes: ['Candles'],
-        },
-        disabled_features: [
-          'header_symbol_search',
-          'header_chart_type',
-          'header_compare',
-          'display_market_status',
-          'create_volume_indicator_by_default',
-          'header_undo_redo',
-          'symbol_info',
-          'symbol_info_long_description',
-          'symbol_info_price_source',
-        ],
-        enabled_features: [
-          'header_indicators',
-          'header_fullscreen_button',
-          'header_settings',
-        ],
-        custom_css_url: '/tradingview.css',
-        overrides: {
-          'paneProperties.background': '#061018',
-          'paneProperties.backgroundType': 'solid',
-          'paneProperties.legendProperties.showStudyArguments': false,
-          'paneProperties.legendProperties.showStudyTitles': false,
-          'paneProperties.legendProperties.showStudyValues': false,
-          'paneProperties.legendProperties.showSeriesTitle': false,
-          'paneProperties.legendProperties.showBarChange': false,
-          'paneProperties.legendProperties.showSeriesOHLC': true,
-          'mainSeriesProperties.priceLineColor': 'yellow',
-        },
-        theme: 'dark',
-          interval: 'H' as ResolutionString,
-        custom_formatters: {
-          priceFormatterFactory: (): ISymbolValueFormatter | null => {
-            return {
-              format: (price: number): string => {
-                return formatNumber(price, 2, 2, 8);
-              },
-            };
+          timezone: 'Etc/UTC',
+          locale: 'en',
+          toolbar_bg: '#061018',
+          datafeed,
+          loading_screen: {
+            backgroundColor: '#061018',
+            foregroundColor: '#061018',
           },
-        },
-      });
+          favorites: {
+            intervals: [
+              '1',
+              '5',
+              '15',
+              '1h',
+              '4h',
+              'D',
+            ] as ResolutionString[],
+            chartTypes: ['Candles'],
+          },
+          disabled_features: [
+            'header_symbol_search',
+            'header_chart_type',
+            'header_compare',
+            'display_market_status',
+            'create_volume_indicator_by_default',
+            'header_undo_redo',
+            'symbol_info',
+            'symbol_info_long_description',
+            'symbol_info_price_source',
+          ],
+          enabled_features: [
+            'header_indicators',
+            'header_fullscreen_button',
+            'header_settings',
+          ],
+          custom_css_url: '/tradingview.css',
+          overrides: {
+            'paneProperties.background': '#061018',
+            'paneProperties.backgroundType': 'solid',
+            'paneProperties.legendProperties.showStudyArguments': false,
+            'paneProperties.legendProperties.showStudyTitles': false,
+            'paneProperties.legendProperties.showStudyValues': false,
+            'paneProperties.legendProperties.showSeriesTitle': false,
+            'paneProperties.legendProperties.showBarChange': false,
+            'paneProperties.legendProperties.showSeriesOHLC': true,
+            'mainSeriesProperties.priceLineColor': 'yellow',
+          },
+          theme: 'dark',
+          interval: savedResolution as ResolutionString,
+          custom_formatters: {
+            priceFormatterFactory: (): ISymbolValueFormatter | null => {
+              return {
+                format: (price: number): string => {
+                  return formatNumber(price, 2, 2, 8);
+                },
+              };
+            },
+          },
+        });
 
-      widget.onChartReady(() => {
-        setWidgetReady(true);
-        setIsLoading(false);
-      });
+        widget.onChartReady(() => {
+          setWidgetReady(true);
+          setIsLoading(false);
 
-      setWidget(widget);
+          // Listen for resolution changes
+          widget.activeChart().onIntervalChanged().subscribe(null, (newInterval: ResolutionString) => {
+            localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
+          });
+        });
+
+        setWidget(widget);
+      }
     }
-  }
 
     onLoadScriptRef.current = createWidget;
 
@@ -315,7 +323,7 @@ export default function TradingChart({
 
     widget?.setSymbol(
       `Crypto.${token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
-      'H' as ResolutionString,
+      savedResolution as ResolutionString,
       () => {
         setWidgetReady(true);
       },
@@ -457,7 +465,7 @@ export default function TradingChart({
       <div
         id="wrapper-trading-chart"
         className={twMerge(
-          'h-full w-full flex flex-col min-h-[600px]',
+          'h-full w-full flex flex-col',
           isLoading ? 'hidden' : '',
         )}
       >
