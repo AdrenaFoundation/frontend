@@ -457,7 +457,7 @@ export default function TradingChart({
       <div
         id="wrapper-trading-chart"
         className={twMerge(
-          'h-full w-full flex flex-col',
+          'h-full w-full flex flex-col min-h-[600px]',
           isLoading ? 'hidden' : '',
         )}
       >
