@@ -10,11 +10,32 @@ import {
   YAxis,
 } from 'recharts';
 
-import { formatNumber, formatPriceInfo } from '@/utils';
+import { formatPriceInfo } from '@/utils';
 
-import CustomToolTip from './CustomToolTip';
+function CustomToolTip(props: any) {
+  const { active, payload, label } = props;
 
-export default function SizeOfCustodyLine({
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-third p-3 border border-white rounded-lg">
+        <p className="text-lg mb-2 font-mono">{label}</p>
+        {payload.map((item: any) => (
+          <p
+            key={item.dataKey}
+            className="text-sm font-mono"
+            style={{ color: item.fill }}
+          >
+            {item.dataKey}: {formatPriceInfo(item.value)}
+          </p>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+export default function LineRechartComposition({
   title,
   data,
   labels,
@@ -42,15 +63,23 @@ export default function SizeOfCustodyLine({
   };
 
   return (
-    <div className="border p-3 rounded-lg max-h-[450px]">
+    <div className="flex flex-col h-full w-full">
       <h2 className="mb-3">{title}</h2>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart width={600} height={400} data={data}>
+        <LineChart data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
-          <XAxis dataKey="time" />
-          <YAxis domain={['dataMax']} tickFormatter={formatYAxis} />
+
+          <XAxis dataKey="time" fontSize="12" />
+
+          <YAxis
+            domain={['dataMax']}
+            tickFormatter={formatYAxis}
+            fontSize="13"
+          />
+
           <Tooltip content={<CustomToolTip />} cursor={false} />
+
           <Legend />
 
           <Line

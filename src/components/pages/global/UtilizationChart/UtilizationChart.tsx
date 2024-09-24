@@ -78,7 +78,13 @@ export default function UtilizationChart() {
     }
   };
 
-  if (!infos) return <div>Loading...</div>;
+  if (!infos) {
+    return (
+      <div className="h-full w-full flex items-center justify-center text-sm">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <LineRechartPercentage

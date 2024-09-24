@@ -56,7 +56,7 @@ export default function LineRechartPercentage({
     <div className="flex flex-col h-full w-full">
       <h2 className="mb-3">{title}</h2>
 
-      <ResponsiveContainer width="100%" height="100%" maxHeight={400}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
           margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
