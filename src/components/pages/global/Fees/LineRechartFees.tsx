@@ -71,7 +71,7 @@ export default function LineRechartFees({
           <XAxis dataKey="name" fontSize="12" />
 
           <YAxis
-            domain={['dataMin', 'dataMax']}
+            domain={[0, 'auto']}
             tickFormatter={formatYAxis}
             fontSize="13"
           />
