@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { PositionExtended, Token } from '@/types';
-import { formatNumber, formatNumberShort } from '@/utils';
+import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
 
 import {
   IChartingLibraryWidget,
@@ -30,7 +30,11 @@ function createEntryPositionLine(
   position: PositionExtended,
 ): IPositionLineAdapter {
   const color = position.side === 'long' ? greenColor : redColor;
-  const label = getLabel(position.token.symbol, position.side, position.side === 'long' ? 'Long' : 'Short');
+  const label = getLabel(
+    position.token.symbol,
+    position.side,
+    position.side === 'long' ? 'Long' : 'Short',
+  );
   return chart
     .createPositionLine({})
     .setText(label)
@@ -40,9 +44,9 @@ function createEntryPositionLine(
     .setBodyBackgroundColor(color)
     .setBodyBorderColor(color)
     .setBodyTextColor(whiteColor)
-    .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+    .setQuantity('$' + formatNumberShort(position.sizeUsd, 0))
     .setQuantityBackgroundColor(greyColor)
-    .setQuantityBorderColor(greyColor)
+    .setQuantityBorderColor(greyColor);
 }
 
 function createLiquidationPositionLine(
@@ -61,20 +65,18 @@ function createLiquidationPositionLine(
       .setBodyBorderColor(orangeColor)
       .setBodyBackgroundColor(orangeColor)
       .setBodyTextColor(whiteColor)
-      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantity('$' + formatNumberShort(position.sizeUsd, 0))
       .setQuantityBackgroundColor(greyColor)
       .setQuantityBorderColor(greyColor)
   );
 }
 
-function getLabel(tokenSymbol: string, side: 'long' | 'short', type: 'SL' | 'TP' | 'Long' | 'Short'): string {
-  let symbol = tokenSymbol;
-  
-  if (tokenSymbol === 'WBTC') {
-    symbol = 'BTC';
-  } else if (tokenSymbol === 'JITOSOL') {
-    symbol = 'SOL';
-  }
+function getLabel(
+  tokenSymbol: string,
+  side: 'long' | 'short',
+  type: 'SL' | 'TP' | 'Long' | 'Short',
+): string {
+  const symbol = getTokenSymbol(tokenSymbol);
 
   // Return the label for the position line
   if (type === 'Long' || type === 'Short') {
@@ -103,7 +105,7 @@ function createTakeProfitPositionLine(
       .setBodyBorderColor(blueColor)
       .setBodyBackgroundColor(blueColor)
       .setBodyTextColor(whiteColor)
-      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantity('$' + formatNumberShort(position.sizeUsd, 0))
       .setQuantityBackgroundColor(greyColor)
       .setQuantityBorderColor(greyColor)
   );
@@ -126,7 +128,7 @@ function createStopLossPositionLine(
       .setBodyBorderColor(blueColor)
       .setBodyBackgroundColor(blueColor)
       .setBodyTextColor(whiteColor)
-      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantity('$' + formatNumberShort(position.sizeUsd, 0))
       .setQuantityBackgroundColor(greyColor)
       .setQuantityBorderColor(greyColor)
   );
@@ -181,15 +183,15 @@ export default function TradingChart({
       if (positionLine.liquidation) {
         positionLine.liquidation.setPrice(position.liquidationPrice);
       } else {
-        positionLine.liquidation = createLiquidationPositionLine(chart, position);
+        positionLine.liquidation = createLiquidationPositionLine(
+          chart,
+          position,
+        );
       }
     }
 
     // Handle Take Profit
-    if (
-      !position.takeProfitThreadIsSet ||
-      !position.takeProfitLimitPrice
-    ) {
+    if (!position.takeProfitThreadIsSet || !position.takeProfitLimitPrice) {
       if (positionLine.takeProfit) {
         positionLine.takeProfit.remove();
         positionLine.takeProfit = undefined;
@@ -203,10 +205,7 @@ export default function TradingChart({
     }
 
     // Handle Stop Loss
-    if (
-      !position.stopLossThreadIsSet ||
-      !position.stopLossLimitPrice
-    ) {
+    if (!position.stopLossThreadIsSet || !position.stopLossLimitPrice) {
       if (positionLine.stopLoss) {
         positionLine.stopLoss.remove();
         positionLine.stopLoss = undefined;
@@ -229,7 +228,7 @@ export default function TradingChart({
           width: 100,
           height: 100,
           autosize: true,
-          symbol: `Crypto.${token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
+          symbol: `Crypto.${getTokenSymbol(token.symbol)}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
           toolbar_bg: '#061018',
@@ -239,14 +238,7 @@ export default function TradingChart({
             foregroundColor: '#061018',
           },
           favorites: {
-            intervals: [
-              '1',
-              '5',
-              '15',
-              '1h',
-              '4h',
-              'D',
-            ] as ResolutionString[],
+            intervals: ['1', '5', '15', '1h', '4h', 'D'] as ResolutionString[],
             chartTypes: ['Candles'],
           },
           disabled_features: [
@@ -295,9 +287,12 @@ export default function TradingChart({
           setIsLoading(false);
 
           // Listen for resolution changes
-          widget.activeChart().onIntervalChanged().subscribe(null, (newInterval: ResolutionString) => {
-            localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
-          });
+          widget
+            .activeChart()
+            .onIntervalChanged()
+            .subscribe(null, (newInterval: ResolutionString) => {
+              localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
+            });
         });
 
         setWidget(widget);
@@ -333,7 +328,7 @@ export default function TradingChart({
     setWidgetReady(false);
 
     widget?.setSymbol(
-      `Crypto.${token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
+      `Crypto.${getTokenSymbol(token.symbol)}/USD`,
       savedResolution as ResolutionString,
       () => {
         setWidgetReady(true);

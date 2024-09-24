@@ -8,8 +8,8 @@ import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
+import { getTokenImage, getTokenSymbol } from '@/utils';
 
-import solLogo from '../../../../../public/images/sol.svg';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 export default function PositionBlock({
@@ -33,10 +33,7 @@ export default function PositionBlock({
   const [isSmallSize, setIsSmallSize] = useState(false);
 
   const liquidable = (() => {
-    const tokenPrice =
-      tokenPrices[
-        position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
-      ];
+    const tokenPrice = tokenPrices[getTokenSymbol(position.token.symbol)];
 
     if (
       tokenPrice === null ||
@@ -71,32 +68,26 @@ export default function PositionBlock({
     <div className="flex items-center justify-center h-full">
       <Image
         className="w-[1em] h-[1em] mr-1"
-        src={
-          position.token.symbol !== 'JITOSOL' ? position.token.image : solLogo
-        }
+        src={getTokenImage(position.token)}
         width={200}
         height={200}
-        alt={`${
-          position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
-        } logo`}
+        alt={`${getTokenSymbol(position.token.symbol)} logo`}
       />
 
       {window.location.pathname !== '/trade' ? (
         <Link
-          href={`/trade?pair=USDC_${
-            position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'
-          }&action=${position.side}`}
+          href={`/trade?pair=USDC_${getTokenSymbol(
+            position.token.symbol,
+          )}&action=${position.side}`}
           target=""
         >
           <div className="uppercase underline font-boldy text-sm lg:text-xl">
-            {position.token.symbol !== 'JITOSOL'
-              ? position.token.symbol
-              : 'SOL'}
+            {getTokenSymbol(position.token.symbol)}
           </div>
         </Link>
       ) : (
         <div className="uppercase font-boldy text-sm lg:text-lg">
-          {position.token.symbol !== 'JITOSOL' ? position.token.symbol : 'SOL'}
+          {getTokenSymbol(position.token.symbol)}
         </div>
       )}
 
@@ -125,33 +116,43 @@ export default function PositionBlock({
             nb={showAfterFees ? position.pnl + fees : position.pnl} // Adjusted for fee display
             format="currency"
             className={`mr-0.5 font-bold text-${
-              (showAfterFees ? position.pnl + fees : position.pnl) > 0 ? 'green' : 'redbright'
+              (showAfterFees ? position.pnl + fees : position.pnl) > 0
+                ? 'green'
+                : 'redbright'
             }`}
             isDecimalDimmed={false}
           />
 
           <FormatNumber
-            nb={((showAfterFees ? position.pnl + fees : position.pnl) / position.collateralUsd) * 100}
+            nb={
+              ((showAfterFees ? position.pnl + fees : position.pnl) /
+                position.collateralUsd) *
+              100
+            }
             format="percentage"
             prefix="("
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
             className={`text-xs text-${
-              (showAfterFees ? position.pnl + fees : position.pnl) > 0 ? 'green' : 'redbright'
+              (showAfterFees ? position.pnl + fees : position.pnl) > 0
+                ? 'green'
+                : 'redbright'
             }`}
           />
 
-                  <label className="flex items-center ml-2 cursor-pointer">
-          <Switch
-            className="mr-1"
-            checked={showAfterFees}
-            onChange={() => setShowAfterFees(!showAfterFees)
-            }
-            size="small"
-          />
-          <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">{showAfterFees ? 'w/o fees' : 'w/ fees'}</span> {/* conditional text */}
-        </label>
+          <label className="flex items-center ml-2 cursor-pointer">
+            <Switch
+              className="mr-1"
+              checked={showAfterFees}
+              onChange={() => setShowAfterFees(!showAfterFees)}
+              size="small"
+            />
+            <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">
+              {showAfterFees ? 'w/o fees' : 'w/ fees'}
+            </span>{' '}
+            {/* conditional text */}
+          </label>
         </div>
       ) : (
         '-'
@@ -280,13 +281,7 @@ export default function PositionBlock({
           </div>
           <div className="flex">
             <FormatNumber
-              nb={
-                tokenPrices[
-                  position.token.symbol !== 'JITOSOL'
-                    ? position.token.symbol
-                    : 'SOL'
-                ]
-              }
+              nb={tokenPrices[getTokenSymbol(position.token.symbol)]}
               format="currency"
               className="text-gray-400 text-xs bold"
             />

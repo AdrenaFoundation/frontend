@@ -8,6 +8,7 @@ import btcLogo from '../../public/images/btc.svg';
 import jitosolLogo from '../../public/images/jitosol.png';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
+import wbtcLogo from '../../public/images/wbtc.png';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
 export default class MainnetConfiguration implements IConfiguration {
@@ -49,17 +50,29 @@ export default class MainnetConfiguration implements IConfiguration {
         'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
     },
-    // '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E': {
-    //   name: 'Bitcoin',
-    //   color: '#f7931a',
-    //   symbol: 'BTC',
-    //   image: btcLogo,
-    //   coingeckoId: 'bitcoin',
-    //   decimals: 6,
-    //   pythPriceUpdateV2: new PublicKey(
-    //     '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
-    //   ),
-    // },
+    '3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh': {
+      name: 'Wrapped Bitcoin',
+      color: '#f7931a',
+      symbol: 'WBTC',
+      image: wbtcLogo,
+      coingeckoId: 'wrapped-btc-wormhole',
+      decimals: 6,
+      pythPriceUpdateV2: new PublicKey(
+        '9gNX5vguzarZZPjTnE1hWze3s6UsZ7dsU3UnAmKPnMHG',
+      ),
+    },
+    [PublicKey.default.toBase58()]: {
+      // There is no token for BTC
+      name: 'Bitcoin',
+      color: '#f7931a',
+      symbol: 'BTC',
+      image: btcLogo,
+      coingeckoId: 'bitcoin',
+      decimals: 6,
+      pythPriceUpdateV2: new PublicKey(
+        '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
+      ),
+    },
     J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn: {
       name: 'Jito Staked SOL',
       color: '#84CC90',
