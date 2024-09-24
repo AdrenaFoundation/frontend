@@ -60,6 +60,7 @@ export default function Trade({
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   userProfile,
+  activeRpc,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -301,7 +302,6 @@ export default function Trade({
               isBigScreen={isBigScreen}
               userProfile={userProfile}
             />
-
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
@@ -318,6 +318,7 @@ export default function Trade({
                   triggerWalletTokenBalancesReload
                 }
                 isBigScreen={isBigScreen}
+                activeRpc={activeRpc}
               />
             </div>
           </div>
@@ -340,6 +341,7 @@ export default function Trade({
             triggerPositionsReload={triggerPositionsReload}
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             isBigScreen={isBigScreen}
+            activeRpc={activeRpc}
           />
         ) : null}
 
@@ -409,6 +411,7 @@ export default function Trade({
                     triggerWalletTokenBalancesReload={
                       triggerWalletTokenBalancesReload
                     }
+                    activeRpc={activeRpc}
                   />
                 </div>
               </Modal>
