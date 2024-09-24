@@ -4142,8 +4142,8 @@ export class AdrenaClient {
       });
 
       return ret;
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // Ignore errors - we have a lot of Blockhash expired errors
       return null;
     }
   }
@@ -4258,8 +4258,8 @@ export class AdrenaClient {
       });
 
       return ret;
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // Ignore errors - we have a lot of Blockhash expired errors
       return null;
     }
   }

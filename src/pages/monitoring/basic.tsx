@@ -167,18 +167,6 @@ export default function BasicMonitoring({
         />
       ) : null}
 
-      {stakedAlpChartData || stakedAdxChartData ? (
-        <TokenStakingOverview
-          alpChart={stakedAlpChartData}
-          alpPrice={alpPrice}
-          alpTotalSupply={alpTotalSupply}
-          adxChart={stakedAdxChartData}
-          adxPrice={adxPrice}
-          adxTotalSupply={adxTotalSupply}
-          className="max-w-[61em]"
-        />
-      ) : null}
-
       <StatsDashboard />
     </div>
   );
