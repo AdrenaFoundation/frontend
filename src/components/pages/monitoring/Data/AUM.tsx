@@ -24,7 +24,7 @@ export default function AUM({
     >
       <div className={twMerge('flex', bodyClassName)}>
         {aumUsd !== null ? formatPriceInfo(aumUsd, 0) : '-'}
-        <div className="text-txtfade">*</div>
+        {!connected ? <div className="text-txtfade">*</div> : null}
       </div>
 
       {!connected ? (

@@ -21,12 +21,10 @@ export default function LineRechart({
 }: {
   title: string;
   data: any;
-  labels?: [
-    {
-      name: string;
-      color?: string;
-    },
-  ];
+  labels: {
+    name: string;
+    color?: string;
+  }[];
 }) {
   // const CustomizedDot = (props: any) => {
   //   const { cx, cy, stroke, payload, value } = props;
@@ -74,7 +72,7 @@ export default function LineRechart({
   };
 
   return (
-    <div className="border p-3 rounded-lg max-h-[450px]">
+    <div className="border p-3 rounded-lg flex flex-col h-full">
       <h2 className="mb-3">{title}</h2>
 
       <ResponsiveContainer width="100%" height="100%">
@@ -85,7 +83,26 @@ export default function LineRechart({
           <Tooltip content={<CustomToolTip />} cursor={false} />
           <Legend />
 
-          <Line type="monotone" dataKey="value" stroke="#82ca9d" dot={false} />
+          {labels?.map(({ name, color }) => {
+            return (
+              <Line
+                key={name}
+                type="monotone"
+                dataKey={name}
+                stroke={color}
+                dot={false}
+                // dot={<CustomizedDot />}
+              />
+            );
+          })}
+
+          {/* <Line
+            type="monotone"
+            dataKey="value"
+            stroke="#82ca9d"
+            dot={false}
+            // dot={<CustomizedDot />}
+          /> */}
         </LineChart>
       </ResponsiveContainer>
     </div>

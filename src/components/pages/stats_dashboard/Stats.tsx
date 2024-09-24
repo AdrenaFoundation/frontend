@@ -106,9 +106,9 @@ export default function StatsDashboard() {
   if (!AUM || !custody) return <div>Loading...</div>;
 
   return (
-    <StyledContainer className="mt-6">
+    <StyledContainer className="mt-6 flex h-full" bodyClassName="h-full flex">
       <div className="grid grid-cols-2 gap-16">
-        <LineRechart title={'AUM'} data={AUM} />
+        <LineRechart title={'AUM'} data={AUM} labels={[{ name: 'value' }]} />
         <SizeOfCustodyLine
           title={'Size of each custody'}
           data={custody}
