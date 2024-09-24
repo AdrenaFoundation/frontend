@@ -94,7 +94,8 @@ export default function TradingChartHeader({
                   title: `${
                     token.symbol === 'WBTC' ? 'BTC' : 
                     token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
-                  } / USD`,
+                    } / USD`,
+                  img: token.image,
                 };
               })}
             onSelect={(opt: string) => {

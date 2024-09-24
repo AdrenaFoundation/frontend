@@ -1,11 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
-import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { PositionExtended, Token } from '@/types';
-import { formatNumber } from '@/utils';
+import { formatNumber, formatNumberShort } from '@/utils';
 
 import {
   IChartingLibraryWidget,
@@ -21,7 +20,7 @@ let tvScriptLoadingPromise: Promise<unknown>;
 type Widget = IChartingLibraryWidget;
 const greenColor = '#07956be6';
 const redColor = '#c9243ae6';
-// const greyColor = '#78828e';
+const greyColor = '#78828e';
 const whiteColor = '#ffffff';
 const orangeColor = '#f77f00';
 const blueColor = '#3a86ff';
@@ -41,6 +40,9 @@ function createEntryPositionLine(
     .setBodyBackgroundColor(color)
     .setBodyBorderColor(color)
     .setBodyTextColor(whiteColor)
+    .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+    .setQuantityBackgroundColor(greyColor)
+    .setQuantityBorderColor(greyColor)
 }
 
 function createLiquidationPositionLine(
@@ -55,10 +57,13 @@ function createLiquidationPositionLine(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .setPrice(position.liquidationPrice!) // Price is checked before calling function
       .setLineColor(orangeColor)
-      .setLineStyle(2)
+      .setLineStyle(1)
       .setBodyBorderColor(orangeColor)
       .setBodyBackgroundColor(orangeColor)
       .setBodyTextColor(whiteColor)
+      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantityBackgroundColor(greyColor)
+      .setQuantityBorderColor(greyColor)
   );
 }
 
@@ -94,10 +99,13 @@ function createTakeProfitPositionLine(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .setPrice(position.takeProfitLimitPrice!)
       .setLineColor(blueColor)
-      .setLineStyle(2)
+      .setLineStyle(1)
       .setBodyBorderColor(blueColor)
       .setBodyBackgroundColor(blueColor)
       .setBodyTextColor(whiteColor)
+      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantityBackgroundColor(greyColor)
+      .setQuantityBorderColor(greyColor)
   );
 }
 
@@ -114,10 +122,13 @@ function createStopLossPositionLine(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .setPrice(position.stopLossLimitPrice!)
       .setLineColor(blueColor)
-      .setLineStyle(2)
+      .setLineStyle(1)
       .setBodyBorderColor(blueColor)
       .setBodyBackgroundColor(blueColor)
       .setBodyTextColor(whiteColor)
+      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantityBackgroundColor(greyColor)
+      .setQuantityBorderColor(greyColor)
   );
 }
 
@@ -470,16 +481,6 @@ export default function TradingChart({
         )}
       >
         <div id="chart-area" className="h-full flex flex-col rounded-b-lg" />
-        <div className="copyright text-[0.3em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
-          TradingView™️ 
-          <Link
-            href={`https://www.tradingview.com/symbols/${token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}USD/`}
-            target="__blank"
-            className="ml-1 underline"
-          >
-            {token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'} USD Chart
-          </Link>
-        </div>
       </div>
     </div>
   );
