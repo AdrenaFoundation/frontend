@@ -297,7 +297,12 @@ export default function PositionBlock({
           <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
             Liq. Price
           </div>
-          <div className="flex">
+          <div
+            className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+            onClick={() => triggerEditPositionCollateral(position)}
+            role="button"
+            tabIndex={0}
+          >
             <FormatNumber
               nb={position.liquidationPrice}
               format="currency"
@@ -310,8 +315,12 @@ export default function PositionBlock({
           <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
             Take Profit
           </div>
-
-          <div className="flex">
+          <div
+            className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+            onClick={() => triggerStopLossTakeProfit(position)}
+            role="button"
+            tabIndex={0}
+          >
             {position.takeProfitThreadIsSet &&
             position.takeProfitLimitPrice &&
             position.takeProfitLimitPrice > 0 ? (
@@ -330,8 +339,12 @@ export default function PositionBlock({
           <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
             Stop Loss
           </div>
-
-          <div className="flex">
+          <div
+            className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+            onClick={() => triggerStopLossTakeProfit(position)}
+            role="button"
+            tabIndex={0}
+          >
             {position.stopLossThreadIsSet &&
             position.stopLossLimitPrice &&
             position.stopLossLimitPrice > 0 ? (
