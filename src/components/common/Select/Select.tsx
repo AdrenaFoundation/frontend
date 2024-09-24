@@ -21,6 +21,7 @@ export default function Select<T extends string>({
   onSelect,
   reversed,
   align = 'right',
+  textClassName,
 }: {
   className?: string;
   selectedClassName?: string;
@@ -29,6 +30,7 @@ export default function Select<T extends string>({
   selected: T;
   options: { title: T; img?: ImageRef }[];
   onSelect: (opt: T) => void;
+  textClassName?: string;
 
   // Reverse the image position
   reversed?: boolean;
