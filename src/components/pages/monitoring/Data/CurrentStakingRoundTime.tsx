@@ -16,14 +16,6 @@ export default function CurrentStakingRoundTime({
   titleClassName?: string;
   bodyClassName?: string;
 }) {
-  console.log(
-    ' alpStakingAccount.currentStakingRound.startTime',
-    alpStakingAccount.currentStakingRound.startTime.toString(),
-    getNextStakingRoundStartTime(
-      alpStakingAccount.currentStakingRound.startTime,
-    ).getTime() / 1000,
-  );
-
   return (
     <StyledContainer
       title="CURRENT STAKING ROUND TIME"

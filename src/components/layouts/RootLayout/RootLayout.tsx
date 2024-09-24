@@ -46,14 +46,15 @@ export default function RootLayout({
   setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
-  const [pages, setPages] = useState<{ name: string; link: string }[]>([
+  const [pages, setPages] = useState<
+    { name: string; link: string; external?: boolean }[]
+  >([
     { name: 'My Dashboard', link: '/my_dashboard' },
     { name: 'Monitoring', link: '/monitoring' },
     { name: 'Stake', link: '/stake' },
     { name: 'ALP', link: '/buy_alp' },
     { name: 'ADX', link: '/buy_adx' },
-    { name: 'Genesis', link: '/genesis' },
-    // { name: 'Docs', link: 'https://www.gitbook.com/' },
+    { name: 'Docs', link: 'https://docs.adrena.xyz/', external: true },
   ]);
 
   useEffect(() => {

@@ -10,11 +10,7 @@ import {
 import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
-import {
-  getAbbrevNickname,
-  getAbbrevWalletAddress,
-  getAccountExplorer,
-} from '@/utils';
+import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';

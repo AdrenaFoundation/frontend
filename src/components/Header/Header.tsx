@@ -30,7 +30,7 @@ export default function Header({
   setFavoriteRpc,
 }: {
   userProfile: UserProfileExtended | null | false;
-  PAGES: { name: string; link: string }[];
+  PAGES: { name: string; link: string; external?: boolean }[];
   activeRpc: {
     name: string;
     connection: Connection;
@@ -89,6 +89,7 @@ export default function Header({
                 pathname === page.link ? 'opacity-100' : '',
               )}
               key={page.name}
+              target={page.external ? '_blank' : '_self'}
             >
               <h5>{page.name}</h5>
             </Link>
