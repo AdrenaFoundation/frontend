@@ -123,17 +123,17 @@ export function formatPriceInfo(
   )}`;
 }
 
-export function formatNumberShort(nb: number | string): string {
+export function formatNumberShort(nb: number | string, maxDecimals = 2): string { // Added maxDecimals parameter
   if (typeof nb === 'string') {
     nb = Number(nb);
   }
-  if (nb < 1_000) return nb.toString();
+  if (nb < 1_000) return nb.toFixed(maxDecimals).toString();
 
-  if (nb < 1_000_000) return `${(nb / 1_000).toFixed(1)}K`;
+  if (nb < 1_000_000) return `${(nb / 1_000).toFixed(maxDecimals)}K`; // Use maxDecimals
 
-  if (nb < 1_000_000_000) return `${(nb / 1_000_000).toFixed(1)}M`;
+  if (nb < 1_000_000_000) return `${(nb / 1_000_000).toFixed(maxDecimals)}M`; // Use maxDecimals
 
-  return `${(nb / 1_000_000_000).toFixed(1)}B`;
+  return `${(nb / 1_000_000_000).toFixed(maxDecimals)}B`; // Use maxDecimals
 }
 
 export function formatPercentage(

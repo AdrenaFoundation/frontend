@@ -261,7 +261,6 @@ export default function Trade({
           <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
             {/* Display trading chart for appropriate token */}
             {tokenA && tokenB ? (
-              <>
                 <TradingChart
                   token={
                     selectedAction === 'short' || selectedAction === 'long'
@@ -272,7 +271,6 @@ export default function Trade({
                   }
                   positions={positions}
                 />
-              </>
             ) : null}
           </div>
         </div>
