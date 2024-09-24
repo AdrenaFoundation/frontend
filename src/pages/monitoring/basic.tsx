@@ -3,10 +3,10 @@ import React from 'react';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
+import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
-import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 
 export default function BasicMonitoring({
   mainPool,

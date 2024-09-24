@@ -2,6 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
 
 import { TokenInfo } from '@/config/IConfiguration';
+
 import LineRechartOpenInterest from './LineRechartOpenInterest';
 
 export default function OpenInterestChart() {
