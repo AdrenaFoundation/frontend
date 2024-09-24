@@ -99,8 +99,8 @@ export default function LineRechartComposition({
           <Line
             type="monotone"
             dataKey="BONK"
-            stroke="#3D3E3F"
-            fill="#3D3E3F"
+            stroke="#dfaf92"
+            fill="#dfaf92"
             dot={false}
           />
           <Line

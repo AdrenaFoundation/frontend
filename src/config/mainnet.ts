@@ -41,7 +41,7 @@ export default class MainnetConfiguration implements IConfiguration {
     },
     DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263: {
       name: 'BONK',
-      color: '#3D3E3F',
+      color: '#dfaf92',
       symbol: 'BONK',
       image: bonkLogo,
       coingeckoId: 'bonk',
