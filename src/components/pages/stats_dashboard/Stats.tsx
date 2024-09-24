@@ -5,6 +5,7 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import BarRechart from '@/components/pages/stats_dashboard/BarRechart';
 import LineRechart from '@/components/pages/stats_dashboard/LineRechart';
 import { TokenInfo } from '@/config/IConfiguration';
+
 import SizeOfCustodyLine from './SizeOfCustodyLine';
 
 export default function StatsDashboard() {
