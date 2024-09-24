@@ -153,7 +153,7 @@ export default function Genesis({
 
   const getGenesis = async () => {
     try {
-      const genesis = await window.adrena.client.getGensisLock();
+      const genesis = await window.adrena.client.getGenesisLock();
 
       if (!genesis) {
         return;

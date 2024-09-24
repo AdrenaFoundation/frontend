@@ -77,7 +77,10 @@ export default function MintAccounts({
                 },
               ];
 
-              if (custody.tradeTokenInfo.symbol !== custody.tokenInfo.symbol) {
+              if (
+                custody.tradeTokenInfo.symbol !== custody.tokenInfo.symbol &&
+                custody.tradeTokenInfo.symbol !== 'BTC' // Hardcoded exception
+              ) {
                 rows.push({
                   rowTitle: (
                     <div className="font-boldy">
