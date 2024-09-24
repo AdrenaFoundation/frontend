@@ -8,6 +8,7 @@ import btcLogo from '../../public/images/btc.svg';
 import jitosolLogo from '../../public/images/jitosol.png';
 import solLogo from '../../public/images/sol.svg';
 import usdcLogo from '../../public/images/usdc.svg';
+import wbtcLogo from '../../public/images/wbtc.png';
 import IConfiguration, { RpcOption } from './IConfiguration';
 
 export default class MainnetConfiguration implements IConfiguration {
@@ -53,7 +54,7 @@ export default class MainnetConfiguration implements IConfiguration {
       name: 'Wrapped Bitcoin',
       color: '#f7931a',
       symbol: 'WBTC',
-      image: btcLogo,
+      image: wbtcLogo,
       coingeckoId: 'wrapped-btc-wormhole',
       decimals: 6,
       pythPriceUpdateV2: new PublicKey(

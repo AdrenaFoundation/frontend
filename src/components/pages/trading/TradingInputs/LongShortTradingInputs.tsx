@@ -463,7 +463,7 @@ export default function LongShortTradingInputs({
       <div className="flex flex-col mt-2 sm:mt-4 transition-opacity duration-500">
         <h5 className="flex items-center ml-4">Size</h5>
 
-        <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-50">
+        <div className="flex items-center h-16 pr-3 bg-third mt-1 border rounded-lg z-40">
           <Select
             className="shrink-0 h-full flex items-center w-[7em]"
             selectedClassName="w-14"

@@ -550,7 +550,7 @@ export function getTokenImage(token: Token): ImageRef {
 
 // Handle specific case of jitoSOL and WBTC
 export function getTokenSymbol(symbol: string): string {
-  if (symbol === 'jitoSOL') return 'SOL';
+  if (symbol === 'JITOSOL') return 'SOL';
   if (symbol === 'WBTC') return 'BTC';
 
   return symbol;
