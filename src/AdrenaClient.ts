@@ -4132,13 +4132,20 @@ export class AdrenaClient {
       return null;
     }
 
-    return this.adrenaProgram.views.getAssetsUnderManagement({
-      accounts: {
-        cortex: AdrenaClient.cortexPda,
-        pool: this.mainPool.pubkey,
-      },
-      remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-    });
+    try {
+      const ret = await this.adrenaProgram.views.getAssetsUnderManagement({
+        accounts: {
+          cortex: AdrenaClient.cortexPda,
+          pool: this.mainPool.pubkey,
+        },
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+      });
+
+      return ret;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 
   // fees are expressed in collateral token
@@ -4240,14 +4247,21 @@ export class AdrenaClient {
       return null;
     }
 
-    return this.adrenaProgram.views.getLpTokenPrice({
-      accounts: {
-        cortex: AdrenaClient.cortexPda,
-        pool: this.mainPool.pubkey,
-        lpTokenMint: this.lpTokenMint,
-      },
-      remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-    });
+    try {
+      const ret = await this.adrenaProgram.views.getLpTokenPrice({
+        accounts: {
+          cortex: AdrenaClient.cortexPda,
+          pool: this.mainPool.pubkey,
+          lpTokenMint: this.lpTokenMint,
+        },
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+      });
+
+      return ret;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 
   /*

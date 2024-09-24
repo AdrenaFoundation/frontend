@@ -6,17 +6,32 @@ import { nativeToUi } from '@/utils';
 export default function useAssetsUnderManagement(): number | null {
   const [aum, setAum] = useState<number | null>(null);
 
-  const fetchAum = useCallback(async () => {
-    const aum = await window.adrena.client.getAssetsUnderManagement();
+  const fetchAum = useCallback(async (retryNb: number) => {
+    try {
+      const aum = await window.adrena.client.getAssetsUnderManagement();
 
-    setAum(aum !== null ? nativeToUi(aum, USD_DECIMALS) : null);
+      if (aum === null) {
+        if (retryNb >= 3) {
+          console.error('Failed to fetch AUM after 3 retries');
+          return;
+        }
+
+        // Retry fetching AUM in case of failure
+        setTimeout(() => fetchAum(retryNb + 1), 100 * retryNb);
+        return;
+      }
+
+      setAum(aum !== null ? nativeToUi(aum, USD_DECIMALS) : null);
+    } catch (error) {
+      console.error('Failed to fetch AUM', error);
+    }
   }, []);
 
   useEffect(() => {
-    fetchAum();
+    fetchAum(0);
 
     const interval = setInterval(() => {
-      fetchAum();
+      fetchAum(0);
     }, 15000);
 
     return () => {
