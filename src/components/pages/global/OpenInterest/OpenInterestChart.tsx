@@ -11,6 +11,12 @@ export default function OpenInterestChart() {
 
   useEffect(() => {
     getCustodyInfo();
+
+    const interval = setInterval(() => {
+      getCustodyInfo();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const getCustody = async (mint: string) => {

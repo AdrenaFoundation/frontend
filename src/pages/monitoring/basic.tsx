@@ -8,6 +8,7 @@ import UnrealizedPnlChart from '@/components/pages/global/UnrealizedPnl/Unrealiz
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
+import CumulativePnlChart from '@/components/pages/global/CumulativePnl/CumulativePnlChart';
 
 export default function BasicMonitoring({}: PageProps & {
   poolInfo: PoolInfo | null;
@@ -27,6 +28,7 @@ export default function BasicMonitoring({}: PageProps & {
 
         <div className="grid lg:grid-cols-2 gap-16 lg:h-[18em]">
           <UnrealizedPnlChart />
+          <CumulativePnlChart />
         </div>
       </StyledContainer>
     </div>
