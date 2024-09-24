@@ -6,6 +6,8 @@ import BarRechart from '@/components/pages/stats_dashboard/BarRechart';
 import LineRechart from '@/components/pages/stats_dashboard/LineRechart';
 import { TokenInfo } from '@/config/IConfiguration';
 
+import SizeOfCustodyLine from './SizeOfCustodyLine';
+
 export default function StatsDashboard() {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
@@ -24,6 +26,7 @@ export default function StatsDashboard() {
       );
       const { data } = await res.json();
       const { aum_usd, snapshot_timestamp } = data;
+
       const timeStamp = snapshot_timestamp.map((time: string) =>
         new Date(time).toLocaleTimeString('en-US', {
           hour: 'numeric',
@@ -106,7 +109,7 @@ export default function StatsDashboard() {
     <StyledContainer className="mt-6">
       <div className="grid grid-cols-2 gap-16">
         <LineRechart title={'AUM'} data={AUM} />
-        <BarRechart
+        <SizeOfCustodyLine
           title={'Size of each custody'}
           data={custody}
           labels={

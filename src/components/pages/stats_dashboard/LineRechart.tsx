@@ -74,23 +74,18 @@ export default function LineRechart({
   };
 
   return (
-    <div className="border p-3 rounded-lg">
+    <div className="border p-3 rounded-lg max-h-[450px]">
       <h2 className="mb-3">{title}</h2>
 
-      <ResponsiveContainer width="100%" height="100%" maxHeight={400}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart width={600} height={400} data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
           <XAxis dataKey="name" />
           <YAxis domain={['dataMin', 'dataMax']} tickFormatter={formatYAxis} />
           <Tooltip content={<CustomToolTip />} cursor={false} />
           <Legend />
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke="#82ca9d"
-            dot={false}
-            // dot={<CustomizedDot />}
-          />
+
+          <Line type="monotone" dataKey="value" stroke="#82ca9d" dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
