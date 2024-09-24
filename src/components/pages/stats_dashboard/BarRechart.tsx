@@ -74,10 +74,10 @@ export default function BarRechart({
   };
 
   return (
-    <div className="border p-3 rounded-lg">
+    <div className="border p-3 rounded-lg max-h-[450px]">
       <h2 className="mb-3">{title}</h2>
 
-      <ResponsiveContainer width="100%" height="100%" maxHeight={400}>
+      <ResponsiveContainer width="100%" height="100%">
         <BarChart width={600} height={400} data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
           <XAxis dataKey="time" />
