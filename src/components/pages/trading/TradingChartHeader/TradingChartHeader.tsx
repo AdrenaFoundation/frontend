@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -6,7 +7,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import useDailyStats from '@/hooks/useDailyStats';
 import { useSelector } from '@/store/store';
 import { Token } from '@/types';
-import { formatNumber } from '@/utils';
 
 export function getTokenSymbolFromChartFormat(tokenSymbol: string) {
   return tokenSymbol.slice(0, tokenSymbol.length - ' / USD'.length);
@@ -35,6 +35,7 @@ export default function TradingChartHeader({
 
     const price =
       streamingTokenPrices[
+        selected.symbol === 'WBTC' ? 'BTC' : 
         selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
       ];
 
@@ -53,96 +54,146 @@ export default function TradingChartHeader({
   useEffect(() => {
     setPreviousTokenPrice(
       streamingTokenPrices[
+        selected.symbol === 'WBTC' ? 'BTC' : 
         selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
       ] || 0,
     );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streamingTokenPrices]);
 
   return (
-    <div
-      className={twMerge(
-        'flex flex-col sm:flex-row items-center justify-between sm:gap-3 z-30 bg-main border-b',
-        className,
-      )}
-    >
-      <div className="flex items-center w-full sm:w-[200px] border-b border-r-none sm:border-b-0 sm:border-r">
-        <Select
-          className="w-full"
-          selectedClassName="py-3 px-2 sm:px-3"
-          selected={`${
+    <>
+      <Head>
+        <title>
+          {streamingTokenPrices[
+            selected.symbol === 'WBTC' ? 'BTC' : 
             selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-          } / USD`}
-          options={tokenList
-            .filter((token) => token.symbol !== selected.symbol)
-            .map((token) => {
-              return {
-                title: `${
-                  token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
-                } / USD`,
-              };
-            })}
-          onSelect={(opt: string) => {
-            const selectedTokenSymbol = getTokenSymbolFromChartFormat(opt);
-            // Force linting, you cannot not find the token in the list
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const token = tokenList.find(
-              (t) =>
-                t.symbol === selectedTokenSymbol ||
-                (t.symbol === 'JITOSOL' && selectedTokenSymbol === 'SOL'),
-            )!;
-
-            if (!token) return;
-
-            onChange(token);
-          }}
-        />
-      </div>
-
-      <div className="flex w-full p-3 sm:p-0 flex-row gap-3 justify-between sm:justify-end sm:gap-12 items-center sm:pr-5">
-        <FormatNumber
-          nb={
-            streamingTokenPrices[
+          ]?.toFixed(2) || 0}{' '}
+          – {selected.symbol === 'WBTC' ? 'BTC' : selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'} / USD
+        </title>
+      </Head>
+      <div
+        className={twMerge(
+          'flex flex-col sm:flex-row items-center justify-between sm:gap-3 z-30 bg-main border-b p-1',
+          className,
+        )}
+      >
+        <div className="flex items-center w-full sm:w-[200px] border-b border-r-none sm:border-b-0 sm:border-r">
+          <Select
+            className="w-full"
+            selectedClassName="py-1 px-2 sm:px-2"
+            selected={`${
+              selected.symbol === 'WBTC' ? 'BTC' : 
               selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
-            ]
-          }
-          format="currency"
-          minimumFractionDigits={2}
-          className={twMerge('text-lg font-bold', tokenColor)}
-        />
+            } / USD`}
+            options={tokenList
+              .filter((token) => token.symbol !== selected.symbol)
+              .map((token) => {
+                return {
+                  title: `${
+                    token.symbol === 'WBTC' ? 'BTC' : 
+                    token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
+                    } / USD`,
+                  img: token.image,
+                };
+              })}
+            onSelect={(opt: string) => {
+              const selectedTokenSymbol = getTokenSymbolFromChartFormat(opt);
+              // Force linting, you cannot not find the token in the list
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              const token = tokenList.find(
+                (t) =>
+                  t.symbol === selectedTokenSymbol ||
+                  (t.symbol === 'JITOSOL' && selectedTokenSymbol === 'SOL') ||
+                  (t.symbol === 'WBTC' && selectedTokenSymbol === 'BTC'),
+              )!;
 
-        <div className="flex flex-row gap-3 sm:gap-6">
-          <div className="flex flex-col p-1 rounded-full flex-wrap">
-            <span className="text-xs sm:text-sm text-txtfade text-right">
-              24h Change
-            </span>
+              if (!token) return;
 
-            <span
-              className={twMerge(
-                'font-mono text-sm',
-                stats && stats[selected.symbol].dailyChange > 0
-                  ? 'text-green'
-                  : 'text-red',
-              )}
-            >
-              {stats
-                ? `${formatNumber(stats[selected.symbol].dailyChange, 2)}%`
-                : '-'}
-            </span>
-          </div>
+              onChange(token);
+            }}
+            align="left"
+          />
+        </div>
 
-          <div className="flex flex-col p-1 rounded-full flex-wrap">
-            <span className="text-xs sm:text-sm text-txtfade text-right">
-              24h Volume
-            </span>
+        <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5"> {}
+          <FormatNumber
+            nb={
+              streamingTokenPrices[
+                selected.symbol === 'WBTC' ? 'BTC' : 
+                selected.symbol !== 'JITOSOL' ? selected.symbol : 'SOL'
+              ]
+            }
+            format="currency"
+            minimumFractionDigits={2}
+            className={twMerge('text-lg font-bold', tokenColor)}
+          />
 
-            <FormatNumber
-              nb={stats?.[selected.symbol].dailyVolume}
-              format="currency"
-            />
+          <div className="flex flex-row gap-0 sm:gap-1">
+            <div className="flex items-center p-1 rounded-full flex-wrap">
+              <span className="font-mono text-xs sm:text-xs text-txtfade text-right"> {}
+                24h Change
+              </span>
+              <span
+                className={twMerge(
+                  'font-mono text-xs sm:text-xs ml-1', // Adjusted to text-xs
+                  stats && stats[selected.symbol].dailyChange > 0
+                    ? 'text-green'
+                    : 'text-red',
+                )}
+              >
+                {stats
+                  ? `${(stats[selected.symbol].dailyChange).toFixed(2)}%` // Manually format to 2 decimal places
+                  : '-'}
+              </span>
+            </div>
+
+            <div className="flex items-center p-1 rounded-full flex-wrap">
+              <span className="font-mono text-xs sm:text-xs text-txtfade text-right"> {}
+                24h Volume
+              </span>
+              <span className="font-mono text-xs sm:text-xs ml-1"> {}
+                <FormatNumber
+                  nb={stats?.[selected.symbol].dailyVolume}
+                  format="currency"
+                  isAbbreviate={true}
+                  isDecimalDimmed={false}
+                  className="font-mono text-xs" // Ensure smaller font
+                />
+              </span>
+            </div>
+
+            {/* New 24h High */}
+            <div className="flex items-center p-1 rounded-full flex-wrap">
+              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
+                High
+              </span>
+              <span className="font-mono text-xs sm:text-xs ml-1">
+                <FormatNumber
+                  nb={stats?.[selected.symbol].lastDayHigh} // Assuming high is available in stats
+                  format="currency"
+                  className="font-mono text-xxs"
+                />
+              </span>
+            </div>
+
+            {/* New 24h Low */}
+            <div className="flex items-center p-1 rounded-full flex-wrap">
+              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
+                Low
+              </span>
+              <span className="font-mono text-xs sm:text-xs ml-1">
+                <FormatNumber
+                  nb={stats?.[selected.symbol].lastDayLow} // Assuming low is available in stats
+                  format="currency"
+                  className="font-mono text-xxs"
+                />
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

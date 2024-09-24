@@ -316,7 +316,6 @@ export default function EditPositionCollateral({
               className="text-sm"
               inputClassName="border-0 bg-inputcolor"
               value={input}
-              maxButton={true}
               selectedToken={
                 position.side === 'long'
                   ? position.token
@@ -327,7 +326,6 @@ export default function EditPositionCollateral({
                 // One token only
               }}
               onChange={setInput}
-              onMaxButtonClick={() => setInput(walletBalance)}
             />
           </div>
 
@@ -341,7 +339,10 @@ export default function EditPositionCollateral({
               if (balance === null) return null;
 
               return (
-                <div className="ml-auto mr-4">
+                <div
+                  className="ml-auto mr-4 cursor-pointer"
+                  onClick={() => setInput(walletBalance)}
+                >
                   <FormatNumber
                     nb={balance}
                     precision={position.collateralToken.decimals}
@@ -376,11 +377,11 @@ export default function EditPositionCollateral({
             />
           </div>
 
-          <div className="text-sm ml-auto mr-4">
+          <div className="text-sm text-txtfade ml-auto mr-4">
             <FormatNumber
               nb={position.collateralUsd}
               format="currency"
-              className="inline"
+              className="inline text-sm text-txtfade"
               isDecimalDimmed={false}
             />{' '}
             of collateral in the position
@@ -414,31 +415,31 @@ export default function EditPositionCollateral({
 
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
           <div className={rowStyle}>
-            <div className="text-sm">Size</div>
+            <div className="text-sm text-gray-400">Size</div>
 
-            <FormatNumber nb={position.sizeUsd} format="currency" />
+            <FormatNumber nb={position.sizeUsd} format="currency" className="text-gray-400"/>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Entry Price</div>
+            <div className="text-sm text-gray-400">Entry Price</div>
 
-            <FormatNumber nb={position.price} format="currency" />
+            <FormatNumber nb={position.price} format="currency" className="text-gray-400"/>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Mark Price</div>
+            <div className="text-sm text-gray-400">Mark Price</div>
 
-            <FormatNumber nb={markPrice} format="currency" />
+            <FormatNumber nb={markPrice} format="currency" className="text-gray-400"/>
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">PnL</div>
+            <div className="text-sm text-gray-400">PnL</div>
 
             <FormatNumber
               nb={position.pnl && markPrice ? position.pnl : null}
               prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
-              className={`text-${
+              className={`font-bold text-${
                 position.pnl && position.pnl > 0 ? 'green' : 'redbright'
               }`}
               isDecimalDimmed={false}

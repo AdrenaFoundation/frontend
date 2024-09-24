@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -110,33 +111,47 @@ export default function PositionBlock({
     </div>
   );
 
+  const [showAfterFees, setShowAfterFees] = useState(false); // State to manage fee display
+  const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
+
   const pnl = (
     <div className="flex flex-col items-center min-w-[5em] w-[5em]">
       <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
         PnL
       </div>
       {position.pnl ? (
-        <div className="flex">
+        <div className="flex items-center">
           <FormatNumber
-            nb={position.pnl}
+            nb={showAfterFees ? position.pnl + fees : position.pnl} // Adjusted for fee display
             format="currency"
-            className={`mr-0.5 text-${
-              position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+            className={`mr-0.5 font-bold text-${
+              (showAfterFees ? position.pnl + fees : position.pnl) > 0 ? 'green' : 'redbright'
             }`}
             isDecimalDimmed={false}
           />
 
           <FormatNumber
-            nb={(position.pnl / position.collateralUsd) * 100}
+            nb={((showAfterFees ? position.pnl + fees : position.pnl) / position.collateralUsd) * 100}
             format="percentage"
             prefix="("
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
-            className={`text-${
-              position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+            className={`text-xs text-${
+              (showAfterFees ? position.pnl + fees : position.pnl) > 0 ? 'green' : 'redbright'
             }`}
           />
+
+                  <label className="flex items-center ml-2 cursor-pointer">
+          <Switch
+            className="mr-1"
+            checked={showAfterFees}
+            onChange={() => setShowAfterFees(!showAfterFees)
+            }
+            size="small"
+          />
+          <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">{showAfterFees ? 'w/o fees' : 'w/ fees'}</span> {/* conditional text */}
+        </label>
         </div>
       ) : (
         '-'
@@ -213,7 +228,7 @@ export default function PositionBlock({
             <FormatNumber
               nb={position.leverage}
               format="number"
-              className="text-xs lowercase"
+              className="text-gray-400 text-xs lowercase"
               suffix="x"
               isDecimalDimmed={false}
             />
@@ -228,7 +243,7 @@ export default function PositionBlock({
             <FormatNumber
               nb={position.sizeUsd}
               format="currency"
-              className="text-xs"
+              className="text-gray-400 text-xs"
             />
           </div>
         </div>
@@ -273,7 +288,7 @@ export default function PositionBlock({
                 ]
               }
               format="currency"
-              className="text-xs bold"
+              className="text-gray-400 text-xs bold"
             />
           </div>
         </div>
@@ -282,11 +297,16 @@ export default function PositionBlock({
           <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
             Liq. Price
           </div>
-          <div className="flex">
+          <div
+            className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+            onClick={() => triggerEditPositionCollateral(position)}
+            role="button"
+            tabIndex={0}
+          >
             <FormatNumber
               nb={position.liquidationPrice}
               format="currency"
-              className="text-xs"
+              className="text-xs text-orange"
             />
           </div>
         </div>
@@ -295,8 +315,12 @@ export default function PositionBlock({
           <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
             Take Profit
           </div>
-
-          <div className="flex">
+          <div
+            className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+            onClick={() => triggerStopLossTakeProfit(position)}
+            role="button"
+            tabIndex={0}
+          >
             {position.takeProfitThreadIsSet &&
             position.takeProfitLimitPrice &&
             position.takeProfitLimitPrice > 0 ? (
@@ -315,15 +339,19 @@ export default function PositionBlock({
           <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
             Stop Loss
           </div>
-
-          <div className="flex">
+          <div
+            className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
+            onClick={() => triggerStopLossTakeProfit(position)}
+            role="button"
+            tabIndex={0}
+          >
             {position.stopLossThreadIsSet &&
             position.stopLossLimitPrice &&
             position.stopLossLimitPrice > 0 ? (
               <FormatNumber
                 nb={position.stopLossLimitPrice}
                 format="currency"
-                className="text-xs text-orange"
+                className="text-xs text-blue"
               />
             ) : (
               <div className="flex text-xs">-</div>

@@ -1,8 +1,6 @@
 import Button from '@/components/common/Button/Button';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
-import FormatNumber from '@/components/Number/FormatNumber';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { LockedStakeExtended } from '@/types';
 
@@ -56,7 +54,7 @@ export default function StakesStats({
             Stakes
           </span>
 
-          <div className="flex flex-row flex-wrap mt-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 mt-2 gap-3">
             {lockedStakes ? (
               lockedStakes.map((lockedStake, i) => (
                 <LockedStakedElement

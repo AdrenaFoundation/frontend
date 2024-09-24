@@ -40,6 +40,7 @@ declare module '*.lottie';
 
 declare global {
   interface Window {
+    Jupiter: any;
     riveImageCaching: Record<string, RiveImage>;
     adrena: AdrenaGlobal;
   }
@@ -62,6 +63,10 @@ export type PageProps = {
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
   connected: boolean;
+  activeRpc: {
+    name: string;
+    connection: Connection;
+  };
 };
 
 export type CustodyExtended = {
@@ -158,6 +163,7 @@ export interface Token {
   color: string;
   name: TokenName;
   decimals: number;
+  // displayDecimals: number; TODO: Implement this to fix display in fields
   isStable: boolean;
   image: ImageRef;
   custody?: PublicKey;

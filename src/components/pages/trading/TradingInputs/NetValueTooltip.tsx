@@ -45,7 +45,7 @@ export default function NetValueTooltip({
             </div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">Borrow Fee</span>
+              <span className="text-sm text-txtfade">Borrow Fee</span>
               <FormatNumber
                 nb={position.borrowFeeUsd}
                 format="currency"
@@ -55,7 +55,7 @@ export default function NetValueTooltip({
               />
             </div>
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">Trade Fee</span>
+              <span className="text-sm text-txtfade">Trade Fee</span>
               <FormatNumber
                 nb={position.exitFeeUsd}
                 format="currency"

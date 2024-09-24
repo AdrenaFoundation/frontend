@@ -1,11 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
-import Link from 'next/link';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { PositionExtended, Token } from '@/types';
-import { formatNumber } from '@/utils';
+import { formatNumber, formatNumberShort } from '@/utils';
 
 import {
   IChartingLibraryWidget,
@@ -31,19 +30,19 @@ function createEntryPositionLine(
   position: PositionExtended,
 ): IPositionLineAdapter {
   const color = position.side === 'long' ? greenColor : redColor;
+  const label = getLabel(position.token.symbol, position.side, position.side === 'long' ? 'Long' : 'Short');
   return chart
     .createPositionLine({})
-    .setText(`${position.side === 'long' ? 'Long' : 'Short'} Open`)
+    .setText(label)
     .setLineLength(3)
-    .setQuantity(formatNumber(position.sizeUsd, 2))
     .setPrice(position.price)
     .setLineColor(color)
-    .setQuantityBackgroundColor(color)
     .setBodyBackgroundColor(color)
     .setBodyBorderColor(color)
-    .setQuantityBorderColor(color)
     .setBodyTextColor(whiteColor)
-    .setQuantityTextColor(whiteColor);
+    .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+    .setQuantityBackgroundColor(greyColor)
+    .setQuantityBorderColor(greyColor)
 }
 
 function createLiquidationPositionLine(
@@ -56,39 +55,57 @@ function createLiquidationPositionLine(
       .setText(`${position.side === 'long' ? 'Long' : 'Short'} Liq.`)
       .setLineLength(3)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setQuantity(formatNumber(position.liquidationPrice!, 2)) // Price is checked before calling function
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       .setPrice(position.liquidationPrice!) // Price is checked before calling function
-      .setLineColor(greyColor)
-      .setLineStyle(2)
+      .setLineColor(orangeColor)
+      .setLineStyle(1)
+      .setBodyBorderColor(orangeColor)
+      .setBodyBackgroundColor(orangeColor)
+      .setBodyTextColor(whiteColor)
+      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
       .setQuantityBackgroundColor(greyColor)
       .setQuantityBorderColor(greyColor)
-      .setBodyBorderColor(greyColor)
-      .setBodyBackgroundColor(greyColor)
-      .setBodyTextColor(whiteColor)
   );
+}
+
+function getLabel(tokenSymbol: string, side: 'long' | 'short', type: 'SL' | 'TP' | 'Long' | 'Short'): string {
+  let symbol = tokenSymbol;
+  
+  if (tokenSymbol === 'WBTC') {
+    symbol = 'BTC';
+  } else if (tokenSymbol === 'JITOSOL') {
+    symbol = 'SOL';
+  }
+
+  // Return the label for the position line
+  if (type === 'Long' || type === 'Short') {
+    return `${symbol} ${type}`;
+  }
+
+  // Return the label for the stop loss or take profit line
+  const sideLabel = side === 'long' ? '' : '-Short';
+  return `${symbol}${sideLabel}-${type}`;
 }
 
 function createTakeProfitPositionLine(
   chart: IChartWidgetApi,
   position: PositionExtended,
 ): IPositionLineAdapter {
+  const label = getLabel(position.token.symbol, position.side, 'TP');
   return (
     chart
       .createPositionLine({})
-      .setText(`${position.side === 'long' ? 'Long' : 'Short'} Take Profit`)
+      .setText(label)
       .setLineLength(3)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setQuantity(formatNumber(position.takeProfitLimitPrice!, 2)) // Price is checked before calling function
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setPrice(position.takeProfitLimitPrice!) // Price is checked before calling function
+      .setPrice(position.takeProfitLimitPrice!)
       .setLineColor(blueColor)
-      .setLineStyle(2)
-      .setQuantityBackgroundColor(blueColor)
-      .setQuantityBorderColor(blueColor)
+      .setLineStyle(1)
       .setBodyBorderColor(blueColor)
       .setBodyBackgroundColor(blueColor)
       .setBodyTextColor(whiteColor)
+      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantityBackgroundColor(greyColor)
+      .setQuantityBorderColor(greyColor)
   );
 }
 
@@ -96,24 +113,26 @@ function createStopLossPositionLine(
   chart: IChartWidgetApi,
   position: PositionExtended,
 ): IPositionLineAdapter {
+  const label = getLabel(position.token.symbol, position.side, 'SL');
   return (
     chart
       .createPositionLine({})
-      .setText(`${position.side === 'long' ? 'Long' : 'Short'} Stop Loss`)
+      .setText(label)
       .setLineLength(3)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setQuantity(formatNumber(position.stopLossLimitPrice!, 2)) // Price is checked before calling function
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      .setPrice(position.stopLossLimitPrice!) // Price is checked before calling function
-      .setLineColor(orangeColor)
-      .setLineStyle(2)
-      .setQuantityBackgroundColor(orangeColor)
-      .setQuantityBorderColor(orangeColor)
-      .setBodyBorderColor(orangeColor)
-      .setBodyBackgroundColor(orangeColor)
+      .setPrice(position.stopLossLimitPrice!)
+      .setLineColor(blueColor)
+      .setLineStyle(1)
+      .setBodyBorderColor(blueColor)
+      .setBodyBackgroundColor(blueColor)
       .setBodyTextColor(whiteColor)
+      .setQuantity('$'+formatNumberShort(position.sizeUsd, 0))
+      .setQuantityBackgroundColor(greyColor)
+      .setQuantityBorderColor(greyColor)
   );
 }
+
+const STORAGE_KEY_RESOLUTION = 'trading_chart_resolution';
 
 export default function TradingChart({
   token,
@@ -140,6 +159,9 @@ export default function TradingChart({
     long: PositionLine | null;
   } | null>(null);
 
+  // Retrieve saved resolution or default to 'H'
+  const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || 'H';
+
   function modifyPositionLine(
     chart: IChartWidgetApi,
     position: PositionExtended | null,
@@ -148,83 +170,66 @@ export default function TradingChart({
     if (!position || !positionLine) return;
 
     positionLine.entry.setPrice(position.price);
-    positionLine.entry.setQuantity(formatNumber(position.sizeUsd, 2));
 
-    // if liquidationPrice is not set, remove liquidation directly
+    // Handle Liquidation
     if (!position.liquidationPrice) {
       if (positionLine.liquidation) {
         positionLine.liquidation.remove();
-        // Make sure the key is gone
         positionLine.liquidation = undefined;
-        delete positionLine.liquidation;
       }
-    } else if (positionLine.liquidation) {
-      // if liquidation is set, update it
-      positionLine.liquidation.setPrice(position.liquidationPrice);
-      positionLine.liquidation.setQuantity(
-        formatNumber(position.liquidationPrice, 2),
-      );
-    } else createLiquidationPositionLine(chart, position);
+    } else {
+      if (positionLine.liquidation) {
+        positionLine.liquidation.setPrice(position.liquidationPrice);
+      } else {
+        positionLine.liquidation = createLiquidationPositionLine(chart, position);
+      }
+    }
 
-    // if takeProfit is not set, remove takeProfit directly
+    // Handle Take Profit
     if (
       !position.takeProfitThreadIsSet ||
-      typeof position.takeProfitLimitPrice === 'undefined' ||
-      position.takeProfitLimitPrice === null ||
-      position.takeProfitLimitPrice === 0
+      !position.takeProfitLimitPrice
     ) {
       if (positionLine.takeProfit) {
         positionLine.takeProfit.remove();
-        // Make sure the key is gone
         positionLine.takeProfit = undefined;
-        delete positionLine.takeProfit;
       }
-    } else if (positionLine.takeProfit) {
-      // if takeProfit is set, update it
-      positionLine.takeProfit.setPrice(position.takeProfitLimitPrice);
-      positionLine.takeProfit.setQuantity(
-        formatNumber(position.takeProfitLimitPrice, 2),
-      );
     } else {
-      createTakeProfitPositionLine(chart, position);
+      if (positionLine.takeProfit) {
+        positionLine.takeProfit.setPrice(position.takeProfitLimitPrice);
+      } else {
+        positionLine.takeProfit = createTakeProfitPositionLine(chart, position);
+      }
     }
 
-    // if stopLoss is not set, remove stopLoss directly
+    // Handle Stop Loss
     if (
       !position.stopLossThreadIsSet ||
-      typeof position.stopLossLimitPrice === 'undefined' ||
-      position.stopLossLimitPrice === null ||
-      position.stopLossLimitPrice === 0
+      !position.stopLossLimitPrice
     ) {
       if (positionLine.stopLoss) {
         positionLine.stopLoss.remove();
-        // Make sure the key is gone
         positionLine.stopLoss = undefined;
-        delete positionLine.stopLoss;
       }
-    } else if (positionLine.stopLoss) {
-      // if stopLoss is set, update it
-      positionLine.stopLoss.setPrice(position.stopLossLimitPrice);
-      positionLine.stopLoss.setQuantity(
-        formatNumber(position.stopLossLimitPrice, 2),
-      );
-    } else createStopLossPositionLine(chart, position);
+    } else {
+      if (positionLine.stopLoss) {
+        positionLine.stopLoss.setPrice(position.stopLossLimitPrice);
+      } else {
+        positionLine.stopLoss = createStopLossPositionLine(chart, position);
+      }
+    }
   }
 
   useEffect(() => {
     function createWidget() {
       if (document.getElementById('chart-area') && 'TradingView' in window) {
-        // Force to any because we don't have access to the type of TradingView
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const widget = new window.TradingView.widget({
           container: 'chart-area',
           library_path: '/charting_library/',
           width: 100,
           height: 100,
           autosize: true,
-          symbol: `Crypto.${
-            token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
-          }/USD`,
+          symbol: `Crypto.${token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
           toolbar_bg: '#061018',
@@ -239,18 +244,15 @@ export default function TradingChart({
               '5',
               '15',
               '1h',
+              '4h',
               'D',
-              'W',
-              'M',
             ] as ResolutionString[],
             chartTypes: ['Candles'],
           },
           disabled_features: [
-            'use_localstorage_for_settings',
             'header_symbol_search',
             'header_chart_type',
             'header_compare',
-            'header_indicators',
             'display_market_status',
             'create_volume_indicator_by_default',
             'header_undo_redo',
@@ -258,36 +260,25 @@ export default function TradingChart({
             'symbol_info_long_description',
             'symbol_info_price_source',
           ],
-
           enabled_features: [
+            'header_indicators',
             'header_fullscreen_button',
-            'hide_left_toolbar_by_default',
-            'header_saveload',
-            'header_screenshot',
             'header_settings',
-
-            // Favorite times are displayed in the top of the chart
-            'items_favoriting',
           ],
-
           custom_css_url: '/tradingview.css',
           overrides: {
-            // Adapt colors
             'paneProperties.background': '#061018',
             'paneProperties.backgroundType': 'solid',
-            // Hides the legend
             'paneProperties.legendProperties.showStudyArguments': false,
             'paneProperties.legendProperties.showStudyTitles': false,
             'paneProperties.legendProperties.showStudyValues': false,
             'paneProperties.legendProperties.showSeriesTitle': false,
             'paneProperties.legendProperties.showBarChange': false,
             'paneProperties.legendProperties.showSeriesOHLC': true,
-
-            // Last price line
             'mainSeriesProperties.priceLineColor': 'yellow',
           },
           theme: 'dark',
-          interval: 'D' as ResolutionString,
+          interval: savedResolution as ResolutionString,
           custom_formatters: {
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
@@ -302,6 +293,11 @@ export default function TradingChart({
         widget.onChartReady(() => {
           setWidgetReady(true);
           setIsLoading(false);
+
+          // Listen for resolution changes
+          widget.activeChart().onIntervalChanged().subscribe(null, (newInterval: ResolutionString) => {
+            localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
+          });
         });
 
         setWidget(widget);
@@ -337,8 +333,8 @@ export default function TradingChart({
     setWidgetReady(false);
 
     widget?.setSymbol(
-      `Crypto.${token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
-      'D' as ResolutionString,
+      `Crypto.${token.symbol === 'WBTC' ? 'BTC' : token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'}/USD`,
+      savedResolution as ResolutionString,
       () => {
         setWidgetReady(true);
       },
@@ -485,19 +481,6 @@ export default function TradingChart({
         )}
       >
         <div id="chart-area" className="h-full flex flex-col rounded-b-lg" />
-        <div className="copyright text-[0.5em] bg-secondary flex items-center text-center italic pt-2 pb-2 pr-4 text-[#ffffffA0] justify-center md:justify-end">
-          The chart is provided by TradingView, an advanced platform that
-          provides unparalleled access to live data e.g.
-          <Link
-            href={`https://www.tradingview.com/symbols/${
-              token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'
-            }USD/`}
-            target="__blank"
-            className="ml-1 underline"
-          >
-            {token.symbol !== 'JITOSOL' ? token.symbol : 'SOL'} USD chart
-          </Link>
-        </div>
       </div>
     </div>
   );

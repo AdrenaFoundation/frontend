@@ -11,7 +11,7 @@ export default function InfoAnnotation({
   title,
 }: {
   text: ReactNode;
-  className: string;
+  className?: string;
   title?: string;
 }) {
   return (
