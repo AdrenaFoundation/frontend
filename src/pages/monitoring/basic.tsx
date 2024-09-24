@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import GlobalHealthOverview from '@/components/pages/global/GlobalHealthOverview';
 import TokenStakingOverview from '@/components/pages/global/TokenStakingOverview';
 import UsageOverview from '@/components/pages/global/UsageOverview';
+import StatsDashboard from '@/components/pages/stats_dashboard/Stats';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
@@ -177,6 +178,8 @@ export default function BasicMonitoring({
           className="max-w-[61em]"
         />
       ) : null}
+
+      <StatsDashboard />
     </div>
   );
 }
