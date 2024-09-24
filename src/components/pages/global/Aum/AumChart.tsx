@@ -6,10 +6,6 @@ import LineRechartAum from './LineRechartAum';
 export default function AumChart() {
   const [AUM, setAUM] = useState<any>(null);
 
-  useEffect(() => {
-    getPoolInfo();
-  }, []);
-
   const getPoolInfo = async () => {
     try {
       const res = await fetch(
@@ -35,6 +31,16 @@ export default function AumChart() {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    getPoolInfo();
+
+    const interval = setInterval(() => {
+      getPoolInfo();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!AUM) {
     return (

@@ -14,10 +14,6 @@ export default function UnrealizedPnlChart() {
     custodiesColors: string[];
   } | null>(null);
 
-  useEffect(() => {
-    getCustodyInfo();
-  }, []);
-
   const getCustodyInfo = async () => {
     try {
       const res = await fetch(
@@ -86,6 +82,16 @@ export default function UnrealizedPnlChart() {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    getCustodyInfo();
+
+    const interval = setInterval(() => {
+      getCustodyInfo();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!infos) {
     return (

@@ -9,10 +9,6 @@ export default function CompositionChart() {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
 
-  useEffect(() => {
-    getCustodyInfo();
-  }, []);
-
   const getCustody = async (mint: string) => {
     const custody = await window.adrena.client.getCustodyByPubkey(
       new PublicKey(mint),
@@ -70,6 +66,16 @@ export default function CompositionChart() {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    getCustodyInfo();
+
+    const interval = setInterval(() => {
+      getCustodyInfo();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!custody) {
     return (

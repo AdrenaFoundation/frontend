@@ -14,10 +14,6 @@ export default function UtilizationChart() {
     custodiesColors: string[];
   } | null>(null);
 
-  useEffect(() => {
-    getCustodyInfo();
-  }, []);
-
   const getCustodyInfo = async () => {
     try {
       const res = await fetch(
@@ -77,6 +73,16 @@ export default function UtilizationChart() {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    getCustodyInfo();
+
+    const interval = setInterval(() => {
+      getCustodyInfo();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!infos) {
     return (
