@@ -54,7 +54,7 @@ export default function LineRechartPercentage({
   }
 
   return (
-    <div className="flex flex-col h-full w-full">
+    <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
         <h2 className="">{title}</h2>
 
