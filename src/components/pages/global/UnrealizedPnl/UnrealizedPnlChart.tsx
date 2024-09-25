@@ -112,9 +112,9 @@ export default function UnrealizedPnlChart() {
       title="Unrealized Trader PnL"
       data={infos.formattedData}
       labels={[
-        { name: 'Pool', color: '#ff0000' },
+        { name: 'Total', color: '#ff0000' },
         ...Object.keys(infos.formattedData[0])
-          .filter((key) => key !== 'time' && key !== 'Pool')
+          .filter((key) => key !== 'time' && key !== 'Total')
           .map((x, i) => {
             return {
               name: x,
