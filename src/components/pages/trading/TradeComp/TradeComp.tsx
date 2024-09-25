@@ -26,6 +26,7 @@ export default function TradeComp({
   className,
   isBigScreen,
   activeRpc,
+  terminalId,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -44,6 +45,7 @@ export default function TradeComp({
     name: string;
     connection: Connection;
   };
+  terminalId: string;
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
 
@@ -96,6 +98,7 @@ export default function TradeComp({
                   <IntegratedTerminal
                     connected={connected}
                     activeRpc={activeRpc}
+                    id={terminalId}
                     className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
                   />
                 ) : (
