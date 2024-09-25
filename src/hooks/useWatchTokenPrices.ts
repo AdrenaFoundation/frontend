@@ -4,7 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setTokenPriceAction } from '@/actions/tokenPricesActions';
-import { USD_DECIMALS } from '@/constant';
+import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { Token } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -115,7 +115,7 @@ export default function useWatchTokenPrices() {
       dispatch(
         setTokenPriceAction(
           window.adrena.client.alpToken.symbol,
-          price ? nativeToUi(price, USD_DECIMALS) : null,
+          price ? nativeToUi(price, PRICE_DECIMALS) : null,
         ),
       );
     } catch (e) {
