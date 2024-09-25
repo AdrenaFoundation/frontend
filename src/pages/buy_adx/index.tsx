@@ -41,11 +41,10 @@ export default function BuyADX({ connected, activeRpc }: PageProps) {
             </p>
 
             <Button
-              title="Buy ADX on Jupiter (coming soon)"
-              href="https://jup.ag/swap/USDC-ADX"
+              title="Buy ADX on Jupiter"
+              href="https://jup.ag/swap/USDC-AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw"
               isOpenLinkInNewTab
               rightIcon={jupIcon}
-              disabled={true}
               iconClassName="w-5 h-5"
               size="lg"
               className="mt-4 px-14 py-3 text-base"
