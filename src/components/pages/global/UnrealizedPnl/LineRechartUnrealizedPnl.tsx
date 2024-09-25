@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 
 import { formatPercentage, formatPriceInfo } from '@/utils';
+import Tippy from '@tippyjs/react';
 
 export default function LineRechartUnrealizedPnl({
   title,
@@ -63,7 +64,27 @@ export default function LineRechartUnrealizedPnl({
 
   return (
     <div className="flex flex-col h-full w-full">
-      <h2 className="mb-3">{title}</h2>
+      <div className="flex mb-3 justify-between items-center">
+        <h2 className="">{title}</h2>
+
+        <div className="flex gap-2 text-sm">
+          <div className="cursor-pointer">1d</div>
+          <Tippy
+            content={
+              <div className="text-sm w-20 flex flex-col justify-around">
+                Coming soon
+              </div>
+            }
+            placement="auto"
+          >
+            <div className="flex gap-2">
+              <div className="text-txtfade cursor-not-allowed">7d</div>
+              <div className="text-txtfade cursor-not-allowed">1M</div>
+              <div className="text-txtfade cursor-not-allowed">1Y</div>
+            </div>
+          </Tippy>
+        </div>
+      </div>
 
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
