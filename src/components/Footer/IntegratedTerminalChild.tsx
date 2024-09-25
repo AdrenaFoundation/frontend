@@ -13,6 +13,7 @@ export default function IntegratedTerminalChild({
   connected,
   className,
   activeRpc,
+  id = 'integrated-terminal',
 }: {
   connected: boolean;
   className?: string;
@@ -20,6 +21,7 @@ export default function IntegratedTerminalChild({
     name: string;
     connection: Connection;
   };
+  id: string;
 }) {
   const walletState = useSelector((s) => s.walletState.wallet);
 
@@ -36,7 +38,7 @@ export default function IntegratedTerminalChild({
   useEffect(() => {
     window.Jupiter.init({
       displayMode: 'integrated',
-      integratedTargetId: 'integrated-terminal',
+      integratedTargetId: id,
       enableWalletPassthrough: true,
       endpoint: activeRpc.connection.rpcEndpoint,
       containerStyles: { minHeight: '400px' },
@@ -65,9 +67,6 @@ export default function IntegratedTerminalChild({
   }, [passthroughWalletContextState.connected, connected]);
 
   return (
-    <StyledSubContainer
-      id="integrated-terminal"
-      className={className}
-    ></StyledSubContainer>
+    <StyledSubContainer id={id} className={className}></StyledSubContainer>
   );
 }

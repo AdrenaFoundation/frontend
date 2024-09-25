@@ -10,6 +10,7 @@ export default function IntegratedTerminal({
   connected,
   className,
   activeRpc,
+  id = 'Integrated-terminal',
 }: {
   connected: boolean;
   className?: string;
@@ -17,6 +18,7 @@ export default function IntegratedTerminal({
     name: string;
     connection: Connection;
   };
+  id?: string;
 }) {
   const adapter = walletAdapters['phantom'];
 
@@ -26,6 +28,7 @@ export default function IntegratedTerminal({
         connected={connected}
         className={className}
         activeRpc={activeRpc}
+        id={id}
       />
     </WalletProvider>
   );

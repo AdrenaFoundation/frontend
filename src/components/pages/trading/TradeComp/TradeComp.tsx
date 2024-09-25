@@ -5,7 +5,6 @@ import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Action } from '@/pages/trade';
 import { PositionExtended, Token } from '@/types';
 
@@ -27,6 +26,7 @@ export default function TradeComp({
   className,
   isBigScreen,
   activeRpc,
+  terminalId,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -45,9 +45,9 @@ export default function TradeComp({
     name: string;
     connection: Connection;
   };
+  terminalId: string;
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
-  const isMobile = useBetterMediaQuery('(max-width: 768px)');
 
   return (
     <div
@@ -94,10 +94,11 @@ export default function TradeComp({
               />
             ) : (
               <>
-                {!isMobile && isJupSwap ? (
+                {isJupSwap ? (
                   <IntegratedTerminal
                     connected={connected}
                     activeRpc={activeRpc}
+                    id={terminalId}
                     className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
                   />
                 ) : (
@@ -116,35 +117,33 @@ export default function TradeComp({
                   />
                 )}
 
-                {!isMobile && (
-                  <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
-                    <span
-                      className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                        isJupSwap ? 'opacity-100' : '',
-                      )}
-                      onClick={() => {
-                        setIsJupSwap(true);
-                      }}
-                    >
-                      JUP
-                    </span>
+                <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
+                  <span
+                    className={twMerge(
+                      'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                      isJupSwap ? 'opacity-100' : '',
+                    )}
+                    onClick={() => {
+                      setIsJupSwap(true);
+                    }}
+                  >
+                    JUP
+                  </span>
 
-                    <span className="opacity-20 text-2xl">/</span>
+                  <span className="opacity-20 text-2xl">/</span>
 
-                    <span
-                      className={twMerge(
-                        'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                        !isJupSwap ? 'opacity-100' : '',
-                      )}
-                      onClick={() => {
-                        setIsJupSwap(false);
-                      }}
-                    >
-                      Adrena
-                    </span>
-                  </div>
-                )}
+                  <span
+                    className={twMerge(
+                      'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                      !isJupSwap ? 'opacity-100' : '',
+                    )}
+                    onClick={() => {
+                      setIsJupSwap(false);
+                    }}
+                  >
+                    Adrena
+                  </span>
+                </div>
               </>
             )}
           </>
