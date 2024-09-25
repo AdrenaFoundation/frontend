@@ -227,7 +227,7 @@ export default function PositionBlock({
           </div>
           <div className="flex">
             <FormatNumber
-              nb={position.leverage}
+              nb={position.sizeUsd / position.collateralUsd}
               format="number"
               className="text-gray-400 text-xs lowercase"
               suffix="x"
