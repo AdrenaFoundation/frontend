@@ -148,7 +148,7 @@ export default function TradingChartHeader({
             {/* New 24h High */}
             <div className="flex items-center p-1 rounded-full flex-wrap">
               <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
-                High
+                24h High
               </span>
               <span className="font-mono text-xs sm:text-xs ml-1">
                 <FormatNumber
@@ -162,7 +162,7 @@ export default function TradingChartHeader({
             {/* New 24h Low */}
             <div className="flex items-center p-1 rounded-full flex-wrap">
               <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
-                Low
+                24h Low
               </span>
               <span className="font-mono text-xs sm:text-xs ml-1">
                 <FormatNumber
