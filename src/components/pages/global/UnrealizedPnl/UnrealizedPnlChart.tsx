@@ -49,7 +49,7 @@ export default function UnrealizedPnlChart() {
         values: [] as number[],
       }));
 
-      const poolInfos: number[] = Array.from(Array(timeStamp.length).fill(0));
+      const totalInfos: number[] = Array.from(Array(timeStamp.length).fill(0));
 
       for (const [custodyKey, shortPnLValues] of Object.entries(shortPnL)) {
         const custodyInfos = infos.find(
@@ -64,7 +64,7 @@ export default function UnrealizedPnlChart() {
 
           custodyInfos.values.push(shortPnLNb + longPnLNb);
 
-          poolInfos[i] += shortPnLNb + longPnLNb;
+          totalInfos[i] += shortPnLNb + longPnLNb;
         });
       }
 
@@ -77,7 +77,7 @@ export default function UnrealizedPnlChart() {
           }),
           {} as { [key: string]: number },
         ),
-        Pool: poolInfos[i],
+        Total: totalInfos[i],
       }));
 
       setInfos({

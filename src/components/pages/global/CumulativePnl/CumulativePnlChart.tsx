@@ -49,7 +49,7 @@ export default function CumulativePnlChart() {
         values: [] as number[],
       }));
 
-      const poolInfos: number[] = Array.from(Array(timeStamp.length).fill(0));
+      const totalInfos: number[] = Array.from(Array(timeStamp.length).fill(0));
 
       for (const [custodyKey, cumulativeProfitUsdValues] of Object.entries(
         cumulativeProfitUsd,
@@ -75,7 +75,7 @@ export default function CumulativePnlChart() {
               cumulativeProfitUsdNb - cumulativeLossUsdNb,
             );
 
-            poolInfos[i] += cumulativeProfitUsdNb - cumulativeLossUsdNb;
+            totalInfos[i] += cumulativeProfitUsdNb - cumulativeLossUsdNb;
           },
         );
       }
@@ -89,7 +89,7 @@ export default function CumulativePnlChart() {
           }),
           {} as { [key: string]: number },
         ),
-        Pool: poolInfos[i],
+        Total: totalInfos[i],
       }));
 
       setInfos({
