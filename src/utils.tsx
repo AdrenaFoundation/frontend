@@ -542,7 +542,7 @@ export function formatMilliseconds(milliseconds: number): string {
 
 // Handle specific case of jitoSOL and WBTC
 export function getTokenImage(token: Token): ImageRef {
-  if (token.symbol === 'jitoSOL') return solLogo;
+  if (token.symbol === 'JITOSOL') return solLogo;
   if (token.symbol === 'WBTC') return btcLogo;
 
   return token.image;
