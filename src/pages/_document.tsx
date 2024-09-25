@@ -11,7 +11,7 @@ export const metadata = {
     description:
       'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
     images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
   },
   twitter: {
     card: 'summary_large_image',
@@ -20,7 +20,7 @@ export const metadata = {
       'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
     creator: '@adrenaprotocol',
     images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena_genesis_og-tXy102rrl9HR0SfCsj0d4LywnaXTJM.jpg',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
   },
 } as const;
 
