@@ -113,12 +113,17 @@ export default function TradingChartHeader({
           />
           <div className="flex flex-row gap-0 sm:gap-1">
             <div className="flex items-center p-1 rounded-full flex-wrap">
-              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
-                24h Change
+              <span className="flex font-mono sm:text-xxs text-txtfade text-right">
+              24h:  
+              </span>
+            </div>
+            <div className="flex items-center p-1 rounded-full flex-wrap">
+              <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                Ch.
               </span>
               <span
                 className={twMerge(
-                  'font-mono text-xs sm:text-xs ml-1', // Adjusted to text-xs
+                  'font-mono text-xs sm:text-xxs ml-1', // Adjusted to text-xs
                   stats && stats[selected.symbol].dailyChange > 0
                     ? 'text-green'
                     : 'text-red',
@@ -131,26 +136,25 @@ export default function TradingChartHeader({
             </div>
 
             <div className="flex items-center p-1 rounded-full flex-wrap">
-              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
-                24h Volume
+              <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                Vol.
               </span>
-              <span className="font-mono text-xs sm:text-xs ml-1">
+              <span className="font-mono text-xs sm:text-xxs ml-1">
                 <FormatNumber
                   nb={stats?.[selected.symbol].dailyVolume}
                   format="currency"
                   isAbbreviate={true}
                   isDecimalDimmed={false}
-                  className="font-mono text-xs" // Ensure smaller font
+                  className="font-mono text-xxs" // Ensure smaller font
                 />
               </span>
             </div>
 
-            {/* New 24h High */}
             <div className="flex items-center p-1 rounded-full flex-wrap">
-              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
-                24h High
+              <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                Hi
               </span>
-              <span className="font-mono text-xs sm:text-xs ml-1">
+              <span className="font-mono text-xs sm:text-xxs ml-1">
                 <FormatNumber
                   nb={stats?.[selected.symbol].lastDayHigh} // Assuming high is available in stats
                   format="currency"
@@ -159,12 +163,11 @@ export default function TradingChartHeader({
               </span>
             </div>
 
-            {/* New 24h Low */}
             <div className="flex items-center p-1 rounded-full flex-wrap">
-              <span className="font-mono text-xs sm:text-xs text-txtfade text-right">
-                24h Low
+              <span className="font-mono text-xs sm:text-xxs text-txtfade text-right">
+                Lo
               </span>
-              <span className="font-mono text-xs sm:text-xs ml-1">
+              <span className="font-mono text-xxs sm:text-xs ml-1">
                 <FormatNumber
                   nb={stats?.[selected.symbol].lastDayLow} // Assuming low is available in stats
                   format="currency"
