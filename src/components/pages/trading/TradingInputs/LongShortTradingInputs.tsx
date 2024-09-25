@@ -515,7 +515,11 @@ export default function LongShortTradingInputs({
                         precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
                         className="text-txtfade"
                         isAbbreviate={tokenB.symbol === 'BONK'}
-                        info={(openedPosition.sizeUsd / tokenPriceB).toString()}
+                        info={
+                          tokenB.symbol === 'BONK'
+                            ? (openedPosition.sizeUsd / tokenPriceB).toString()
+                            : null
+                        }
                       />
 
                       <FormatNumber
@@ -534,7 +538,9 @@ export default function LongShortTradingInputs({
                       precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
                       className="text-lg"
                       isAbbreviate={tokenB.symbol === 'BONK'}
-                      info={inputB?.toString()}
+                      info={
+                        tokenB.symbol === 'BONK' ? inputB?.toString() : null
+                      }
                     />
 
                     <FormatNumber
