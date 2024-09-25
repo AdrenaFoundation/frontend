@@ -127,6 +127,19 @@ export default function LongShortTradingInputs({
       });
     }
 
+    // Check for minimum collateral value
+    const tokenAPrice = tokenPrices[tokenA.symbol];
+    if (tokenAPrice) {
+      const collateralValue = inputA * tokenAPrice;
+      if (collateralValue < 10) {
+        return addNotification({
+          type: 'info',
+          title: 'Cannot open position',
+          message: 'Collateral value must be at least $10',
+        });
+      }
+    }
+
     const notification = MultiStepNotification.newForRegularTransaction(
       side + ' Position Opening',
     ).fire();
@@ -339,6 +352,15 @@ export default function LongShortTradingInputs({
 
     if (!walletTokenABalance || inputA > walletTokenABalance) {
       return setErrorMessage(`Insufficient ${tokenA.symbol} balance`);
+    }
+
+    // Check for minimum collateral value
+    const tokenAPrice = tokenPrices[tokenA.symbol];
+    if (tokenAPrice) {
+      const collateralValue = inputA * tokenAPrice;
+      if (collateralValue < 10) {
+        return setErrorMessage('Collateral value must be at least $10');
+      }
     }
 
     if (!tokenB || !inputB) {
