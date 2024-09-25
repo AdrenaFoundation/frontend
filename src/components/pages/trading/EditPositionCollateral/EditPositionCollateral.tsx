@@ -417,19 +417,33 @@ export default function EditPositionCollateral({
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Size</div>
 
-            <FormatNumber nb={position.sizeUsd} format="currency" className="text-gray-400"/>
+            <FormatNumber
+              nb={position.sizeUsd}
+              format="currency"
+              className="text-gray-400"
+            />
           </div>
 
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Entry Price</div>
 
-            <FormatNumber nb={position.price} format="currency" className="text-gray-400"/>
+            <FormatNumber
+              nb={position.price}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              className="text-gray-400"
+            />
           </div>
 
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Mark Price</div>
 
-            <FormatNumber nb={markPrice} format="currency" className="text-gray-400"/>
+            <FormatNumber
+              nb={markPrice}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              className="text-gray-400"
+            />
           </div>
 
           <div className={rowStyle}>
@@ -509,6 +523,7 @@ export default function EditPositionCollateral({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
                 className={input ? ' text-xs' : 'text-sm'}
               />
 
