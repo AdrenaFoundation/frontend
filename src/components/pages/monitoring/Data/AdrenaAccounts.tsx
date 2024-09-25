@@ -18,16 +18,36 @@ export default function AdrenaAccounts({
   custodies: CustodyExtended[];
   titleClassName?: string;
 }) {
+  const lmStakingPda = window.adrena.client.getStakingPda(
+    window.adrena.client.lmTokenMint,
+  );
+
+  const lpStakingPda = window.adrena.client.getStakingPda(
+    window.adrena.client.lpTokenMint,
+  );
+
+  const lmStakingRewardTokenVaultPda =
+    window.adrena.client.getStakingRewardTokenVaultPda(lmStakingPda);
+
+  const lmStakingLmRewardTokenVaultPda =
+    window.adrena.client.getStakingLmRewardTokenVaultPda(lmStakingPda);
+
+  const lpStakingRewardTokenVaultPda =
+    window.adrena.client.getStakingRewardTokenVaultPda(lpStakingPda);
+
+  const lpStakingLmRewardTokenVaultPda =
+    window.adrena.client.getStakingLmRewardTokenVaultPda(lpStakingPda);
+
   return (
     <StyledContainer
       title="Adrena Accounts"
       subTitle="Adrena Program on-chain accounts (PDAs)."
-      className="w-[37em] grow md:min-w-[37em]"
+      className="w-[46em] grow md:min-w-[46em]"
       titleClassName={titleClassName}
     >
       <Table
         breakpoint="767px"
-        rowTitleWidth="30%"
+        rowTitleWidth="50%"
         data={[
           {
             rowTitle: (
@@ -150,9 +170,35 @@ export default function AdrenaAccounts({
             value: (
               <OnchainAccountInfo
                 className="md:ml-auto"
-                address={window.adrena.client.getStakingPda(
-                  window.adrena.client.lmTokenMint,
-                )}
+                address={lmStakingPda}
+              />
+            ),
+          },
+          {
+            rowTitle: (
+              <div className="flex items-center font-boldy">
+                ADX Staking USDC Rewards Vault
+                <TitleAnnotation text="PDA" />
+              </div>
+            ),
+            value: (
+              <OnchainAccountInfo
+                className="md:ml-auto"
+                address={lmStakingRewardTokenVaultPda}
+              />
+            ),
+          },
+          {
+            rowTitle: (
+              <div className="flex items-center font-boldy">
+                ADX Staking ADX Rewards Vault
+                <TitleAnnotation text="PDA" />
+              </div>
+            ),
+            value: (
+              <OnchainAccountInfo
+                className="md:ml-auto"
+                address={lmStakingLmRewardTokenVaultPda}
               />
             ),
           },
@@ -169,9 +215,35 @@ export default function AdrenaAccounts({
             value: (
               <OnchainAccountInfo
                 className="md:ml-auto"
-                address={window.adrena.client.getStakingPda(
-                  window.adrena.client.lpTokenMint,
-                )}
+                address={lpStakingPda}
+              />
+            ),
+          },
+          {
+            rowTitle: (
+              <div className="flex items-center font-boldy">
+                ALP Staking USDC Rewards Vault
+                <TitleAnnotation text="PDA" />
+              </div>
+            ),
+            value: (
+              <OnchainAccountInfo
+                className="md:ml-auto"
+                address={lpStakingRewardTokenVaultPda}
+              />
+            ),
+          },
+          {
+            rowTitle: (
+              <div className="flex items-center font-boldy">
+                ALP Staking ADX Rewards Vault
+                <TitleAnnotation text="PDA" />
+              </div>
+            ),
+            value: (
+              <OnchainAccountInfo
+                className="md:ml-auto"
+                address={lpStakingLmRewardTokenVaultPda}
               />
             ),
           },
