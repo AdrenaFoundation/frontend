@@ -152,7 +152,13 @@ export default function StakeOverview({
               }
             />
             <Button
-              className="w-full mt-4 opacity-70 text-opacity-70"
+              className={twMerge(
+                'w-full mt-4 ',
+                !lockedStakes?.some((ls) => ls.isGenesis) ||
+                  totalRedeemableLockedStake !== 0
+                  ? 'opacity-70 text-opacity-70'
+                  : '',
+              )}
               disabled={
                 !lockedStakes?.some((ls) => ls.isGenesis) ||
                 totalRedeemableLockedStake !== 0
@@ -162,7 +168,6 @@ export default function StakeOverview({
               title="Claim Rewards *"
               onClick={() => handleClickOnClaimRewards()}
             />
-            )
           </div>
 
           <p className="opacity-25 text-center w-full p-5 pt-0">
