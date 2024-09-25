@@ -3156,7 +3156,7 @@ export class AdrenaClient {
   }
 
   public async getGenesisLock(): Promise<GenesisLock | null> {
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
@@ -3691,27 +3691,30 @@ export class AdrenaClient {
       );
     }
 
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
     const custodyIn = this.getCustodyByMint(tokenIn.mint);
     const custodyOut = this.getCustodyByMint(tokenOut.mint);
 
-    return this.adrenaProgram.views.getSwapAmountAndFees(
-      {
+    const instruction = await this.adrenaProgram.methods
+      .getSwapAmountAndFees({
         amountIn,
-      },
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          receivingCustody: tokenIn.custody,
-          receivingCustodyOracle: custodyIn.nativeObject.oracle,
-          dispensingCustody: tokenOut.custody,
-          dispensingCustodyOracle: custodyOut.nativeObject.oracle,
-        },
-      },
+      })
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        receivingCustody: tokenIn.custody,
+        receivingCustodyOracle: custodyIn.nativeObject.oracle,
+        dispensingCustody: tokenOut.custody,
+        dispensingCustodyOracle: custodyOut.nativeObject.oracle,
+      })
+      .instruction();
+
+    return this.simulateInstructions<SwapAmountAndFees>(
+      [instruction],
+      'SwapAmountAndFees',
     );
   }
 
@@ -3728,7 +3731,7 @@ export class AdrenaClient {
     leverage: number;
     side: 'long' | 'short';
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
@@ -3796,31 +3799,34 @@ export class AdrenaClient {
       );
     }
 
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
     const custody = this.getCustodyByMint(token.mint);
     const collateralCustody = this.getCustodyByMint(collateralToken.mint);
 
-    return this.adrenaProgram.views.getEntryPriceAndFee(
-      {
+    const instruction = await this.adrenaProgram.methods
+      .getEntryPriceAndFee({
         collateral: collateralAmount,
         leverage,
         // use any to force typing to be accepted - anchor typing is broken
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         side: { [side]: {} } as any,
-      },
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          custody: token.custody,
-          custodyTradeOracle: custody.nativeObject.tradeOracle,
-          collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-          collateralCustody: collateralToken.custody,
-        },
-      },
+      })
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        custody: token.custody,
+        custodyTradeOracle: custody.nativeObject.tradeOracle,
+        collateralCustodyOracle: collateralCustody.nativeObject.oracle,
+        collateralCustody: collateralToken.custody,
+      })
+      .instruction();
+
+    return this.simulateInstructions<NewPositionPricesAndFee>(
+      [instruction],
+      'NewPositionPricesAndFee',
     );
   }
 
@@ -3829,7 +3835,7 @@ export class AdrenaClient {
   }: {
     position: PositionExtended;
   }): Promise<ExitPriceAndFee | null> {
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
@@ -3845,8 +3851,9 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    return this.adrenaProgram.views.getExitPriceAndFee({
-      accounts: {
+    const instruction = await this.adrenaProgram.methods
+      .getExitPriceAndFee()
+      .accountsStrict({
         cortex: AdrenaClient.cortexPda,
         pool: this.mainPool.pubkey,
         position: position.pubkey,
@@ -3854,8 +3861,13 @@ export class AdrenaClient {
         custodyTradeOracle: custody.nativeObject.tradeOracle,
         collateralCustody: position.collateralCustody,
         collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-      },
-    });
+      })
+      .instruction();
+
+    return this.simulateInstructions<ExitPriceAndFee>(
+      [instruction],
+      'ExitPriceAndFee',
+    );
   }
 
   public async getPnL({
@@ -3866,7 +3878,7 @@ export class AdrenaClient {
       'custody' | 'pubkey' | 'collateralCustody'
     >;
   }): Promise<ProfitAndLoss | null> {
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
@@ -3886,8 +3898,9 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    return this.adrenaProgram.views.getPnl({
-      accounts: {
+    const instruction = await this.adrenaProgram.methods
+      .getPnl()
+      .accountsStrict({
         cortex: AdrenaClient.cortexPda,
         pool: this.mainPool.pubkey,
         position: position.pubkey,
@@ -3895,8 +3908,13 @@ export class AdrenaClient {
         custodyTradeOracle: custody.nativeObject.tradeOracle,
         collateralCustodyOracle: collateralCustody.nativeObject.oracle,
         collateralCustody: collateralCustody.pubkey,
-      },
-    });
+      })
+      .instruction();
+
+    return this.simulateInstructions<ProfitAndLoss>(
+      [instruction],
+      'ProfitAndLoss',
+    );
   }
 
   public async getPositionLiquidationPrice({
@@ -3931,22 +3949,29 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    return this.adrenaProgram.views.getLiquidationPrice(
-      {
-        addCollateral,
-        removeCollateral,
-      },
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          position: position.pubkey,
-          custody: custody.pubkey,
-          collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-          collateralCustody: collateralCustody.pubkey,
+    try {
+      const ret = await this.adrenaProgram.views.getLiquidationPrice(
+        {
+          addCollateral,
+          removeCollateral,
         },
-      },
-    );
+        {
+          accounts: {
+            cortex: AdrenaClient.cortexPda,
+            pool: this.mainPool.pubkey,
+            position: position.pubkey,
+            custody: custody.pubkey,
+            collateralCustodyOracle: collateralCustody.nativeObject.oracle,
+            collateralCustody: collateralCustody.pubkey,
+          },
+        },
+      );
+
+      return ret;
+    } catch {
+      // Ignore errors - we have a lot of Blockhash expired errors
+      return null;
+    }
   }
 
   // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
@@ -4163,35 +4188,29 @@ export class AdrenaClient {
       );
     }
 
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
     const custody = this.getCustodyByMint(token.mint);
 
-    console.log('Get Add Liquidity Amount And Fee', {
-      amountIn: amountIn.toString(),
-      decimals: token.decimals,
-      pool: this.mainPool.pubkey.toBase58(),
-      custody: token.custody.toBase58(),
-      custodyOracleAccount: custody.nativeObject.oracle.toBase58(),
-      lpTokenMint: this.lpTokenMint.toBase58(),
-    });
-
-    return this.adrenaProgram.views.getAddLiquidityAmountAndFee(
-      {
+    const instruction = await this.adrenaProgram.methods
+      .getAddLiquidityAmountAndFee({
         amountIn,
-      },
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          custody: token.custody,
-          custodyOracle: custody.nativeObject.oracle,
-          lpTokenMint: this.lpTokenMint,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      },
+      })
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        custody: token.custody,
+        custodyOracle: custody.nativeObject.oracle,
+        lpTokenMint: this.lpTokenMint,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
+
+    return this.simulateInstructions<AmountAndFee>(
+      [instruction],
+      'AmountAndFee',
     );
   }
 
@@ -4210,35 +4229,29 @@ export class AdrenaClient {
       );
     }
 
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
     const custody = this.getCustodyByMint(token.mint);
 
-    console.log('Get Remove Liquidity Amount And Fee', {
-      lpAmountIn: lpAmountIn.toString(),
-      decimals: token.decimals,
-      pool: this.mainPool.pubkey.toBase58(),
-      custody: token.custody.toBase58(),
-      custodyOracleAccount: custody.nativeObject.oracle.toBase58(),
-      lpTokenMint: this.lpTokenMint.toBase58(),
-    });
-
-    return this.adrenaProgram.views.getRemoveLiquidityAmountAndFee(
-      {
+    const instruction = await this.adrenaProgram.methods
+      .getRemoveLiquidityAmountAndFee({
         lpAmountIn,
-      },
-      {
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          custody: token.custody,
-          custodyOracle: custody.nativeObject.oracle,
-          lpTokenMint: this.lpTokenMint,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      },
+      })
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        custody: token.custody,
+        custodyOracle: custody.nativeObject.oracle,
+        lpTokenMint: this.lpTokenMint,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
+
+    return this.simulateInstructions<AmountAndFee>(
+      [instruction],
+      'AmountAndFee',
     );
   }
 
