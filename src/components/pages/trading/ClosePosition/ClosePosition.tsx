@@ -126,7 +126,7 @@ export default function ClosePosition({
     >
       <div className="flex items-center">
         <div className="flex border p-4 bg-third w-full justify-between items-center">
-           <div className="flex items-center"> {}
+          <div className="flex items-center">
             <Image
               src={tokenImage}
               width={24}
@@ -180,39 +180,63 @@ export default function ClosePosition({
       </div>
 
       <div className="flex flex-col border p-4 pt-2 bg-third mt-3 ml-4 mr-4 rounded-lg">
-
-         <div className={rowStyle}>
+        <div className={rowStyle}>
           <div className="text-sm font-bold">Mark Price</div>
 
-          <FormatNumber nb={markPrice} format="currency" className="text-sm font-bold" />
+          <FormatNumber
+            nb={markPrice}
+            format="currency"
+            precision={position.token.symbol === 'BONK' ? 8 : undefined}
+            className="text-sm font-bold"
+          />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm text-gray-400">Size</div>
 
-          <FormatNumber nb={position.sizeUsd} format="currency" className="text-gray-400"/>
+          <FormatNumber
+            nb={position.sizeUsd}
+            format="currency"
+            className="text-gray-400"
+          />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm text-gray-400">Entry Price</div>
 
-          <FormatNumber nb={position.price} format="currency" className="text-gray-400"/>
+          <FormatNumber
+            nb={position.price}
+            format="currency"
+            precision={position.token.symbol === 'BONK' ? 8 : undefined}
+            className="text-gray-400"
+          />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm text-gray-400">Liquidation Price</div>
 
-          <FormatNumber nb={position.liquidationPrice ?? 0} format="currency" className="text-gray-400"/>
+          <FormatNumber
+            nb={position.liquidationPrice ?? 0}
+            format="currency"
+            precision={position.token.symbol === 'BONK' ? 8 : undefined}
+            className="text-gray-400"
+          />
         </div>
 
         <div className={rowStyle}>
           <div className="text-sm text-gray-400">Leverage</div>
 
-          <FormatNumber nb={position.leverage} prefix="x" className="text-gray-400"/>
+          <FormatNumber
+            nb={position.leverage}
+            prefix="x"
+            className="text-gray-400"
+          />
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm">PnL <span className="test-xs text-gray-400">(after fees)</span></div>
+          <div className="text-sm">
+            PnL <span className="test-xs text-gray-400">(after fees)</span>
+          </div>
 
           <div className="text-sm font-mono font-bold">
             <FormatNumber
@@ -236,8 +260,22 @@ export default function ClosePosition({
         <div className={rowStyle}>
           <div className="flex items-center text-sm text-txtfade">
             Exit Fees
-            <Tippy content={<p className="font-medium">Open fees are 0 bps, while close fees are 16 bps. This average to 8bps entry and close fees, but allow for opening exactly the requested position size.</p>}>
-              <Image src={infoIcon} width={16} height={16} alt="info icon" className="ml-1" />
+            <Tippy
+              content={
+                <p className="font-medium">
+                  Open fees are 0 bps, while close fees are 16 bps. This average
+                  to 8bps entry and close fees, but allow for opening exactly
+                  the requested position size.
+                </p>
+              }
+            >
+              <Image
+                src={infoIcon}
+                width={16}
+                height={16}
+                alt="info icon"
+                className="ml-1"
+              />
             </Tippy>
           </div>
 
@@ -247,20 +285,38 @@ export default function ClosePosition({
         <div className={rowStyle}>
           <div className="flex items-center text-sm text-txtfade">
             Borrow Fees
-            <Tippy content={<p className="font-medium">Total of fees accruing continuously while the leveraged position is open, to pay interest rate on the borrowed assets from the Liquidity Pool.</p>}>
-              <Image src={infoIcon} width={16} height={16} alt="info icon" className="ml-1" />
+            <Tippy
+              content={
+                <p className="font-medium">
+                  Total of fees accruing continuously while the leveraged
+                  position is open, to pay interest rate on the borrowed assets
+                  from the Liquidity Pool.
+                </p>
+              }
+            >
+              <Image
+                src={infoIcon}
+                width={16}
+                height={16}
+                alt="info icon"
+                className="ml-1"
+              />
             </Tippy>
           </div>
 
           <FormatNumber nb={position.borrowFeeUsd} format="currency" />
         </div>
 
-          <div className={rowStyle}>
+        <div className={rowStyle}>
           <div className="flex items-center text-sm text-gray-400">
             Total Fees
           </div>
 
-          <FormatNumber nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)} format="currency" className="text-red" />
+          <FormatNumber
+            nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
+            format="currency"
+            className="text-red"
+          />
         </div>
       </div>
 
