@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import React from 'react';
 import {
   CartesianGrid,
@@ -11,7 +12,6 @@ import {
 } from 'recharts';
 
 import { formatPriceInfo } from '@/utils';
-import Tippy from '@tippyjs/react';
 
 function CustomToolTip(props: any) {
   const { active, payload, label } = props;

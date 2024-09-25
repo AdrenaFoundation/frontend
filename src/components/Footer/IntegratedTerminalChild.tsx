@@ -38,12 +38,6 @@ export default function IntegratedTerminalChild({
       displayMode: 'integrated',
       integratedTargetId: 'integrated-terminal',
       enableWalletPassthrough: true,
-      strictTokenList: true,
-      formProps: {
-        fixedOutputMint: true,
-        swapMode: 'ExactIn',
-        initialOutputMint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-      },
       endpoint: activeRpc.connection.rpcEndpoint,
       containerStyles: { minHeight: '400px' },
       onSuccess: ({ txid }: { txid: string }) => {

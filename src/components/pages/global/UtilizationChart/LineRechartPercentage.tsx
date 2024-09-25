@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import React from 'react';
 import {
   CartesianGrid,
@@ -12,7 +13,6 @@ import {
 } from 'recharts';
 
 import { formatPercentage } from '@/utils';
-import Tippy from '@tippyjs/react';
 
 export default function LineRechartPercentage({
   title,
