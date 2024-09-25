@@ -127,8 +127,6 @@ export default function ClosePosition({
       <div className="flex items-center">
         <div className="flex border p-4 bg-third w-full justify-between items-center">
           <div className="flex items-center">
-            {' '}
-            {}
             <Image
               src={tokenImage}
               width={24}
