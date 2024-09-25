@@ -232,6 +232,7 @@ export default function PositionBlock({
               className="text-gray-400 text-xs lowercase"
               suffix="x"
               isDecimalDimmed={false}
+              precision={2}
             />
           </div>
         </div>
