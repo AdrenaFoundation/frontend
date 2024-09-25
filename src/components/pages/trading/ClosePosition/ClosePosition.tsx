@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image'; // Ensure correct import
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -9,6 +10,8 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
 import { nativeToUi } from '@/utils';
+
+import infoIcon from '../../../../../public/images/Icons/info.svg';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated informations
@@ -231,15 +234,33 @@ export default function ClosePosition({
 
       <div className="flex flex-col border p-4 pt-2 bg-third mt-3 ml-4 mr-4 rounded-lg">
         <div className={rowStyle}>
-          <div className="text-sm text-gray-400">Exit Fees</div>
+          <div className="flex items-center text-sm text-txtfade">
+            Exit Fees
+            <Tippy content={<p className="font-medium">Open fees are 0 bps, while close fees are 16 bps. This average to 8bps entry and close fees, but allow for opening exactly the requested position size.</p>}>
+              <Image src={infoIcon} width={16} height={16} alt="info icon" className="ml-1" />
+            </Tippy>
+          </div>
 
           <FormatNumber nb={position.exitFeeUsd} format="currency" />
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm text-gray-400">Borrow Fees</div>
+          <div className="flex items-center text-sm text-txtfade">
+            Borrow Fees
+            <Tippy content={<p className="font-medium">Total of fees accruing continuously while the leveraged position is open, to pay interest rate on the borrowed assets from the Liquidity Pool.</p>}>
+              <Image src={infoIcon} width={16} height={16} alt="info icon" className="ml-1" />
+            </Tippy>
+          </div>
 
           <FormatNumber nb={position.borrowFeeUsd} format="currency" />
+        </div>
+
+          <div className={rowStyle}>
+          <div className="flex items-center text-sm text-gray-400">
+            Total Fees
+          </div>
+
+          <FormatNumber nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)} format="currency" className="text-red" />
         </div>
       </div>
 

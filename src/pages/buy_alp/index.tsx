@@ -17,7 +17,7 @@ import { useSelector } from '@/store/store';
 import { PageProps, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
-import infoIcon from '../../../public/images/Icons/info.png';
+import infoIcon from '../../../public/images/Icons/info.svg';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information

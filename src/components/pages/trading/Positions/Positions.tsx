@@ -48,7 +48,15 @@ export default function Positions({
       <AnimatePresence>
         {positionToClose && (
           <Modal
-            title={`Close ${positionToClose.side} ${positionToClose.token.symbol}`}
+            title={
+              <>
+                Close{' '}
+                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToClose.side === 'long' ? 'text-green' : 'text-red'}`}>
+                  {positionToClose.side}
+                </span>{' '}
+                {positionToClose.token.symbol}
+              </>
+            }
             close={() => setPositionToClose(null)}
             className="flex flex-col items-center"
           >
