@@ -17,23 +17,23 @@ export default function BasicMonitoring({}: PageProps & {
 }) {
   return (
     <div className="flex flex-row flex-wrap justify-center gap-2 p-4">
-      <StyledContainer className="flex gap-16" bodyClassName="">
-        <div className="grid lg:grid-cols-2 gap-[1em] h-[37em] lg:h-[18em]">
+      <StyledContainer className="flex gap-6" bodyClassName="">
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <AumChart />
           <UtilizationChart />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-[1em] h-[37em] lg:h-[18em]">
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <CompositionChart />
           <OpenInterestChart />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-[1em] h-[37em] lg:h-[18em]">
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <UnrealizedPnlChart />
           <CumulativePnlChart />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-[1em] h-[37em] lg:h-[18em]">
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <FeesChart />
           <ALPPriceChart />
         </div>
