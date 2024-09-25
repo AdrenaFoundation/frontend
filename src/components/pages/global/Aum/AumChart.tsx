@@ -18,8 +18,6 @@ export default function AumChart() {
       const { data } = await res.json();
       const { aum_usd, snapshot_timestamp } = data;
 
-      console.log(snapshot_timestamp);
-
       const timeStamp = snapshot_timestamp.map((time: string) =>
         new Date(time).toLocaleTimeString('en-US', {
           hour: 'numeric',

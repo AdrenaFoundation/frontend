@@ -133,7 +133,7 @@ export default function useWatchTokenPrices() {
       clearInterval(alpPriceInterval);
       alpPriceInterval = null;
     };
-    // Manually handle dependencies to avoid unwanted refreshs
+    // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadALPTokenPrice]);
 }
