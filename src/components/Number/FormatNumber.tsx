@@ -1,10 +1,8 @@
+import Tippy from '@tippyjs/react';
 import React, { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { formatNumber, formatPriceInfo } from '@/utils';
-
-import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
-import Tippy from '@tippyjs/react';
 
 interface FormatNumberProps {
   nb?: number | null;
