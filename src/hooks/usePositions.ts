@@ -36,7 +36,7 @@ export default function usePositions(): {
 
     const interval = setInterval(() => {
       loadPositions();
-    }, 30000);
+    }, 5000);
 
     return () => {
       clearInterval(interval);
