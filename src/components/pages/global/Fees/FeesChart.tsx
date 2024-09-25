@@ -12,8 +12,14 @@ export default function FeesChart() {
   const getPoolInfo = async () => {
     try {
       const res = await fetch(
-        'https://datapi.adrena.xyz/poolinfo?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true',
+        `https://datapi.adrena.xyz/poolinfo?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          return yesterday.toISOString(); // Get the last 24h
+        })()}&end_date=${new Date().toISOString()}`,
       );
+
       const { data } = await res.json();
       const {
         cumulative_swap_fee_usd,

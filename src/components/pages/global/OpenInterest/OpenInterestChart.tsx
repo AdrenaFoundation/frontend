@@ -29,8 +29,14 @@ export default function OpenInterestChart() {
   const getCustodyInfo = async () => {
     try {
       const res = await fetch(
-        'https://datapi.adrena.xyz/custodyinfo?open_interest_long_usd=true&open_interest_short_usd=true',
+        `https://datapi.adrena.xyz/custodyinfo?open_interest_long_usd=true&open_interest_short_usd=true&start_date=${(() => {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          return yesterday.toISOString(); // Get the last 24h
+        })()}&end_date=${new Date().toISOString()}`,
       );
+
       const { data } = await res.json();
       const {
         open_interest_long_usd,

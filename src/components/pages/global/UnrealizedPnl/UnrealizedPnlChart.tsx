@@ -17,8 +17,14 @@ export default function UnrealizedPnlChart() {
   const getCustodyInfo = async () => {
     try {
       const res = await fetch(
-        'https://datapi.adrena.xyz/custodyinfo?short_pnl=true&long_pnl=true',
+        `https://datapi.adrena.xyz/custodyinfo?short_pnl=true&long_pnl=true&start_date=${(() => {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          return yesterday.toISOString(); // Get the last 24h
+        })()}&end_date=${new Date().toISOString()}`,
       );
+
       const { data } = await res.json();
       const {
         short_pnl: shortPnL,
