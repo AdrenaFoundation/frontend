@@ -7,6 +7,12 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatPriceInfo, getTokenSymbol, nativeToUi } from '@/utils';
 
+const determinePrecision = (price: number): number => {
+  if (price < 0.01) return 8;
+  if (price < 1) return 6;
+  return 2;
+};
+
 export default function StopLossTakeProfitInput({
   position,
   type,
@@ -67,16 +73,16 @@ export default function StopLossTakeProfitInput({
       } else {
         max = markPrice;
         // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.leverage` is equal to 100, and get that price as the min value
-        const initialCollateralUsd = nativeToUi(
+        const collateralUsd = nativeToUi(
           position.nativeObject.collateralUsd,
           position.token.decimals,
         );
-        const initialSizeUsd = nativeToUi(
+        const sizeUsd = nativeToUi(
           position.nativeObject.sizeUsd,
           position.token.decimals,
         );
-        const initialLeverage = initialSizeUsd / initialCollateralUsd;
-        min = position.price * (1 - 1 / initialLeverage);
+        const leverage = sizeUsd / collateralUsd;
+        min = position.price * (1 - 1 / leverage);
       }
     }
 
@@ -124,57 +130,43 @@ export default function StopLossTakeProfitInput({
   const handleBlur = () => {
     if (input !== null && infos) {
       let newValue = input;
+      const precision = determinePrecision(markPrice || 1);
 
-      // Enforce min and max constraints
-      if (infos.min !== null && input < infos.min) {
-        newValue = infos.min;
-      } else if (infos.max !== null && input > infos.max) {
-        newValue = infos.max;
-      }
+      if (infos.min !== null && input < infos.min) newValue = infos.min;
+      if (infos.max !== null && input > infos.max) newValue = infos.max;
 
-      // Round to a maximum of two decimal places without adding trailing zeros
-      newValue = Math.round(newValue * 100) / 100;
+      newValue = parseFloat(newValue.toFixed(precision));
 
-      if (newValue !== input) {
-        setInput(newValue);
-      } else {
-        // Even if the value hasn't changed, ensure it's rounded to two decimals
-        setInput(Math.round(newValue * 100) / 100);
-      }
+      setInput(newValue !== input ? newValue : parseFloat(newValue.toFixed(precision)));
     }
   };
 
+  // Update handleSetInput to apply precision
   const handleSetInput = (value: number | null) => {
     if (value !== null) {
-      setInput(value);
+      const precision = determinePrecision(markPrice || 1);
+      setInput(parseFloat(value.toFixed(precision)));
     }
   };
 
-  // Helper function to adjust the price based on type and position side
+  // Adjust getAdjustedPrice to apply precision
   const getAdjustedPrice = (currentPrice: number, isMin: boolean): number => {
-    const adjustment = 0.01;
-    const isLong = position.side === 'long';
+    const precision = determinePrecision(currentPrice);
+    const adjustment = Math.pow(10, -precision); // Dynamic adjustment based on precision
+    // const isLong = position.side === 'long';
 
+    let adjustedPrice = currentPrice;
     if (type === 'Stop Loss') {
-      if (isMin) {
-        // For Stop Loss, adjust min
-        return isLong ? currentPrice + adjustment : currentPrice + adjustment;
-      } else {
-        // For Stop Loss, adjust max if needed
-        return isLong ? currentPrice - adjustment : currentPrice - adjustment;
-      }
+      adjustedPrice = isMin
+        ? currentPrice + adjustment
+        : currentPrice - adjustment;
     } else if (type === 'Take Profit') {
-      if (isMin) {
-        // For Take Profit, adjust min if applicable
-        return isLong ? currentPrice + adjustment : currentPrice + adjustment;
-      } else {
-        // For Take Profit, adjust max
-        return isLong ? currentPrice + adjustment : currentPrice - adjustment;
-      }
+      adjustedPrice = isMin
+        ? currentPrice + adjustment
+        : currentPrice - adjustment;
     }
 
-    // Default adjustment
-    return currentPrice;
+    return parseFloat(adjustedPrice.toFixed(precision));
   };
 
   if (!infos) return null;
@@ -238,27 +230,23 @@ export default function StopLossTakeProfitInput({
         </div>
 
         <div className="flex">
-          {min !== null ? (
+          {min !== null && (
             <div
               className={twMerge(
                 'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
               )}
               onClick={() =>
-                handleSetInput(
-                  Math.round(getAdjustedPrice(min, true) * 100) / 100,
-                )
+                handleSetInput(getAdjustedPrice(min, true))
               }
             >
               <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
-                {formatPriceInfo(
-                  Math.round(getAdjustedPrice(min, true) * 100) / 100,
-                )}
+                {formatPriceInfo(getAdjustedPrice(min, true))}
               </div>
               <div className="text-xs text-txtfade">min</div>
             </div>
-          ) : null}
+          )}
 
-          {max !== null ? (
+          {max !== null && (
             <div
               className={twMerge(
                 'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
@@ -266,9 +254,7 @@ export default function StopLossTakeProfitInput({
                 max === null ? 'text-txtfade' : '',
               )}
               onClick={() =>
-                handleSetInput(
-                  Math.round(getAdjustedPrice(max, false) * 100) / 100,
-                )
+                handleSetInput(getAdjustedPrice(max, false))
               }
             >
               <div
@@ -277,13 +263,11 @@ export default function StopLossTakeProfitInput({
                   max === null ? 'text-txtfade' : '',
                 )}
               >
-                {formatPriceInfo(
-                  Math.round(getAdjustedPrice(max, false) * 100) / 100,
-                )}
+                {formatPriceInfo(getAdjustedPrice(max, false))}
               </div>
               <div className="text-xs text-txtfade">max</div>
             </div>
-          ) : null}
+          )}
         </div>
       </div>
     </div>

@@ -40,11 +40,11 @@ export default function FeesChart() {
       const formattedData = timeStamp.map(
         (time: number, i: string | number) => ({
           name: time,
-          'Swap And Fee': cumulative_swap_fee_usd[i],
-          'Liquidity Fee': cumulative_liquidity_fee_usd[i],
-          'Close Position Fee': cumulative_close_position_fee_usd[i],
-          'Liquidation Fee': cumulative_liquidation_fee_usd[i],
-          'Borrow Fee': cumulative_borrow_fee_usd[i],
+          'Swap Fees': cumulative_swap_fee_usd[i],
+          'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i],
+          'Open/Close Position Fees': cumulative_close_position_fee_usd[i],
+          'Liquidation Fees': cumulative_liquidation_fee_usd[i],
+          'Borrow Fees': cumulative_borrow_fee_usd[i],
         }),
       );
 
@@ -68,23 +68,23 @@ export default function FeesChart() {
       data={chartData}
       labels={[
         {
-          name: 'Swap And Fee',
+          name: 'Swap Fees',
           color: '#f7931a',
         },
         {
-          name: 'Liquidity Fee',
+          name: 'Mint/Redeem ALP Fees',
           color: '#2775ca',
         },
         {
-          name: 'Close Position Fee',
+          name: 'Open/Close Position Fees',
           color: '#84CC90',
         },
         {
-          name: 'Liquidation Fee',
+          name: 'Liquidation Fees',
           color: '#BE84CC',
         },
         {
-          name: 'Borrow Fee',
+          name: 'Borrow Fees',
           color: '#DA6F71',
         },
       ]}

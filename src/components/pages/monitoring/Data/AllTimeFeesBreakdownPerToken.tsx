@@ -22,7 +22,7 @@ export default function AllTimeFeesBreakdownPerToken({
 
   return (
     <StyledContainer
-      title="All time Fees Breakdown Per Token"
+      title="All time Fees Breakdown (Per Token)"
       headerClassName="text-center justify-center"
       className="w-auto grow"
       titleClassName={titleClassName}
