@@ -224,7 +224,17 @@ export default function ClosePosition({
         </div>
 
         <div className={rowStyle}>
-          <div className="text-sm text-gray-400">Leverage</div>
+          <div className="text-sm text-gray-400">Initial Leverage</div>
+
+          <FormatNumber
+            nb={position.sizeUsd / position.collateralUsd}
+            prefix="x"
+            className="text-gray-400"
+          />
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-sm text-gray-400">Current Leverage</div>
 
           <FormatNumber
             nb={position.leverage}
