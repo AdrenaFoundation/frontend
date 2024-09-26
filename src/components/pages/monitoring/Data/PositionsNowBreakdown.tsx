@@ -22,7 +22,7 @@ export default function PositionsNowBreakdown({
 }) {
   return (
     <StyledContainer
-      title="POSITIONS NOW BREAKDOWN"
+      title="LIVE POSITIONS COUNT OI BREAKDOWN (PER TOKEN AND SIDE)"
       className="w-auto grow"
       titleClassName={titleClassName}
     >
