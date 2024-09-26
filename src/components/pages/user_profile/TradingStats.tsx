@@ -68,12 +68,12 @@ export default function TradingStatsBloc({
 
         <div className="flex w-full items-center justify-between">
           <div className="text-sm text-txtfade flex items-center">
-            Account overall PnL
+            Realized PnL
             <span className="ml-1">
               <Tippy
                 content={
                   <p className="font-medium">
-                    This is the sum of all your profits and losses over all trades, including fees.
+                    This is the sum of all your profits and losses over all trades, excluding fees.
                   </p>
                 }
               >
