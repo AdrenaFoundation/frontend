@@ -107,23 +107,27 @@ export default function LockedStakedElement({
             suffix={` ${token.symbol}`}
           />
 
-          <Tippy
-            content={
-              <div className="text-sm w-60 flex flex-col justify-around">
-                <div>This stake has been made during the genesis campaign.</div>
+          {lockedStake.isGenesis ? (
+            <Tippy
+              content={
+                <div className="text-sm w-60 flex flex-col justify-around">
+                  <div>
+                    This stake has been made during the genesis campaign.
+                  </div>
 
-                <div>
-                  It gets a share of 5% of the total ADX supply as an extra
-                  reward.
+                  <div>
+                    It gets a share of 5% of the total ADX supply as an extra
+                    reward.
+                  </div>
                 </div>
+              }
+              placement="auto"
+            >
+              <div className="text-xs border-b-[#02a99a] border pr-1 pl-1 rounded bg-[#02a99a] text-black">
+                genesis
               </div>
-            }
-            placement="auto"
-          >
-            <div className="text-xs border-b-[#02a99a] border pr-1 pl-1 rounded bg-[#02a99a] text-black">
-              genesis
-            </div>
-          </Tippy>
+            </Tippy>
+          ) : null}
         </div>
       </div>
 
