@@ -18,8 +18,8 @@ export default function TradingStatsBloc({
 }) {
   const totalProfitLoss =
     userProfile.longStats.profitsUsd +
-    userProfile.shortStats.profitsUsd +
-    userProfile.longStats.lossesUsd +
+    userProfile.shortStats.profitsUsd -
+    userProfile.longStats.lossesUsd -
     userProfile.shortStats.lossesUsd;
 
   return (
