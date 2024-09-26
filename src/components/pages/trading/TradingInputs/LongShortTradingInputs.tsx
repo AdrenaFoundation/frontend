@@ -131,7 +131,7 @@ export default function LongShortTradingInputs({
     const tokenAPrice = tokenPrices[tokenA.symbol];
     if (tokenAPrice) {
       const collateralValue = inputA * tokenAPrice;
-      if (collateralValue < 10) {
+      if (collateralValue < 9.5) {
         return addNotification({
           type: 'info',
           title: 'Cannot open position',
