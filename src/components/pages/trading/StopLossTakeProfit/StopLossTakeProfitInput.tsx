@@ -212,7 +212,7 @@ export default function StopLossTakeProfitInput({
         <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 grow text-sm w-full relative">
           <InputNumber
             value={input === null ? undefined : input}
-            placeholder={markPrice && markPrice < 1 ? "0.000000" : "0.00"}
+            placeholder="none"
             className="font-mono border-0 outline-none bg-transparent flex text-center"
             onChange={setInput}
             onBlur={handleBlur} // Now enforces max two decimals on blur
