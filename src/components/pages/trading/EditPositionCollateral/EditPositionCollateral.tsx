@@ -237,7 +237,7 @@ export default function EditPositionCollateral({
     }
 
     let updatedLeverage =
-      position.sizeUsd / (updatedCollateralUsd + position.pnl);
+      position.sizeUsd / (updatedCollateralUsd);
 
     // Leverage overflow
     if (updatedLeverage < 0) {
@@ -447,6 +447,19 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
+            <div className="text-sm text-gray-400">Initial Leverage</div>
+            <div className="flex items-center ">
+              <FormatNumber
+                nb={position.sizeUsd / position.collateralUsd}
+                suffix="x"
+                className="text-gray-400"
+                isDecimalDimmed={true}
+              />
+            </div>
+          </div>
+
+
+          <div className={rowStyle}>
             <div className="text-sm text-gray-400">PnL</div>
 
             <FormatNumber
@@ -490,7 +503,7 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Leverage</div>
+            <div className="text-sm">Current Leverage</div>
             <div className="flex items-center">
               <FormatNumber
                 nb={position.leverage}

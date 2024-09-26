@@ -288,7 +288,7 @@ export default function StopLossTakeProfit({
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Initial Leverage</span>
             <FormatNumber
-              nb={position.leverage}
+              nb={position.sizeUsd / position.collateralUsd}
               suffix="x"
               className="text-txtfade text-xs self-center"
               isDecimalDimmed={false}

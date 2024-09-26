@@ -67,16 +67,16 @@ export default function StopLossTakeProfitInput({
       } else {
         max = markPrice;
         // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.leverage` is equal to 100, and get that price as the min value
-        const initialCollateralUsd = nativeToUi(
+        const collateralUsd = nativeToUi(
           position.nativeObject.collateralUsd,
           position.token.decimals,
         );
-        const initialSizeUsd = nativeToUi(
+        const sizeUsd = nativeToUi(
           position.nativeObject.sizeUsd,
           position.token.decimals,
         );
-        const initialLeverage = initialSizeUsd / initialCollateralUsd;
-        min = position.price * (1 - 1 / initialLeverage);
+        const leverage = sizeUsd / collateralUsd;
+        min = position.price * (1 - 1 / leverage);
       }
     }
 
