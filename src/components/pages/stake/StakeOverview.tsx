@@ -154,14 +154,14 @@ export default function StakeOverview({
             <Button
               className={twMerge(
                 'w-full mt-4 ',
-                !lockedStakes?.some((ls) => ls.isGenesis) ||
-                  totalRedeemableLockedStake !== 0
+                !(totalRedeemableLockedStake !== 0 ||
+                  totalLiquidStaked !== 0)
                   ? 'opacity-70 text-opacity-70'
                   : '',
               )}
               disabled={
-                !lockedStakes?.some((ls) => ls.isGenesis) ||
-                totalRedeemableLockedStake !== 0
+                !(totalRedeemableLockedStake !== 0 ||
+                totalLiquidStaked !== 0)
               }
               variant="outline"
               size="lg"
