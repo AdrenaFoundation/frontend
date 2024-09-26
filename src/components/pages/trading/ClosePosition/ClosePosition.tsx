@@ -89,13 +89,9 @@ export default function ClosePosition({
 
       const priceWithSlippage =
         position.side === 'short'
-          ? priceAndFee.price
-              .div(new BN(10_000 - slippageInBps))
-              .mul(new BN(10_000))
-          : priceAndFee.price
-              .mul(new BN(10_000 - slippageInBps))
-              .div(new BN(10_000));
-
+          ? priceAndFee.price.mul(new BN(10_000)).div(new BN(10_000 - slippageInBps))
+          : priceAndFee.price.mul(new BN(10_000 - slippageInBps)).div(new BN(10_000));
+      
       await (position.side === 'long'
         ? window.adrena.client.closePositionLong.bind(window.adrena.client)
         : window.adrena.client.closePositionShort.bind(window.adrena.client))({
