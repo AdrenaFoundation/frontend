@@ -260,7 +260,7 @@ export default function PositionHistoryBlock({
         </div>
         <div className="flex flex-col items-center">
           <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Borrow Fees
+            Borrow
           </div>
           <div className="flex">
             <FormatNumber
@@ -272,7 +272,7 @@ export default function PositionHistoryBlock({
         </div>
         <div className="flex flex-col items-center">
           <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Exit Fees
+            Exit
           </div>
           <div className="flex">
             <FormatNumber

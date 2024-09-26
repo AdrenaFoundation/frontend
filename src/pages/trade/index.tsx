@@ -276,14 +276,67 @@ export default function Trade({
 
         {isBigScreen ? (
           <>
-            {history ? (
-              <div className="flex flex-col w-full">
-                <PositionsHistory className="mt-4" connected={connected} />
+            <div className="bg-secondary mt-4 border rounded-lg">
+              <div className="flex">
+                <Button
+                  className={`bg-secondary text-white ${
+                    history ? 'opacity-50' : ''
+                  }`}
+                  title="Positions"
+                  onClick={() => setHistory(false)}
+                />
+                <Button
+                  className={`bg-secondary text-white ${
+                    history ? '' : 'opacity-50'
+                  }`}
+                  title="History"
+                  onClick={() => setHistory(true)}
+                />
               </div>
-            ) : (
-              <div className="flex flex-col w-full">
+              {history ? (
+                <div className="flex flex-col w-full p-4">
+                  <PositionsHistory connected={connected} />
+                </div>
+              ) : (
+                <div className="flex flex-col w-full p-4">
+                  <Positions
+                    connected={connected}
+                    positions={positions}
+                    triggerPositionsReload={triggerPositionsReload}
+                    triggerUserProfileReload={triggerUserProfileReload}
+                    isBigScreen={isBigScreen}
+                    userProfile={userProfile}
+                  />
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="flex">
+            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full">
+              <div className="flex">
+                <Button
+                  className={`bg-secondary text-white ${
+                    history ? 'opacity-50' : ''
+                  }`}
+                  title="Positions"
+                  onClick={() => setHistory(false)}
+                />
+                <Button
+                  className={`bg-secondary text-white ${
+                    history ? '' : 'opacity-50'
+                  }`}
+                  title="History"
+                  onClick={() => setHistory(true)}
+                />
+              </div>
+              {history ? (
+                <div className="mt-1 w-full p-0 md:p-4">
+                  <PositionsHistory connected={connected} />
+                </div>
+              ) : (
                 <Positions
-                  className="mt-4"
+                  className={'mt-1 w-full p-0 md:p-4'}
                   connected={connected}
                   positions={positions}
                   triggerPositionsReload={triggerPositionsReload}
@@ -291,28 +344,8 @@ export default function Trade({
                   isBigScreen={isBigScreen}
                   userProfile={userProfile}
                 />
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="flex flex-row">
-            {history ? (
-              <div className="m:w-1/2 sm:mr-4 lg:mr-0 mt-4 w-full h-full">
-                <PositionsHistory connected={connected} />
-              </div>
-            ) : (
-              <Positions
-                className={
-                  'mt-4 sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full'
-                }
-                connected={connected}
-                positions={positions}
-                triggerPositionsReload={triggerPositionsReload}
-                triggerUserProfileReload={triggerUserProfileReload}
-                isBigScreen={isBigScreen}
-                userProfile={userProfile}
-              />
-            )}
+              )}
+            </div>
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
