@@ -123,7 +123,7 @@ export default function LockedStakedElement({
               }
               placement="auto"
             >
-              <div className="text-xs border-b-[#02a99a] border pr-1 pl-1 rounded bg-[#02a99a] text-black">
+              <div className="text-xs border-b-[#068862] border pr-1 pl-1 rounded bg-[#068862] text-white font-mono">
                 genesis
               </div>
             </Tippy>
