@@ -99,7 +99,7 @@ export function formatPriceInfo(
   price: number | null | undefined,
   decimals = 2,
   minimumFractionDigits = 0,
-  precisionIfPriceDecimalsBelow = 6,
+  precisionIfPriceDecimalsBelow = 8,
 ) {
   if (price === null || typeof price === 'undefined') {
     return '-';
