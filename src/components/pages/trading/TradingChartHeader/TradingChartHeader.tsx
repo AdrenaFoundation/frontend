@@ -60,8 +60,9 @@ export default function TradingChartHeader({
     <>
       <Head>
         <title>
-          {streamingTokenPrices[getTokenSymbol(selected.symbol)]?.toFixed(2) ||
-            0}{' '}
+          {streamingTokenPrices[getTokenSymbol(selected.symbol)]?.toFixed(
+            selected.symbol === 'BONK' ? 8 : 2,
+          ) || 0}{' '}
           – {getTokenSymbol(selected.symbol)} / USD
         </title>
       </Head>
