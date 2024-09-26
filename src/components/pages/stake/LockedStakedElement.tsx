@@ -13,7 +13,6 @@ import {
 } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
-import BN from 'bn.js';
 
 export default function LockedStakedElement({
   token,
@@ -61,8 +60,6 @@ export default function LockedStakedElement({
 
   const isLessThan30Days =
     timeRemaining && timeRemaining < 30 * 3600 * 24 * 1000;
-  
-  const isGenesis = lockedStake.stakeTime.lt(new BN(1726992000));
 
   const remainingDaysDiv = (
     <div>
@@ -110,11 +107,13 @@ export default function LockedStakedElement({
             suffix={` ${token.symbol}`}
           />
 
-          {isGenesis && (
+          {lockedStake.isGenesis ? (
             <Tippy
               content={
                 <div className="text-sm w-60 flex flex-col justify-around">
-                  <div>This stake has been made during the genesis campaign.</div>
+                  <div>
+                    This stake has been made during the genesis campaign.
+                  </div>
 
                   <div>
                     It gets a share of 5% of the total ADX supply as an extra
@@ -128,7 +127,7 @@ export default function LockedStakedElement({
                 genesis
               </div>
             </Tippy>
-          )}
+          ) : null}
         </div>
       </div>
 
