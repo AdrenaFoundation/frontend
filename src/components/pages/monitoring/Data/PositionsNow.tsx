@@ -15,7 +15,7 @@ export default function PositionsNow({
   return (
     <StyledContainer
       headerClassName="text-center justify-center"
-      title="POSITIONS NOW"
+      title="LIVE POSITIONS COUNT"
       className="w-auto grow"
       titleClassName={titleClassName}
     >
