@@ -20,28 +20,29 @@ export default function SwapStats({
     >
       <StyledSubSubContainer className="flex-col">
         <div className="flex w-full items-start justify-between">
-          <div className="text-sm">Swap Count</div>
+          <div className="text-sm text-txtfade">Swaps count</div>
 
           <FormatNumber nb={userProfile.swapCount} precision={1} />
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Swap Volume</div>
+          <div className="text-sm text-txtfade">All time swap volume</div>
 
           <FormatNumber
             nb={userProfile.swapVolumeUsd}
             format="currency"
-            precision={3}
+            precision={2}
           />
         </div>
 
         <div className="flex w-full items-center justify-between">
-          <div className="text-sm">Fees Paid</div>
+          <div className="text-sm text-txtfade">Total fees</div>
 
           <FormatNumber
             nb={userProfile.swapFeePaidUsd}
             format="currency"
-            precision={3}
+            precision={2}
+            className="text-red"
           />
         </div>
       </StyledSubSubContainer>
