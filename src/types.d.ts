@@ -381,7 +381,6 @@ export type PositionHistoryExtended = {
 export type PositionHistoryApi = {
   position_id: number;
   user_id: number;
-  custody_id: number;
   side: 'long' | 'short';
   status: 'open' | 'closed';
   pubkey: string;

@@ -18,113 +18,19 @@ export default function usePositionsHistory(): {
     const tokens = await window.adrena.client.tokens;
 
     const response = await fetch(
-      'https://datapi.adrena.xyz/position?user_wallet=' + wallet?.walletAddress,
+      'https://datapi.adrena.xyz/position?user_wallet=' +
+        wallet?.walletAddress +
+        '&status=liquidate&status=close',
     );
 
     if (!response.ok) {
       console.log('API response was not ok');
     }
     const apiBody = await response.json();
-    const apiDataTmp: PositionHistoryApi[] = apiBody.data;
+    const apiData: PositionHistoryApi[] = apiBody.data;
 
-    const apiData = [
-      {
-        position_id: 1,
-        user_id: 123,
-        custody_id: 456,
-        side: 'long',
-        status: 'open',
-        pubkey: '3iGzr6qvQR5fPJWBMdfB9uX8YES3drvyPaS3GtLn7n4q',
-        entry_price: 100.5,
-        exit_price: null,
-        pnl: 10.5,
-        entry_leverage: 2,
-        entry_collateral_amount: 500,
-        size: 1000,
-        entry_date: new Date(new Date().setHours(0)).toISOString(),
-        exit_date: new Date().toISOString(),
-        fees: 1.5,
-        borrow_fees: 0.5,
-        exit_fees: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        profile: 'FakeProfile1',
-        symbol: 'BONK',
-        token_account_mint: '2eU7sUxhpQuBaUrjd6oPTzoFZNPEaawrAka4zqowMzbJ',
-      },
-      {
-        position_id: 2,
-        user_id: 123,
-        custody_id: 789,
-        side: 'short',
-        status: 'closed',
-        pubkey: '3iGzr6qvQR5fPJWBMdfB9uX8YES3drvyPaS3GtLn7n4q',
-        entry_price: 200.5,
-        exit_price: 180.5,
-        pnl: -20,
-        entry_leverage: 3,
-        entry_collateral_amount: 500,
-        size: 1500,
-        entry_date: new Date(new Date().setHours(19)).toISOString(),
-        exit_date: new Date().toISOString(),
-        fees: 2.5,
-        borrow_fees: 1,
-        exit_fees: 0.5,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        profile: 'FakeProfile2',
-        symbol: 'BONK',
-        token_account_mint: '2eU7sUxhpQuBaUrjd6oPTzoFZNPEaawrAka4zqowMzbJ',
-      },
-      {
-        position_id: 3,
-        user_id: 123,
-        custody_id: 789,
-        side: 'short',
-        status: 'closed',
-        pubkey: '3iGzr6qvQR5fPJWBMdfB9uX8YES3drvyPaS3GtLn7n4q',
-        entry_price: 200.5,
-        exit_price: 180.5,
-        pnl: -20,
-        entry_leverage: 3,
-        entry_collateral_amount: 500,
-        size: 1500,
-        entry_date: new Date(new Date().setHours(19)).toISOString(),
-        exit_date: new Date().toISOString(),
-        fees: 2.5,
-        borrow_fees: 1,
-        exit_fees: 0.5,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        profile: 'FakeProfile2',
-        symbol: 'BONK',
-        token_account_mint: '2eU7sUxhpQuBaUrjd6oPTzoFZNPEaawrAka4zqowMzbJ',
-      },
-      {
-        position_id: 4,
-        user_id: 123,
-        custody_id: 789,
-        side: 'short',
-        status: 'closed',
-        pubkey: '3iGzr6qvQR5fPJWBMdfB9uX8YES3drvyPaS3GtLn7n4q',
-        entry_price: 200.5,
-        exit_price: 180.5,
-        pnl: -20,
-        entry_leverage: 3,
-        entry_collateral_amount: 500,
-        size: 1500,
-        entry_date: new Date(new Date().setHours(19)).toISOString(),
-        exit_date: new Date().toISOString(),
-        fees: 2.5,
-        borrow_fees: 1,
-        exit_fees: 0.5,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        profile: 'FakeProfile2',
-        symbol: 'BONK',
-        token_account_mint: '2eU7sUxhpQuBaUrjd6oPTzoFZNPEaawrAka4zqowMzbJ',
-      },
-    ];
+    console.log(apiData);
+
     if (typeof apiData === 'undefined' || (apiData && apiData.length === 0))
       return [];
     const enrichedDataWithTokens: PositionHistoryExtended[] = apiData
@@ -132,15 +38,18 @@ export default function usePositionsHistory(): {
         const token = tokens.find(
           (t) =>
             t.mint.toBase58() === data.token_account_mint &&
-            t.symbol === data.symbol,
+            t.symbol.toUpperCase() === data.symbol.toUpperCase(),
         );
 
-        if (typeof token === 'undefined') return null;
+        if (typeof token === 'undefined') {
+          console.log('oh no couldn t match');
+
+          return null;
+        }
 
         return {
           position_id: data.position_id,
           user_id: data.user_id,
-          custody_id: data.custody_id,
           side: data.side,
           status: data.status,
           pubkey: new PublicKey(data.pubkey),
