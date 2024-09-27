@@ -2877,71 +2877,105 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
-
-    if (!stakingRewardTokenMint) {
-      throw new Error('USDC not found');
-    }
-
-    const rewardTokenAccount = findATAAddressSync(
+    const { instruction } = await this.buildClaimStakesInstruction(
       owner,
-      stakingRewardTokenMint,
+      stakedTokenMint,
     );
-    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
-    const staking = this.getStakingPda(stakedTokenMint);
-    const userStaking = this.getUserStakingPda(owner, staking);
-    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
-    const stakingLmRewardTokenVault =
-      this.getStakingLmRewardTokenVaultPda(staking);
-
-    const preInstructions: TransactionInstruction[] = [];
-
-    if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: rewardTokenAccount,
-          mint: stakingRewardTokenMint,
-          owner,
-        }),
-      );
-    }
-
-    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
-      preInstructions.push(
-        this.createATAInstruction({
-          ataAddress: lmTokenAccount,
-          mint: this.lmTokenMint,
-          owner,
-        }),
-      );
-    }
-
-    const transaction = await this.adrenaProgram.methods
-      .claimStakes()
-      .accountsStrict({
-        caller: owner,
-        payer: owner,
-        owner,
-        rewardTokenAccount,
-        lmTokenAccount,
-        stakingRewardTokenVault,
-        stakingLmRewardTokenVault,
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
-        userStaking,
-        staking,
-        cortex: AdrenaClient.cortexPda,
-        lmTokenMint: this.lmTokenMint,
-        adrenaProgram: this.adrenaProgram.programId,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        feeRedistributionMint: this.cortex.feeRedistributionMint,
-        pool: this.mainPool.pubkey,
-        genesisLock: this.genesisLockPda,
-      })
-      .preInstructions(preInstructions)
-      .transaction();
+    const transaction = new Transaction().add(instruction);
 
     return this.signAndExecuteTx(transaction, notification);
+  }
+
+  // Simulation for getting pending rewards
+  public async simulateClaimStakes(
+    owner: PublicKey,
+    stakedTokenMint: PublicKey,
+  ): Promise<{
+    pendingUsdcRewards: number;
+    pendingAdxRewards: number;
+    pendingGenesisAdxRewards: number;
+  }> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
+      .wallet;
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { instruction, accounts } = await this.buildClaimStakesInstruction(
+      owner,
+      stakedTokenMint,
+    );
+
+    const messageV0 = new TransactionMessage({
+      payerKey: wallet.publicKey,
+      recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+      instructions: [instruction],
+    }).compileToV0Message();
+
+    const versionedTransaction = new VersionedTransaction(messageV0);
+
+    // Simulate the transaction
+    const result = await this.connection.simulateTransaction(
+      versionedTransaction,
+      {
+        sigVerify: false,
+      },
+    );
+
+    // Parse the simulation result to extract reward amounts
+    const simulationLogs = result.value.logs;
+    if (!simulationLogs) {
+      throw new Error('Simulation failed to return logs');
+    }
+
+    // Parsing log for ALP:
+    let usdcRewards: BN = new BN(0);
+    let adxRewards: BN = new BN(0);
+    let adxGenesisRewards: BN = new BN(0);
+    // console.log('logs', simulationLogs);
+
+    let usdcPattern: RegExp;
+    let adxPattern: RegExp;
+    let adxGenesisRewardsPattern: RegExp;
+    if (stakedTokenMint === this.alpToken.mint) {
+      usdcPattern = /Transfer rewards amount: (\d+(\.\d+)?)/;
+      adxPattern = /Transfer lm_rewards_token_amount: (\d+(\.\d+)?)/;
+      adxGenesisRewardsPattern =
+        /Mint (\d+(\.\d+)?) LM tokens for ecosystem bucket/;
+    } else {
+      usdcPattern = /Transfer rewards amount: (\d+(\.\d+)?)/;
+      adxPattern = /Distribute (\d+(\.\d+)?) lm rewards/;
+      adxGenesisRewardsPattern = / /;
+    }
+
+    for (const log of simulationLogs) {
+      const usdcMatch = log.match(usdcPattern);
+      if (usdcMatch) {
+        console.log('usdcMatch', usdcMatch[1]);
+        usdcRewards = new BN(usdcMatch[1]);
+      }
+
+      const adxMatch = log.match(adxPattern);
+      if (adxMatch) {
+        console.log('adxMatch', adxMatch[1]);
+        adxRewards = new BN(adxMatch[1]);
+      }
+
+      const adxGenesisMatch = log.match(adxGenesisRewardsPattern);
+      if (adxGenesisMatch) {
+        console.log('adxGenesisMatch', adxGenesisMatch[1]);
+        adxGenesisRewards = new BN(adxGenesisMatch[1]);
+      }
+    }
+
+    // console.log('Parsed rewards:', { usdcRewards, adxRewards, adxGenesisRewards });
+    return {
+      pendingUsdcRewards: nativeToUi(usdcRewards, this.getUsdcToken().decimals),
+      pendingAdxRewards: nativeToUi(adxRewards, 6),
+      pendingGenesisAdxRewards: nativeToUi(adxGenesisRewards, 6),
+    };
   }
 
   public async removeLockedStake({
@@ -4606,5 +4640,89 @@ export class AdrenaClient {
 
   public getTokenBySymbol(symbol: TokenSymbol): Token | null {
     return this.tokens.find((token) => token.symbol === symbol) ?? null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async buildClaimStakesInstruction(
+    owner: PublicKey,
+    stakedTokenMint: PublicKey,
+  ): Promise<{ instruction: TransactionInstruction; accounts: any }> {
+    const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
+    const adrenaProgram = this.adrenaProgram;
+
+    if (!stakingRewardTokenMint) {
+      throw new Error('USDC not found');
+    }
+    if (!adrenaProgram) {
+      throw new Error('adrena program not ready');
+    }
+
+    const rewardTokenAccount = findATAAddressSync(
+      owner,
+      stakingRewardTokenMint,
+    );
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
+    const staking = this.getStakingPda(stakedTokenMint);
+    const userStaking = this.getUserStakingPda(owner, staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+
+    const preInstructions: TransactionInstruction[] = [];
+
+    if (
+      this.connection &&
+      !(await isATAInitialized(this.connection, rewardTokenAccount))
+    ) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: rewardTokenAccount,
+          mint: stakingRewardTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    if (
+      this.connection &&
+      !(await isATAInitialized(this.connection, lmTokenAccount))
+    ) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: lmTokenAccount,
+          mint: this.lmTokenMint,
+          owner,
+        }),
+      );
+    }
+
+    const accounts = {
+      caller: owner,
+      payer: owner,
+      owner,
+      rewardTokenAccount,
+      lmTokenAccount,
+      stakingRewardTokenVault,
+      stakingLmRewardTokenVault,
+      transferAuthority: AdrenaClient.transferAuthorityAddress,
+      userStaking,
+      staking,
+      cortex: AdrenaClient.cortexPda,
+      lmTokenMint: this.lmTokenMint,
+      adrenaProgram: adrenaProgram.programId,
+      systemProgram: SystemProgram.programId,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      feeRedistributionMint: this.cortex?.feeRedistributionMint,
+      pool: this.mainPool.pubkey,
+      genesisLock: this.genesisLockPda,
+    };
+
+    const instruction = await adrenaProgram.methods
+      .claimStakes()
+      .accountsStrict(accounts)
+      .preInstructions(preInstructions)
+      .instruction();
+
+    return { instruction, accounts };
   }
 }
