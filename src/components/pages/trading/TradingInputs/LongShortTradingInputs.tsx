@@ -1,5 +1,6 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -30,6 +31,7 @@ import {
 } from '@/utils';
 
 import errorImg from '../../../../../public/images/Icons/error.svg';
+import infoIcon from '../../../../../public/images/Icons/info.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
@@ -709,7 +711,13 @@ export default function LongShortTradingInputs({
         </StyledSubSubContainer>
 
         <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
-          Fees
+          Fees{' '}
+          <span className="ml-1">
+            <Tippy content={
+                <p className="font-medium text-txtfade">0 BPS entry fees - 16 BPS exit fees. 🎊 NO SIZE FEES! 🎊</p>}>
+              <Image src={infoIcon} width={12} height={12} alt="info icon" />
+            </Tippy>
+          </span>
         </h5>
 
         <PositionFeesTooltip
