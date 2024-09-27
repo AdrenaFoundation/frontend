@@ -52,7 +52,7 @@ export default function StakeOverview({
 }) {
   const isALP = token === 'ALP';
   const stakingAccount = useStakingAccount(
-    isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint
+    isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
 
   return (
@@ -107,20 +107,24 @@ export default function StakeOverview({
               {isALP ? (
                 <>
                   <p className="text-sm text-txtfade mb-1">
-                    ADX and USDC rewards automatically accrue at the end of every staking round.
+                    ADX and USDC rewards automatically accrue at the end of
+                    every staking round.
                   </p>
                   <p className="text-sm text-txtfade mb-1">
-                    Locked ALP can be retrieved once the locking period is over, or by doing an early exit.
+                    Locked ALP can be retrieved once the locking period is over,
+                    or by doing an early exit.
                   </p>
                 </>
               ) : (
                 <>
                   <p className="text-sm text-txtfade mb-1">
-                    ADX rewards automatically accrue at the end of every staking round.
+                    ADX rewards automatically accrue at the end of every staking
+                    round.
                   </p>
                   <p className="text-sm text-txtfade mb-1">
-                    Liquid staked ADX can be unstaked at any time. Locked ADX can be retrieved
-                    once the locking period is over, or by performing an early exit.
+                    Liquid staked ADX can be unstaked at any time. Locked ADX
+                    can be retrieved once the locking period is over, or by
+                    performing an early exit.
                   </p>
                 </>
               )}
@@ -132,7 +136,7 @@ export default function StakeOverview({
                 <span className="text-txtfade">USDC:</span>
                 <div className="flex items-center">
                   <FormatNumber nb={pendingUsdcRewards} suffix=" USDC" />
-                  {isALP && lockedStakes?.some(stake => stake.isGenesis) && (
+                  {isALP && lockedStakes?.some((stake) => stake.isGenesis) && (
                     <Tippy content="We found a bug with the Genesis Locked Stake that prevent users to claim. A fix is on the way in the backend. If you see this, that means you are concerned, and that all the rewards are SAFU, coming soon™️">
                       <Image
                         src={warningIcon}
@@ -149,7 +153,7 @@ export default function StakeOverview({
                 <span className="text-txtfade">ADX:</span>
                 <div className="flex items-center">
                   <FormatNumber nb={pendingAdxRewards} suffix=" ADX" />
-                  {isALP && lockedStakes?.some(stake => stake.isGenesis) && (
+                  {isALP && lockedStakes?.some((stake) => stake.isGenesis) && (
                     <Tippy content="We found a bug with the Genesis Locked Stake that prevent users to claim. A fix is on the way in the backend. If you see this, that means you are concerned, and that all the rewards are SAFU, coming soon™️">
                       <Image
                         src={warningIcon}
@@ -175,7 +179,11 @@ export default function StakeOverview({
               title="Claim"
               className="px-5 self-end mt-4" // Increased top margin
               onClick={() => handleClickOnClaimRewards()}
-              disabled={pendingUsdcRewards === 0 && pendingAdxRewards === 0 && pendingGenesisAdxRewards === 0}
+              disabled={
+                pendingUsdcRewards === 0 &&
+                pendingAdxRewards === 0 &&
+                pendingGenesisAdxRewards === 0
+              }
             />
           </div>
           <div className="text-sm mt-2 flex items-center justify-between">
@@ -183,15 +191,20 @@ export default function StakeOverview({
               <span className="text-txtfade">Next round starts in: </span>
               {stakingAccount && (
                 <RemainingTimeToDate
-                  timestamp={getNextStakingRoundStartTime(stakingAccount.currentStakingRound.startTime).getTime() / 1000}
-                  className="inline-flex items-center ml-1"
-                  tippyText=''
+                  timestamp={
+                    getNextStakingRoundStartTime(
+                      stakingAccount.currentStakingRound.startTime,
+                    ).getTime() / 1000
+                  }
+                  className="inline-flex items-center ml-1 w-[5.5em] text-nowrap"
+                  tippyText=""
                 />
               )}
               <Tippy
                 content={
                   <p className="font-medium">
-                    Each round duration is 6h. At the end of a round, rewards become available.
+                    Each round duration is 6h. At the end of a round, rewards
+                    become available.
                   </p>
                 }
               >
@@ -280,9 +293,15 @@ export default function StakeOverview({
                     <Button
                       variant="primary"
                       size="sm"
-                      title={totalLiquidStaked && totalLiquidStaked > 0 ? "Add Stake" : "Start Staking"}
+                      title={
+                        totalLiquidStaked && totalLiquidStaked > 0
+                          ? 'Add Stake'
+                          : 'Start Staking'
+                      }
                       className="px-5"
-                      onClick={() => handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)}
+                      onClick={() =>
+                        handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+                      }
                     />
                   </div>
                 </div>
@@ -295,8 +314,10 @@ export default function StakeOverview({
 
           {/* Info text remains at the bottom */}
           <p className="opacity-25 text-center w-full p-5 pt-0">
-            The duration of a staking round is 6 hours. You can manually claim rewards,
-            else if you do not they will be automatically claimed every ~8 days as the on chain space is limited (technical constraint, but also feature).
+            The duration of a staking round is 6 hours. You can manually claim
+            rewards, else if you do not they will be automatically claimed every
+            ~8 days as the on chain space is limited (technical constraint, but
+            also feature).
           </p>
         </div>
       </div>
