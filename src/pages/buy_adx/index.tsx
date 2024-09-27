@@ -9,6 +9,8 @@ import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeA
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps } from '@/types';
 
+import jupIcon from '../../../public/images/jup-logo.png';
+
 export default function BuyADX({ connected, activeRpc }: PageProps) {
   return (
     <div className="px-7">
@@ -37,15 +39,25 @@ export default function BuyADX({ connected, activeRpc }: PageProps) {
               Accumulate and stake ADX to get proportional control and economic
               value capture.
             </p>
+
+            <Button
+              title="Buy ADX on Jupiter"
+              href="https://jup.ag/swap/USDC-AuQaustGiaqxRvj2gtCdrd22PBzTn8kM3kEPEkZCtuDw"
+              isOpenLinkInNewTab
+              rightIcon={jupIcon}
+              iconClassName="w-5 h-5"
+              size="lg"
+              className="mt-4 px-14 py-3 text-base"
+            />
           </div>
 
-          <div className="mx-auto lg:mx-0 lg:mb-auto">
+          {/* <div className="mx-auto lg:mx-0 lg:mb-auto">
             <IntegratedTerminal
               connected={connected}
               activeRpc={activeRpc}
               className="w-full lg:w-[400px] h-[700px]"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 

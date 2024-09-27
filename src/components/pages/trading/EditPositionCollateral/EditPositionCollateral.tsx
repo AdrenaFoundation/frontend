@@ -7,6 +7,7 @@ import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import FormatNumber from '@/components/Number/FormatNumber';
+import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
@@ -14,8 +15,8 @@ import { PositionExtended, Token } from '@/types';
 import { nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
+import walletImg from '../../../../../public/images/wallet-icon.svg';
 import TradingInput from '../TradingInput/TradingInput';
-
 const LEVERAGE_OVERFLOW = 999;
 
 // use the counter to handle asynchronous multiple loading
@@ -236,8 +237,7 @@ export default function EditPositionCollateral({
       updatedCollateralAmount = updatedCollateralUsd / markCollateralPrice;
     }
 
-    let updatedLeverage =
-      position.sizeUsd / (updatedCollateralUsd + position.pnl);
+    let updatedLeverage = position.sizeUsd / updatedCollateralUsd;
 
     // Leverage overflow
     if (updatedLeverage < 0) {
@@ -340,18 +340,25 @@ export default function EditPositionCollateral({
 
               return (
                 <div
-                  className="ml-auto mr-4 cursor-pointer"
+                  className="flex flex-row items-center ml-auto mr-4 cursor-pointer"
                   onClick={() => setInput(walletBalance)}
                 >
+                  <Image
+                    className="mr-1 opacity-60 relative"
+                    src={walletImg}
+                    height={17}
+                    width={17}
+                    alt="Wallet icon"
+                  />
                   <FormatNumber
                     nb={balance}
                     precision={position.collateralToken.decimals}
                     className="text-txtfade"
                     isDecimalDimmed={false}
+                    suffix={` ${position.collateralToken.symbol}`}
                   />
-                  <span className="text-sm text-txtfade ml-1">
-                    {position.collateralToken.symbol} in wallet
-                  </span>
+
+                  <RefreshButton className="ml-1" />
                 </div>
               );
             })()
@@ -417,19 +424,45 @@ export default function EditPositionCollateral({
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Size</div>
 
-            <FormatNumber nb={position.sizeUsd} format="currency" className="text-gray-400"/>
+            <FormatNumber
+              nb={position.sizeUsd}
+              format="currency"
+              className="text-gray-400"
+            />
           </div>
 
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Entry Price</div>
 
-            <FormatNumber nb={position.price} format="currency" className="text-gray-400"/>
+            <FormatNumber
+              nb={position.price}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              className="text-gray-400"
+            />
           </div>
 
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Mark Price</div>
 
-            <FormatNumber nb={markPrice} format="currency" className="text-gray-400"/>
+            <FormatNumber
+              nb={markPrice}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              className="text-gray-400"
+            />
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">Initial Leverage</div>
+            <div className="flex items-center ">
+              <FormatNumber
+                nb={position.sizeUsd / position.collateralUsd}
+                suffix="x"
+                className="text-gray-400"
+                isDecimalDimmed={true}
+              />
+            </div>
           </div>
 
           <div className={rowStyle}>
@@ -476,7 +509,7 @@ export default function EditPositionCollateral({
           </div>
 
           <div className={rowStyle}>
-            <div className="text-sm">Leverage</div>
+            <div className="text-sm">Current Leverage</div>
             <div className="flex items-center">
               <FormatNumber
                 nb={position.leverage}
@@ -509,6 +542,7 @@ export default function EditPositionCollateral({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
                 className={input ? ' text-xs' : 'text-sm'}
               />
 

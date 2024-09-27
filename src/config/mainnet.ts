@@ -41,7 +41,7 @@ export default class MainnetConfiguration implements IConfiguration {
     },
     DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263: {
       name: 'BONK',
-      color: '#3D3E3F',
+      color: '#dfaf92',
       symbol: 'BONK',
       image: bonkLogo,
       coingeckoId: 'bonk',
@@ -96,10 +96,6 @@ export default class MainnetConfiguration implements IConfiguration {
       ),
     },
   };
-
-  public readonly solPythPriceUpdateV2: PublicKey = new PublicKey(
-    '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
-  );
 
   public readonly governanceProgram: PublicKey = new PublicKey(
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',

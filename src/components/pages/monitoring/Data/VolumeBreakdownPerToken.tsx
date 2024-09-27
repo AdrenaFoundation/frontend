@@ -22,7 +22,7 @@ export default function VolumeBreakdownPerToken({
 
   return (
     <StyledContainer
-      title="Volume Breakdown Per Token"
+      title="Trading Volume Breakdown (per token)"
       headerClassName="text-center justify-center"
       className="w-auto grow"
       titleClassName={titleClassName}

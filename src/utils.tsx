@@ -99,7 +99,7 @@ export function formatPriceInfo(
   price: number | null | undefined,
   decimals = 2,
   minimumFractionDigits = 0,
-  precisionIfPriceDecimalsBelow = 6,
+  precisionIfPriceDecimalsBelow = 8,
 ) {
   if (price === null || typeof price === 'undefined') {
     return '-';
@@ -542,7 +542,7 @@ export function formatMilliseconds(milliseconds: number): string {
 
 // Handle specific case of jitoSOL and WBTC
 export function getTokenImage(token: Token): ImageRef {
-  if (token.symbol === 'jitoSOL') return solLogo;
+  if (token.symbol === 'JITOSOL') return solLogo;
   if (token.symbol === 'WBTC') return btcLogo;
 
   return token.image;
@@ -695,8 +695,9 @@ export function calculateCappedFeeForExitEarly(
   lockedStake: LockedStakeExtended,
 ): number {
   const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber() * 1000;
-  const timeRemaining = lockedStake.lockDuration.toNumber() - timeElapsed;
-  const feeRate = timeRemaining / lockedStake.lockDuration.toNumber();
+  const timeRemaining =
+    lockedStake.lockDuration.toNumber() * 1000 - timeElapsed;
+  const feeRate = timeRemaining / (lockedStake.lockDuration.toNumber() * 1000);
 
   // Cap the fee rate between the lower and upper caps
 

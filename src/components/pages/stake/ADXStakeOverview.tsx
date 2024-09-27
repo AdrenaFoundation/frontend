@@ -181,7 +181,7 @@ export default function ADXStakeOverview({
           />
 
           {(() => {
-            if (totalRedeemableLockedStake !== 0)
+            if (totalRedeemableLockedStake !== 0 || totalLiquidStaked !== 0)
               return (
                 <Button
                   className="w-full mt-4"
@@ -192,7 +192,7 @@ export default function ADXStakeOverview({
                 />
               );
 
-            if (lockedStakes?.length)
+            if (lockedStakes?.length && totalLiquidStaked === 0)
               return (
                 <Button
                   className="w-full mt-4 opacity-70 text-opacity-70"
@@ -207,9 +207,9 @@ export default function ADXStakeOverview({
         {lockedStakes?.length ? (
           <span className="mt-4 text-sm opacity-50">
             * ADX and USDC rewards accrue automatically every ~6 hours and get
-            <span className="underline"> auto-claimed</span> every 18 days. You
+            <span className="underline"> auto-claimed</span> every ~8 days. You
             can manually claim rewards. The locked ADX tokens can be redeemed
-            once the locking period is over.
+            once the locking period is over. Rewards from liquid and locked stake are claimed together.
           </span>
         ) : null}
       </StyledSubContainer>

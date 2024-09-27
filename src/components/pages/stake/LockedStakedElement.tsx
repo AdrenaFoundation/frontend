@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -61,7 +62,7 @@ export default function LockedStakedElement({
     timeRemaining && timeRemaining < 30 * 3600 * 24 * 1000;
 
   const remainingDaysDiv = (
-    <div className="mt-2">
+    <div>
       <p className="opacity-50">
         Ends{' '}
         {!isLessThan30Days
@@ -93,13 +94,41 @@ export default function LockedStakedElement({
               <span> days</span>
             </span>
           </div>
-          {endDate && timeRemaining && remainingDaysDiv}
+
+          {endDate && timeRemaining && remainingDaysDiv
+            ? remainingDaysDiv
+            : null}
         </div>
-        <FormatNumber
-          nb={nativeToUi(lockedStake.amount, token.decimals)}
-          className="text-xl inline-block"
-          suffix={` ${token.symbol}`}
-        />{' '}
+
+        <div className="flex justify-between items-center">
+          <FormatNumber
+            nb={nativeToUi(lockedStake.amount, token.decimals)}
+            className="text-xl inline-block"
+            suffix={` ${token.symbol}`}
+          />
+
+          {lockedStake.isGenesis ? (
+            <Tippy
+              content={
+                <div className="text-sm w-60 flex flex-col justify-around">
+                  <div>
+                    This stake has been made during the genesis campaign.
+                  </div>
+
+                  <div>
+                    It gets a share of 5% of the total ADX supply as an extra
+                    reward.
+                  </div>
+                </div>
+              }
+              placement="auto"
+            >
+              <div className="text-xs border-b-[#068862] border pr-1 pl-1 rounded bg-[#068862] text-white font-mono">
+                genesis
+              </div>
+            </Tippy>
+          ) : null}
+        </div>
       </div>
 
       <div className="flex-col w-full flex items-center flex-none">

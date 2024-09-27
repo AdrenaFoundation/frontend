@@ -4,7 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setTokenPriceAction } from '@/actions/tokenPricesActions';
-import { USD_DECIMALS } from '@/constant';
+import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { Token } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -40,7 +40,16 @@ export default function useWatchTokenPrices() {
       // Add SOL token here to handle jitoSOL traded as SOL price
       {
         symbol: 'SOL',
-        pythPriceUpdateV2: window.adrena.config.solPythPriceUpdateV2,
+        pythPriceUpdateV2: Object.values(window.adrena.config.tokensInfo).find(
+          (t) => t.symbol === 'SOL',
+        )?.pythPriceUpdateV2,
+      } as unknown as Token, // Force type as we only need symbol and pythPriceUpdateV2 pubkey
+      // Add BTC token here to handle jitoSOL traded as SOL price
+      {
+        symbol: 'BTC',
+        pythPriceUpdateV2: Object.values(window.adrena.config.tokensInfo).find(
+          (t) => t.symbol === 'BTC',
+        )?.pythPriceUpdateV2,
       } as unknown as Token, // Force type as we only need symbol and pythPriceUpdateV2 pubkey
     ];
 
@@ -106,7 +115,7 @@ export default function useWatchTokenPrices() {
       dispatch(
         setTokenPriceAction(
           window.adrena.client.alpToken.symbol,
-          price ? nativeToUi(price, USD_DECIMALS) : null,
+          price ? nativeToUi(price, PRICE_DECIMALS) : null,
         ),
       );
     } catch (e) {
@@ -133,7 +142,7 @@ export default function useWatchTokenPrices() {
       clearInterval(alpPriceInterval);
       alpPriceInterval = null;
     };
-    // Manually handle dependencies to avoid unwanted refreshs
+    // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadALPTokenPrice]);
 }

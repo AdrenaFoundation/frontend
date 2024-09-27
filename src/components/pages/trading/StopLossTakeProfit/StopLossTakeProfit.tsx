@@ -242,16 +242,26 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Liquidation Price</span>
-            <div className="text-orange">
-              {formatPriceInfo(position.liquidationPrice)}
-            </div>
+
+            <FormatNumber
+              nb={position.liquidationPrice}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              className="text-orange font-regular"
+              isDecimalDimmed={false}
+            />
           </div>
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Entry Price</span>
-            <div className="text-sm text-gray-400">
-              {formatPriceInfo(position.price)}
-            </div>
+
+            <FormatNumber
+              nb={position.price}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              isDecimalDimmed={false}
+              className="text-gray-400 font-regular"
+            />
           </div>
 
           <div className="flex w-full justify-between">
@@ -278,7 +288,7 @@ export default function StopLossTakeProfit({
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Initial Leverage</span>
             <FormatNumber
-              nb={position.leverage}
+              nb={position.sizeUsd / position.collateralUsd}
               suffix="x"
               className="text-txtfade text-xs self-center"
               isDecimalDimmed={false}

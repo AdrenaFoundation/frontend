@@ -12,7 +12,28 @@ import {
 
 import { formatNumber, formatPriceInfo } from '@/utils';
 
-import CustomToolTip from './CustomToolTip';
+function CustomToolTip(props: any) {
+  const { active, payload, label } = props;
+
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-third p-3 border border-white rounded-lg">
+        <p className="text-lg mb-2 font-mono">{label}</p>
+        {payload.map((item: any) => (
+          <p
+            key={item.dataKey}
+            className="text-sm font-mono"
+            style={{ color: item.fill }}
+          >
+            {item.dataKey}: {formatPriceInfo(item.value)}
+          </p>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+}
 
 export default function BarRechart({
   title,
@@ -74,10 +95,10 @@ export default function BarRechart({
   };
 
   return (
-    <div className="border p-3 rounded-lg">
+    <div className="border p-3 rounded-lg max-h-[450px]">
       <h2 className="mb-3">{title}</h2>
 
-      <ResponsiveContainer width="100%" height="100%" maxHeight={400}>
+      <ResponsiveContainer width="100%" height="100%">
         <BarChart width={600} height={400} data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
           <XAxis dataKey="time" />

@@ -26,6 +26,7 @@ export default function TradeComp({
   className,
   isBigScreen,
   activeRpc,
+  terminalId,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -44,6 +45,7 @@ export default function TradeComp({
     name: string;
     connection: Connection;
   };
+  terminalId: string;
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
 
@@ -92,26 +94,12 @@ export default function TradeComp({
               />
             ) : (
               <>
-                <TabSelect
-                  selected={isJupSwap ? 'Jup' : 'Adrena'}
-                  tabs={[
-                    { title: 'Jup', activeColor: 'border-white' },
-                    {
-                      title: 'Adrena',
-                      activeColor: 'border-white',
-                    },
-                  ]}
-                  onClick={(title) => {
-                    setIsJupSwap(title === 'Jup');
-                  }}
-                  className="text-sm text-center"
-                />
-
                 {isJupSwap ? (
                   <IntegratedTerminal
                     connected={connected}
                     activeRpc={activeRpc}
-                    className="bg-transparent border-transparent h-[600px] min-w-[300px] w-full p-0"
+                    id={terminalId}
+                    className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
                   />
                 ) : (
                   <SwapTradingInputs
@@ -128,6 +116,34 @@ export default function TradeComp({
                     }
                   />
                 )}
+
+                <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
+                  <span
+                    className={twMerge(
+                      'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                      isJupSwap ? 'opacity-100' : '',
+                    )}
+                    onClick={() => {
+                      setIsJupSwap(true);
+                    }}
+                  >
+                    JUP
+                  </span>
+
+                  <span className="opacity-20 text-2xl">/</span>
+
+                  <span
+                    className={twMerge(
+                      'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                      !isJupSwap ? 'opacity-100' : '',
+                    )}
+                    onClick={() => {
+                      setIsJupSwap(false);
+                    }}
+                  >
+                    Adrena
+                  </span>
+                </div>
               </>
             )}
           </>

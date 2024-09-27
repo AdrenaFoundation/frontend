@@ -25,7 +25,7 @@ export default function StakesStats({
         <NumberDisplay
           title="Liquid Staked ADX"
           nb={liquidStakedADX}
-          precision={window.adrena.client.adxToken.decimals}
+          precision={2}
           placeholder="0 ADX"
           suffix=" ADX"
         />
@@ -33,7 +33,7 @@ export default function StakesStats({
         <NumberDisplay
           title="Locked Staked ADX"
           nb={lockedStakedADX}
-          precision={window.adrena.client.adxToken.decimals}
+          precision={2}
           placeholder="0 ADX"
           suffix=" ADX"
         />
@@ -41,7 +41,7 @@ export default function StakesStats({
         <NumberDisplay
           title="Locked Staked ALP"
           nb={lockedStakedALP}
-          precision={window.adrena.client.alpToken.decimals}
+          precision={2}
           placeholder="0 ALP"
           suffix=" ALP"
         />

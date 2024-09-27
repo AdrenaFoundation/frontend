@@ -3,6 +3,7 @@ import React from 'react';
 
 import Button from '@/components/common/Button/Button';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { ADX_LOCK_PERIODS, ADX_STAKE_MULTIPLIERS } from '@/constant';
 import { AdxLockPeriod } from '@/types';
 import { formatNumber } from '@/utils';
@@ -52,6 +53,7 @@ export default function ADXStakeToken({
               <span className="text-txtfade font-mono text-xs mr-1">
                 {balance !== null ? `${formatNumber(balance, 2)} ADX` : '–'}
               </span>
+              <RefreshButton className="ml-1" />
             </div>
           </div>
 

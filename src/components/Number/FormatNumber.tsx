@@ -1,9 +1,8 @@
+import Tippy from '@tippyjs/react';
 import React, { forwardRef } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { formatNumber, formatPriceInfo } from '@/utils';
-
-import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 interface FormatNumberProps {
   nb?: number | null;
@@ -124,8 +123,16 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
 
     return (
       <div className={twMerge(info && 'flex flex-row gap-1 items-center')}>
-        {nbDiv}
-        {info && <InfoAnnotation text={info.toLocaleString()} />}
+        <Tippy
+          content={
+            <div className="text-sm w-60 flex flex-col justify-around">
+              {info}
+            </div>
+          }
+          placement="auto"
+        >
+          {nbDiv}
+        </Tippy>
       </div>
     );
   },

@@ -231,11 +231,11 @@ export default function TradingChart({
           symbol: `Crypto.${getTokenSymbol(token.symbol)}/USD`,
           timezone: 'Etc/UTC',
           locale: 'en',
-          toolbar_bg: '#061018',
+          toolbar_bg: '#171B26',
           datafeed,
           loading_screen: {
-            backgroundColor: '#061018',
-            foregroundColor: '#061018',
+            backgroundColor: '#171B26',
+            foregroundColor: '#171B26',
           },
           favorites: {
             intervals: ['1', '5', '15', '1h', '4h', 'D'] as ResolutionString[],
@@ -253,13 +253,14 @@ export default function TradingChart({
             'symbol_info_price_source',
           ],
           enabled_features: [
+            'hide_left_toolbar_by_default',
             'header_indicators',
             'header_fullscreen_button',
             'header_settings',
           ],
           custom_css_url: '/tradingview.css',
           overrides: {
-            'paneProperties.background': '#061018',
+            'paneProperties.background': '#171B26',
             'paneProperties.backgroundType': 'solid',
             'paneProperties.legendProperties.showStudyArguments': false,
             'paneProperties.legendProperties.showStudyTitles': false,

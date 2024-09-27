@@ -363,6 +363,7 @@ export default function Trade({
                 }
                 isBigScreen={isBigScreen}
                 activeRpc={activeRpc}
+                terminalId="integrated-terminal-1"
               />
             </div>
           </div>
@@ -386,6 +387,7 @@ export default function Trade({
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
+            terminalId="integrated-terminal-2"
           />
         ) : null}
 
@@ -456,6 +458,7 @@ export default function Trade({
                       triggerWalletTokenBalancesReload
                     }
                     activeRpc={activeRpc}
+                    terminalId="integrated-terminal-3"
                   />
                 </div>
               </Modal>
