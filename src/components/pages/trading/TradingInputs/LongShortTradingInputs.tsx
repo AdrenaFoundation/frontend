@@ -149,14 +149,15 @@ export default function LongShortTradingInputs({
     // Existing position or not, it's the same
     const collateralAmount = uiToNative(inputA, tokenA.decimals);
 
-    const openPositionWithSwapAmountAndFees =
-      await window.adrena.client.getOpenPositionWithSwapAmountAndFees({
+    const openPositionWithSwapAmountAndFees = await window.adrena.client.getOpenPositionWithSwapAmountAndFees(
+      {
         collateralMint: tokenA.mint,
         mint: tokenB.mint,
         collateralAmount,
         leverage: uiLeverageToNative(leverage),
         side,
-      });
+      },
+    );
 
     if (!openPositionWithSwapAmountAndFees) {
       return notification.currentStepErrored('Error calculating fees');
@@ -249,15 +250,16 @@ export default function LongShortTradingInputs({
 
     (async () => {
       try {
-        const infos =
-          await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
+        const infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
+          {
             tokenA,
             tokenB,
             collateralAmount: uiToNative(inputA, tokenA.decimals),
             leverage: uiLeverageToNative(leverage),
             side,
             tokenPrices,
-          });
+          },
+        );
 
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means
@@ -415,6 +417,28 @@ export default function LongShortTradingInputs({
   const usdcCustody =
     usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
+
+  const currentSize = openedPosition?.sizeUsd ?? 0;
+  const newPositionSize = positionInfos?.sizeUsd ?? 0;
+  const newSize = currentSize + newPositionSize;
+
+  const currentLeverage =
+    openedPosition?.sizeUsd && openedPosition?.collateralUsd
+      ? openedPosition.sizeUsd / openedPosition.collateralUsd
+      : null;
+
+  const newPositionLeverage =
+    positionInfos?.sizeUsd && positionInfos?.collateralUsd
+      ? positionInfos.sizeUsd / positionInfos.collateralUsd
+      : 0;
+
+  const newOverallLeverage = openedPosition
+    ? (openedPosition.sizeUsd + (positionInfos?.sizeUsd ?? 0)) /
+      (openedPosition.collateralUsd + (positionInfos?.collateralUsd ?? 0))
+    : newPositionLeverage;
+
+  const isLeverageIncreased =
+    currentLeverage !== null && newOverallLeverage > currentLeverage;
 
   return (
     <div
@@ -649,149 +673,239 @@ export default function LongShortTradingInputs({
           onClick={handleExecuteButton}
         />
 
-        <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2">
-          Trade Prices
-        </h5>
+        {inputA && !errorMessage && (
+          <>
+            <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2">
+              Position info
+            </h5>
 
-        <StyledSubSubContainer
-          className={twMerge(
-            'flex-col p-2 h-[6em] items-center justify-center mt-2 sm:mt-0',
-          )}
-        >
-          {positionInfos && !isInfoLoading ? (
-            <div className="flex w-full justify-evenly">
-              <TextExplainWrapper title="Entry Price" className="flex-col mt-8">
-                <FormatNumber
-                  nb={positionInfos.entryPrice}
-                  format="currency"
-                  className="text-lg"
-                />
+            <StyledSubSubContainer
+              className={twMerge(
+                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
+                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
+              )}
+            >
+              {positionInfos && !isInfoLoading ? (
+                <div className="flex w-full justify-evenly">
+                  <TextExplainWrapper
+                    title="Entry Price"
+                    className="flex-col mt-8"
+                  >
+                    <FormatNumber
+                      nb={positionInfos.entryPrice}
+                      format="currency"
+                      className="text-lg"
+                    />
 
-                {openedPosition ? (
-                  <FormatNumber
-                    nb={openedPosition.price}
-                    format="currency"
-                    className="text-txtfade text-xs self-center line-through"
-                    isDecimalDimmed={false}
+                    {openedPosition ? (
+                      <FormatNumber
+                        nb={openedPosition.price}
+                        format="currency"
+                        className="text-txtfade text-xs self-center line-through"
+                        isDecimalDimmed={false}
+                      />
+                    ) : null}
+                  </TextExplainWrapper>
+
+                  <div className="h-full w-[1px] bg-gray-800" />
+
+                  <TextExplainWrapper
+                    title="Liquidation Price"
+                    className="flex-col mt-8"
+                  >
+                    <FormatNumber
+                      nb={positionInfos.liquidationPrice}
+                      format="currency"
+                      className="text-lg text-orange"
+                    />
+
+                    {openedPosition && openedPosition.liquidationPrice ? (
+                      <FormatNumber
+                        nb={openedPosition.liquidationPrice}
+                        format="currency"
+                        className="text-txtfade text-xs self-center line-through"
+                        isDecimalDimmed={false}
+                      />
+                    ) : null}
+                  </TextExplainWrapper>
+                </div>
+              ) : (
+                <div className="flex w-full justify-evenly items-center">
+                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+
+                  <div className="h-full w-[1px] bg-gray-800" />
+
+                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+                </div>
+              )}
+            </StyledSubSubContainer>
+
+            <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2"></h5>
+
+            <StyledSubSubContainer
+              className={twMerge(
+                'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
+                openedPosition ? 'h-[5.5em]' : 'h-[5em]',
+              )}
+            >
+              {positionInfos && !isInfoLoading ? (
+                <div className="flex w-full justify-evenly">
+                  <TextExplainWrapper
+                    title="Leverage"
+                    className="flex-col mt-8"
+                  >
+                    <FormatNumber
+                      nb={newOverallLeverage}
+                      format="number"
+                      prefix="x"
+                      className={`text-lg ${
+                        openedPosition
+                          ? isLeverageIncreased
+                            ? 'text-orange'
+                            : 'text-green'
+                          : 'text-white'
+                      }`}
+                    />
+
+                    {openedPosition && newOverallLeverage ? (
+                      <FormatNumber
+                        nb={currentLeverage}
+                        format="number"
+                        prefix="x"
+                        className="text-txtfade text-xs self-center line-through"
+                        isDecimalDimmed={false}
+                      />
+                    ) : null}
+                  </TextExplainWrapper>
+
+                  <div className="h-full w-[1px] bg-gray-800" />
+
+                  <TextExplainWrapper
+                    title="Size (usd)"
+                    className="flex-col mt-8"
+                  >
+                    <FormatNumber
+                      nb={newSize}
+                      format="number"
+                      className="text-lg"
+                    />
+
+                    {openedPosition && openedPosition.sizeUsd ? (
+                      <FormatNumber
+                        nb={currentSize}
+                        format="number"
+                        className="text-txtfade text-xs self-center line-through"
+                        isDecimalDimmed={false}
+                      />
+                    ) : null}
+                  </TextExplainWrapper>
+                </div>
+              ) : (
+                <div className="flex w-full justify-evenly items-center">
+                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+
+                  <div className="h-full w-[1px] bg-gray-800" />
+
+                  <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+                </div>
+              )}
+            </StyledSubSubContainer>
+
+            <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
+              Fees{' '}
+              <span className="ml-1">
+                <Tippy
+                  content={
+                    <p className="font-medium text-txtfade">
+                      0 BPS entry fees - 16 BPS exit fees. 🎊 NO SIZE FEES! 🎊
+                    </p>
+                  }
+                >
+                  <Image
+                    src={infoIcon}
+                    width={14}
+                    height={14}
+                    alt="info icon"
                   />
-                ) : null}
-              </TextExplainWrapper>
+                </Tippy>
+              </span>
+            </h5>
 
-              <div className="h-full w-[1px] bg-gray-800" />
-
-              <TextExplainWrapper
-                title="Liquidation Price"
-                className="flex-col mt-8"
+            <PositionFeesTooltip
+              borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
+              positionInfos={positionInfos}
+              openedPosition={openedPosition}
+            >
+              <StyledSubSubContainer
+                className={twMerge(
+                  'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
+                  openedPosition ? 'h-[5.5em]' : 'h-[5em]',
+                  isInfoLoading || !positionInfos
+                    ? 'pt-4'
+                    : openedPosition
+                    ? 'pt-2'
+                    : 'pt-8',
+                )}
               >
-                <FormatNumber
-                  nb={positionInfos.liquidationPrice}
-                  format="currency"
-                  className="text-lg text-orange"
-                />
+                {positionInfos && !isInfoLoading ? (
+                  <AutoScalableDiv>
+                    {openedPosition ? (
+                      <>
+                        <TextExplainWrapper
+                          title="Current Fees"
+                          className="flex-col sm:mt-3"
+                          position="bottom"
+                        >
+                          <FormatNumber
+                            nb={
+                              openedPosition.exitFeeUsd +
+                              (openedPosition.borrowFeeUsd ?? 0)
+                            }
+                            format="currency"
+                            className="text-lg"
+                          />
+                        </TextExplainWrapper>
 
-                {openedPosition && openedPosition.liquidationPrice ? (
-                  <FormatNumber
-                    nb={openedPosition.liquidationPrice}
-                    format="currency"
-                    className="text-txtfade text-xs self-center line-through"
-                    isDecimalDimmed={false}
-                  />
-                ) : null}
-              </TextExplainWrapper>
-            </div>
-          ) : (
-            <div className="flex w-full justify-evenly items-center">
-              <div className="w-20 h-4 bg-gray-800 rounded-xl" />
+                        <span className="text-xl ml-2 mr-2 mt-3">+</span>
+                      </>
+                    ) : null}
 
-              <div className="h-full w-[1px] bg-gray-800" />
-
-              <div className="w-20 h-4 bg-gray-800 rounded-xl" />
-            </div>
-          )}
-        </StyledSubSubContainer>
-
-        <h5 className="hidden sm:flex items-center ml-4 mt-2 sm:mt-4 mb-2">
-          Fees{' '}
-          <span className="ml-1">
-            <Tippy content={
-                <p className="font-medium text-txtfade">0 BPS entry fees - 16 BPS exit fees. 🎊 NO SIZE FEES! 🎊</p>}>
-              <Image src={infoIcon} width={12} height={12} alt="info icon" />
-            </Tippy>
-          </span>
-        </h5>
-
-        <PositionFeesTooltip
-          borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
-          positionInfos={positionInfos}
-          openedPosition={openedPosition}
-        >
-          <StyledSubSubContainer
-            className={twMerge(
-              'flex pl-6 pr-6 pb-4 h-[6em] items-center justify-center mt-2 sm:mt-0',
-              isInfoLoading || !positionInfos
-                ? 'pt-4'
-                : openedPosition
-                ? 'pt-2'
-                : 'pt-8',
-            )}
-          >
-            {positionInfos && !isInfoLoading ? (
-              <AutoScalableDiv>
-                {openedPosition ? (
-                  <>
                     <TextExplainWrapper
-                      title="Current Fees"
-                      className="flex-col sm:mt-3"
-                      position="bottom"
+                      title={!openedPosition ? 'Trade Fees' : 'Additional Fees'}
+                      className="flex-col mt-3"
                     >
                       <FormatNumber
-                        nb={
-                          openedPosition.exitFeeUsd +
-                          (openedPosition.borrowFeeUsd ?? 0)
-                        }
+                        nb={positionInfos.exitFeeUsd}
                         format="currency"
                         className="text-lg"
                       />
                     </TextExplainWrapper>
 
                     <span className="text-xl ml-2 mr-2 mt-3">+</span>
-                  </>
-                ) : null}
 
-                <TextExplainWrapper
-                  title={!openedPosition ? 'Trade Fees' : 'Additional Fees'}
-                  className="flex-col mt-3"
-                >
-                  <FormatNumber
-                    nb={positionInfos.exitFeeUsd}
-                    format="currency"
-                    className="text-lg"
-                  />
-                </TextExplainWrapper>
-
-                <span className="text-xl ml-2 mr-2 mt-3">+</span>
-
-                <TextExplainWrapper
-                  title="Dynamic Borrow Rate"
-                  className="flex-col mt-3"
-                >
-                  <FormatNumber
-                    nb={custody && tokenB && custody.borrowFee}
-                    precision={RATE_DECIMALS}
-                    minimumFractionDigits={4}
-                    suffix="%/hr"
-                    isDecimalDimmed={false}
-                    className="text-lg"
-                  />
-                </TextExplainWrapper>
-              </AutoScalableDiv>
-            ) : (
-              <div className="flex h-full justify-center items-center">
-                <div className="w-40 h-4 bg-gray-800 rounded-xl" />
-              </div>
-            )}
-          </StyledSubSubContainer>
-        </PositionFeesTooltip>
+                    <TextExplainWrapper
+                      title="Dynamic Borrow Rate"
+                      className="flex-col mt-3"
+                    >
+                      <FormatNumber
+                        nb={custody && tokenB && custody.borrowFee}
+                        precision={RATE_DECIMALS}
+                        minimumFractionDigits={4}
+                        suffix="%/hr"
+                        isDecimalDimmed={false}
+                        className="text-lg"
+                      />
+                    </TextExplainWrapper>
+                  </AutoScalableDiv>
+                ) : (
+                  <div className="flex h-full justify-center items-center">
+                    <div className="w-40 h-4 bg-gray-800 rounded-xl" />
+                  </div>
+                )}
+              </StyledSubSubContainer>
+            </PositionFeesTooltip>
+          </>
+        )}
       </div>
     </div>
   );
