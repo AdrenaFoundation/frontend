@@ -2959,13 +2959,11 @@ export class AdrenaClient {
 
       const adxMatch = log.match(adxPattern);
       if (adxMatch) {
-        console.log('adxMatch', adxMatch[1]);
         adxRewards = new BN(adxMatch[1]);
       }
 
       const adxGenesisMatch = log.match(adxGenesisRewardsPattern);
       if (adxGenesisMatch) {
-        console.log('adxGenesisMatch', adxGenesisMatch[1]);
         adxGenesisRewards = new BN(adxGenesisMatch[1]);
       }
     }
@@ -3013,6 +3011,12 @@ export class AdrenaClient {
         stakedTokenMint,
         earlyExit,
       });
+
+      const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+        units: 600_000,
+      });
+
+      preInstructions.push(modifyComputeUnits);
 
       preInstructions.push(instruction);
     }
