@@ -93,7 +93,7 @@ export default function CompositionChart() {
 
   return (
     <LineRechartComposition
-      title="Composition"
+      title="Pool Composition"
       data={custody}
       labels={
         custodyInfo.map((info: TokenInfo) => ({

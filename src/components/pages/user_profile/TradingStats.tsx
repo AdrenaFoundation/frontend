@@ -73,7 +73,7 @@ export default function TradingStatsBloc({
               <Tippy
                 content={
                   <p className="font-medium">
-                    This is the sum of all your profits and losses over all trades, excluding fees.
+                    This is the sum of all your profits and losses over all trades, including fees.
                   </p>
                 }
               >
