@@ -54,7 +54,7 @@ export default function OpenInterestChart() {
       const custodyInfos = [];
 
       let custodyData = {
-        USDC: { short: [], long: [] },
+        // USDC: { short: [], long: [] },
         WBTC: { short: [], long: [] },
         BONK: { short: [], long: [] },
         JITOSOL: { short: [], long: [] },
@@ -79,8 +79,8 @@ export default function OpenInterestChart() {
         WBTC:
           (Number(custodyData.WBTC.short[i]) ?? 0) +
           (Number(custodyData.WBTC.long[i]) ?? 0),
-        USDC:
-          Number(custodyData.USDC.short[i]) + Number(custodyData.USDC.long[i]),
+        // USDC:
+        //   Number(custodyData.USDC.short[i]) + Number(custodyData.USDC.long[i]),
         BONK:
           Number(custodyData.BONK.short[i]) + Number(custodyData.BONK.long[i]),
         JITOSOL:
