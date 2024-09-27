@@ -14,6 +14,8 @@ import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useStakingAccount from '@/hooks/useStakingAccount';
+import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import {
@@ -29,6 +31,7 @@ import {
   getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
+import { getNextStakingRoundStartTime } from '@/utils';
 
 export type ADXTokenDetails = {
   balance: number | null;
@@ -182,18 +185,18 @@ export default function Stake({
     try {
       lockPeriod === 0
         ? await window.adrena.client.addLiquidStake({
-            owner,
-            amount,
-            stakedTokenMint,
-            notification,
-          })
+          owner,
+          amount,
+          stakedTokenMint,
+          notification,
+        })
         : await window.adrena.client.addLockedStake({
-            owner,
-            amount,
-            lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
-            stakedTokenMint,
-            notification,
-          });
+          owner,
+          amount,
+          lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
+          stakedTokenMint,
+          notification,
+        });
 
       setAmount(null);
       setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
@@ -423,6 +426,20 @@ export default function Stake({
     setAmount(Number(value));
   };
 
+  const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
+  const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
+
+  const nextStakingRoundTimeAlp = alpStakingAccount
+    ? getNextStakingRoundStartTime(alpStakingAccount.currentStakingRound.startTime).getTime()
+    : null;
+
+  const nextStakingRoundTimeAdx = adxStakingAccount
+    ? getNextStakingRoundStartTime(adxStakingAccount.currentStakingRound.startTime).getTime()
+    : null;
+
+  const adxRewards = useStakingClaimableRewards(false); // For ADX
+  const alpRewards = useStakingClaimableRewards(true);  // For ALP
+
   useEffect(() => {
     setAdxDetails({
       balance: adxBalance,
@@ -581,6 +598,10 @@ export default function Stake({
               setFinalizeLockedStakeRedeem(true);
             }}
             handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
+            pendingUsdcRewards={alpRewards.pendingUsdcRewards}
+            pendingAdxRewards={alpRewards.pendingAdxRewards}
+            pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
+            nextRoundTime={nextStakingRoundTimeAlp ?? 0}
           />
 
           <StakeOverview
@@ -602,6 +623,10 @@ export default function Stake({
               setFinalizeLockedStakeRedeem(true);
             }}
             handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
+            pendingUsdcRewards={adxRewards.pendingUsdcRewards}
+            pendingAdxRewards={adxRewards.pendingAdxRewards}
+            pendingGenesisAdxRewards={adxRewards.pendingGenesisAdxRewards}
+            nextRoundTime={nextStakingRoundTimeAdx ?? 0}
           />
 
           <AnimatePresence>
