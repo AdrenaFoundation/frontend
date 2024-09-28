@@ -36,8 +36,18 @@ export default function SharePositionModal({
         <div className="flex flex-row gap-3 items-center">
           <h2 className="font-boldy">{position.token.symbol}</h2>
 
-          <div className=" rounded-md bg-green/20 px-2">
-            <p className="text-sm text-green font-mono font-semibold capitalize">
+          <div
+            className={twMerge(
+              'rounded-md  px-2',
+              position.side === 'long' ? 'bg-green/20' : 'bg-red/20',
+            )}
+          >
+            <p
+              className={twMerge(
+                'text-sm font-mono font-semibold capitalize',
+                position.side === 'long' ? 'bg-green' : 'bg-red',
+              )}
+            >
               {position.side} {formatNumber(position.leverage, 2)}x
             </p>
           </div>
