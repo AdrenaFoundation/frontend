@@ -20,6 +20,18 @@ export default function SharePositionModal({
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
+  //   const takeScreenshot = () => {
+  //     const element = cardRef.current;
+
+  //     html2canvas(element).then((canvas) => {
+  //       const imgData = canvas.toDataURL('image/png');
+  //       const link = document.createElement('a');
+  //       link.href = imgData;
+  //       link.download = 'screenshot.png';
+  //       link.click();
+  //     });
+  //   };
+
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
   const pnlPercentage = position.pnl
@@ -45,7 +57,7 @@ export default function SharePositionModal({
             <p
               className={twMerge(
                 'text-sm font-mono font-semibold capitalize',
-                position.side === 'long' ? 'bg-green' : 'bg-red',
+                position.side === 'long' ? 'text-green' : 'text-red',
               )}
             >
               {position.side} {formatNumber(position.leverage, 2)}x
