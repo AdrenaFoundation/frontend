@@ -401,12 +401,11 @@ export function parseTransactionError(
       return match?.length ? match[1] : null;
     })();
 
+    if (safeJSONStringify(err) === '"BlockhashNotFound"') {
+      return 'BlockhashNotFound';
+    }
+
     Sentry.captureException(err);
-    console.debug('Error parsing: error:', safeJSONStringify(err));
-    console.debug('Error parsing: errCodeHex: ', errCodeHex);
-    console.debug('Error parsing: errCodeDecimals', errCodeDecimals);
-    console.debug('Error parsing: errName', errName);
-    console.debug('Error parsing: errMessage', errMessage);
 
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
       if (errName !== null && errName === name) return true;

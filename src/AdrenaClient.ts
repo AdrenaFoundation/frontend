@@ -3750,7 +3750,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructions<SwapAmountAndFees>(
+    return this.simulateInstructionsStrong<SwapAmountAndFees>(
       [instruction],
       'SwapAmountAndFees',
     );
@@ -3812,7 +3812,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
+    return this.simulateInstructionsStrong<OpenPositionWithSwapAmountAndFees>(
       [instruction],
       'OpenPositionWithSwapAmountAndFees',
     );
@@ -3862,7 +3862,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructions<NewPositionPricesAndFee>(
+    return this.simulateInstructionsStrong<NewPositionPricesAndFee>(
       [instruction],
       'NewPositionPricesAndFee',
     );
@@ -3902,7 +3902,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructions<ExitPriceAndFee>(
+    return this.simulateInstructionsStrong<ExitPriceAndFee>(
       [instruction],
       'ExitPriceAndFee',
     );
@@ -3949,7 +3949,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructions<ProfitAndLoss>(
+    return this.simulateInstructionsStrong<ProfitAndLoss>(
       [instruction],
       'ProfitAndLoss',
     );
@@ -3967,7 +3967,7 @@ export class AdrenaClient {
     addCollateral: BN;
     removeCollateral: BN;
   }): Promise<BN | null> {
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
@@ -3988,24 +3988,22 @@ export class AdrenaClient {
     }
 
     try {
-      const ret = await this.adrenaProgram.views.getLiquidationPrice(
-        {
+      const instruction = await this.adrenaProgram.methods
+        .getLiquidationPrice({
           addCollateral,
           removeCollateral,
-        },
-        {
-          accounts: {
-            cortex: AdrenaClient.cortexPda,
-            pool: this.mainPool.pubkey,
-            position: position.pubkey,
-            custody: custody.pubkey,
-            collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-            collateralCustody: collateralCustody.pubkey,
-          },
-        },
-      );
+        })
+        .accountsStrict({
+          cortex: AdrenaClient.cortexPda,
+          pool: this.mainPool.pubkey,
+          position: position.pubkey,
+          custody: custody.pubkey,
+          collateralCustodyOracle: collateralCustody.nativeObject.oracle,
+          collateralCustody: collateralCustody.pubkey,
+        })
+        .instruction();
 
-      return ret;
+      return this.simulateInstructionsStrong<BN>([instruction], 'BN');
     } catch {
       // Ignore errors - we have a lot of Blockhash expired errors
       return null;
@@ -4191,20 +4189,21 @@ export class AdrenaClient {
   }
 
   public async getAssetsUnderManagement(): Promise<BN | null> {
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
     try {
-      const ret = await this.adrenaProgram.views.getAssetsUnderManagement({
-        accounts: {
+      const instruction = await this.adrenaProgram.methods
+        .getAssetsUnderManagement()
+        .accountsStrict({
           cortex: AdrenaClient.cortexPda,
           pool: this.mainPool.pubkey,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      });
+        })
+        .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+        .instruction();
 
-      return ret;
+      return this.simulateInstructionsStrong<BN>([instruction], 'BN');
     } catch {
       // Ignore errors - we have a lot of Blockhash expired errors
       return null;
@@ -4246,7 +4245,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .instruction();
 
-    return this.simulateInstructions<AmountAndFee>(
+    return this.simulateInstructionsStrong<AmountAndFee>(
       [instruction],
       'AmountAndFee',
     );
@@ -4287,28 +4286,29 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .instruction();
 
-    return this.simulateInstructions<AmountAndFee>(
+    return this.simulateInstructionsStrong<AmountAndFee>(
       [instruction],
       'AmountAndFee',
     );
   }
 
   public async getLpTokenPrice(): Promise<BN | null> {
-    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
+    if (this.adrenaProgram === null) {
       return null;
     }
 
     try {
-      const ret = await this.adrenaProgram.views.getLpTokenPrice({
-        accounts: {
+      const instruction = await this.adrenaProgram.methods
+        .getLpTokenPrice()
+        .accountsStrict({
           cortex: AdrenaClient.cortexPda,
           pool: this.mainPool.pubkey,
           lpTokenMint: this.lpTokenMint,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      });
+        })
+        .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+        .instruction();
 
-      return ret;
+      return this.simulateInstructionsStrong<BN>([instruction], 'BN');
     } catch {
       // Ignore errors - we have a lot of Blockhash expired errors
       return null;
@@ -4400,6 +4400,50 @@ export class AdrenaClient {
     return custody;
   }
 
+  // Include a retry system to avoid blockhash expired errors
+  protected simulateInstructionsStrong<T>(
+    instructions: TransactionInstruction[],
+    typeName: string,
+  ): Promise<T> {
+    return new Promise((resolve, reject) => {
+      this.simulateInstructionsStrongPromise(
+        resolve,
+        reject,
+        instructions,
+        typeName,
+      );
+    });
+  }
+
+  // Retry up to 10 times over 500ms if blockhash expired
+  protected simulateInstructionsStrongPromise<T>(
+    resolve: (value: T) => void,
+    reject: (err: Error) => void,
+    instructions: TransactionInstruction[],
+    typeName: string,
+    retry = 0,
+  ): void {
+    this.simulateInstructions(instructions, typeName)
+      .then((args) => resolve(args as T))
+      .catch((err) => {
+        // Retry if blockhash expired
+        const errString =
+          err instanceof AdrenaTransactionError ? err.errorString : String(err);
+
+        if (errString.includes('BlockhashNotFound') && retry < 10) {
+          setTimeout(() => {
+            this.simulateInstructionsStrongPromise(
+              resolve,
+              reject,
+              instructions,
+              typeName,
+              retry + 1,
+            );
+          }, 50);
+        }
+      });
+  }
+
   // Used to bypass "views" to workaround anchor bug with .views having CPI calls
   protected async simulateInstructions<T>(
     instructions: TransactionInstruction[],
@@ -4440,6 +4484,13 @@ export class AdrenaClient {
 
     if (returnDataEncoded == null) {
       throw new Error('View expected return data');
+    }
+
+    // Force the type in case of BN
+    if (typeName === 'BN') {
+      const buffer = Buffer.from(returnDataEncoded, 'base64');
+
+      return new BN(buffer, 'le') as T;
     }
 
     const returnData = base64.decode(returnDataEncoded);
