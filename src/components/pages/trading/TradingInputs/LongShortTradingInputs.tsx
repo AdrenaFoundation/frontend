@@ -166,23 +166,23 @@ export default function LongShortTradingInputs({
     try {
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-            owner: new PublicKey(wallet.publicKey),
-            collateralMint: tokenA.mint,
-            mint: tokenB.mint,
-            price: openPositionWithSwapAmountAndFees.entryPrice,
-            collateralAmount,
-            leverage: uiLeverageToNative(leverage),
-            notification,
-          })
+          owner: new PublicKey(wallet.publicKey),
+          collateralMint: tokenA.mint,
+          mint: tokenB.mint,
+          price: openPositionWithSwapAmountAndFees.entryPrice,
+          collateralAmount,
+          leverage: uiLeverageToNative(leverage),
+          notification,
+        })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-            owner: new PublicKey(wallet.publicKey),
-            collateralMint: tokenA.mint,
-            mint: tokenB.mint,
-            price: openPositionWithSwapAmountAndFees.entryPrice,
-            collateralAmount,
-            leverage: uiLeverageToNative(leverage),
-            notification,
-          }));
+          owner: new PublicKey(wallet.publicKey),
+          collateralMint: tokenA.mint,
+          mint: tokenB.mint,
+          price: openPositionWithSwapAmountAndFees.entryPrice,
+          collateralAmount,
+          leverage: uiLeverageToNative(leverage),
+          notification,
+        }));
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
@@ -362,7 +362,7 @@ export default function LongShortTradingInputs({
     const tokenAPrice = tokenPrices[tokenA.symbol];
     if (tokenAPrice) {
       const collateralValue = inputA * tokenAPrice;
-      if (collateralValue < 10) {
+      if (collateralValue < 9.5) {
         return setErrorMessage('Collateral value must be at least $10');
       }
     }
@@ -434,7 +434,7 @@ export default function LongShortTradingInputs({
 
   const newOverallLeverage = openedPosition
     ? (openedPosition.sizeUsd + (positionInfos?.sizeUsd ?? 0)) /
-      (openedPosition.collateralUsd + (positionInfos?.collateralUsd ?? 0))
+    (openedPosition.collateralUsd + (positionInfos?.collateralUsd ?? 0))
     : newPositionLeverage;
 
   const isLeverageIncreased =
@@ -443,7 +443,7 @@ export default function LongShortTradingInputs({
   return (
     <div
       className={twMerge('relative flex flex-col sm:pb-2', className)}
-      // ref={componentRef}
+    // ref={componentRef}
     >
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
@@ -626,8 +626,8 @@ export default function LongShortTradingInputs({
                 side === 'long'
                   ? custody && tokenPriceB && custody.liquidity * tokenPriceB
                   : usdcPrice &&
-                    usdcCustody &&
-                    usdcCustody.liquidity * usdcPrice
+                  usdcCustody &&
+                  usdcCustody.liquidity * usdcPrice
               }
               format="currency"
               precision={0}
@@ -695,6 +695,7 @@ export default function LongShortTradingInputs({
                       nb={positionInfos.entryPrice}
                       format="currency"
                       className="text-lg"
+                      precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                     />
 
                     {openedPosition ? (
@@ -703,6 +704,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
+                        precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                       />
                     ) : null}
                   </TextExplainWrapper>
@@ -717,6 +719,7 @@ export default function LongShortTradingInputs({
                       nb={positionInfos.liquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
+                      precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                     />
 
                     {openedPosition && openedPosition.liquidationPrice ? (
@@ -725,6 +728,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
+                        precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                       />
                     ) : null}
                   </TextExplainWrapper>
@@ -758,13 +762,12 @@ export default function LongShortTradingInputs({
                       nb={newOverallLeverage}
                       format="number"
                       prefix="x"
-                      className={`text-lg ${
-                        openedPosition
-                          ? isLeverageIncreased
-                            ? 'text-orange'
-                            : 'text-green'
-                          : 'text-white'
-                      }`}
+                      className={`text-lg ${openedPosition
+                        ? isLeverageIncreased
+                          ? 'text-orange'
+                          : 'text-green'
+                        : 'text-white'
+                        }`}
                     />
 
                     {openedPosition && newOverallLeverage ? (
@@ -843,8 +846,8 @@ export default function LongShortTradingInputs({
                   isInfoLoading || !positionInfos
                     ? 'pt-4'
                     : openedPosition
-                    ? 'pt-2'
-                    : 'pt-8',
+                      ? 'pt-2'
+                      : 'pt-8',
                 )}
               >
                 {positionInfos && !isInfoLoading ? (
