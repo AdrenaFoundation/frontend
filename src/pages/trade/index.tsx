@@ -2,6 +2,7 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -277,21 +278,32 @@ export default function Trade({
         {isBigScreen ? (
           <>
             <div className="bg-secondary mt-4 border rounded-lg">
-              <div className="flex">
-                <Button
-                  className={`bg-secondary text-white ${
-                    history ? 'opacity-50' : ''
-                  }`}
-                  title="Positions"
-                  onClick={() => setHistory(false)}
-                />
-                <Button
-                  className={`bg-secondary text-white ${
-                    history ? '' : 'opacity-50'
-                  }`}
-                  title="History"
-                  onClick={() => setHistory(true)}
-                />
+              <div className="flex items-center justify-start gap-3  w-[14em] px-5 pt-2">
+                <span
+                  className={twMerge(
+                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                    !history ? 'opacity-100' : '',
+                  )}
+                  onClick={() => {
+                    setHistory(false);
+                  }}
+                >
+                  Positions
+                </span>
+
+                <span className="opacity-20 text-2xl">/</span>
+
+                <span
+                  className={twMerge(
+                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                    history ? 'opacity-100' : '',
+                  )}
+                  onClick={() => {
+                    setHistory(true);
+                  }}
+                >
+                  History
+                </span>
               </div>
               {history ? (
                 <div className="flex flex-col w-full p-4">
@@ -314,21 +326,32 @@ export default function Trade({
         ) : (
           <div className="flex">
             <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full">
-              <div className="flex">
-                <Button
-                  className={`bg-secondary text-white ${
-                    history ? 'opacity-50' : ''
-                  }`}
-                  title="Positions"
-                  onClick={() => setHistory(false)}
-                />
-                <Button
-                  className={`bg-secondary text-white ${
-                    history ? '' : 'opacity-50'
-                  }`}
-                  title="History"
-                  onClick={() => setHistory(true)}
-                />
+              <div className="flex items-center justify-start gap-3  w-[14em] px-5 pt-2">
+                <span
+                  className={twMerge(
+                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                    !history ? 'opacity-100' : '',
+                  )}
+                  onClick={() => {
+                    setHistory(false);
+                  }}
+                >
+                  Positions
+                </span>
+
+                <span className="opacity-20 text-2xl">/</span>
+
+                <span
+                  className={twMerge(
+                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+                    history ? 'opacity-100' : '',
+                  )}
+                  onClick={() => {
+                    setHistory(true);
+                  }}
+                >
+                  History
+                </span>
               </div>
               {history ? (
                 <div className="mt-1 w-full p-0 md:p-4">

@@ -37,52 +37,63 @@ export default function PositionHistoryBlock({
   }, []);
 
   const positionName = (
-    <div className="flex items-center justify-center h-full">
-      <Image
-        className="w-[1em] h-[1em] mr-1"
-        src={
-          positionHistory.token.symbol !== 'JITOSOL'
-            ? positionHistory.token.image
-            : solLogo
-        }
-        width={200}
-        height={200}
-        alt={`${
-          positionHistory.token.symbol !== 'JITOSOL'
-            ? positionHistory.token.symbol
-            : 'SOL'
-        } logo`}
-      />
-      {window.location.pathname !== '/trade' ? (
-        <Link
-          href={`/trade?pair=USDC_${
+    <div>
+      <div className="flex items-center h-full">
+        <Image
+          className="w-[1em] h-[1em] mr-1"
+          src={
+            positionHistory.token.symbol !== 'JITOSOL'
+              ? positionHistory.token.image
+              : solLogo
+          }
+          width={200}
+          height={200}
+          alt={`${
             positionHistory.token.symbol !== 'JITOSOL'
               ? positionHistory.token.symbol
               : 'SOL'
-          }&action=${positionHistory.side}`}
-          target=""
-        >
-          <div className="uppercase underline font-boldy text-sm lg:text-xl">
+          } logo`}
+        />
+        {window.location.pathname !== '/trade' ? (
+          <Link
+            href={`/trade?pair=USDC_${
+              positionHistory.token.symbol !== 'JITOSOL'
+                ? positionHistory.token.symbol
+                : 'SOL'
+            }&action=${positionHistory.side}`}
+            target=""
+          >
+            <div className="uppercase underline font-boldy text-sm">
+              {positionHistory.token.symbol !== 'JITOSOL'
+                ? positionHistory.token.symbol
+                : 'SOL'}
+            </div>
+          </Link>
+        ) : (
+          <div className="uppercase font-boldy text-sm opacity-90">
             {positionHistory.token.symbol !== 'JITOSOL'
               ? positionHistory.token.symbol
               : 'SOL'}
           </div>
-        </Link>
-      ) : (
-        <div className="uppercase font-boldy text-sm lg:text-xl opacity-90">
-          {positionHistory.token.symbol !== 'JITOSOL'
-            ? positionHistory.token.symbol
-            : 'SOL'}
-        </div>
-      )}
-      <div
-        className={twMerge(
-          'uppercase font-boldy text-sm lg:text-xl ml-1 opacity-90',
-          positionHistory.side === 'long' ? 'text-green' : 'text-red',
         )}
-      >
-        {positionHistory.side}
+        <div
+          className={twMerge(
+            'uppercase font-boldy text-sm ml-1 opacity-90',
+            positionHistory.side === 'long' ? 'text-green' : 'text-red',
+          )}
+        >
+          {positionHistory.side}
+        </div>
       </div>
+      <p className="text-xs font-mono opacity-50 mt-1">
+        {new Date(positionHistory.entry_date).toLocaleDateString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })}
+      </p>
     </div>
   );
 
@@ -188,33 +199,17 @@ export default function PositionHistoryBlock({
   return (
     <div
       className={twMerge(
-        'min-w-[300px] w-full flex flex-col border rounded-lg bg-black',
+        'min-w-[300px] w-full flex flex-col border rounded-lg border-dashed border-bcolor',
         bodyClassName,
         borderColor,
       )}
       key={positionHistory.position_id}
       ref={blockRef}
     >
-      {isSmallSize ? (
-        <div className="flex flex-col w-full overflow-hidden items-center">
-          <div className="border-b pb-2 pt-2 flex w-full justify-center">
-            {positionName}
-          </div>
-          <div className="border-b pb-2 pt-2 flex w-full justify-center opacity-90">
-            {pnl}
-          </div>
-          <div className="border-b pb-2 pt-2 flex w-full justify-center opacity-90">
-            {netValue}
-          </div>
-        </div>
-      ) : (
-        <div className="flex border-b pt-2 pl-4 pb-2 pr-4 justify-between items-center overflow-hidden flex-wrap w-full opacity-90">
-          {positionName}
-          {pnl}
-          {netValue}
-        </div>
-      )}
-      <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2 opacity-90">
+      <div className="flex flex-row items-center justify-between flex-wrap gap-y-2 px-5 py-2 opacity-90">
+        {positionName}
+        {pnl}
+
         <div className="flex flex-col items-center">
           <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
             Status
@@ -224,25 +219,20 @@ export default function PositionHistoryBlock({
 
         <div className="flex flex-col items-center">
           <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Entry Date
-          </div>
-          <div className="flex text-sm">
-            {new Date(positionHistory.entry_date)
-              .toISOString()
-              .replace('T', ' ')
-              .substring(0, 19)}
-          </div>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
             Exit Date
           </div>
-          <div className="flex text-sm">
+          <div className="flex text-xs font-mono">
             {positionHistory.exit_date
-              ? new Date(positionHistory.exit_date)
-                  .toISOString()
-                  .replace('T', ' ')
-                  .substring(0, 19)
+              ? new Date(positionHistory.exit_date).toLocaleDateString(
+                  'en-US',
+                  {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  },
+                )
               : '-'}
           </div>
         </div>
@@ -282,6 +272,7 @@ export default function PositionHistoryBlock({
             />
           </div>
         </div>
+        {netValue}
       </div>
     </div>
   );

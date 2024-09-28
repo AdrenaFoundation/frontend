@@ -33,10 +33,7 @@ export default function PositionsHistory({
     <>
       {positionsHistory && positionsHistory.length ? (
         <div
-          className={twMerge(
-            'flex flex-col bg-first w-full h-full gap-1',
-            className,
-          )}
+          className={twMerge('flex flex-col w-full h-full gap-1', className)}
         >
           {positionsHistory.map((positionHistory) => (
             <PositionHistoryBlock
