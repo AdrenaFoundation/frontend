@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -156,7 +155,7 @@ export default function PositionHistoryBlock({
 
   const renderFeesPaid = () => <div className="w-24">{feesPaid}</div>;
 
-  const [showAfterFees, setShowAfterFees] = useState(false); // State to manage fee display
+  const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
 
   const pnl = (
     <div className="flex flex-col items-center min-w-[8em] w-[8em]">
@@ -165,7 +164,7 @@ export default function PositionHistoryBlock({
         <label className="flex items-center ml-1 cursor-pointer">
           <Switch
             className="mr-0.5"
-            checked={showAfterFees}
+            checked={!showAfterFees}
             onChange={() => setShowAfterFees(!showAfterFees)}
             size="small"
           />
@@ -309,13 +308,17 @@ export default function PositionHistoryBlock({
       key={positionHistory.position_id}
       ref={blockRef}
     >
-      <div className="grid grid-cols-6 gap-2 px-5 py-2 opacity-90 items-center">
-        <div className="col-span-1">{renderPositionName()}</div>
-        <div className="col-span-1">{renderPriceDisplay(positionHistory.entry_price, "Entry Price")}</div>
-        <div className="col-span-1">{renderPriceDisplay(positionHistory.exit_price, "Exit Price")}</div>
-        <div className="col-span-1">{renderPnl()}</div>
-        <div className="col-span-1">{renderExitDate()}</div>
-        <div className="col-span-1">{renderFeesPaid()}</div>
+      <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-2 px-5 py-2 opacity-90">
+        <div>{renderPositionName()}</div>
+        <div>
+          {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
+        </div>
+        <div>
+          {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
+        </div>
+        <div>{renderPnl()}</div>
+        <div>{renderExitDate()}</div>
+        <div className="ml-auto">{renderFeesPaid()}</div>
       </div>
     </div>
   );
