@@ -20,14 +20,14 @@ export default function StakingRewardVaults({
 }) {
   return (
     <StyledContainer
-      title="STAKING REWARD VAULTS"
-      subTitle="Rewards accruing to be redistributed to stakers at the end of the staking round."
+      title="Current round accrued usdc"
+      subTitle="USDC rewards accruing to be redistributed to stakers at the end of the staking round."
       className="grow w-[40em]"
       titleClassName={titleClassName}
       bodyClassName="flex flex-col sm:flex-row grow items-center justify-center"
     >
       <StyledSubContainer>
-        <div className={titleClassName}>ALP TOKEN STAKING</div>
+        <div className={titleClassName}>ALP STAKING</div>
 
         <div className={twMerge('m-auto', bodyClassName)}>
           {alpStakingCurrentRoundRewards !== null
@@ -37,7 +37,7 @@ export default function StakingRewardVaults({
       </StyledSubContainer>
 
       <StyledSubContainer>
-        <div className={titleClassName}>ADX TOKEN STAKING</div>
+        <div className={titleClassName}>ADX STAKING</div>
 
         <div className={twMerge('m-auto', bodyClassName)}>
           {adxStakingCurrentRoundRewards !== null

@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
@@ -27,8 +27,10 @@ export default function StakeOverview({
   handleClickOnStakeMore,
   handleClickOnClaimRewards,
   handleClickOnFinalizeLockedRedeem,
-  pendingUsdcRewards,
-  pendingAdxRewards,
+  userPendingUsdcRewards,
+  userPendingAdxRewards,
+  roundPendingUsdcRewards,
+  roundPendingAdxRewards,
   pendingGenesisAdxRewards,
 }: {
   token: 'ADX' | 'ALP';
@@ -44,8 +46,10 @@ export default function StakeOverview({
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod) => void;
   handleClickOnClaimRewards: () => void;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
-  pendingUsdcRewards: number;
-  pendingAdxRewards: number;
+  userPendingUsdcRewards: number;
+  userPendingAdxRewards: number;
+  roundPendingUsdcRewards: number;
+  roundPendingAdxRewards: number;
   pendingGenesisAdxRewards: number;
   nextRoundTime: number;
 }) {
@@ -53,6 +57,16 @@ export default function StakeOverview({
   const stakingAccount = useStakingAccount(
     isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
+  const [isClaimingRewards, setIsClaimingRewards] = useState(false);
+
+  const handleClaim = async () => {
+    setIsClaimingRewards(true);
+    try {
+      await handleClickOnClaimRewards();
+    } finally {
+      setIsClaimingRewards(false);
+    }
+  };
 
   return (
     <div className="flex flex-col bg-main rounded-2xl border h-full">
@@ -100,102 +114,168 @@ export default function StakeOverview({
         {/* Pending rewards block */}
         <div className="h-[1px] bg-bcolor w-full my-3" />
         <div className="px-5">
-          <h3 className="text-lg font-semibold mb-2">Pending Rewards</h3>
-          <div className="flex-grow">
-            <div className="h-[80px] overflow-y-auto">
-              {isALP ? (
-                <>
-                  <p className="text-sm text-txtfade mb-1">
-                    ADX and USDC rewards automatically accrue at the end of
-                    every staking round.
-                  </p>
-                  <p className="text-sm text-txtfade mb-1">
-                    Locked ALP can be retrieved once the locking period is over,
-                    or by doing an early exit.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="text-sm text-txtfade mb-1">
-                    ADX rewards automatically accrue at the end of every staking
-                    round.
-                  </p>
-                  <p className="text-sm text-txtfade mb-1">
-                    Liquid staked ADX can be unstaked at any time. Locked ADX
-                    can be retrieved once the locking period is over, or by
-                    performing an early exit.
-                  </p>
-                </>
-              )}
-            </div>
+          <div className="flex items-center mb-2">
+            <h3 className="text-lg font-semibold">Pending Rewards</h3>
+            <Tippy content={
+              <div className="p-2">
+                {isALP ? (
+                  <>
+                    <p className="text-sm mb-1">
+                      ADX and USDC rewards automatically accrue at the end of
+                      every staking round.
+                    </p>
+                    <p className="text-sm">
+                      Locked ALP can be retrieved once the locking period is over,
+                      or by doing an early exit.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm mb-1">
+                      ADX rewards automatically accrue at the end of every staking
+                      round.
+                    </p>
+                    <p className="text-sm">
+                      Liquid staked ADX can be unstaked at any time. Locked ADX
+                      can be retrieved once the locking period is over, or by
+                      performing an early exit.
+                    </p>
+                  </>
+                )}
+              </div>
+            }>
+              <Image
+                src={infoIcon}
+                width={16}
+                height={16}
+                alt="info icon"
+                className="inline-block ml-2 cursor-pointer"
+              />
+            </Tippy>
           </div>
-          <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg h-[140px]">
-            <div className="flex flex-col space-y-1 flex-grow">
-              <div className="flex justify-between">
-                <span className="text-txtfade">USDC:</span>
-                <div className="flex items-center">
-                  <FormatNumber nb={pendingUsdcRewards} suffix=" USDC" />
-                </div>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-txtfade">ADX:</span>
-                <div className="flex items-center">
-                  <FormatNumber nb={pendingAdxRewards} suffix=" ADX" />
-                </div>
-              </div>
-              {pendingGenesisAdxRewards > 0 && (
+          <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg">
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col space-y-1 flex-grow">
                 <div className="flex justify-between">
-                  <span className="text-txtfade">ADX (genesis bonus):</span>
-                  <FormatNumber nb={pendingGenesisAdxRewards} suffix=" ADX" />
+                  <span className="text-txtfade">
+                    Your share of <span className="font-bold">{isALP ? '70%' : '20%'}</span> of platform revenues:
+                  </span>
+                  <div className="flex items-center">
+                    <FormatNumber nb={userPendingUsdcRewards} />
+                    <Image src={window.adrena.client.getUsdcToken().image} alt="USDC" width={16} height={16} className="ml-1" />
+                  </div>
                 </div>
-              )}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              title="Claim"
-              className="px-5 self-end mt-4" // Increased top margin
-              onClick={() => handleClickOnClaimRewards()}
-              disabled={
-                pendingUsdcRewards === 0 &&
-                pendingAdxRewards === 0 &&
-                pendingGenesisAdxRewards === 0
-              }
-            />
-          </div>
-          <div className="text-sm mt-2 flex items-center justify-between">
-            <div>
-              <span className="text-txtfade">Next round starts in: </span>
-              {stakingAccount && (
-                <RemainingTimeToDate
-                  timestamp={
-                    getNextStakingRoundStartTime(
-                      stakingAccount.currentStakingRound.startTime,
-                    ).getTime() / 1000
+                <div className="flex justify-between">
+                  <span className="text-txtfade">LM emissions:</span>
+                  <div className="flex items-center">
+                    {pendingGenesisAdxRewards !== 0 && (
+                      <>
+                        <span className="text-xs text-blue">(Genesis Bonus)</span>
+                        <FormatNumber nb={pendingGenesisAdxRewards} className="text-blue ml-1" />
+                        <span className="text-txtfade ml-1">+</span>
+                      </>
+                    )}
+                    <FormatNumber nb={userPendingAdxRewards} className="ml-1" />
+                    <Image src={window.adrena.client.adxToken.image} alt="ADX" width={16} height={16} className="ml-1" />
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <div className="h-8 w-px bg-bcolor mx-4"></div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  title={isClaimingRewards ? 'Claiming...' : 'Claim'}
+                  className="px-5"
+                  onClick={handleClaim}
+                  disabled={
+                    userPendingUsdcRewards === 0 &&
+                    userPendingAdxRewards === 0 &&
+                    pendingGenesisAdxRewards === 0
                   }
-                  className="inline-flex items-center ml-1 w-[5.5em] text-nowrap"
-                  tippyText=""
                 />
-              )}
-              <Tippy
-                content={
-                  <p className="font-medium">
-                    Each round duration is 6h. At the end of a round, rewards
-                    become available.
-                  </p>
-                }
-              >
-                <Image
-                  src={infoIcon}
-                  width={14}
-                  height={14}
-                  alt="info icon"
-                  className="ml-1 inline-block"
-                />
-              </Tippy>
+              </div>
+            </div>
+          </div>
+
+          {/* New side-by-side layout */}
+          <div className="flex flex-col mt-2 gap-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="txt-xxs text-txtfade">
+                <Tippy
+                  content={
+                    <p className="font-medium">
+                      USDC rewards originates from platform revenues (70% ALP / 20%
+                      ADX).
+                      <br />
+                      <br />
+                      ADX rewards originates from the ADX inflation (see doc for
+                      scheduled inflation).
+                      <br />
+                      They are estimated based on the 6h round duration, but since this can vary this number is an estimate.
+                    </p>
+                  }
+                >
+                  <Image
+                    src={infoIcon}
+                    width={14}
+                    height={14}
+                    alt="info icon"
+                    className="inline-block mr-1"
+                  />
+                </Tippy>
+                Next round&apos;s rewards:
+              </span>
+              <div className="flex items-center gap-2">
+                <FormatNumber nb={roundPendingAdxRewards} />
+                <Image src={window.adrena.client.adxToken.image} alt="ADX" width={16} height={16} />
+                <span className="text-txtfade">|</span>
+                <FormatNumber nb={roundPendingUsdcRewards} />
+                <Image src={window.adrena.client.getUsdcToken().image} alt="USDC" width={16} height={16} />
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-txtfade">
+                <Tippy
+                  content={
+                    <p className="font-medium">
+                      Each round duration is ~6h (+/- some jitter due to Sablier
+                      on chain decentralized execution).
+                      <br />
+                      <br />
+                      At the end of a round, the accrued rewards become
+                      claimable, and a new round starts.
+                    </p>
+                  }
+                >
+                  <Image
+                    src={infoIcon}
+                    width={14}
+                    height={14}
+                    alt="info icon"
+                    className="inline-block mr-1"
+                  />
+                </Tippy>
+                Distribution in:
+              </span>
+              <div className="flex items-center">
+                {stakingAccount && (
+                  <RemainingTimeToDate
+                    timestamp={
+                      getNextStakingRoundStartTime(
+                        stakingAccount.currentStakingRound.startTime,
+                      ).getTime() / 1000
+                    }
+                    className="inline-flex items-center text-nowrap"
+                    tippyText=""
+                  />
+                )}
+              </div>
+            </div>
+            <div className="flex justify-end">
               <Link
                 href="/monitoring?tab=Staking"
-                className="text-xs text-txtfade hover:underline ml-1 opacity-40"
+                className="text-xs text-txtfade hover:underline opacity-40"
               >
                 learn more &gt;
               </Link>
