@@ -83,7 +83,7 @@ export default function Trade({
   );
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
-  const [history, setHistory] = useState<boolean>(true);
+  const [history, setHistory] = useState<boolean>(false);
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;

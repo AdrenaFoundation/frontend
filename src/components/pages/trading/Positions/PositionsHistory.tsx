@@ -18,21 +18,12 @@ export default function PositionsHistory({
   const [itemsPerPage, setItemsPerPage] = useState(() => {
     return parseInt(localStorage.getItem('itemsPerPage') || '5', 10);
   });
-  const itemHeight = 55;
 
   useEffect(() => {
     localStorage.setItem('itemsPerPage', itemsPerPage.toString());
   }, [itemsPerPage]);
 
-  if (!connected) {
-    return <WalletConnection />;
-  }
-
-  if (!positionsHistory) {
-    return <Loader />;
-  }
-
-  const paginatedPositions = positionsHistory.slice(
+  const paginatedPositions = (positionsHistory ?? []).slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
@@ -40,34 +31,51 @@ export default function PositionsHistory({
   return (
     <div className="relative w-full h-full">
       <div
-        className="flex-grow flex flex-col gap-1"
+        className="flex items-center justify-center"
         style={{
-          minHeight: `${paginatedPositions.length * itemHeight + 45}px`,
+          minHeight: `${itemsPerPage * 49}px`,
         }}
       >
-        {paginatedPositions.length > 0 ? (
-          paginatedPositions.map((positionHistory) => (
-            <PositionHistoryBlock
-              key={positionHistory.position_id}
-              positionHistory={positionHistory}
-            />
-          ))
+        {connected ? (
+          <>
+            {positionsHistory ? (
+              <>
+                {paginatedPositions.length > 0 ? (
+                  <div className="flex-grow flex flex-col gap-1">
+                    {paginatedPositions.map((positionHistory) => (
+                      <PositionHistoryBlock
+                        key={positionHistory.position_id}
+                        positionHistory={positionHistory}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    No trade history available.
+                  </div>
+                )}
+              </>
+            ) : (
+              <Loader />
+            )}
+          </>
         ) : (
-          <p>No trade history available.</p>
+          <WalletConnection />
         )}
       </div>
-      <div className="absolute bottom-2 left-0 right-0 flex justify-between items-center px-2">
+
+      <div className="flex justify-between items-center">
         <div className="w-6" /> {/* Spacer */}
         <Pagination
           currentPage={currentPage}
-          totalItems={positionsHistory.length}
+          totalItems={(positionsHistory ?? []).length}
           itemsPerPage={itemsPerPage}
           onPageChange={setCurrentPage}
         />
         <select
           value={itemsPerPage}
           onChange={(e) => setItemsPerPage(Number(e.target.value))}
-          className="w-6 h-6 bg-gray-800 text-white border border-gray-700 rounded text-[10px] appearance-none cursor-pointer text-center mt-3"
+          className="w-6 h-6 bg-gray-800 text-white border border-gray-700 rounded text-[10px] appearance-none cursor-pointer text-center mt-1"
         >
           {[5, 10, 25, 100].map((num) => (
             <option key={num} value={num}>

@@ -7,6 +7,7 @@ import solLogo from '@/../public/images/sol.svg';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ImageRef, PositionHistoryExtended, Token } from '@/types';
+import { formatDate, getTokenImage, getTokenSymbol } from '@/utils';
 
 import FeesPaidTooltip from './FeesPaidTooltip';
 
@@ -29,18 +30,6 @@ interface DateDisplayProps {
   date: string | number | Date;
 }
 
-const formatDate = (date: string | number | Date) => {
-  const d = new Date(date);
-  const month = d.toLocaleString('en-US', { month: 'short' });
-  const day = d.getDate();
-  let hour = d.getHours();
-  const minute = d.getMinutes().toString().padStart(2, '0');
-  const ampm = hour >= 12 ? 'pm' : 'am';
-  hour = hour % 12;
-  hour = hour ? hour : 12; // the hour '0' should be '12'
-  return `${month} ${day},${hour}:${minute}${ampm}`;
-};
-
 const DateDisplay: React.FC<DateDisplayProps> = ({ date }) => (
   <p className="text-xs font-mono opacity-50">{formatDate(date)}</p>
 );
@@ -61,13 +50,15 @@ const TokenSymbol: React.FC<TokenSymbolProps> = ({ symbol, pathname, side }) =>
   );
 
 const useResizeObserver = (ref: React.RefObject<HTMLElement>) => {
-  const [isSmallSize, setIsSmallSize] = useState(false);
+  const [isSmallSize, setIsSmallSize] = useState<boolean | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
-      if (!ref.current) return;
-      setIsSmallSize(ref.current.clientWidth <= 400);
+      if (!ref.current) return setIsSmallSize(null);
+      setIsSmallSize(ref.current.clientWidth <= 700);
     };
+
+    handleResize();
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -87,31 +78,21 @@ export default function PositionHistoryBlock({
 }) {
   const blockRef = useRef<HTMLDivElement>(null);
   const isSmallSize = useResizeObserver(blockRef);
+  const symbol = getTokenSymbol(positionHistory.token.symbol);
+  const img = getTokenImage(positionHistory.token);
 
-  const symbolDisplay =
-    positionHistory.token.symbol === 'JITOSOL'
-      ? 'SOL'
-      : positionHistory.token.symbol === 'WBTC'
-      ? 'BTC'
-      : positionHistory.token.symbol;
-
-  const renderPositionName = () => (
-    <div className="w-32">
+  const renderPositionName = (className?: string) => (
+    <div className={twMerge('w-32', className)}>
       <div className="flex items-center h-full">
-        <TokenImage
-          symbol={positionHistory.token.symbol}
-          image={positionHistory.token.image}
-        />
+        <TokenImage symbol={symbol} image={img} />
         {window.location.pathname !== '/trade' ? (
           <TokenSymbol
-            symbol={positionHistory.token.symbol}
+            symbol={symbol}
             pathname={window.location.pathname}
             side={positionHistory.side}
           />
         ) : (
-          <div className="uppercase font-bold text-sm opacity-90">
-            {symbolDisplay}
-          </div>
+          <div className="uppercase font-bold text-sm opacity-90">{symbol}</div>
         )}
         <div
           className={twMerge(
@@ -173,6 +154,7 @@ export default function PositionHistoryBlock({
           </span>
         </label>
       </div>
+
       {positionHistory.pnl ? (
         <div className="flex items-center justify-center w-full">
           <FormatNumber
@@ -261,7 +243,8 @@ export default function PositionHistoryBlock({
             <FormatNumber
               nb={positionHistory.exit_fees + positionHistory.borrow_fees}
               format="currency"
-              className="text-xs text-red"
+              className="text-xs text-redbright"
+              isDecimalDimmed={false}
             />
           </span>
         </div>
@@ -287,6 +270,7 @@ export default function PositionHistoryBlock({
         <div className="w-full font-mono text-xxs text-txtfade text-center">
           {title}
         </div>
+
         <FormatNumber
           nb={price}
           format="currency"
@@ -298,10 +282,36 @@ export default function PositionHistoryBlock({
     );
   };
 
+  if (isSmallSize)
+    return (
+      <div
+        className={twMerge(
+          'flex flex-wrap justify-evenly w-full border rounded-lg border-dashed border-bcolor overflow-hidden mt-2 mb-2 pb-2 pt-2',
+          bodyClassName,
+          borderColor,
+        )}
+        key={positionHistory.position_id}
+        ref={blockRef}
+      >
+        <div>
+          {renderPositionName('items-center justify-center flex flex-col')}
+        </div>
+        <div>
+          {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
+        </div>
+        <div>
+          {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
+        </div>
+        <div>{renderPnl()}</div>
+        <div>{renderExitDate()}</div>
+        <div>{renderFeesPaid()}</div>
+      </div>
+    );
+
   return (
     <div
       className={twMerge(
-        'min-w-[300px] w-full border rounded-lg border-dashed border-bcolor',
+        'min-w-[300px] w-full border rounded-lg border-dashed border-bcolor overflow-hidden',
         bodyClassName,
         borderColor,
       )}

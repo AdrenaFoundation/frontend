@@ -713,3 +713,18 @@ export function estimateLockedStakeEarlyExitFee(
     calculateCappedFeeForExitEarly(lockedStake)
   );
 }
+
+export function formatDate(date: string | number | Date) {
+  const d = new Date(date);
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  const day = d.getDate();
+  let hour = d.getHours();
+
+  const minute = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hour >= 12 ? 'pm' : 'am';
+
+  hour = hour % 12;
+  hour = hour ? hour : 12; // the hour '0' should be '12'
+
+  return `${month} ${day},${hour}:${minute}${ampm}`;
+}
