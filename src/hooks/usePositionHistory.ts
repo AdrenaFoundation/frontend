@@ -19,8 +19,8 @@ export default function usePositionsHistory(): {
 
     const response = await fetch(
       'https://datapi.adrena.xyz/position?user_wallet=' +
-        wallet?.walletAddress +
-        '&status=liquidate&status=close',
+      wallet?.walletAddress +
+      '&status=liquidate&status=close',
     );
 
     if (!response.ok) {
@@ -28,8 +28,6 @@ export default function usePositionsHistory(): {
     }
     const apiBody = await response.json();
     const apiData: PositionHistoryApi[] = apiBody.data;
-
-    console.log(apiData);
 
     if (typeof apiData === 'undefined' || (apiData && apiData.length === 0))
       return [];

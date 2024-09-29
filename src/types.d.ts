@@ -358,7 +358,7 @@ export type PositionHistoryExtended = {
   user_id: number;
   custody_id: number;
   side: 'long' | 'short';
-  status: 'open' | 'closed';
+  status: 'open' | 'close' | 'liquidate';
   pubkey: PublicKey;
   entry_price: number | null;
   exit_price: number | null;
@@ -383,7 +383,7 @@ export type PositionHistoryApi = {
   position_id: number;
   user_id: number;
   side: 'long' | 'short';
-  status: 'open' | 'closed';
+  status: 'open' | 'close' | 'liquidate';
   pubkey: string;
   entry_price: number | null;
   exit_price: number | null;

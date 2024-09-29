@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -6,7 +7,75 @@ import { twMerge } from 'tailwind-merge';
 import solLogo from '@/../public/images/sol.svg';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { PositionHistoryExtended } from '@/types';
+import { ImageRef, PositionHistoryExtended, Token } from '@/types';
+
+import FeesPaidTooltip from './FeesPaidTooltip';
+
+interface TokenImageProps {
+  symbol: string;
+  image: ImageRef;
+}
+
+const TokenImage: React.FC<TokenImageProps> = ({ symbol, image }) => (
+  <Image
+    className="w-[1em] h-[1em] mr-1"
+    src={symbol === 'JITOSOL' ? solLogo : image}
+    width={200}
+    height={200}
+    alt={`${symbol === 'JITOSOL' ? 'SOL' : symbol} logo`}
+  />
+);
+
+interface DateDisplayProps {
+  date: string | number | Date;
+}
+
+const formatDate = (date: string | number | Date) => {
+  const d = new Date(date);
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  const day = d.getDate();
+  let hour = d.getHours();
+  const minute = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hour >= 12 ? 'pm' : 'am';
+  hour = hour % 12;
+  hour = hour ? hour : 12; // the hour '0' should be '12'
+  return `${month} ${day},${hour}:${minute}${ampm}`;
+};
+
+const DateDisplay: React.FC<DateDisplayProps> = ({ date }) => (
+  <p className="text-xs font-mono opacity-50">{formatDate(date)}</p>
+);
+
+interface TokenSymbolProps {
+  symbol: string;
+  pathname: string;
+  side: 'long' | 'short';
+}
+
+const TokenSymbol: React.FC<TokenSymbolProps> = ({ symbol, pathname, side }) =>
+  pathname !== '/trade' ? (
+    <Link href={`/trade?pair=USDC_${symbol}&action=${side}`} target="">
+      <div className="uppercase underline font-boldy text-sm">{symbol}</div>
+    </Link>
+  ) : (
+    <div className="uppercase font-boldy text-sm opacity-90">{symbol}</div>
+  );
+
+const useResizeObserver = (ref: React.RefObject<HTMLElement>) => {
+  const [isSmallSize, setIsSmallSize] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!ref.current) return;
+      setIsSmallSize(ref.current.clientWidth <= 400);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [ref]);
+
+  return isSmallSize;
+};
 
 export default function PositionHistoryBlock({
   bodyClassName,
@@ -18,62 +87,31 @@ export default function PositionHistoryBlock({
   positionHistory: PositionHistoryExtended;
 }) {
   const blockRef = useRef<HTMLDivElement>(null);
-  const [isSmallSize, setIsSmallSize] = useState(false);
+  const isSmallSize = useResizeObserver(blockRef);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (!blockRef.current) return;
-
-      const width = blockRef.current.clientWidth;
-
-      setIsSmallSize(width <= 400);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.addEventListener('resize', handleResize);
-    };
-  }, []);
+  const symbolDisplay =
+    positionHistory.token.symbol === 'JITOSOL'
+      ? 'SOL'
+      : positionHistory.token.symbol === 'WBTC'
+      ? 'BTC'
+      : positionHistory.token.symbol;
 
   const positionName = (
     <div>
       <div className="flex items-center h-full">
-        <Image
-          className="w-[1em] h-[1em] mr-1"
-          src={
-            positionHistory.token.symbol !== 'JITOSOL'
-              ? positionHistory.token.image
-              : solLogo
-          }
-          width={200}
-          height={200}
-          alt={`${
-            positionHistory.token.symbol !== 'JITOSOL'
-              ? positionHistory.token.symbol
-              : 'SOL'
-          } logo`}
+        <TokenImage
+          symbol={positionHistory.token.symbol}
+          image={positionHistory.token.image}
         />
         {window.location.pathname !== '/trade' ? (
-          <Link
-            href={`/trade?pair=USDC_${
-              positionHistory.token.symbol !== 'JITOSOL'
-                ? positionHistory.token.symbol
-                : 'SOL'
-            }&action=${positionHistory.side}`}
-            target=""
-          >
-            <div className="uppercase underline font-boldy text-sm">
-              {positionHistory.token.symbol !== 'JITOSOL'
-                ? positionHistory.token.symbol
-                : 'SOL'}
-            </div>
-          </Link>
+          <TokenSymbol
+            symbol={positionHistory.token.symbol}
+            pathname={window.location.pathname}
+            side={positionHistory.side}
+          />
         ) : (
           <div className="uppercase font-boldy text-sm opacity-90">
-            {positionHistory.token.symbol !== 'JITOSOL'
-              ? positionHistory.token.symbol
-              : 'SOL'}
+            {symbolDisplay}
           </div>
         )}
         <div
@@ -85,35 +123,38 @@ export default function PositionHistoryBlock({
           {positionHistory.side}
         </div>
       </div>
-      <p className="text-xs font-mono opacity-50 mt-1">
-        {new Date(positionHistory.entry_date).toLocaleDateString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        })}
-      </p>
+      <DateDisplay date={positionHistory.entry_date} />
     </div>
   );
 
   const [showAfterFees, setShowAfterFees] = useState(false); // State to manage fee display
 
   const pnl = (
-    <div className="flex flex-col items-center min-w-[5em] w-[5em]">
-      <div className="flex w-full font-mono text-xxs opacity-90 justify-center items-center">
+    <div className="flex flex-col items-center min-w-[8em] w-[8em]">
+      <div className="flex w-full font-mono text-xxs text-txtfade opacity-90 justify-center items-center">
         PnL
+        <label className="flex items-center ml-1 cursor-pointer">
+          <Switch
+            className="mr-0.5"
+            checked={showAfterFees}
+            onChange={() => setShowAfterFees(!showAfterFees)}
+            size="small"
+          />
+          <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
+            {showAfterFees ? 'w/o fees' : 'w/ fees'}
+          </span>
+        </label>
       </div>
       {positionHistory.pnl ? (
-        <div className="flex items-center">
+        <div className="flex items-center justify-center w-full">
           <FormatNumber
             nb={
               showAfterFees
                 ? positionHistory.pnl + positionHistory.fees
                 : positionHistory.pnl
-            } // Adjusted for fee display
+            }
             format="currency"
-            className={`mr-0.5 opacity-90 font-bold text-${
+            className={`mr-0.5 opacity-90 font-bold text-sm text-${
               (showAfterFees
                 ? positionHistory.pnl + positionHistory.fees
                 : positionHistory.pnl) > 0
@@ -138,7 +179,7 @@ export default function PositionHistoryBlock({
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
-            className={`text-xs opacity-90 text-${
+            className={`text-xxs opacity-90 text-${
               (showAfterFees
                 ? positionHistory.pnl + positionHistory.fees
                 : positionHistory.pnl) > 0
@@ -146,19 +187,6 @@ export default function PositionHistoryBlock({
                 : 'redbright'
             }`}
           />
-
-          <label className="flex items-center ml-2 cursor-pointer">
-            <Switch
-              className="mr-1"
-              checked={showAfterFees}
-              onChange={() => setShowAfterFees(!showAfterFees)}
-              size="small"
-            />
-            <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">
-              {showAfterFees ? 'w/o fees' : 'w/ fees'}
-            </span>{' '}
-            {/* conditional text */}
-          </label>
         </div>
       ) : (
         '-'
@@ -166,35 +194,81 @@ export default function PositionHistoryBlock({
     </div>
   );
 
-  const netValue = (
-    <div className="flex flex-col items-center">
-      <div
-        className={`flex w-full font-mono text-xxs text-txtfade ${
-          isSmallSize ? 'justify-center' : 'justify-end'
-        } items-center`}
-      >
-        Net value
-      </div>
+  const pnlValue = showAfterFees
+    ? positionHistory.pnl + positionHistory.fees
+    : positionHistory.pnl;
 
-      <div className="flex">
-        {positionHistory.pnl ? (
-          <>
-            <span>
-              <FormatNumber
-                nb={
-                  positionHistory.entry_collateral_amount + positionHistory.pnl
-                }
-                format="currency"
-                className="text-md opacity-90"
-              />
-            </span>
-          </>
-        ) : (
-          '-'
-        )}
+  const percentage = positionHistory.entry_collateral_amount
+    ? (pnlValue / positionHistory.entry_collateral_amount) * 100
+    : null;
+
+  {
+    percentage !== null ? (
+      <FormatNumber
+        nb={percentage}
+        format="percentage"
+        prefix="("
+        suffix=")"
+        precision={2}
+        isDecimalDimmed={false}
+        className={`text-xxs opacity-90 text-${
+          pnlValue > 0 ? 'green' : 'redbright'
+        }`}
+      />
+    ) : null;
+  }
+
+  const feesPaid = (
+    <div className="flex flex-col items-center">
+      <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+        Fees Paid
       </div>
+      <FeesPaidTooltip
+        entryFees={0}
+        exitFees={positionHistory.exit_fees}
+        borrowFees={positionHistory.borrow_fees}
+      >
+        <div className="flex cursor-help">
+          <span className="border-b border-dotted border-gray">
+            <FormatNumber
+              nb={positionHistory.exit_fees + positionHistory.borrow_fees}
+              format="currency"
+              className="text-xs text-red"
+            />
+          </span>
+        </div>
+      </FeesPaidTooltip>
     </div>
   );
+
+  interface PriceDisplayProps {
+    price: number | null;
+    token: Token;
+    title: string;
+  }
+
+  const PriceDisplay: React.FC<PriceDisplayProps> = ({
+    price,
+    token,
+    title,
+  }) => {
+    const decimals = token.symbol === 'BONK' ? 8 : 2;
+
+    return (
+      <div className="flex flex-col items-center w-24">
+        <div className="w-full font-mono text-xxs text-txtfade text-center">
+          {title}
+        </div>
+        <FormatNumber
+          nb={price}
+          format="currency"
+          className="text-xs"
+          minimumFractionDigits={decimals}
+          precision={decimals}
+        />
+      </div>
+    );
+  };
 
   return (
     <div
@@ -208,71 +282,42 @@ export default function PositionHistoryBlock({
     >
       <div className="flex flex-row items-center justify-between flex-wrap gap-y-2 px-5 py-2 opacity-90">
         {positionName}
+
+        <div className="flex flex-col items-center">
+          <PriceDisplay
+            price={positionHistory.entry_price}
+            token={positionHistory.token}
+            title="Entry Price"
+          />
+        </div>
+
+        <div className="flex flex-col items-center">
+          <PriceDisplay
+            price={positionHistory.exit_price}
+            token={positionHistory.token}
+            title="Exit Price"
+          />
+        </div>
+
         {pnl}
 
         <div className="flex flex-col items-center">
-          <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Status
+          <div className="flex w-full font-mono text-xxs justify-center items-center">
+            {positionHistory.status === 'close' ? (
+              <span className="text-blue">Closed on</span>
+            ) : positionHistory.status === 'liquidate' ? (
+              <span className="text-orange">Liquidated on</span>
+            ) : (
+              'Exit Date'
+            )}
           </div>
-          <div className="flex text-sm">{positionHistory.status}</div>
+          {positionHistory.exit_date ? (
+            <DateDisplay date={positionHistory.exit_date} />
+          ) : (
+            <p className="text-xs font-mono opacity-50">-</p>
+          )}
         </div>
-
-        <div className="flex flex-col items-center">
-          <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Exit Date
-          </div>
-          <div className="flex text-xs font-mono">
-            {positionHistory.exit_date
-              ? new Date(positionHistory.exit_date).toLocaleDateString(
-                  'en-US',
-                  {
-                    hour: 'numeric',
-                    minute: 'numeric',
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  },
-                )
-              : '-'}
-          </div>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Fees
-          </div>
-          <div className="flex">
-            <FormatNumber
-              nb={positionHistory.fees}
-              format="currency"
-              className="text-xs"
-            />
-          </div>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Borrow
-          </div>
-          <div className="flex">
-            <FormatNumber
-              nb={positionHistory.borrow_fees}
-              format="currency"
-              className="text-xs"
-            />
-          </div>
-        </div>
-        <div className="flex flex-col items-center">
-          <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-            Exit
-          </div>
-          <div className="flex">
-            <FormatNumber
-              nb={positionHistory.exit_fees}
-              format="currency"
-              className="text-xs"
-            />
-          </div>
-        </div>
-        {netValue}
+        {feesPaid}
       </div>
     </div>
   );

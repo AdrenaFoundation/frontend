@@ -278,31 +278,25 @@ export default function Trade({
         {isBigScreen ? (
           <>
             <div className="bg-secondary mt-4 border rounded-lg">
-              <div className="flex items-center justify-start gap-3  w-[14em] px-5 pt-2">
+              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
                 <span
                   className={twMerge(
-                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                    !history ? 'opacity-100' : '',
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    !history ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => {
-                    setHistory(false);
-                  }}
+                  onClick={() => setHistory(false)}
                 >
-                  Positions
+                  Open positions
                 </span>
-
-                <span className="opacity-20 text-2xl">/</span>
-
+                <span className="opacity-20">|</span>
                 <span
                   className={twMerge(
-                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                    history ? 'opacity-100' : '',
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    history ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => {
-                    setHistory(true);
-                  }}
+                  onClick={() => setHistory(true)}
                 >
-                  History
+                  Trade history
                 </span>
               </div>
               {history ? (
@@ -326,29 +320,23 @@ export default function Trade({
         ) : (
           <div className="flex">
             <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full">
-              <div className="flex items-center justify-start gap-3  w-[14em] px-5 pt-2">
+              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
                 <span
                   className={twMerge(
-                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                    !history ? 'opacity-100' : '',
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    !history ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => {
-                    setHistory(false);
-                  }}
+                  onClick={() => setHistory(false)}
                 >
                   Positions
                 </span>
-
-                <span className="opacity-20 text-2xl">/</span>
-
+                <span className="opacity-20">|</span>
                 <span
                   className={twMerge(
-                    'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-                    history ? 'opacity-100' : '',
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    history ? 'opacity-100' : 'opacity-40',
                   )}
-                  onClick={() => {
-                    setHistory(true);
-                  }}
+                  onClick={() => setHistory(true)}
                 >
                   History
                 </span>
@@ -358,15 +346,16 @@ export default function Trade({
                   <PositionsHistory connected={connected} />
                 </div>
               ) : (
-                <Positions
-                  className={'mt-1 w-full p-0 md:p-4'}
-                  connected={connected}
-                  positions={positions}
-                  triggerPositionsReload={triggerPositionsReload}
-                  triggerUserProfileReload={triggerUserProfileReload}
-                  isBigScreen={isBigScreen}
-                  userProfile={userProfile}
-                />
+                <div className="mt-1 w-full p-0 md:p-4">
+                  <Positions
+                    connected={connected}
+                    positions={positions}
+                    triggerPositionsReload={triggerPositionsReload}
+                    triggerUserProfileReload={triggerUserProfileReload}
+                    isBigScreen={isBigScreen}
+                    userProfile={userProfile}
+                  />
+                </div>
               )}
             </div>
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
