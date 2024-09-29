@@ -96,8 +96,8 @@ export default function PositionHistoryBlock({
       ? 'BTC'
       : positionHistory.token.symbol;
 
-  const positionName = (
-    <div>
+  const renderPositionName = () => (
+    <div className="w-32">
       <div className="flex items-center h-full">
         <TokenImage
           symbol={positionHistory.token.symbol}
@@ -110,13 +110,13 @@ export default function PositionHistoryBlock({
             side={positionHistory.side}
           />
         ) : (
-          <div className="uppercase font-boldy text-sm opacity-90">
+          <div className="uppercase font-bold text-sm opacity-90">
             {symbolDisplay}
           </div>
         )}
         <div
           className={twMerge(
-            'uppercase font-boldy text-sm ml-1 opacity-90',
+            'uppercase font-bold text-xs ml-1 opacity-90',
             positionHistory.side === 'long' ? 'text-green' : 'text-red',
           )}
         >
@@ -126,6 +126,35 @@ export default function PositionHistoryBlock({
       <DateDisplay date={positionHistory.entry_date} />
     </div>
   );
+
+  const renderPriceDisplay = (price: number | null, title: string) => (
+    <div className="flex flex-col items-center w-24">
+      <PriceDisplay price={price} token={positionHistory.token} title={title} />
+    </div>
+  );
+
+  const renderPnl = () => <div className="w-32">{pnl}</div>;
+
+  const renderExitDate = () => (
+    <div className="flex flex-col items-center w-24">
+      <div className="flex w-full font-mono text-xxs justify-center items-center">
+        {positionHistory.status === 'close' ? (
+          <span className="text-blue">Closed on</span>
+        ) : positionHistory.status === 'liquidate' ? (
+          <span className="text-orange">Liquidated on</span>
+        ) : (
+          'Exit Date'
+        )}
+      </div>
+      {positionHistory.exit_date ? (
+        <DateDisplay date={positionHistory.exit_date} />
+      ) : (
+        <p className="text-xs font-mono opacity-50">-</p>
+      )}
+    </div>
+  );
+
+  const renderFeesPaid = () => <div className="w-24">{feesPaid}</div>;
 
   const [showAfterFees, setShowAfterFees] = useState(false); // State to manage fee display
 
@@ -273,51 +302,20 @@ export default function PositionHistoryBlock({
   return (
     <div
       className={twMerge(
-        'min-w-[300px] w-full flex flex-col border rounded-lg border-dashed border-bcolor',
+        'min-w-[300px] w-full border rounded-lg border-dashed border-bcolor',
         bodyClassName,
         borderColor,
       )}
       key={positionHistory.position_id}
       ref={blockRef}
     >
-      <div className="flex flex-row items-center justify-between flex-wrap gap-y-2 px-5 py-2 opacity-90">
-        {positionName}
-
-        <div className="flex flex-col items-center">
-          <PriceDisplay
-            price={positionHistory.entry_price}
-            token={positionHistory.token}
-            title="Entry Price"
-          />
-        </div>
-
-        <div className="flex flex-col items-center">
-          <PriceDisplay
-            price={positionHistory.exit_price}
-            token={positionHistory.token}
-            title="Exit Price"
-          />
-        </div>
-
-        {pnl}
-
-        <div className="flex flex-col items-center">
-          <div className="flex w-full font-mono text-xxs justify-center items-center">
-            {positionHistory.status === 'close' ? (
-              <span className="text-blue">Closed on</span>
-            ) : positionHistory.status === 'liquidate' ? (
-              <span className="text-orange">Liquidated on</span>
-            ) : (
-              'Exit Date'
-            )}
-          </div>
-          {positionHistory.exit_date ? (
-            <DateDisplay date={positionHistory.exit_date} />
-          ) : (
-            <p className="text-xs font-mono opacity-50">-</p>
-          )}
-        </div>
-        {feesPaid}
+      <div className="grid grid-cols-6 gap-2 px-5 py-2 opacity-90 items-center">
+        <div className="col-span-1">{renderPositionName()}</div>
+        <div className="col-span-1">{renderPriceDisplay(positionHistory.entry_price, "Entry Price")}</div>
+        <div className="col-span-1">{renderPriceDisplay(positionHistory.exit_price, "Exit Price")}</div>
+        <div className="col-span-1">{renderPnl()}</div>
+        <div className="col-span-1">{renderExitDate()}</div>
+        <div className="col-span-1">{renderFeesPaid()}</div>
       </div>
     </div>
   );
