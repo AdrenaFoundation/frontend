@@ -159,7 +159,12 @@ export default function StakeOverview({
               variant="outline"
               size="sm"
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
-              className="px-5 ml-auto"
+              className={twMerge(
+                "px-5 ml-auto",
+                (userPendingUsdcRewards === 0 &&
+                userPendingAdxRewards === 0 &&
+                pendingGenesisAdxRewards === 0) && "opacity-50 cursor-not-allowed"
+              )}
               onClick={handleClaim}
               disabled={
                 userPendingUsdcRewards === 0 &&
@@ -185,8 +190,30 @@ export default function StakeOverview({
               </div>
 
               <div className="flex items-center justify-center">
-                <FormatNumber nb={userPendingAdxRewards} />
-                <div className="ml-1 text-sm mt-[2px]">ADX</div>
+                <div className="flex flex-col items-end">
+                  <div className="flex items-center">
+                    <FormatNumber nb={userPendingAdxRewards} />
+                    <div className="ml-1 text-sm mt-[2px]">ADX</div>
+                  </div>
+                  {pendingGenesisAdxRewards !== 0 && (
+                    <div className="flex items-center text-xs mt-1">
+                      <span className="text-blue mr-1">
+                        Genesis Bonus
+                        <Tippy content={<p>Your tooltip content here</p>}>
+                          <Image
+                            src={infoIcon}
+                            width={12}
+                            height={12}
+                            alt="info icon"
+                            className="inline-block ml-1 cursor-pointer"
+                          />
+                        </Tippy>
+                      </span>
+                      <FormatNumber nb={pendingGenesisAdxRewards} className="text-blue" />
+                      <span className="text-blue ml-1">ADX</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <Image
@@ -197,18 +224,6 @@ export default function StakeOverview({
                 className="absolute opacity-20 -right-10"
               />
 
-              {/* {pendingGenesisAdxRewards !== 0 && (
-                      <>
-                        <span className="text-xs text-blue">
-                          (Genesis Bonus)
-                        </span>
-                        <FormatNumber
-                          nb={pendingGenesisAdxRewards}
-                          className="text-blue ml-1"
-                        />
-                        <span className="text-txtfade ml-1">+</span>
-                      </>
-                    )} */}
             </div>
           </div>
 
