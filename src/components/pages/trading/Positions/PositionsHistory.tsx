@@ -64,7 +64,7 @@ export default function PositionsHistory({
         )}
       </div>
 
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mt-3">
         <div className="w-6" /> {/* Spacer */}
         <Pagination
           currentPage={currentPage}
@@ -75,9 +75,9 @@ export default function PositionsHistory({
         <select
           value={itemsPerPage}
           onChange={(e) => setItemsPerPage(Number(e.target.value))}
-          className="w-6 h-6 bg-gray-800 text-white border border-gray-700 rounded text-[10px] appearance-none cursor-pointer text-center mt-1"
+          className="w-6 h-6 bg-gray-800 text-white border border-gray-700 rounded text-[10px] appearance-none cursor-pointer text-center"
         >
-          {[5, 10, 25, 100].map((num) => (
+          {[5, 10, 25].map((num) => (
             <option key={num} value={num}>
               {num}
             </option>

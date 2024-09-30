@@ -377,6 +377,8 @@ export type PositionHistoryExtended = {
   symbol: string;
   token_account_mint: string;
   token: Token;
+  last_tx: string; // the close or liquidate tx
+  final_collateral_amount: number; // Final collateral amount before close
 };
 
 export type PositionHistoryApi = {
@@ -401,4 +403,6 @@ export type PositionHistoryApi = {
   profile: string;
   symbol: string;
   token_account_mint: string;
+  last_ix: string;
+  collateral_amount: number;
 };

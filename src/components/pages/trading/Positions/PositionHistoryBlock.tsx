@@ -3,11 +3,17 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import solLogo from '@/../public/images/sol.svg';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ImageRef, PositionHistoryExtended, Token } from '@/types';
-import { formatDate, getTokenImage, getTokenSymbol } from '@/utils';
+import {
+  formatDate,
+  getTokenImage,
+  getTokenSymbol,
+  getTxExplorer,
+} from '@/utils';
 
 import FeesPaidTooltip from './FeesPaidTooltip';
 
@@ -119,9 +125,39 @@ export default function PositionHistoryBlock({
     <div className="flex flex-col items-center w-24">
       <div className="flex w-full font-mono text-xxs justify-center items-center">
         {positionHistory.status === 'close' ? (
-          <span className="text-blue">Closed on</span>
+          <Link
+            href={getTxExplorer(positionHistory.last_tx)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center"
+          >
+            <span className="text-blue cursor-pointer hover:underline mr-1">
+              Closed on
+            </span>
+            <Image
+              src={externalLinkLogo}
+              alt="External link"
+              width={12}
+              height={12}
+            />
+          </Link>
         ) : positionHistory.status === 'liquidate' ? (
-          <span className="text-orange">Liquidated on</span>
+          <Link
+            href={getTxExplorer(positionHistory.last_tx)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center"
+          >
+            <span className="text-orange cursor-pointer hover:underline mr-1">
+              Liquidated on
+            </span>
+            <Image
+              src={externalLinkLogo}
+              alt="External link"
+              width={12}
+              height={12}
+            />
+          </Link>
         ) : (
           'Exit Date'
         )}
@@ -181,7 +217,7 @@ export default function PositionHistoryBlock({
               ((showAfterFees
                 ? positionHistory.pnl + positionHistory.fees
                 : positionHistory.pnl) /
-                positionHistory.entry_collateral_amount) *
+                positionHistory.final_collateral_amount) *
               100
             }
             format="percentage"
@@ -244,7 +280,7 @@ export default function PositionHistoryBlock({
               nb={positionHistory.exit_fees + positionHistory.borrow_fees}
               format="currency"
               className="text-xs text-redbright"
-              isDecimalDimmed={false}
+              isDecimalDimmed={true}
             />
           </span>
         </div>

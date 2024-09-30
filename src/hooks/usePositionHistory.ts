@@ -27,7 +27,7 @@ export default function usePositionsHistory(): {
       const tokens = window.adrena.client.tokens;
 
       const response = await fetch(
-        `https://datapi.adrena.xyz/position?user_wallet='${wallet.walletAddress}'&status=liquidate&status=close`,
+        `https://datapi.adrena.xyz/position?user_wallet=${wallet.walletAddress}&status=liquidate&status=close`,
       );
 
       if (!response.ok) {
@@ -76,6 +76,8 @@ export default function usePositionsHistory(): {
             symbol: data.symbol,
             token_account_mint: data.token_account_mint,
             token,
+            last_tx: data.last_ix,
+            final_collateral_amount: data.collateral_amount,
           } as PositionHistoryExtended;
         })
         .filter((data) => data !== null) as PositionHistoryExtended[];
