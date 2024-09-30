@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import LineRechartFees from './LineRechartFees';
 
-export default function FeesChart() {
+export default function FeesChart({
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
+}: {
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
+}) {
   const [chartData, setChartData] = useState<any>(null);
 
   useEffect(() => {
@@ -88,6 +101,11 @@ export default function FeesChart() {
           color: '#DA6F71',
         },
       ]}
+      position={position}
+      isActive={isActive}
+      setIsActive={setIsActive}
+      handleMouseMove={handleMouseMove}
+      activeIndex={activeIndex}
     />
   );
 }

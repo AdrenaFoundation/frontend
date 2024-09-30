@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import { formatPriceInfo } from '@/utils';
 
@@ -40,6 +41,11 @@ export default function LineRechartComposition({
   title,
   data,
   labels,
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
 }: {
   title: string;
   data: any;
@@ -49,6 +55,11 @@ export default function LineRechartComposition({
       color?: string;
     },
   ];
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
 }) {
   const formatYAxis = (tickItem: any) => {
     let num = tickItem;
@@ -88,7 +99,13 @@ export default function LineRechartComposition({
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <LineChart
+          data={data}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => {
+            setIsActive(false);
+          }}
+        >
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="time" fontSize="12" />
@@ -99,7 +116,13 @@ export default function LineRechartComposition({
             fontSize="13"
           />
 
-          <Tooltip content={<CustomToolTip />} cursor={false} />
+          <Tooltip
+            position={position}
+            active={isActive}
+            defaultIndex={activeIndex}
+            content={<CustomToolTip />}
+            cursor={false}
+          />
 
           <Legend />
 
@@ -109,6 +132,7 @@ export default function LineRechartComposition({
             stroke="#f7931a"
             fill="#f7931a"
             dot={false}
+            activeDot={isActive}
           />
           <Line
             type="monotone"
@@ -116,6 +140,7 @@ export default function LineRechartComposition({
             stroke="#2775ca"
             fill="#2775ca"
             dot={false}
+            activeDot={isActive}
           />
           <Line
             type="monotone"
@@ -123,6 +148,7 @@ export default function LineRechartComposition({
             stroke="#dfaf92"
             fill="#dfaf92"
             dot={false}
+            activeDot={isActive}
           />
           <Line
             type="monotone"
@@ -130,6 +156,7 @@ export default function LineRechartComposition({
             stroke="#84CC90"
             fill="#84CC90"
             dot={false}
+            activeDot={isActive}
           />
         </LineChart>
       </ResponsiveContainer>

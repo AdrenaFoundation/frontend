@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import { formatPriceInfo } from '@/utils';
 
@@ -40,6 +41,11 @@ export default function LineRechartFees({
   title,
   data,
   labels,
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
 }: {
   title: string;
   data: any;
@@ -47,6 +53,11 @@ export default function LineRechartFees({
     name: string;
     color?: string;
   }[];
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
 }) {
   const formatYAxis = (tickItem: any) => {
     let num = tickItem;
@@ -86,7 +97,15 @@ export default function LineRechartFees({
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart width={600} height={400} data={data}>
+        <LineChart
+          width={600}
+          height={400}
+          data={data}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => {
+            setIsActive(false);
+          }}
+        >
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="name" fontSize="12" />
@@ -97,7 +116,13 @@ export default function LineRechartFees({
             fontSize="13"
           />
           <Legend />
-          <Tooltip content={<CustomToolTip />} cursor={false} />
+          <Tooltip
+            position={position}
+            active={isActive}
+            defaultIndex={activeIndex}
+            content={<CustomToolTip />}
+            cursor={false}
+          />
 
           {labels?.map(({ name, color }) => {
             return (
@@ -108,6 +133,7 @@ export default function LineRechartFees({
                 fill={color}
                 dot={false}
                 key={name}
+                activeDot={isActive}
               />
             );
           })}

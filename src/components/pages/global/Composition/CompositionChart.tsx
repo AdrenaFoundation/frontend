@@ -1,11 +1,24 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useState } from 'react';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import { TokenInfo } from '@/config/IConfiguration';
 
 import LineRechartComposition from './LineRechartComposition';
 
-export default function CompositionChart() {
+export default function CompositionChart({
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
+}: {
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
+}) {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
 
@@ -101,6 +114,11 @@ export default function CompositionChart() {
           color: info.color,
         })) ?? []
       }
+      position={position}
+      isActive={isActive}
+      setIsActive={setIsActive}
+      handleMouseMove={handleMouseMove}
+      activeIndex={activeIndex}
     />
   );
 }

@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import LineRechartAum from './RechartAum';
 
-export default function AumChart() {
+export default function AumChart({
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
+}: {
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
+}) {
   const [AUM, setAUM] = useState<any>(null);
 
   const getPoolInfo = async () => {
@@ -55,6 +68,15 @@ export default function AumChart() {
   }
 
   return (
-    <LineRechartAum title={'AUM'} data={AUM} labels={[{ name: 'value' }]} />
+    <LineRechartAum
+      position={position}
+      isActive={isActive}
+      setIsActive={setIsActive}
+      title={'AUM'}
+      data={AUM}
+      labels={[{ name: 'value' }]}
+      handleMouseMove={handleMouseMove}
+      activeIndex={activeIndex}
+    />
   );
 }

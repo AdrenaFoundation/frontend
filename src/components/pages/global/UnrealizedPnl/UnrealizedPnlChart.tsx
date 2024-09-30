@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import LineRechartPercentage from './LineRechartUnrealizedPnl';
 
-export default function UnrealizedPnlChart() {
+export default function UnrealizedPnlChart({
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
+}: {
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
+}) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -122,6 +135,11 @@ export default function UnrealizedPnlChart() {
             };
           }),
       ]}
+      position={position}
+      isActive={isActive}
+      setIsActive={setIsActive}
+      handleMouseMove={handleMouseMove}
+      activeIndex={activeIndex}
     />
   );
 }

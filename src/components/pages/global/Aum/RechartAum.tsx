@@ -1,17 +1,15 @@
 import Tippy from '@tippyjs/react';
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Area,
   AreaChart,
   CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import { formatPriceInfo } from '@/utils';
 
@@ -42,6 +40,11 @@ export default function RechartAum({
   title,
   data,
   labels,
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
 }: {
   title: string;
   data: any;
@@ -49,6 +52,11 @@ export default function RechartAum({
     name: string;
     color?: string;
   }[];
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
 }) {
   const formatYAxis = (tickItem: any) => {
     let num = tickItem;
@@ -88,7 +96,15 @@ export default function RechartAum({
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart width={600} height={400} data={data}>
+        <AreaChart
+          width={600}
+          height={400}
+          data={data}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => {
+            setIsActive(false);
+          }}
+        >
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="name" fontSize="12" />
@@ -99,7 +115,13 @@ export default function RechartAum({
             fontSize="13"
           />
 
-          <Tooltip content={<CustomToolTip />} cursor={false} />
+          <Tooltip
+            position={position}
+            active={isActive}
+            content={<CustomToolTip />}
+            cursor={false}
+            defaultIndex={activeIndex}
+          />
 
           {labels?.map(({ name, color }) => {
             return (
@@ -109,6 +131,7 @@ export default function RechartAum({
                 key={name}
                 stroke={color}
                 fill={color}
+                activeDot={isActive}
               />
             );
           })}

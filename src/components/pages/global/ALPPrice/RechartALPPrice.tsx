@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import { formatPriceInfo } from '@/utils';
 
@@ -42,6 +43,11 @@ export default function RechartALPPrice({
   title,
   data,
   labels,
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
 }: {
   title: string;
   data: any;
@@ -49,6 +55,11 @@ export default function RechartALPPrice({
     name: string;
     color?: string;
   }[];
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
 }) {
   const formatYAxis = (tickItem: any) => {
     let num = tickItem;
@@ -90,7 +101,15 @@ export default function RechartALPPrice({
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart width={600} height={400} data={data}>
+        <AreaChart
+          width={600}
+          height={400}
+          data={data}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => {
+            setIsActive(false);
+          }}
+        >
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="name" fontSize="10" />
@@ -101,7 +120,13 @@ export default function RechartALPPrice({
             fontSize="10"
           />
 
-          <Tooltip content={<CustomToolTip />} cursor={false} />
+          <Tooltip
+            position={position}
+            active={isActive}
+            defaultIndex={activeIndex}
+            content={<CustomToolTip />}
+            cursor={false}
+          />
 
           {labels?.map(({ name, color }) => {
             return (
@@ -111,6 +136,7 @@ export default function RechartALPPrice({
                 key={name}
                 stroke={color}
                 fill={color}
+                activeDot={isActive}
               />
             );
           })}

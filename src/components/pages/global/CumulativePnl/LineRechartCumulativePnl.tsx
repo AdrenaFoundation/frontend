@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import { formatPercentage, formatPriceInfo } from '@/utils';
 
@@ -18,6 +19,11 @@ export default function LineRechartCumulativePnl({
   title,
   data,
   labels,
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
 }: {
   title: string;
   data: any;
@@ -25,6 +31,11 @@ export default function LineRechartCumulativePnl({
     name: string;
     color?: string;
   }[];
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
 }) {
   const formatYAxis = (tickItem: any) => {
     let num = tickItem;
@@ -90,6 +101,10 @@ export default function LineRechartCumulativePnl({
         <LineChart
           data={data}
           margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => {
+            setIsActive(false);
+          }}
         >
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
@@ -97,7 +112,13 @@ export default function LineRechartCumulativePnl({
 
           <YAxis domain={[0]} tickFormatter={formatYAxis} fontSize="13" />
 
-          <Tooltip content={<CustomToolTip />} cursor={false} />
+          <Tooltip
+            position={position}
+            active={isActive}
+            defaultIndex={activeIndex}
+            content={<CustomToolTip />}
+            cursor={false}
+          />
 
           <Legend />
 
@@ -110,6 +131,7 @@ export default function LineRechartCumulativePnl({
                 fill={color}
                 stroke={color}
                 dot={false}
+                activeDot={isActive}
               />
             );
           })}

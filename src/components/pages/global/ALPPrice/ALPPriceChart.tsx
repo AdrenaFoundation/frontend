@@ -1,8 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { CategoricalChartState } from 'recharts/types/chart/types';
 
 import LineRechartAum from './RechartALPPrice';
 
-export default function ALPPriceChart() {
+export default function ALPPriceChart({
+  position,
+  isActive,
+  setIsActive,
+  handleMouseMove,
+  activeIndex,
+}: {
+  position: { x: number; y: number };
+  isActive: boolean;
+  setIsActive: (isActive: boolean) => void;
+  handleMouseMove: (e: CategoricalChartState) => void;
+  activeIndex: number;
+}) {
   const [chartData, setChartData] = useState<any>(null);
 
   const getPoolInfo = async () => {
@@ -61,6 +74,11 @@ export default function ALPPriceChart() {
       title={'ALP Price'}
       data={chartData}
       labels={[{ name: 'value' }]}
+      position={position}
+      isActive={isActive}
+      setIsActive={setIsActive}
+      handleMouseMove={handleMouseMove}
+      activeIndex={activeIndex}
     />
   );
 }
