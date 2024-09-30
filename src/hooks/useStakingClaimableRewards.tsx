@@ -15,13 +15,16 @@ export const useStakingClaimableRewards = (isALP: boolean) => {
     pendingAdxRewards: 0,
     pendingGenesisAdxRewards: 0,
   });
-  const connection = window.adrena.client.connection;
   const wallet = useSelector((s) => s.walletState.wallet);
 
   useEffect(() => {
     const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
 
-    if (!walletAddress || !window.adrena.client || !connection) {
+    if (
+      !walletAddress ||
+      !window.adrena.client ||
+      !window.adrena.client.connection
+    ) {
       return;
     }
 
@@ -37,6 +40,7 @@ export const useStakingClaimableRewards = (isALP: boolean) => {
 
         setRewards(simulatedRewards);
       } catch (error) {
+        console.log('error fetching rewards', error);
         setRewards({
           pendingUsdcRewards: 0,
           pendingAdxRewards: 0,
@@ -50,7 +54,14 @@ export const useStakingClaimableRewards = (isALP: boolean) => {
 
     return () => clearInterval(intervalId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connection, isALP, !!window.adrena.client, wallet]);
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!window.adrena.client.connection,
+    isALP,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!window.adrena.client,
+    wallet,
+  ]);
 
   return rewards;
 };

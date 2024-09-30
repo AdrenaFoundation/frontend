@@ -116,34 +116,36 @@ export default function StakeOverview({
         <div className="px-5">
           <div className="flex items-center mb-2">
             <h3 className="text-lg font-semibold">Pending Rewards</h3>
-            <Tippy content={
-              <div className="p-2">
-                {isALP ? (
-                  <>
-                    <p className="text-sm mb-1">
-                      ADX and USDC rewards automatically accrue at the end of
-                      every staking round.
-                    </p>
-                    <p className="text-sm">
-                      Locked ALP can be retrieved once the locking period is over,
-                      or by doing an early exit.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm mb-1">
-                      ADX rewards automatically accrue at the end of every staking
-                      round.
-                    </p>
-                    <p className="text-sm">
-                      Liquid staked ADX can be unstaked at any time. Locked ADX
-                      can be retrieved once the locking period is over, or by
-                      performing an early exit.
-                    </p>
-                  </>
-                )}
-              </div>
-            }>
+            <Tippy
+              content={
+                <div className="p-2">
+                  {isALP ? (
+                    <>
+                      <p className="text-sm mb-1">
+                        ADX and USDC rewards automatically accrue at the end of
+                        every staking round.
+                      </p>
+                      <p className="text-sm">
+                        Locked ALP can be retrieved once the locking period is
+                        over, or by doing an early exit.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm mb-1">
+                        ADX rewards automatically accrue at the end of every
+                        staking round.
+                      </p>
+                      <p className="text-sm">
+                        Liquid staked ADX can be unstaked at any time. Locked
+                        ADX can be retrieved once the locking period is over, or
+                        by performing an early exit.
+                      </p>
+                    </>
+                  )}
+                </div>
+              }
+            >
               <Image
                 src={infoIcon}
                 width={16}
@@ -152,49 +154,61 @@ export default function StakeOverview({
                 className="inline-block ml-2 cursor-pointer"
               />
             </Tippy>
+
+            <Button
+              variant="outline"
+              size="sm"
+              title={isClaimingRewards ? 'Claiming...' : 'Claim'}
+              className="px-5 ml-auto"
+              onClick={handleClaim}
+              disabled={
+                userPendingUsdcRewards === 0 &&
+                userPendingAdxRewards === 0 &&
+                pendingGenesisAdxRewards === 0
+              }
+            />
           </div>
-          <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg">
-            <div className="flex justify-between items-center">
-              <div className="flex flex-col space-y-1 flex-grow">
-                <div className="flex justify-between">
-                  <span className="text-txtfade">
-                    Your share of <span className="font-bold">{isALP ? '70%' : '20%'}</span> of platform revenues:
-                  </span>
-                  <div className="flex items-center">
-                    <FormatNumber nb={userPendingUsdcRewards} />
-                    <Image src={window.adrena.client.getUsdcToken().image} alt="USDC" width={16} height={16} className="ml-1" />
-                  </div>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-txtfade">LM emissions:</span>
-                  <div className="flex items-center">
-                    {pendingGenesisAdxRewards !== 0 && (
+
+          <div className="flex flex-col border bg-secondary rounded-xl shadow-lg">
+            <div className="flex justify-between items-center relative w-full overflow-hidden pt-4 pb-4 pl-8 pr-8">
+              <Image
+                src={window.adrena.client.getUsdcToken().image}
+                alt="USDC"
+                width={100}
+                height={100}
+                className="absolute opacity-20 -left-10"
+              />
+
+              <div className="flex items-center justify-center">
+                <FormatNumber nb={userPendingUsdcRewards} />
+                <div className="ml-1 text-sm mt-[2px]">USDC</div>
+              </div>
+
+              <div className="flex items-center justify-center">
+                <FormatNumber nb={userPendingAdxRewards} />
+                <div className="ml-1 text-sm mt-[2px]">ADX</div>
+              </div>
+
+              <Image
+                src={window.adrena.client.adxToken.image}
+                alt="ADX"
+                width={100}
+                height={100}
+                className="absolute opacity-20 -right-10"
+              />
+
+              {/* {pendingGenesisAdxRewards !== 0 && (
                       <>
-                        <span className="text-xs text-blue">(Genesis Bonus)</span>
-                        <FormatNumber nb={pendingGenesisAdxRewards} className="text-blue ml-1" />
+                        <span className="text-xs text-blue">
+                          (Genesis Bonus)
+                        </span>
+                        <FormatNumber
+                          nb={pendingGenesisAdxRewards}
+                          className="text-blue ml-1"
+                        />
                         <span className="text-txtfade ml-1">+</span>
                       </>
-                    )}
-                    <FormatNumber nb={userPendingAdxRewards} className="ml-1" />
-                    <Image src={window.adrena.client.adxToken.image} alt="ADX" width={16} height={16} className="ml-1" />
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <div className="h-8 w-px bg-bcolor mx-4"></div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  title={isClaimingRewards ? 'Claiming...' : 'Claim'}
-                  className="px-5"
-                  onClick={handleClaim}
-                  disabled={
-                    userPendingUsdcRewards === 0 &&
-                    userPendingAdxRewards === 0 &&
-                    pendingGenesisAdxRewards === 0
-                  }
-                />
-              </div>
+                    )} */}
             </div>
           </div>
 
@@ -205,14 +219,15 @@ export default function StakeOverview({
                 <Tippy
                   content={
                     <p className="font-medium">
-                      USDC rewards originates from platform revenues (70% ALP / 20%
-                      ADX).
+                      USDC rewards originates from platform revenues (70% ALP /
+                      20% ADX).
                       <br />
                       <br />
                       ADX rewards originates from the ADX inflation (see doc for
                       scheduled inflation).
                       <br />
-                      They are estimated based on the 6h round duration, but since this can vary this number is an estimate.
+                      They are estimated based on the 6h round duration, but
+                      since this can vary this number is an estimate.
                     </p>
                   }
                 >
@@ -228,10 +243,20 @@ export default function StakeOverview({
               </span>
               <div className="flex items-center gap-2">
                 <FormatNumber nb={roundPendingAdxRewards} />
-                <Image src={window.adrena.client.adxToken.image} alt="ADX" width={16} height={16} />
+                <Image
+                  src={window.adrena.client.adxToken.image}
+                  alt="ADX"
+                  width={16}
+                  height={16}
+                />
                 <span className="text-txtfade">|</span>
                 <FormatNumber nb={roundPendingUsdcRewards} />
-                <Image src={window.adrena.client.getUsdcToken().image} alt="USDC" width={16} height={16} />
+                <Image
+                  src={window.adrena.client.getUsdcToken().image}
+                  alt="USDC"
+                  width={16}
+                  height={16}
+                />
               </div>
             </div>
             <div className="flex items-center justify-between">

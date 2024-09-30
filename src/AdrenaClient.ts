@@ -2949,7 +2949,6 @@ export class AdrenaClient {
     for (const log of simulationLogs) {
       const usdcMatch = log.match(usdcPattern);
       if (usdcMatch) {
-        console.log('usdcMatch', usdcMatch[1]);
         usdcRewards = new BN(usdcMatch[1]);
       }
 
@@ -4411,10 +4410,9 @@ export class AdrenaClient {
     args: Parameters<Connection['simulateTransaction']>[0],
     retry = 0,
   ): void {
-    if (!this.readonlyConnection)
-      return reject(new Error('Connection missing'));
+    if (!this.connection) return reject(new Error('Connection missing'));
 
-    this.readonlyConnection
+    this.connection
       .simulateTransaction(args, {
         sigVerify: false,
       })
@@ -4428,7 +4426,7 @@ export class AdrenaClient {
           throw adrenaError;
         }
 
-        return result.value;
+        return resolve(result.value);
       })
       .catch((err) => {
         // Retry if blockhash expired
