@@ -31,7 +31,7 @@ export default function PositionsHistory({
   return (
     <div className="relative w-full h-full flex flex-col">
       <div
-        className="flex items-center justify-center grow"
+        className="flex justify-center grow"
         style={{
           minHeight: `${itemsPerPage * 49}px`,
         }}
@@ -41,7 +41,7 @@ export default function PositionsHistory({
             {positionsHistory ? (
               <>
                 {paginatedPositions.length > 0 ? (
-                  <div className="flex flex-col gap-1 grow">
+                  <div className="flex flex-col gap-3 grow">
                     {paginatedPositions.map((positionHistory) => (
                       <PositionHistoryBlock
                         key={positionHistory.position_id}

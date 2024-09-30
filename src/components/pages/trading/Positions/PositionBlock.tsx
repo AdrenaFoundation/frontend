@@ -194,7 +194,7 @@ export default function PositionBlock({
   return (
     <div
       className={twMerge(
-        'min-w-[300px] w-full flex flex-col border rounded-lg bg-secondary',
+        'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary',
         bodyClassName,
         borderColor,
       )}
