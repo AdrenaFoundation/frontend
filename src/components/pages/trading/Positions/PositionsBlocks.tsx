@@ -67,7 +67,7 @@ export default function PositionsBlocks({
       {positions && positions.length ? (
         <div
           className={twMerge(
-            'flex flex-col bg-first w-full h-full gap-1',
+            'flex flex-col bg-first w-full h-full gap-3',
             className,
           )}
         >

@@ -401,12 +401,11 @@ export function parseTransactionError(
       return match?.length ? match[1] : null;
     })();
 
+    if (safeJSONStringify(err) === '"BlockhashNotFound"') {
+      return 'BlockhashNotFound';
+    }
+
     Sentry.captureException(err);
-    console.debug('Error parsing: error:', safeJSONStringify(err));
-    console.debug('Error parsing: errCodeHex: ', errCodeHex);
-    console.debug('Error parsing: errCodeDecimals', errCodeDecimals);
-    console.debug('Error parsing: errName', errName);
-    console.debug('Error parsing: errMessage', errMessage);
 
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
       if (errName !== null && errName === name) return true;
@@ -712,4 +711,19 @@ export function estimateLockedStakeEarlyExitFee(
     nativeToUi(lockedStake.amount, stakeTokenMintDecimals) *
     calculateCappedFeeForExitEarly(lockedStake)
   );
+}
+
+export function formatDate(date: string | number | Date) {
+  const d = new Date(date);
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  const day = d.getDate();
+  let hour = d.getHours();
+
+  const minute = d.getMinutes().toString().padStart(2, '0');
+  const ampm = hour >= 12 ? 'pm' : 'am';
+
+  hour = hour % 12;
+  hour = hour ? hour : 12; // the hour '0' should be '12'
+
+  return `${month} ${day},${hour}:${minute}${ampm}`;
 }

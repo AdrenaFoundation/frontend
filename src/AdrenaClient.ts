@@ -4674,6 +4674,12 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
+    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 800_000,
+    });
+
+    preInstructions.push(modifyComputeUnits);
+
     if (
       this.connection &&
       !(await isATAInitialized(this.connection, rewardTokenAccount))

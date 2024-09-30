@@ -16,7 +16,6 @@ import { getNextStakingRoundStartTime } from '@/utils';
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
-import warningIcon from '../../../../public/images/Icons/warning.png';
 
 export default function StakeOverview({
   token,
@@ -136,34 +135,12 @@ export default function StakeOverview({
                 <span className="text-txtfade">USDC:</span>
                 <div className="flex items-center">
                   <FormatNumber nb={pendingUsdcRewards} suffix=" USDC" />
-                  {isALP && lockedStakes?.some((stake) => stake.isGenesis) && (
-                    <Tippy content="We found a bug with the Genesis Locked Stake that prevent users to claim. A fix is on the way in the backend. If you see this, that means you are concerned, and that all the rewards are SAFU, coming soon™️">
-                      <Image
-                        src={warningIcon}
-                        width={14}
-                        height={14}
-                        alt="info icon"
-                        className="ml-1 inline-block"
-                      />
-                    </Tippy>
-                  )}
                 </div>
               </div>
               <div className="flex justify-between">
                 <span className="text-txtfade">ADX:</span>
                 <div className="flex items-center">
                   <FormatNumber nb={pendingAdxRewards} suffix=" ADX" />
-                  {isALP && lockedStakes?.some((stake) => stake.isGenesis) && (
-                    <Tippy content="We found a bug with the Genesis Locked Stake that prevent users to claim. A fix is on the way in the backend. If you see this, that means you are concerned, and that all the rewards are SAFU, coming soon™️">
-                      <Image
-                        src={warningIcon}
-                        width={14}
-                        height={14}
-                        alt="info icon"
-                        className="ml-1 inline-block"
-                      />
-                    </Tippy>
-                  )}
                 </div>
               </div>
               {pendingGenesisAdxRewards > 0 && (
