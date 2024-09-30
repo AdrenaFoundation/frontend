@@ -11,7 +11,6 @@ export default function useStakingAccountCurrentRoundRewards(
   const [adxAmount, setAdxAmount] = useState<number | null>(null);
 
   const usdc = window.adrena.client.getUsdcToken();
-  const adx = window.adrena.client.adxToken;
 
   const usdcPda = window.adrena.client.getStakingRewardTokenVaultPda(
     window.adrena.client.getStakingPda(stakedTokenMint),
@@ -29,7 +28,11 @@ export default function useStakingAccountCurrentRoundRewards(
     setUsdcAmount(usdcBalance?.value.uiAmount ?? null);
     setAdxAmount(adxBalance?.value.uiAmount ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [usdcPda.toBase58(), adxPda.toBase58(), !!window.adrena.client.readonlyConnection]);
+  }, [
+    usdcPda.toBase58(),
+    adxPda.toBase58(),
+    !!window.adrena.client.readonlyConnection,
+  ]);
 
   useEffect(() => {
     fetchRewards();
@@ -37,17 +40,18 @@ export default function useStakingAccountCurrentRoundRewards(
     return () => clearInterval(interval);
   }, [fetchRewards]);
 
-  const usdcRewards = useMemo(() =>
-    usdcAmount !== null && tokenPrices[usdc.symbol]
-      ? usdcAmount * (tokenPrices[usdc.symbol] ?? 0)
-      : null,
-    [usdcAmount, tokenPrices, usdc.symbol]);
+  const usdcRewards = useMemo(
+    () =>
+      usdcAmount !== null && tokenPrices[usdc.symbol]
+        ? usdcAmount * (tokenPrices[usdc.symbol] ?? 0)
+        : null,
+    [usdcAmount, tokenPrices, usdc.symbol],
+  );
 
-  const adxRewards = useMemo(() =>
-    adxAmount !== null
-      ? adxAmount
-      : null,
-    [adxAmount]);
+  const adxRewards = useMemo(
+    () => (adxAmount !== null ? adxAmount : null),
+    [adxAmount],
+  );
 
   return { usdcRewards, adxRewards };
 }
