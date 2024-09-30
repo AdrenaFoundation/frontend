@@ -190,16 +190,16 @@ export default function StakeOverview({
               </div>
 
               <div className="flex items-center justify-center">
-                <div className="flex flex-col items-end">
+                <div className="flex flex-col items-end justify-center min-h-[3rem]">
                   <div className="flex items-center">
                     <FormatNumber nb={userPendingAdxRewards} />
                     <div className="ml-1 text-sm mt-[2px]">ADX</div>
                   </div>
-                  {pendingGenesisAdxRewards !== 0 && (
+                  {pendingGenesisAdxRewards !== 0 ? (
                     <div className="flex items-center text-xs mt-1">
                       <span className="text-blue mr-1">
                         Genesis Bonus
-                        <Tippy content={<p>Your tooltip content here</p>}>
+                        <Tippy content={<p>These rewards accrue over time for the first 180 days of the protocol. They are proportional to your participation in the Genesis Liquidity campaign. <br/><br/> Thank you for being an early supporter of the protocol! 🎊 🎁</p>}>
                           <Image
                             src={infoIcon}
                             width={12}
@@ -212,7 +212,7 @@ export default function StakeOverview({
                       <FormatNumber nb={pendingGenesisAdxRewards} className="text-blue" />
                       <span className="text-blue ml-1">ADX</span>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
@@ -229,20 +229,17 @@ export default function StakeOverview({
 
           {/* New side-by-side layout */}
           <div className="flex flex-col mt-2 gap-2 text-sm">
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <span className="txt-xxs text-txtfade">
                 <Tippy
                   content={
                     <p className="font-medium">
-                      USDC rewards originates from platform revenues (70% ALP /
-                      20% ADX).
+                      USDC rewards originate from platform revenues (70% ALP / 20% ADX).
                       <br />
                       <br />
-                      ADX rewards originates from the ADX inflation (see doc for
-                      scheduled inflation).
+                      ADX rewards originate from the ADX inflation (see doc for scheduled inflation).
                       <br />
-                      They are estimated based on the 6h round duration, but
-                      since this can vary this number is an estimate.
+                      This represents the current content of the vaults.
                     </p>
                   }
                 >
@@ -254,7 +251,7 @@ export default function StakeOverview({
                     className="inline-block mr-1"
                   />
                 </Tippy>
-                Next round&apos;s rewards:
+                Current content of the vaults:
               </span>
               <div className="flex items-center gap-2">
                 <FormatNumber nb={roundPendingAdxRewards} />
@@ -273,7 +270,7 @@ export default function StakeOverview({
                   height={16}
                 />
               </div>
-            </div>
+            </div> */}
             <div className="flex items-center justify-between">
               <span className="text-txtfade">
                 <Tippy
@@ -282,9 +279,10 @@ export default function StakeOverview({
                       Each round duration is ~6h (+/- some jitter due to Sablier
                       on chain decentralized execution).
                       <br />
-                      <br />
                       At the end of a round, the accrued rewards become
                       claimable, and a new round starts.
+                      <br />
+                      The ADX and ALP rounds are not necessarily in sync.
                     </p>
                   }
                 >
@@ -296,7 +294,7 @@ export default function StakeOverview({
                     className="inline-block mr-1"
                   />
                 </Tippy>
-                Distribution in:
+                New rewards unlocking in:
               </span>
               <div className="flex items-center">
                 {stakingAccount && (
@@ -310,15 +308,17 @@ export default function StakeOverview({
                     tippyText=""
                   />
                 )}
+                <div className="flex justify-end ml-2">
+                  <Link
+                    href="https://docs.adrena.xyz/about-adrena/staking"
+                    className="text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    learn more &gt;
+                  </Link>
+                </div>
               </div>
-            </div>
-            <div className="flex justify-end">
-              <Link
-                href="/monitoring?tab=Staking"
-                className="text-xs text-txtfade hover:underline opacity-40"
-              >
-                learn more &gt;
-              </Link>
             </div>
           </div>
         </div>
@@ -408,14 +408,6 @@ export default function StakeOverview({
 
           {/* New separator below liquid stake section */}
           <div className="h-[1px] bg-bcolor w-full my-5" />
-
-          {/* Info text remains at the bottom */}
-          <p className="opacity-25 text-center w-full p-5 pt-0">
-            The duration of a staking round is 6 hours. You can manually claim
-            rewards, else if you do not they will be automatically claimed every
-            ~8 days as the on chain space is limited (technical constraint, but
-            also feature).
-          </p>
         </div>
       </div>
     </div>
