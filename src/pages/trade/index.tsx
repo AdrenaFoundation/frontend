@@ -342,11 +342,11 @@ export default function Trade({
                 </span>
               </div>
               {history ? (
-                <div className="mt-1 w-full p-0 md:p-4 flex grow">
+                <div className="mt-1 w-full p-4 flex grow">
                   <PositionsHistory connected={connected} />
                 </div>
               ) : (
-                <div className="mt-1 w-full p-0 md:p-4">
+                <div className="mt-1 w-full p-4">
                   <Positions
                     connected={connected}
                     positions={positions}
