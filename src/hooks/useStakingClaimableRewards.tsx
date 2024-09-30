@@ -4,38 +4,53 @@ import { useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 
 interface RewardsData {
-    pendingUsdcRewards: number;
-    pendingAdxRewards: number;
-    pendingGenesisAdxRewards: number;
+  pendingUsdcRewards: number;
+  pendingAdxRewards: number;
+  pendingGenesisAdxRewards: number;
 }
 
 export const useStakingClaimableRewards = (isALP: boolean) => {
-    const [rewards, setRewards] = useState<RewardsData>({ pendingUsdcRewards: 0, pendingAdxRewards: 0, pendingGenesisAdxRewards: 0 });
-    const connection = window.adrena.client.connection;
-    const wallet = useSelector((s) => s.walletState.wallet);
-    const adrenaClient = window.adrena?.client;
+  const [rewards, setRewards] = useState<RewardsData>({
+    pendingUsdcRewards: 0,
+    pendingAdxRewards: 0,
+    pendingGenesisAdxRewards: 0,
+  });
+  const connection = window.adrena.client.connection;
+  const wallet = useSelector((s) => s.walletState.wallet);
 
-    useEffect(() => {
-        const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
-        if (!walletAddress || !adrenaClient || !connection) {
-            return;
-        }
+  useEffect(() => {
+    const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
 
-        const fetchRewards = async () => {
-            try {
-                const stakedTokenMint = isALP ? adrenaClient.lpTokenMint : adrenaClient.lmTokenMint;
-                const simulatedRewards = await adrenaClient.simulateClaimStakes(walletAddress, stakedTokenMint);
-                setRewards(simulatedRewards);
-            } catch (error) {
-                setRewards({ pendingUsdcRewards: 0, pendingAdxRewards: 0, pendingGenesisAdxRewards: 0 });
-            }
-        };
+    if (!walletAddress || !window.adrena.client || !connection) {
+      return;
+    }
 
-        fetchRewards();
-        const intervalId = setInterval(fetchRewards, 10000); // Refresh every 10 seconds
+    const fetchRewards = async () => {
+      try {
+        const stakedTokenMint = isALP
+          ? window.adrena.client.lpTokenMint
+          : window.adrena.client.lmTokenMint;
+        const simulatedRewards = await window.adrena.client.simulateClaimStakes(
+          walletAddress,
+          stakedTokenMint,
+        );
 
-        return () => clearInterval(intervalId);
-    }, [connection, isALP, adrenaClient, wallet]);
+        setRewards(simulatedRewards);
+      } catch (error) {
+        setRewards({
+          pendingUsdcRewards: 0,
+          pendingAdxRewards: 0,
+          pendingGenesisAdxRewards: 0,
+        });
+      }
+    };
 
-    return rewards;
+    fetchRewards();
+    const intervalId = setInterval(fetchRewards, 10000); // Refresh every 10 seconds
+
+    return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connection, isALP, !!window.adrena.client, wallet]);
+
+  return rewards;
 };

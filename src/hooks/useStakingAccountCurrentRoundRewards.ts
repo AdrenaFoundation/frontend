@@ -1,17 +1,11 @@
 import { PublicKey } from '@solana/web3.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-
-import { useSelector } from '@/store/store';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function useStakingAccountCurrentRoundRewards(
   stakedTokenMint: PublicKey,
 ): { usdcRewards: number | null; adxRewards: number | null } {
-  const tokenPrices = useSelector((s) => s.tokenPrices);
-
   const [usdcAmount, setUsdcAmount] = useState<number | null>(null);
   const [adxAmount, setAdxAmount] = useState<number | null>(null);
-
-  const usdc = window.adrena.client.getUsdcToken();
 
   const usdcPda = window.adrena.client.getStakingRewardTokenVaultPda(
     window.adrena.client.getStakingPda(stakedTokenMint),
@@ -42,18 +36,5 @@ export default function useStakingAccountCurrentRoundRewards(
     return () => clearInterval(interval);
   }, [fetchRewards]);
 
-  const usdcRewards = useMemo(
-    () =>
-      usdcAmount !== null && tokenPrices[usdc.symbol]
-        ? usdcAmount * (tokenPrices[usdc.symbol] ?? 0)
-        : null,
-    [usdcAmount, tokenPrices, usdc.symbol],
-  );
-
-  const adxRewards = useMemo(
-    () => (adxAmount !== null ? adxAmount : null),
-    [adxAmount],
-  );
-
-  return { usdcRewards, adxRewards };
+  return { usdcRewards: usdcAmount, adxRewards: adxAmount };
 }

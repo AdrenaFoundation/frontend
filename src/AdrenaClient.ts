@@ -12,11 +12,13 @@ import {
   PublicKey,
   RpcResponseAndContext,
   SignatureResult,
+  SimulatedTransactionResponse,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
   Transaction,
   TransactionInstruction,
   TransactionMessage,
+  TransactionReturnData,
   VersionedTransaction,
 } from '@solana/web3.js';
 
@@ -2902,8 +2904,7 @@ export class AdrenaClient {
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
       .wallet;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { instruction, accounts } = await this.buildClaimStakesInstruction(
+    const { instruction } = await this.buildClaimStakesInstruction(
       owner,
       stakedTokenMint,
     );
@@ -2917,15 +2918,10 @@ export class AdrenaClient {
     const versionedTransaction = new VersionedTransaction(messageV0);
 
     // Simulate the transaction
-    const result = await this.connection.simulateTransaction(
-      versionedTransaction,
-      {
-        sigVerify: false,
-      },
-    );
+    const result = await this.simulateTransactionStrong(versionedTransaction);
 
     // Parse the simulation result to extract reward amounts
-    const simulationLogs = result.value.logs;
+    const simulationLogs = result.logs;
     if (!simulationLogs) {
       throw new Error('Simulation failed to return logs');
     }
@@ -2934,11 +2930,11 @@ export class AdrenaClient {
     let usdcRewards: BN = new BN(0);
     let adxRewards: BN = new BN(0);
     let adxGenesisRewards: BN = new BN(0);
-    // console.log('logs', simulationLogs);
 
     let usdcPattern: RegExp;
     let adxPattern: RegExp;
     let adxGenesisRewardsPattern: RegExp;
+
     if (stakedTokenMint === this.alpToken.mint) {
       usdcPattern = /Transfer rewards amount: (\d+(\.\d+)?)/;
       adxPattern = /Transfer lm_rewards_token_amount: (\d+(\.\d+)?)/;
@@ -2968,7 +2964,6 @@ export class AdrenaClient {
       }
     }
 
-    // console.log('Parsed rewards:', { usdcRewards, adxRewards, adxGenesisRewards });
     return {
       pendingUsdcRewards: nativeToUi(usdcRewards, this.getUsdcToken().decimals),
       pendingAdxRewards: nativeToUi(adxRewards, 6),
@@ -3750,7 +3745,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructionsStrong<SwapAmountAndFees>(
+    return this.simulateInstructions<SwapAmountAndFees>(
       [instruction],
       'SwapAmountAndFees',
     );
@@ -3812,7 +3807,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructionsStrong<OpenPositionWithSwapAmountAndFees>(
+    return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
       [instruction],
       'OpenPositionWithSwapAmountAndFees',
     );
@@ -3862,7 +3857,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructionsStrong<NewPositionPricesAndFee>(
+    return this.simulateInstructions<NewPositionPricesAndFee>(
       [instruction],
       'NewPositionPricesAndFee',
     );
@@ -3902,7 +3897,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructionsStrong<ExitPriceAndFee>(
+    return this.simulateInstructions<ExitPriceAndFee>(
       [instruction],
       'ExitPriceAndFee',
     );
@@ -3949,7 +3944,7 @@ export class AdrenaClient {
       })
       .instruction();
 
-    return this.simulateInstructionsStrong<ProfitAndLoss>(
+    return this.simulateInstructions<ProfitAndLoss>(
       [instruction],
       'ProfitAndLoss',
     );
@@ -4003,7 +3998,7 @@ export class AdrenaClient {
         })
         .instruction();
 
-      return this.simulateInstructionsStrong<BN>([instruction], 'BN');
+      return this.simulateInstructions<BN>([instruction], 'BN');
     } catch {
       // Ignore errors - we have a lot of Blockhash expired errors
       return null;
@@ -4203,7 +4198,7 @@ export class AdrenaClient {
         .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
         .instruction();
 
-      return this.simulateInstructionsStrong<BN>([instruction], 'BN');
+      return this.simulateInstructions<BN>([instruction], 'BN');
     } catch {
       // Ignore errors - we have a lot of Blockhash expired errors
       return null;
@@ -4245,7 +4240,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .instruction();
 
-    return this.simulateInstructionsStrong<AmountAndFee>(
+    return this.simulateInstructions<AmountAndFee>(
       [instruction],
       'AmountAndFee',
     );
@@ -4286,7 +4281,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .instruction();
 
-    return this.simulateInstructionsStrong<AmountAndFee>(
+    return this.simulateInstructions<AmountAndFee>(
       [instruction],
       'AmountAndFee',
     );
@@ -4308,7 +4303,7 @@ export class AdrenaClient {
         .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
         .instruction();
 
-      return this.simulateInstructionsStrong<BN>([instruction], 'BN');
+      return this.simulateInstructions<BN>([instruction], 'BN');
     } catch {
       // Ignore errors - we have a lot of Blockhash expired errors
       return null;
@@ -4401,30 +4396,40 @@ export class AdrenaClient {
   }
 
   // Include a retry system to avoid blockhash expired errors
-  protected simulateInstructionsStrong<T>(
-    instructions: TransactionInstruction[],
-    typeName: string,
-  ): Promise<T> {
+  protected simulateTransactionStrong(
+    args: Parameters<Connection['simulateTransaction']>[0],
+  ): Promise<SimulatedTransactionResponse> {
     return new Promise((resolve, reject) => {
-      this.simulateInstructionsStrongPromise(
-        resolve,
-        reject,
-        instructions,
-        typeName,
-      );
+      this.simulateTransactionStrongPromise(resolve, reject, args);
     });
   }
 
   // Retry up to 10 times over 500ms if blockhash expired
-  protected simulateInstructionsStrongPromise<T>(
-    resolve: (value: T) => void,
+  protected simulateTransactionStrongPromise(
+    resolve: (value: SimulatedTransactionResponse) => void,
     reject: (err: Error) => void,
-    instructions: TransactionInstruction[],
-    typeName: string,
+    args: Parameters<Connection['simulateTransaction']>[0],
     retry = 0,
   ): void {
-    this.simulateInstructions(instructions, typeName)
-      .then((args) => resolve(args as T))
+    if (!this.readonlyConnection)
+      return reject(new Error('Connection missing'));
+
+    this.readonlyConnection
+      .simulateTransaction(args, {
+        sigVerify: false,
+      })
+      .then((result) => {
+        if (result.value.err) {
+          const adrenaError = parseTransactionError(
+            this.readonlyAdrenaProgram,
+            result.value.err,
+          );
+
+          throw adrenaError;
+        }
+
+        return result.value;
+      })
       .catch((err) => {
         // Retry if blockhash expired
         const errString =
@@ -4432,11 +4437,10 @@ export class AdrenaClient {
 
         if (errString.includes('BlockhashNotFound') && retry < 10) {
           setTimeout(() => {
-            this.simulateInstructionsStrongPromise(
+            this.simulateTransactionStrongPromise(
               resolve,
               reject,
-              instructions,
-              typeName,
+              args,
               retry + 1,
             );
           }, 50);
@@ -4465,22 +4469,9 @@ export class AdrenaClient {
 
     const versionedTransaction = new VersionedTransaction(messageV0);
 
-    const result = await this.readonlyConnection.simulateTransaction(
-      versionedTransaction,
-      {
-        sigVerify: false,
-      },
-    );
+    const result = await this.simulateTransactionStrong(versionedTransaction);
 
-    if (result.value.err) {
-      const adrenaError = parseTransactionError(
-        this.readonlyAdrenaProgram,
-        result.value.err,
-      );
-      throw adrenaError;
-    }
-
-    const returnDataEncoded = result.value.returnData?.data[0] ?? null;
+    const returnDataEncoded = result.returnData?.data[0] ?? null;
 
     if (returnDataEncoded == null) {
       throw new Error('View expected return data');
