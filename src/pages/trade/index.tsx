@@ -2,10 +2,12 @@ import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Positions from '@/components/pages/trading/Positions/Positions';
+import PositionsHistory from '@/components/pages/trading/Positions/PositionsHistory';
 import TradeComp from '@/components/pages/trading/TradeComp/TradeComp';
 import TradingChart from '@/components/pages/trading/TradingChart/TradingChart';
 import TradingChartHeader from '@/components/pages/trading/TradingChartHeader/TradingChartHeader';
@@ -81,6 +83,7 @@ export default function Trade({
   );
 
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
+  const [history, setHistory] = useState<boolean>(false);
 
   useEffect(() => {
     if (!tokenA || !tokenB) return;
@@ -273,30 +276,88 @@ export default function Trade({
         </div>
 
         {isBigScreen ? (
-          <div className="flex flex-col w-full">
-            <Positions
-              className="mt-4"
-              connected={connected}
-              positions={positions}
-              triggerPositionsReload={triggerPositionsReload}
-              triggerUserProfileReload={triggerUserProfileReload}
-              isBigScreen={isBigScreen}
-              userProfile={userProfile}
-            />
-          </div>
+          <>
+            <div className="bg-secondary mt-4 border rounded-lg">
+              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
+                <span
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    !history ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setHistory(false)}
+                >
+                  Open positions
+                </span>
+                <span className="opacity-20">|</span>
+                <span
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    history ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setHistory(true)}
+                >
+                  Trade history
+                </span>
+              </div>
+              {history ? (
+                <div className="flex flex-col w-full p-4">
+                  <PositionsHistory connected={connected} />
+                </div>
+              ) : (
+                <div className="flex flex-col w-full p-4">
+                  <Positions
+                    connected={connected}
+                    positions={positions}
+                    triggerPositionsReload={triggerPositionsReload}
+                    triggerUserProfileReload={triggerUserProfileReload}
+                    isBigScreen={isBigScreen}
+                    userProfile={userProfile}
+                  />
+                </div>
+              )}
+            </div>
+          </>
         ) : (
-          <div className="flex flex-row">
-            <Positions
-              className={
-                'mt-4 sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full'
-              }
-              connected={connected}
-              positions={positions}
-              triggerPositionsReload={triggerPositionsReload}
-              triggerUserProfileReload={triggerUserProfileReload}
-              isBigScreen={isBigScreen}
-              userProfile={userProfile}
-            />
+          <div className="flex">
+            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col">
+              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
+                <span
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    !history ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setHistory(false)}
+                >
+                  Positions
+                </span>
+                <span className="opacity-20">|</span>
+                <span
+                  className={twMerge(
+                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                    history ? 'opacity-100' : 'opacity-40',
+                  )}
+                  onClick={() => setHistory(true)}
+                >
+                  History
+                </span>
+              </div>
+              {history ? (
+                <div className="mt-1 w-full p-0 md:p-4 flex grow">
+                  <PositionsHistory connected={connected} />
+                </div>
+              ) : (
+                <div className="mt-1 w-full p-0 md:p-4">
+                  <Positions
+                    connected={connected}
+                    positions={positions}
+                    triggerPositionsReload={triggerPositionsReload}
+                    triggerUserProfileReload={triggerUserProfileReload}
+                    isBigScreen={isBigScreen}
+                    userProfile={userProfile}
+                  />
+                </div>
+              )}
+            </div>
             <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
               <TradeComp
                 selectedAction={selectedAction}
