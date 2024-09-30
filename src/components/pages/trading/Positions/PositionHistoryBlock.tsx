@@ -82,13 +82,13 @@ export default function PositionHistoryBlock({
   borderColor?: string;
   positionHistory: PositionHistoryExtended;
 }) {
-  const blockRef = useRef<HTMLDivElement>(null);
-  const isSmallSize = useResizeObserver(blockRef);
+  // const blockRef = useRef<HTMLDivElement>(null);
+  // const isSmallSize = useResizeObserver(blockRef);
   const symbol = getTokenSymbol(positionHistory.token.symbol);
   const img = getTokenImage(positionHistory.token);
 
   const renderPositionName = (className?: string) => (
-    <div className={twMerge('w-32', className)}>
+    <div className={twMerge(className)}>
       <div className="flex items-center h-full">
         <TokenImage symbol={symbol} image={img} />
         {window.location.pathname !== '/trade' ? (
@@ -119,7 +119,7 @@ export default function PositionHistoryBlock({
     </div>
   );
 
-  const renderPnl = () => <div className="w-32">{pnl}</div>;
+  const renderPnl = () => <div>{pnl}</div>;
 
   const renderExitDate = () => (
     <div className="flex flex-col items-center w-24">
@@ -318,32 +318,6 @@ export default function PositionHistoryBlock({
     );
   };
 
-  if (isSmallSize)
-    return (
-      <div
-        className={twMerge(
-          'flex flex-wrap justify-evenly w-full border rounded-lg border-dashed border-bcolor overflow-hidden mt-2 mb-2 pb-2 pt-2',
-          bodyClassName,
-          borderColor,
-        )}
-        key={positionHistory.position_id}
-        ref={blockRef}
-      >
-        <div>
-          {renderPositionName('items-center justify-center flex flex-col')}
-        </div>
-        <div>
-          {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
-        </div>
-        <div>
-          {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
-        </div>
-        <div>{renderPnl()}</div>
-        <div>{renderExitDate()}</div>
-        <div>{renderFeesPaid()}</div>
-      </div>
-    );
-
   return (
     <div
       className={twMerge(
@@ -352,19 +326,21 @@ export default function PositionHistoryBlock({
         borderColor,
       )}
       key={positionHistory.position_id}
-      ref={blockRef}
     >
-      <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr_auto] gap-2 px-5 py-2 opacity-90">
-        <div>{renderPositionName()}</div>
+      <div className="md:hidden border-b px-5 py-3 flex flex-row items-center justify-between">
+        {renderPositionName()} <div>{renderPnl()}</div>
+      </div>
+      <div className="flex flex-row justify-between flex-wrap gap-6 px-3 py-5 sm:py-2 opacity-90">
+        <div className="hidden md:block">{renderPositionName()}</div>
         <div>
           {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
         </div>
         <div>
           {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
         </div>
-        <div>{renderPnl()}</div>
+        <div className="hidden md:block">{renderPnl()}</div>
         <div>{renderExitDate()}</div>
-        <div className="ml-auto">{renderFeesPaid()}</div>
+        <div>{renderFeesPaid()}</div>
       </div>
     </div>
   );
