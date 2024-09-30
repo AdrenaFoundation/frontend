@@ -7,6 +7,7 @@ export default function useStakingAccountCurrentRoundRewards(
   stakedTokenMint: PublicKey,
 ): { usdcRewards: number | null; adxRewards: number | null } {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+
   const [usdcAmount, setUsdcAmount] = useState<number | null>(null);
   const [adxAmount, setAdxAmount] = useState<number | null>(null);
 
@@ -29,14 +30,15 @@ export default function useStakingAccountCurrentRoundRewards(
     setAdxAmount(adxBalance?.value.uiAmount ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    usdcPda.toBase58(),
-    adxPda.toBase58(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     !!window.adrena.client.readonlyConnection,
   ]);
 
   useEffect(() => {
     fetchRewards();
+
     const interval = setInterval(fetchRewards, 30000);
+
     return () => clearInterval(interval);
   }, [fetchRewards]);
 

@@ -694,14 +694,9 @@ export function calculateCappedFeeForExitEarly(
   lockedStake: LockedStakeExtended,
 ): number {
   const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber() * 1000;
-<<<<<<< Updated upstream
   const timeRemaining =
     lockedStake.lockDuration.toNumber() * 1000 - timeElapsed;
   const feeRate = timeRemaining / (lockedStake.lockDuration.toNumber() * 1000);
-=======
-  const timeRemaining = lockedStake.lockDuration.toNumber() - timeElapsed;
-  const feeRate = (timeRemaining / lockedStake.lockDuration.toNumber()) * 1000;
->>>>>>> Stashed changes
 
   // Cap the fee rate between the lower and upper caps
 
