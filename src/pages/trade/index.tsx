@@ -319,7 +319,7 @@ export default function Trade({
           </>
         ) : (
           <div className="flex">
-            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full">
+            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col">
               <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
                 <span
                   className={twMerge(
@@ -342,7 +342,7 @@ export default function Trade({
                 </span>
               </div>
               {history ? (
-                <div className="mt-1 w-full p-0 md:p-4">
+                <div className="mt-1 w-full p-0 md:p-4 flex grow">
                   <PositionsHistory connected={connected} />
                 </div>
               ) : (

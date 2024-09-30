@@ -29,9 +29,9 @@ export default function PositionsHistory({
   );
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full flex flex-col">
       <div
-        className="flex items-center justify-center"
+        className="flex items-center justify-center grow"
         style={{
           minHeight: `${itemsPerPage * 49}px`,
         }}
@@ -41,7 +41,7 @@ export default function PositionsHistory({
             {positionsHistory ? (
               <>
                 {paginatedPositions.length > 0 ? (
-                  <div className="flex-grow flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 grow">
                     {paginatedPositions.map((positionHistory) => (
                       <PositionHistoryBlock
                         key={positionHistory.position_id}
@@ -50,7 +50,7 @@ export default function PositionsHistory({
                     ))}
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center grow">
                     No trade history available.
                   </div>
                 )}
