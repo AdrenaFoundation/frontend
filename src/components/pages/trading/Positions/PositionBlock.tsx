@@ -102,7 +102,7 @@ export default function PositionBlock({
     </div>
   );
 
-  const [showAfterFees, setShowAfterFees] = useState(false); // State to manage fee display
+  const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
   const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
 
   const pnl = (
@@ -142,16 +142,17 @@ export default function PositionBlock({
           />
 
           <label className="flex items-center ml-2 cursor-pointer">
-            <Switch
-              className="mr-1"
-              checked={showAfterFees}
-              onChange={() => setShowAfterFees(!showAfterFees)}
-              size="small"
-            />
-            <span className="ml-1 text-xxs text-gray-600 whitespace-nowrap w-8 text-center">
-              {showAfterFees ? 'w/o fees' : 'w/ fees'}
-            </span>{' '}
-            {/* conditional text */}
+            <label className="flex items-center ml-1 cursor-pointer">
+              <Switch
+                className="mr-0.5"
+                checked={!showAfterFees}
+                onChange={() => setShowAfterFees(!showAfterFees)}
+                size="small"
+              />
+              <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
+                {showAfterFees ? 'w/o fees' : 'w/ fees'}
+              </span>
+            </label>
           </label>
         </div>
       ) : (
@@ -193,7 +194,7 @@ export default function PositionBlock({
   return (
     <div
       className={twMerge(
-        'min-w-[300px] w-full flex flex-col border rounded-lg bg-secondary',
+        'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary',
         bodyClassName,
         borderColor,
       )}
