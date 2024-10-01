@@ -330,16 +330,19 @@ export default function StakeOverview({
 
               <div className="flex items-center">
                 {stakingAccount && (
-                  <RemainingTimeToDate
-                    timestamp={
-                      getNextStakingRoundStartTime(
-                        stakingAccount.currentStakingRound.startTime,
-                      ).getTime() / 1000
-                    }
-                    className="inline-flex items-center text-nowrap"
-                    tippyText=""
-                  />
+                  <div className="flex items-center justify-center w-[7em]">
+                    <RemainingTimeToDate
+                      timestamp={
+                        getNextStakingRoundStartTime(
+                          stakingAccount.currentStakingRound.startTime,
+                        ).getTime() / 1000
+                      }
+                      className="inline-flex items-center text-nowrap"
+                      tippyText=""
+                    />
+                  </div>
                 )}
+
                 <div className="flex justify-end ml-2">
                   <Link
                     href="https://docs.adrena.xyz/about-adrena/staking"
