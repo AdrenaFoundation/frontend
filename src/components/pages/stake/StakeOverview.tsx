@@ -159,7 +159,7 @@ export default function StakeOverview({
             </Tippy>
 
             <Button
-              variant="primary"
+              variant="outline"
               size="sm"
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
               className={twMerge(
