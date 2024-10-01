@@ -198,21 +198,21 @@ export default function StakeOverview({
                   nb={userPendingUsdcRewards}
                   isDecimalDimmed={false}
                 />
-                <div className="ml-1 text-sm mt-[2px]">USDC</div>
+                <div className="ml-1 text-sm mt-[1px]">USDC</div>
               </div>
 
               <div className="flex items-center justify-center">
-                <div className="flex flex-col items-end justify-center min-h-[3rem]">
+                <div className="flex flex-col items-end justify-center min-h-[3em]">
                   <div className="flex items-center">
                     <FormatNumber
                       nb={userPendingAdxRewards}
                       isDecimalDimmed={false}
                     />
-                    <div className="ml-1 text-sm mt-[2px]">ADX</div>
+                    <div className="ml-1 text-sm mt-[1px]">ADX</div>
                   </div>
 
                   {pendingGenesisAdxRewards !== 0 ? (
-                    <div className="flex items-center text-xs mt-1">
+                    <div className="flex items-center justify-center text-xs mt-1">
                       <span className="text-blue mr-1">
                         {!isMobile ? 'Genesis Bonus' : null}
                         <Tippy
@@ -236,12 +236,13 @@ export default function StakeOverview({
                           />
                         </Tippy>
                       </span>
+
                       <FormatNumber
                         nb={pendingGenesisAdxRewards}
                         isDecimalDimmed={false}
                         className="text-blue"
                       />
-                      <span className="text-blue ml-1">ADX</span>
+                      <span className="text-blue ml-1 mt-[2px]">ADX</span>
                     </div>
                   ) : null}
                 </div>
@@ -326,6 +327,7 @@ export default function StakeOverview({
                 </Tippy>
                 New rewards unlocking in:
               </span>
+
               <div className="flex items-center">
                 {stakingAccount && (
                   <RemainingTimeToDate
