@@ -213,7 +213,7 @@ export default function StakeOverview({
 
                   {pendingGenesisAdxRewards !== 0 ? (
                     <div className="flex items-center justify-center text-xs mt-1">
-                      <span className="text-blue mr-1">
+                      <span className="mr-1">
                         {!isMobile ? 'Genesis Bonus' : null}
                         <Tippy
                           content={
@@ -240,9 +240,8 @@ export default function StakeOverview({
                       <FormatNumber
                         nb={pendingGenesisAdxRewards}
                         isDecimalDimmed={false}
-                        className="text-blue"
                       />
-                      <span className="text-blue ml-1 mt-[2px]">ADX</span>
+                      <span className="ml-1 mt-[2px]">ADX</span>
                     </div>
                   ) : null}
                 </div>
