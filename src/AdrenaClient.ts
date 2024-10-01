@@ -3983,29 +3983,22 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    try {
-      const ret = await this.adrenaProgram.views.getLiquidationPrice(
-        {
-          addCollateral,
-          removeCollateral,
-        },
-        {
-          accounts: {
-            cortex: AdrenaClient.cortexPda,
-            pool: this.mainPool.pubkey,
-            position: position.pubkey,
-            custody: custody.pubkey,
-            collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-            collateralCustody: collateralCustody.pubkey,
-          },
-        },
-      );
+    const instruction = await this.adrenaProgram.methods
+      .getLiquidationPrice({
+        addCollateral,
+        removeCollateral,
+      })
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        position: position.pubkey,
+        custody: custody.pubkey,
+        collateralCustodyOracle: collateralCustody.nativeObject.oracle,
+        collateralCustody: collateralCustody.pubkey,
+      })
+      .instruction();
 
-      return this.simulateInstructions<BN>([instruction], 'BN');
-    } catch {
-      // Ignore errors - we have a lot of Blockhash expired errors
-      return null;
-    }
+    return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
   // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
@@ -4191,20 +4184,16 @@ export class AdrenaClient {
       return null;
     }
 
-    try {
-      const ret = await this.adrenaProgram.views.getAssetsUnderManagement({
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      });
+    const instruction = await this.adrenaProgram.methods
+      .getAssetsUnderManagement()
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
 
-      return this.simulateInstructions<BN>([instruction], 'BN');
-    } catch {
-      // Ignore errors - we have a lot of Blockhash expired errors
-      return null;
-    }
+    return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
   // fees are expressed in collateral token
@@ -4294,21 +4283,17 @@ export class AdrenaClient {
       return null;
     }
 
-    try {
-      const ret = await this.adrenaProgram.views.getLpTokenPrice({
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          lpTokenMint: this.lpTokenMint,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      });
+    const instruction = await this.adrenaProgram.methods
+      .getLpTokenPrice()
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        lpTokenMint: this.lpTokenMint,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
 
-      return this.simulateInstructions<BN>([instruction], 'BN');
-    } catch {
-      // Ignore errors - we have a lot of Blockhash expired errors
-      return null;
-    }
+    return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
   /*
@@ -4475,6 +4460,12 @@ export class AdrenaClient {
 
     if (returnDataEncoded == null) {
       throw new Error('View expected return data');
+    }
+
+    if (typeName === 'BN') {
+      const bn = new BN(Buffer.from(returnDataEncoded, 'base64'), 'le');
+
+      return bn as unknown as T;
     }
 
     const returnData = base64.decode(returnDataEncoded);
