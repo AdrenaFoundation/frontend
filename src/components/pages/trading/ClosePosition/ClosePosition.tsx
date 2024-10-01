@@ -91,14 +91,14 @@ export default function ClosePosition({
         position.side === 'short'
           ? priceAndFee.price.mul(new BN(10_000)).div(new BN(10_000 - slippageInBps))
           : priceAndFee.price.mul(new BN(10_000 - slippageInBps)).div(new BN(10_000));
-      
+
       await (position.side === 'long'
         ? window.adrena.client.closePositionLong.bind(window.adrena.client)
         : window.adrena.client.closePositionShort.bind(window.adrena.client))({
-        position,
-        price: priceWithSlippage,
-        notification,
-      });
+          position,
+          price: priceWithSlippage,
+          notification,
+        });
 
       // Reload positions just after closing the popup
       setTimeout(() => {
@@ -147,6 +147,7 @@ export default function ClosePosition({
                 precision={4}
                 className="text-lg inline-block"
                 isDecimalDimmed={false}
+                isAbbreviate={position.collateralToken.symbol === 'BONK'}
               />
 
               <span className="text-lg ml-1">
@@ -249,9 +250,8 @@ export default function ClosePosition({
               nb={position.pnl && markPrice ? position.pnl : null}
               prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
-              className={`font-bold text-${
-                position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-              }`}
+              className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                }`}
               isDecimalDimmed={false}
             />
           </div>

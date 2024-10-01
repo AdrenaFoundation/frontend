@@ -352,3 +352,57 @@ export type AdrenaProgram = Program<Adrena>;
 
 export type AdxLockPeriod = 0 | 90 | 180 | 360 | 540;
 export type AlpLockPeriod = 90 | 180 | 360 | 540;
+
+export type PositionHistoryExtended = {
+  position_id: number;
+  user_id: number;
+  custody_id: number;
+  side: 'long' | 'short';
+  status: 'open' | 'close' | 'liquidate';
+  pubkey: PublicKey;
+  entry_price: number | null;
+  exit_price: number | null;
+  pnl: number;
+  entry_leverage: number;
+  entry_collateral_amount: number;
+  size: number;
+  entry_date: Date;
+  exit_date: Date | null;
+  fees: number;
+  borrow_fees: number;
+  exit_fees: number;
+  created_at: Date;
+  updated_at: Date | null;
+  profile: string;
+  symbol: string;
+  token_account_mint: string;
+  token: Token;
+  last_tx: string; // the close or liquidate tx
+  final_collateral_amount: number; // Final collateral amount before close
+};
+
+export type PositionHistoryApi = {
+  position_id: number;
+  user_id: number;
+  side: 'long' | 'short';
+  status: 'open' | 'close' | 'liquidate';
+  pubkey: string;
+  entry_price: number | null;
+  exit_price: number | null;
+  pnl: number;
+  entry_leverage: number;
+  entry_collateral_amount: number;
+  size: number;
+  entry_date: string; // ISO date string
+  exit_date: string | null; // ISO date string
+  fees: number;
+  borrow_fees: number;
+  exit_fees: number;
+  created_at: string; // ISO date string
+  updated_at: string | null; // ISO date string
+  profile: string;
+  symbol: string;
+  token_account_mint: string;
+  last_ix: string;
+  collateral_amount: number;
+};

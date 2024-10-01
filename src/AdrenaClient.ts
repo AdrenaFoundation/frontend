@@ -2879,11 +2879,11 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const { instruction } = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction(
       owner,
       stakedTokenMint,
     );
-    const transaction = new Transaction().add(instruction);
+    const transaction = await builder.transaction();
 
     return this.signAndExecuteTx(transaction, notification);
   }
@@ -2904,15 +2904,17 @@ export class AdrenaClient {
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
       .wallet;
 
-    const { instruction } = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction(
       owner,
       stakedTokenMint,
     );
 
+    const transaction = await builder.transaction();
+
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
-      instructions: [instruction],
+      instructions: transaction.instructions,
     }).compileToV0Message();
 
     const versionedTransaction = new VersionedTransaction(messageV0);
@@ -3961,7 +3963,7 @@ export class AdrenaClient {
     addCollateral: BN;
     removeCollateral: BN;
   }): Promise<BN | null> {
-    if (this.adrenaProgram === null) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
@@ -3982,20 +3984,22 @@ export class AdrenaClient {
     }
 
     try {
-      const instruction = await this.adrenaProgram.methods
-        .getLiquidationPrice({
+      const ret = await this.adrenaProgram.views.getLiquidationPrice(
+        {
           addCollateral,
           removeCollateral,
-        })
-        .accountsStrict({
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          position: position.pubkey,
-          custody: custody.pubkey,
-          collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-          collateralCustody: collateralCustody.pubkey,
-        })
-        .instruction();
+        },
+        {
+          accounts: {
+            cortex: AdrenaClient.cortexPda,
+            pool: this.mainPool.pubkey,
+            position: position.pubkey,
+            custody: custody.pubkey,
+            collateralCustodyOracle: collateralCustody.nativeObject.oracle,
+            collateralCustody: collateralCustody.pubkey,
+          },
+        },
+      );
 
       return this.simulateInstructions<BN>([instruction], 'BN');
     } catch {
@@ -4183,19 +4187,18 @@ export class AdrenaClient {
   }
 
   public async getAssetsUnderManagement(): Promise<BN | null> {
-    if (this.adrenaProgram === null) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
     try {
-      const instruction = await this.adrenaProgram.methods
-        .getAssetsUnderManagement()
-        .accountsStrict({
+      const ret = await this.adrenaProgram.views.getAssetsUnderManagement({
+        accounts: {
           cortex: AdrenaClient.cortexPda,
           pool: this.mainPool.pubkey,
-        })
-        .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
-        .instruction();
+        },
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+      });
 
       return this.simulateInstructions<BN>([instruction], 'BN');
     } catch {
@@ -4287,20 +4290,19 @@ export class AdrenaClient {
   }
 
   public async getLpTokenPrice(): Promise<BN | null> {
-    if (this.adrenaProgram === null) {
+    if (this.adrenaProgram === null || !this.adrenaProgram.views) {
       return null;
     }
 
     try {
-      const instruction = await this.adrenaProgram.methods
-        .getLpTokenPrice()
-        .accountsStrict({
+      const ret = await this.adrenaProgram.views.getLpTokenPrice({
+        accounts: {
           cortex: AdrenaClient.cortexPda,
           pool: this.mainPool.pubkey,
           lpTokenMint: this.lpTokenMint,
-        })
-        .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
-        .instruction();
+        },
+        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
+      });
 
       return this.simulateInstructions<BN>([instruction], 'BN');
     } catch {
@@ -4475,13 +4477,6 @@ export class AdrenaClient {
       throw new Error('View expected return data');
     }
 
-    // Force the type in case of BN
-    if (typeName === 'BN') {
-      const buffer = Buffer.from(returnDataEncoded, 'base64');
-
-      return new BN(buffer, 'le') as T;
-    }
-
     const returnData = base64.decode(returnDataEncoded);
 
     return this.readonlyAdrenaProgram.coder.types.decode(typeName, returnData);
@@ -4575,14 +4570,8 @@ export class AdrenaClient {
 
     let result: RpcResponseAndContext<SignatureResult> | null = null;
 
-    const latestBlockHash = await this.connection.getLatestBlockhash();
-
     try {
-      result = await this.connection.confirmTransaction({
-        blockhash: latestBlockHash.blockhash,
-        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-        signature: txHash,
-      });
+      result = await this.connection.confirmTransaction(txHash);
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txHash);
@@ -4692,11 +4681,10 @@ export class AdrenaClient {
     return this.tokens.find((token) => token.symbol === symbol) ?? null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async buildClaimStakesInstruction(
     owner: PublicKey,
     stakedTokenMint: PublicKey,
-  ): Promise<{ instruction: TransactionInstruction; accounts: any }> {
+  ) {
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
     const adrenaProgram = this.adrenaProgram;
 
@@ -4719,6 +4707,12 @@ export class AdrenaClient {
       this.getStakingLmRewardTokenVaultPda(staking);
 
     const preInstructions: TransactionInstruction[] = [];
+
+    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 800_000,
+    });
+
+    preInstructions.push(modifyComputeUnits);
 
     if (
       this.connection &&
@@ -4767,12 +4761,11 @@ export class AdrenaClient {
       genesisLock: this.genesisLockPda,
     };
 
-    const instruction = await adrenaProgram.methods
+    const builder = adrenaProgram.methods
       .claimStakes()
       .accountsStrict(accounts)
-      .preInstructions(preInstructions)
-      .instruction();
+      .preInstructions(preInstructions);
 
-    return { instruction, accounts };
+    return builder;
   }
 }
