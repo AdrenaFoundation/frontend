@@ -2877,11 +2877,11 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const { instruction } = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction(
       owner,
       stakedTokenMint,
     );
-    const transaction = new Transaction().add(instruction);
+    const transaction = await builder.transaction();
 
     return this.signAndExecuteTx(transaction, notification);
   }
@@ -2902,16 +2902,17 @@ export class AdrenaClient {
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
       .wallet;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { instruction, accounts } = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction(
       owner,
       stakedTokenMint,
     );
 
+    const transaction = await builder.transaction();
+
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
-      instructions: [instruction],
+      instructions: transaction.instructions,
     }).compileToV0Message();
 
     const versionedTransaction = new VersionedTransaction(messageV0);
@@ -4646,11 +4647,10 @@ export class AdrenaClient {
     return this.tokens.find((token) => token.symbol === symbol) ?? null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async buildClaimStakesInstruction(
     owner: PublicKey,
     stakedTokenMint: PublicKey,
-  ): Promise<{ instruction: TransactionInstruction; accounts: any }> {
+  ) {
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
     const adrenaProgram = this.adrenaProgram;
 
@@ -4727,12 +4727,11 @@ export class AdrenaClient {
       genesisLock: this.genesisLockPda,
     };
 
-    const instruction = await adrenaProgram.methods
+    const builder = adrenaProgram.methods
       .claimStakes()
       .accountsStrict(accounts)
-      .preInstructions(preInstructions)
-      .instruction();
+      .preInstructions(preInstructions);
 
-    return { instruction, accounts };
+    return builder;
   }
 }
