@@ -8,6 +8,7 @@ import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
 import { AlpLockPeriod, LockedStakeExtended } from '@/types';
@@ -44,7 +45,7 @@ export default function StakeOverview({
     earlyExit: boolean,
   ) => void;
   handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod) => void;
-  handleClickOnClaimRewards: () => void;
+  handleClickOnClaimRewards: () => Promise<void>;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   userPendingUsdcRewards: number;
   userPendingAdxRewards: number;
@@ -57,10 +58,12 @@ export default function StakeOverview({
   const stakingAccount = useStakingAccount(
     isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
+  const isMobile = useBetterMediaQuery('(max-width: 450px)');
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
 
   const handleClaim = async () => {
     setIsClaimingRewards(true);
+
     try {
       await handleClickOnClaimRewards();
     } finally {
@@ -160,10 +163,11 @@ export default function StakeOverview({
               size="sm"
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
               className={twMerge(
-                "px-5 ml-auto",
-                (userPendingUsdcRewards === 0 &&
-                userPendingAdxRewards === 0 &&
-                pendingGenesisAdxRewards === 0) && "opacity-50 cursor-not-allowed"
+                'px-5 ml-auto',
+                userPendingUsdcRewards === 0 &&
+                  userPendingAdxRewards === 0 &&
+                  pendingGenesisAdxRewards === 0 &&
+                  'opacity-50 cursor-not-allowed',
               )}
               onClick={handleClaim}
               disabled={
@@ -175,7 +179,12 @@ export default function StakeOverview({
           </div>
 
           <div className="flex flex-col border bg-secondary rounded-xl shadow-lg">
-            <div className="flex justify-between items-center relative w-full overflow-hidden pt-4 pb-4 pl-8 pr-8">
+            <div
+              className={twMerge(
+                'flex justify-between items-center relative w-full overflow-hidden pt-4 pb-4',
+                isMobile ? 'pl-6 pr-6' : 'pl-8 pr-8',
+              )}
+            >
               <Image
                 src={window.adrena.client.getUsdcToken().image}
                 alt="USDC"
@@ -185,21 +194,39 @@ export default function StakeOverview({
               />
 
               <div className="flex items-center justify-center">
-                <FormatNumber nb={userPendingUsdcRewards} />
+                <FormatNumber
+                  nb={userPendingUsdcRewards}
+                  isDecimalDimmed={false}
+                />
                 <div className="ml-1 text-sm mt-[2px]">USDC</div>
               </div>
 
               <div className="flex items-center justify-center">
                 <div className="flex flex-col items-end justify-center min-h-[3rem]">
                   <div className="flex items-center">
-                    <FormatNumber nb={userPendingAdxRewards} />
+                    <FormatNumber
+                      nb={userPendingAdxRewards}
+                      isDecimalDimmed={false}
+                    />
                     <div className="ml-1 text-sm mt-[2px]">ADX</div>
                   </div>
+
                   {pendingGenesisAdxRewards !== 0 ? (
                     <div className="flex items-center text-xs mt-1">
                       <span className="text-blue mr-1">
-                        Genesis Bonus
-                        <Tippy content={<p>These rewards accrue over time for the first 180 days of the protocol. They are proportional to your participation in the Genesis Liquidity campaign. <br/><br/> Thank you for being an early supporter of the protocol! 🎊 🎁</p>}>
+                        {!isMobile ? 'Genesis Bonus' : null}
+                        <Tippy
+                          content={
+                            <p>
+                              These rewards accrue over time for the first 180
+                              days of the protocol. They are proportional to
+                              your participation in the Genesis Liquidity
+                              campaign. <br />
+                              <br /> Thank you for being an early supporter of
+                              the protocol! 🎊 🎁
+                            </p>
+                          }
+                        >
                           <Image
                             src={infoIcon}
                             width={12}
@@ -209,7 +236,11 @@ export default function StakeOverview({
                           />
                         </Tippy>
                       </span>
-                      <FormatNumber nb={pendingGenesisAdxRewards} className="text-blue" />
+                      <FormatNumber
+                        nb={pendingGenesisAdxRewards}
+                        isDecimalDimmed={false}
+                        className="text-blue"
+                      />
                       <span className="text-blue ml-1">ADX</span>
                     </div>
                   ) : null}
@@ -223,7 +254,6 @@ export default function StakeOverview({
                 height={100}
                 className="absolute opacity-20 -right-10"
               />
-
             </div>
           </div>
 
