@@ -133,11 +133,11 @@ export default function LockedStakedElement({
 
       <div className="flex-col w-full flex items-center flex-none">
         <ul className="flex flex-row border-y border-bcolor w-full items-center flex-none">
-          <li className="flex-1 p-3">
+          <li className="flex-1 p-3 text-center">
             <p className="font-mono">
               {Math.floor((lockedStake.lmRewardMultiplier / 10_000) * 100)}%
             </p>
-            <p className="opacity-50">ADX</p>
+            <p className="opacity-50">ADX Emissions</p>
           </li>
 
           <li
@@ -145,7 +145,7 @@ export default function LockedStakedElement({
               lockedStake.voteMultiplier > 0
                 ? 'border-x px-5'
                 : 'border-l pl-5',
-              'flex-1 p-3 border-bcolor',
+              'flex-1 p-3 border-bcolor text-center',
             )}
           >
             <p className="font-mono">
@@ -155,11 +155,11 @@ export default function LockedStakedElement({
           </li>
 
           {lockedStake.voteMultiplier > 0 && (
-            <li className="flex-1 p-3">
+            <li className="flex-1 p-3 text-center">
               <p className="font-mono">
                 {Math.floor((lockedStake.voteMultiplier / 10_000) * 100)}%
               </p>
-              <p className="opacity-50">Voting power</p>
+              <p className="opacity-50">Voting Power</p>
             </li>
           )}
         </ul>

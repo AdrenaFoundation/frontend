@@ -15,6 +15,7 @@ import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useStakingAccount from '@/hooks/useStakingAccount';
+import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
@@ -69,8 +70,10 @@ export default function Stake({
     useSelector((s) => s.tokenPrices?.[window.adrena.client.alpToken.symbol]) ??
     null;
 
-  const { stakingAccounts, triggerWalletStakingAccountsReload } =
-    useWalletStakingAccounts();
+  const {
+    stakingAccounts,
+    triggerWalletStakingAccountsReload,
+  } = useWalletStakingAccounts();
 
   const [adxDetails, setAdxDetails] = useState<ADXTokenDetails>({
     balance: null,
@@ -95,14 +98,16 @@ export default function Stake({
     'ADX' | 'ALP' | null
   >(null);
 
-  const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
-    useState<boolean>(false);
+  const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] = useState<
+    boolean
+  >(false);
   const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
     null,
   );
 
-  const [activeRedeemLiquidADX, setActiveRedeemLiquidADX] =
-    useState<boolean>(false);
+  const [activeRedeemLiquidADX, setActiveRedeemLiquidADX] = useState<boolean>(
+    false,
+  );
 
   const [lockPeriod, setLockPeriod] = useState<AdxLockPeriod | AlpLockPeriod>(
     DEFAULT_LOCKED_STAKE_DURATION,
@@ -122,11 +127,13 @@ export default function Stake({
     ? new PublicKey(wallet.walletAddress)
     : null;
 
-  const adxLockedStakes: LockedStakeExtended[] | null =
-    getAdxLockedStakes(stakingAccounts);
+  const adxLockedStakes: LockedStakeExtended[] | null = getAdxLockedStakes(
+    stakingAccounts,
+  );
 
-  const alpLockedStakes: LockedStakeExtended[] | null =
-    getAlpLockedStakes(stakingAccounts);
+  const alpLockedStakes: LockedStakeExtended[] | null = getAlpLockedStakes(
+    stakingAccounts,
+  );
 
   const stakeAmount = async () => {
     if (!owner) {
@@ -219,8 +226,9 @@ export default function Stake({
 
     if (!activeRedeemLiquidADX) return;
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Unstake').fire();
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Unstake',
+    ).fire();
 
     const stakedTokenMint = window.adrena.client.adxToken.mint;
 
@@ -254,8 +262,9 @@ export default function Stake({
 
     if (earlyExit && !finalizeLockedStakeRedeem) return;
 
-    const notification =
-      MultiStepNotification.newForRegularTransaction('Unstake').fire();
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Unstake',
+    ).fire();
 
     const stakedTokenMint =
       lockedStake.tokenSymbol === 'ADX'
@@ -430,15 +439,28 @@ export default function Stake({
   const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
 
   const nextStakingRoundTimeAlp = alpStakingAccount
-    ? getNextStakingRoundStartTime(alpStakingAccount.currentStakingRound.startTime).getTime()
+    ? getNextStakingRoundStartTime(
+      alpStakingAccount.currentStakingRound.startTime,
+    ).getTime()
     : null;
 
   const nextStakingRoundTimeAdx = adxStakingAccount
-    ? getNextStakingRoundStartTime(adxStakingAccount.currentStakingRound.startTime).getTime()
+    ? getNextStakingRoundStartTime(
+      adxStakingAccount.currentStakingRound.startTime,
+    ).getTime()
     : null;
 
+  // The rewards pending for the user
   const adxRewards = useStakingClaimableRewards(false); // For ADX
-  const alpRewards = useStakingClaimableRewards(true);  // For ALP
+  const alpRewards = useStakingClaimableRewards(true); // For ALP
+
+  // The rewards pending collection in the current round
+  const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+    window.adrena.client.lpTokenMint,
+  );
+  const adxStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+    window.adrena.client.lmTokenMint,
+  );
 
   useEffect(() => {
     setAdxDetails({
@@ -587,6 +609,7 @@ export default function Stake({
             totalRedeemableLockedStake={getTotalRedeemableLockedStake('ALP')}
             lockedStakes={alpLockedStakes}
             handleLockedStakeRedeem={handleLockedStakeRedeem}
+            handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
             handleClickOnStakeMore={(initialLockPeriod: AlpLockPeriod) => {
               setLockPeriod(initialLockPeriod);
               setActiveStakingToken('ALP');
@@ -597,9 +620,10 @@ export default function Stake({
               setLockedStake(lockedStake);
               setFinalizeLockedStakeRedeem(true);
             }}
-            handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
-            pendingUsdcRewards={alpRewards.pendingUsdcRewards}
-            pendingAdxRewards={alpRewards.pendingAdxRewards}
+            userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
+            userPendingAdxRewards={alpRewards.pendingAdxRewards}
+            roundPendingUsdcRewards={alpStakingCurrentRoundRewards.usdcRewards ?? 0}
+            roundPendingAdxRewards={alpStakingCurrentRoundRewards.adxRewards ?? 0}
             pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
             nextRoundTime={nextStakingRoundTimeAlp ?? 0}
           />
@@ -611,6 +635,7 @@ export default function Stake({
             totalRedeemableLockedStake={getTotalRedeemableLockedStake('ADX')}
             lockedStakes={adxLockedStakes}
             handleLockedStakeRedeem={handleLockedStakeRedeem}
+            handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
             handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
               setLockPeriod(initialLockPeriod);
               setActiveStakingToken('ADX');
@@ -622,9 +647,10 @@ export default function Stake({
               setLockedStake(lockedStake);
               setFinalizeLockedStakeRedeem(true);
             }}
-            handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
-            pendingUsdcRewards={adxRewards.pendingUsdcRewards}
-            pendingAdxRewards={adxRewards.pendingAdxRewards}
+            userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
+            userPendingAdxRewards={adxRewards.pendingAdxRewards}
+            roundPendingUsdcRewards={adxStakingCurrentRoundRewards.usdcRewards ?? 0}
+            roundPendingAdxRewards={adxStakingCurrentRoundRewards.adxRewards ?? 0}
             pendingGenesisAdxRewards={adxRewards.pendingGenesisAdxRewards}
             nextRoundTime={nextStakingRoundTimeAdx ?? 0}
           />

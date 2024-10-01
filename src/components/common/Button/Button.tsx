@@ -66,7 +66,7 @@ export default function Button({
       'bg-secondary text-white opacity-90 hover:opacity-100 font-medium',
     danger: 'bg-red text-white hover:bg-red font-medium',
     text: 'opacity-50 text-white hover:opacity-100 font-medium',
-    outline: 'border text-white hover:bg-bcolor font-medium',
+    outline: 'border-2 text-white hover:bg-bcolor font-medium',
     lightbg: 'bg-[#1f2c3c] text-white hover:text-txt',
   };
 
@@ -91,7 +91,7 @@ export default function Button({
 
         disabled || onClickInProgress
           ? variantsBgDisabledOpacity[variant]
-          : null,
+          : variants[variant],
         'transition duration-300',
       )}
       disabled={disabled || onClickInProgress}

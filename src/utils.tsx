@@ -528,13 +528,19 @@ export function formatMilliseconds(milliseconds: number): string {
   }
 
   if (hours || formatted.length)
-    formatted = `${formatted}${formatted.length ? ' ' : ''}${hours}h`;
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${
+      hours < 10 ? '0' : ''
+    }${hours}h`;
 
   if (minutes || formatted.length)
-    formatted = `${formatted}${formatted.length ? ' ' : ''}${minutes}m`;
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${
+      minutes < 10 ? '0' : ''
+    }${minutes}m`;
 
   if (seconds || formatted.length)
-    formatted = `${formatted}${formatted.length ? ' ' : ''}${seconds}s`;
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${
+      seconds < 10 ? '0' : ''
+    }${seconds}s`;
 
   return formatted;
 }
