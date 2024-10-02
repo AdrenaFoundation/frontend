@@ -6,10 +6,12 @@ import { formatPriceInfo } from '@/utils';
 
 export default function AllTimeFees({
   mainPool,
+  className,
   titleClassName,
   bodyClassName,
 }: {
   mainPool: PoolExtended;
+  className?: string;
   titleClassName?: string;
   bodyClassName?: string;
 }) {
@@ -17,7 +19,10 @@ export default function AllTimeFees({
     <StyledContainer
       headerClassName="text-center justify-center"
       title="ALL TIME FEES"
-      className="grow flex items-center min-w-[22em] w-[22em]"
+      className={twMerge(
+        'grow flex items-center min-w-[22em] w-[22em]',
+        className,
+      )}
       titleClassName={titleClassName}
     >
       <div

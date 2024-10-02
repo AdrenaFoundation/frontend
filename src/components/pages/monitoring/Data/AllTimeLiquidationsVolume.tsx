@@ -6,10 +6,12 @@ import { formatPriceInfo } from '@/utils';
 
 export default function AllTimeLiquidationsVolume({
   mainPool,
+  className,
   titleClassName,
   bodyClassName,
 }: {
   mainPool: PoolExtended;
+  className?: string;
   titleClassName?: string;
   bodyClassName?: string;
 }) {
@@ -17,7 +19,10 @@ export default function AllTimeLiquidationsVolume({
     <StyledContainer
       headerClassName="text-center justify-center"
       title="All Time Liquidations Volume"
-      className="grow flex items-center min-w-[22em] w-[22em]"
+      className={twMerge(
+        'grow flex items-center min-w-[22em] w-[22em]',
+        className,
+      )}
       titleClassName={titleClassName}
     >
       <div
