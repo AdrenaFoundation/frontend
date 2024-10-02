@@ -16,9 +16,11 @@ import AllTimeTradingVolume from '@/components/pages/monitoring/Data/AllTimeTrad
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
-const className = 'w-[17em] min-w-[17em] border-0 p-2 pb-4';
-const titleClassName = 'text-sm opacity-50 font-boldy';
-const bodyClassName = 'text-[1.5rem] font-bold h-4';
+const className =
+  'w-[12em] min-w-[12em] lg:w-[12em] lg:min-w-[12em] xl:w-[17em] xl:min-w-[17em] border-0 p-2 pb-4';
+const titleClassName = 'text-xs lg:text-sm opacity-50 font-boldy';
+const bodyClassName =
+  'text-[1rem] lg:text-[1.3rem] xl:text-[1.5rem] font-bold h-4';
 
 export default function BasicMonitoring({
   mainPool,
