@@ -139,7 +139,10 @@ export type PoolExtended = {
   longPositions: number;
   shortPositions: number;
   aumUsd: number;
-  totalVolume: number;
+  totalSwapVolume: number;
+  totalAddRemoveLiquidityVolume: number;
+  totalTradingVolume: number; // total open volume
+  totalLiquidationVolume: number;
   oiLongUsd: number;
   oiShortUsd: number;
   nbOpenLongPositions: number;
