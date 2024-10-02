@@ -12,6 +12,7 @@ import {
   PublicKey,
   RpcResponseAndContext,
   SignatureResult,
+  SimulatedTransactionResponse,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
   Transaction,
@@ -274,7 +275,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) {}
+  ) { }
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
     this.readonlyAdrenaProgram = program;
@@ -426,14 +427,14 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-              name: string;
-              color: string;
-              symbol: string;
-              image: ImageRef;
-              coingeckoId: string;
-              decimals: number;
-              pythPriceUpdateV2: PublicKey;
-            }
+            name: string;
+            color: string;
+            symbol: string;
+            image: ImageRef;
+            coingeckoId: string;
+            decimals: number;
+            pythPriceUpdateV2: PublicKey;
+          }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -495,12 +496,49 @@ export class AdrenaClient {
           nativeToUi(custody.nativeObject.shortPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
-      totalVolume: custodies.reduce(
+      totalSwapVolume: custodies.reduce(
         (tmp, custody) =>
           tmp +
-          Object.values(custody.nativeObject.volumeStats).reduce(
-            (total, volume) => total + nativeToUi(volume, USD_DECIMALS),
-            0,
+          nativeToUi(custody.nativeObject.volumeStats.swapUsd, USD_DECIMALS),
+        0,
+      ),
+      totalAddRemoveLiquidityVolume: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          nativeToUi(
+            custody.nativeObject.volumeStats.addLiquidityUsd,
+            USD_DECIMALS,
+          ) +
+          nativeToUi(
+            custody.nativeObject.volumeStats.removeLiquidityUsd,
+            USD_DECIMALS,
+          ),
+        0,
+      ),
+      totalTradingVolume: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          nativeToUi(
+            custody.nativeObject.volumeStats.openPositionUsd,
+            USD_DECIMALS,
+          ) +
+          nativeToUi(
+            custody.nativeObject.volumeStats.closePositionUsd,
+            USD_DECIMALS,
+          ) +
+          nativeToUi(
+            custody.nativeObject.volumeStats.liquidationUsd,
+            USD_DECIMALS,
+          )
+        ,
+        0,
+      ),
+      totalLiquidationVolume: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          nativeToUi(
+            custody.nativeObject.volumeStats.liquidationUsd,
+            USD_DECIMALS,
           ),
         0,
       ),
@@ -1785,13 +1823,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-            swappedTokenDecimals: tokenB.decimals,
-            swappedTokenPrice: tokenBPrice,
-          }
+          swappedTokenDecimals: tokenB.decimals,
+          swappedTokenPrice: tokenBPrice,
+        }
         : {
-            swappedTokenDecimals: usdcToken.decimals,
-            swappedTokenPrice: usdcTokenPrice,
-          };
+          swappedTokenDecimals: usdcToken.decimals,
+          swappedTokenPrice: usdcTokenPrice,
+        };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1974,9 +2012,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-      position,
-      collateralAmount: addedCollateral,
-    })
+        position,
+        collateralAmount: addedCollateral,
+      })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2877,11 +2915,11 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    const { instruction } = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction(
       owner,
       stakedTokenMint,
     );
-    const transaction = new Transaction().add(instruction);
+    const transaction = await builder.transaction();
 
     return this.signAndExecuteTx(transaction, notification);
   }
@@ -2902,30 +2940,26 @@ export class AdrenaClient {
     const wallet = (this.readonlyAdrenaProgram.provider as AnchorProvider)
       .wallet;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { instruction, accounts } = await this.buildClaimStakesInstruction(
+    const builder = await this.buildClaimStakesInstruction(
       owner,
       stakedTokenMint,
     );
 
+    const transaction = await builder.transaction();
+
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
-      instructions: [instruction],
+      instructions: transaction.instructions,
     }).compileToV0Message();
 
     const versionedTransaction = new VersionedTransaction(messageV0);
 
     // Simulate the transaction
-    const result = await this.connection.simulateTransaction(
-      versionedTransaction,
-      {
-        sigVerify: false,
-      },
-    );
+    const result = await this.simulateTransactionStrong(versionedTransaction);
 
     // Parse the simulation result to extract reward amounts
-    const simulationLogs = result.value.logs;
+    const simulationLogs = result.logs;
     if (!simulationLogs) {
       throw new Error('Simulation failed to return logs');
     }
@@ -2934,11 +2968,11 @@ export class AdrenaClient {
     let usdcRewards: BN = new BN(0);
     let adxRewards: BN = new BN(0);
     let adxGenesisRewards: BN = new BN(0);
-    // console.log('logs', simulationLogs);
 
     let usdcPattern: RegExp;
     let adxPattern: RegExp;
     let adxGenesisRewardsPattern: RegExp;
+
     if (stakedTokenMint === this.alpToken.mint) {
       usdcPattern = /Transfer rewards amount: (\d+(\.\d+)?)/;
       adxPattern = /Transfer lm_rewards_token_amount: (\d+(\.\d+)?)/;
@@ -2953,7 +2987,6 @@ export class AdrenaClient {
     for (const log of simulationLogs) {
       const usdcMatch = log.match(usdcPattern);
       if (usdcMatch) {
-        console.log('usdcMatch', usdcMatch[1]);
         usdcRewards = new BN(usdcMatch[1]);
       }
 
@@ -2968,7 +3001,6 @@ export class AdrenaClient {
       }
     }
 
-    // console.log('Parsed rewards:', { usdcRewards, adxRewards, adxGenesisRewards });
     return {
       pendingUsdcRewards: nativeToUi(usdcRewards, this.getUsdcToken().decimals),
       pendingAdxRewards: nativeToUi(adxRewards, 6),
@@ -3987,29 +4019,22 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
-    try {
-      const ret = await this.adrenaProgram.views.getLiquidationPrice(
-        {
-          addCollateral,
-          removeCollateral,
-        },
-        {
-          accounts: {
-            cortex: AdrenaClient.cortexPda,
-            pool: this.mainPool.pubkey,
-            position: position.pubkey,
-            custody: custody.pubkey,
-            collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-            collateralCustody: collateralCustody.pubkey,
-          },
-        },
-      );
+    const instruction = await this.adrenaProgram.methods
+      .getLiquidationPrice({
+        addCollateral,
+        removeCollateral,
+      })
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        position: position.pubkey,
+        custody: custody.pubkey,
+        collateralCustodyOracle: collateralCustody.nativeObject.oracle,
+        collateralCustody: collateralCustody.pubkey,
+      })
+      .instruction();
 
-      return ret;
-    } catch {
-      // Ignore errors - we have a lot of Blockhash expired errors
-      return null;
-    }
+    return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
   // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
@@ -4081,9 +4106,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                    position.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
+                  position.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4195,20 +4220,16 @@ export class AdrenaClient {
       return null;
     }
 
-    try {
-      const ret = await this.adrenaProgram.views.getAssetsUnderManagement({
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      });
+    const instruction = await this.adrenaProgram.methods
+      .getAssetsUnderManagement()
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
 
-      return ret;
-    } catch {
-      // Ignore errors - we have a lot of Blockhash expired errors
-      return null;
-    }
+    return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
   // fees are expressed in collateral token
@@ -4298,21 +4319,17 @@ export class AdrenaClient {
       return null;
     }
 
-    try {
-      const ret = await this.adrenaProgram.views.getLpTokenPrice({
-        accounts: {
-          cortex: AdrenaClient.cortexPda,
-          pool: this.mainPool.pubkey,
-          lpTokenMint: this.lpTokenMint,
-        },
-        remainingAccounts: this.prepareCustodiesForRemainingAccounts(),
-      });
+    const instruction = await this.adrenaProgram.methods
+      .getLpTokenPrice()
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        lpTokenMint: this.lpTokenMint,
+      })
+      .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
+      .instruction();
 
-      return ret;
-    } catch {
-      // Ignore errors - we have a lot of Blockhash expired errors
-      return null;
-    }
+    return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
   /*
@@ -4400,6 +4417,58 @@ export class AdrenaClient {
     return custody;
   }
 
+  // Include a retry system to avoid blockhash expired errors
+  protected simulateTransactionStrong(
+    args: Parameters<Connection['simulateTransaction']>[0],
+  ): Promise<SimulatedTransactionResponse> {
+    return new Promise((resolve, reject) => {
+      this.simulateTransactionStrongPromise(resolve, reject, args);
+    });
+  }
+
+  // Retry up to 10 times over 500ms if blockhash expired
+  protected simulateTransactionStrongPromise(
+    resolve: (value: SimulatedTransactionResponse) => void,
+    reject: (err: Error) => void,
+    args: Parameters<Connection['simulateTransaction']>[0],
+    retry = 0,
+  ): void {
+    if (!this.connection) return reject(new Error('Connection missing'));
+
+    this.connection
+      .simulateTransaction(args, {
+        sigVerify: false,
+      })
+      .then((result) => {
+        if (result.value.err) {
+          const adrenaError = parseTransactionError(
+            this.readonlyAdrenaProgram,
+            result.value.err,
+          );
+
+          throw adrenaError;
+        }
+
+        return resolve(result.value);
+      })
+      .catch((err) => {
+        // Retry if blockhash expired
+        const errString =
+          err instanceof AdrenaTransactionError ? err.errorString : String(err);
+
+        if (errString.includes('BlockhashNotFound') && retry < 10) {
+          setTimeout(() => {
+            this.simulateTransactionStrongPromise(
+              resolve,
+              reject,
+              args,
+              retry + 1,
+            );
+          }, 50);
+        }
+      });
+  }
+
   // Used to bypass "views" to workaround anchor bug with .views having CPI calls
   protected async simulateInstructions<T>(
     instructions: TransactionInstruction[],
@@ -4421,25 +4490,18 @@ export class AdrenaClient {
 
     const versionedTransaction = new VersionedTransaction(messageV0);
 
-    const result = await this.readonlyConnection.simulateTransaction(
-      versionedTransaction,
-      {
-        sigVerify: false,
-      },
-    );
+    const result = await this.simulateTransactionStrong(versionedTransaction);
 
-    if (result.value.err) {
-      const adrenaError = parseTransactionError(
-        this.readonlyAdrenaProgram,
-        result.value.err,
-      );
-      throw adrenaError;
-    }
-
-    const returnDataEncoded = result.value.returnData?.data[0] ?? null;
+    const returnDataEncoded = result.returnData?.data[0] ?? null;
 
     if (returnDataEncoded == null) {
       throw new Error('View expected return data');
+    }
+
+    if (typeName === 'BN') {
+      const bn = new BN(Buffer.from(returnDataEncoded, 'base64'), 'le');
+
+      return bn as unknown as T;
     }
 
     const returnData = base64.decode(returnDataEncoded);
@@ -4646,11 +4708,10 @@ export class AdrenaClient {
     return this.tokens.find((token) => token.symbol === symbol) ?? null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async buildClaimStakesInstruction(
     owner: PublicKey,
     stakedTokenMint: PublicKey,
-  ): Promise<{ instruction: TransactionInstruction; accounts: any }> {
+  ) {
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
     const adrenaProgram = this.adrenaProgram;
 
@@ -4727,12 +4788,11 @@ export class AdrenaClient {
       genesisLock: this.genesisLockPda,
     };
 
-    const instruction = await adrenaProgram.methods
+    const builder = adrenaProgram.methods
       .claimStakes()
       .accountsStrict(accounts)
-      .preInstructions(preInstructions)
-      .instruction();
+      .preInstructions(preInstructions);
 
-    return { instruction, accounts };
+    return builder;
   }
 }
