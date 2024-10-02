@@ -14,7 +14,7 @@ interface FeesPaidTooltipProps {
 
 const FeesPaidTooltip: React.FC<FeesPaidTooltipProps> = ({ entryFees, exitFees, borrowFees, children }) => {
   const content = (
-    <div className="p-2">
+    <div className="">
       <div className="flex justify-between">
         <span>Entry Fee:</span>
         <span className="ml-4 inline-block">
@@ -37,7 +37,7 @@ const FeesPaidTooltip: React.FC<FeesPaidTooltipProps> = ({ entryFees, exitFees, 
   );
 
   return (
-    <Tippy content={content}>
+    <Tippy content={content} placement="auto">
       {children}
     </Tippy>
   );
