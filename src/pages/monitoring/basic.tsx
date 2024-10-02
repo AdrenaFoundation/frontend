@@ -9,14 +9,39 @@ import FeesChart from '@/components/pages/global/Fees/FeesChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import UnrealizedPnlChart from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
+import AllTimeFees from '@/components/pages/monitoring/Data/AllTimeFees';
+import AllTimeVolume from '@/components/pages/monitoring/Data/AllTimeVolume';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
-export default function BasicMonitoring({}: PageProps & {
+const titleClassName = 'text-sm opacity-50 font-bold';
+const bodyClassName = 'text-3xl font-bold';
+
+export default function BasicMonitoring({
+  mainPool,
+  // custodies,
+  // poolInfo,
+}: PageProps & {
   poolInfo: PoolInfo | null;
 }) {
   return (
-    <div className="flex flex-row flex-wrap justify-center gap-2 p-4">
+    <div className="flex flex-col gap-4 p-4">
+      {mainPool && (
+        <StyledContainer className="p-3 golden-outline">
+          <div className="flex justify-between gap-2">
+            <AllTimeVolume
+              titleClassName={titleClassName}
+              bodyClassName={bodyClassName}
+              mainPool={mainPool}
+            />
+            <AllTimeFees
+              titleClassName={titleClassName}
+              bodyClassName={bodyClassName}
+              mainPool={mainPool}
+            />
+          </div>
+        </StyledContainer>
+      )}
       <StyledContainer className="flex gap-6" bodyClassName="">
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <AumChart />
