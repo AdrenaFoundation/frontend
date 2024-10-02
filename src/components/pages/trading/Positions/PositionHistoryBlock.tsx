@@ -1,6 +1,9 @@
+import 'tippy.js/dist/tippy.css'; // Import Tippy's CSS
+
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
@@ -55,23 +58,59 @@ const TokenSymbol: React.FC<TokenSymbolProps> = ({ symbol, pathname, side }) =>
     <div className="uppercase font-boldy text-sm opacity-90">{symbol}</div>
   );
 
-const useResizeObserver = (ref: React.RefObject<HTMLElement>) => {
-  const [isSmallSize, setIsSmallSize] = useState<boolean | null>(null);
+// Add this new component
+interface LeverageDisplayProps {
+  leverage: number;
+  positionSize: number;
+  entryCollateral: number;
+  finalCollateral: number;
+}
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (!ref.current) return setIsSmallSize(null);
-      setIsSmallSize(ref.current.clientWidth <= 700);
-    };
-
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [ref]);
-
-  return isSmallSize;
-};
+const LeverageDisplay: React.FC<LeverageDisplayProps> = ({ leverage, positionSize, entryCollateral, finalCollateral}) => (
+  <Tippy
+    content={
+      <>
+        <div className="flex justify-between items-center mb-1">
+          <span className="text-xs mr-2">Size:</span>
+          <FormatNumber
+            nb={positionSize}
+            format="currency"
+            minimumFractionDigits={2}
+            precision={2}
+            className="text-xs"
+          />
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-xs mr-2">Entry Collateral:</span>
+          <FormatNumber
+            nb={entryCollateral}
+            format="currency"
+            minimumFractionDigits={2}
+            precision={2}
+            className="text-xs"
+          />
+        </div>
+        {finalCollateral !== entryCollateral && (
+          <div className="flex justify-between items-center mt-1">
+            <span className="text-xs mr-2">Final Collateral:</span>
+            <FormatNumber
+              nb={finalCollateral}
+              format="currency"
+              minimumFractionDigits={2}
+              precision={2}
+              className="text-xs"
+            />
+          </div>
+        )}
+      </>
+    }
+    placement="auto"
+  >
+    <div className="text-xs ml-1 text-gray-400 border-b border-dotted border-gray-400 cursor-help">
+      {leverage}x
+    </div>
+  </Tippy>
+);
 
 export default function PositionHistoryBlock({
   bodyClassName,
@@ -108,6 +147,12 @@ export default function PositionHistoryBlock({
         >
           {positionHistory.side}
         </div>
+        <LeverageDisplay
+          leverage={positionHistory.entry_leverage}
+          positionSize={positionHistory.entry_collateral_amount * positionHistory.entry_leverage}
+          entryCollateral={positionHistory.entry_collateral_amount}
+          finalCollateral={positionHistory.final_collateral_amount}
+        />
       </div>
       <DateDisplay date={positionHistory.entry_date} />
     </div>
@@ -119,7 +164,7 @@ export default function PositionHistoryBlock({
     </div>
   );
 
-  const renderPnl = () => <div>{pnl}</div>;
+  const renderPnl = () => pnl;
 
   const renderExitDate = () => (
     <div className="flex flex-col items-center w-24">
@@ -244,8 +289,8 @@ export default function PositionHistoryBlock({
     ? positionHistory.pnl + positionHistory.fees
     : positionHistory.pnl;
 
-  const percentage = positionHistory.entry_collateral_amount
-    ? (pnlValue / positionHistory.entry_collateral_amount) * 100
+  const percentage = positionHistory.final_collateral_amount
+    ? (pnlValue / positionHistory.final_collateral_amount) * 100
     : null;
 
   {
@@ -280,7 +325,7 @@ export default function PositionHistoryBlock({
               nb={positionHistory.exit_fees + positionHistory.borrow_fees}
               format="currency"
               className="text-xs text-redbright"
-              isDecimalDimmed={true}
+              isDecimalDimmed={false}
             />
           </span>
         </div>
@@ -328,19 +373,19 @@ export default function PositionHistoryBlock({
       key={positionHistory.position_id}
     >
       <div className="md:hidden border-b px-5 py-3 flex flex-row items-center justify-between">
-        {renderPositionName()} <div>{renderPnl()}</div>
+        <div className="w-[7em] flex grow items-center justify-center">{renderPositionName()}</div> <div className="w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
       </div>
       <div className="flex flex-row justify-between flex-wrap gap-6 px-3 py-5 sm:py-2 opacity-90">
-        <div className="hidden md:block">{renderPositionName()}</div>
-        <div>
+        <div className="hidden md:flex w-[7em] flex grow items-center justify-center">{renderPositionName()}</div>
+        <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
         </div>
-        <div>
+        <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
         </div>
-        <div className="hidden md:block">{renderPnl()}</div>
-        <div>{renderExitDate()}</div>
-        <div>{renderFeesPaid()}</div>
+        <div className="hidden md:flex w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
+        <div className="w-[7em] flex grow items-center justify-center">{renderExitDate()}</div>
+        <div className="w-[7em] flex grow items-center justify-center">{renderFeesPaid()}</div>
       </div>
     </div>
   );
