@@ -4,7 +4,7 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import { PoolExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
-export default function AllTimeFees({
+export default function AllTimeTradingVolume({
   mainPool,
   className,
   titleClassName,
@@ -18,7 +18,7 @@ export default function AllTimeFees({
   return (
     <StyledContainer
       headerClassName="text-center justify-center"
-      title="ALL TIME FEES"
+      title="All Time Trading Volume"
       className={twMerge(
         'grow flex items-center min-w-[22em] w-[22em]',
         className,
@@ -28,7 +28,7 @@ export default function AllTimeFees({
       <div
         className={twMerge('items-center justify-center flex', bodyClassName)}
       >
-        {formatPriceInfo(mainPool.totalFeeCollected)}
+        {formatPriceInfo(mainPool.totalTradingVolume, 0)}
       </div>
     </StyledContainer>
   );
