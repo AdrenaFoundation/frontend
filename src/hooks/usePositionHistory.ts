@@ -82,9 +82,7 @@ export default function usePositionsHistory(): {
         })
         .filter((data) => data !== null) as PositionHistoryExtended[];
 
-      return enrichedDataWithTokens.sort((a, b) => {
-        return a.position_id - b.position_id;
-      });
+      return enrichedDataWithTokens;
     }
 
     try {
