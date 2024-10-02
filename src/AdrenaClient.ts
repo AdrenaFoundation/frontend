@@ -18,7 +18,6 @@ import {
   Transaction,
   TransactionInstruction,
   TransactionMessage,
-  TransactionReturnData,
   VersionedTransaction,
 } from '@solana/web3.js';
 
@@ -497,12 +496,49 @@ export class AdrenaClient {
           nativeToUi(custody.nativeObject.shortPositions.sizeUsd, USD_DECIMALS),
         0,
       ),
-      totalVolume: custodies.reduce(
+      totalSwapVolume: custodies.reduce(
         (tmp, custody) =>
           tmp +
-          Object.values(custody.nativeObject.volumeStats).reduce(
-            (total, volume) => total + nativeToUi(volume, USD_DECIMALS),
-            0,
+          nativeToUi(custody.nativeObject.volumeStats.swapUsd, USD_DECIMALS),
+        0,
+      ),
+      totalAddRemoveLiquidityVolume: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          nativeToUi(
+            custody.nativeObject.volumeStats.addLiquidityUsd,
+            USD_DECIMALS,
+          ) +
+          nativeToUi(
+            custody.nativeObject.volumeStats.removeLiquidityUsd,
+            USD_DECIMALS,
+          ),
+        0,
+      ),
+      totalTradingVolume: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          nativeToUi(
+            custody.nativeObject.volumeStats.openPositionUsd,
+            USD_DECIMALS,
+          ) +
+          nativeToUi(
+            custody.nativeObject.volumeStats.closePositionUsd,
+            USD_DECIMALS,
+          ) +
+          nativeToUi(
+            custody.nativeObject.volumeStats.liquidationUsd,
+            USD_DECIMALS,
+          )
+        ,
+        0,
+      ),
+      totalLiquidationVolume: custodies.reduce(
+        (tmp, custody) =>
+          tmp +
+          nativeToUi(
+            custody.nativeObject.volumeStats.liquidationUsd,
+            USD_DECIMALS,
           ),
         0,
       ),

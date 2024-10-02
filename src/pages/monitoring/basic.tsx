@@ -9,8 +9,10 @@ import FeesChart from '@/components/pages/global/Fees/FeesChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import UnrealizedPnlChart from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
+import AllTimeAddRemoveLiquidityVolume from '@/components/pages/monitoring/Data/AllTimeAddRemoveLiquidityVolume';
 import AllTimeFees from '@/components/pages/monitoring/Data/AllTimeFees';
-import AllTimeVolume from '@/components/pages/monitoring/Data/AllTimeVolume';
+import AllTimeLiquidationsVolume from '@/components/pages/monitoring/Data/AllTimeLiquidationsVolume';
+import AllTimeTradingVolume from '@/components/pages/monitoring/Data/AllTimeTradingVolume';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
@@ -27,13 +29,21 @@ export default function BasicMonitoring({
   return (
     <div className="flex flex-col gap-4 p-4">
       {mainPool && (
-        <StyledContainer className="p-3 golden-outline">
+        <StyledContainer className="p-3">
           <div className="flex justify-between gap-2">
-            <AllTimeVolume
+            <AllTimeTradingVolume
               titleClassName={titleClassName}
               bodyClassName={bodyClassName}
               mainPool={mainPool}
             />
+            <AllTimeLiquidationsVolume
+              titleClassName={titleClassName}
+              bodyClassName={bodyClassName}
+              mainPool={mainPool} />
+            <AllTimeAddRemoveLiquidityVolume
+              titleClassName={titleClassName}
+              bodyClassName={bodyClassName}
+              mainPool={mainPool} />
             <AllTimeFees
               titleClassName={titleClassName}
               bodyClassName={bodyClassName}
