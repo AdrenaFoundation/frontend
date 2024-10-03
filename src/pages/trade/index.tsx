@@ -1,5 +1,6 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { AnimatePresence } from 'framer-motion';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -15,7 +16,6 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
-import Head from 'next/head';
 
 export type Action = 'long' | 'short' | 'swap';
 
