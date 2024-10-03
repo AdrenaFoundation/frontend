@@ -47,6 +47,7 @@ export default function StakingResolveRoundThread({
         )}
       >
         <Table
+          rowHovering={true}
           rowTitleWidth="30%"
           data={[
             {

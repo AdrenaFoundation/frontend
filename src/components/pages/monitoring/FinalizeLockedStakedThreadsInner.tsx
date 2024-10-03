@@ -49,6 +49,7 @@ export default function FinalizeLockedStakedThreadsInner() {
         {threads ? <div>{threads.length} Threads</div> : null}
 
         <Table
+          rowHovering={true}
           className="mt-4"
           rowTitleWidth="20%"
           columnsTitles={['Funding', 'Paused', 'Until call']}

@@ -21,6 +21,7 @@ export default function GovernanceAccounts({
       titleClassName={titleClassName}
     >
       <Table
+        rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
         data={[
