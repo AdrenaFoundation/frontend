@@ -78,9 +78,10 @@ export default function SharePositionModal({
     link.click();
     document.body.removeChild(link);
   };
+  const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
 
   const pnlPercentage = position.pnl
-    ? (position.pnl / position.collateralUsd) * 100
+    ? ((position.pnl + fees) / position.collateralUsd) * 100
     : undefined;
 
   const openedOn = new Date(
@@ -119,10 +120,11 @@ export default function SharePositionModal({
           </div>
         </div>
         <FormatNumber
-          nb={position.pnl}
+          nb={pnlPercentage}
           format="percentage"
           className={twMerge(
-            'text-[60px] sm:text-[85px] archivo-black relative z-10',
+            'text-[60px] sm:text-[70px] archivo-black relative z-10',
+            pnlPercentage && pnlPercentage < 99 && 'sm:text-[85px]',
             pnlPercentage && pnlPercentage < 0
               ? 'bg-gradient-to-r from-[#F2485F]  to-red inline-block text-transparent bg-clip-text'
               : 'bg-gradient-to-r from-[#14d198]  to-green inline-block text-transparent bg-clip-text',
