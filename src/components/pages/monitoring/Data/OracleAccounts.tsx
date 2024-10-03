@@ -23,6 +23,7 @@ export default function OracleAccounts({
       titleClassName={titleClassName}
     >
       <Table
+        rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
         data={[

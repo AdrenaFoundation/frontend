@@ -46,6 +46,7 @@ export default function AdrenaAccounts({
       titleClassName={titleClassName}
     >
       <Table
+        rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="50%"
         data={[

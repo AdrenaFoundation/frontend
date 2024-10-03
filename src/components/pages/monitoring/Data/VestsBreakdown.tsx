@@ -25,6 +25,7 @@ export default function VestsBreakdown({
       {vests ? <div>{vests.length} Vests</div> : null}
 
       <Table
+        rowHovering={true}
         rowTitleWidth="0px"
         columnsTitles={[
           'vest',
