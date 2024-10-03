@@ -527,20 +527,29 @@ export function formatMilliseconds(milliseconds: number): string {
     formatted = `${days}d`;
   }
 
-  if (hours || formatted.length)
-    formatted = `${formatted}${formatted.length ? ' ' : ''}${
-      hours < 10 ? '0' : ''
-    }${hours}h`;
+  if (hours || formatted.length) {
+    const h = `${hours < 0 ? '-' : ''}${
+      Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
+    }`;
 
-  if (minutes || formatted.length)
-    formatted = `${formatted}${formatted.length ? ' ' : ''}${
-      minutes < 10 ? '0' : ''
-    }${minutes}m`;
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${h}h`;
+  }
 
-  if (seconds || formatted.length)
-    formatted = `${formatted}${formatted.length ? ' ' : ''}${
-      seconds < 10 ? '0' : ''
-    }${seconds}s`;
+  if (minutes || formatted.length) {
+    const m = `${minutes < 0 ? '-' : ''}${
+      Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
+    }`;
+
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${m}m`;
+  }
+
+  if (seconds || formatted.length) {
+    const s = `${seconds < 0 ? '-' : ''}${
+      Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
+    }`;
+
+    formatted = `${formatted}${formatted.length ? ' ' : ''}${s}s`;
+  }
 
   return formatted;
 }
