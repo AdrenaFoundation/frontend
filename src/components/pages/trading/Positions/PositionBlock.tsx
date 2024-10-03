@@ -12,6 +12,7 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
+import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
 
@@ -399,8 +400,8 @@ export default function PositionBlock({
           />
           <Button
             size="xs"
-            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] grow w-[16em] h-8"
-            title="Share"
+            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] grow w-[1em] h-8"
+            leftIcon={shareIcon}
             rounded={false}
             variant="outline"
             onClick={() => {

@@ -21,6 +21,8 @@ export default function SharePositionModal({
 }: {
   position: PositionExtended;
 }) {
+  const tokenPrices = useSelector((s) => s.tokenPrices);
+
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [option, setOption] = useState(0);
 
@@ -73,11 +75,18 @@ export default function SharePositionModal({
     document.body.removeChild(link);
   };
 
-  const tokenPrices = useSelector((s) => s.tokenPrices);
   const pnlPercentage = position.pnl
     ? (position.pnl / position.collateralUsd) * 100
     : undefined;
 
+  const openedOn = new Date(
+    Number(position.nativeObject.openTime) * 1000,
+  ).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    minute: 'numeric',
+    hour: 'numeric',
+  });
   return (
     <div className="max-w-[600px] p-5">
       <div
@@ -140,12 +149,7 @@ export default function SharePositionModal({
               Opened on
             </span>
             <span className="archivo-black text-base sm:text-lg">
-              {new Date('07/09/2024').toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                minute: 'numeric',
-                hour: 'numeric',
-              })}
+              {openedOn}
             </span>
           </li>
         </ul>
@@ -176,7 +180,7 @@ export default function SharePositionModal({
             <Image
               src={OPTIONS[option].img}
               alt="Monster"
-              className="select-none w-[120px] sm:w-[200px]"
+              className="select-none w-[500px] sm:w-[200px] opacity-10 sm:opacity-100"
               draggable="false"
             />
           </motion.div>
