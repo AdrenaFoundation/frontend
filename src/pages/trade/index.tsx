@@ -15,6 +15,7 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PageProps, PositionExtended, Token } from '@/types';
 import { getTokenSymbol } from '@/utils';
+import Head from 'next/head';
 
 export type Action = 'long' | 'short' | 'swap';
 
@@ -214,270 +215,287 @@ export default function Trade({
   }, [activePositionModal]);
 
   return (
-    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4">
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-50">
-        <RiveAnimation
-          animation="btm-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
-          imageClassName="absolute w-[500px] bottom-0 left-[-10vh] scale-x-[-1]"
+    <>
+      <Head>
+        <title>Test</title>
+        <meta
+          property="og:image"
+          content="https://frontend-git-pnlshare-adrena.vercel.app/api/og"
         />
+        <meta name="twitter:card" content="summary_large_image" />
 
-        <RiveAnimation
-          animation="mid-monster"
-          layout={
-            new Layout({
-              fit: Fit.Fill,
-              alignment: Alignment.TopLeft,
-            })
-          }
-          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
-          imageClassName="absolute w-[500px] top-0 right-0 -z-10"
+        <meta
+          name="twitter:image"
+          content="https://frontend-git-pnlshare-adrena.vercel.app/api/og"
         />
-      </div>
+      </Head>
+      <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4">
+        <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-50">
+          <RiveAnimation
+            animation="btm-monster"
+            layout={
+              new Layout({
+                fit: Fit.Fill,
+                alignment: Alignment.TopLeft,
+              })
+            }
+            className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
+            imageClassName="absolute w-[500px] bottom-0 left-[-10vh] scale-x-[-1]"
+          />
 
-      <div className="flex flex-col w-full">
-        <div className="flex flex-col w-full border rounded-lg overflow-hidden">
-          {/* Trading chart header */}
-          {tokenB ? (
-            <TradingChartHeader
-              tokenList={
-                selectedAction === 'short' || selectedAction === 'long'
-                  ? window.adrena.client.tokens.filter((t) => !t.isStable)
-                  : window.adrena.client.tokens
+          <RiveAnimation
+            animation="mid-monster"
+            layout={
+              new Layout({
+                fit: Fit.Fill,
+                alignment: Alignment.TopLeft,
+              })
+            }
+            className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
+            imageClassName="absolute w-[500px] top-0 right-0 -z-10"
+          />
+        </div>
+
+        <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full border rounded-lg overflow-hidden">
+            {/* Trading chart header */}
+            {tokenB ? (
+              <TradingChartHeader
+                tokenList={
+                  selectedAction === 'short' || selectedAction === 'long'
+                    ? window.adrena.client.tokens.filter((t) => !t.isStable)
+                    : window.adrena.client.tokens
+                }
+                selected={tokenB}
+                onChange={(t: Token) => {
+                  setTokenB(t);
+                }}
+              />
+            ) : null}
+
+            <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
+              {/* Display trading chart for appropriate token */}
+              {tokenA && tokenB ? (
+                <TradingChart
+                  token={
+                    selectedAction === 'short' || selectedAction === 'long'
+                      ? tokenB
+                      : tokenA.isStable
+                      ? tokenB
+                      : tokenA
+                  }
+                  positions={positions}
+                />
+              ) : null}
+            </div>
+          </div>
+
+          {isBigScreen ? (
+            <>
+              <div className="bg-secondary mt-4 border rounded-lg">
+                <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
+                  <span
+                    className={twMerge(
+                      'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                      !history ? 'opacity-100' : 'opacity-40',
+                    )}
+                    onClick={() => setHistory(false)}
+                  >
+                    Open positions
+                  </span>
+                  <span className="opacity-20">|</span>
+                  <span
+                    className={twMerge(
+                      'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                      history ? 'opacity-100' : 'opacity-40',
+                    )}
+                    onClick={() => setHistory(true)}
+                  >
+                    Trade history
+                  </span>
+                </div>
+                {history ? (
+                  <div className="flex flex-col w-full p-4">
+                    <PositionsHistory connected={connected} />
+                  </div>
+                ) : (
+                  <div className="flex flex-col w-full p-4">
+                    <Positions
+                      connected={connected}
+                      positions={positions}
+                      triggerPositionsReload={triggerPositionsReload}
+                      triggerUserProfileReload={triggerUserProfileReload}
+                      isBigScreen={isBigScreen}
+                      userProfile={userProfile}
+                    />
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="flex">
+              <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col">
+                <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
+                  <span
+                    className={twMerge(
+                      'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                      !history ? 'opacity-100' : 'opacity-40',
+                    )}
+                    onClick={() => setHistory(false)}
+                  >
+                    Positions
+                  </span>
+                  <span className="opacity-20">|</span>
+                  <span
+                    className={twMerge(
+                      'cursor-pointer hover:opacity-100 transition-opacity duration-300',
+                      history ? 'opacity-100' : 'opacity-40',
+                    )}
+                    onClick={() => setHistory(true)}
+                  >
+                    History
+                  </span>
+                </div>
+                {history ? (
+                  <div className="mt-1 w-full p-4 flex grow">
+                    <PositionsHistory connected={connected} />
+                  </div>
+                ) : (
+                  <div className="mt-1 w-full p-4">
+                    <Positions
+                      connected={connected}
+                      positions={positions}
+                      triggerPositionsReload={triggerPositionsReload}
+                      triggerUserProfileReload={triggerUserProfileReload}
+                      isBigScreen={isBigScreen}
+                      userProfile={userProfile}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
+                <TradeComp
+                  selectedAction={selectedAction}
+                  setSelectedAction={setSelectedAction}
+                  tokenA={tokenA}
+                  tokenB={tokenB}
+                  setTokenA={setTokenA}
+                  setTokenB={setTokenB}
+                  openedPosition={openedPosition}
+                  wallet={wallet}
+                  connected={connected}
+                  triggerPositionsReload={triggerPositionsReload}
+                  triggerWalletTokenBalancesReload={
+                    triggerWalletTokenBalancesReload
+                  }
+                  isBigScreen={isBigScreen}
+                  activeRpc={activeRpc}
+                  terminalId="integrated-terminal-1"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <>
+          {isBigScreen ? (
+            <TradeComp
+              className="lg:max-h-[50em] hidden sm:flex lg:ml-4 lg:min-w-[25%]"
+              selectedAction={selectedAction}
+              setSelectedAction={setSelectedAction}
+              tokenA={tokenA}
+              tokenB={tokenB}
+              setTokenA={setTokenA}
+              setTokenB={setTokenB}
+              openedPosition={openedPosition}
+              wallet={wallet}
+              connected={connected}
+              triggerPositionsReload={triggerPositionsReload}
+              triggerWalletTokenBalancesReload={
+                triggerWalletTokenBalancesReload
               }
-              selected={tokenB}
-              onChange={(t: Token) => {
-                setTokenB(t);
-              }}
+              isBigScreen={isBigScreen}
+              activeRpc={activeRpc}
+              terminalId="integrated-terminal-2"
             />
           ) : null}
 
-          <div className="min-h-[24em] max-h-[28em] grow shrink-1 flex max-w-full">
-            {/* Display trading chart for appropriate token */}
-            {tokenA && tokenB ? (
-              <TradingChart
-                token={
-                  selectedAction === 'short' || selectedAction === 'long'
-                    ? tokenB
-                    : tokenA.isStable
-                    ? tokenB
-                    : tokenA
-                }
-                positions={positions}
-              />
-            ) : null}
-          </div>
-        </div>
+          <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
+            <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
+              <li>
+                <Button
+                  className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
+                  title="Long"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    setActivePositionModal('long');
+                    setSelectedAction('long');
+                  }}
+                />
+              </li>
+              <li>
+                <Button
+                  className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
+                  title="Short"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    setActivePositionModal('short');
+                    setSelectedAction('short');
+                  }}
+                />
+              </li>
+              <li>
+                <Button
+                  className="bg-transparent font-boldy border-white text-white"
+                  title="Swap"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    setActivePositionModal('swap');
+                    setSelectedAction('swap');
+                  }}
+                />
+              </li>
+            </ul>
 
-        {isBigScreen ? (
-          <>
-            <div className="bg-secondary mt-4 border rounded-lg">
-              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    !history ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setHistory(false)}
+            <AnimatePresence>
+              {activePositionModal && (
+                <Modal
+                  title={`${
+                    activePositionModal.charAt(0).toUpperCase() +
+                    activePositionModal.slice(1)
+                  } Position`}
+                  close={() => setActivePositionModal(null)}
+                  className="flex flex-col p-2 sm:p-4 overflow-auto h-[100%]"
                 >
-                  Open positions
-                </span>
-                <span className="opacity-20">|</span>
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    history ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setHistory(true)}
-                >
-                  Trade history
-                </span>
-              </div>
-              {history ? (
-                <div className="flex flex-col w-full p-4">
-                  <PositionsHistory connected={connected} />
-                </div>
-              ) : (
-                <div className="flex flex-col w-full p-4">
-                  <Positions
-                    connected={connected}
-                    positions={positions}
-                    triggerPositionsReload={triggerPositionsReload}
-                    triggerUserProfileReload={triggerUserProfileReload}
-                    isBigScreen={isBigScreen}
-                    userProfile={userProfile}
-                  />
-                </div>
+                  <div className="flex w-full">
+                    <TradeComp
+                      selectedAction={selectedAction}
+                      setSelectedAction={setSelectedAction}
+                      tokenA={tokenA}
+                      tokenB={tokenB}
+                      setTokenA={setTokenA}
+                      setTokenB={setTokenB}
+                      openedPosition={openedPosition}
+                      className="p-0 m-0"
+                      wallet={wallet}
+                      connected={connected}
+                      triggerPositionsReload={triggerPositionsReload}
+                      triggerWalletTokenBalancesReload={
+                        triggerWalletTokenBalancesReload
+                      }
+                      activeRpc={activeRpc}
+                      terminalId="integrated-terminal-3"
+                    />
+                  </div>
+                </Modal>
               )}
-            </div>
-          </>
-        ) : (
-          <div className="flex">
-            <div className="bg-secondary mt-4 border rounded-lg w-full sm:w-1/2 sm:mr-4 lg:mr-0 md:w-[57%] lg:w-[65%] h-full flex flex-col">
-              <div className="flex items-center justify-start gap-2 px-4 pt-2 text-sm">
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    !history ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setHistory(false)}
-                >
-                  Positions
-                </span>
-                <span className="opacity-20">|</span>
-                <span
-                  className={twMerge(
-                    'cursor-pointer hover:opacity-100 transition-opacity duration-300',
-                    history ? 'opacity-100' : 'opacity-40',
-                  )}
-                  onClick={() => setHistory(true)}
-                >
-                  History
-                </span>
-              </div>
-              {history ? (
-                <div className="mt-1 w-full p-4 flex grow">
-                  <PositionsHistory connected={connected} />
-                </div>
-              ) : (
-                <div className="mt-1 w-full p-4">
-                  <Positions
-                    connected={connected}
-                    positions={positions}
-                    triggerPositionsReload={triggerPositionsReload}
-                    triggerUserProfileReload={triggerUserProfileReload}
-                    isBigScreen={isBigScreen}
-                    userProfile={userProfile}
-                  />
-                </div>
-              )}
-            </div>
-            <div className="sm:w-1/2 md:w-[43%] lg:w-[35%] lg:ml-4 hidden sm:flex">
-              <TradeComp
-                selectedAction={selectedAction}
-                setSelectedAction={setSelectedAction}
-                tokenA={tokenA}
-                tokenB={tokenB}
-                setTokenA={setTokenA}
-                setTokenB={setTokenB}
-                openedPosition={openedPosition}
-                wallet={wallet}
-                connected={connected}
-                triggerPositionsReload={triggerPositionsReload}
-                triggerWalletTokenBalancesReload={
-                  triggerWalletTokenBalancesReload
-                }
-                isBigScreen={isBigScreen}
-                activeRpc={activeRpc}
-                terminalId="integrated-terminal-1"
-              />
-            </div>
+            </AnimatePresence>
           </div>
-        )}
+        </>
       </div>
-
-      <>
-        {isBigScreen ? (
-          <TradeComp
-            className="lg:max-h-[50em] hidden sm:flex lg:ml-4 lg:min-w-[25%]"
-            selectedAction={selectedAction}
-            setSelectedAction={setSelectedAction}
-            tokenA={tokenA}
-            tokenB={tokenB}
-            setTokenA={setTokenA}
-            setTokenB={setTokenB}
-            openedPosition={openedPosition}
-            wallet={wallet}
-            connected={connected}
-            triggerPositionsReload={triggerPositionsReload}
-            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
-            isBigScreen={isBigScreen}
-            activeRpc={activeRpc}
-            terminalId="integrated-terminal-2"
-          />
-        ) : null}
-
-        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
-          <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
-            <li>
-              <Button
-                className="bg-transparent font-boldy border-[#10e1a3] text-[#10e1a3]"
-                title="Long"
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setActivePositionModal('long');
-                  setSelectedAction('long');
-                }}
-              />
-            </li>
-            <li>
-              <Button
-                className="bg-transparent font-boldy border-[#f24f4f] text-[#f24f4f]"
-                title="Short"
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setActivePositionModal('short');
-                  setSelectedAction('short');
-                }}
-              />
-            </li>
-            <li>
-              <Button
-                className="bg-transparent font-boldy border-white text-white"
-                title="Swap"
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setActivePositionModal('swap');
-                  setSelectedAction('swap');
-                }}
-              />
-            </li>
-          </ul>
-
-          <AnimatePresence>
-            {activePositionModal && (
-              <Modal
-                title={`${
-                  activePositionModal.charAt(0).toUpperCase() +
-                  activePositionModal.slice(1)
-                } Position`}
-                close={() => setActivePositionModal(null)}
-                className="flex flex-col p-2 sm:p-4 overflow-auto h-[100%]"
-              >
-                <div className="flex w-full">
-                  <TradeComp
-                    selectedAction={selectedAction}
-                    setSelectedAction={setSelectedAction}
-                    tokenA={tokenA}
-                    tokenB={tokenB}
-                    setTokenA={setTokenA}
-                    setTokenB={setTokenB}
-                    openedPosition={openedPosition}
-                    className="p-0 m-0"
-                    wallet={wallet}
-                    connected={connected}
-                    triggerPositionsReload={triggerPositionsReload}
-                    triggerWalletTokenBalancesReload={
-                      triggerWalletTokenBalancesReload
-                    }
-                    activeRpc={activeRpc}
-                    terminalId="integrated-terminal-3"
-                  />
-                </div>
-              </Modal>
-            )}
-          </AnimatePresence>
-        </div>
-      </>
-    </div>
+    </>
   );
 }

@@ -100,7 +100,10 @@ export default function SharePositionModal({
       >
         <Image src={adrenaLogo} alt="Adrena Logo" height={8} className="mb-3" />
         <div className="flex flex-row gap-3 items-center relative z-10">
-          <h2 className="archivo-black">{position.token.symbol}</h2>
+          <div className="flex flex-row items-center gap-2">
+            <Image src={position.token.image} alt="Adrena Logo" height={20} />
+            <h2 className="archivo-black">{position.token.symbol}</h2>
+          </div>
 
           <div
             className={twMerge(
