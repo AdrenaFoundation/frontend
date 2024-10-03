@@ -180,6 +180,7 @@ export default function SharePositionModal({
             <Image
               src={OPTIONS[option].img}
               alt="Monster"
+              loading="eager"
               className="select-none w-[500px] sm:w-[200px] opacity-10 sm:opacity-100"
               draggable="false"
             />
