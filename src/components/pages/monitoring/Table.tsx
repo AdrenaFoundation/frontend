@@ -130,8 +130,8 @@ export default function Table({
         <div
           key={i}
           className={twMerge(
-            'flex w-full border-b last:border-b-0 text-base',
-            rowHovering ? 'hover:bg-secondary' : '',
+            'flex w-full border border-transparent text-base pl-1',
+            rowHovering ? 'hover:bg-secondary hover:border-bcolor' : '',
           )}
         >
           <div
