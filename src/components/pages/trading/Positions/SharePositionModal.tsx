@@ -21,6 +21,7 @@ export default function SharePositionModal({
 }: {
   position: PositionExtended;
 }) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -50,6 +51,7 @@ export default function SharePositionModal({
   ];
 
   const captureElementAsImage = () => {
+    setIsDownloading(true);
     const element = cardRef.current;
 
     if (!element) {
@@ -60,9 +62,11 @@ export default function SharePositionModal({
     toPng(element)
       .then((dataUrl) => {
         downloadImage(dataUrl);
+        setIsDownloading(false);
       })
       .catch((error) => {
         console.error('Error converting to PNG:', error);
+        setIsDownloading(false);
       });
   };
 
@@ -220,6 +224,7 @@ export default function SharePositionModal({
           title="Download image"
           className="w-full h-[40px]"
           onClick={captureElementAsImage}
+          disabled={isDownloading}
         />
       </div>
     </div>
