@@ -275,7 +275,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) { }
+  ) {}
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
     this.readonlyAdrenaProgram = program;
@@ -427,14 +427,14 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-            name: string;
-            color: string;
-            symbol: string;
-            image: ImageRef;
-            coingeckoId: string;
-            decimals: number;
-            pythPriceUpdateV2: PublicKey;
-          }
+              name: string;
+              color: string;
+              symbol: string;
+              image: ImageRef;
+              coingeckoId: string;
+              decimals: number;
+              pythPriceUpdateV2: PublicKey;
+            }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -529,8 +529,7 @@ export class AdrenaClient {
           nativeToUi(
             custody.nativeObject.volumeStats.liquidationUsd,
             USD_DECIMALS,
-          )
-        ,
+          ),
         0,
       ),
       totalLiquidationVolume: custodies.reduce(
@@ -1823,13 +1822,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-          swappedTokenDecimals: tokenB.decimals,
-          swappedTokenPrice: tokenBPrice,
-        }
+            swappedTokenDecimals: tokenB.decimals,
+            swappedTokenPrice: tokenBPrice,
+          }
         : {
-          swappedTokenDecimals: usdcToken.decimals,
-          swappedTokenPrice: usdcTokenPrice,
-        };
+            swappedTokenDecimals: usdcToken.decimals,
+            swappedTokenPrice: usdcTokenPrice,
+          };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -2012,9 +2011,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-        position,
-        collateralAmount: addedCollateral,
-      })
+      position,
+      collateralAmount: addedCollateral,
+    })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -4106,9 +4105,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                  position.stopLossClosePositionPrice,
-                  PRICE_DECIMALS,
-                )
+                    position.stopLossClosePositionPrice,
+                    PRICE_DECIMALS,
+                  )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4167,7 +4166,7 @@ export class AdrenaClient {
         };
       })();
 
-      // pnl from lossUsd and profitsUsd are calculated taking account exitFee and borrowFee
+      // pnl from lossUsd and profitsUsd are calculated
       const pnl = (() => {
         if (!profitsAndLosses) return null;
 
@@ -4179,13 +4178,9 @@ export class AdrenaClient {
       const priceChangeUsd = (() => {
         if (!profitsAndLosses) return null;
 
-        return (
-          (profitsAndLosses.lossUsd !== 0
-            ? profitsAndLosses.lossUsd
-            : profitsAndLosses.profitUsd) +
-          positionExtended.exitFeeUsd +
-          profitsAndLosses.borrowFeeUsd
-        );
+        return profitsAndLosses.lossUsd !== 0
+          ? profitsAndLosses.lossUsd
+          : profitsAndLosses.profitUsd;
       })();
 
       const leverage =

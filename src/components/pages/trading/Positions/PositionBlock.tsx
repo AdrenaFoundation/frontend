@@ -103,7 +103,7 @@ export default function PositionBlock({
   );
 
   const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
-  const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
+  const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnl = (
     <div className="flex flex-col items-center min-w-[5em] w-[5em]">
@@ -113,10 +113,10 @@ export default function PositionBlock({
       {position.pnl ? (
         <div className="flex items-center">
           <FormatNumber
-            nb={showAfterFees ? position.pnl + fees : position.pnl} // Adjusted for fee display
+            nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
             format="currency"
             className={`mr-0.5 font-bold text-${
-              (showAfterFees ? position.pnl + fees : position.pnl) > 0
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
                 ? 'green'
                 : 'redbright'
             }`}
@@ -125,7 +125,7 @@ export default function PositionBlock({
 
           <FormatNumber
             nb={
-              ((showAfterFees ? position.pnl + fees : position.pnl) /
+              ((showAfterFees ? position.pnl : position.pnl - fees) /
                 position.collateralUsd) *
               100
             }
@@ -135,7 +135,7 @@ export default function PositionBlock({
             precision={2}
             isDecimalDimmed={false}
             className={`text-xs text-${
-              (showAfterFees ? position.pnl + fees : position.pnl) > 0
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
                 ? 'green'
                 : 'redbright'
             }`}
@@ -145,12 +145,12 @@ export default function PositionBlock({
             <label className="flex items-center ml-1 cursor-pointer">
               <Switch
                 className="mr-0.5"
-                checked={!showAfterFees}
+                checked={showAfterFees}
                 onChange={() => setShowAfterFees(!showAfterFees)}
                 size="small"
               />
               <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-                {showAfterFees ? 'w/o fees' : 'w/ fees'}
+                {showAfterFees ? 'w fees' : 'w/o fees'}
               </span>
             </label>
           </label>
