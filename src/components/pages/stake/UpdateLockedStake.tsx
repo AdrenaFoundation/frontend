@@ -18,8 +18,8 @@ import { AdxLockPeriod, AlpLockPeriod, LockedStakeExtended } from '@/types';
 import { formatNumber, nativeToUi } from '@/utils';
 
 import infoIcon from '../../../../public/images/Icons/info.svg';
-import warningIcon from '../../../../public/images/Icons/warning.png';
 import lockIcon from '../../../../public/images/Icons/lock.svg';
+import warningIcon from '../../../../public/images/Icons/warning.png';
 import walletImg from '../../../../public/images/wallet-icon.svg';
 
 export default function UpdateLockedStake({
