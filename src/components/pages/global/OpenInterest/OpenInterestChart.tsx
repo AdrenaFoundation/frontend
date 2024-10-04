@@ -77,18 +77,18 @@ export default function OpenInterestChart() {
 
       const timeStamp = snapshot_timestamp.map((time: string) => {
         if (periodRef.current === '1d') {
-          new Date(time).toLocaleTimeString('en-US', {
+          return new Date(time).toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: 'numeric',
           });
         } else if (periodRef.current === '7d') {
-          new Date(time).toLocaleString('en-US', {
+          return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
         } else if (periodRef.current === '1M') {
-          new Date(time).toLocaleDateString('en-US', {
+          return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
