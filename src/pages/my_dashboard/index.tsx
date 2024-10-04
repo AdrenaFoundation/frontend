@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
+import UpdateLockedStake from '@/components/pages/stake/UpdateLockedStake';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
@@ -18,7 +19,13 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockedStakeExtended, PageProps, Vest } from '@/types';
+import {
+  AdxLockPeriod,
+  AlpLockPeriod,
+  LockedStakeExtended,
+  PageProps,
+  Vest,
+} from '@/types';
 import {
   addNotification,
   getAdxLockedStakes,
@@ -47,6 +54,7 @@ export default function MyDashboard({
 
   const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
     useState<boolean>(false);
+  const [updateLockedStake, setUpdateLockedStake] = useState<boolean>(false);
   const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
     null,
   );
@@ -179,6 +187,43 @@ export default function MyDashboard({
     }
   };
 
+  const handleUpdateLockedStake = async ({
+    lockedStake,
+    updatedDuration,
+    additionalAmount,
+  }: {
+    lockedStake: LockedStakeExtended;
+    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    additionalAmount?: number;
+  }) => {
+    if (!owner) {
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
+      return;
+    }
+
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Upgrade Locked Stake',
+    ).fire();
+
+    try {
+      await window.adrena.client.upgradeLockedStake({
+        lockedStake,
+        updatedDuration,
+        additionalAmount,
+        notification,
+      });
+
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
+      setUpdateLockedStake(false);
+    } catch (error) {
+      console.error('error', error);
+    }
+  };
+
   const getUserVesting = async () => {
     try {
       const vest = (await window.adrena.client.loadUserVest()) as Vest;
@@ -273,15 +318,44 @@ export default function MyDashboard({
                 lockedStake: LockedStakeExtended,
               ) => {
                 setLockedStake(lockedStake);
+                setUpdateLockedStake(false);
                 setFinalizeLockedStakeRedeem(true);
               }}
-            ></StakesStats>
+              handleClickOnUpdateLockedStake={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setFinalizeLockedStakeRedeem(false);
+                setUpdateLockedStake(true);
+              }}
+            />
+
             <AnimatePresence>
+              {updateLockedStake && (
+                <Modal
+                  title="Upgrade Locked Stake"
+                  close={() => {
+                    setLockedStake(null);
+                    setUpdateLockedStake(false);
+                    setFinalizeLockedStakeRedeem(false);
+                  }}
+                  className="max-w-[28em]"
+                >
+                  {lockedStake ? (
+                    <UpdateLockedStake
+                      lockedStake={lockedStake}
+                      handleUpdateLockedStake={handleUpdateLockedStake}
+                    />
+                  ) : null}
+                </Modal>
+              )}
+
               {finalizeLockedStakeRedeem && (
                 <Modal
                   title="Early Exit"
                   close={() => {
                     setLockedStake(null);
+                    setUpdateLockedStake(false);
                     setFinalizeLockedStakeRedeem(false);
                   }}
                   className="max-w-[25em]"

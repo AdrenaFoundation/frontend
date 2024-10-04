@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { TokenInfo } from '@/config/IConfiguration';
 
@@ -8,6 +8,13 @@ import LineRechartOpenInterest from './LineRechartOpenInterest';
 export default function OpenInterestChart() {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
+  const [period, setPeriod] = useState<string | null>('1d');
+  const periodRef = useRef(period);
+
+  useEffect(() => {
+    periodRef.current = period;
+    getCustodyInfo();
+  }, [period]);
 
   useEffect(() => {
     getCustodyInfo();
@@ -28,12 +35,36 @@ export default function OpenInterestChart() {
 
   const getCustodyInfo = async () => {
     try {
+      const dataEndpoint = (() => {
+        switch (periodRef.current) {
+          case '1d':
+            return 'custodyinfo';
+          case '7d':
+            return 'custodyinfohourly';
+          case '1M':
+            return 'custodyinfodaily';
+          default:
+            return 'custodyinfo';
+        }
+      })();
+      const dataPeriod = (() => {
+        switch (periodRef.current) {
+          case '1d':
+            return 1;
+          case '7d':
+            return 7;
+          case '1M':
+            return 31;
+          default:
+            return 1;
+        }
+      })();
       const res = await fetch(
-        `https://datapi.adrena.xyz/custodyinfo?open_interest_long_usd=true&open_interest_short_usd=true&start_date=${(() => {
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
+        `https://datapi.adrena.xyz/${dataEndpoint}?open_interest_long_usd=true&open_interest_short_usd=true&start_date=${(() => {
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() - dataPeriod);
 
-          return yesterday.toISOString(); // Get the last 24h
+          return startDate.toISOString();
         })()}&end_date=${new Date().toISOString()}`,
       );
 
@@ -44,12 +75,25 @@ export default function OpenInterestChart() {
         snapshot_timestamp,
       } = data;
 
-      const timeStamp = snapshot_timestamp.map((time: string) =>
-        new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-        }),
-      );
+      const timeStamp = snapshot_timestamp.map((time: string) => {
+        if (periodRef.current === '1d') {
+          return new Date(time).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+          });
+        } else if (periodRef.current === '7d') {
+          return new Date(time).toLocaleString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+            hour: 'numeric',
+          });
+        } else if (periodRef.current === '1M') {
+          return new Date(time).toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'numeric',
+          });
+        }
+      });
 
       const custodyInfos = [];
 
@@ -113,6 +157,8 @@ export default function OpenInterestChart() {
           color: info.color,
         })) ?? []
       }
+      period={period}
+      setPeriod={setPeriod}
     />
   );
 }
