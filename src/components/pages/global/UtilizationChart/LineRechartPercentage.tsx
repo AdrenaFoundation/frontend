@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { twMerge } from 'tailwind-merge';
 
 import { formatPercentage } from '@/utils';
 
@@ -18,6 +19,8 @@ export default function LineRechartPercentage({
   title,
   data,
   labels,
+  period,
+  setPeriod,
 }: {
   title: string;
   data: any;
@@ -25,6 +28,8 @@ export default function LineRechartPercentage({
     name: string;
     color?: string;
   }[];
+  period: string | null;
+  setPeriod: (v: string | null) => void;
 }) {
   const formatYAxis = (tickItem: any) => {
     return `${tickItem}%`;
@@ -59,7 +64,34 @@ export default function LineRechartPercentage({
         <h2 className="">{title}</h2>
 
         <div className="flex gap-2 text-sm">
-          <div className="cursor-pointer">1d</div>
+          <div
+            className={twMerge(
+              'cursor-pointer',
+              period === '1d' ? 'underline' : '',
+            )}
+            onClick={() => setPeriod('1d')}
+          >
+            1d
+          </div>
+          <div
+            className={twMerge(
+              'cursor-pointer',
+              period === '7d' ? 'underline' : '',
+            )}
+            onClick={() => setPeriod('7d')}
+          >
+            7d
+          </div>
+          <div
+            className={twMerge(
+              'cursor-pointer',
+              period === '1M' ? 'underline' : '',
+            )}
+            onClick={() => setPeriod('1M')}
+          >
+            1M
+          </div>
+
           <Tippy
             content={
               <div className="text-sm w-20 flex flex-col justify-around">
@@ -68,11 +100,7 @@ export default function LineRechartPercentage({
             }
             placement="auto"
           >
-            <div className="flex gap-2">
-              <div className="text-txtfade cursor-not-allowed">7d</div>
-              <div className="text-txtfade cursor-not-allowed">1M</div>
-              <div className="text-txtfade cursor-not-allowed">1Y</div>
-            </div>
+            <div className="text-txtfade cursor-not-allowed">1Y</div>
           </Tippy>
         </div>
       </div>
