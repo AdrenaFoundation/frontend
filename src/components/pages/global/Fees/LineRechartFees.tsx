@@ -113,7 +113,7 @@ export default function LineRechartFees({
           <YAxis
             domain={[0, 'auto']}
             tickFormatter={formatYAxis}
-            fontSize="13"
+            fontSize="11"
           />
           <Legend />
           <Tooltip content={<CustomToolTip />} cursor={false} />

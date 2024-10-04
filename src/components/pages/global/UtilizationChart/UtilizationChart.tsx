@@ -14,7 +14,7 @@ export default function UtilizationChart() {
     custodiesColors: string[];
   } | null>(null);
 
-  const [period, setPeriod] = useState<string | null>('1d');
+  const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
   useEffect(() => {

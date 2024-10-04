@@ -8,7 +8,7 @@ import LineRechartComposition from './LineRechartComposition';
 export default function CompositionChart() {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
-  const [period, setPeriod] = useState<string | null>('1d');
+  const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
   useEffect(() => {
@@ -77,6 +77,11 @@ export default function CompositionChart() {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+          });
+        } else {
+          return new Date(time).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
           });
         }
       });
