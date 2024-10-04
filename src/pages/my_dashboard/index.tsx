@@ -19,7 +19,13 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { LockedStakeExtended, PageProps, Vest } from '@/types';
+import {
+  AdxLockPeriod,
+  AlpLockPeriod,
+  LockedStakeExtended,
+  PageProps,
+  Vest,
+} from '@/types';
 import {
   addNotification,
   getAdxLockedStakes,
@@ -181,9 +187,15 @@ export default function MyDashboard({
     }
   };
 
-  const handleClickOnUpdateLockedStake = async (
-    lockedStake: LockedStakeExtended,
-  ) => {
+  const handleUpdateLockedStake = async ({
+    lockedStake,
+    updatedDuration,
+    additionalAmount,
+  }: {
+    lockedStake: LockedStakeExtended;
+    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    additionalAmount?: number;
+  }) => {
     // TODO
   };
 
@@ -305,7 +317,10 @@ export default function MyDashboard({
                   className="max-w-[30em]"
                 >
                   {lockedStake ? (
-                    <UpdateLockedStake lockedStake={lockedStake} />
+                    <UpdateLockedStake
+                      lockedStake={lockedStake}
+                      handleUpdateLockedStake={handleUpdateLockedStake}
+                    />
                   ) : null}
                 </Modal>
               )}

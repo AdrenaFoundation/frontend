@@ -28,7 +28,13 @@ import adxIcon from '../public/images/adx.svg';
 import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
-import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
+import {
+  BPS,
+  LP_DECIMALS,
+  PRICE_DECIMALS,
+  RATE_DECIMALS,
+  USD_DECIMALS,
+} from './constant';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AdrenaProgram,
@@ -41,6 +47,7 @@ import {
   ExitPriceAndFee,
   GenesisLock,
   ImageRef,
+  LockedStakeExtended,
   NewPositionPricesAndFee,
   OpenPositionWithSwapAmountAndFees,
   Pool,
@@ -2740,6 +2747,78 @@ export class AdrenaClient {
         feeRedistributionMint: this.cortex.feeRedistributionMint,
       })
       .preInstructions(preInstructions)
+      .transaction();
+
+    return this.signAndExecuteTx(transaction, notification);
+  }
+
+  public async upgradeLockedStake({
+    lockedStake,
+    updatedDuration,
+    additionalAmount,
+    notification,
+  }: {
+    lockedStake: LockedStakeExtended;
+    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    additionalAmount?: number;
+    notification: MultiStepNotification;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const stakedTokenMint =
+      lockedStake.tokenSymbol === 'ADX' ? this.lmTokenMint : this.lpTokenMint;
+
+    const staking = this.getStakingPda(stakedTokenMint);
+    const userStaking = this.getUserStakingPda(owner, staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
+
+    const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
+
+    const stakeResolutionThread = this.getThreadAddressPda(
+      lockedStake.stakeResolutionThreadId,
+    );
+
+    const transaction = await this.adrenaProgram.methods
+      .upgradeLockedStake({
+        stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
+        amount: additionalAmount
+          ? uiToNative(
+              additionalAmount,
+              lockedStake.tokenSymbol === 'ALP'
+                ? this.alpToken.decimals
+                : this.adxToken.decimals,
+            )
+          : null,
+        lockedDays: updatedDuration ?? null,
+      })
+      .accountsStrict({
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        governanceTokenMint: this.governanceTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
+        sablierProgram: this.config.sablierThreadProgram,
+        governanceProgram: this.config.governanceProgram,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        feeRedistributionMint: this.cortex.feeRedistributionMint,
+        owner,
+        fundingAccount,
+        stakingRewardTokenVault,
+        userStaking,
+        staking,
+        stakingStakedTokenVault,
+        stakeResolutionThread,
+      })
       .transaction();
 
     return this.signAndExecuteTx(transaction, notification);

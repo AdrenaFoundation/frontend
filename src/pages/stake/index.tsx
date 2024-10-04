@@ -243,10 +243,41 @@ export default function Stake({
     }
   };
 
-  const handleClickOnUpdateLockedStake = async (
-    lockedStake: LockedStakeExtended,
-  ) => {
-    // TODO
+  const handleUpdateLockedStake = async ({
+    lockedStake,
+    updatedDuration,
+    additionalAmount,
+  }: {
+    lockedStake: LockedStakeExtended;
+    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    additionalAmount?: number;
+  }) => {
+    if (!owner) {
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
+      return;
+    }
+
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Upgrade Locked Stake',
+    ).fire();
+
+    try {
+      await window.adrena.client.upgradeLockedStake({
+        lockedStake,
+        updatedDuration,
+        additionalAmount,
+        notification,
+      });
+
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
+      setUpdateLockedStake(false);
+    } catch (error) {
+      console.error('error', error);
+    }
   };
 
   const handleLockedStakeRedeem = async (
@@ -717,7 +748,10 @@ export default function Stake({
                 className="max-w-[25em]"
               >
                 {lockedStake ? (
-                  <UpdateLockedStake lockedStake={lockedStake} />
+                  <UpdateLockedStake
+                    lockedStake={lockedStake}
+                    handleUpdateLockedStake={handleUpdateLockedStake}
+                  />
                 ) : null}
               </Modal>
             )}

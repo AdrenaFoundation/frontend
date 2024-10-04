@@ -23,8 +23,14 @@ import walletImg from '../../../../public/images/wallet-icon.svg';
 
 export default function UpdateLockedStake({
   lockedStake,
+  handleUpdateLockedStake,
 }: {
   lockedStake: LockedStakeExtended;
+  handleUpdateLockedStake: (p: {
+    lockedStake: LockedStakeExtended;
+    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    additionalAmount?: number;
+  }) => Promise<void>;
 }) {
   const [amount, setAmount] = useState<number | null>(null);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -223,7 +229,7 @@ export default function UpdateLockedStake({
         </div>
 
         <div className="flex flex-col items-center w-20 grow">
-          <div className="font-mono text-2xl">{multipliers.adx}</div>
+          <div className="font-mono text-2xl">{multipliers.adx}x</div>
           <div className="text-txtfade text-sm">ADX token yield</div>
         </div>
 
@@ -243,9 +249,14 @@ export default function UpdateLockedStake({
           size="lg"
           title={errorMessage ? errorMessage : '[U]pgrade'}
           disabled={!!errorMessage || (lockPeriod == actualDuration && !amount)}
-          onClick={() => {
-            //
-          }}
+          onClick={() =>
+            handleUpdateLockedStake({
+              lockedStake,
+              updatedDuration:
+                lockPeriod !== actualDuration ? lockPeriod : undefined,
+              additionalAmount: amount ?? undefined,
+            })
+          }
         />
       </div>
     </div>
