@@ -1,7 +1,9 @@
 {
-  "version": "1.0.2",
+  "version": "1.1.0",
   "name": "thread_program",
-  "docs": ["Program for creating transaction threads on Solana."],
+  "docs": [
+    "Program for creating transaction threads on Solana."
+  ],
   "constants": [
     {
       "name": "SEED_THREAD",
@@ -44,68 +46,90 @@
     },
     {
       "name": "threadExec",
-      "docs": ["Executes the next instruction on thread."],
+      "docs": [
+        "Executes the next instruction on thread."
+      ],
       "accounts": [
         {
           "name": "fee",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The worker's fee account."]
+          "docs": [
+            "The worker's fee account."
+          ]
         },
         {
           "name": "pool",
           "isMut": false,
           "isSigner": false,
-          "docs": ["The active worker pool."]
+          "docs": [
+            "The active worker pool."
+          ]
         },
         {
           "name": "signatory",
           "isMut": true,
           "isSigner": true,
-          "docs": ["The signatory."]
+          "docs": [
+            "The signatory."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to execute."]
+          "docs": [
+            "The thread to execute."
+          ]
         },
         {
           "name": "worker",
           "isMut": false,
           "isSigner": false,
-          "docs": ["The worker."]
+          "docs": [
+            "The worker."
+          ]
         }
       ],
       "args": []
     },
     {
       "name": "threadCreate",
-      "docs": ["Creates a new transaction thread."],
+      "docs": [
+        "Creates a new transaction thread."
+      ],
       "accounts": [
         {
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": ["The payer for account initializations."]
+          "docs": [
+            "The payer for account initializations."
+          ]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["The Solana system program."]
+          "docs": [
+            "The Solana system program."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be created."]
+          "docs": [
+            "The thread to be created."
+          ]
         }
       ],
       "args": [
@@ -149,44 +173,58 @@
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "closeTo",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The address to return the data rent lamports to."]
+          "docs": [
+            "The address to return the data rent lamports to."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be delete."]
+          "docs": [
+            "The thread to be delete."
+          ]
         }
       ],
       "args": []
     },
     {
       "name": "threadInstructionAdd",
-      "docs": ["Appends a new instruction to the thread's instruction set."],
+      "docs": [
+        "Appends a new instruction to the thread's instruction set."
+      ],
       "accounts": [
         {
           "name": "authority",
           "isMut": true,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["The Solana system program."]
+          "docs": [
+            "The Solana system program."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be paused."]
+          "docs": [
+            "The thread to be paused."
+          ]
         }
       ],
       "args": [
@@ -208,13 +246,17 @@
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be edited."]
+          "docs": [
+            "The thread to be edited."
+          ]
         }
       ],
       "args": [
@@ -226,113 +268,149 @@
     },
     {
       "name": "threadKickoff",
-      "docs": ["Kicks off a thread if its trigger condition is active."],
+      "docs": [
+        "Kicks off a thread if its trigger condition is active."
+      ],
       "accounts": [
         {
           "name": "signatory",
           "isMut": true,
           "isSigner": true,
-          "docs": ["The signatory."]
+          "docs": [
+            "The signatory."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to kickoff."]
+          "docs": [
+            "The thread to kickoff."
+          ]
         },
         {
           "name": "worker",
           "isMut": false,
           "isSigner": false,
-          "docs": ["The worker."]
+          "docs": [
+            "The worker."
+          ]
         }
       ],
       "args": []
     },
     {
       "name": "threadPause",
-      "docs": ["Pauses an active thread."],
+      "docs": [
+        "Pauses an active thread."
+      ],
       "accounts": [
         {
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be paused."]
+          "docs": [
+            "The thread to be paused."
+          ]
         }
       ],
       "args": []
     },
     {
       "name": "threadResume",
-      "docs": ["Resumes a paused thread."],
+      "docs": [
+        "Resumes a paused thread."
+      ],
       "accounts": [
         {
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be resumed."]
+          "docs": [
+            "The thread to be resumed."
+          ]
         }
       ],
       "args": []
     },
     {
       "name": "threadReset",
-      "docs": ["Resets a thread's next instruction."],
+      "docs": [
+        "Resets a thread's next instruction."
+      ],
       "accounts": [
         {
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be paused."]
+          "docs": [
+            "The thread to be paused."
+          ]
         }
       ],
       "args": []
     },
     {
       "name": "threadUpdate",
-      "docs": ["Allows an owner to update the mutable properties of a thread."],
+      "docs": [
+        "Allows an owner to update the mutable properties of a thread."
+      ],
       "accounts": [
         {
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "payer",
           "isMut": true,
           "isSigner": true,
-          "docs": ["The payer of the reallocation."]
+          "docs": [
+            "The payer of the reallocation."
+          ]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["The Solana system program"]
+          "docs": [
+            "The Solana system program"
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be updated."]
+          "docs": [
+            "The thread to be updated."
+          ]
         }
       ],
       "args": [
@@ -346,25 +424,33 @@
     },
     {
       "name": "threadWithdraw",
-      "docs": ["Allows an owner to withdraw from a thread's lamport balance."],
+      "docs": [
+        "Allows an owner to withdraw from a thread's lamport balance."
+      ],
       "accounts": [
         {
           "name": "authority",
           "isMut": false,
           "isSigner": true,
-          "docs": ["The authority (owner) of the thread."]
+          "docs": [
+            "The authority (owner) of the thread."
+          ]
         },
         {
           "name": "payTo",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The account to withdraw lamports to."]
+          "docs": [
+            "The account to withdraw lamports to."
+          ]
         },
         {
           "name": "thread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["The thread to be."]
+          "docs": [
+            "The thread to be."
+          ]
         }
       ],
       "args": [
@@ -378,23 +464,31 @@
   "accounts": [
     {
       "name": "Thread",
-      "docs": ["Tracks the current state of a transaction thread on Solana."],
+      "docs": [
+        "Tracks the current state of a transaction thread on Solana."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "authority",
-            "docs": ["The owner of this thread."],
+            "docs": [
+              "The owner of this thread."
+            ],
             "type": "publicKey"
           },
           {
             "name": "bump",
-            "docs": ["The bump, used for PDA validation."],
+            "docs": [
+              "The bump, used for PDA validation."
+            ],
             "type": "u8"
           },
           {
             "name": "createdAt",
-            "docs": ["The cluster clock at the moment the thread was created."],
+            "docs": [
+              "The cluster clock at the moment the thread was created."
+            ],
             "type": {
               "defined": "ClockData"
             }
@@ -407,7 +501,9 @@
           },
           {
             "name": "execContext",
-            "docs": ["The context of the thread's current execution state."],
+            "docs": [
+              "The context of the thread's current execution state."
+            ],
             "type": {
               "option": {
                 "defined": "ExecContext"
@@ -423,12 +519,16 @@
           },
           {
             "name": "id",
-            "docs": ["The id of the thread, given by the authority."],
+            "docs": [
+              "The id of the thread, given by the authority."
+            ],
             "type": "bytes"
           },
           {
             "name": "instructions",
-            "docs": ["The instructions to be executed."],
+            "docs": [
+              "The instructions to be executed."
+            ],
             "type": {
               "vec": {
                 "defined": "SerializableInstruction"
@@ -437,7 +537,9 @@
           },
           {
             "name": "nextInstruction",
-            "docs": ["The next instruction to be executed."],
+            "docs": [
+              "The next instruction to be executed."
+            ],
             "type": {
               "option": {
                 "defined": "SerializableInstruction"
@@ -446,17 +548,23 @@
           },
           {
             "name": "paused",
-            "docs": ["Whether or not the thread is currently paused."],
+            "docs": [
+              "Whether or not the thread is currently paused."
+            ],
             "type": "bool"
           },
           {
             "name": "rateLimit",
-            "docs": ["The maximum number of execs allowed per slot."],
+            "docs": [
+              "The maximum number of execs allowed per slot."
+            ],
             "type": "u64"
           },
           {
             "name": "trigger",
-            "docs": ["The triggering event to kickoff a thread."],
+            "docs": [
+              "The triggering event to kickoff a thread."
+            ],
             "type": {
               "defined": "Trigger"
             }
@@ -468,23 +576,31 @@
   "types": [
     {
       "name": "SerializableAccount",
-      "docs": ["Serialization of a Solana account."],
+      "docs": [
+        "Serialization of a Solana account."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "pubkey",
-            "docs": ["."],
+            "docs": [
+              "."
+            ],
             "type": "publicKey"
           },
           {
             "name": "isSigner",
-            "docs": ["."],
+            "docs": [
+              "."
+            ],
             "type": "bool"
           },
           {
             "name": "isWritable",
-            "docs": ["."],
+            "docs": [
+              "."
+            ],
             "type": "bool"
           }
         ]
@@ -492,18 +608,24 @@
     },
     {
       "name": "SerializableInstruction",
-      "docs": ["Serialization of a Solana instruction."],
+      "docs": [
+        "Serialization of a Solana instruction."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "programId",
-            "docs": ["The program."],
+            "docs": [
+              "The program."
+            ],
             "type": "publicKey"
           },
           {
             "name": "accounts",
-            "docs": ["The accounts."],
+            "docs": [
+              "The accounts."
+            ],
             "type": {
               "vec": {
                 "defined": "SerializableAccount"
@@ -512,7 +634,9 @@
           },
           {
             "name": "data",
-            "docs": ["The data."],
+            "docs": [
+              "The data."
+            ],
             "type": {
               "vec": "u8"
             }
@@ -522,23 +646,31 @@
     },
     {
       "name": "ClockData",
-      "docs": ["Clock data."],
+      "docs": [
+        "Clock data."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "slot",
-            "docs": ["."],
+            "docs": [
+              "."
+            ],
             "type": "u64"
           },
           {
             "name": "epoch",
-            "docs": ["."],
+            "docs": [
+              "."
+            ],
             "type": "u64"
           },
           {
             "name": "unixTimestamp",
-            "docs": ["."],
+            "docs": [
+              "."
+            ],
             "type": "i64"
           }
         ]
@@ -641,19 +773,32 @@
                 "type": "i64"
               }
             ]
+          },
+          {
+            "name": "Periodic",
+            "fields": [
+              {
+                "name": "delay",
+                "type": "u64"
+              }
+            ]
           }
         ]
       }
     },
     {
       "name": "ExecContext",
-      "docs": ["The execution context of a particular transaction thread."],
+      "docs": [
+        "The execution context of a particular transaction thread."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "execIndex",
-            "docs": ["Index of the next instruction to be executed."],
+            "docs": [
+              "Index of the next instruction to be executed."
+            ],
             "type": "u64"
           },
           {
@@ -666,17 +811,23 @@
           },
           {
             "name": "execsSinceSlot",
-            "docs": ["Number of execs in this slot."],
+            "docs": [
+              "Number of execs in this slot."
+            ],
             "type": "u64"
           },
           {
             "name": "lastExecAt",
-            "docs": ["Slot of the last exec"],
+            "docs": [
+              "Slot of the last exec"
+            ],
             "type": "u64"
           },
           {
             "name": "triggerContext",
-            "docs": ["Context for the triggering condition"],
+            "docs": [
+              "Context for the triggering condition"
+            ],
             "type": {
               "defined": "TriggerContext"
             }
@@ -686,7 +837,9 @@
     },
     {
       "name": "ThreadSettings",
-      "docs": ["The properties of threads which are updatable."],
+      "docs": [
+        "The properties of threads which are updatable."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -742,7 +895,9 @@
             "fields": [
               {
                 "name": "dataHash",
-                "docs": ["The account's data hash."],
+                "docs": [
+                  "The account's data hash."
+                ],
                 "type": "u64"
               }
             ]
@@ -752,7 +907,9 @@
             "fields": [
               {
                 "name": "startedAt",
-                "docs": ["The threshold moment the schedule was waiting for."],
+                "docs": [
+                  "The threshold moment the schedule was waiting for."
+                ],
                 "type": "i64"
               }
             ]
@@ -765,7 +922,9 @@
             "fields": [
               {
                 "name": "startedAt",
-                "docs": ["The threshold slot the schedule was waiting for."],
+                "docs": [
+                  "The threshold slot the schedule was waiting for."
+                ],
                 "type": "u64"
               }
             ]
@@ -775,7 +934,9 @@
             "fields": [
               {
                 "name": "startedAt",
-                "docs": ["The threshold epoch the schedule was waiting for."],
+                "docs": [
+                  "The threshold epoch the schedule was waiting for."
+                ],
                 "type": "u64"
               }
             ]
@@ -785,7 +946,9 @@
             "fields": [
               {
                 "name": "startedAt",
-                "docs": ["The threshold moment the schedule was waiting for."],
+                "docs": [
+                  "The threshold moment the schedule was waiting for."
+                ],
                 "type": "i64"
               }
             ]
@@ -795,6 +958,18 @@
             "fields": [
               {
                 "name": "price",
+                "type": "i64"
+              }
+            ]
+          },
+          {
+            "name": "Periodic",
+            "fields": [
+              {
+                "name": "startedAt",
+                "docs": [
+                  "The threshold moment the schedule was waiting for."
+                ],
                 "type": "i64"
               }
             ]
