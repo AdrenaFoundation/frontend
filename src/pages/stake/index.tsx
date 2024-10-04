@@ -30,7 +30,6 @@ import {
   addNotification,
   getAdxLockedStakes,
   getAlpLockedStakes,
-  getLockedStakeRemainingTime,
   nativeToUi,
 } from '@/utils';
 import { getNextStakingRoundStartTime } from '@/utils';
@@ -410,10 +409,7 @@ export default function Stake({
 
       return (
         tokenObj.lockedStakes.reduce((acc, stake) => {
-          const daysRemaining = getLockedStakeRemainingTime(
-            stake.endTime,
-            stake.lockDuration,
-          );
+          const daysRemaining = stake.endTime.toNumber() * 1000 - Date.now();
 
           if (daysRemaining <= 0) {
             return acc + nativeToUi(stake.amount, decimals);

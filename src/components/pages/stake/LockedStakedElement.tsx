@@ -6,11 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended, Token } from '@/types';
-import {
-  formatMilliseconds,
-  getLockedStakeRemainingTime,
-  nativeToUi,
-} from '@/utils';
+import { formatMilliseconds, nativeToUi } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
 
@@ -35,13 +31,10 @@ export default function LockedStakedElement({
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   const calculateTimeRemaining = useCallback(() => {
-    const timeRemaining = getLockedStakeRemainingTime(
-      lockedStake.endTime,
-      lockedStake.lockDuration,
-    );
+    const timeRemaining = lockedStake.endTime.toNumber() * 1000 - Date.now();
 
     setTimeRemaining(timeRemaining);
-  }, [lockedStake.lockDuration, lockedStake.endTime]);
+  }, [lockedStake.endTime]);
 
   useEffect(() => {
     calculateTimeRemaining();
