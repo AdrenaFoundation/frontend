@@ -411,7 +411,7 @@ export default function Stake({
       return (
         tokenObj.lockedStakes.reduce((acc, stake) => {
           const daysRemaining = getLockedStakeRemainingTime(
-            stake.stakeTime,
+            stake.endTime,
             stake.lockDuration,
           );
 
