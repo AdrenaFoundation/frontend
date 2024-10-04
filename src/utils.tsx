@@ -572,14 +572,14 @@ export function getTokenSymbol(symbol: string): string {
 
 // in milliseconds
 export function getLockedStakeRemainingTime(
-  startDate: BN,
+  endTime: BN,
   lockDuration: BN, // in seconds
 ): number {
-  const start = new Date(startDate.toNumber() * 1000).getTime();
+  const start = new Date(
+    endTime.toNumber() * 1000 - lockDuration.toNumber() * 1000,
+  ).getTime();
 
-  const endDate = start + lockDuration.toNumber() * 1000;
-
-  return endDate - Date.now();
+  return Date.now() - start;
 }
 
 export function formatAndFilterLockedStakes(
@@ -708,7 +708,10 @@ export function getMethodDiscriminator(name: string): Buffer {
 export function calculateCappedFeeForExitEarly(
   lockedStake: LockedStakeExtended,
 ): number {
-  const timeElapsed = Date.now() - lockedStake.stakeTime.toNumber() * 1000;
+  const timeElapsed =
+    Date.now() -
+    (lockedStake.endTime.toNumber() * 1000 -
+      lockedStake.lockDuration.toNumber() * 1000);
   const timeRemaining =
     lockedStake.lockDuration.toNumber() * 1000 - timeElapsed;
   const feeRate = timeRemaining / (lockedStake.lockDuration.toNumber() * 1000);
