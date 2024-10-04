@@ -115,7 +115,7 @@ export default function RechartAum({
           <YAxis
             domain={['dataMin', 'dataMax']}
             tickFormatter={formatYAxis}
-            fontSize="13"
+            fontSize="11"
           />
 
           <Tooltip content={<CustomToolTip />} cursor={false} />

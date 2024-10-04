@@ -114,7 +114,7 @@ export default function LineRechartUnrealizedPnl({
 
           <XAxis dataKey="time" fontSize="12" />
 
-          <YAxis domain={[0]} tickFormatter={formatYAxis} fontSize="13" />
+          <YAxis domain={[0]} tickFormatter={formatYAxis} fontSize="11" />
 
           <Tooltip content={<CustomToolTip />} cursor={false} />
 

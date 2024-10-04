@@ -4,7 +4,7 @@ import LineRechartAum from './RechartAum';
 
 export default function AumChart() {
   const [AUM, setAUM] = useState<any>(null);
-  const [period, setPeriod] = useState<string | null>('1d');
+  const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
   useEffect(() => {
@@ -65,6 +65,11 @@ export default function AumChart() {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+          });
+        } else {
+          return new Date(time).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
           });
         }
       });
