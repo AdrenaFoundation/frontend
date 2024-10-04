@@ -570,18 +570,6 @@ export function getTokenSymbol(symbol: string): string {
   return symbol;
 }
 
-// in milliseconds
-export function getLockedStakeRemainingTime(
-  endTime: BN,
-  lockDuration: BN, // in seconds
-): number {
-  const start = new Date(
-    endTime.toNumber() * 1000 - lockDuration.toNumber() * 1000,
-  ).getTime();
-
-  return Date.now() - start;
-}
-
 export function formatAndFilterLockedStakes(
   lockedStakes: LockedStakeExtended[] | [],
   lockedStakesTokenSymbol: string,
