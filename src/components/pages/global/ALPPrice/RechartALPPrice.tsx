@@ -56,7 +56,7 @@ export default function RechartALPPrice({
   setPeriod: (v: string | null) => void;
 }) {
   const formatYAxis = (tickItem: any) => {
-    return formatPriceInfo(tickItem, 0);
+    return formatPriceInfo(tickItem, 6, 6);
   };
 
   return (
