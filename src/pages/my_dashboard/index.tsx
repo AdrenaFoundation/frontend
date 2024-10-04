@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
+import UpdateLockedStake from '@/components/pages/stake/UpdateLockedStake';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
@@ -47,6 +48,7 @@ export default function MyDashboard({
 
   const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
     useState<boolean>(false);
+  const [updateLockedStake, setUpdateLockedStake] = useState<boolean>(false);
   const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
     null,
   );
@@ -179,6 +181,12 @@ export default function MyDashboard({
     }
   };
 
+  const handleClickOnUpdateLockedStake = async (
+    lockedStake: LockedStakeExtended,
+  ) => {
+    // TODO
+  };
+
   const getUserVesting = async () => {
     try {
       const vest = (await window.adrena.client.loadUserVest()) as Vest;
@@ -273,15 +281,41 @@ export default function MyDashboard({
                 lockedStake: LockedStakeExtended,
               ) => {
                 setLockedStake(lockedStake);
+                setUpdateLockedStake(false);
                 setFinalizeLockedStakeRedeem(true);
               }}
-            ></StakesStats>
+              handleClickOnUpdateLockedStake={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setFinalizeLockedStakeRedeem(false);
+                setUpdateLockedStake(true);
+              }}
+            />
+
             <AnimatePresence>
+              {updateLockedStake && (
+                <Modal
+                  title="Upgrade Locked Stake"
+                  close={() => {
+                    setLockedStake(null);
+                    setUpdateLockedStake(false);
+                    setFinalizeLockedStakeRedeem(false);
+                  }}
+                  className="max-w-[30em]"
+                >
+                  {lockedStake ? (
+                    <UpdateLockedStake lockedStake={lockedStake} />
+                  ) : null}
+                </Modal>
+              )}
+
               {finalizeLockedStakeRedeem && (
                 <Modal
                   title="Early Exit"
                   close={() => {
                     setLockedStake(null);
+                    setUpdateLockedStake(false);
                     setFinalizeLockedStakeRedeem(false);
                   }}
                   className="max-w-[25em]"

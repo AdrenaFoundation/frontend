@@ -30,9 +30,8 @@ export default function StakeOverview({
   handleClickOnFinalizeLockedRedeem,
   userPendingUsdcRewards,
   userPendingAdxRewards,
-  roundPendingUsdcRewards,
-  roundPendingAdxRewards,
   pendingGenesisAdxRewards,
+  handleClickOnUpdateLockedStake,
 }: {
   token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
@@ -53,6 +52,7 @@ export default function StakeOverview({
   roundPendingAdxRewards: number;
   pendingGenesisAdxRewards: number;
   nextRoundTime: number;
+  handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const isALP = token === 'ALP';
   const stakingAccount = useStakingAccount(
@@ -390,6 +390,9 @@ export default function StakeOverview({
                   handleRedeem={handleLockedStakeRedeem}
                   handleClickOnFinalizeLockedRedeem={
                     handleClickOnFinalizeLockedRedeem
+                  }
+                  handleClickOnUpdateLockedStake={
+                    handleClickOnUpdateLockedStake
                   }
                 />
               ))
