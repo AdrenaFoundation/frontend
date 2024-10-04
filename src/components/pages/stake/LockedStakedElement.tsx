@@ -19,6 +19,7 @@ export default function LockedStakedElement({
   lockedStake,
   handleRedeem,
   handleClickOnFinalizeLockedRedeem,
+  handleClickOnUpdateLockedStake,
 }: {
   token: Token;
   lockedStake: LockedStakeExtended;
@@ -27,6 +28,7 @@ export default function LockedStakedElement({
     lockedStake: LockedStakeExtended,
     earlyExit: boolean,
   ) => void;
+  handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +81,7 @@ export default function LockedStakedElement({
   return (
     <div
       className={twMerge(
-        'flex flex-col gap-3 border justify-between items-center bg-secondary rounded-xl shadow-lg flex-1',
+        'flex flex-col gap-3 border justify-between items-center bg-secondary rounded-xl shadow-lg flex-1 overflow-hidden',
         lockedStake.resolved && 'border-green',
       )}
       ref={containerRef}
@@ -159,11 +161,13 @@ export default function LockedStakedElement({
               <p className="font-mono">
                 {Math.floor((lockedStake.voteMultiplier / 10_000) * 100)}%
               </p>
+
               <p className="opacity-50">Voting Power</p>
             </li>
           )}
         </ul>
-        <div className="w-full">
+
+        <div className="w-full flex">
           {(() => {
             if (timeRemaining === null) return null;
 
@@ -183,15 +187,25 @@ export default function LockedStakedElement({
             }
 
             return (
-              <Button
-                variant="outline"
-                size="xs"
-                title="Early Exit"
-                className="rounded-lg rounded-t-none border-none py-3 w-full text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
-                onClick={() =>
-                  handleClickOnFinalizeLockedRedeem(lockedStake, true)
-                }
-              />
+              <>
+                <Button
+                  variant="outline"
+                  size="xs"
+                  title="Early Exit"
+                  className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
+                  onClick={() =>
+                    handleClickOnFinalizeLockedRedeem(lockedStake, true)
+                  }
+                />
+
+                <Button
+                  variant="outline"
+                  size="xs"
+                  title="Upgrade"
+                  className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
+                  onClick={() => handleClickOnUpdateLockedStake(lockedStake)}
+                />
+              </>
             );
           })()}
         </div>
