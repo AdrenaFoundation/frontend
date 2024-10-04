@@ -196,7 +196,32 @@ export default function MyDashboard({
     updatedDuration?: AdxLockPeriod | AlpLockPeriod;
     additionalAmount?: number;
   }) => {
-    // TODO
+    if (!owner) {
+      addNotification({
+        type: 'error',
+        title: 'Please connect your wallet',
+      });
+      return;
+    }
+
+    const notification = MultiStepNotification.newForRegularTransaction(
+      'Upgrade Locked Stake',
+    ).fire();
+
+    try {
+      await window.adrena.client.upgradeLockedStake({
+        lockedStake,
+        updatedDuration,
+        additionalAmount,
+        notification,
+      });
+
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
+      setUpdateLockedStake(false);
+    } catch (error) {
+      console.error('error', error);
+    }
   };
 
   const getUserVesting = async () => {
@@ -314,7 +339,7 @@ export default function MyDashboard({
                     setUpdateLockedStake(false);
                     setFinalizeLockedStakeRedeem(false);
                   }}
-                  className="max-w-[30em]"
+                  className="max-w-[28em]"
                 >
                   {lockedStake ? (
                     <UpdateLockedStake

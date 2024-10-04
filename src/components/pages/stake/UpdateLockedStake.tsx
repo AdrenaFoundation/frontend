@@ -18,6 +18,7 @@ import { AdxLockPeriod, AlpLockPeriod, LockedStakeExtended } from '@/types';
 import { formatNumber, nativeToUi } from '@/utils';
 
 import infoIcon from '../../../../public/images/Icons/info.svg';
+import warningIcon from '../../../../public/images/Icons/warning.png';
 import lockIcon from '../../../../public/images/Icons/lock.svg';
 import walletImg from '../../../../public/images/wallet-icon.svg';
 
@@ -99,12 +100,20 @@ export default function UpdateLockedStake({
   return (
     <div className={twMerge('flex-col pb-4 sm:pb-0')}>
       <div className="min-h-[10em] flex flex-col gap-4 items-center justify-center text-center text-sm p-4">
-        <div>
-          This feature allow you to upgrade an existing stake, either in quality
-          (duration) or quantity (amount).
-        </div>
+        <div>Upgrade an existing stake, in duration and/or quantity.</div>
 
         <div className="w-full bg-bcolor h-[1px]" />
+
+        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10">
+          <Image
+            className="opacity-60 absolute left-3 top-auto bottom-auto"
+            src={infoIcon}
+            height={16}
+            width={16}
+            alt="Info icon"
+          />
+          The upgraded stake will accrue rewards right away.
+        </div>
 
         <Tippy
           content={
@@ -116,17 +125,15 @@ export default function UpdateLockedStake({
           }
           placement="auto"
         >
-          <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex">
+          <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
             <Image
-              className="opacity-60 relative mb-auto"
-              src={infoIcon}
+              className="opacity-100 absolute left-3 top-auto bottom-auto"
+              src={warningIcon}
               height={20}
               width={20}
-              alt="Wallet icon"
+              alt="Warning icon"
             />
-            When you do so, the extra weight will be counted toward rewards of
-            the current round, and you&apos;ll renew the contract to stake until
-            the max lock duration.
+            If upgraded, the stake will unlock in {lockPeriod} days.
           </div>
         </Tippy>
       </div>
@@ -217,28 +224,26 @@ export default function UpdateLockedStake({
 
       <div className="text-sm text-txtfade/50 ml-12 mt-4">Benefits</div>
 
-      <div className="w-full justify-around items-center flex mt-4">
-        <div className="flex flex-col items-center w-20 grow">
+      <div className="w-full justify-around items-center flex mt-4 flex-wrap">
+        <div className="flex flex-col items-center w-[5em] min-w-[5em] grow justify-center">
           <div className="font-mono text-2xl">{lockPeriod}</div>
-          <div className="text-txtfade text-sm">days</div>
+          <div className="text-txtfade text-xs">days</div>
         </div>
 
-        <div className="flex flex-col items-center w-20 grow">
+        <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
           <div className="font-mono text-2xl">{multipliers.usdc}x</div>
-          <div className="text-txtfade text-sm">USDC yield</div>
+          <div className="text-txtfade text-xs">USDC yield</div>
         </div>
 
-        <div className="flex flex-col items-center w-20 grow">
+        <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
           <div className="font-mono text-2xl">{multipliers.adx}x</div>
-          <div className="text-txtfade text-sm">ADX token yield</div>
+          <div className="text-txtfade text-xs">ADX yield</div>
         </div>
 
         {lockedStake.tokenSymbol === 'ADX' && multipliers.votes ? (
-          <div className="flex flex-col items-center w-20 grow">
+          <div className="flex flex-col items-center w-[6em] min-w-[6em] grow justify-center">
             <div className="font-mono text-2xl">{multipliers.votes}x</div>
-            <div className="text-txtfade text-sm">
-              Base voting power multiplier
-            </div>
+            <div className="text-txtfade text-xs">Voting power</div>
           </div>
         ) : null}
       </div>

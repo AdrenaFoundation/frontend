@@ -745,7 +745,7 @@ export default function Stake({
                   setUpdateLockedStake(false);
                   setFinalizeLockedStakeRedeem(false);
                 }}
-                className="max-w-[25em]"
+                className="max-w-[28em]"
               >
                 {lockedStake ? (
                   <UpdateLockedStake
