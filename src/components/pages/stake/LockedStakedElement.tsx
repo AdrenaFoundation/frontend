@@ -36,12 +36,12 @@ export default function LockedStakedElement({
 
   const calculateTimeRemaining = useCallback(() => {
     const timeRemaining = getLockedStakeRemainingTime(
-      lockedStake.stakeTime,
+      lockedStake.endTime,
       lockedStake.lockDuration,
     );
 
     setTimeRemaining(timeRemaining);
-  }, [lockedStake.lockDuration, lockedStake.stakeTime]);
+  }, [lockedStake.lockDuration, lockedStake.endTime]);
 
   useEffect(() => {
     calculateTimeRemaining();
