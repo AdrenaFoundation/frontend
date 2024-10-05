@@ -217,6 +217,7 @@ export default function StakeOverview({
                 <FormatNumber
                   nb={userPendingUsdcRewards}
                   isDecimalDimmed={false}
+                  className="font-bold"
                 />
                 <div className="ml-1 text-sm mt-[1px]">USDC</div>
               </div>
@@ -227,6 +228,7 @@ export default function StakeOverview({
                     <FormatNumber
                       nb={userPendingAdxRewards}
                       isDecimalDimmed={false}
+                      className="font-bold"
                     />
                     <div className="ml-1 text-sm mt-[1px]">ADX</div>
                   </div>
@@ -260,7 +262,8 @@ export default function StakeOverview({
                       <FormatNumber
                         nb={pendingGenesisAdxRewards}
                         isDecimalDimmed={false}
-                        className="text-blue"
+                        className="text-blue font-bold"
+                        prefix='+'
                       />
                       <span className="text-blue ml-1 mt-[2px]">ADX</span>
                     </div>
