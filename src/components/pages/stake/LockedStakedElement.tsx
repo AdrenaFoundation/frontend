@@ -8,7 +8,9 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended, Token } from '@/types';
 import { formatMilliseconds, nativeToUi } from '@/utils';
 
+import adxIcon from '../../../../public/images/adx.svg';
 import lockIcon from '../../../../public/images/Icons/lock.svg';
+import usdcIcon from '../../../../public/images/usdc.svg';
 
 export default function LockedStakedElement({
   token,
@@ -129,10 +131,13 @@ export default function LockedStakedElement({
       <div className="flex-col w-full flex items-center flex-none">
         <ul className="flex flex-row border-y border-bcolor w-full items-center flex-none">
           <li className="flex-1 p-3 text-center">
-            <p className="font-mono">
+            <p className="font-mono flex items-center justify-center">
               {Math.floor((lockedStake.lmRewardMultiplier / 10_000) * 100)}%
             </p>
-            <p className="opacity-50">ADX Emissions</p>
+            <div className="flex items-center justify-center">
+              <Image src={adxIcon} width={16} height={16} alt="ADX icon" className="opacity-70" />
+              <p className="opacity-50 ml-1">Emissions</p>
+            </div>
           </li>
 
           <li
@@ -146,7 +151,10 @@ export default function LockedStakedElement({
             <p className="font-mono">
               {Math.floor((lockedStake.rewardMultiplier / 10_000) * 100)}%
             </p>
-            <p className="opacity-50">USDC yield</p>
+            <div className="flex items-center justify-center">
+              <Image src={usdcIcon} width={16} height={16} alt="USDC icon" className="opacity-80" />
+              <p className="opacity-50 ml-1">yield</p>
+            </div>
           </li>
 
           {lockedStake.voteMultiplier > 0 && (
