@@ -27,7 +27,7 @@ function CustomToolTip(props: any) {
         {payload.map((item: any) => (
           <p
             key={item.dataKey}
-            className="text-lg font-mono"
+            className="text-lg font-mono text-center"
             style={{ color: item.fill }}
           >
             {formatPriceInfo(item.value)}

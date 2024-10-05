@@ -20,19 +20,20 @@ function CustomToolTip(props: any) {
 
   if (active && payload && payload.length) {
     return (
-      <div className="bg-third p-3 border border-white rounded-lg">
+      <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
         <p className="text-lg mb-2 font-mono">{label}</p>
         {payload.map((item: any) => (
-          <p
+          <div
             key={item.dataKey}
-            className="text-sm font-mono"
+            className="text-sm font-mono flex justify-between"
             style={{ color: item.fill }}
           >
-            {item.dataKey}: {formatPriceInfo(item.value)}
-          </p>
+            <span style={{ color: item.fill }}>{item.dataKey}:</span>
+            <span className="ml-2 font-mono" style={{ color: item.fill }}>{formatPriceInfo(item.value, 2, 2)}</span>
+          </div>
         ))}
       </div>
-    );
+  );
   }
 
   return null;

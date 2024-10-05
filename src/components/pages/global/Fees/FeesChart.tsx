@@ -92,7 +92,7 @@ export default function FeesChart() {
           name: time,
           'Swap Fees': cumulative_swap_fee_usd[i],
           'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i],
-          'Open/Close Position Fees': cumulative_close_position_fee_usd[i],
+          'Open/Close Fees': cumulative_close_position_fee_usd[i],
           'Liquidation Fees': cumulative_liquidation_fee_usd[i],
           'Borrow Fees': cumulative_borrow_fee_usd[i],
         }),
@@ -133,7 +133,7 @@ export default function FeesChart() {
           color: '#2775ca',
         },
         {
-          name: 'Open/Close Position Fees',
+          name: 'Open/Close Fees',
           color: '#84CC90',
         },
         {

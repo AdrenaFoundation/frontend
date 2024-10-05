@@ -127,7 +127,7 @@ export default function UnrealizedPnlChart() {
         ...infos.reduce(
           (acc, { custody, values }) => ({
             ...acc,
-            [custody.tokenInfo.symbol]: values[i],
+            [custody.tokenInfo.symbol === 'USDC' ? 'USDC (all shorts)' : custody.tokenInfo.symbol]: values[i],
           }),
           {} as { [key: string]: number },
         ),

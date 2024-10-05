@@ -134,11 +134,13 @@ export default function CumulativePnlChart() {
       const formatted = timeStamp.map((time: string, i: number) => ({
         time,
         ...infos.reduce(
-          (acc, { custody, values }) => ({
-            ...acc,
-            [custody.tokenInfo.symbol]: values[i],
-          }),
-          {} as { [key: string]: number },
+          (acc, { custody, values }) => {
+            if (custody.tokenInfo.symbol !== 'USDC') {
+              acc[custody.tokenInfo.symbol] = values[i];
+            }
+            return acc;
+          },
+          {} as { [key: string]: number }
         ),
         Total: totalInfos[i],
       }));
@@ -184,13 +186,13 @@ export default function CumulativePnlChart() {
       labels={[
         { name: 'Total', color: '#ff0000' },
         ...Object.keys(infos.formattedData[0])
-          .filter((key) => key !== 'time' && key !== 'Total')
-          .map((x, i) => {
-            return {
-              name: x,
-              color: infos.custodiesColors[i],
-            };
-          }),
+          .filter(key => key !== 'time' && key !== 'Total')
+          .map((x, i) => ({
+            name: x,
+            color: infos.custodiesColors.filter(
+              (_, index) => window.adrena.client.custodies[index].tokenInfo.symbol !== 'USDC'
+            )[i],
+          })),
       ]}
       period={period}
       setPeriod={setPeriod}
