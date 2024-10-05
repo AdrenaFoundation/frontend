@@ -25,7 +25,7 @@ export default function position() {
         <meta
           name="twitter:image"
           content={
-            'https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og'
+            'https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?username=test'
           }
         />
       </Head>
