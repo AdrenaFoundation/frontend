@@ -11,6 +11,8 @@ export default function OpenInterestChart() {
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
+  const [totalOpenInterest, setTotalOpenInterest] = useState<number>(0);
+
   useEffect(() => {
     periodRef.current = period;
     getCustodyInfo();
@@ -103,7 +105,7 @@ export default function OpenInterestChart() {
       const custodyInfos = [];
 
       let custodyData = {
-        // USDC: { short: [], long: [] },
+        USDC: { short: [], long: [] },
         WBTC: { short: [], long: [] },
         BONK: { short: [], long: [] },
         JITOSOL: { short: [], long: [] },
@@ -123,20 +125,28 @@ export default function OpenInterestChart() {
         };
       }
 
-      const formatted = timeStamp.map((time: string, i: number) => ({
-        time,
-        WBTC:
-          (Number(custodyData.WBTC.short[i]) ?? 0) +
-          (Number(custodyData.WBTC.long[i]) ?? 0),
-        // USDC:
-        //   Number(custodyData.USDC.short[i]) + Number(custodyData.USDC.long[i]),
-        BONK:
-          Number(custodyData.BONK.short[i]) + Number(custodyData.BONK.long[i]),
-        JITOSOL:
+      const formatted = timeStamp.map((time: string, i: number) => {
+        const total = 
+          Number(custodyData.WBTC.long[i]) +
+          Number(custodyData.BONK.long[i]) +
+          Number(custodyData.JITOSOL.long[i]) +
           Number(custodyData.JITOSOL.short[i]) +
-          Number(custodyData.JITOSOL.long[i]),
-      }));
+          Number(custodyData.WBTC.short[i]) + 
+          Number(custodyData.BONK.short[i]);
 
+        return {
+          time,
+          WBTC: Number(custodyData.WBTC.long[i]),
+          BONK: Number(custodyData.BONK.long[i]),
+          JITOSOL: Number(custodyData.JITOSOL.long[i]),
+          USDC: Number(custodyData.WBTC.short[i]) + 
+                Number(custodyData.BONK.short[i]) +
+                Number(custodyData.JITOSOL.short[i]),
+          total,
+        };
+      });
+
+      setTotalOpenInterest(formatted[formatted.length - 1].total);
       setCustody(formatted);
       setCustodyInfo(custodyInfos);
     } catch (e) {
@@ -154,7 +164,8 @@ export default function OpenInterestChart() {
 
   return (
     <LineRechartOpenInterest
-      title="Open Interest USD"
+      title={`Open Interest USD`}
+      total_oi={totalOpenInterest}
       data={custody}
       labels={
         custodyInfo.map((info: TokenInfo) => ({

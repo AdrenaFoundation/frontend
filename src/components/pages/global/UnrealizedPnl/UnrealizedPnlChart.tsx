@@ -15,6 +15,7 @@ export default function UnrealizedPnlChart() {
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
+  const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState<number>(0);
 
   useEffect(() => {
     periodRef.current = period;
@@ -129,6 +130,13 @@ export default function UnrealizedPnlChart() {
         Total: totalInfos[i],
       }));
 
+      const lastDataPoint = formatted[formatted.length - 1];
+      const calculatedTotalUnrealizedPnl = Object.entries(lastDataPoint)
+        .filter(([key]) => key !== 'time' && key !== 'Total')
+        .reduce((sum, [_, value]) => sum + (value as number), 0);
+
+      setTotalUnrealizedPnl(calculatedTotalUnrealizedPnl);
+
       setInfos({
         formattedData: formatted,
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
@@ -159,6 +167,7 @@ export default function UnrealizedPnlChart() {
   return (
     <LineRechartPercentage
       title="Live Traders Unrealized PnL"
+      sub_value={totalUnrealizedPnl}
       data={infos.formattedData}
       labels={[
         { name: 'Total', color: '#ff0000' },

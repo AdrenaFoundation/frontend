@@ -14,6 +14,7 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
 
 function CustomToolTip(props: any) {
@@ -41,12 +42,14 @@ function CustomToolTip(props: any) {
 
 export default function RechartALPPrice({
   title,
+  sub_value,
   data,
   labels,
   period,
   setPeriod,
 }: {
-  title: string;
+    title: string;
+  sub_value: number;
   data: any;
   labels: {
     name: string;
@@ -62,7 +65,16 @@ export default function RechartALPPrice({
   return (
     <div className="flex flex-col h-full w-full">
       <div className="flex mb-3 justify-between items-center">
-        <h2 className="">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="">{title}</h2>
+          <FormatNumber
+            nb={sub_value}
+            className="text-sm text-txtfade"
+            prefix="($"
+            suffix=")"
+            precision={4}
+          />
+        </div>
 
         <div className="flex gap-2 text-sm">
           <div

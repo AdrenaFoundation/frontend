@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
 
 function CustomToolTip(props: any) {
@@ -39,12 +40,14 @@ function CustomToolTip(props: any) {
 
 export default function LineRechartFees({
   title,
+  sub_value,
   data,
   labels,
   period,
   setPeriod,
 }: {
   title: string;
+  sub_value: number;
   data: any;
   labels: {
     name: string;
@@ -60,7 +63,16 @@ export default function LineRechartFees({
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
-        <h2 className="">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="">{title}</h2>
+          <FormatNumber
+            nb={sub_value}
+            className="text-sm text-txtfade"
+            prefix="(tot. $"
+            suffix=")"
+            precision={0}
+          />
+        </div>
 
         <div className="flex gap-2 text-sm">
           <div

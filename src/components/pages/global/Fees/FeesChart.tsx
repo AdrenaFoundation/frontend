@@ -5,6 +5,7 @@ import LineRechartFees from './LineRechartFees';
 export default function FeesChart() {
   const [chartData, setChartData] = useState<any>(null);
   const [period, setPeriod] = useState<string | null>('7d');
+  const [totalFees, setTotalFees] = useState<number>(0);
   const periodRef = useRef(period);
 
   useEffect(() => {
@@ -97,6 +98,12 @@ export default function FeesChart() {
         }),
       );
 
+      const lastDataPoint = formattedData[formattedData.length - 1];
+      const totalFees = Object.entries(lastDataPoint)
+        .filter(([key]) => key !== 'time')
+        .reduce((sum, [_, value]) => sum + (Number(value) || 0), 0);
+      setTotalFees(totalFees);
+
       setChartData(formattedData);
     } catch (e) {
       console.error(e);
@@ -114,6 +121,7 @@ export default function FeesChart() {
   return (
     <LineRechartFees
       title={'Cumulative Fees'}
+      sub_value={totalFees}
       data={chartData}
       labels={[
         {

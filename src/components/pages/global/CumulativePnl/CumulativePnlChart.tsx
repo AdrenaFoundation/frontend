@@ -16,6 +16,8 @@ export default function CumulativePnlChart() {
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
+  const [totalRealizedPnl, setTotalRealizedPnl] = useState<number>(0);
+
   useEffect(() => {
     periodRef.current = period;
     getCustodyInfo();
@@ -141,6 +143,12 @@ export default function CumulativePnlChart() {
         Total: totalInfos[i],
       }));
 
+      const lastDataPoint = formatted[formatted.length - 1];
+      const calculatedTotalRealizedPnl = Object.entries(lastDataPoint)
+        .filter(([key]) => key !== 'time' && key !== 'Total')
+        .reduce((sum, [_, value]) => sum + (value as number), 0);
+
+      setTotalRealizedPnl(calculatedTotalRealizedPnl);
       setInfos({
         formattedData: formatted,
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
@@ -171,6 +179,7 @@ export default function CumulativePnlChart() {
   return (
     <LineRechartPercentage
       title="All-time Traders Realized PnL"
+      sub_value={totalRealizedPnl}
       data={infos.formattedData}
       labels={[
         { name: 'Total', color: '#ff0000' },

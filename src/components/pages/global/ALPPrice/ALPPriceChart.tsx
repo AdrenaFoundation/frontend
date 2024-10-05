@@ -107,6 +107,7 @@ export default function ALPPriceChart() {
   return (
     <LineRechartAum
       title={'ALP Price'}
+      sub_value={chartData[chartData.length - 1].value}
       data={chartData}
       labels={[{ name: 'value' }]}
       period={period}

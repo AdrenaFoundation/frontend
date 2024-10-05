@@ -106,6 +106,7 @@ export default function AumChart() {
   return (
     <LineRechartAum
       title={'AUM'}
+      sub_value={AUM[AUM.length - 1].value}
       data={AUM}
       labels={[{ name: 'value' }]}
       period={period}
