@@ -1,7 +1,7 @@
 import { Connection } from '@solana/web3.js';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
 
 import { UserProfileExtended } from '@/types';
@@ -47,8 +47,9 @@ export default function Header({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
-  const { pathname } = useRouter();
+  const pathname = usePathname();
   const router = useRouter();
+  const query = useSearchParams();
 
   const clusterSwitchEnabled = false;
 
@@ -131,33 +132,13 @@ export default function Header({
             }
           >
             <MenuItems>
-              <MenuItem
-                selected={window.adrena.cluster === 'devnet'}
-                onClick={() => {
-                  router.replace({
-                    query: {
-                      ...router.query,
-                      cluster: 'devnet',
-                    },
-                  });
-                }}
-              >
+              <MenuItem selected={window.adrena.cluster === 'devnet'}>
                 Devnet
               </MenuItem>
 
               <MenuSeparator />
 
-              <MenuItem
-                selected={window.adrena.cluster === 'mainnet'}
-                onClick={() => {
-                  router.replace({
-                    query: {
-                      ...router.query,
-                      cluster: 'mainnet',
-                    },
-                  });
-                }}
-              >
+              <MenuItem selected={window.adrena.cluster === 'mainnet'}>
                 Mainnet
               </MenuItem>
             </MenuItems>
