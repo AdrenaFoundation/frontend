@@ -16,7 +16,9 @@ import { getNextStakingRoundStartTime } from '@/utils';
 
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
+import amountIcon from '../../../../public/images/Icons/amount.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
+import stopwatchIcon from '../../../../public/images/Icons/stopwatch.svg';
 
 export default function StakeOverview({
   token,
@@ -60,6 +62,11 @@ export default function StakeOverview({
   );
   const isMobile = useBetterMediaQuery('(max-width: 450px)');
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    size: 'desc' as 'asc' | 'desc',
+    duration: 'asc' as 'asc' | 'desc',
+    lastClicked: 'size' as 'size' | 'duration'
+  });
 
   const handleClaim = async () => {
     setIsClaimingRewards(true);
@@ -69,6 +76,19 @@ export default function StakeOverview({
     } finally {
       setIsClaimingRewards(false);
     }
+  };
+
+  const handleSort = (key: 'size' | 'duration') => {
+    setSortConfig(prev => ({
+      ...prev,
+      [key]: prev[key] === 'desc' ? 'asc' : 'desc',
+      lastClicked: key
+    }));
+  };
+
+  const getEndDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   };
 
   return (
@@ -363,39 +383,60 @@ export default function StakeOverview({
         <div className="px-5">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-semibold">
-              My Locked Stakes{' '}
-              {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
+              My Locked Stakes {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
             </h3>
-            <Button
-              className="px-8"
-              variant="primary"
-              size="sm"
-              title={totalLockedStake !== 0 ? 'Add Stake' : 'Start Staking'}
-              onClick={() =>
-                handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
-              }
-            />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center text-xs bg-secondary rounded-full p-[2px] border border-bcolor">
+                <button
+                  className="px-2 py-1 rounded-full transition-colors flex items-center"
+                  onClick={() => handleSort('size')}
+                >
+                  <Image src={amountIcon} alt="Amount" width={12} height={12} />
+                  <span className="ml-1 text-txtfade text-[10px]">{sortConfig.size === 'asc' ? '↑' : '↓'}</span>
+                </button>
+                <div className="w-px h-4 bg-bcolor mx-[1px]"></div>
+                <button
+                  className="px-2 py-1 rounded-full transition-colors flex items-center"
+                  onClick={() => handleSort('duration')}
+                >
+                  <Image src={stopwatchIcon} alt="Duration" width={12} height={12} />
+                  <span className="ml-1 text-txtfade text-[10px]">{sortConfig.duration === 'asc' ? '↑' : '↓'}</span>
+                </button>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                title="Add Stake"
+                className="px-5"
+                onClick={() => handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {lockedStakes && lockedStakes.length > 0 ? (
               lockedStakes
-                .sort((a, b) => b.amount.toNumber() - a.amount.toNumber())
+                .sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
+                  const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
+                  const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
+                  const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
+                  const durationDiff = (
+                    getEndDate(Number(a.endTime)).getTime() - getEndDate(Number(b.endTime)).getTime()
+                  ) * durationModifier;
+                  
+                  if (sortConfig.lastClicked === 'size') {
+                    return sizeDiff || durationDiff;
+                  } else {
+                    return durationDiff || sizeDiff;
+                  }
+                })
                 .map((lockedStake, i) => (
                   <LockedStakedElement
                     lockedStake={lockedStake}
                     key={i}
-                    token={
-                      isALP
-                        ? window.adrena.client.alpToken
-                        : window.adrena.client.adxToken
-                    }
+                    token={isALP ? window.adrena.client.alpToken : window.adrena.client.adxToken}
                     handleRedeem={handleLockedStakeRedeem}
-                    handleClickOnFinalizeLockedRedeem={
-                      handleClickOnFinalizeLockedRedeem
-                    }
-                    handleClickOnUpdateLockedStake={
-                      handleClickOnUpdateLockedStake
-                    }
+                    handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
+                    handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
                   />
                 ))
             ) : (
