@@ -4671,8 +4671,14 @@ export class AdrenaClient {
 
     let result: RpcResponseAndContext<SignatureResult> | null = null;
 
+    const latestBlockHash = await this.connection.getLatestBlockhash();
+
     try {
-      result = await this.connection.confirmTransaction(txHash);
+      result = await this.connection.confirmTransaction({
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+        signature: txHash,
+      });
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txHash);
