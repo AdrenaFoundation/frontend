@@ -16,6 +16,7 @@ export default function TabSelect<T extends string | number>({
     title: T;
     icon?: string;
     activeColor?: string;
+    disabled?: boolean;
   }[];
   onClick: (title: T, index: number) => void;
   className?: string;
@@ -41,7 +42,7 @@ export default function TabSelect<T extends string | number>({
         wrapperClassName,
       )}
     >
-      {tabs.map(({ title, activeColor }, index) => (
+      {tabs.map(({ title, activeColor, disabled }, index) => (
         <div
           className={twMerge(
             'ext-center p-1 w-full cursor-pointer z-10',
@@ -51,10 +52,13 @@ export default function TabSelect<T extends string | number>({
                 ? `opacity-100 border-b-[0.3em] ${activeColor}`
                 : 'opacity-100 border-b-[0.3em] border-highlight'
               : 'opacity-50 border-b-[1px]',
+            disabled && 'opacity-25 cursor-not-allowed',
           )}
           ref={refs[index]}
           key={title}
           onClick={() => {
+            if (disabled) return;
+
             onClick(title, index);
             setActiveTab(index);
           }}

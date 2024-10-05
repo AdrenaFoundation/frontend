@@ -19,6 +19,7 @@ export default function ADXStakeOverview({
   handleClickOnRedeem,
   handleClickOnClaimRewards,
   handleClickOnFinalizeLockedRedeem,
+  handleClickOnUpdateLockedStake,
   className,
 }: {
   totalLiquidStaked: number | null;
@@ -30,6 +31,9 @@ export default function ADXStakeOverview({
   handleClickOnRedeem: () => void;
   handleClickOnClaimRewards: () => void;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleClickOnUpdateLockedStake: (
+    lockedStake: LockedStakeExtended,
+  ) => Promise<void>;
   className?: string;
 }) {
   return (
@@ -158,6 +162,9 @@ export default function ADXStakeOverview({
                     handleClickOnFinalizeLockedRedeem={
                       handleClickOnFinalizeLockedRedeem
                     }
+                    handleClickOnUpdateLockedStake={
+                      handleClickOnUpdateLockedStake
+                    }
                   />
                 ))
               ) : (
@@ -209,7 +216,8 @@ export default function ADXStakeOverview({
             * ADX and USDC rewards accrue automatically every ~6 hours and get
             <span className="underline"> auto-claimed</span> every ~8 days. You
             can manually claim rewards. The locked ADX tokens can be redeemed
-            once the locking period is over. Rewards from liquid and locked stake are claimed together.
+            once the locking period is over. Rewards from liquid and locked
+            stake are claimed together.
           </span>
         ) : null}
       </StyledSubContainer>

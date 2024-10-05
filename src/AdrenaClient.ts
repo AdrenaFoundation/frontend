@@ -28,7 +28,13 @@ import adxIcon from '../public/images/adx.svg';
 import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
-import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
+import {
+  BPS,
+  LP_DECIMALS,
+  PRICE_DECIMALS,
+  RATE_DECIMALS,
+  USD_DECIMALS,
+} from './constant';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AdrenaProgram,
@@ -41,6 +47,7 @@ import {
   ExitPriceAndFee,
   GenesisLock,
   ImageRef,
+  LockedStakeExtended,
   NewPositionPricesAndFee,
   OpenPositionWithSwapAmountAndFees,
   Pool,
@@ -275,7 +282,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) { }
+  ) {}
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
     this.readonlyAdrenaProgram = program;
@@ -427,14 +434,14 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-            name: string;
-            color: string;
-            symbol: string;
-            image: ImageRef;
-            coingeckoId: string;
-            decimals: number;
-            pythPriceUpdateV2: PublicKey;
-          }
+              name: string;
+              color: string;
+              symbol: string;
+              image: ImageRef;
+              coingeckoId: string;
+              decimals: number;
+              pythPriceUpdateV2: PublicKey;
+            }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -529,8 +536,7 @@ export class AdrenaClient {
           nativeToUi(
             custody.nativeObject.volumeStats.liquidationUsd,
             USD_DECIMALS,
-          )
-        ,
+          ),
         0,
       ),
       totalLiquidationVolume: custodies.reduce(
@@ -1823,13 +1829,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-          swappedTokenDecimals: tokenB.decimals,
-          swappedTokenPrice: tokenBPrice,
-        }
+            swappedTokenDecimals: tokenB.decimals,
+            swappedTokenPrice: tokenBPrice,
+          }
         : {
-          swappedTokenDecimals: usdcToken.decimals,
-          swappedTokenPrice: usdcTokenPrice,
-        };
+            swappedTokenDecimals: usdcToken.decimals,
+            swappedTokenPrice: usdcTokenPrice,
+          };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -2012,9 +2018,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-        position,
-        collateralAmount: addedCollateral,
-      })
+      position,
+      collateralAmount: addedCollateral,
+    })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2746,6 +2752,78 @@ export class AdrenaClient {
     return this.signAndExecuteTx(transaction, notification);
   }
 
+  public async upgradeLockedStake({
+    lockedStake,
+    updatedDuration,
+    additionalAmount,
+    notification,
+  }: {
+    lockedStake: LockedStakeExtended;
+    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    additionalAmount?: number;
+    notification: MultiStepNotification;
+  }) {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const owner = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    const stakedTokenMint =
+      lockedStake.tokenSymbol === 'ADX' ? this.lmTokenMint : this.lpTokenMint;
+
+    const staking = this.getStakingPda(stakedTokenMint);
+    const userStaking = this.getUserStakingPda(owner, staking);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
+
+    const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
+
+    const stakeResolutionThread = this.getThreadAddressPda(
+      lockedStake.stakeResolutionThreadId,
+    );
+
+    const transaction = await this.adrenaProgram.methods
+      .upgradeLockedStake({
+        stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
+        amount: additionalAmount
+          ? uiToNative(
+              additionalAmount,
+              lockedStake.tokenSymbol === 'ALP'
+                ? this.alpToken.decimals
+                : this.adxToken.decimals,
+            )
+          : null,
+        lockedDays: updatedDuration ?? null,
+      })
+      .accountsStrict({
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        cortex: AdrenaClient.cortexPda,
+        governanceTokenMint: this.governanceTokenMint,
+        governanceRealm: this.governanceRealm,
+        governanceRealmConfig: this.governanceRealmConfig,
+        governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
+        governanceGoverningTokenOwnerRecord:
+          this.getGovernanceGoverningTokenOwnerRecordPda(owner),
+        sablierProgram: this.config.sablierThreadProgram,
+        governanceProgram: this.config.governanceProgram,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        feeRedistributionMint: this.cortex.feeRedistributionMint,
+        owner,
+        fundingAccount,
+        stakingRewardTokenVault,
+        userStaking,
+        staking,
+        stakingStakedTokenVault,
+        stakeResolutionThread,
+      })
+      .transaction();
+
+    return this.signAndExecuteTx(transaction, notification);
+  }
+
   public async removeLiquidStake({
     owner,
     amount,
@@ -2949,7 +3027,9 @@ export class AdrenaClient {
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
-      recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+      // Use finalize to get the latest blockhash accepted by leader
+      recentBlockhash: (await this.connection.getLatestBlockhash('finalized'))
+        .blockhash,
       instructions: transaction.instructions,
     }).compileToV0Message();
 
@@ -4106,9 +4186,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                  position.stopLossClosePositionPrice,
-                  PRICE_DECIMALS,
-                )
+                    position.stopLossClosePositionPrice,
+                    PRICE_DECIMALS,
+                  )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4167,7 +4247,7 @@ export class AdrenaClient {
         };
       })();
 
-      // pnl from lossUsd and profitsUsd are calculated taking account exitFee and borrowFee
+      // pnl from lossUsd and profitsUsd are calculated
       const pnl = (() => {
         if (!profitsAndLosses) return null;
 
@@ -4179,13 +4259,9 @@ export class AdrenaClient {
       const priceChangeUsd = (() => {
         if (!profitsAndLosses) return null;
 
-        return (
-          (profitsAndLosses.lossUsd !== 0
-            ? profitsAndLosses.lossUsd
-            : profitsAndLosses.profitUsd) +
-          positionExtended.exitFeeUsd +
-          profitsAndLosses.borrowFeeUsd
-        );
+        return profitsAndLosses.lossUsd !== 0
+          ? profitsAndLosses.lossUsd
+          : profitsAndLosses.profitUsd;
       })();
 
       const leverage =
@@ -4483,8 +4559,10 @@ export class AdrenaClient {
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
-      recentBlockhash: (await this.readonlyConnection.getLatestBlockhash())
-        .blockhash,
+      // Use finalize to get the latest blockhash accepted by the leader
+      recentBlockhash: (
+        await this.readonlyConnection.getLatestBlockhash('finalized')
+      ).blockhash,
       instructions,
     }).compileToV0Message();
 
@@ -4519,9 +4597,9 @@ export class AdrenaClient {
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
-    transaction.recentBlockhash = (
-      await this.connection.getLatestBlockhash()
-    ).blockhash;
+    transaction.recentBlockhash =
+      // Use finalized to get the latest blockhash accepted by the leader
+      (await this.connection.getLatestBlockhash('finalized')).blockhash;
 
     transaction.feePayer = wallet.publicKey;
 
@@ -4597,8 +4675,17 @@ export class AdrenaClient {
 
     let result: RpcResponseAndContext<SignatureResult> | null = null;
 
+    // use finalized to get the latest blockhash accepted by the leader
+    const latestBlockHash = await this.connection.getLatestBlockhash(
+      'finalized',
+    );
+
     try {
-      result = await this.connection.confirmTransaction(txHash);
+      result = await this.connection.confirmTransaction({
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+        signature: txHash,
+      });
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txHash);

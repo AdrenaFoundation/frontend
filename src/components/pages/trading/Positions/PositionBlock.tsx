@@ -13,6 +13,7 @@ import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
+import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
 
@@ -72,43 +73,54 @@ export default function PositionBlock({
   const positionName = (
     <div className="flex items-center justify-center h-full">
       <Image
-        className="w-[1em] h-[1em] mr-1"
+        className="w-[2em] h-[2em] mr-2"
         src={getTokenImage(position.token)}
         width={200}
         height={200}
         alt={`${getTokenSymbol(position.token.symbol)} logo`}
       />
 
-      {window.location.pathname !== '/trade' ? (
-        <Link
-          href={`/trade?pair=USDC_${getTokenSymbol(
-            position.token.symbol,
-          )}&action=${position.side}`}
-          target=""
-        >
-          <div className="uppercase underline font-boldy text-sm lg:text-xl">
-            {getTokenSymbol(position.token.symbol)}
-          </div>
-        </Link>
-      ) : (
-        <div className="uppercase font-boldy text-sm lg:text-lg">
-          {getTokenSymbol(position.token.symbol)}
-        </div>
-      )}
+      <div className="flex flex-col">
+        <div className="flex items-center justify-center">
+          {window.location.pathname !== '/trade' ? (
+            <Link
+              href={`/trade?pair=USDC_${getTokenSymbol(
+                position.token.symbol,
+              )}&action=${position.side}`}
+              target=""
+            >
+              <div className="uppercase underline font-boldy text-sm lg:text-xl">
+                {getTokenSymbol(position.token.symbol)}
+              </div>
+            </Link>
+          ) : (
+            <div className="uppercase font-boldy text-sm lg:text-lg">
+              {getTokenSymbol(position.token.symbol)}
+            </div>
+          )}
 
-      <div
-        className={twMerge(
-          'uppercase font-boldy text-sm lg:text-lg ml-1',
-          position.side === 'long' ? 'text-green' : 'text-red',
-        )}
-      >
-        {position.side}
+          <div
+            className={twMerge(
+              'uppercase font-boldy text-sm lg:text-lg ml-1',
+              position.side === 'long' ? 'text-green' : 'text-red',
+            )}
+          >
+            {position.side}
+          </div>
+        </div>
+
+        <OnchainAccountInfo
+          address={position.pubkey}
+          shorten={true}
+          className="text-xxs"
+          iconClassName="w-2 h-2"
+        />
       </div>
     </div>
   );
 
   const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
-  const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
+  const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnl = (
     <div className="flex flex-col items-center min-w-[5em] w-[5em]">
@@ -118,10 +130,10 @@ export default function PositionBlock({
       {position.pnl ? (
         <div className="flex items-center">
           <FormatNumber
-            nb={showAfterFees ? position.pnl + fees : position.pnl} // Adjusted for fee display
+            nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
             format="currency"
             className={`mr-0.5 font-bold text-${
-              (showAfterFees ? position.pnl + fees : position.pnl) > 0
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
                 ? 'green'
                 : 'redbright'
             }`}
@@ -130,7 +142,7 @@ export default function PositionBlock({
 
           <FormatNumber
             nb={
-              ((showAfterFees ? position.pnl + fees : position.pnl) /
+              ((showAfterFees ? position.pnl : position.pnl - fees) /
                 position.collateralUsd) *
               100
             }
@@ -140,7 +152,7 @@ export default function PositionBlock({
             precision={2}
             isDecimalDimmed={false}
             className={`text-xs text-${
-              (showAfterFees ? position.pnl + fees : position.pnl) > 0
+              (showAfterFees ? position.pnl : position.pnl - fees) > 0
                 ? 'green'
                 : 'redbright'
             }`}
@@ -150,12 +162,12 @@ export default function PositionBlock({
             <label className="flex items-center ml-1 cursor-pointer">
               <Switch
                 className="mr-0.5"
-                checked={!showAfterFees}
+                checked={showAfterFees}
                 onChange={() => setShowAfterFees(!showAfterFees)}
                 size="small"
               />
               <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-                {showAfterFees ? 'w/o fees' : 'w/ fees'}
+                {showAfterFees ? 'w fees' : 'w/o fees'}
               </span>
             </label>
           </label>

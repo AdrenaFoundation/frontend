@@ -11,6 +11,7 @@ export default function StakesStats({
   lockedStakes,
   handleLockedStakeRedeem,
   handleClickOnFinalizeLockedRedeem,
+  handleClickOnUpdateLockedStake,
 }: {
   liquidStakedADX: number | null;
   lockedStakedADX: number | null;
@@ -18,6 +19,7 @@ export default function StakesStats({
   lockedStakes: LockedStakeExtended[] | null;
   handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   return (
     <StyledContainer title="Ongoing Stakes" titleClassName="text-2xl">
@@ -68,6 +70,9 @@ export default function StakesStats({
                   handleRedeem={handleLockedStakeRedeem}
                   handleClickOnFinalizeLockedRedeem={
                     handleClickOnFinalizeLockedRedeem
+                  }
+                  handleClickOnUpdateLockedStake={
+                    handleClickOnUpdateLockedStake
                   }
                 />
               ))

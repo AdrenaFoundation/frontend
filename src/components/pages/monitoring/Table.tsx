@@ -18,6 +18,7 @@ export default function Table({
   pagination = false,
   nbItemPerPage = 10,
   nbItemPerPageWhenBreakpoint = 2,
+  rowHovering = false,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -39,6 +40,7 @@ export default function Table({
   pagination?: boolean;
   nbItemPerPage?: number;
   nbItemPerPageWhenBreakpoint?: number;
+  rowHovering?: boolean;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
@@ -125,7 +127,13 @@ export default function Table({
       </div>
 
       {pageData.map(({ rowTitle, ...v }, i) => (
-        <div key={i} className="flex w-full border-b last:border-b-0 text-base">
+        <div
+          key={i}
+          className={twMerge(
+            'flex w-full border border-transparent text-base pl-1',
+            rowHovering ? 'hover:bg-secondary hover:border-bcolor' : '',
+          )}
+        >
           <div
             className={twMerge('flex shrink-0 items-center', rowTitleClassName)}
             style={{
@@ -143,7 +151,7 @@ export default function Table({
             return values.map((value, j) => (
               <div
                 key={j}
-                className="p-[0.3em]  flex grow flex-shrink-0 basis-0"
+                className="p-[0.3em] flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well
                   maxWidth: `calc(100% - ${rowTitleWidth ?? '150px'})`,
