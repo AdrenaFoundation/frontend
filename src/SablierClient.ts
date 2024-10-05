@@ -82,7 +82,7 @@ export default class SablierClient {
         : null;
 
       const nextTheoreticalExecutionDate = (() => {
-        if (info.trigger.cron.schedule !== '0 0 */6 * * * *') {
+        if (info.trigger.periodic.delay.toNumber() != 21600) {
           console.warn(
             'The cron schedule have changed for the thread, please adapt the code here.',
           );
@@ -100,7 +100,7 @@ export default class SablierClient {
           return null;
         }
 
-        return info.execContext.trigger.cron.startedAt.toNumber() + 21600;
+        return info.execContext.trigger.periodic.startedAt.toNumber() + 21600;
       })();
 
       const solBalance = await connection.getBalance(pubkey);
