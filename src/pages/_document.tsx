@@ -44,7 +44,7 @@ export default function Document() {
           rel="stylesheet"
         />
 
-        <meta
+        {/* <meta
           name="description"
           content="Trade at the speed of light with up to 100x leverage"
         />
@@ -64,7 +64,7 @@ export default function Document() {
           content={metadata.twitter.description}
         />
         <meta name="twitter:creator" content={metadata.twitter.creator} />
-        <meta name="twitter:image" content={metadata.twitter.images} />
+        <meta name="twitter:image" content={metadata.twitter.images} /> */}
         <Script
           src="https://terminal.jup.ag/main-v3.js"
           strategy="beforeInteractive"

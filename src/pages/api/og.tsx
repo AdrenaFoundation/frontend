@@ -7,6 +7,7 @@ export const config = {
 
 export default async function handler(request: NextRequest) {
   const { searchParams } = request.nextUrl;
+
   const username = searchParams.get('username') ?? 'there';
 
   return new ImageResponse(
