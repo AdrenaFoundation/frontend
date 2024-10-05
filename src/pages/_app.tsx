@@ -129,7 +129,7 @@ export default function App(props: AppProps) {
 
     setInitializationInProgress(true);
 
-    const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+    const pythConnection = new Connection(config.pythnetRpc.url, 'processed');
 
     initializeApp(config, activeRpc.connection, pythConnection).then(() => {
       setIsInitialized(true);
@@ -221,7 +221,7 @@ function AppComponent({
   useEffect(() => {
     const acceptanceDate = cookies['terms-and-conditions-acceptance'];
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    
+
     if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
       setIsTermsAndConditionModalOpen(true);
     }
@@ -296,11 +296,15 @@ function AppComponent({
             isOpen={isTermsAndConditionModalOpen}
             agreeTrigger={() => {
               setIsTermsAndConditionModalOpen(false);
-              setCookie('terms-and-conditions-acceptance', new Date().toISOString(), {
-                path: '/',
-                maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
-                sameSite: 'strict'
-              });
+              setCookie(
+                'terms-and-conditions-acceptance',
+                new Date().toISOString(),
+                {
+                  path: '/',
+                  maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+                  sameSite: 'strict',
+                },
+              );
             }}
             declineTrigger={() => {
               router.push('https://landing.adrena.xyz/');

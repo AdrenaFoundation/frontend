@@ -103,7 +103,7 @@ export default function useRpc(config: IConfiguration | null): {
     if (customRpcUrl === null) return;
 
     try {
-      setCustomRpcConnection(new Connection(customRpcUrl, 'confirmed'));
+      setCustomRpcConnection(new Connection(customRpcUrl, 'processed'));
     } catch {
       // Doesn't work
       setCustomRpcConnection(null);
@@ -117,7 +117,7 @@ export default function useRpc(config: IConfiguration | null): {
     setRpcConnections(
       config.rpcOptions.map((rpc) => {
         try {
-          return new Connection(rpc.url, 'confirmed');
+          return new Connection(rpc.url, 'processed');
         } catch {
           return null;
         }
