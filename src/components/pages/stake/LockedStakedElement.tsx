@@ -190,14 +190,16 @@ export default function LockedStakedElement({
                     handleClickOnFinalizeLockedRedeem(lockedStake, true)
                   }
                 />
-
-                <Button
-                  variant="outline"
-                  size="xs"
-                  title="Upgrade"
-                  className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
-                  onClick={() => handleClickOnUpdateLockedStake(lockedStake)}
-                />
+                <div className="w-px bg-bcolor" />
+                {!lockedStake.isGenesis && (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    title="Upgrade"
+                    className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
+                    onClick={() => handleClickOnUpdateLockedStake(lockedStake)}
+                  />
+                )}
               </>
             );
           })()}

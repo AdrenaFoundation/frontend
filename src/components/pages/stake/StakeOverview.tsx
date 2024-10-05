@@ -378,24 +378,26 @@ export default function StakeOverview({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {lockedStakes && lockedStakes.length > 0 ? (
-              lockedStakes.map((lockedStake, i) => (
-                <LockedStakedElement
-                  lockedStake={lockedStake}
-                  key={i}
-                  token={
-                    isALP
-                      ? window.adrena.client.alpToken
-                      : window.adrena.client.adxToken
-                  }
-                  handleRedeem={handleLockedStakeRedeem}
-                  handleClickOnFinalizeLockedRedeem={
-                    handleClickOnFinalizeLockedRedeem
-                  }
-                  handleClickOnUpdateLockedStake={
-                    handleClickOnUpdateLockedStake
-                  }
-                />
-              ))
+              lockedStakes
+                .sort((a, b) => b.amount.toNumber() - a.amount.toNumber())
+                .map((lockedStake, i) => (
+                  <LockedStakedElement
+                    lockedStake={lockedStake}
+                    key={i}
+                    token={
+                      isALP
+                        ? window.adrena.client.alpToken
+                        : window.adrena.client.adxToken
+                    }
+                    handleRedeem={handleLockedStakeRedeem}
+                    handleClickOnFinalizeLockedRedeem={
+                      handleClickOnFinalizeLockedRedeem
+                    }
+                    handleClickOnUpdateLockedStake={
+                      handleClickOnUpdateLockedStake
+                    }
+                  />
+                ))
             ) : (
               <div className="text-lg mt-4 mb-4 text-txtfade text-left pl-4">
                 No Active Locked Stakes
