@@ -2,18 +2,18 @@ import Head from 'next/head';
 import React from 'react';
 
 export default function position() {
-  const searchParams = new URLSearchParams(window.location.search);
+  //   const searchParams = new URLSearchParams(window.location.search);
 
-  const position = searchParams.get('po') ?? 'Adrena';
-  const img =
-    searchParams.get('po') ??
-    'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena-position-g.png';
-  console.log(position);
+  //   const position = searchParams.get('po') ?? 'Adrena';
+  //   const img =
+  //     searchParams.get('po') ??
+  //     'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/adrena-position-g.png';
+  //   console.log(position);
 
   return (
     <div>
       <Head>
-        <title>{position}</title>
+        <title>test</title>
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@adrenaprotocol" />
         <meta name="twitter:creator" content="@adrenaprotocol" />
@@ -22,7 +22,12 @@ export default function position() {
           name="twitter:description"
           content="Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool"
         />
-        <meta name="twitter:image" content={img} />
+        <meta
+          name="twitter:image"
+          content={
+            'https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og'
+          }
+        />
       </Head>
     </div>
   );
