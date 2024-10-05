@@ -101,20 +101,24 @@ export default function UnrealizedPnlChart() {
 
       const totalInfos: number[] = Array.from(Array(timeStamp.length).fill(0));
 
-      for (const [custodyKey, shortPnLValues] of Object.entries(shortPnL)) {
+      const usdcCustody = infos.find(({ custody }) => custody.tokenInfo.symbol === 'USDC');
+      if (!usdcCustody) return;
+      
+      for (const [custodyKey, longPnLValues] of Object.entries(longPnL)) {
         const custodyInfos = infos.find(
-          ({ custody }) => custody.pubkey.toBase58() === custodyKey,
+          ({ custody }) => custody.pubkey.toBase58() === custodyKey
         );
 
         if (!custodyInfos) continue;
 
-        shortPnLValues.forEach((shortPnLValue: string, i: number) => {
-          const shortPnLNb = parseInt(shortPnLValue, 10);
-          const longPnLNb = parseInt(longPnL[custodyKey][i], 10);
+        longPnLValues.forEach((longPnLValue: string, i: number) => {
+          const longPnLNb = parseInt(longPnLValue, 10);
+          const shortPnLNb = parseInt(shortPnL[custodyKey][i], 10);
 
-          custodyInfos.values.push(shortPnLNb + longPnLNb);
-
-          totalInfos[i] += shortPnLNb + longPnLNb;
+          custodyInfos.values.push(longPnLNb);
+          usdcCustody.values[i] = (usdcCustody.values[i] || 0) + shortPnLNb;
+          
+          totalInfos[i] += longPnLNb + shortPnLNb;
         });
       }
 
