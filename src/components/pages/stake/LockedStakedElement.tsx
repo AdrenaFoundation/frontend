@@ -132,7 +132,7 @@ export default function LockedStakedElement({
             <p className="font-mono">
               {Math.floor((lockedStake.lmRewardMultiplier / 10_000) * 100)}%
             </p>
-            <p className="opacity-50">ADX Emissions</p>
+            <p className="opacity-50 text-xs">ADX Emissions</p>
           </li>
 
           <li
@@ -146,7 +146,7 @@ export default function LockedStakedElement({
             <p className="font-mono">
               {Math.floor((lockedStake.rewardMultiplier / 10_000) * 100)}%
             </p>
-            <p className="opacity-50">USDC yield</p>
+            <p className="opacity-50 text-xs">USDC yield</p>
           </li>
 
           {lockedStake.voteMultiplier > 0 && (
@@ -155,7 +155,7 @@ export default function LockedStakedElement({
                 {Math.floor((lockedStake.voteMultiplier / 10_000) * 100)}%
               </p>
 
-              <p className="opacity-50">Voting Power</p>
+              <p className="opacity-50 text-xs">Voting Power</p>
             </li>
           )}
         </ul>
