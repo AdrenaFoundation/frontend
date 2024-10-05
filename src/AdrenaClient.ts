@@ -3027,7 +3027,9 @@ export class AdrenaClient {
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
-      recentBlockhash: (await this.connection.getLatestBlockhash()).blockhash,
+      // Use finalize to get the latest blockhash accepted by leader
+      recentBlockhash: (await this.connection.getLatestBlockhash('finalized'))
+        .blockhash,
       instructions: transaction.instructions,
     }).compileToV0Message();
 
@@ -4557,8 +4559,10 @@ export class AdrenaClient {
 
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
-      recentBlockhash: (await this.readonlyConnection.getLatestBlockhash())
-        .blockhash,
+      // Use finalize to get the latest blockhash accepted by the leader
+      recentBlockhash: (
+        await this.readonlyConnection.getLatestBlockhash('finalized')
+      ).blockhash,
       instructions,
     }).compileToV0Message();
 
@@ -4593,9 +4597,9 @@ export class AdrenaClient {
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
-    transaction.recentBlockhash = (
-      await this.connection.getLatestBlockhash()
-    ).blockhash;
+    transaction.recentBlockhash =
+      // Use finalized to get the latest blockhash accepted by the leader
+      (await this.connection.getLatestBlockhash('finalized')).blockhash;
 
     transaction.feePayer = wallet.publicKey;
 
@@ -4671,8 +4675,17 @@ export class AdrenaClient {
 
     let result: RpcResponseAndContext<SignatureResult> | null = null;
 
+    // use finalized to get the latest blockhash accepted by the leader
+    const latestBlockHash = await this.connection.getLatestBlockhash(
+      'finalized',
+    );
+
     try {
-      result = await this.connection.confirmTransaction(txHash);
+      result = await this.connection.confirmTransaction({
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+        signature: txHash,
+      });
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txHash);
