@@ -60,6 +60,11 @@ export default function StakeOverview({
   );
   const isMobile = useBetterMediaQuery('(max-width: 450px)');
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    size: 'desc' as 'asc' | 'desc',
+    duration: 'asc' as 'asc' | 'desc',
+    lastClicked: 'size' as 'size' | 'duration',
+  });
 
   const handleClaim = async () => {
     setIsClaimingRewards(true);
@@ -69,6 +74,19 @@ export default function StakeOverview({
     } finally {
       setIsClaimingRewards(false);
     }
+  };
+
+  const handleSort = (key: 'size' | 'duration') => {
+    setSortConfig((prev) => ({
+      ...prev,
+      [key]: prev[key] === 'desc' ? 'asc' : 'desc',
+      lastClicked: key,
+    }));
+  };
+
+  const getEndDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   };
 
   return (
@@ -197,6 +215,7 @@ export default function StakeOverview({
                 <FormatNumber
                   nb={userPendingUsdcRewards}
                   isDecimalDimmed={false}
+                  className="font-bold"
                 />
                 <div className="ml-1 text-sm mt-[1px]">USDC</div>
               </div>
@@ -207,6 +226,7 @@ export default function StakeOverview({
                     <FormatNumber
                       nb={userPendingAdxRewards}
                       isDecimalDimmed={false}
+                      className="font-bold"
                     />
                     <div className="ml-1 text-sm mt-[1px]">ADX</div>
                   </div>
@@ -240,7 +260,8 @@ export default function StakeOverview({
                       <FormatNumber
                         nb={pendingGenesisAdxRewards}
                         isDecimalDimmed={false}
-                        className="text-blue"
+                        className="text-blue font-bold"
+                        prefix="+"
                       />
                       <span className="text-blue ml-1 mt-[2px]">ADX</span>
                     </div>
@@ -343,7 +364,7 @@ export default function StakeOverview({
                   </div>
                 )}
 
-                <div className="flex justify-end ml-2">
+                <div className="justify-end ml-2 hidden sm:flex">
                   <Link
                     href="https://docs.adrena.xyz/about-adrena/staking"
                     className="text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity"
@@ -361,41 +382,84 @@ export default function StakeOverview({
         {/* Locked stakes section */}
         <div className="h-[1px] bg-bcolor w-full my-5" />
         <div className="px-5">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
             <h3 className="text-lg font-semibold">
               My Locked Stakes{' '}
               {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
             </h3>
-            <Button
-              className="px-8"
-              variant="primary"
-              size="sm"
-              title={totalLockedStake !== 0 ? 'Add Stake' : 'Start Staking'}
-              onClick={() =>
-                handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
-              }
-            />
+
+            <div className="flex items-center gap-2 mt-4 sm:mt-0 flex-col sm:flex-row w-full sm:w-auto">
+              <div className="flex items-center text-xs bg-secondary rounded-full p-[2px] border border-bcolor">
+                <button
+                  className="px-2 py-1 rounded-full transition-colors flex items-center"
+                  onClick={() => handleSort('size')}
+                >
+                  Amount
+                  <span className="ml-1 text-txtfade text-[10px]">
+                    {sortConfig.size === 'asc' ? '↑' : '↓'}
+                  </span>
+                </button>
+                <div className="w-px h-4 bg-bcolor mx-[1px]"></div>
+                <button
+                  className="px-2 py-1 rounded-full transition-colors flex items-center"
+                  onClick={() => handleSort('duration')}
+                >
+                  Unlock Date
+                  <span className="ml-1 text-txtfade text-[10px]">
+                    {sortConfig.duration === 'asc' ? '↑' : '↓'}
+                  </span>
+                </button>
+              </div>
+
+              <Button
+                variant="primary"
+                size="sm"
+                title="Add Stake"
+                className="px-5 w-full sm:w-auto"
+                onClick={() =>
+                  handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+                }
+              />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {lockedStakes && lockedStakes.length > 0 ? (
-              lockedStakes.map((lockedStake, i) => (
-                <LockedStakedElement
-                  lockedStake={lockedStake}
-                  key={i}
-                  token={
-                    isALP
-                      ? window.adrena.client.alpToken
-                      : window.adrena.client.adxToken
+              lockedStakes
+                .sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
+                  const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
+                  const durationModifier =
+                    sortConfig.duration === 'asc' ? 1 : -1;
+                  const sizeDiff =
+                    (Number(a.amount) - Number(b.amount)) * sizeModifier;
+                  const durationDiff =
+                    (getEndDate(Number(a.endTime)).getTime() -
+                      getEndDate(Number(b.endTime)).getTime()) *
+                    durationModifier;
+
+                  if (sortConfig.lastClicked === 'size') {
+                    return sizeDiff || durationDiff;
                   }
-                  handleRedeem={handleLockedStakeRedeem}
-                  handleClickOnFinalizeLockedRedeem={
-                    handleClickOnFinalizeLockedRedeem
-                  }
-                  handleClickOnUpdateLockedStake={
-                    handleClickOnUpdateLockedStake
-                  }
-                />
-              ))
+
+                  return durationDiff || sizeDiff;
+                })
+                .map((lockedStake, i) => (
+                  <LockedStakedElement
+                    lockedStake={lockedStake}
+                    key={i}
+                    token={
+                      isALP
+                        ? window.adrena.client.alpToken
+                        : window.adrena.client.adxToken
+                    }
+                    handleRedeem={handleLockedStakeRedeem}
+                    handleClickOnFinalizeLockedRedeem={
+                      handleClickOnFinalizeLockedRedeem
+                    }
+                    handleClickOnUpdateLockedStake={
+                      handleClickOnUpdateLockedStake
+                    }
+                  />
+                ))
             ) : (
               <div className="text-lg mt-4 mb-4 text-txtfade text-left pl-4">
                 No Active Locked Stakes
@@ -411,13 +475,14 @@ export default function StakeOverview({
               <div className="h-[1px] bg-bcolor w-full my-5" />
               <div className="px-5">
                 <h3 className="text-lg font-semibold mb-2">Liquid stake</h3>
-                <div className="flex flex-row justify-between items-center border p-3 bg-secondary rounded-xl mt-3 shadow-lg">
+                <div className="flex flex-col sm:flex-row justify-between items-center border p-3 bg-secondary rounded-xl mt-3 shadow-lg">
                   <FormatNumber
                     nb={totalLiquidStaked}
                     suffix=" ADX"
                     className="text-xl"
                   />
-                  <div className="flex gap-2">
+
+                  <div className="flex gap-2 mt-4 sm:mt-0 flex-col sm:flex-row w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
@@ -425,6 +490,7 @@ export default function StakeOverview({
                       className="px-5"
                       onClick={handleClickOnRedeem}
                     />
+
                     <Button
                       variant="primary"
                       size="sm"

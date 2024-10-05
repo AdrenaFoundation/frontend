@@ -132,7 +132,7 @@ export default function LockedStakedElement({
             <p className="font-mono">
               {Math.floor((lockedStake.lmRewardMultiplier / 10_000) * 100)}%
             </p>
-            <p className="opacity-50">ADX Emissions</p>
+            <p className="opacity-50 text-xs">ADX Emissions</p>
           </li>
 
           <li
@@ -146,7 +146,7 @@ export default function LockedStakedElement({
             <p className="font-mono">
               {Math.floor((lockedStake.rewardMultiplier / 10_000) * 100)}%
             </p>
-            <p className="opacity-50">USDC yield</p>
+            <p className="opacity-50 text-xs">USDC yield</p>
           </li>
 
           {lockedStake.voteMultiplier > 0 && (
@@ -155,7 +155,7 @@ export default function LockedStakedElement({
                 {Math.floor((lockedStake.voteMultiplier / 10_000) * 100)}%
               </p>
 
-              <p className="opacity-50">Voting Power</p>
+              <p className="opacity-50 text-xs">Voting Power</p>
             </li>
           )}
         </ul>
@@ -190,14 +190,16 @@ export default function LockedStakedElement({
                     handleClickOnFinalizeLockedRedeem(lockedStake, true)
                   }
                 />
-
-                <Button
-                  variant="outline"
-                  size="xs"
-                  title="Upgrade"
-                  className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
-                  onClick={() => handleClickOnUpdateLockedStake(lockedStake)}
-                />
+                <div className="w-px bg-bcolor" />
+                {!lockedStake.isGenesis && (
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    title="Upgrade"
+                    className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
+                    onClick={() => handleClickOnUpdateLockedStake(lockedStake)}
+                  />
+                )}
               </>
             );
           })()}
