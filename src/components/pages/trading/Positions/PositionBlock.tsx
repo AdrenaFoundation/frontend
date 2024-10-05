@@ -167,7 +167,7 @@ export default function PositionBlock({
                 size="small"
               />
               <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-                {showAfterFees ? 'w fees' : 'w/o fees'}
+                {showAfterFees ? 'w/ fees' : 'w/o fees'}
               </span>
             </label>
           </label>

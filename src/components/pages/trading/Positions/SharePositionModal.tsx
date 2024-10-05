@@ -1,3 +1,4 @@
+import { put } from '@vercel/blob';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toPng } from 'html-to-image';
 import Image from 'next/image';
@@ -21,6 +22,8 @@ export default function SharePositionModal({
 }: {
   position: PositionExtended;
 }) {
+  // const { url } = await put('articles/blob.txt', 'Hello World!', { access: 'public' });
+
   const [isDownloading, setIsDownloading] = useState(false);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -50,7 +53,7 @@ export default function SharePositionModal({
     },
   ];
 
-  const captureElementAsImage = () => {
+  const captureElementAsImage = async () => {
     setIsDownloading(true);
     const element = cardRef.current;
 
@@ -60,9 +63,13 @@ export default function SharePositionModal({
     }
 
     toPng(element)
-      .then((dataUrl) => {
-        downloadImage(dataUrl);
+      .then(async (dataUrl) => {
+        // downloadImage(dataUrl);
         setIsDownloading(false);
+        return await put('articles/test.png', dataUrl, {
+          access: 'public',
+          token: process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN,
+        });
       })
       .catch((error) => {
         console.error('Error converting to PNG:', error);
@@ -78,10 +85,10 @@ export default function SharePositionModal({
     link.click();
     document.body.removeChild(link);
   };
-  const fees = (position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0);
+  const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnlPercentage = position.pnl
-    ? ((position.pnl + fees) / position.collateralUsd) * 100
+    ? ((position.pnl - fees) / position.collateralUsd) * 100
     : undefined;
 
   const openedOn = new Date(
