@@ -101,20 +101,20 @@ export default function SharePositionModal({
     hour: 'numeric',
   });
 
-  // https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?opt=1&pnl=22&side=long&symbol=WBTC&collateral=21&mark=291&price=202&opened=2022-01-02
   const twitterText = `I just made ${formatNumber(
     pnlPercentage ?? 0,
     2,
-  )}% on a ${position.side} position on ${position.token.symbol}!`;
+  )}% on ${position.side} position on ${position.token.symbol}!`;
 
-  const twitterUrl = `https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?opt=${option}&pnl=${formatNumber(
+  const twitterUrl = `https://frontend-devnet-git-pnlshare-adrena.vercel.app/position?opt=${option}&pnl=${formatNumber(
     pnlPercentage ?? 0,
     2,
   )}&side=${position.side}&symbol=${position.token.symbol
     }&collateral=${formatNumber(position.collateralUsd, 2)}&mark=${formatNumber(
       tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
       2,
-    )}&price=${formatNumber(position.price, 2)}&opened=${Number(position.nativeObject.openTime) * 1000}`;
+    )}&price=${formatNumber(position.price, 2)}&size=${position.sizeUsd}&opened=${Number(position.nativeObject.openTime) * 1000
+    }`;
 
   return (
     <div className="max-w-[600px] p-5">

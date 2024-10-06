@@ -93,11 +93,7 @@ export default async function handler(request: NextRequest) {
                                 : 'bg-[#c9243a] text-[#c9243a]',
                         )}
                     >
-                        {side}{' '}
-                        {Number(Number(sizeUsd) / Number(collateralUsd))
-                            .toFixed(2)
-                        }
-                        x
+                        {side} {Number(Number(sizeUsd) / Number(collateralUsd)).toFixed(2)}x
                     </p>
                 </div>
                 <p
