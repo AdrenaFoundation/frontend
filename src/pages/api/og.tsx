@@ -2,8 +2,6 @@ import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 import { twMerge } from 'tailwind-merge';
 
-import { formatNumber, formatPriceInfo } from '@/utils';
-
 export const config = {
     runtime: 'edge',
 };
@@ -74,9 +72,13 @@ export default async function handler(request: NextRequest) {
                     tw="w-[150px] mt-[10px]"
                 />
 
-                <div tw="flex flex-row items-center relative z-10">
+                <div tw="flex flex-row items-center relative">
                     <div tw="flex flex-row items-center mt-[20px]">
-                        <img src={TOKEN_SYMBOL[symbol]} alt="Adrena Logo" tw="w-[50px] h-[50px]" />
+                        <img
+                            src={TOKEN_SYMBOL[symbol]}
+                            alt="Adrena Logo"
+                            tw="w-[50px] h-[50px]"
+                        />
 
                         <h2 tw="text-[60px] font-bold text-white archivo-black m-0 ml-2">
                             {symbol}
@@ -91,7 +93,11 @@ export default async function handler(request: NextRequest) {
                                 : 'bg-[#c9243a] text-[#c9243a]',
                         )}
                     >
-                        {side} {formatNumber(Number(sizeUsd) / Number(collateralUsd), 2)}x
+                        {side}{' '}
+                        {Number(Number(sizeUsd) / Number(collateralUsd))
+                            .toFixed(2)
+                        }
+                        x
                     </p>
                 </div>
                 <p
@@ -102,13 +108,13 @@ export default async function handler(request: NextRequest) {
                 >
                     {pnlPercentage}%
                 </p>
-                <ul tw="flex flex-row gap-6 mt-[10px] mt-[120px]">
+                <ul tw="flex flex-row mt-[10px] mt-[120px]">
                     <li tw="flex flex-col">
                         <span tw="opacity-50 text-[30px] font-semibold text-white">
                             Entry Price
                         </span>
                         <span tw="archivo-black text-[40px] text-white mt-2">
-                            {formatPriceInfo(Number(price))}
+                            ${Number(price)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">
@@ -116,7 +122,7 @@ export default async function handler(request: NextRequest) {
                             Mark Price
                         </span>
                         <span tw="archivo-black text-[40px] text-white mt-2">
-                            {formatPriceInfo(Number(mark))}
+                            ${Number(mark)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">
@@ -136,7 +142,7 @@ export default async function handler(request: NextRequest) {
                         backgroundImage: `radial-gradient(${OPTIONS[opt].gradient[0]}, #061018)`,
                         filter: 'blur(30px)',
                     }}
-                    tw="absolute bottom-[-80px] left-[-30px] w-[500px] h-[500px] rounded-full"
+                    tw="absolute bottom-[-200px] left-[-100px] w-[600px] h-[600px] rounded-full"
                 />
                 <div
                     style={{
@@ -144,7 +150,7 @@ export default async function handler(request: NextRequest) {
                         backgroundImage: `radial-gradient(${OPTIONS[opt].gradient[1]}, #061018)`,
                         filter: 'blur(30px)',
                     }}
-                    tw="absolute top-[-80px] right-[-30px] w-[500px] h-[500px] rounded-full"
+                    tw="absolute top-[-200px] right-[-100px] w-[600px] h-[600px] rounded-full"
                 />
                 <div tw="absolute flex bottom-0 right-0">
                     <img src={OPTIONS[opt].img} alt="Monster" tw="w-[400px]" />
