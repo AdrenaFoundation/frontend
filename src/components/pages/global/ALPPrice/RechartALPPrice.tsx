@@ -4,9 +4,6 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,6 +11,7 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
 
 function CustomToolTip(props: any) {
@@ -23,10 +21,11 @@ function CustomToolTip(props: any) {
     return (
       <div className="bg-third p-3 border border-white rounded-lg">
         <p className="text-lg mb-2 font-mono">{label}</p>
+
         {payload.map((item: any) => (
           <p
             key={item.dataKey}
-            className="text-lg font-mono"
+            className="text-lg font-mono text-center"
             style={{ color: item.fill }}
           >
             {formatPriceInfo(item.value)}
@@ -41,12 +40,14 @@ function CustomToolTip(props: any) {
 
 export default function RechartALPPrice({
   title,
+  subValue,
   data,
   labels,
   period,
   setPeriod,
 }: {
   title: string;
+  subValue: number;
   data: any;
   labels: {
     name: string;
@@ -62,7 +63,13 @@ export default function RechartALPPrice({
   return (
     <div className="flex flex-col h-full w-full">
       <div className="flex mb-3 justify-between items-center">
-        <h2 className="">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="">{title}</h2>
+
+          <div className="text-txtfade text-sm">
+            ({formatPriceInfo(subValue, 4)})
+          </div>
+        </div>
 
         <div className="flex gap-2 text-sm">
           <div

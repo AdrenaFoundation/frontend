@@ -2,15 +2,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import LineRechartAum from './RechartAum';
 
+export interface AumData {
+  value: number;
+  date: string;
+}
+
 export default function AumChart() {
-  const [AUM, setAUM] = useState<any>(null);
+  const [AUM, setAUM] = useState<AumData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
-
-  useEffect(() => {
-    periodRef.current = period;
-    getPoolInfo();
-  }, [period]);
 
   const getPoolInfo = useCallback(async () => {
     try {
@@ -26,6 +26,7 @@ export default function AumChart() {
             return 'poolinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -38,6 +39,7 @@ export default function AumChart() {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?aum_usd=true&start_date=${(() => {
           const startDate = new Date();
@@ -46,6 +48,7 @@ export default function AumChart() {
           return startDate.toISOString();
         })()}&end_date=${new Date().toISOString()}`,
       );
+
       const { data } = await res.json();
       const { aum_usd, snapshot_timestamp } = data;
 
@@ -55,23 +58,27 @@ export default function AumChart() {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       const formattedData = aum_usd.map((aum: number, i: string | number) => ({
@@ -84,6 +91,11 @@ export default function AumChart() {
       console.error(e);
     }
   }, []);
+
+  useEffect(() => {
+    periodRef.current = period;
+    getPoolInfo();
+  }, [getPoolInfo, period]);
 
   useEffect(() => {
     getPoolInfo();
@@ -106,6 +118,7 @@ export default function AumChart() {
   return (
     <LineRechartAum
       title={'AUM'}
+      subValue={AUM[AUM.length - 1].value}
       data={AUM}
       labels={[{ name: 'value' }]}
       period={period}

@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import LineRechartPercentage from './LineRechartCumulativePnl';
 
-export default function CumulativePnlChart() {
+interface CumulativePnlChartProps {
+  isSmallScreen: boolean;
+}
+
+export function CumulativePnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -15,6 +19,8 @@ export default function CumulativePnlChart() {
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
+
+  const [totalRealizedPnl, setTotalRealizedPnl] = useState<number>(0);
 
   useEffect(() => {
     periodRef.current = period;
@@ -35,6 +41,7 @@ export default function CumulativePnlChart() {
             return 'custodyinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -47,6 +54,7 @@ export default function CumulativePnlChart() {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_profit_usd=true&cumulative_loss_usd=true&start_date=${(() => {
           const startDate = new Date();
@@ -73,23 +81,27 @@ export default function CumulativePnlChart() {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       // Each custody keeps an utilization array
@@ -131,16 +143,21 @@ export default function CumulativePnlChart() {
 
       const formatted = timeStamp.map((time: string, i: number) => ({
         time,
-        ...infos.reduce(
-          (acc, { custody, values }) => ({
-            ...acc,
-            [custody.tokenInfo.symbol]: values[i],
-          }),
-          {} as { [key: string]: number },
-        ),
+        ...infos.reduce((acc, { custody, values }) => {
+          if (custody.tokenInfo.symbol !== 'USDC') {
+            acc[custody.tokenInfo.symbol] = values[i];
+          }
+          return acc;
+        }, {} as { [key: string]: number }),
         Total: totalInfos[i],
       }));
 
+      const lastDataPoint = formatted[formatted.length - 1];
+      const calculatedTotalRealizedPnl = Object.entries(lastDataPoint)
+        .filter(([key]) => key !== 'time' && key !== 'Total')
+        .reduce((sum, [_, value]) => sum + (value as number), 0);
+
+      setTotalRealizedPnl(calculatedTotalRealizedPnl);
       setInfos({
         formattedData: formatted,
         custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
@@ -170,21 +187,25 @@ export default function CumulativePnlChart() {
 
   return (
     <LineRechartPercentage
-      title="All-time Traders Realized PnL"
+      title="Traders Realized PnL"
+      subValue={totalRealizedPnl}
       data={infos.formattedData}
       labels={[
         { name: 'Total', color: '#ff0000' },
         ...Object.keys(infos.formattedData[0])
           .filter((key) => key !== 'time' && key !== 'Total')
-          .map((x, i) => {
-            return {
-              name: x,
-              color: infos.custodiesColors[i],
-            };
-          }),
+          .map((x, i) => ({
+            name: x,
+            color: infos.custodiesColors.filter(
+              (_, index) =>
+                window.adrena.client.custodies[index].tokenInfo.symbol !==
+                'USDC',
+            )[i],
+          })),
       ]}
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }

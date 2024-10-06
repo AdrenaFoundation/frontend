@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import LineRechartPercentage from './LineRechartUnrealizedPnl';
 
-export default function UnrealizedPnlChart() {
+interface UnrealizedPnlChartProps {
+  isSmallScreen: boolean;
+}
+
+export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -15,6 +19,7 @@ export default function UnrealizedPnlChart() {
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
+  const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState<number>(0);
 
   useEffect(() => {
     periodRef.current = period;
@@ -93,27 +98,29 @@ export default function UnrealizedPnlChart() {
       });
 
       // Each custody keeps an utilization array
-      const infos = window.adrena.client.custodies.map((c) => ({
-        custody: c,
-        values: [] as number[],
-      }));
+      const infos = window.adrena.client.custodies
+        .filter((c) => c.tokenInfo.symbol !== 'USDC')
+        .map((c) => ({
+          custody: c,
+          values: [] as number[],
+        }));
 
       const totalInfos: number[] = Array.from(Array(timeStamp.length).fill(0));
 
-      for (const [custodyKey, shortPnLValues] of Object.entries(shortPnL)) {
+      for (const [custodyKey, longPnLValues] of Object.entries(longPnL)) {
         const custodyInfos = infos.find(
           ({ custody }) => custody.pubkey.toBase58() === custodyKey,
         );
 
         if (!custodyInfos) continue;
 
-        shortPnLValues.forEach((shortPnLValue: string, i: number) => {
-          const shortPnLNb = parseInt(shortPnLValue, 10);
-          const longPnLNb = parseInt(longPnL[custodyKey][i], 10);
+        longPnLValues.forEach((longPnLValue: string, i: number) => {
+          const longPnLNb = parseInt(longPnLValue, 10);
+          const shortPnLNb = parseInt(shortPnL[custodyKey][i], 10);
 
-          custodyInfos.values.push(shortPnLNb + longPnLNb);
+          custodyInfos.values.push(longPnLNb + shortPnLNb);
 
-          totalInfos[i] += shortPnLNb + longPnLNb;
+          totalInfos[i] += longPnLNb + shortPnLNb;
         });
       }
 
@@ -128,6 +135,13 @@ export default function UnrealizedPnlChart() {
         ),
         Total: totalInfos[i],
       }));
+
+      const lastDataPoint = formatted[formatted.length - 1];
+      const calculatedTotalUnrealizedPnl = Object.entries(lastDataPoint)
+        .filter(([key]) => key !== 'time' && key !== 'Total')
+        .reduce((sum, [_, value]) => sum + (value as number), 0);
+
+      setTotalUnrealizedPnl(calculatedTotalUnrealizedPnl);
 
       setInfos({
         formattedData: formatted,
@@ -158,7 +172,8 @@ export default function UnrealizedPnlChart() {
 
   return (
     <LineRechartPercentage
-      title="Live Traders Unrealized PnL"
+      title="Traders Unrealized PnL"
+      subValue={totalUnrealizedPnl}
       data={infos.formattedData}
       labels={[
         { name: 'Total', color: '#ff0000' },
@@ -173,6 +188,7 @@ export default function UnrealizedPnlChart() {
       ]}
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }
