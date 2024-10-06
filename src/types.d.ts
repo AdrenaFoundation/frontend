@@ -95,6 +95,14 @@ export type CustodyExtended = {
   nativeObject: Custody;
 };
 
+export type VestExtended = {
+  pubkey: PublicKey;
+} & Vest;
+
+export type UserStakingExtended = {
+  pubkey: PublicKey;
+} & UserStaking;
+
 export type PositionExtended = {
   // Formatted data
   custody: PublicKey;

@@ -133,6 +133,44 @@ export default class SablierClient {
     };
   }
 
+  public async loadSablierSLTPThreads(
+    owner: PublicKey,
+  ): Promise<PublicKey[] | null> {
+    if (!this.readonlySablierThreadProgram) return null;
+
+    const connection = window.adrena.sablierClient.readonlyThreadConnection;
+    if (!connection) throw new Error('Connection not initialized');
+
+    const threads = (
+      await Promise.all([
+        this.readonlySablierThreadProgram.account.thread.all([
+          {
+            dataSize: 2125, // Hardcoded size of the thread account containing the TP ix
+          },
+          {
+            memcmp: {
+              offset: 70,
+              bytes: owner.toBase58(),
+            },
+          },
+        ]),
+        this.readonlySablierThreadProgram.account.thread.all([
+          {
+            dataSize: 2086, // Hardcoded size of the thread account containing the SL ix
+          },
+          {
+            memcmp: {
+              offset: 70,
+              bytes: owner.toBase58(),
+            },
+          },
+        ]),
+      ])
+    ).flat();
+
+    return threads.map((x) => x.publicKey);
+  }
+
   public async loadSablierFinalizeLockedStakedThreads(): Promise<
     SablierThreadExtended[] | null
   > {

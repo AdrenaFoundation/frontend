@@ -1,11 +1,10 @@
 import Tippy from '@tippyjs/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CartesianGrid,
   Legend,
   Line,
   LineChart,
-  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -13,16 +12,20 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
-import { formatPercentage, formatPriceInfo } from '@/utils';
+import FormatNumber from '@/components/Number/FormatNumber';
+import { formatPriceInfo } from '@/utils';
 
 export default function LineRechartUnrealizedPnl({
   title,
+  subValue,
   data,
   labels,
   period,
   setPeriod,
+  isSmallScreen,
 }: {
   title: string;
+  subValue: number;
   data: any;
   labels: {
     name: string;
@@ -30,8 +33,9 @@ export default function LineRechartUnrealizedPnl({
   }[];
   period: string | null;
   setPeriod: (v: string | null) => void;
+  isSmallScreen: boolean;
 }) {
-  const formatYAxis = (tickItem: any) => {
+  const formatYAxis = (tickItem: number) => {
     return formatPriceInfo(tickItem, 0);
   };
 
@@ -40,16 +44,19 @@ export default function LineRechartUnrealizedPnl({
 
     if (active && payload && payload.length) {
       return (
-        <div className="bg-third p-3 border border-white rounded-lg">
+        <div className="bg-third p-3 border border-white rounded-lg min-w-[10em]">
           <p className="text-lg mb-2 font-mono">{label}</p>
           {payload.map((item: any) => (
-            <p
+            <div
               key={item.dataKey}
-              className="text-sm font-mono"
+              className="text-sm font-mono flex justify-between"
               style={{ color: item.fill }}
             >
-              {item.dataKey}: {formatPriceInfo(item.value)}
-            </p>
+              <span style={{ color: item.fill }}>{item.dataKey}:</span>
+              <span className="ml-2" style={{ color: item.fill }}>
+                {formatPriceInfo(item.value)}
+              </span>
+            </div>
           ))}
         </div>
       );
@@ -61,7 +68,14 @@ export default function LineRechartUnrealizedPnl({
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
-        <h2 className="">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="">{title}</h2>
+          {!isSmallScreen && (
+            <div className="text-txtfade text-sm">
+              ({formatPriceInfo(subValue, 0)})
+            </div>
+          )}
+        </div>
 
         <div className="flex gap-2 text-sm">
           <div

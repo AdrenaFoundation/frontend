@@ -19,6 +19,10 @@
     "Solana",
     "Tokenomics",
     "txtfade",
+    "unstaked",
     "WSOL"
-  ]
+  ],
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }

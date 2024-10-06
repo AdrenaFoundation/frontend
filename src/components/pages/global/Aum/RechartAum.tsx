@@ -14,7 +14,10 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
+
+import { AumData } from './AumChart';
 
 function CustomToolTip(props: any) {
   const { active, payload, label } = props;
@@ -41,13 +44,15 @@ function CustomToolTip(props: any) {
 
 export default function RechartAum({
   title,
+  subValue,
   data,
   labels,
   period,
   setPeriod,
 }: {
   title: string;
-  data: any;
+  subValue: number;
+  data: AumData[];
   labels: {
     name: string;
     color?: string;
@@ -55,14 +60,19 @@ export default function RechartAum({
   period: string | null;
   setPeriod: (v: string | null) => void;
 }) {
-  const formatYAxis = (tickItem: any) => {
+  const formatYAxis = (tickItem: number) => {
     return formatPriceInfo(tickItem, 0);
   };
 
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
-        <h2 className="">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="">{title}</h2>
+          <div className="text-txtfade text-sm">
+            ({formatPriceInfo(subValue, 0)})
+          </div>
+        </div>
 
         <div className="flex gap-2 text-sm">
           <div

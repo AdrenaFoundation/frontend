@@ -36,6 +36,7 @@ export default function UtilizationChart() {
             return 'custodyinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -48,6 +49,7 @@ export default function UtilizationChart() {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?owned=true&locked=true&start_date=${(() => {
           const startDate = new Date();
@@ -92,23 +94,27 @@ export default function UtilizationChart() {
               hour: 'numeric',
               minute: 'numeric',
             });
-          } else if (periodRef.current === '7d') {
+          }
+
+          if (periodRef.current === '7d') {
             return new Date(time).toLocaleString('en-US', {
               day: 'numeric',
               month: 'numeric',
               hour: 'numeric',
             });
-          } else if (periodRef.current === '1M') {
+          }
+
+          if (periodRef.current === '1M') {
             return new Date(time).toLocaleDateString('en-US', {
               day: 'numeric',
               month: 'numeric',
             });
-          } else {
-            return new Date(time).toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: 'numeric',
-            });
           }
+
+          return new Date(time).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+          });
         })();
 
         return {

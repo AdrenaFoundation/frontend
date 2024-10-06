@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
 
 function CustomToolTip(props: any) {
@@ -19,16 +20,20 @@ function CustomToolTip(props: any) {
 
   if (active && payload && payload.length) {
     return (
-      <div className="bg-third p-3 border border-white rounded-lg">
+      <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
         <p className="text-lg mb-2 font-mono">{label}</p>
+
         {payload.map((item: any) => (
-          <p
+          <div
             key={item.dataKey}
-            className="text-sm font-mono"
+            className="text-sm font-mono flex justify-between"
             style={{ color: item.fill }}
           >
-            {item.dataKey}: {formatPriceInfo(item.value)}
-          </p>
+            <span style={{ color: item.fill }}>{item.dataKey}:</span>
+            <span className="ml-2 font-mono" style={{ color: item.fill }}>
+              {formatPriceInfo(item.value, 2, 2)}
+            </span>
+          </div>
         ))}
       </div>
     );
@@ -39,21 +44,18 @@ function CustomToolTip(props: any) {
 
 export default function LineRechartOpenInterest({
   title,
+  totalOpenInterest,
   data,
-  labels,
   period,
   setPeriod,
+  isSmallScreen,
 }: {
   title: string;
+  totalOpenInterest: number;
   data: any;
-  labels: [
-    {
-      name: string;
-      color?: string;
-    },
-  ];
   period: string | null;
   setPeriod: (v: string | null) => void;
+  isSmallScreen: boolean;
 }) {
   const formatYAxis = (tickItem: any) => {
     return formatPriceInfo(tickItem, 0);
@@ -62,7 +64,15 @@ export default function LineRechartOpenInterest({
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
-        <h2 className="">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="">{title}</h2>
+
+          {!isSmallScreen && (
+            <div className="text-txtfade text-sm">
+              ({formatPriceInfo(totalOpenInterest, 0)})
+            </div>
+          )}
+        </div>
 
         <div className="flex gap-2 text-sm">
           <div
@@ -124,16 +134,16 @@ export default function LineRechartOpenInterest({
 
           <Line
             type="monotone"
-            dataKey="WBTC"
-            stroke="#f7931a"
-            fill="#f7931a"
+            dataKey="Total"
+            stroke="#ff0000"
+            fill="#ff0000"
             dot={false}
           />
           <Line
             type="monotone"
-            dataKey="USDC"
-            stroke="#2775ca"
-            fill="#2775ca"
+            dataKey="WBTC"
+            stroke="#f7931a"
+            fill="#f7931a"
             dot={false}
           />
           <Line

@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
 
 function CustomToolTip(props: any) {
@@ -19,16 +20,19 @@ function CustomToolTip(props: any) {
 
   if (active && payload && payload.length) {
     return (
-      <div className="bg-third p-3 border border-white rounded-lg">
+      <div className="bg-third p-3 border border-white rounded-lg min-w-[14em]">
         <p className="text-lg mb-2 font-mono">{label}</p>
         {payload.map((item: any) => (
-          <p
+          <div
             key={item.dataKey}
-            className="text-sm font-mono"
+            className="text-sm font-mono flex justify-between"
             style={{ color: item.fill }}
           >
-            {item.dataKey}: {formatPriceInfo(item.value)}
-          </p>
+            <span style={{ color: item.fill }}>{item.dataKey}:</span>
+            <span className="ml-2 font-mono" style={{ color: item.fill }}>
+              {formatPriceInfo(item.value, 2, 2)}
+            </span>
+          </div>
         ))}
       </div>
     );
@@ -39,12 +43,15 @@ function CustomToolTip(props: any) {
 
 export default function LineRechartFees({
   title,
+  subValue,
   data,
   labels,
   period,
   setPeriod,
+  isSmallScreen,
 }: {
   title: string;
+  subValue: number;
   data: any;
   labels: {
     name: string;
@@ -52,6 +59,7 @@ export default function LineRechartFees({
   }[];
   period: string | null;
   setPeriod: (v: string | null) => void;
+  isSmallScreen: boolean;
 }) {
   const formatYAxis = (tickItem: any) => {
     return formatPriceInfo(tickItem, 0);
@@ -60,7 +68,22 @@ export default function LineRechartFees({
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
-        <h2 className="">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="">{title}</h2>
+          <Tippy content="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps.">
+            <span className="cursor-help text-txtfade">ⓘ</span>
+          </Tippy>
+
+          {!isSmallScreen && (
+            <FormatNumber
+              nb={subValue}
+              className="text-sm text-txtfade sm:text-xs"
+              prefix="($"
+              suffix=")"
+              precision={0}
+            />
+          )}
+        </div>
 
         <div className="flex gap-2 text-sm">
           <div
