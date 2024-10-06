@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import LineRechartFees from './LineRechartFees';
 
-export default function FeesChart() {
+interface FeesChartProps {
+  isSmallScreen: boolean;
+}
+
+export default function FeesChart({ isSmallScreen }: FeesChartProps) {
   const [chartData, setChartData] = useState<any>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const [totalFees, setTotalFees] = useState<number>(0);
@@ -147,6 +151,7 @@ export default function FeesChart() {
       ]}
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }

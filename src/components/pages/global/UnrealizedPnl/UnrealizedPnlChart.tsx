@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import LineRechartPercentage from './LineRechartUnrealizedPnl';
 
-export default function UnrealizedPnlChart() {
+interface UnrealizedPnlChartProps {
+  isSmallScreen: boolean;
+}
+
+export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -186,6 +190,7 @@ export default function UnrealizedPnlChart() {
       ]}
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }

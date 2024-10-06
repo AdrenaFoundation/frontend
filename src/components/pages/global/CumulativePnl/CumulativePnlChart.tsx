@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import LineRechartPercentage from './LineRechartCumulativePnl';
 
-export default function CumulativePnlChart() {
+interface CumulativePnlChartProps {
+  isSmallScreen: boolean;
+}
+
+export function CumulativePnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -196,6 +200,7 @@ export default function CumulativePnlChart() {
       ]}
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }

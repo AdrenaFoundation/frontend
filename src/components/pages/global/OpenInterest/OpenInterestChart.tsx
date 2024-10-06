@@ -5,7 +5,12 @@ import { TokenInfo } from '@/config/IConfiguration';
 
 import LineRechartOpenInterest from './LineRechartOpenInterest';
 
-export default function OpenInterestChart() {
+
+interface OpenInterestChartProps {
+  isSmallScreen: boolean;
+}
+
+export default function OpenInterestChart({ isSmallScreen }: OpenInterestChartProps) {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
   const [period, setPeriod] = useState<string | null>('7d');
@@ -175,6 +180,7 @@ export default function OpenInterestChart() {
       }
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }

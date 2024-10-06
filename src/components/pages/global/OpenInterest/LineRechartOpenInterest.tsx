@@ -46,6 +46,7 @@ export default function LineRechartOpenInterest({
   labels,
   period,
   setPeriod,
+  isSmallScreen,
 }: {
     title: string;
   total_oi: number;
@@ -57,7 +58,8 @@ export default function LineRechartOpenInterest({
     },
   ];
   period: string | null;
-  setPeriod: (v: string | null) => void;
+    setPeriod: (v: string | null) => void;
+  isSmallScreen: boolean;
 }) {
   const formatYAxis = (tickItem: any) => {
     return formatPriceInfo(tickItem, 0);
@@ -68,13 +70,13 @@ export default function LineRechartOpenInterest({
       <div className="flex mb-3 justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="">{title}</h2>
-          <FormatNumber
+          {!isSmallScreen && <FormatNumber
             nb={total_oi}
             className="text-sm text-txtfade sm:text-xs"
             prefix="($"
             suffix=")"
             precision={0}
-          />
+          />}
         </div>
 
         <div className="flex gap-2 text-sm">

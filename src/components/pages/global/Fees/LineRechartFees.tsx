@@ -46,6 +46,7 @@ export default function LineRechartFees({
   labels,
   period,
   setPeriod,
+  isSmallScreen,
 }: {
   title: string;
   sub_value: number;
@@ -56,7 +57,8 @@ export default function LineRechartFees({
   }[];
   period: string | null;
   setPeriod: (v: string | null) => void;
-}) {
+  isSmallScreen: boolean;
+  }) {
   const formatYAxis = (tickItem: any) => {
     return formatPriceInfo(tickItem, 0);
   };
@@ -70,13 +72,13 @@ export default function LineRechartFees({
             <span className="cursor-help text-txtfade">ⓘ</span>
           </Tippy>
           
-          <FormatNumber
+          {!isSmallScreen && <FormatNumber
             nb={sub_value}
             className="text-sm text-txtfade sm:text-xs"
             prefix="($"
             suffix=")"
             precision={0}
-          />
+          />}
         </div>
 
         <div className="flex gap-2 text-sm">
