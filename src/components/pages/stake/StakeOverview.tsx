@@ -183,54 +183,63 @@ export default function StakeOverview({
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
               className="px-5 ml-auto w-[9em]"
               onClick={handleClaim}
-
             />
           </div>
 
           <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">
-
             {/* Pending rewards block */}
-            <div className="flex-grow">
-            </div>
+            <div className="flex-grow"></div>
             <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg h-[90px]">
               <div className="flex flex-col space-y-1 flex-grow">
                 <div className="flex justify-between">
-                  <span className="text-txtfade">Your share of {isALP ? '70%' : '20%'} platform&apos;s revenue:</span>
+                  <span className="text-txtfade">
+                    Your share of {isALP ? '70%' : '20%'} platform&apos;s
+                    revenue:
+                  </span>
                   <div className="flex items-center">
                     <FormatNumber nb={userPendingUsdcRewards} />
                     <Image
                       src={usdcTokenLogo}
                       width={16}
                       height={16}
-                      className="ml-1"
-                      alt={`usdc token logo`}
+                      className="ml-1 opacity-50"
+                      alt="usdc token logo"
                     />
                   </div>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-txtfade">LM rewards (see schedule):</span>
+                  <span className="text-txtfade">
+                    LM rewards (see schedule):
+                  </span>
                   <div className="flex items-center">
                     <FormatNumber nb={userPendingAdxRewards} />
                     <Image
                       src={adxTokenLogo}
                       width={16}
                       height={16}
-                      className="ml-1"
-                      alt={`adx token logo`}
+                      className="ml-1 opacity-50"
+                      alt="adx token logo"
                     />
                   </div>
                 </div>
                 {pendingGenesisAdxRewards > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-txtfade">Genesis Lock campaign bonus:</span>
+                    <span className="text-txtfade">
+                      Genesis campaign LM rewards bonus:
+                    </span>
                     <div className="flex items-center">
-                      <FormatNumber nb={pendingGenesisAdxRewards} className="text-green" prefix='+ ' isDecimalDimmed={false} />
+                      <FormatNumber
+                        nb={pendingGenesisAdxRewards}
+                        className="text-green"
+                        prefix="+"
+                        isDecimalDimmed={false}
+                      />
                       <Image
                         src={adxTokenLogo}
                         width={16}
                         height={16}
-                        className="ml-1"
-                        alt={`adx token logo`}
+                        className="ml-1 opacity-50"
+                        alt="adx token logo"
                       />
                     </div>
                   </div>
@@ -377,7 +386,6 @@ export default function StakeOverview({
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Locked stakes section */}
@@ -515,6 +523,6 @@ export default function StakeOverview({
           <div className="h-[1px] bg-bcolor w-full my-5" />
         </div>
       </div>
-    </div >
+    </div>
   );
 }
