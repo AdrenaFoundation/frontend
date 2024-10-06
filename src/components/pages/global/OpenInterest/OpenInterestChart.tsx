@@ -1,15 +1,21 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { TokenInfo } from '@/config/IConfiguration';
-
 import LineRechartOpenInterest from './LineRechartOpenInterest';
 
-export default function OpenInterestChart() {
+interface OpenInterestChartProps {
+  isSmallScreen: boolean;
+}
+
+export default function OpenInterestChart({
+  isSmallScreen,
+}: OpenInterestChartProps) {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
+
+  const [totalOpenInterest, setTotalOpenInterest] = useState<number>(0);
 
   useEffect(() => {
     periodRef.current = period;
@@ -47,6 +53,7 @@ export default function OpenInterestChart() {
             return 'custodyinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -59,6 +66,7 @@ export default function OpenInterestChart() {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?open_interest_long_usd=true&open_interest_short_usd=true&start_date=${(() => {
           const startDate = new Date();
@@ -81,29 +89,32 @@ export default function OpenInterestChart() {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       const custodyInfos = [];
 
       let custodyData = {
-        // USDC: { short: [], long: [] },
         WBTC: { short: [], long: [] },
         BONK: { short: [], long: [] },
         JITOSOL: { short: [], long: [] },
@@ -112,6 +123,10 @@ export default function OpenInterestChart() {
       for (const [key, value] of Object.entries(open_interest_long_usd)) {
         const custody = await getCustody(key);
         if (!custody || !value) return;
+
+        // Ignore USDC
+        if (custody.tokenInfo.symbol === 'USDC') continue;
+
         custodyInfos.push(custody.tokenInfo);
 
         custodyData = {
@@ -123,28 +138,40 @@ export default function OpenInterestChart() {
         };
       }
 
-      const formatted = timeStamp.map((time: string, i: number) => ({
-        time,
-        WBTC:
-          (Number(custodyData.WBTC.short[i]) ?? 0) +
-          (Number(custodyData.WBTC.long[i]) ?? 0),
-        // USDC:
-        //   Number(custodyData.USDC.short[i]) + Number(custodyData.USDC.long[i]),
-        BONK:
-          Number(custodyData.BONK.short[i]) + Number(custodyData.BONK.long[i]),
-        JITOSOL:
+      const formatted = timeStamp.map((time: string, i: number) => {
+        const Total =
+          Number(custodyData.WBTC.long[i]) +
+          Number(custodyData.BONK.long[i]) +
+          Number(custodyData.JITOSOL.long[i]) +
           Number(custodyData.JITOSOL.short[i]) +
-          Number(custodyData.JITOSOL.long[i]),
-      }));
+          Number(custodyData.WBTC.short[i]) +
+          Number(custodyData.BONK.short[i]);
 
+        return {
+          time,
+          WBTC:
+            Number(custodyData.WBTC.long[i]) +
+            Number(custodyData.WBTC.short[i]),
+          BONK:
+            Number(custodyData.BONK.long[i]) +
+            Number(custodyData.BONK.short[i]),
+          JITOSOL:
+            Number(custodyData.JITOSOL.long[i]) +
+            Number(custodyData.JITOSOL.short[i]),
+          Total,
+        };
+      });
+
+      setTotalOpenInterest(formatted[formatted.length - 1].Total);
       setCustody(formatted);
+
       setCustodyInfo(custodyInfos);
     } catch (e) {
       console.error(e);
     }
   };
 
-  if (!custody) {
+  if (!custody || !custodyInfo) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
         Loading...
@@ -155,15 +182,11 @@ export default function OpenInterestChart() {
   return (
     <LineRechartOpenInterest
       title="Open Interest USD"
+      totalOpenInterest={totalOpenInterest}
       data={custody}
-      labels={
-        custodyInfo.map((info: TokenInfo) => ({
-          symbol: info.symbol,
-          color: info.color,
-        })) ?? []
-      }
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }

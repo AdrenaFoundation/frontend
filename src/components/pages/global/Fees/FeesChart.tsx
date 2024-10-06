@@ -2,9 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import LineRechartFees from './LineRechartFees';
 
-export default function FeesChart() {
+interface FeesChartProps {
+  isSmallScreen: boolean;
+}
+
+export default function FeesChart({ isSmallScreen }: FeesChartProps) {
   const [chartData, setChartData] = useState<any>(null);
   const [period, setPeriod] = useState<string | null>('7d');
+  const [totalFees, setTotalFees] = useState<number>(0);
   const periodRef = useRef(period);
 
   useEffect(() => {
@@ -30,6 +35,7 @@ export default function FeesChart() {
             return 'poolinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -42,6 +48,7 @@ export default function FeesChart() {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
           const startDate = new Date();
@@ -67,23 +74,27 @@ export default function FeesChart() {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       const formattedData = timeStamp.map(
@@ -91,11 +102,17 @@ export default function FeesChart() {
           name: time,
           'Swap Fees': cumulative_swap_fee_usd[i],
           'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i],
-          'Open/Close Position Fees': cumulative_close_position_fee_usd[i],
+          'Open/Close Fees': cumulative_close_position_fee_usd[i],
           'Liquidation Fees': cumulative_liquidation_fee_usd[i],
           'Borrow Fees': cumulative_borrow_fee_usd[i],
         }),
       );
+
+      const lastDataPoint = formattedData[formattedData.length - 1];
+      const totalFees = Object.entries(lastDataPoint)
+        .filter(([key]) => key !== 'time')
+        .reduce((sum, [_, value]) => sum + (Number(value) || 0), 0);
+      setTotalFees(totalFees);
 
       setChartData(formattedData);
     } catch (e) {
@@ -114,6 +131,7 @@ export default function FeesChart() {
   return (
     <LineRechartFees
       title={'Cumulative Fees'}
+      subValue={totalFees}
       data={chartData}
       labels={[
         {
@@ -125,7 +143,7 @@ export default function FeesChart() {
           color: '#2775ca',
         },
         {
-          name: 'Open/Close Position Fees',
+          name: 'Open/Close Fees',
           color: '#84CC90',
         },
         {
@@ -139,6 +157,7 @@ export default function FeesChart() {
       ]}
       period={period}
       setPeriod={setPeriod}
+      isSmallScreen={isSmallScreen}
     />
   );
 }

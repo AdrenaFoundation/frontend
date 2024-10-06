@@ -16,7 +16,9 @@ import { getNextStakingRoundStartTime } from '@/utils';
 
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
+import adxTokenLogo from '../../../../public/images/adx.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
+import usdcTokenLogo from '../../../../public/images/usdc.svg';
 
 export default function StakeOverview({
   token,
@@ -95,7 +97,7 @@ export default function StakeOverview({
         <div className="flex flex-col sm:flex-row items-center h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
           <div
             className={twMerge(
-              'flex items-center w-full sm:w-auto sm:min-w-[200px] rounded-t-lg sm:rounded-r-none sm:rounded-l-lg p-3 sm:h-full flex-none border-r',
+              'flex items-center w-full sm:w-auto sm:min-w-[200px] rounded-t-lg sm:rounded-r-none sm:rounded-l-lg p-3 sm:h-full flex-none sm:border-r',
               isALP ? 'bg-[#130AAA]' : 'bg-[#991B1B]',
             )}
           >
@@ -175,29 +177,78 @@ export default function StakeOverview({
                 className="inline-block ml-2 cursor-pointer"
               />
             </Tippy>
-
             <Button
-              variant="outline"
+              variant="primary"
               size="sm"
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
-              className={twMerge(
-                'px-5 ml-auto',
-                userPendingUsdcRewards === 0 &&
-                  userPendingAdxRewards === 0 &&
-                  pendingGenesisAdxRewards === 0 &&
-                  'opacity-50 cursor-not-allowed',
-              )}
+              className="px-5 ml-auto w-[9em]"
               onClick={handleClaim}
-              disabled={
-                userPendingUsdcRewards === 0 &&
-                userPendingAdxRewards === 0 &&
-                pendingGenesisAdxRewards === 0
-              }
             />
           </div>
 
-          <div className="flex flex-col border bg-secondary rounded-xl shadow-lg">
-            <div
+          <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">
+            {/* Pending rewards block */}
+            <div className="flex-grow"></div>
+            <div className="flex flex-col border p-3 bg-secondary rounded-xl shadow-lg h-[90px]">
+              <div className="flex flex-col space-y-1 flex-grow">
+                <div className="flex justify-between">
+                  <span className="text-txtfade">
+                    Your share of {isALP ? '70%' : '20%'} platform&apos;s
+                    revenue:
+                  </span>
+                  <div className="flex items-center">
+                    <FormatNumber nb={userPendingUsdcRewards} />
+                    <Image
+                      src={usdcTokenLogo}
+                      width={16}
+                      height={16}
+                      className="ml-1 opacity-50"
+                      alt="usdc token logo"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-txtfade">
+                    LM rewards (see schedule):
+                  </span>
+                  <div className="flex items-center">
+                    <FormatNumber nb={userPendingAdxRewards} />
+                    <Image
+                      src={adxTokenLogo}
+                      width={16}
+                      height={16}
+                      className="ml-1 opacity-50"
+                      alt="adx token logo"
+                    />
+                  </div>
+                </div>
+                {pendingGenesisAdxRewards > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-txtfade">
+                      Genesis campaign LM rewards bonus:
+                    </span>
+                    <div className="flex items-center">
+                      <FormatNumber
+                        nb={pendingGenesisAdxRewards}
+                        className="text-green"
+                        prefix="+"
+                        isDecimalDimmed={false}
+                      />
+                      <Image
+                        src={adxTokenLogo}
+                        width={16}
+                        height={16}
+                        className="ml-1 opacity-50"
+                        alt="adx token logo"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Horizontal layout */}
+            {/* <div
               className={twMerge(
                 'flex justify-between items-center relative w-full overflow-hidden pt-4 pb-4',
                 isMobile ? 'pl-6 pr-6' : 'pl-8 pr-8',
@@ -239,7 +290,7 @@ export default function StakeOverview({
                           content={
                             <p>
                               These rewards accrue over time for the first 180
-                              days of the protocol. They are proportional to
+                              days of the protocol. The amount is proportional to
                               your participation in the Genesis Liquidity
                               campaign. <br />
                               <br /> Thank you for being an early supporter of
@@ -276,53 +327,11 @@ export default function StakeOverview({
                 height={100}
                 className="absolute opacity-20 -right-10"
               />
-            </div>
+            </div> */}
           </div>
 
-          {/* New side-by-side layout */}
-          <div className="flex flex-col mt-2 gap-2 text-sm">
-            {/* <div className="flex items-center justify-between">
-              <span className="txt-xxs text-txtfade">
-                <Tippy
-                  content={
-                    <p className="font-medium">
-                      USDC rewards originate from platform revenues (70% ALP / 20% ADX).
-                      <br />
-                      <br />
-                      ADX rewards originate from the ADX inflation (see doc for scheduled inflation).
-                      <br />
-                      This represents the current content of the vaults.
-                    </p>
-                  }
-                >
-                  <Image
-                    src={infoIcon}
-                    width={14}
-                    height={14}
-                    alt="info icon"
-                    className="inline-block mr-1"
-                  />
-                </Tippy>
-                Current content of the vaults:
-              </span>
-              <div className="flex items-center gap-2">
-                <FormatNumber nb={roundPendingAdxRewards} />
-                <Image
-                  src={window.adrena.client.adxToken.image}
-                  alt="ADX"
-                  width={16}
-                  height={16}
-                />
-                <span className="text-txtfade">|</span>
-                <FormatNumber nb={roundPendingUsdcRewards} />
-                <Image
-                  src={window.adrena.client.getUsdcToken().image}
-                  alt="USDC"
-                  width={16}
-                  height={16}
-                />
-              </div>
-            </div> */}
+          {/* Bottom line */}
+          <div className="flex flex-col mt-2 gap-2 text-sm pl-2 pr-6">
             <div className="flex items-center justify-between">
               <span className="text-txtfade">
                 <Tippy
@@ -415,7 +424,7 @@ export default function StakeOverview({
                 variant="primary"
                 size="sm"
                 title="Add Stake"
-                className="px-5 w-full sm:w-auto"
+                className="px-5 w-[9em]"
                 onClick={() =>
                   handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
                 }
