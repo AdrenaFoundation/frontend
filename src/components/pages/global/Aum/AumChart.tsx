@@ -2,15 +2,15 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import LineRechartAum from './RechartAum';
 
+export interface AumData {
+  value: number;
+  date: string;
+}
+
 export default function AumChart() {
-  const [AUM, setAUM] = useState<any>(null);
+  const [AUM, setAUM] = useState<AumData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
-
-  useEffect(() => {
-    periodRef.current = period;
-    getPoolInfo();
-  }, [period]);
 
   const getPoolInfo = useCallback(async () => {
     try {
@@ -84,6 +84,12 @@ export default function AumChart() {
       console.error(e);
     }
   }, []);
+
+  useEffect(() => {
+    periodRef.current = period;
+    getPoolInfo();
+  }, [getPoolInfo, period]);
+
 
   useEffect(() => {
     getPoolInfo();

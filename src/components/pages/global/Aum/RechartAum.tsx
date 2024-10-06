@@ -14,8 +14,10 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
-import { formatPriceInfo } from '@/utils';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { formatPriceInfo } from '@/utils';
+
+import { AumData } from './AumChart';
 
 function CustomToolTip(props: any) {
   const { active, payload, label } = props;
@@ -50,7 +52,7 @@ export default function RechartAum({
 }: {
   title: string;
   sub_value: number;
-  data: any;
+  data: AumData[];
   labels: {
     name: string;
     color?: string;
@@ -58,7 +60,7 @@ export default function RechartAum({
   period: string | null;
   setPeriod: (v: string | null) => void;
 }) {
-  const formatYAxis = (tickItem: any) => {
+  const formatYAxis = (tickItem: number) => {
     return formatPriceInfo(tickItem, 0);
   };
 
@@ -69,7 +71,7 @@ export default function RechartAum({
           <h2 className="">{title}</h2>
           <FormatNumber
             nb={sub_value}
-            className="text-sm text-txtfade"
+            className="text-sm text-txtfade sm:text-xs"
             prefix="($"
             suffix=")"
             precision={0}

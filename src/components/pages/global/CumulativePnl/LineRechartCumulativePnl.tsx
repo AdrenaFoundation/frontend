@@ -5,7 +5,6 @@ import {
   Legend,
   Line,
   LineChart,
-  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,7 +13,7 @@ import {
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import { formatPercentage, formatPriceInfo } from '@/utils';
+import { formatPriceInfo } from '@/utils';
 
 export default function LineRechartCumulativePnl({
   title,
@@ -69,7 +68,7 @@ export default function LineRechartCumulativePnl({
           <h2 className="">{title}</h2>
           <FormatNumber
             nb={sub_value}
-            className="text-sm text-txtfade"
+            className="text-sm text-txtfade sm:text-xs"
             prefix="($"
             suffix=")"
             precision={0}

@@ -72,8 +72,8 @@ export default function LineRechartFees({
           
           <FormatNumber
             nb={sub_value}
-            className="text-sm text-txtfade"
-            prefix="(tot. $"
+            className="text-sm text-txtfade sm:text-xs"
+            prefix="($"
             suffix=")"
             precision={0}
           />

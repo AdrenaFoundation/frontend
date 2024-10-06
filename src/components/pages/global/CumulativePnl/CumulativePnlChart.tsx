@@ -180,7 +180,7 @@ export default function CumulativePnlChart() {
 
   return (
     <LineRechartPercentage
-      title="All-time Traders Realized PnL"
+      title="Traders Realized PnL"
       sub_value={totalRealizedPnl}
       data={infos.formattedData}
       labels={[

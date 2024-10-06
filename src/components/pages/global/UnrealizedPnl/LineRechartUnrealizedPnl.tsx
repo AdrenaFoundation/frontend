@@ -5,7 +5,6 @@ import {
   Legend,
   Line,
   LineChart,
-  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,7 +13,7 @@ import {
 import { twMerge } from 'tailwind-merge';
 
 import FormatNumber from '@/components/Number/FormatNumber';
-import { formatPercentage, formatPriceInfo } from '@/utils';
+import { formatPriceInfo } from '@/utils';
 
 export default function LineRechartUnrealizedPnl({
   title,
@@ -34,7 +33,7 @@ export default function LineRechartUnrealizedPnl({
   period: string | null;
   setPeriod: (v: string | null) => void;
 }) {
-  const formatYAxis = (tickItem: any) => {
+  const formatYAxis = (tickItem: number) => {
     return formatPriceInfo(tickItem, 0);
   };
 
@@ -69,8 +68,8 @@ export default function LineRechartUnrealizedPnl({
           <h2 className="">{title}</h2>
           <FormatNumber
             nb={sub_value}
-            className="text-sm text-txtfade"
-            prefix="(tot. $"
+            className="text-sm text-txtfade sm:text-xs"
+            prefix="($"
             suffix=")"
             precision={0}
           />

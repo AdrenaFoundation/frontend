@@ -69,7 +69,7 @@ export default function RechartALPPrice({
           <h2 className="">{title}</h2>
           <FormatNumber
             nb={sub_value}
-            className="text-sm text-txtfade"
+            className="text-sm text-txtfade sm:text-xs"
             prefix="($"
             suffix=")"
             precision={4}

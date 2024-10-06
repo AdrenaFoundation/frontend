@@ -70,8 +70,8 @@ export default function LineRechartOpenInterest({
           <h2 className="">{title}</h2>
           <FormatNumber
             nb={total_oi}
-            className="text-sm text-txtfade"
-            prefix="(tot. $"
+            className="text-sm text-txtfade sm:text-xs"
+            prefix="($"
             suffix=")"
             precision={0}
           />

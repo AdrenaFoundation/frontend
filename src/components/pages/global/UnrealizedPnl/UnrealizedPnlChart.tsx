@@ -170,7 +170,7 @@ export default function UnrealizedPnlChart() {
 
   return (
     <LineRechartPercentage
-      title="Live Traders Unrealized PnL"
+      title="Traders Unrealized PnL"
       sub_value={totalUnrealizedPnl}
       data={infos.formattedData}
       labels={[

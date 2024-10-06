@@ -31,7 +31,7 @@ export default function LineRechartPercentage({
   period: string | null;
   setPeriod: (v: string | null) => void;
 }) {
-  const formatYAxis = (tickItem: any) => {
+  const formatYAxis = (tickItem: number) => {
     return `${tickItem}%`;
   };
 
@@ -53,19 +53,6 @@ export default function LineRechartPercentage({
             </div>
           ))}
         </div>
-
-        // <div className="bg-third p-3 border border-white rounded-lg">
-        //   <p className="text-lg mb-2 font-mono">{label}</p>
-        //   {payload.map((item: any) => (
-        //     <p
-        //       key={item.dataKey}
-        //       className="text-sm font-mono"
-        //       style={{ color: item.fill }}
-        //     >
-        //       {item.dataKey}: {formatPercentage(item.value)}
-        //     </p>
-        //   ))}
-        // </div>
       );
     }
 
