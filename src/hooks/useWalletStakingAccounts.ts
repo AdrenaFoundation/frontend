@@ -2,11 +2,11 @@ import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
-import { UserStaking } from '@/types';
+import { UserStakingExtended } from '@/types';
 
 export type WalletStakingAccounts = {
-  ADX: UserStaking | null;
-  ALP: UserStaking | null;
+  ADX: UserStakingExtended | null;
+  ALP: UserStakingExtended | null;
 };
 
 export default function useWalletStakingAccounts(): {
@@ -17,8 +17,8 @@ export default function useWalletStakingAccounts(): {
   const [triggerCount, setTriggerCount] = useState<number>(0);
 
   const [stakingAccounts, setStakingAccounts] = useState<{
-    ADX: UserStaking | null;
-    ALP: UserStaking | null;
+    ADX: UserStakingExtended | null;
+    ALP: UserStakingExtended | null;
   } | null>(null);
 
   const getUserStakingAccount = useCallback(async () => {

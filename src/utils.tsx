@@ -430,7 +430,7 @@ export function parseTransactionError(
   return new AdrenaTransactionError(null, errStr);
 }
 
-export async function isATAInitialized(
+export async function isAccountInitialized(
   connection: Connection,
   address: PublicKey,
 ): Promise<boolean> {
