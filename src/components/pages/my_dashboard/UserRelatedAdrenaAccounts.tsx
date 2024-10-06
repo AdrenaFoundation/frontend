@@ -6,7 +6,6 @@ import { AdrenaClient } from '@/AdrenaClient';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { SOL_DECIMALS } from '@/constant';
-import useSablierDanglingThreads from '@/hooks/useSablierDanglingThreads';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { PositionExtended, UserProfileExtended, VestExtended } from '@/types';
 import { getTokenSymbol, nativeToUi } from '@/utils';
@@ -56,32 +55,8 @@ export default function UserRelatedAdrenaAccounts({
       }[]
     | null
   >(null);
-  const [danglingThreadsData, setDanglingThreadsData] = useState<
-    | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-      }[]
-    | null
-  >(null);
 
   const [accounts, setAccounts] = useState<PublicKey[] | null>(null);
-
-  const danglingThreads = useSablierDanglingThreads(positions);
-
-  useEffect(() => {
-    if (!danglingThreads) return setDanglingThreadsData(null);
-
-    setDanglingThreadsData(
-      danglingThreads?.map((thread, index) =>
-        onchainAccountData({
-          title: `Dangling Thread #${index + 1}`,
-          address: thread,
-          program: 'Adrena',
-        }),
-      ) ?? [],
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [danglingThreads]);
 
   useEffect(() => {
     const data: {
@@ -264,22 +239,15 @@ export default function UserRelatedAdrenaAccounts({
 
   // Calculate rent for all accounts
   const calculateRent = useCallback(async () => {
-    if (
-      !window.adrena.client.connection ||
-      accounts === null ||
-      danglingThreads === null
-    )
+    if (!window.adrena.client.connection || accounts === null)
       return setRent(null);
 
-    if (!accounts.length && !danglingThreads.length) {
+    if (!accounts.length) {
       return setRent(0);
     }
 
     const accountsInfo =
-      await window.adrena.client.connection.getMultipleAccountsInfo([
-        ...accounts,
-        ...danglingThreads,
-      ]);
+      await window.adrena.client.connection.getMultipleAccountsInfo(accounts);
 
     const rent = accountsInfo.reduce((acc, account) => {
       if (!account) return acc;
@@ -288,7 +256,7 @@ export default function UserRelatedAdrenaAccounts({
     }, 0);
 
     setRent(rent);
-  }, [accounts, danglingThreads]);
+  }, [accounts]);
 
   useEffect(() => {
     calculateRent();
@@ -324,26 +292,6 @@ export default function UserRelatedAdrenaAccounts({
         data={data}
         rowTitleClassName="text-sm"
       />
-
-      {danglingThreadsData && danglingThreadsData.length ? (
-        <>
-          <div className="flex">
-            <h3>Dangling Threads</h3>
-            <InfoAnnotation
-              text="There is a known issue about SL/TP order being executed resulting in dangling threads. The team is working on an instruction to allow"
-              className="h-4 w-4"
-            />
-          </div>
-
-          <Table
-            rowHovering={true}
-            breakpoint="650px"
-            rowTitleWidth="50%"
-            data={danglingThreadsData}
-            rowTitleClassName="text-sm"
-          />
-        </>
-      ) : null}
     </StyledContainer>
   );
 }

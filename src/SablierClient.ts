@@ -133,7 +133,7 @@ export default class SablierClient {
     };
   }
 
-  public async loadSablierDanglingThreads(
+  public async loadSablierSLTPThreads(
     owner: PublicKey,
   ): Promise<PublicKey[] | null> {
     if (!this.readonlySablierThreadProgram) return null;
@@ -141,17 +141,32 @@ export default class SablierClient {
     const connection = window.adrena.sablierClient.readonlyThreadConnection;
     if (!connection) throw new Error('Connection not initialized');
 
-    const threads = await this.readonlySablierThreadProgram.account.thread.all([
-      {
-        dataSize: 2125, // Hardcoded size of the thread account containing the SL/TP ix
-      },
-      {
-        memcmp: {
-          offset: 70,
-          bytes: owner.toBase58(),
-        },
-      },
-    ]);
+    const threads = (
+      await Promise.all([
+        this.readonlySablierThreadProgram.account.thread.all([
+          {
+            dataSize: 2125, // Hardcoded size of the thread account containing the TP ix
+          },
+          {
+            memcmp: {
+              offset: 70,
+              bytes: owner.toBase58(),
+            },
+          },
+        ]),
+        this.readonlySablierThreadProgram.account.thread.all([
+          {
+            dataSize: 2086, // Hardcoded size of the thread account containing the SL ix
+          },
+          {
+            memcmp: {
+              offset: 70,
+              bytes: owner.toBase58(),
+            },
+          },
+        ]),
+      ])
+    ).flat();
 
     return threads.map((x) => x.publicKey);
   }
