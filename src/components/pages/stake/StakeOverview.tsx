@@ -97,7 +97,7 @@ export default function StakeOverview({
         <div className="flex flex-col sm:flex-row items-center h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
           <div
             className={twMerge(
-              'flex items-center w-full sm:w-auto sm:min-w-[200px] rounded-t-lg sm:rounded-r-none sm:rounded-l-lg p-3 sm:h-full flex-none border-r',
+              'flex items-center w-full sm:w-auto sm:min-w-[200px] rounded-t-lg sm:rounded-r-none sm:rounded-l-lg p-3 sm:h-full flex-none sm:border-r',
               isALP ? 'bg-[#130AAA]' : 'bg-[#991B1B]',
             )}
           >
@@ -187,7 +187,7 @@ export default function StakeOverview({
             />
           </div>
 
-          <div className="flex flex-col border bg-secondary rounded-xl shadow-lg">
+          <div className="flex flex-col border bg-secondary rounded-xl shadow-lg overflow-hidden">
 
             {/* Pending rewards block */}
             <div className="flex-grow">
