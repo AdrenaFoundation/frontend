@@ -133,6 +133,29 @@ export default class SablierClient {
     };
   }
 
+  public async loadSablierDanglingThreads(
+    owner: PublicKey,
+  ): Promise<PublicKey[] | null> {
+    if (!this.readonlySablierThreadProgram) return null;
+
+    const connection = window.adrena.sablierClient.readonlyThreadConnection;
+    if (!connection) throw new Error('Connection not initialized');
+
+    const threads = await this.readonlySablierThreadProgram.account.thread.all([
+      {
+        dataSize: 2125, // Hardcoded size of the thread account containing the SL/TP ix
+      },
+      {
+        memcmp: {
+          offset: 70,
+          bytes: owner.toBase58(),
+        },
+      },
+    ]);
+
+    return threads.map((x) => x.publicKey);
+  }
+
   public async loadSablierFinalizeLockedStakedThreads(): Promise<
     SablierThreadExtended[] | null
   > {

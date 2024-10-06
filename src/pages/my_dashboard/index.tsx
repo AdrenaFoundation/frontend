@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import UpdateLockedStake from '@/components/pages/stake/UpdateLockedStake';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
@@ -25,6 +26,7 @@ import {
   LockedStakeExtended,
   PageProps,
   Vest,
+  VestExtended,
 } from '@/types';
 import {
   addNotification,
@@ -64,7 +66,7 @@ export default function MyDashboard({
   const [liquidStakedADX, setLiquidStakedADX] = useState<number | null>(null);
   const [lockedStakedADX, setLockedStakedADX] = useState<number | null>(null);
   const [lockedStakedALP, setLockedStakedALP] = useState<number | null>(null);
-  const [userVest, setUserVest] = useState<Vest | null>(null);
+  const [userVest, setUserVest] = useState<VestExtended | null>(null);
 
   // When the profile page loads, update the profile so it's up to date with latests
   // user actions
@@ -226,7 +228,10 @@ export default function MyDashboard({
 
   const getUserVesting = async () => {
     try {
-      const vest = (await window.adrena.client.loadUserVest()) as Vest;
+      const vest = await window.adrena.client.loadUserVest();
+
+      if (!vest) throw new Error('No vest');
+
       setUserVest(vest);
     } catch (error) {
       console.log('failed to load vesting', error);
@@ -328,6 +333,12 @@ export default function MyDashboard({
                 setFinalizeLockedStakeRedeem(false);
                 setUpdateLockedStake(true);
               }}
+            />
+
+            <UserRelatedAdrenaAccounts
+              userProfile={userProfile}
+              userVest={userVest}
+              positions={positions}
             />
 
             <AnimatePresence>

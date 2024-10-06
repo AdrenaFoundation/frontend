@@ -61,6 +61,7 @@ import {
   TokenSymbol,
   UserProfileExtended,
   UserStaking,
+  UserStakingExtended,
   Vest,
   VestExtended,
   VestRegistry,
@@ -71,7 +72,7 @@ import {
   createCloseWSOLAccountInstruction,
   createPrepareWSOLAccountInstructions,
   findATAAddressSync,
-  isATAInitialized,
+  isAccountInitialized,
   nativeToUi,
   parseTransactionError,
   u128SplitToBN,
@@ -723,7 +724,7 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
 
-    if (!(await isATAInitialized(this.connection, lpTokenAccount))) {
+    if (!(await isAccountInitialized(this.connection, lpTokenAccount))) {
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: lpTokenAccount,
@@ -1334,7 +1335,7 @@ export class AdrenaClient {
     if (!mintB.equals(NATIVE_MINT)) {
       const receivingAccount = findATAAddressSync(owner, mintB);
 
-      if (!(await isATAInitialized(this.connection, receivingAccount))) {
+      if (!(await isAccountInitialized(this.connection, receivingAccount))) {
         preInstructions.push(
           this.createATAInstruction({
             ataAddress: receivingAccount,
@@ -1711,7 +1712,7 @@ export class AdrenaClient {
     } else {
       const usdcAta = findATAAddressSync(owner, usdcToken.mint);
 
-      if (!(await isATAInitialized(this.connection, usdcAta))) {
+      if (!(await isAccountInitialized(this.connection, usdcAta))) {
         preInstructions.push(
           this.createATAInstruction({
             ataAddress: usdcAta,
@@ -1943,7 +1944,7 @@ export class AdrenaClient {
     if (!mint.equals(NATIVE_MINT)) {
       const mintATA = findATAAddressSync(owner, mint);
 
-      if (!(await isATAInitialized(this.connection, mintATA))) {
+      if (!(await isAccountInitialized(this.connection, mintATA))) {
         preInstructions.push(
           this.createATAInstruction({
             ataAddress: mintATA,
@@ -2370,7 +2371,7 @@ export class AdrenaClient {
 
   // null = not ready
   // false = no vest
-  public async loadUserVest(): Promise<Vest | false | null> {
+  public async loadUserVest(): Promise<VestExtended | false | null> {
     if (!this.adrenaProgram || !this.connection) {
       return null;
     }
@@ -2385,7 +2386,10 @@ export class AdrenaClient {
 
     if (!vest) return null;
 
-    return vest;
+    return {
+      pubkey: userVestPda,
+      ...vest,
+    };
   }
 
   public async claimUserVest() {
@@ -2400,7 +2404,7 @@ export class AdrenaClient {
 
     const receivingAccount = findATAAddressSync(owner, this.adxToken.mint);
 
-    if (!(await isATAInitialized(this.connection, receivingAccount))) {
+    if (!(await isAccountInitialized(this.connection, receivingAccount))) {
       preInstructions.push(
         this.createATAInstruction({
           ataAddress: receivingAccount,
@@ -2487,21 +2491,24 @@ export class AdrenaClient {
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
-  }): Promise<UserStaking | null> {
+  }): Promise<UserStakingExtended | null> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
     const stakingPda = this.getStakingPda(stakedTokenMint);
     const userStaking = this.getUserStakingPda(owner, stakingPda);
 
-    if (!(await isATAInitialized(this.connection, userStaking))) {
-      return null;
-    }
-
-    return this.adrenaProgram.account.userStaking.fetchNullable(
+    const account = await this.adrenaProgram.account.userStaking.fetchNullable(
       userStaking,
       'processed',
     );
+
+    if (!account) return null;
+
+    return {
+      pubkey: userStaking,
+      ...account,
+    };
   }
 
   public async addLiquidStake({
@@ -2557,7 +2564,7 @@ export class AdrenaClient {
     if (!userStakingAccount) {
       throw new Error('User staking account not found');
     } else {
-      if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
+      if (!(await isAccountInitialized(this.connection, rewardTokenAccount))) {
         preInstructions.push(
           this.createATAInstruction({
             ataAddress: rewardTokenAccount,
@@ -2567,7 +2574,7 @@ export class AdrenaClient {
         );
       }
 
-      if (!(await isATAInitialized(this.connection, tokenAccount))) {
+      if (!(await isAccountInitialized(this.connection, tokenAccount))) {
         preInstructions.push(
           this.createATAInstruction({
             ataAddress: tokenAccount,
@@ -2674,7 +2681,7 @@ export class AdrenaClient {
     if (!userStakingAccount) {
       throw new Error('User staking account not found');
     } else {
-      if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
+      if (!(await isAccountInitialized(this.connection, rewardTokenAccount))) {
         console.log('init user reward account');
         preInstructions.push(
           this.createATAInstruction({
@@ -2685,7 +2692,7 @@ export class AdrenaClient {
         );
       }
 
-      if (!(await isATAInitialized(this.connection, tokenAccount))) {
+      if (!(await isAccountInitialized(this.connection, tokenAccount))) {
         console.log('init user staking');
         preInstructions.push(
           this.createATAInstruction({
@@ -3236,7 +3243,7 @@ export class AdrenaClient {
     const tokenAccount = findATAAddressSync(owner, stakedTokenMint);
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
-    if (!(await isATAInitialized(this.connection, rewardTokenAccount))) {
+    if (!(await isAccountInitialized(this.connection, rewardTokenAccount))) {
       console.log('init user reward account');
 
       preInstructions.push(
@@ -3248,7 +3255,7 @@ export class AdrenaClient {
       );
     }
 
-    if (!(await isATAInitialized(this.connection, tokenAccount))) {
+    if (!(await isAccountInitialized(this.connection, tokenAccount))) {
       console.log('init user staking');
 
       preInstructions.push(
@@ -3260,7 +3267,7 @@ export class AdrenaClient {
       );
     }
 
-    if (!(await isATAInitialized(this.connection, lmTokenAccount))) {
+    if (!(await isAccountInitialized(this.connection, lmTokenAccount))) {
       console.log('init user adx token account');
 
       preInstructions.push(
@@ -4830,7 +4837,7 @@ export class AdrenaClient {
 
     if (
       this.connection &&
-      !(await isATAInitialized(this.connection, rewardTokenAccount))
+      !(await isAccountInitialized(this.connection, rewardTokenAccount))
     ) {
       preInstructions.push(
         this.createATAInstruction({
@@ -4843,7 +4850,7 @@ export class AdrenaClient {
 
     if (
       this.connection &&
-      !(await isATAInitialized(this.connection, lmTokenAccount))
+      !(await isAccountInitialized(this.connection, lmTokenAccount))
     ) {
       preInstructions.push(
         this.createATAInstruction({
