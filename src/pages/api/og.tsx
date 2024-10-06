@@ -23,7 +23,7 @@ export default async function handler(request: NextRequest) {
     const price = searchParams.get('price') || '2000';
     const mark = searchParams.get('mark') || '2000';
     const openedOn = new Date(
-        searchParams.get('opened') || '2022-01-01',
+        Number(searchParams.get('opened')) || '2024-10-10',
     ).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -102,7 +102,7 @@ export default async function handler(request: NextRequest) {
                         pnlPercentage < 0 ? 'text-[#c9243a]' : 'text-[#07956b]',
                     )}
                 >
-                    {pnlPercentage}%
+                    {pnlPercentage.toFixed(2)}%
                 </p>
                 <ul tw="flex flex-row mt-[10px] mt-[120px]">
                     <li tw="flex flex-col">
