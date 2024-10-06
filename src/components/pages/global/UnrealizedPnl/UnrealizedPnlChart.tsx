@@ -98,19 +98,18 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       });
 
       // Each custody keeps an utilization array
-      const infos = window.adrena.client.custodies.map((c) => ({
-        custody: c,
-        values: [] as number[],
-      }));
+      const infos = window.adrena.client.custodies
+        .filter((c) => c.tokenInfo.symbol !== 'USDC')
+        .map((c) => ({
+          custody: c,
+          values: [] as number[],
+        }));
 
       const totalInfos: number[] = Array.from(Array(timeStamp.length).fill(0));
 
-      const usdcCustody = infos.find(({ custody }) => custody.tokenInfo.symbol === 'USDC');
-      if (!usdcCustody) return;
-      
       for (const [custodyKey, longPnLValues] of Object.entries(longPnL)) {
         const custodyInfos = infos.find(
-          ({ custody }) => custody.pubkey.toBase58() === custodyKey
+          ({ custody }) => custody.pubkey.toBase58() === custodyKey,
         );
 
         if (!custodyInfos) continue;
@@ -119,9 +118,8 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
           const longPnLNb = parseInt(longPnLValue, 10);
           const shortPnLNb = parseInt(shortPnL[custodyKey][i], 10);
 
-          custodyInfos.values.push(longPnLNb);
-          usdcCustody.values[i] = (usdcCustody.values[i] || 0) + shortPnLNb;
-          
+          custodyInfos.values.push(longPnLNb + shortPnLNb);
+
           totalInfos[i] += longPnLNb + shortPnLNb;
         });
       }
@@ -131,7 +129,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
         ...infos.reduce(
           (acc, { custody, values }) => ({
             ...acc,
-            [custody.tokenInfo.symbol === 'USDC' ? 'USDC (all shorts)' : custody.tokenInfo.symbol]: values[i],
+            [custody.tokenInfo.symbol]: values[i],
           }),
           {} as { [key: string]: number },
         ),

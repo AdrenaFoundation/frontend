@@ -22,6 +22,7 @@ function CustomToolTip(props: any) {
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
         <p className="text-lg mb-2 font-mono">{label}</p>
+
         {payload.map((item: any) => (
           <div
             key={item.dataKey}
@@ -29,11 +30,13 @@ function CustomToolTip(props: any) {
             style={{ color: item.fill }}
           >
             <span style={{ color: item.fill }}>{item.dataKey}:</span>
-            <span className="ml-2 font-mono" style={{ color: item.fill }}>{formatPriceInfo(item.value, 2, 2)}</span>
+            <span className="ml-2 font-mono" style={{ color: item.fill }}>
+              {formatPriceInfo(item.value, 2, 2)}
+            </span>
           </div>
         ))}
       </div>
-  );
+    );
   }
 
   return null;
@@ -43,22 +46,15 @@ export default function LineRechartOpenInterest({
   title,
   total_oi,
   data,
-  labels,
   period,
   setPeriod,
   isSmallScreen,
 }: {
-    title: string;
+  title: string;
   total_oi: number;
   data: any;
-  labels: [
-    {
-      name: string;
-      color?: string;
-    },
-  ];
   period: string | null;
-    setPeriod: (v: string | null) => void;
+  setPeriod: (v: string | null) => void;
   isSmallScreen: boolean;
 }) {
   const formatYAxis = (tickItem: any) => {
@@ -70,13 +66,15 @@ export default function LineRechartOpenInterest({
       <div className="flex mb-3 justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="">{title}</h2>
-          {!isSmallScreen && <FormatNumber
-            nb={total_oi}
-            className="text-sm text-txtfade sm:text-xs"
-            prefix="($"
-            suffix=")"
-            precision={0}
-          />}
+          {!isSmallScreen && (
+            <FormatNumber
+              nb={total_oi}
+              className="text-sm text-txtfade sm:text-xs"
+              prefix="($"
+              suffix=")"
+              precision={0}
+            />
+          )}
         </div>
 
         <div className="flex gap-2 text-sm">
@@ -139,16 +137,16 @@ export default function LineRechartOpenInterest({
 
           <Line
             type="monotone"
-            dataKey="WBTC"
-            stroke="#f7931a"
-            fill="#f7931a"
+            dataKey="Total"
+            stroke="#ff0000"
+            fill="#ff0000"
             dot={false}
           />
           <Line
             type="monotone"
-            dataKey="USDC"
-            stroke="#2775ca"
-            fill="#2775ca"
+            dataKey="WBTC"
+            stroke="#f7931a"
+            fill="#f7931a"
             dot={false}
           />
           <Line

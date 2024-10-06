@@ -5,12 +5,13 @@ import { TokenInfo } from '@/config/IConfiguration';
 
 import LineRechartOpenInterest from './LineRechartOpenInterest';
 
-
 interface OpenInterestChartProps {
   isSmallScreen: boolean;
 }
 
-export default function OpenInterestChart({ isSmallScreen }: OpenInterestChartProps) {
+export default function OpenInterestChart({
+  isSmallScreen,
+}: OpenInterestChartProps) {
   const [custody, setCustody] = useState<any>(null);
   const [custodyInfo, setCustodyInfo] = useState<any>(null);
   const [period, setPeriod] = useState<string | null>('7d');
@@ -110,7 +111,6 @@ export default function OpenInterestChart({ isSmallScreen }: OpenInterestChartPr
       const custodyInfos = [];
 
       let custodyData = {
-        USDC: { short: [], long: [] },
         WBTC: { short: [], long: [] },
         BONK: { short: [], long: [] },
         JITOSOL: { short: [], long: [] },
@@ -119,6 +119,10 @@ export default function OpenInterestChart({ isSmallScreen }: OpenInterestChartPr
       for (const [key, value] of Object.entries(open_interest_long_usd)) {
         const custody = await getCustody(key);
         if (!custody || !value) return;
+
+        // Ignore USDC
+        if (custody.tokenInfo.symbol === 'USDC') continue;
+
         custodyInfos.push(custody.tokenInfo);
 
         custodyData = {
@@ -131,35 +135,39 @@ export default function OpenInterestChart({ isSmallScreen }: OpenInterestChartPr
       }
 
       const formatted = timeStamp.map((time: string, i: number) => {
-        const total = 
+        const Total =
           Number(custodyData.WBTC.long[i]) +
           Number(custodyData.BONK.long[i]) +
           Number(custodyData.JITOSOL.long[i]) +
           Number(custodyData.JITOSOL.short[i]) +
-          Number(custodyData.WBTC.short[i]) + 
+          Number(custodyData.WBTC.short[i]) +
           Number(custodyData.BONK.short[i]);
 
         return {
           time,
-          WBTC: Number(custodyData.WBTC.long[i]),
-          BONK: Number(custodyData.BONK.long[i]),
-          JITOSOL: Number(custodyData.JITOSOL.long[i]),
-          USDC: Number(custodyData.WBTC.short[i]) + 
-                Number(custodyData.BONK.short[i]) +
-                Number(custodyData.JITOSOL.short[i]),
-          total,
+          WBTC:
+            Number(custodyData.WBTC.long[i]) +
+            Number(custodyData.WBTC.short[i]),
+          BONK:
+            Number(custodyData.BONK.long[i]) +
+            Number(custodyData.BONK.short[i]),
+          JITOSOL:
+            Number(custodyData.JITOSOL.long[i]) +
+            Number(custodyData.JITOSOL.short[i]),
+          Total,
         };
       });
 
       setTotalOpenInterest(formatted[formatted.length - 1].total);
       setCustody(formatted);
+
       setCustodyInfo(custodyInfos);
     } catch (e) {
       console.error(e);
     }
   };
 
-  if (!custody) {
+  if (!custody || !custodyInfo) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
         Loading...
@@ -169,15 +177,9 @@ export default function OpenInterestChart({ isSmallScreen }: OpenInterestChartPr
 
   return (
     <LineRechartOpenInterest
-      title={`Open Interest USD`}
+      title="Open Interest USD"
       total_oi={totalOpenInterest}
       data={custody}
-      labels={
-        custodyInfo.map((info: TokenInfo) => ({
-          symbol: info.symbol,
-          color: info.color,
-        })) ?? []
-      }
       period={period}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
