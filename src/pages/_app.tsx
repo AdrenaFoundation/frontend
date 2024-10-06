@@ -129,7 +129,7 @@ export default function App(props: AppProps) {
 
     setInitializationInProgress(true);
 
-    const pythConnection = new Connection(config.pythnetRpc.url, 'confirmed');
+    const pythConnection = new Connection(config.pythnetRpc.url, 'processed');
 
     initializeApp(config, activeRpc.connection, pythConnection).then(() => {
       setIsInitialized(true);
@@ -202,11 +202,10 @@ function AppComponent({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
+  const router = useRouter();
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
-  const router = useRouter();
-
   const { positions, triggerPositionsReload } = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
@@ -215,22 +214,19 @@ function AppComponent({
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance']);
-
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
 
-  // Open the terms and conditions modal if cookies isn't set to true
   useEffect(() => {
-    if (cookies['terms-and-conditions-acceptance'] !== 'true') {
+    const acceptanceDate = cookies['terms-and-conditions-acceptance'];
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
       setIsTermsAndConditionModalOpen(true);
     }
   }, [cookies]);
 
-  // When the wallet connect/disconnect load/unload information
-  // 1) load the program so we can execute txs with its wallet
-  // 2) Set connected variable variable to true/false
-  // 3) load the user profile so we can display nickname
   useEffect(() => {
     if (!wallet) {
       setConnected(false);
@@ -251,9 +247,6 @@ function AppComponent({
     );
   }, [wallet]);
 
-  //
-  // When the RPC change, change the connection in the adrena client
-  //
   useEffect(() => {
     window.adrena.mainConnection = activeRpc.connection;
 
@@ -302,11 +295,16 @@ function AppComponent({
           <TermsAndConditionsModal
             isOpen={isTermsAndConditionModalOpen}
             agreeTrigger={() => {
-              // User agreed to terms and conditions
               setIsTermsAndConditionModalOpen(false);
-
-              // Save the user actions to the website
-              setCookie('terms-and-conditions-acceptance', 'true');
+              setCookie(
+                'terms-and-conditions-acceptance',
+                new Date().toISOString(),
+                {
+                  path: '/',
+                  maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+                  sameSite: 'strict',
+                },
+              );
             }}
             declineTrigger={() => {
               router.push('https://landing.adrena.xyz/');

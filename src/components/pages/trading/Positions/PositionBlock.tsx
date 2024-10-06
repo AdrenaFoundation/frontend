@@ -10,6 +10,7 @@ import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
+import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 export default function PositionBlock({
@@ -67,37 +68,48 @@ export default function PositionBlock({
   const positionName = (
     <div className="flex items-center justify-center h-full">
       <Image
-        className="w-[1em] h-[1em] mr-1"
+        className="w-[2em] h-[2em] mr-2"
         src={getTokenImage(position.token)}
         width={200}
         height={200}
         alt={`${getTokenSymbol(position.token.symbol)} logo`}
       />
 
-      {window.location.pathname !== '/trade' ? (
-        <Link
-          href={`/trade?pair=USDC_${getTokenSymbol(
-            position.token.symbol,
-          )}&action=${position.side}`}
-          target=""
-        >
-          <div className="uppercase underline font-boldy text-sm lg:text-xl">
-            {getTokenSymbol(position.token.symbol)}
-          </div>
-        </Link>
-      ) : (
-        <div className="uppercase font-boldy text-sm lg:text-lg">
-          {getTokenSymbol(position.token.symbol)}
-        </div>
-      )}
+      <div className="flex flex-col">
+        <div className="flex items-center justify-center">
+          {window.location.pathname !== '/trade' ? (
+            <Link
+              href={`/trade?pair=USDC_${getTokenSymbol(
+                position.token.symbol,
+              )}&action=${position.side}`}
+              target=""
+            >
+              <div className="uppercase underline font-boldy text-sm lg:text-xl">
+                {getTokenSymbol(position.token.symbol)}
+              </div>
+            </Link>
+          ) : (
+            <div className="uppercase font-boldy text-sm lg:text-lg">
+              {getTokenSymbol(position.token.symbol)}
+            </div>
+          )}
 
-      <div
-        className={twMerge(
-          'uppercase font-boldy text-sm lg:text-lg ml-1',
-          position.side === 'long' ? 'text-green' : 'text-red',
-        )}
-      >
-        {position.side}
+          <div
+            className={twMerge(
+              'uppercase font-boldy text-sm lg:text-lg ml-1',
+              position.side === 'long' ? 'text-green' : 'text-red',
+            )}
+          >
+            {position.side}
+          </div>
+        </div>
+
+        <OnchainAccountInfo
+          address={position.pubkey}
+          shorten={true}
+          className="text-xxs"
+          iconClassName="w-2 h-2"
+        />
       </div>
     </div>
   );

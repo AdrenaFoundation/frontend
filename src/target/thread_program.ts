@@ -642,6 +642,15 @@ export type ThreadProgram = {
               },
             ];
           },
+          {
+            name: 'Periodic';
+            fields: [
+              {
+                name: 'delay';
+                type: 'u64';
+              }
+            ]
+          }
         ];
       };
     },
@@ -795,6 +804,16 @@ export type ThreadProgram = {
             fields: [
               {
                 name: 'price';
+                type: 'i64';
+              },
+            ];
+          },
+          {
+            name: 'Periodic';
+            fields: [
+              {
+                name: 'startedAt';
+                docs: ['The threshold moment the schedule was waiting for.'];
                 type: 'i64';
               },
             ];
@@ -1504,6 +1523,15 @@ export const IDL: ThreadProgram = {
               },
             ],
           },
+          {
+            name: 'Periodic',
+            fields: [
+              {
+                name: 'delay',
+                type: 'u64',
+              }
+            ]
+          }
         ],
       },
     },
@@ -1657,6 +1685,16 @@ export const IDL: ThreadProgram = {
             fields: [
               {
                 name: 'price',
+                type: 'i64',
+              },
+            ],
+          },
+          {
+            name: 'Periodic',
+            fields: [
+              {
+                name: 'startedAt',
+                docs: ['The threshold moment the schedule was waiting for.'],
                 type: 'i64',
               },
             ],
