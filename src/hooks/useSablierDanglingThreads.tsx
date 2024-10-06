@@ -1,9 +1,9 @@
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
+import { AdrenaClient } from '@/AdrenaClient';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { AdrenaClient } from '@/AdrenaClient';
 
 export default function useSablierDanglingThreads(
   positions: PositionExtended[] | null,
