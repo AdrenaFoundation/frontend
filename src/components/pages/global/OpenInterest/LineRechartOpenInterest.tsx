@@ -44,14 +44,14 @@ function CustomToolTip(props: any) {
 
 export default function LineRechartOpenInterest({
   title,
-  total_oi,
+  totalOpenInterest,
   data,
   period,
   setPeriod,
   isSmallScreen,
 }: {
   title: string;
-  total_oi: number;
+  totalOpenInterest: number;
   data: any;
   period: string | null;
   setPeriod: (v: string | null) => void;
@@ -66,14 +66,11 @@ export default function LineRechartOpenInterest({
       <div className="flex mb-3 justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="">{title}</h2>
+
           {!isSmallScreen && (
-            <FormatNumber
-              nb={total_oi}
-              className="text-sm text-txtfade sm:text-xs"
-              prefix="($"
-              suffix=")"
-              precision={0}
-            />
+            <div className="text-txtfade text-sm">
+              ({formatPriceInfo(totalOpenInterest, 0)})
+            </div>
           )}
         </div>
 

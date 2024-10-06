@@ -25,6 +25,7 @@ export default function ALPPriceChart() {
             return 'poolinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -37,6 +38,7 @@ export default function ALPPriceChart() {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?lp_token_price=true&start_date=${(() => {
           const startDate = new Date();
@@ -54,23 +56,27 @@ export default function ALPPriceChart() {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       const formattedData = lp_token_price.map(
@@ -107,7 +113,7 @@ export default function ALPPriceChart() {
   return (
     <LineRechartAum
       title={'ALP Price'}
-      sub_value={chartData[chartData.length - 1].value}
+      subValue={chartData[chartData.length - 1].value}
       data={chartData}
       labels={[{ name: 'value' }]}
       period={period}

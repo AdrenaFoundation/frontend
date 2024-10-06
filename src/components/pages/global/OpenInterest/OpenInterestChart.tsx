@@ -1,8 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { TokenInfo } from '@/config/IConfiguration';
-
 import LineRechartOpenInterest from './LineRechartOpenInterest';
 
 interface OpenInterestChartProps {
@@ -55,6 +53,7 @@ export default function OpenInterestChart({
             return 'custodyinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -67,6 +66,7 @@ export default function OpenInterestChart({
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?open_interest_long_usd=true&open_interest_short_usd=true&start_date=${(() => {
           const startDate = new Date();
@@ -89,23 +89,27 @@ export default function OpenInterestChart({
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       const custodyInfos = [];
@@ -158,7 +162,7 @@ export default function OpenInterestChart({
         };
       });
 
-      setTotalOpenInterest(formatted[formatted.length - 1].total);
+      setTotalOpenInterest(formatted[formatted.length - 1].Total);
       setCustody(formatted);
 
       setCustodyInfo(custodyInfos);
@@ -178,7 +182,7 @@ export default function OpenInterestChart({
   return (
     <LineRechartOpenInterest
       title="Open Interest USD"
-      total_oi={totalOpenInterest}
+      totalOpenInterest={totalOpenInterest}
       data={custody}
       period={period}
       setPeriod={setPeriod}

@@ -20,19 +20,21 @@ function CustomToolTip(props: any) {
 
   if (active && payload && payload.length) {
     return (
-        <div className="bg-third p-3 border border-white rounded-lg min-w-[14em]">
-          <p className="text-lg mb-2 font-mono">{label}</p>
-          {payload.map((item: any) => (
-            <div
-              key={item.dataKey}
-              className="text-sm font-mono flex justify-between"
-              style={{ color: item.fill }}
-            >
-              <span style={{ color: item.fill }}>{item.dataKey}:</span>
-              <span className="ml-2 font-mono" style={{ color: item.fill }}>{formatPriceInfo(item.value, 2, 2)}</span>
-            </div>
-          ))}
-        </div>
+      <div className="bg-third p-3 border border-white rounded-lg min-w-[14em]">
+        <p className="text-lg mb-2 font-mono">{label}</p>
+        {payload.map((item: any) => (
+          <div
+            key={item.dataKey}
+            className="text-sm font-mono flex justify-between"
+            style={{ color: item.fill }}
+          >
+            <span style={{ color: item.fill }}>{item.dataKey}:</span>
+            <span className="ml-2 font-mono" style={{ color: item.fill }}>
+              {formatPriceInfo(item.value, 2, 2)}
+            </span>
+          </div>
+        ))}
+      </div>
     );
   }
 
@@ -41,7 +43,7 @@ function CustomToolTip(props: any) {
 
 export default function LineRechartFees({
   title,
-  sub_value,
+  subValue,
   data,
   labels,
   period,
@@ -49,7 +51,7 @@ export default function LineRechartFees({
   isSmallScreen,
 }: {
   title: string;
-  sub_value: number;
+  subValue: number;
   data: any;
   labels: {
     name: string;
@@ -58,7 +60,7 @@ export default function LineRechartFees({
   period: string | null;
   setPeriod: (v: string | null) => void;
   isSmallScreen: boolean;
-  }) {
+}) {
   const formatYAxis = (tickItem: any) => {
     return formatPriceInfo(tickItem, 0);
   };
@@ -71,14 +73,16 @@ export default function LineRechartFees({
           <Tippy content="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps.">
             <span className="cursor-help text-txtfade">ⓘ</span>
           </Tippy>
-          
-          {!isSmallScreen && <FormatNumber
-            nb={sub_value}
-            className="text-sm text-txtfade sm:text-xs"
-            prefix="($"
-            suffix=")"
-            precision={0}
-          />}
+
+          {!isSmallScreen && (
+            <FormatNumber
+              nb={subValue}
+              className="text-sm text-txtfade sm:text-xs"
+              prefix="($"
+              suffix=")"
+              precision={0}
+            />
+          )}
         </div>
 
         <div className="flex gap-2 text-sm">

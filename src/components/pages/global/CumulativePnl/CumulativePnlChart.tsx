@@ -41,6 +41,7 @@ export function CumulativePnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             return 'custodyinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -53,6 +54,7 @@ export function CumulativePnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_profit_usd=true&cumulative_loss_usd=true&start_date=${(() => {
           const startDate = new Date();
@@ -79,23 +81,27 @@ export function CumulativePnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       // Each custody keeps an utilization array
@@ -182,7 +188,7 @@ export function CumulativePnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   return (
     <LineRechartPercentage
       title="Traders Realized PnL"
-      sub_value={totalRealizedPnl}
+      subValue={totalRealizedPnl}
       data={infos.formattedData}
       labels={[
         { name: 'Total', color: '#ff0000' },

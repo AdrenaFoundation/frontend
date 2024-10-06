@@ -35,6 +35,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
             return 'poolinfo';
         }
       })();
+
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -47,6 +48,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
             return 1;
         }
       })();
+
       const res = await fetch(
         `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
           const startDate = new Date();
@@ -72,23 +74,27 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
           });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
         }
+
+        return new Date(time).toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+        });
       });
 
       const formattedData = timeStamp.map(
@@ -125,7 +131,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
   return (
     <LineRechartFees
       title={'Cumulative Fees'}
-      sub_value={totalFees}
+      subValue={totalFees}
       data={chartData}
       labels={[
         {

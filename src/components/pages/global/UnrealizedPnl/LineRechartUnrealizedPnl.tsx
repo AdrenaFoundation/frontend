@@ -17,7 +17,7 @@ import { formatPriceInfo } from '@/utils';
 
 export default function LineRechartUnrealizedPnl({
   title,
-  sub_value,
+  subValue,
   data,
   labels,
   period,
@@ -25,14 +25,14 @@ export default function LineRechartUnrealizedPnl({
   isSmallScreen,
 }: {
   title: string;
-  sub_value: number;
+  subValue: number;
   data: any;
   labels: {
     name: string;
     color?: string;
   }[];
   period: string | null;
-    setPeriod: (v: string | null) => void;
+  setPeriod: (v: string | null) => void;
   isSmallScreen: boolean;
 }) {
   const formatYAxis = (tickItem: number) => {
@@ -53,7 +53,9 @@ export default function LineRechartUnrealizedPnl({
               style={{ color: item.fill }}
             >
               <span style={{ color: item.fill }}>{item.dataKey}:</span>
-              <span className="ml-2" style={{ color: item.fill }}>{formatPriceInfo(item.value)}</span>
+              <span className="ml-2" style={{ color: item.fill }}>
+                {formatPriceInfo(item.value)}
+              </span>
             </div>
           ))}
         </div>
@@ -68,14 +70,13 @@ export default function LineRechartUnrealizedPnl({
       <div className="flex mb-3 justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="">{title}</h2>
-          {!isSmallScreen && (<FormatNumber
-            nb={sub_value}
-            className="text-sm text-txtfade sm:text-xs"
-            prefix="($"
-            suffix=")"
-            precision={0}
-          />)}
+          {!isSmallScreen && (
+            <div className="text-txtfade text-sm">
+              ({formatPriceInfo(subValue, 0)})
+            </div>
+          )}
         </div>
+
         <div className="flex gap-2 text-sm">
           <div
             className={twMerge(

@@ -173,7 +173,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
   return (
     <LineRechartPercentage
       title="Traders Unrealized PnL"
-      sub_value={totalUnrealizedPnl}
+      subValue={totalUnrealizedPnl}
       data={infos.formattedData}
       labels={[
         { name: 'Total', color: '#ff0000' },

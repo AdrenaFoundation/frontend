@@ -4,9 +4,6 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -24,6 +21,7 @@ function CustomToolTip(props: any) {
     return (
       <div className="bg-third p-3 border border-white rounded-lg">
         <p className="text-lg mb-2 font-mono">{label}</p>
+
         {payload.map((item: any) => (
           <p
             key={item.dataKey}
@@ -42,14 +40,14 @@ function CustomToolTip(props: any) {
 
 export default function RechartALPPrice({
   title,
-  sub_value,
+  subValue,
   data,
   labels,
   period,
   setPeriod,
 }: {
-    title: string;
-  sub_value: number;
+  title: string;
+  subValue: number;
   data: any;
   labels: {
     name: string;
@@ -67,13 +65,10 @@ export default function RechartALPPrice({
       <div className="flex mb-3 justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="">{title}</h2>
-          <FormatNumber
-            nb={sub_value}
-            className="text-sm text-txtfade sm:text-xs"
-            prefix="($"
-            suffix=")"
-            precision={4}
-          />
+
+          <div className="text-txtfade text-sm">
+            ({formatPriceInfo(subValue, 4)})
+          </div>
         </div>
 
         <div className="flex gap-2 text-sm">

@@ -44,14 +44,14 @@ function CustomToolTip(props: any) {
 
 export default function RechartAum({
   title,
-  sub_value,
+  subValue,
   data,
   labels,
   period,
   setPeriod,
 }: {
   title: string;
-  sub_value: number;
+  subValue: number;
   data: AumData[];
   labels: {
     name: string;
@@ -69,13 +69,9 @@ export default function RechartAum({
       <div className="flex mb-3 justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="">{title}</h2>
-          <FormatNumber
-            nb={sub_value}
-            className="text-sm text-txtfade sm:text-xs"
-            prefix="($"
-            suffix=")"
-            precision={0}
-          />
+          <div className="text-txtfade text-sm">
+            ({formatPriceInfo(subValue, 0)})
+          </div>
         </div>
 
         <div className="flex gap-2 text-sm">
