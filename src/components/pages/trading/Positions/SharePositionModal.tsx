@@ -16,6 +16,7 @@ import monster1 from '../../../../../public/images/monster_1.png';
 import monster2 from '../../../../../public/images/monster_2.png';
 import monster3 from '../../../../../public/images/monster_3.png';
 import monster4 from '../../../../../public/images/monster_4.png';
+import xIcon from '../../../../../public/images/x-black-bg.png';
 
 export default function SharePositionModal({
   position,
@@ -99,6 +100,22 @@ export default function SharePositionModal({
     minute: 'numeric',
     hour: 'numeric',
   });
+
+  // https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?opt=1&pnl=22&side=long&symbol=WBTC&collateral=21&mark=291&price=202&opened=2022-01-02
+  const twitterText = `I just made ${formatNumber(
+    pnlPercentage ?? 0,
+    2,
+  )}% on a ${position.side} position on ${position.token.symbol}!`;
+
+  const twitterUrl = `https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?opt=${option}&pnl=${formatNumber(
+    pnlPercentage ?? 0,
+    2,
+  )}&side=${position.side}&symbol=${position.token.symbol
+    }&collateral=${formatNumber(position.collateralUsd, 2)}&mark=${formatNumber(
+      tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
+      2,
+    )}&price=${formatNumber(position.price, 2)}&opened=${Number(position.nativeObject.openTime) * 1000}`;
+
   return (
     <div className="max-w-[600px] p-5">
       <div
@@ -233,10 +250,15 @@ export default function SharePositionModal({
       </div>
       <div className="mt-3">
         <Button
-          title="Download image"
-          className="w-full h-[40px]"
-          onClick={captureElementAsImage}
-          disabled={isDownloading}
+          size="lg"
+          title="Share on"
+          className="w-full mt-6 py-3 text-base"
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            twitterText,
+          )}&url=${encodeURIComponent(twitterUrl)}`}
+          isOpenLinkInNewTab
+          rightIcon={xIcon}
+          rightIconClassName="w-4 h-4"
         />
       </div>
     </div>

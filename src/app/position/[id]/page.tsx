@@ -23,7 +23,7 @@ export async function generateMetadata(
     openGraph: {
       images: [
         'https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?username=position' +
-          id,
+        id,
         ...previousImages,
       ],
     },
