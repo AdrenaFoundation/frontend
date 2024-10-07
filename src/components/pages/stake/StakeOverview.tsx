@@ -183,6 +183,7 @@ export default function StakeOverview({
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
               className="px-5 ml-auto w-[9em]"
               onClick={handleClaim}
+              disabled={userPendingUsdcRewards + userPendingAdxRewards + pendingGenesisAdxRewards <= 0}
             />
           </div>
 
@@ -209,7 +210,22 @@ export default function StakeOverview({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-txtfade">
-                    LM rewards (see schedule):
+                    LM rewards
+                    <span className="text-txtfade "> (see
+                      <Link
+                        href={
+                          isALP
+                            ? 'https://docs.adrena.xyz/tokenomics/alp/staked-alp-rewards-emissions-schedule'
+                            : 'https://docs.adrena.xyz/tokenomics/adx/staked-adx-rewards-emissions-schedule'
+                        }
+                        className="underline ml-1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        schedule
+                      </Link>
+                      )
+                    </span>
                   </span>
                   <div className="flex items-center">
                     <FormatNumber nb={userPendingAdxRewards} />
@@ -225,7 +241,29 @@ export default function StakeOverview({
                 {pendingGenesisAdxRewards > 0 && (
                   <div className="flex justify-between">
                     <span className="text-txtfade">
-                      Genesis campaign LM rewards bonus:
+                      Genesis campaign LM rewards bonus
+                      <Tippy
+                        content={
+                          <p>
+                            These rewards accrue over time for the first 180
+                            days of the protocol. The amount is proportional to
+                            your participation in the Genesis Liquidity
+                            campaign. <br />
+                            <br /> Thank you for being an early supporter of
+                            the protocol! 🎊 🎁
+                          </p>
+                        }
+                        placement="auto"
+                      >
+                        <Image
+                          src={infoIcon}
+                          width={14}
+                          height={14}
+                          alt="info icon"
+                          className="inline-block ml-1 mr-1 cursor-pointer"
+                        />
+                      </Tippy>
+                      :
                     </span>
                     <div className="flex items-center">
                       <FormatNumber
