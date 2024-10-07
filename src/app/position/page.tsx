@@ -1,4 +1,5 @@
 import type { Metadata, ResolvingMetadata } from 'next';
+import { redirect } from 'next/navigation';
 
 type Props = {
   params: { id: string };
@@ -37,11 +38,6 @@ export async function generateMetadata(
   };
 }
 
-export default function Page({ searchParams }: Props) {
-  return (
-    <div>
-      <h1>Product: {searchParams.symbol}</h1>
-      <p>Search params: {JSON.stringify(searchParams)}</p>
-    </div>
-  );
+export default function Page() {
+  redirect('/trade');
 }
