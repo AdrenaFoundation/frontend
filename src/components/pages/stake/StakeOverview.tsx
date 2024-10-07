@@ -1,14 +1,13 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
 import { AlpLockPeriod, LockedStakeExtended } from '@/types';
@@ -19,6 +18,12 @@ import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxTokenLogo from '../../../../public/images/adx.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
+
+interface SortConfig {
+  size: 'asc' | 'desc';
+  duration: 'asc' | 'desc';
+  lastClicked: 'size' | 'duration';
+}
 
 export default function StakeOverview({
   token,
@@ -57,16 +62,23 @@ export default function StakeOverview({
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const isALP = token === 'ALP';
+  const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
   const stakingAccount = useStakingAccount(
     isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
-  const isMobile = useBetterMediaQuery('(max-width: 450px)');
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
-  const [sortConfig, setSortConfig] = useState({
-    size: 'desc' as 'asc' | 'desc',
-    duration: 'asc' as 'asc' | 'desc',
-    lastClicked: 'size' as 'size' | 'duration',
+  const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
+    const savedConfig = localStorage.getItem(storageKey);
+    return savedConfig ? JSON.parse(savedConfig) : {
+      size: 'desc',
+      duration: 'asc',
+      lastClicked: 'size',
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(sortConfig));
+  }, [sortConfig, storageKey]);
 
   const handleClaim = async () => {
     setIsClaimingRewards(true);
