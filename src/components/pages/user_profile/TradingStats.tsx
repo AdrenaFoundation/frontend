@@ -73,7 +73,8 @@ export default function TradingStatsBloc({
               <Tippy
                 content={
                   <p className="font-medium">
-                    This is the sum of all your profits and losses over all trades, including fees.
+                    This is the sum of all your profits and losses over all
+                    trades, including fees.
                   </p>
                 }
               >
@@ -97,7 +98,8 @@ export default function TradingStatsBloc({
               <Tippy
                 content={
                   <p className="font-medium">
-                    This include the Open/Close fees (0 bps open, 16bps close) and the Borrow fees.
+                    This include the Open/Close fees (0 bps open, 16bps close)
+                    and the Borrow fees.
                   </p>
                 }
               >

@@ -188,18 +188,18 @@ export default function Stake({
     try {
       lockPeriod === 0
         ? await window.adrena.client.addLiquidStake({
-          owner,
-          amount,
-          stakedTokenMint,
-          notification,
-        })
+            owner,
+            amount,
+            stakedTokenMint,
+            notification,
+          })
         : await window.adrena.client.addLockedStake({
-          owner,
-          amount,
-          lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
-          stakedTokenMint,
-          notification,
-        });
+            owner,
+            amount,
+            lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
+            stakedTokenMint,
+            notification,
+          });
 
       setAmount(null);
       setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
@@ -468,14 +468,14 @@ export default function Stake({
 
   const nextStakingRoundTimeAlp = alpStakingAccount
     ? getNextStakingRoundStartTime(
-      alpStakingAccount.currentStakingRound.startTime,
-    ).getTime()
+        alpStakingAccount.currentStakingRound.startTime,
+      ).getTime()
     : null;
 
   const nextStakingRoundTimeAdx = adxStakingAccount
     ? getNextStakingRoundStartTime(
-      adxStakingAccount.currentStakingRound.startTime,
-    ).getTime()
+        adxStakingAccount.currentStakingRound.startTime,
+      ).getTime()
     : null;
 
   // The rewards pending for the user

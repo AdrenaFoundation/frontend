@@ -137,7 +137,9 @@ export default function StopLossTakeProfitInput({
 
       newValue = parseFloat(newValue.toFixed(precision));
 
-      setInput(newValue !== input ? newValue : parseFloat(newValue.toFixed(precision)));
+      setInput(
+        newValue !== input ? newValue : parseFloat(newValue.toFixed(precision)),
+      );
     }
   };
 
@@ -190,7 +192,7 @@ export default function StopLossTakeProfitInput({
           <div className="flex items-center">
             <div className={twMerge(displayColor + ' text-sm mr-1')}>
               {' '}
-              { }
+              {}
               {isPositive ? '+' : '-'}
               {formatPriceInfo(Math.abs(displayValue))}
             </div>
@@ -235,9 +237,7 @@ export default function StopLossTakeProfitInput({
               className={twMerge(
                 'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
               )}
-              onClick={() =>
-                handleSetInput(getAdjustedPrice(min, true))
-              }
+              onClick={() => handleSetInput(getAdjustedPrice(min, true))}
             >
               <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
                 <FormatNumber
@@ -259,9 +259,7 @@ export default function StopLossTakeProfitInput({
                 priceIsOk === 1 ? 'text-redbright' : '',
                 max === null ? 'text-txtfade' : '',
               )}
-              onClick={() =>
-                handleSetInput(getAdjustedPrice(max, false))
-              }
+              onClick={() => handleSetInput(getAdjustedPrice(max, false))}
             >
               <div
                 className={twMerge(

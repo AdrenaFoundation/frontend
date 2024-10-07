@@ -51,7 +51,11 @@ export default function Positions({
             title={
               <>
                 Close{' '}
-                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToClose.side === 'long' ? 'text-green' : 'text-red'}`}>
+                <span
+                  className={`text-[1em] uppercase font-special opacity-80 ${
+                    positionToClose.side === 'long' ? 'text-green' : 'text-red'
+                  }`}
+                >
                   {positionToClose.side}
                 </span>{' '}
                 {positionToClose.token.symbol}

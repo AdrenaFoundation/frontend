@@ -149,15 +149,14 @@ export default function LongShortTradingInputs({
     // Existing position or not, it's the same
     const collateralAmount = uiToNative(inputA, tokenA.decimals);
 
-    const openPositionWithSwapAmountAndFees = await window.adrena.client.getOpenPositionWithSwapAmountAndFees(
-      {
+    const openPositionWithSwapAmountAndFees =
+      await window.adrena.client.getOpenPositionWithSwapAmountAndFees({
         collateralMint: tokenA.mint,
         mint: tokenB.mint,
         collateralAmount,
         leverage: uiLeverageToNative(leverage),
         side,
-      },
-    );
+      });
 
     if (!openPositionWithSwapAmountAndFees) {
       return notification.currentStepErrored('Error calculating fees');
@@ -166,23 +165,23 @@ export default function LongShortTradingInputs({
     try {
       await (side === 'long'
         ? window.adrena.client.openOrIncreasePositionWithSwapLong({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: openPositionWithSwapAmountAndFees.entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(leverage),
-          notification,
-        })
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: openPositionWithSwapAmountAndFees.entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(leverage),
+            notification,
+          })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
-          owner: new PublicKey(wallet.publicKey),
-          collateralMint: tokenA.mint,
-          mint: tokenB.mint,
-          price: openPositionWithSwapAmountAndFees.entryPrice,
-          collateralAmount,
-          leverage: uiLeverageToNative(leverage),
-          notification,
-        }));
+            owner: new PublicKey(wallet.publicKey),
+            collateralMint: tokenA.mint,
+            mint: tokenB.mint,
+            price: openPositionWithSwapAmountAndFees.entryPrice,
+            collateralAmount,
+            leverage: uiLeverageToNative(leverage),
+            notification,
+          }));
 
       triggerPositionsReload();
       triggerWalletTokenBalancesReload();
@@ -250,16 +249,15 @@ export default function LongShortTradingInputs({
 
     (async () => {
       try {
-        const infos = await window.adrena.client.getOpenPositionWithConditionalSwapInfos(
-          {
+        const infos =
+          await window.adrena.client.getOpenPositionWithConditionalSwapInfos({
             tokenA,
             tokenB,
             collateralAmount: uiToNative(inputA, tokenA.decimals),
             leverage: uiLeverageToNative(leverage),
             side,
             tokenPrices,
-          },
-        );
+          });
 
         // Verify that information is not outdated
         // If loaderCounter doesn't match it means
@@ -434,7 +432,7 @@ export default function LongShortTradingInputs({
 
   const newOverallLeverage = openedPosition
     ? (openedPosition.sizeUsd + (positionInfos?.sizeUsd ?? 0)) /
-    (openedPosition.collateralUsd + (positionInfos?.collateralUsd ?? 0))
+      (openedPosition.collateralUsd + (positionInfos?.collateralUsd ?? 0))
     : newPositionLeverage;
 
   const isLeverageIncreased =
@@ -443,7 +441,7 @@ export default function LongShortTradingInputs({
   return (
     <div
       className={twMerge('relative flex flex-col sm:pb-2', className)}
-    // ref={componentRef}
+      // ref={componentRef}
     >
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
@@ -626,8 +624,8 @@ export default function LongShortTradingInputs({
                 side === 'long'
                   ? custody && tokenPriceB && custody.liquidity * tokenPriceB
                   : usdcPrice &&
-                  usdcCustody &&
-                  usdcCustody.liquidity * usdcPrice
+                    usdcCustody &&
+                    usdcCustody.liquidity * usdcPrice
               }
               format="currency"
               precision={0}
@@ -762,12 +760,13 @@ export default function LongShortTradingInputs({
                       nb={newOverallLeverage}
                       format="number"
                       prefix="x"
-                      className={`text-lg ${openedPosition
-                        ? isLeverageIncreased
-                          ? 'text-orange'
-                          : 'text-green'
-                        : 'text-white'
-                        }`}
+                      className={`text-lg ${
+                        openedPosition
+                          ? isLeverageIncreased
+                            ? 'text-orange'
+                            : 'text-green'
+                          : 'text-white'
+                      }`}
                     />
 
                     {openedPosition && newOverallLeverage ? (
@@ -846,8 +845,8 @@ export default function LongShortTradingInputs({
                   isInfoLoading || !positionInfos
                     ? 'pt-4'
                     : openedPosition
-                      ? 'pt-2'
-                      : 'pt-8',
+                    ? 'pt-2'
+                    : 'pt-8',
                 )}
               >
                 {positionInfos && !isInfoLoading ? (

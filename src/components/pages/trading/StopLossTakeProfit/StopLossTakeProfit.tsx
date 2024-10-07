@@ -134,17 +134,17 @@ export default function StopLossTakeProfit({
         transaction.add(
           await (position.side === 'long'
             ? window.adrena.client.buildSetTakeProfitLongIx.bind(
-              window.adrena.client,
-            )
+                window.adrena.client,
+              )
             : window.adrena.client.buildSetTakeProfitShortIx.bind(
-              window.adrena.client,
-            ))({
-              position,
-              takeProfitLimitPrice: new BN(
-                takeProfitInput * 10 ** PRICE_DECIMALS,
-              ),
-              userProfile: userProfile ? userProfile.pubkey : undefined,
-            }),
+                window.adrena.client,
+              ))({
+            position,
+            takeProfitLimitPrice: new BN(
+              takeProfitInput * 10 ** PRICE_DECIMALS,
+            ),
+            userProfile: userProfile ? userProfile.pubkey : undefined,
+          }),
         );
       }
 
@@ -176,16 +176,16 @@ export default function StopLossTakeProfit({
         transaction.add(
           await (position.side === 'long'
             ? window.adrena.client.buildSetStopLossLongIx.bind(
-              window.adrena.client,
-            )
+                window.adrena.client,
+              )
             : window.adrena.client.buildSetStopLossShortIx.bind(
-              window.adrena.client,
-            ))({
-              position,
-              stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
-              closePositionPrice: null, // TODO: Handle this one
-              userProfile: userProfile ? userProfile.pubkey : undefined,
-            }),
+                window.adrena.client,
+              ))({
+            position,
+            stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
+            closePositionPrice: null, // TODO: Handle this one
+            userProfile: userProfile ? userProfile.pubkey : undefined,
+          }),
         );
       }
 
@@ -244,7 +244,10 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          SL/TP thread are executed at the limit price with 1% slippage.<br /> Custom slippage settings will be added in the near future, as for now sudden price movements and network conditions sometimes hinder execution.
+          SL/TP thread are executed at the limit price with 1% slippage.
+          <br /> Custom slippage settings will be added in the near future, as
+          for now sudden price movements and network conditions sometimes hinder
+          execution.
         </div>
         <StyledSubSubContainer className="flex-col items-center justify-center gap-1 text-sm w-full p-4">
           <div className="flex w-full justify-between">
@@ -327,8 +330,8 @@ export default function StopLossTakeProfit({
                 positionNetPnl > 0
                   ? 'text-green'
                   : positionNetPnl < 0
-                    ? 'text-red'
-                    : 'text-gray-400',
+                  ? 'text-red'
+                  : 'text-gray-400',
               )}
             >
               {positionNetPnl > 0 ? '+' : positionNetPnl < 0 ? '−' : ''}

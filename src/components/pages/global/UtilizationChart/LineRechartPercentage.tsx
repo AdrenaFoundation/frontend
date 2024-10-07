@@ -49,7 +49,9 @@ export default function LineRechartPercentage({
               style={{ color: item.fill }}
             >
               <span style={{ color: item.fill }}>{item.dataKey}:</span>
-              <span className="ml-2 font-mono" style={{ color: item.fill }}>{formatPercentage(item.value, 2)}</span>
+              <span className="ml-2 font-mono" style={{ color: item.fill }}>
+                {formatPercentage(item.value, 2)}
+              </span>
             </div>
           ))}
         </div>

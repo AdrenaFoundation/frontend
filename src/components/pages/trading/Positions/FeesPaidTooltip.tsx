@@ -12,7 +12,12 @@ interface FeesPaidTooltipProps {
   children: ReactElement;
 }
 
-const FeesPaidTooltip: React.FC<FeesPaidTooltipProps> = ({ entryFees, exitFees, borrowFees, children }) => {
+const FeesPaidTooltip: React.FC<FeesPaidTooltipProps> = ({
+  entryFees,
+  exitFees,
+  borrowFees,
+  children,
+}) => {
   const content = (
     <div className="">
       <div className="flex justify-between">

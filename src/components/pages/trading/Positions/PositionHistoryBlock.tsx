@@ -66,7 +66,12 @@ interface LeverageDisplayProps {
   finalCollateral: number;
 }
 
-const LeverageDisplay: React.FC<LeverageDisplayProps> = ({ leverage, positionSize, entryCollateral, finalCollateral}) => (
+const LeverageDisplay: React.FC<LeverageDisplayProps> = ({
+  leverage,
+  positionSize,
+  entryCollateral,
+  finalCollateral,
+}) => (
   <Tippy
     content={
       <>
@@ -149,7 +154,10 @@ export default function PositionHistoryBlock({
         </div>
         <LeverageDisplay
           leverage={positionHistory.entry_leverage}
-          positionSize={positionHistory.entry_collateral_amount * positionHistory.entry_leverage}
+          positionSize={
+            positionHistory.entry_collateral_amount *
+            positionHistory.entry_leverage
+          }
           entryCollateral={positionHistory.entry_collateral_amount}
           finalCollateral={positionHistory.final_collateral_amount}
         />
@@ -373,19 +381,32 @@ export default function PositionHistoryBlock({
       key={positionHistory.position_id}
     >
       <div className="md:hidden border-b px-5 py-3 flex flex-row items-center justify-between">
-        <div className="w-[7em] flex grow items-center justify-center">{renderPositionName()}</div> <div className="w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
+        <div className="w-[7em] flex grow items-center justify-center">
+          {renderPositionName()}
+        </div>{' '}
+        <div className="w-[10em] flex grow items-center justify-center">
+          {renderPnl()}
+        </div>
       </div>
       <div className="flex flex-row justify-between flex-wrap gap-6 px-3 py-5 sm:py-2 opacity-90">
-        <div className="hidden md:flex w-[7em] flex grow items-center justify-center">{renderPositionName()}</div>
+        <div className="hidden md:flex w-[7em] flex grow items-center justify-center">
+          {renderPositionName()}
+        </div>
         <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
         </div>
         <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
         </div>
-        <div className="hidden md:flex w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
-        <div className="w-[7em] flex grow items-center justify-center">{renderExitDate()}</div>
-        <div className="w-[7em] flex grow items-center justify-center">{renderFeesPaid()}</div>
+        <div className="hidden md:flex w-[10em] flex grow items-center justify-center">
+          {renderPnl()}
+        </div>
+        <div className="w-[7em] flex grow items-center justify-center">
+          {renderExitDate()}
+        </div>
+        <div className="w-[7em] flex grow items-center justify-center">
+          {renderFeesPaid()}
+        </div>
       </div>
     </div>
   );

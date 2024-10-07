@@ -25,17 +25,18 @@ const bodyClassName =
 export default function BasicMonitoring({
   mainPool,
 }: // custodies,
-  // poolInfo,
-  PageProps & {
-    poolInfo: PoolInfo | null;
-  }) {
-
+// poolInfo,
+PageProps & {
+  poolInfo: PoolInfo | null;
+}) {
   const [isSmallScreen, setIsSmallSize] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       const newIsSmallSize = window.innerWidth <= 500;
-      console.log(`Window width: ${window.innerWidth}, isSmallSize: ${newIsSmallSize}`);
+      console.log(
+        `Window width: ${window.innerWidth}, isSmallSize: ${newIsSmallSize}`,
+      );
       setIsSmallSize(newIsSmallSize);
     };
 

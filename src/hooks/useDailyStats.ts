@@ -33,7 +33,7 @@ export default function useDailyStats() {
 
       // Fetch price data
       const priceResponse = await fetch(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${tokenIds}&vs_currencies=USD&include_24hr_vol=true&include_24hr_change=true`
+        `https://api.coingecko.com/api/v3/simple/price?ids=${tokenIds}&vs_currencies=USD&include_24hr_vol=true&include_24hr_change=true`,
       );
 
       if (!priceResponse.ok) {
@@ -47,11 +47,13 @@ export default function useDailyStats() {
         if (!token.coingeckoId) return null;
 
         const ohlcResponse = await fetch(
-          `https://api.coingecko.com/api/v3/coins/${token.coingeckoId}/ohlc?vs_currency=usd&days=1`
+          `https://api.coingecko.com/api/v3/coins/${token.coingeckoId}/ohlc?vs_currency=usd&days=1`,
         );
 
         if (!ohlcResponse.ok) {
-          console.error(`OHLC fetch error for ${token.symbol}: ${ohlcResponse.statusText}`);
+          console.error(
+            `OHLC fetch error for ${token.symbol}: ${ohlcResponse.statusText}`,
+          );
           return null;
         }
 
@@ -66,8 +68,10 @@ export default function useDailyStats() {
 
           const { usd, usd_24h_change, usd_24h_vol } = data[token.coingeckoId];
           const ohlcData = ohlcDataArray[index];
-          const lastDayHigh = Math.max(...ohlcData.map((ohlc: OHLC) => ohlc[2]));
-          const lastDayLow = Math.min(...ohlcData.map((ohlc: OHLC) => ohlc[3])); 
+          const lastDayHigh = Math.max(
+            ...ohlcData.map((ohlc: OHLC) => ohlc[2]),
+          );
+          const lastDayLow = Math.min(...ohlcData.map((ohlc: OHLC) => ohlc[3]));
 
           return {
             ...acc,

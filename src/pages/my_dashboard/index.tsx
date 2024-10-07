@@ -93,9 +93,9 @@ export default function MyDashboard({
     const liquidStakedADX =
       typeof stakingAccounts.ADX?.liquidStake.amount !== 'undefined'
         ? nativeToUi(
-          stakingAccounts.ADX.liquidStake.amount,
-          window.adrena.client.adxToken.decimals,
-        )
+            stakingAccounts.ADX.liquidStake.amount,
+            window.adrena.client.adxToken.decimals,
+          )
         : null;
 
     const lockedStakedADX = adxLockedStakes.reduce((acc, stake) => {
