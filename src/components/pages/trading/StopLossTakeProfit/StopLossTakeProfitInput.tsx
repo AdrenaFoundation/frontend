@@ -190,7 +190,7 @@ export default function StopLossTakeProfitInput({
           <div className="flex items-center">
             <div className={twMerge(displayColor + ' text-sm mr-1')}>
               {' '}
-              {}
+              { }
               {isPositive ? '+' : '-'}
               {formatPriceInfo(Math.abs(displayValue))}
             </div>
@@ -240,7 +240,13 @@ export default function StopLossTakeProfitInput({
               }
             >
               <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
-                {formatPriceInfo(getAdjustedPrice(min, true))}
+                <FormatNumber
+                  nb={getAdjustedPrice(min, true)}
+                  className="text-sm"
+                  isDecimalDimmed={true}
+                  precision={determinePrecision(markPrice ?? 0)}
+                  prefix="$"
+                />
               </div>
               <div className="text-xs text-txtfade">min</div>
             </div>
@@ -263,7 +269,13 @@ export default function StopLossTakeProfitInput({
                   max === null ? 'text-txtfade' : '',
                 )}
               >
-                {formatPriceInfo(getAdjustedPrice(max, false))}
+                <FormatNumber
+                  nb={getAdjustedPrice(max, false)}
+                  className="text-sm"
+                  isDecimalDimmed={true}
+                  precision={determinePrecision(markPrice ?? 0)}
+                  prefix="$"
+                />
               </div>
               <div className="text-xs text-txtfade">max</div>
             </div>

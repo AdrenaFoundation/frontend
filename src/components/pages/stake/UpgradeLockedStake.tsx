@@ -22,14 +22,14 @@ import lockIcon from '../../../../public/images/Icons/lock.svg';
 import warningIcon from '../../../../public/images/Icons/warning.png';
 import walletImg from '../../../../public/images/wallet-icon.svg';
 
-export default function UpdateLockedStake({
+export default function UpgradeLockedStake({
   lockedStake,
-  handleUpdateLockedStake,
+  handleUpgradeLockedStake: handleUpgradeLockedStake,
 }: {
   lockedStake: LockedStakeExtended;
-  handleUpdateLockedStake: (p: {
+  handleUpgradeLockedStake: (p: {
     lockedStake: LockedStakeExtended;
-    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    upgradedDuration?: AdxLockPeriod | AlpLockPeriod;
     additionalAmount?: number;
   }) => Promise<void>;
 }) {
@@ -255,9 +255,9 @@ export default function UpdateLockedStake({
           title={errorMessage ? errorMessage : '[U]pgrade'}
           disabled={!!errorMessage || (lockPeriod == actualDuration && !amount)}
           onClick={() =>
-            handleUpdateLockedStake({
+            handleUpgradeLockedStake({
               lockedStake,
-              updatedDuration:
+              upgradedDuration:
                 lockPeriod !== actualDuration ? lockPeriod : undefined,
               additionalAmount: amount ?? undefined,
             })

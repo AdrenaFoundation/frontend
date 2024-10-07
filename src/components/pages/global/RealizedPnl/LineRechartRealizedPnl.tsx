@@ -1,5 +1,4 @@
 import Tippy from '@tippyjs/react';
-import React, { useEffect, useState } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -12,10 +11,9 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
-import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
 
-export default function LineRechartCumulativePnl({
+export default function LineRechartRealizedPnl({
   title,
   subValue,
   data,

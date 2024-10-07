@@ -8,7 +8,7 @@ import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
-import UpdateLockedStake from '@/components/pages/stake/UpdateLockedStake';
+import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
@@ -25,7 +25,6 @@ import {
   AlpLockPeriod,
   LockedStakeExtended,
   PageProps,
-  Vest,
   VestExtended,
 } from '@/types';
 import {
@@ -94,9 +93,9 @@ export default function MyDashboard({
     const liquidStakedADX =
       typeof stakingAccounts.ADX?.liquidStake.amount !== 'undefined'
         ? nativeToUi(
-            stakingAccounts.ADX.liquidStake.amount,
-            window.adrena.client.adxToken.decimals,
-          )
+          stakingAccounts.ADX.liquidStake.amount,
+          window.adrena.client.adxToken.decimals,
+        )
         : null;
 
     const lockedStakedADX = adxLockedStakes.reduce((acc, stake) => {
@@ -189,13 +188,13 @@ export default function MyDashboard({
     }
   };
 
-  const handleUpdateLockedStake = async ({
+  const handleUpgradeLockedStake = async ({
     lockedStake,
-    updatedDuration,
+    upgradedDuration: upgradeDuration,
     additionalAmount,
   }: {
     lockedStake: LockedStakeExtended;
-    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    upgradedDuration?: AdxLockPeriod | AlpLockPeriod;
     additionalAmount?: number;
   }) => {
     if (!owner) {
@@ -213,7 +212,7 @@ export default function MyDashboard({
     try {
       await window.adrena.client.upgradeLockedStake({
         lockedStake,
-        updatedDuration,
+        updatedDuration: upgradeDuration,
         additionalAmount,
         notification,
       });
@@ -353,9 +352,9 @@ export default function MyDashboard({
                   className="max-w-[28em]"
                 >
                   {lockedStake ? (
-                    <UpdateLockedStake
+                    <UpgradeLockedStake
                       lockedStake={lockedStake}
-                      handleUpdateLockedStake={handleUpdateLockedStake}
+                      handleUpgradeLockedStake={handleUpgradeLockedStake}
                     />
                   ) : null}
                 </Modal>

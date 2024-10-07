@@ -13,7 +13,7 @@ import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedSt
 import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
-import UpdateLockedStake from '@/components/pages/stake/UpdateLockedStake';
+import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
@@ -53,7 +53,8 @@ export type ALPTokenDetails = {
   totalRedeemableStakeUSD: number | null;
 };
 
-export const DEFAULT_LOCKED_STAKE_DURATION = 180;
+export const DEFAULT_LOCKED_STAKE_LOCK_DURATION = 180;
+export const LIQUID_STAKE_LOCK_DURATION = 0;
 
 export default function Stake({
   connected,
@@ -98,7 +99,7 @@ export default function Stake({
 
   const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
     useState<boolean>(false);
-  const [updateLockedStake, setUpdateLockedStake] = useState<boolean>(false);
+  const [upgradeLockedStake, setUpgradeLockedStake] = useState<boolean>(false);
   const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
     null,
   );
@@ -107,7 +108,7 @@ export default function Stake({
     useState<boolean>(false);
 
   const [lockPeriod, setLockPeriod] = useState<AdxLockPeriod | AlpLockPeriod>(
-    DEFAULT_LOCKED_STAKE_DURATION,
+    DEFAULT_LOCKED_STAKE_LOCK_DURATION,
   );
 
   const [amount, setAmount] = useState<number | null>(null);
@@ -187,21 +188,21 @@ export default function Stake({
     try {
       lockPeriod === 0
         ? await window.adrena.client.addLiquidStake({
-            owner,
-            amount,
-            stakedTokenMint,
-            notification,
-          })
+          owner,
+          amount,
+          stakedTokenMint,
+          notification,
+        })
         : await window.adrena.client.addLockedStake({
-            owner,
-            amount,
-            lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
-            stakedTokenMint,
-            notification,
-          });
+          owner,
+          amount,
+          lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
+          stakedTokenMint,
+          notification,
+        });
 
       setAmount(null);
-      setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
+      setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
       setActiveStakingToken(null);
@@ -242,7 +243,7 @@ export default function Stake({
     }
   };
 
-  const handleUpdateLockedStake = async ({
+  const handleUpgradeLockedStake = async ({
     lockedStake,
     updatedDuration,
     additionalAmount,
@@ -273,7 +274,7 @@ export default function Stake({
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
-      setUpdateLockedStake(false);
+      setUpgradeLockedStake(false);
     } catch (error) {
       console.error('error', error);
     }
@@ -467,14 +468,14 @@ export default function Stake({
 
   const nextStakingRoundTimeAlp = alpStakingAccount
     ? getNextStakingRoundStartTime(
-        alpStakingAccount.currentStakingRound.startTime,
-      ).getTime()
+      alpStakingAccount.currentStakingRound.startTime,
+    ).getTime()
     : null;
 
   const nextStakingRoundTimeAdx = adxStakingAccount
     ? getNextStakingRoundStartTime(
-        adxStakingAccount.currentStakingRound.startTime,
-      ).getTime()
+      adxStakingAccount.currentStakingRound.startTime,
+    ).getTime()
     : null;
 
   // The rewards pending for the user
@@ -537,7 +538,7 @@ export default function Stake({
       title={`Stake ${activeStakingToken}`}
       close={() => {
         setAmount(null);
-        setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
+        setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
         setActiveStakingToken(null);
       }}
     >
@@ -645,7 +646,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(false);
+              setUpgradeLockedStake(false);
               setFinalizeLockedStakeRedeem(true);
             }}
             userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
@@ -662,7 +663,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(true);
+              setUpgradeLockedStake(true);
               setFinalizeLockedStakeRedeem(false);
             }}
           />
@@ -684,7 +685,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(false);
+              setUpgradeLockedStake(false);
               setFinalizeLockedStakeRedeem(true);
             }}
             userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
@@ -701,7 +702,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(true);
+              setUpgradeLockedStake(true);
               setFinalizeLockedStakeRedeem(false);
             }}
           />
@@ -714,7 +715,7 @@ export default function Stake({
                 title="Early Exit"
                 close={() => {
                   setLockedStake(null);
-                  setUpdateLockedStake(false);
+                  setUpgradeLockedStake(false);
                   setFinalizeLockedStakeRedeem(false);
                 }}
                 className="max-w-[25em]"
@@ -733,20 +734,20 @@ export default function Stake({
               </Modal>
             )}
 
-            {updateLockedStake && (
+            {upgradeLockedStake && (
               <Modal
                 title="Upgrade Locked Stake"
                 close={() => {
                   setLockedStake(null);
-                  setUpdateLockedStake(false);
+                  setUpgradeLockedStake(false);
                   setFinalizeLockedStakeRedeem(false);
                 }}
                 className="max-w-[28em]"
               >
                 {lockedStake ? (
-                  <UpdateLockedStake
+                  <UpgradeLockedStake
                     lockedStake={lockedStake}
-                    handleUpdateLockedStake={handleUpdateLockedStake}
+                    handleUpgradeLockedStake={handleUpgradeLockedStake}
                   />
                 ) : null}
               </Modal>
