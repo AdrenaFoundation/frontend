@@ -13,7 +13,7 @@ import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedSt
 import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
-import UpdateLockedStake from '@/components/pages/stake/UpdateLockedStake';
+import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
@@ -99,7 +99,7 @@ export default function Stake({
 
   const [finalizeLockedStakeRedeem, setFinalizeLockedStakeRedeem] =
     useState<boolean>(false);
-  const [updateLockedStake, setUpdateLockedStake] = useState<boolean>(false);
+  const [upgradeLockedStake, setUpgradeLockedStake] = useState<boolean>(false);
   const [lockedStake, setLockedStake] = useState<LockedStakeExtended | null>(
     null,
   );
@@ -243,7 +243,7 @@ export default function Stake({
     }
   };
 
-  const handleUpdateLockedStake = async ({
+  const handleUpgradeLockedStake = async ({
     lockedStake,
     updatedDuration,
     additionalAmount,
@@ -274,7 +274,7 @@ export default function Stake({
 
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
-      setUpdateLockedStake(false);
+      setUpgradeLockedStake(false);
     } catch (error) {
       console.error('error', error);
     }
@@ -646,7 +646,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(false);
+              setUpgradeLockedStake(false);
               setFinalizeLockedStakeRedeem(true);
             }}
             userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
@@ -663,7 +663,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(true);
+              setUpgradeLockedStake(true);
               setFinalizeLockedStakeRedeem(false);
             }}
           />
@@ -685,7 +685,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(false);
+              setUpgradeLockedStake(false);
               setFinalizeLockedStakeRedeem(true);
             }}
             userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
@@ -702,7 +702,7 @@ export default function Stake({
               lockedStake: LockedStakeExtended,
             ) => {
               setLockedStake(lockedStake);
-              setUpdateLockedStake(true);
+              setUpgradeLockedStake(true);
               setFinalizeLockedStakeRedeem(false);
             }}
           />
@@ -715,7 +715,7 @@ export default function Stake({
                 title="Early Exit"
                 close={() => {
                   setLockedStake(null);
-                  setUpdateLockedStake(false);
+                  setUpgradeLockedStake(false);
                   setFinalizeLockedStakeRedeem(false);
                 }}
                 className="max-w-[25em]"
@@ -734,20 +734,20 @@ export default function Stake({
               </Modal>
             )}
 
-            {updateLockedStake && (
+            {upgradeLockedStake && (
               <Modal
                 title="Upgrade Locked Stake"
                 close={() => {
                   setLockedStake(null);
-                  setUpdateLockedStake(false);
+                  setUpgradeLockedStake(false);
                   setFinalizeLockedStakeRedeem(false);
                 }}
                 className="max-w-[28em]"
               >
                 {lockedStake ? (
-                  <UpdateLockedStake
+                  <UpgradeLockedStake
                     lockedStake={lockedStake}
-                    handleUpdateLockedStake={handleUpdateLockedStake}
+                    handleUpgradeLockedStake={handleUpgradeLockedStake}
                   />
                 ) : null}
               </Modal>

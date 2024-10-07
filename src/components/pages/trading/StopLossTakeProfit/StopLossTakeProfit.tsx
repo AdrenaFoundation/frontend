@@ -1,5 +1,6 @@
 import { BN } from '@coral-xyz/anchor';
 import { Transaction } from '@solana/web3.js';
+import Image from 'next/image';
 import { useState } from 'react';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -13,6 +14,7 @@ import { useSelector } from '@/store/store';
 import { PositionExtended, UserProfileExtended } from '@/types';
 import { addNotification, formatPriceInfo, getTokenSymbol } from '@/utils';
 
+import infoIcon from '../../../../../public/images/Icons/info.svg';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
 
 export default function StopLossTakeProfit({
@@ -132,17 +134,17 @@ export default function StopLossTakeProfit({
         transaction.add(
           await (position.side === 'long'
             ? window.adrena.client.buildSetTakeProfitLongIx.bind(
-                window.adrena.client,
-              )
+              window.adrena.client,
+            )
             : window.adrena.client.buildSetTakeProfitShortIx.bind(
-                window.adrena.client,
-              ))({
-            position,
-            takeProfitLimitPrice: new BN(
-              takeProfitInput * 10 ** PRICE_DECIMALS,
-            ),
-            userProfile: userProfile ? userProfile.pubkey : undefined,
-          }),
+              window.adrena.client,
+            ))({
+              position,
+              takeProfitLimitPrice: new BN(
+                takeProfitInput * 10 ** PRICE_DECIMALS,
+              ),
+              userProfile: userProfile ? userProfile.pubkey : undefined,
+            }),
         );
       }
 
@@ -174,16 +176,16 @@ export default function StopLossTakeProfit({
         transaction.add(
           await (position.side === 'long'
             ? window.adrena.client.buildSetStopLossLongIx.bind(
-                window.adrena.client,
-              )
+              window.adrena.client,
+            )
             : window.adrena.client.buildSetStopLossShortIx.bind(
-                window.adrena.client,
-              ))({
-            position,
-            stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
-            closePositionPrice: null, // TODO: Handle this one
-            userProfile: userProfile ? userProfile.pubkey : undefined,
-          }),
+              window.adrena.client,
+            ))({
+              position,
+              stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
+              closePositionPrice: null, // TODO: Handle this one
+              userProfile: userProfile ? userProfile.pubkey : undefined,
+            }),
         );
       }
 
@@ -234,10 +236,26 @@ export default function StopLossTakeProfit({
       )}
     >
       <div className="w-[90%] ml-auto mr-auto">
+        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+          <Image
+            className="opacity-60 absolute left-3 top-auto bottom-auto"
+            src={infoIcon}
+            height={16}
+            width={16}
+            alt="Info icon"
+          />
+          SL/TP thread are executed at the limit price with 1% slippage.<br /> Custom slippage settings will be added in the near future, as for now sudden price movements and network conditions sometimes hinder execution.
+        </div>
         <StyledSubSubContainer className="flex-col items-center justify-center gap-1 text-sm w-full p-4">
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-400">Mark Price</span>
-            <div>{formatPriceInfo(markPrice)}</div>
+            <FormatNumber
+              nb={markPrice}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              className="font-regular"
+              isDecimalDimmed={true}
+            />
           </div>
 
           <div className="flex w-full justify-between">
@@ -259,8 +277,8 @@ export default function StopLossTakeProfit({
               nb={position.price}
               format="currency"
               precision={position.token.symbol === 'BONK' ? 8 : undefined}
-              isDecimalDimmed={false}
-              className="text-gray-400 font-regular"
+              isDecimalDimmed={true}
+              className="text-gray-100 font-regular"
             />
           </div>
 
@@ -280,8 +298,14 @@ export default function StopLossTakeProfit({
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-600">Initial collateral</span>
-            <div className="text-sm text-gray-400">
-              {formatPriceInfo(position.collateralUsd)}
+            <div>
+              <FormatNumber
+                nb={position.collateralUsd}
+                format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                isDecimalDimmed={true}
+                className="text-gray-100 font-regular"
+              />
             </div>
           </div>
 
@@ -290,7 +314,7 @@ export default function StopLossTakeProfit({
             <FormatNumber
               nb={position.sizeUsd / position.collateralUsd}
               suffix="x"
-              className="text-txtfade text-xs self-center"
+              className="text-xs self-center"
               isDecimalDimmed={false}
             />
           </div>
@@ -303,8 +327,8 @@ export default function StopLossTakeProfit({
                 positionNetPnl > 0
                   ? 'text-green'
                   : positionNetPnl < 0
-                  ? 'text-red'
-                  : 'text-gray-400',
+                    ? 'text-red'
+                    : 'text-gray-400',
               )}
             >
               {positionNetPnl > 0 ? '+' : positionNetPnl < 0 ? '−' : ''}
