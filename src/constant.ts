@@ -70,6 +70,10 @@ export const DEFAULT_PERPS_USER = Keypair.fromSecretKey(
 export const ALP_STAKE_MULTIPLIERS: {
   [K in AlpLockPeriod]: { usdc: number; adx: number };
 } = {
+  0: {
+    usdc: 0,
+    adx: 0,
+  },
   90: {
     usdc: 0.75,
     adx: 1.0,
