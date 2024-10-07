@@ -1,16 +1,15 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import useStakingAccount from '@/hooks/useStakingAccount';
-import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
+import { DEFAULT_LOCKED_STAKE_LOCK_DURATION, LIQUID_STAKE_LOCK_DURATION } from '@/pages/stake';
 import { AlpLockPeriod, LockedStakeExtended } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -19,6 +18,12 @@ import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxTokenLogo from '../../../../public/images/adx.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
+
+interface SortConfig {
+  size: 'asc' | 'desc';
+  duration: 'asc' | 'desc';
+  lastClicked: 'size' | 'duration';
+}
 
 export default function StakeOverview({
   token,
@@ -57,16 +62,23 @@ export default function StakeOverview({
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const isALP = token === 'ALP';
+  const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
   const stakingAccount = useStakingAccount(
     isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
-  const isMobile = useBetterMediaQuery('(max-width: 450px)');
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
-  const [sortConfig, setSortConfig] = useState({
-    size: 'desc' as 'asc' | 'desc',
-    duration: 'asc' as 'asc' | 'desc',
-    lastClicked: 'size' as 'size' | 'duration',
+  const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
+    const savedConfig = localStorage.getItem(storageKey);
+    return savedConfig ? JSON.parse(savedConfig) : {
+      size: 'desc',
+      duration: 'asc',
+      lastClicked: 'size',
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(sortConfig));
+  }, [sortConfig, storageKey]);
 
   const handleClaim = async () => {
     setIsClaimingRewards(true);
@@ -183,6 +195,7 @@ export default function StakeOverview({
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
               className="px-5 ml-auto w-[9em]"
               onClick={handleClaim}
+              disabled={userPendingUsdcRewards + userPendingAdxRewards + pendingGenesisAdxRewards <= 0}
             />
           </div>
 
@@ -209,7 +222,22 @@ export default function StakeOverview({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-txtfade">
-                    LM rewards (see schedule):
+                    LM rewards
+                    <span className="text-txtfade "> (see
+                      <Link
+                        href={
+                          isALP
+                            ? 'https://docs.adrena.xyz/tokenomics/alp/staked-alp-rewards-emissions-schedule'
+                            : 'https://docs.adrena.xyz/tokenomics/adx/staked-adx-rewards-emissions-schedule'
+                        }
+                        className="underline ml-1"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        schedule
+                      </Link>
+                      )
+                    </span>
                   </span>
                   <div className="flex items-center">
                     <FormatNumber nb={userPendingAdxRewards} />
@@ -225,7 +253,29 @@ export default function StakeOverview({
                 {pendingGenesisAdxRewards > 0 && (
                   <div className="flex justify-between">
                     <span className="text-txtfade">
-                      Genesis campaign LM rewards bonus:
+                      Genesis campaign LM rewards bonus
+                      <Tippy
+                        content={
+                          <p>
+                            These rewards accrue over time for the first 180
+                            days of the protocol. The amount is proportional to
+                            your participation in the Genesis Liquidity
+                            campaign. <br />
+                            <br /> Thank you for being an early supporter of
+                            the protocol! 🎊 🎁
+                          </p>
+                        }
+                        placement="auto"
+                      >
+                        <Image
+                          src={infoIcon}
+                          width={14}
+                          height={14}
+                          alt="info icon"
+                          className="inline-block ml-1 mr-1 cursor-pointer"
+                        />
+                      </Tippy>
+                      :
                     </span>
                     <div className="flex items-center">
                       <FormatNumber
@@ -246,88 +296,6 @@ export default function StakeOverview({
                 )}
               </div>
             </div>
-
-            {/* Horizontal layout */}
-            {/* <div
-              className={twMerge(
-                'flex justify-between items-center relative w-full overflow-hidden pt-4 pb-4',
-                isMobile ? 'pl-6 pr-6' : 'pl-8 pr-8',
-              )}
-            >
-              <Image
-                src={window.adrena.client.getUsdcToken().image}
-                alt="USDC"
-                width={100}
-                height={100}
-                className="absolute opacity-20 -left-10"
-              />
-
-              <div className="flex items-center justify-center">
-                <FormatNumber
-                  nb={userPendingUsdcRewards}
-                  isDecimalDimmed={false}
-                  className="font-bold"
-                />
-                <div className="ml-1 text-sm mt-[1px]">USDC</div>
-              </div>
-
-              <div className="flex items-center justify-center">
-                <div className="flex flex-col items-end justify-center min-h-[3em]">
-                  <div className="flex items-center">
-                    <FormatNumber
-                      nb={userPendingAdxRewards}
-                      isDecimalDimmed={false}
-                      className="font-bold"
-                    />
-                    <div className="ml-1 text-sm mt-[1px]">ADX</div>
-                  </div>
-
-                  {pendingGenesisAdxRewards !== 0 ? (
-                    <div className="flex items-center justify-center text-xs mt-1">
-                      <span className="text-blue mr-1">
-                        {!isMobile ? 'Genesis Bonus' : null}
-                        <Tippy
-                          content={
-                            <p>
-                              These rewards accrue over time for the first 180
-                              days of the protocol. The amount is proportional to
-                              your participation in the Genesis Liquidity
-                              campaign. <br />
-                              <br /> Thank you for being an early supporter of
-                              the protocol! 🎊 🎁
-                            </p>
-                          }
-                        >
-                          <Image
-                            src={infoIcon}
-                            width={12}
-                            height={12}
-                            alt="info icon"
-                            className="inline-block ml-1 cursor-pointer"
-                          />
-                        </Tippy>
-                      </span>
-
-                      <FormatNumber
-                        nb={pendingGenesisAdxRewards}
-                        isDecimalDimmed={false}
-                        className="text-blue font-bold"
-                        prefix="+"
-                      />
-                      <span className="text-blue ml-1 mt-[2px]">ADX</span>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              <Image
-                src={window.adrena.client.adxToken.image}
-                alt="ADX"
-                width={100}
-                height={100}
-                className="absolute opacity-20 -right-10"
-              />
-            </div> */}
           </div>
 
           {/* Bottom line */}
@@ -426,7 +394,7 @@ export default function StakeOverview({
                 title="Add Stake"
                 className="px-5 w-[9em]"
                 onClick={() =>
-                  handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+                  handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_LOCK_DURATION)
                 }
               />
             </div>
@@ -485,19 +453,31 @@ export default function StakeOverview({
               <div className="px-5">
                 <h3 className="text-lg font-semibold mb-2">Liquid stake</h3>
                 <div className="flex flex-col sm:flex-row justify-between items-center border p-3 bg-secondary rounded-xl mt-3 shadow-lg">
-                  <FormatNumber
-                    nb={totalLiquidStaked}
-                    suffix=" ADX"
-                    className="text-xl"
-                  />
+                  <div className="flex items-center">
+                    <Image
+                      src={adxTokenLogo}
+                      width={16}
+                      height={16}
+                      className="opacity-50"
+                      alt="adx token logo"
+                    />
+                    <FormatNumber
+                      nb={totalLiquidStaked}
+                      className="ml-2 text-xl"
+                    />
+                  </div>
 
                   <div className="flex gap-2 mt-4 sm:mt-0 flex-col sm:flex-row w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
                       title="Unstake"
-                      className="px-5"
+                      className={twMerge(
+                        "px-5",
+                        (!totalLiquidStaked || totalLiquidStaked <= 0) && "opacity-50 cursor-not-allowed"
+                      )}
                       onClick={handleClickOnRedeem}
+                      disabled={!totalLiquidStaked || totalLiquidStaked <= 0}
                     />
 
                     <Button
@@ -506,11 +486,11 @@ export default function StakeOverview({
                       title={
                         totalLiquidStaked && totalLiquidStaked > 0
                           ? 'Add Stake'
-                          : 'Start Staking'
+                          : 'Stake'
                       }
                       className="px-5"
                       onClick={() =>
-                        handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+                        handleClickOnStakeMore(LIQUID_STAKE_LOCK_DURATION)
                       }
                     />
                   </div>
