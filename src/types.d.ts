@@ -362,7 +362,7 @@ export type AdrenaProgram = Program<Adrena>;
 //
 
 export type AdxLockPeriod = 0 | 90 | 180 | 360 | 540;
-export type AlpLockPeriod = 90 | 180 | 360 | 540;
+export type AlpLockPeriod = 0 | 90 | 180 | 360 | 540;
 
 export type PositionHistoryExtended = {
   position_id: number;

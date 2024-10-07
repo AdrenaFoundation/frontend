@@ -53,7 +53,8 @@ export type ALPTokenDetails = {
   totalRedeemableStakeUSD: number | null;
 };
 
-export const DEFAULT_LOCKED_STAKE_DURATION = 180;
+export const DEFAULT_LOCKED_STAKE_LOCK_DURATION = 180;
+export const LIQUID_STAKE_LOCK_DURATION = 0;
 
 export default function Stake({
   connected,
@@ -107,7 +108,7 @@ export default function Stake({
     useState<boolean>(false);
 
   const [lockPeriod, setLockPeriod] = useState<AdxLockPeriod | AlpLockPeriod>(
-    DEFAULT_LOCKED_STAKE_DURATION,
+    DEFAULT_LOCKED_STAKE_LOCK_DURATION,
   );
 
   const [amount, setAmount] = useState<number | null>(null);
@@ -187,21 +188,21 @@ export default function Stake({
     try {
       lockPeriod === 0
         ? await window.adrena.client.addLiquidStake({
-            owner,
-            amount,
-            stakedTokenMint,
-            notification,
-          })
+          owner,
+          amount,
+          stakedTokenMint,
+          notification,
+        })
         : await window.adrena.client.addLockedStake({
-            owner,
-            amount,
-            lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
-            stakedTokenMint,
-            notification,
-          });
+          owner,
+          amount,
+          lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
+          stakedTokenMint,
+          notification,
+        });
 
       setAmount(null);
-      setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
+      setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
       triggerWalletTokenBalancesReload();
       triggerWalletStakingAccountsReload();
       setActiveStakingToken(null);
@@ -467,14 +468,14 @@ export default function Stake({
 
   const nextStakingRoundTimeAlp = alpStakingAccount
     ? getNextStakingRoundStartTime(
-        alpStakingAccount.currentStakingRound.startTime,
-      ).getTime()
+      alpStakingAccount.currentStakingRound.startTime,
+    ).getTime()
     : null;
 
   const nextStakingRoundTimeAdx = adxStakingAccount
     ? getNextStakingRoundStartTime(
-        adxStakingAccount.currentStakingRound.startTime,
-      ).getTime()
+      adxStakingAccount.currentStakingRound.startTime,
+    ).getTime()
     : null;
 
   // The rewards pending for the user
@@ -537,7 +538,7 @@ export default function Stake({
       title={`Stake ${activeStakingToken}`}
       close={() => {
         setAmount(null);
-        setLockPeriod(DEFAULT_LOCKED_STAKE_DURATION);
+        setLockPeriod(DEFAULT_LOCKED_STAKE_LOCK_DURATION);
         setActiveStakingToken(null);
       }}
     >

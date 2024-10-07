@@ -6,7 +6,7 @@ import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSub
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
-import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
+import { DEFAULT_LOCKED_STAKE_LOCK_DURATION } from '@/pages/stake';
 import { AdxLockPeriod, LockedStakeExtended } from '@/types';
 
 export default function ADXStakeOverview({
@@ -183,7 +183,7 @@ export default function ADXStakeOverview({
             size="lg"
             title={totalLockedStake !== 0 ? 'Stake More' : 'Stake'}
             onClick={() =>
-              handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+              handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_LOCK_DURATION)
             }
           />
 

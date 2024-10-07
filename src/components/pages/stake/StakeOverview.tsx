@@ -9,7 +9,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import useStakingAccount from '@/hooks/useStakingAccount';
-import { DEFAULT_LOCKED_STAKE_DURATION } from '@/pages/stake';
+import { DEFAULT_LOCKED_STAKE_LOCK_DURATION, LIQUID_STAKE_LOCK_DURATION } from '@/pages/stake';
 import { AlpLockPeriod, LockedStakeExtended } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -394,7 +394,7 @@ export default function StakeOverview({
                 title="Add Stake"
                 className="px-5 w-[9em]"
                 onClick={() =>
-                  handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+                  handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_LOCK_DURATION)
                 }
               />
             </div>
@@ -453,19 +453,31 @@ export default function StakeOverview({
               <div className="px-5">
                 <h3 className="text-lg font-semibold mb-2">Liquid stake</h3>
                 <div className="flex flex-col sm:flex-row justify-between items-center border p-3 bg-secondary rounded-xl mt-3 shadow-lg">
-                  <FormatNumber
-                    nb={totalLiquidStaked}
-                    suffix=" ADX"
-                    className="text-xl"
-                  />
+                  <div className="flex items-center">
+                    <Image
+                      src={adxTokenLogo}
+                      width={16}
+                      height={16}
+                      className="opacity-50"
+                      alt="adx token logo"
+                    />
+                    <FormatNumber
+                      nb={totalLiquidStaked}
+                      className="ml-2 text-xl"
+                    />
+                  </div>
 
                   <div className="flex gap-2 mt-4 sm:mt-0 flex-col sm:flex-row w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
                       title="Unstake"
-                      className="px-5"
+                      className={twMerge(
+                        "px-5",
+                        (!totalLiquidStaked || totalLiquidStaked <= 0) && "opacity-50 cursor-not-allowed"
+                      )}
                       onClick={handleClickOnRedeem}
+                      disabled={!totalLiquidStaked || totalLiquidStaked <= 0}
                     />
 
                     <Button
@@ -474,11 +486,11 @@ export default function StakeOverview({
                       title={
                         totalLiquidStaked && totalLiquidStaked > 0
                           ? 'Add Stake'
-                          : 'Start Staking'
+                          : 'Stake'
                       }
                       className="px-5"
                       onClick={() =>
-                        handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_DURATION)
+                        handleClickOnStakeMore(LIQUID_STAKE_LOCK_DURATION)
                       }
                     />
                   </div>
