@@ -61,7 +61,7 @@ export default async function handler(request: NextRequest) {
         USDC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/usdc.svg',
         BONK: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/bonk.png',
         WBTC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wbtc.png',
-        SOL: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/sol.svg',
+        SOL: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/sol.png',
         BTC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/btc.svg',
     };
 
