@@ -156,8 +156,8 @@ export default async function handler(request: NextRequest) {
             </div>
         ),
         {
-            width: 600,
-            height: 315,
+            width: 1200,
+            height: 630,
             fonts: [
                 {
                     name: 'archivo-black',

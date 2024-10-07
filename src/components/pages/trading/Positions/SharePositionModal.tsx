@@ -57,7 +57,8 @@ export default function SharePositionModal({
 
   const createShortHash = () => {
     const randomValue = randomBytes(16).toString('hex');
-    const hash = createHash('sha256').update(randomValue).digest('base64');
+    let hash = createHash('sha256').update(randomValue).digest('base64');
+    hash = hash.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     return hash.substring(0, 8);
   };
 
