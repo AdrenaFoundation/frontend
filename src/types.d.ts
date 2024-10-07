@@ -110,7 +110,7 @@ export type PositionExtended = {
   owner: PublicKey;
   pubkey: PublicKey;
   // Current leverage (not initial leverage)
-  leverage: number;
+  leverage?: number | null;
   token: Token;
   collateralToken: Token;
   side: 'long' | 'short';

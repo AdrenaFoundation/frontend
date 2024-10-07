@@ -3,7 +3,6 @@ import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountInstruction,
-  NATIVE_MINT,
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
@@ -28,13 +27,7 @@ import adxIcon from '../public/images/adx.svg';
 import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
-import {
-  BPS,
-  LP_DECIMALS,
-  PRICE_DECIMALS,
-  RATE_DECIMALS,
-  USD_DECIMALS,
-} from './constant';
+import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AdrenaProgram,
@@ -60,7 +53,6 @@ import {
   Token,
   TokenSymbol,
   UserProfileExtended,
-  UserStaking,
   UserStakingExtended,
   Vest,
   VestExtended,
@@ -69,8 +61,6 @@ import {
 import {
   AdrenaTransactionError,
   applySlippage,
-  createCloseWSOLAccountInstruction,
-  createPrepareWSOLAccountInstructions,
   findATAAddressSync,
   isAccountInitialized,
   nativeToUi,
@@ -340,6 +330,8 @@ export class AdrenaClient {
       if (!this.adrenaProgram) return null;
 
       user = (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
+
+      if (!user) return null;
     }
 
     const userProfilePda = this.getUserProfilePda(user);
@@ -801,34 +793,6 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 600_000,
-    });
-
-    preInstructions.push(modifyComputeUnits);
-
-    if (mint.equals(NATIVE_MINT)) {
-      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
-
-      // Make sure there are enough WSOL available in WSOL ATA
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: amountIn,
-          connection: this.connection,
-          owner,
-          wsolATA,
-        })),
-      );
-
-      // Close the WSOL account after all is done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA,
-          owner,
-        }),
-      );
-    }
-
     const transaction = await (
       await this.buildAddLiquidityTx({
         owner,
@@ -841,7 +805,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   protected async buildRemoveLiquidityTx({
@@ -932,34 +896,6 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 500_000,
-    });
-
-    preInstructions.push(modifyComputeUnitsIx);
-
-    if (mint.equals(NATIVE_MINT)) {
-      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
-
-      // Create WSOL account
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: new BN(0),
-          connection: this.connection,
-          owner,
-          wsolATA,
-        })),
-      );
-
-      // Close the WSOL account after all is done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA,
-          owner,
-        }),
-      );
-    }
-
     const transaction = await (
       await this.buildRemoveLiquidityTx({
         owner,
@@ -972,7 +908,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   protected buildOpenOrIncreasePositionWithSwapLong({
@@ -1301,49 +1237,16 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 800_000,
-    });
+    const receivingAccount = findATAAddressSync(owner, mintB);
 
-    preInstructions.push(modifyComputeUnitsIx);
-
-    if (mintA.equals(NATIVE_MINT) || mintB.equals(NATIVE_MINT)) {
-      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
-
-      // Make sure there are enough WSOL available in WSOL ATA
+    if (!(await isAccountInitialized(this.connection, receivingAccount))) {
       preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          // mintA means swapping WSOL
-          // mintB means receiving WSOl
-          amount: mintA.equals(NATIVE_MINT) ? amountIn : new BN(0),
-          connection: this.connection,
-          owner,
-          wsolATA,
-        })),
-      );
-
-      // Close the WSOL account after all done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA,
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: mintB,
           owner,
         }),
       );
-    }
-
-    // Create the receiving ATA except if WSOL as we are already creating it
-    if (!mintB.equals(NATIVE_MINT)) {
-      const receivingAccount = findATAAddressSync(owner, mintB);
-
-      if (!(await isAccountInitialized(this.connection, receivingAccount))) {
-        preInstructions.push(
-          this.createATAInstruction({
-            ataAddress: receivingAccount,
-            mint: mintB,
-            owner,
-          }),
-        );
-      }
     }
 
     const userProfile = await this.loadUserProfile();
@@ -1360,7 +1263,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async closePositionLong({
@@ -1401,32 +1304,6 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 600_000,
-    });
-
-    preInstructions.push(modifyComputeUnitsIx);
-
-    if (position.collateralToken.mint.equals(NATIVE_MINT)) {
-      // Make sure the WSOL ATA exists
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: new BN(0),
-          connection: this.connection,
-          owner: position.owner,
-          wsolATA: receivingAccount,
-        })),
-      );
-
-      // Close the WSOL account after all done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA: receivingAccount,
-          owner: position.owner,
-        }),
-      );
-    }
-
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
@@ -1448,8 +1325,8 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
-    return this.signAndExecuteTx(
-      await this.adrenaProgram.methods
+    return this.signAndExecuteTx({
+      transaction: await this.adrenaProgram.methods
         .closePositionLong({
           price,
         })
@@ -1494,7 +1371,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
-    );
+    });
   }
 
   public async closePositionShort({
@@ -1546,32 +1423,6 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 600_000,
-    });
-
-    preInstructions.push(modifyComputeUnitsIx);
-
-    if (position.collateralToken.mint.equals(NATIVE_MINT)) {
-      // Make sure the WSOL ATA exists
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: new BN(0),
-          connection: this.connection,
-          owner: position.owner,
-          wsolATA: receivingAccount,
-        })),
-      );
-
-      // Close the WSOL account after all done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA: receivingAccount,
-          owner: position.owner,
-        }),
-      );
-    }
-
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
       stakingRewardTokenMint,
@@ -1588,8 +1439,8 @@ export class AdrenaClient {
 
     const userProfile = await this.loadUserProfile();
 
-    return this.signAndExecuteTx(
-      await this.adrenaProgram.methods
+    return this.signAndExecuteTx({
+      transaction: await this.adrenaProgram.methods
         .closePositionShort({
           price,
         })
@@ -1635,7 +1486,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
-    );
+    });
   }
 
   public getUsdcToken(): Token {
@@ -1681,46 +1532,16 @@ export class AdrenaClient {
 
     const usdcToken = this.getUsdcToken();
 
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 1_200_000,
-    });
+    const usdcAta = findATAAddressSync(owner, usdcToken.mint);
 
-    preInstructions.push(modifyComputeUnitsIx);
-
-    if (collateralMint.equals(NATIVE_MINT) || mint.equals(NATIVE_MINT)) {
-      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
-
-      // Make sure there are enough WSOL available in WSOL ATA
+    if (!(await isAccountInitialized(this.connection, usdcAta))) {
       preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: collateralMint.equals(NATIVE_MINT)
-            ? collateralAmount
-            : new BN(0),
-          connection: this.connection,
-          owner,
-          wsolATA,
-        })),
-      );
-
-      // Close the WSOL account after all done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA,
+        this.createATAInstruction({
+          ataAddress: usdcAta,
+          mint: usdcToken.mint,
           owner,
         }),
       );
-    } else {
-      const usdcAta = findATAAddressSync(owner, usdcToken.mint);
-
-      if (!(await isAccountInitialized(this.connection, usdcAta))) {
-        preInstructions.push(
-          this.createATAInstruction({
-            ataAddress: usdcAta,
-            mint: usdcToken.mint,
-            owner,
-          }),
-        );
-      }
     }
 
     const userProfile = await this.loadUserProfile();
@@ -1743,7 +1564,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   // Estimate the fee + other infos that will be paid by user if opening a new position with conditional swap
@@ -1908,51 +1729,16 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 2_000_000,
-    });
+    const mintATA = findATAAddressSync(owner, mint);
 
-    preInstructions.push(modifyComputeUnitsIx);
-
-    if (collateralMint.equals(NATIVE_MINT) || mint.equals(NATIVE_MINT)) {
-      const wsolATA = findATAAddressSync(owner, NATIVE_MINT);
-
-      // Make sure there are enough WSOL available in WSOL ATA
+    if (!(await isAccountInitialized(this.connection, mintATA))) {
       preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          // collateralMint means swap WSOL
-          // mint means position is in WSOL
-          amount: collateralMint.equals(NATIVE_MINT)
-            ? collateralAmount
-            : new BN(0),
-          connection: this.connection,
-          owner,
-          wsolATA,
-        })),
-      );
-
-      // Close the WSOL account after all done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA,
+        this.createATAInstruction({
+          ataAddress: mintATA,
+          mint,
           owner,
         }),
       );
-    }
-
-    // Create ATA if it doesn't exist yet except for WSOL as we are already creating it
-    if (!mint.equals(NATIVE_MINT)) {
-      const mintATA = findATAAddressSync(owner, mint);
-
-      if (!(await isAccountInitialized(this.connection, mintATA))) {
-        preInstructions.push(
-          this.createATAInstruction({
-            ataAddress: mintATA,
-            mint,
-            owner,
-          }),
-        );
-      }
     }
 
     const userProfile = await this.loadUserProfile();
@@ -1975,7 +1761,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async addCollateralToPosition({
@@ -1994,28 +1780,6 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    if (position.token.mint.equals(NATIVE_MINT)) {
-      const wsolATA = findATAAddressSync(position.owner, NATIVE_MINT);
-
-      // Make sure there are enough WSOL available in WSOL ATA
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: addedCollateral,
-          connection: this.connection,
-          owner: position.owner,
-          wsolATA,
-        })),
-      );
-
-      // Close the WSOL account after all is done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA,
-          owner: position.owner,
-        }),
-      );
-    }
-
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
@@ -2026,7 +1790,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async initUserProfile({
@@ -2041,6 +1805,8 @@ export class AdrenaClient {
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+    if (!wallet.publicKey) throw new Error('user not connected');
 
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
@@ -2057,7 +1823,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async editUserProfile({
@@ -2073,6 +1839,8 @@ export class AdrenaClient {
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
+    if (!wallet.publicKey) throw new Error('user not connected');
+
     const userProfilePda = this.getUserProfilePda(wallet.publicKey);
 
     const transaction = await this.adrenaProgram.methods
@@ -2087,7 +1855,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async deleteUserProfile(): Promise<string> {
@@ -2233,28 +2001,8 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    if (position.token.mint.equals(NATIVE_MINT)) {
-      // Make sure the WSOL ATA exists
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: new BN(0),
-          connection: this.connection,
-          owner: position.owner,
-          wsolATA: receivingAccount,
-        })),
-      );
-
-      // Close the WSOL account after all is done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA: receivingAccount,
-          owner: position.owner,
-        }),
-      );
-    }
-
-    return this.signAndExecuteTx(
-      await this.adrenaProgram.methods
+    return this.signAndExecuteTx({
+      transaction: await this.adrenaProgram.methods
         .removeCollateralLong({
           collateralUsd,
         })
@@ -2276,7 +2024,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
-    );
+    });
   }
 
   public async removeCollateralShort({
@@ -2322,28 +2070,8 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    if (position.token.mint.equals(NATIVE_MINT)) {
-      // Make sure the WSOL ATA exists
-      preInstructions.push(
-        ...(await createPrepareWSOLAccountInstructions({
-          amount: new BN(0),
-          connection: this.connection,
-          owner: position.owner,
-          wsolATA: receivingAccount,
-        })),
-      );
-
-      // Close the WSOL account after all is done
-      postInstructions.push(
-        createCloseWSOLAccountInstruction({
-          wsolATA: receivingAccount,
-          owner: position.owner,
-        }),
-      );
-    }
-
-    return this.signAndExecuteTx(
-      await this.adrenaProgram.methods
+    return this.signAndExecuteTx({
+      transaction: await this.adrenaProgram.methods
         .removeCollateralShort({
           collateralUsd,
         })
@@ -2366,7 +2094,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
-    );
+    });
   }
 
   // null = not ready
@@ -2447,7 +2175,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction);
+    return this.signAndExecuteTx({ transaction });
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {
@@ -2527,12 +2255,6 @@ export class AdrenaClient {
     }
 
     const preInstructions: TransactionInstruction[] = [];
-
-    const modifyComputeUnitsIx = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 500_000,
-    });
-
-    preInstructions.push(modifyComputeUnitsIx);
 
     const stakingRewardTokenMint = this.getTokenBySymbol('USDC')?.mint;
 
@@ -2634,7 +2356,7 @@ export class AdrenaClient {
 
     console.log('transaction debug in AdrenaClient', transaction);
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async addLockedStake({
@@ -2756,7 +2478,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async upgradeLockedStake({
@@ -2828,7 +2550,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async removeLiquidStake({
@@ -2876,10 +2598,6 @@ export class AdrenaClient {
       userStakingAccount.stakesClaimCronThreadId,
     );
 
-    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 400_000,
-    });
-
     const transaction = await this.adrenaProgram.methods
       .removeLiquidStake({
         amount: uiToNative(
@@ -2918,10 +2636,10 @@ export class AdrenaClient {
         genesisLock: this.genesisLockPda,
         pool: this.mainPool.pubkey,
       })
-      .preInstructions([modifyComputeUnits])
+      // .preInstructions([modifyComputeUnits])
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async buildFinalizeLockedStakeTx({
@@ -3006,7 +2724,7 @@ export class AdrenaClient {
     );
     const transaction = await builder.transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   // Simulation for getting pending rewards
@@ -3131,12 +2849,6 @@ export class AdrenaClient {
         earlyExit,
       });
 
-      const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-        units: 600_000,
-      });
-
-      preInstructions.push(modifyComputeUnits);
-
       preInstructions.push(instruction);
     }
 
@@ -3204,7 +2916,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async initUserStaking({
@@ -3281,7 +2993,7 @@ export class AdrenaClient {
 
     const stakesClaimCronThread = this.getThreadAddressPda(threadId);
 
-    const instruction = await this.adrenaProgram.methods
+    const transaction = await this.adrenaProgram.methods
       .initUserStaking({
         stakesClaimCronThreadId: threadId,
       })
@@ -3309,7 +3021,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx(instruction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public async getGenesisLock(): Promise<GenesisLock | null> {
@@ -3424,7 +3136,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .transaction();
 
-    return this.signAndExecuteTx(transaction, notification);
+    return this.signAndExecuteTx({ transaction, notification });
   }
 
   public buildCancelStopLossIx({
@@ -4125,6 +3837,7 @@ export class AdrenaClient {
   }
 
   // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
+  // DO NOT LOAD PNL OR LIQUIDATION PRICE
   public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
     const possiblePositionAddresses = this.tokens.reduce((acc, token) => {
       if (!token.custody) return acc;
@@ -4139,15 +3852,14 @@ export class AdrenaClient {
     const positions =
       (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
         possiblePositionAddresses,
+        'recent',
       )) as (Position | null)[];
 
+    console.log('Positions', positions);
+
     // Create extended positions
-    const positionsExtended = positions.reduce(
-      (
-        acc: Omit<PositionExtended, 'leverage'>[],
-        position: Position | null,
-        index: number,
-      ) => {
+    return positions.reduce(
+      (acc: PositionExtended[], position: Position | null, index: number) => {
         if (!position) {
           return acc;
         }
@@ -4165,6 +3877,7 @@ export class AdrenaClient {
 
         // Ignore position with unknown tokens
         if (!token || !collateralToken) {
+          console.log('Ignore postion with unknown tokens', position);
           return acc;
         }
 
@@ -4214,88 +3927,6 @@ export class AdrenaClient {
       },
       [],
     );
-
-    // Get liquidation price + pnl
-    const [liquidationPrices, pnls] = await Promise.all([
-      Promise.allSettled(
-        positionsExtended.map((positionExtended) =>
-          this.getPositionLiquidationPrice({
-            position: positionExtended,
-            addCollateral: new BN(0),
-            removeCollateral: new BN(0),
-          }),
-        ),
-      ),
-      Promise.allSettled(
-        positionsExtended.map((positionExtended) =>
-          this.getPnL({ position: positionExtended }),
-        ),
-      ),
-    ]);
-
-    // Insert them in positions extended
-    return positionsExtended.map((positionExtended, index) => {
-      const profitsAndLosses = (() => {
-        if (pnls[index].status === 'rejected') return null;
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const promisePnl = pnls[index] as any;
-        const profitAndLossNative = promisePnl.value as ProfitAndLoss | null;
-
-        if (!profitAndLossNative) return null;
-
-        return {
-          profitUsd: nativeToUi(profitAndLossNative.profitUsd, USD_DECIMALS),
-          lossUsd: nativeToUi(profitAndLossNative.lossUsd, USD_DECIMALS) * -1,
-          borrowFeeUsd: nativeToUi(
-            profitAndLossNative.borrowFeeUsd,
-            USD_DECIMALS,
-          ),
-        };
-      })();
-
-      // pnl from lossUsd and profitsUsd are calculated
-      const pnl = (() => {
-        if (!profitsAndLosses) return null;
-
-        if (profitsAndLosses.lossUsd !== 0) return profitsAndLosses.lossUsd;
-
-        return profitsAndLosses.profitUsd;
-      })();
-
-      const priceChangeUsd = (() => {
-        if (!profitsAndLosses) return null;
-
-        return profitsAndLosses.lossUsd !== 0
-          ? profitsAndLosses.lossUsd
-          : profitsAndLosses.profitUsd;
-      })();
-
-      const leverage =
-        positionExtended.sizeUsd /
-        (positionExtended.collateralUsd + (pnl ?? 0));
-
-      return {
-        ...positionExtended,
-        leverage,
-        pnl,
-        priceChangeUsd,
-        profitUsd: profitsAndLosses ? profitsAndLosses.profitUsd : null,
-        lossUsd: profitsAndLosses ? profitsAndLosses.lossUsd : null,
-        borrowFeeUsd: profitsAndLosses ? profitsAndLosses.borrowFeeUsd : null,
-        liquidationPrice: ((): number | null => {
-          if (liquidationPrices[index].status === 'rejected') return null;
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const promiseLiquidationPrice = liquidationPrices[index] as any;
-          const liquidationPrice = promiseLiquidationPrice.value as BN | null;
-
-          if (liquidationPrice === null) return null;
-
-          return nativeToUi(liquidationPrice, PRICE_DECIMALS);
-        })(),
-      };
-    });
   }
 
   public async getAssetsUnderManagement(): Promise<BN | null> {
@@ -4518,9 +4149,12 @@ export class AdrenaClient {
   ): void {
     if (!this.connection) return reject(new Error('Connection missing'));
 
+    const d = Date.now();
+
     this.connection
       .simulateTransaction(args, {
         sigVerify: false,
+        commitment: 'recent',
       })
       .then((result) => {
         if (result.value.err) {
@@ -4538,6 +4172,8 @@ export class AdrenaClient {
         // Retry if blockhash expired
         const errString =
           err instanceof AdrenaTransactionError ? err.errorString : String(err);
+
+        console.log('Simulate time KO', Date.now() - d, errString);
 
         if (errString.includes('BlockhashNotFound') && retry < 10) {
           setTimeout(() => {
@@ -4557,7 +4193,7 @@ export class AdrenaClient {
     instructions: TransactionInstruction[],
     typeName: string,
   ): Promise<T> {
-    if (!this.readonlyAdrenaProgram || !this.readonlyConnection) {
+    if (!this.readonlyAdrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
@@ -4567,9 +4203,8 @@ export class AdrenaClient {
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       // Use finalize to get the latest blockhash accepted by the leader
-      recentBlockhash: (
-        await this.readonlyConnection.getLatestBlockhash('finalized')
-      ).blockhash,
+      recentBlockhash: (await this.connection.getLatestBlockhash('finalized'))
+        .blockhash,
       instructions,
     }).compileToV0Message();
 
@@ -4594,45 +4229,86 @@ export class AdrenaClient {
     return this.readonlyAdrenaProgram.coder.types.decode(typeName, returnData);
   }
 
-  public async signAndExecuteTx(
-    transaction: Transaction,
-    notification?: MultiStepNotification,
-  ): Promise<string> {
+  protected async simulateAndGetComputedUnits({
+    payer,
+    transaction,
+    recentBlockhash,
+  }: {
+    payer: PublicKey;
+    transaction: Transaction;
+    recentBlockhash: string;
+  }): Promise<null | number> {
+    if (!this.connection) return null;
+
+    try {
+      const messageV0 = new TransactionMessage({
+        payerKey: payer,
+        recentBlockhash,
+        instructions: transaction.instructions,
+      }).compileToV0Message();
+
+      const versionedTransaction = new VersionedTransaction(messageV0);
+
+      // Simulate the transaction
+      const result = await this.simulateTransactionStrong(versionedTransaction);
+
+      return result.unitsConsumed ?? null;
+    } catch (err) {
+      console.log('Error', err);
+
+      return null;
+    }
+  }
+
+  public async signAndExecuteTx({
+    transaction,
+    notification,
+  }: {
+    transaction: Transaction;
+    notification?: MultiStepNotification;
+  }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
-    transaction.recentBlockhash =
-      // Use finalized to get the latest blockhash accepted by the leader
-      (await this.connection.getLatestBlockhash('finalized')).blockhash;
-
-    transaction.feePayer = wallet.publicKey;
-
-    // Check the user SOL balance, and reject if not enough
-    const [userSolBalance, estimatedFee] = await Promise.all([
-      this.connection.getBalance(wallet.publicKey),
-      transaction.getEstimatedFee(this.connection),
-    ]);
-
-    if (estimatedFee !== null && userSolBalance < estimatedFee) {
-      const adrenaError = new AdrenaTransactionError(
-        null,
-        'Insufficient SOL to pay for fees',
-      );
-
-      // Prepare the transaction failed
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    // Prepare the transaction succeeded
-    notification?.currentStepSucceeded();
-
     let signedTransaction: Transaction;
 
     try {
+      const latestBlockHash = await this.connection.getLatestBlockhash(
+        'finalized',
+      );
+
+      transaction.instructions.unshift(
+        ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: 1,
+        }),
+        ComputeBudgetProgram.setComputeUnitLimit({
+          units: 1000000, // Use a lot of units to avoid any issues during simulation
+        }),
+      );
+
+      transaction.recentBlockhash = latestBlockHash.blockhash;
+      transaction.feePayer = wallet.publicKey;
+
+      const computeUnitUsed = await this.simulateAndGetComputedUnits({
+        payer: wallet.publicKey,
+        transaction: transaction,
+        recentBlockhash: latestBlockHash.blockhash,
+      });
+
+      console.log('computeUnitUsed', computeUnitUsed);
+
+      if (computeUnitUsed !== null) {
+        transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
+          units: computeUnitUsed + 50000, // Add an extra 50k units to avoid any issues
+        });
+      }
+
+      // Prepare the transaction succeeded
+      notification?.currentStepSucceeded();
+
       signedTransaction = await wallet.signTransaction(transaction);
     } catch (err) {
       console.log('sign error:', err);
@@ -4660,8 +4336,6 @@ export class AdrenaClient {
           requireAllSignatures: false,
           verifySignatures: false,
         }),
-        // Uncomment to force the transaction to be sent
-        // And get a transaction to analyze
         {
           skipPreflight: true,
         },
@@ -4678,7 +4352,11 @@ export class AdrenaClient {
     notification?.setTxHash(txHash);
     notification?.currentStepSucceeded();
 
-    console.log(`tx: https://explorer.solana.com/tx/${txHash}?cluster=devnet`);
+    console.log(
+      `tx: https://explorer.solana.com/tx/${txHash}${
+        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      }`,
+    );
 
     let result: RpcResponseAndContext<SignatureResult> | null = null;
 
@@ -4828,12 +4506,6 @@ export class AdrenaClient {
       this.getStakingLmRewardTokenVaultPda(staking);
 
     const preInstructions: TransactionInstruction[] = [];
-
-    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-      units: 800_000,
-    });
-
-    preInstructions.push(modifyComputeUnits);
 
     if (
       this.connection &&

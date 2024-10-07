@@ -405,7 +405,11 @@ export function parseTransactionError(
       return 'BlockhashNotFound';
     }
 
-    Sentry.captureException(err);
+    try {
+      Sentry.captureException(err);
+    } catch {
+      // ignore
+    }
 
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
       if (errName !== null && errName === name) return true;
