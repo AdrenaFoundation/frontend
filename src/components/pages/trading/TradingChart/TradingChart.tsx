@@ -1,8 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
+import BN from 'bn.js';
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import usePositionsHistory from '@/hooks/usePositionHistory';
 import { PositionExtended, Token } from '@/types';
 import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
 
@@ -164,6 +166,8 @@ export default function TradingChart({
   // Retrieve saved resolution or default to 'H'
   const savedResolution = localStorage.getItem(STORAGE_KEY_RESOLUTION) || 'H';
 
+  const { positionsHistory } = usePositionsHistory();
+
   function modifyPositionLine(
     chart: IChartWidgetApi,
     position: PositionExtended | null,
@@ -269,6 +273,7 @@ export default function TradingChart({
             'paneProperties.legendProperties.showBarChange': false,
             'paneProperties.legendProperties.showSeriesOHLC': true,
             'mainSeriesProperties.priceLineColor': 'yellow',
+            'highLowPriceLabelsVisible': true,
           },
           theme: 'dark',
           interval: savedResolution as ResolutionString,
@@ -389,14 +394,14 @@ export default function TradingChart({
               position: longPosition.pubkey,
               takeProfit:
                 longPosition.takeProfitThreadIsSet &&
-                longPosition.takeProfitLimitPrice &&
-                longPosition.takeProfitLimitPrice > 0
+                  longPosition.takeProfitLimitPrice &&
+                  longPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, longPosition)
                   : undefined,
               stopLoss:
                 longPosition.stopLossThreadIsSet &&
-                longPosition.stopLossLimitPrice &&
-                longPosition.stopLossLimitPrice > 0
+                  longPosition.stopLossLimitPrice &&
+                  longPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, longPosition)
                   : undefined,
             };
@@ -427,14 +432,14 @@ export default function TradingChart({
               position: shortPosition.pubkey,
               takeProfit:
                 shortPosition.takeProfitThreadIsSet &&
-                shortPosition.takeProfitLimitPrice &&
-                shortPosition.takeProfitLimitPrice > 0
+                  shortPosition.takeProfitLimitPrice &&
+                  shortPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, shortPosition)
                   : undefined,
               stopLoss:
                 shortPosition.stopLossThreadIsSet &&
-                shortPosition.stopLossLimitPrice &&
-                shortPosition.stopLossLimitPrice > 0
+                  shortPosition.stopLossLimitPrice &&
+                  shortPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, shortPosition)
                   : undefined,
             };
@@ -465,6 +470,83 @@ export default function TradingChart({
     !!widget,
     widgetReady,
   ]);
+
+  /* Draw historical positions "Opens" and "Closes" on the chart */
+  // useEffect(() => {
+  //   if (!widget || !widgetReady || !positionsHistory) return;
+
+  //   const chart: IChartWidgetApi = widget.activeChart();
+
+  //   positionsHistory.forEach((position: PositionHistoryExtended) => {
+  //     if (position.token.symbol === token.symbol) {
+  //       const color = position.side === 'long' ? greenColor : redColor;
+  //       const sideText = position.side === 'long' ? 'Long' : 'Short';
+
+  //       if (position.entry_price && position.exit_price) {
+  //         // Open position marker
+  //         chart.createExecutionShape()
+  //           .setTime(position.entry_date.getTime() / 1000)
+  //           .setPrice(position.entry_price)
+  //           .setDirection('buy')
+  //           .setText(`Open ${sideText} $${formatNumberShort(position.size, 0)}`)
+  //           .setTextColor(color)
+  //           .setArrowHeight(5)
+  //           .setArrowSpacing(0);
+
+  //         // Close position marker
+  //         if (position.exit_date) {
+  //           chart.createExecutionShape()
+  //             .setTime(position.exit_date.getTime() / 1000)
+  //             .setPrice(position.exit_price)
+  //             .setDirection('sell')
+  //             .setText(`Close ${sideText} $${formatNumberShort(position.size, 0)}`)
+  //             .setTextColor(color)
+  //             .setArrowHeight(5)
+  //             .setArrowSpacing(0);
+  //         }
+  //       }
+  //     }
+  //   });
+  // }, [widget, widgetReady, positionsHistory, token.symbol]);
+
+  // Draw currently open positions "Opens" on the chart
+  useEffect(() => {
+    if (!widget || !widgetReady || !positions) return;
+
+    const chart: IChartWidgetApi = widget.activeChart();
+
+    chart.removeAllShapes();
+
+    const createdShapes: ReturnType<typeof chart.createExecutionShape>[] = [];
+
+    positions.forEach((position: PositionExtended) => {
+      if (position.token.symbol === token.symbol) {
+        const color = position.side === 'long' ? greenColor : redColor;
+        const sideText = position.side === 'long' ? 'Long' : 'Short';
+
+        const openTime = position.nativeObject.openTime;
+        if (openTime && BN.isBN(openTime)) {
+          const openTimeMs = openTime.toNumber() * 1000;
+          const openDate = new Date(openTimeMs);
+
+          const shape = chart.createExecutionShape()
+            .setTime(openDate.getTime() / 1000)
+            .setPrice(position.price)
+            .setDirection('buy')
+            .setText(`Open ${getTokenSymbol(position.token.symbol)} ${sideText} $${formatNumberShort(position.sizeUsd, 0)}`)
+            .setTextColor(whiteColor)
+            .setFont('bold 12px Arial')
+            .setArrowColor(color)
+            .setArrowHeight(7)
+            .setArrowSpacing(5);
+
+          createdShapes.push(shape);
+        }
+      }
+    });
+
+    return () => createdShapes.forEach(shape => shape.remove());
+  }, [widget, widgetReady, positions, token.symbol]);
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-secondary backdrop-blur-md">
