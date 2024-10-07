@@ -19,7 +19,13 @@ export default function useSablierFinalizeLockedStakedThreads(): {
 
     try {
       setThreads(
-        await window.adrena.sablierClient.loadSablierFinalizeLockedStakedThreads(),
+        (
+          await window.adrena.sablierClient.loadSablierFinalizeLockedStakedThreads()
+        )?.sort(
+          (a, b) =>
+            (a.nextTheoreticalExecutionDate ?? 0) -
+            (b.nextTheoreticalExecutionDate ?? 0),
+        ) ?? null,
       );
     } catch (e) {
       console.error('Error loading threads', e);

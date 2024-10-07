@@ -253,7 +253,7 @@ export type SablierThreadExtended = {
   nextTheoreticalExecutionDate: number | null;
   paused: boolean;
   pubkey: PublicKey;
-  funding: number;
+  funding?: number;
   nativeObject: SablierThread;
 };
 
