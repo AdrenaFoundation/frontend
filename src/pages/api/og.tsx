@@ -61,6 +61,8 @@ export default async function handler(request: NextRequest) {
         USDC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/usdc.svg',
         BONK: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/bonk.png',
         WBTC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/wbtc.png',
+        SOL: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/sol.svg',
+        BTC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/btc.svg',
     };
 
     return new ImageResponse(
@@ -154,8 +156,8 @@ export default async function handler(request: NextRequest) {
             </div>
         ),
         {
-            width: 1200,
-            height: 630,
+            width: 600,
+            height: 315,
             fonts: [
                 {
                     name: 'archivo-black',

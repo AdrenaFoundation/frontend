@@ -1,15 +1,19 @@
-import { put } from '@vercel/blob';
+import { createHash, randomBytes } from 'crypto';
 import { AnimatePresence, motion } from 'framer-motion';
-import { toPng } from 'html-to-image';
 import Image from 'next/image';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatNumber, formatPriceInfo, getTokenSymbol } from '@/utils';
+import {
+  formatNumber,
+  formatPriceInfo,
+  getTokenImage,
+  getTokenSymbol,
+} from '@/utils';
 
 import adrenaLogo from '../../../../../public/images/logo.svg';
 import monster1 from '../../../../../public/images/monster_1.png';
@@ -23,9 +27,6 @@ export default function SharePositionModal({
 }: {
   position: PositionExtended;
 }) {
-  // const { url } = await put('articles/blob.txt', 'Hello World!', { access: 'public' });
-
-  const [isDownloading, setIsDownloading] = useState(false);
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -54,38 +55,12 @@ export default function SharePositionModal({
     },
   ];
 
-  const captureElementAsImage = async () => {
-    setIsDownloading(true);
-    const element = cardRef.current;
-
-    if (!element) {
-      console.error('Element not found!');
-      return;
-    }
-
-    toPng(element)
-      .then(async (dataUrl) => {
-        // downloadImage(dataUrl);
-        setIsDownloading(false);
-        return await put('articles/test.png', dataUrl, {
-          access: 'public',
-          token: process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN,
-        });
-      })
-      .catch((error) => {
-        console.error('Error converting to PNG:', error);
-        setIsDownloading(false);
-      });
+  const createShortHash = () => {
+    const randomValue = randomBytes(16).toString('hex');
+    const hash = createHash('sha256').update(randomValue).digest('base64');
+    return hash.substring(0, 8);
   };
 
-  const downloadImage = (dataUrl: string) => {
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = 'adrena-position.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
   const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnlPercentage = position.pnl
@@ -101,20 +76,51 @@ export default function SharePositionModal({
     hour: 'numeric',
   });
 
-  const twitterText = `I just made ${formatNumber(
-    pnlPercentage ?? 0,
-    2,
-  )}% on ${position.side} position on ${position.token.symbol}!`;
+  const twitterText = `I just made ${formatNumber(pnlPercentage ?? 0, 2)}% on ${position.side
+    } position on ${position.token.symbol}!`;
 
   const twitterUrl = `https://frontend-devnet-git-pnlshare-adrena.vercel.app/position?opt=${option}&pnl=${formatNumber(
     pnlPercentage ?? 0,
     2,
-  )}&side=${position.side}&symbol=${position.token.symbol
-    }&collateral=${formatNumber(position.collateralUsd, 2)}&mark=${formatNumber(
-      tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
-      2,
-    )}&price=${formatNumber(position.price, 2)}&size=${position.sizeUsd}&opened=${Number(position.nativeObject.openTime) * 1000
+  )}&side=${position.side}&symbol=${getTokenSymbol(
+    position.token.symbol,
+  )}&collateral=${formatNumber(position.collateralUsd, 2)}&mark=${formatNumber(
+    tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
+    2,
+  )}&price=${formatNumber(position.price, 2)}&size=${position.sizeUsd}&opened=${Number(position.nativeObject.openTime) * 1000
     }`;
+
+  const getTinyUrl = async (url: string) => {
+    const params = {
+      url,
+      domain: 'tinyurl.com',
+      alias: 'adrena-' + createShortHash(),
+      description: 'Adrena Protocol',
+    };
+
+    try {
+      const key = process.env.NEXT_PUBLIC_URL_KEY;
+      const response = await fetch('https://api.tinyurl.com/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${key}`,
+        },
+        body: JSON.stringify(params),
+      });
+
+      const { data } = await response.json();
+
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          twitterText,
+        )}&url=${encodeURIComponent(data.tiny_url)}`,
+        '_blank',
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="max-w-[600px] p-5">
@@ -125,8 +131,14 @@ export default function SharePositionModal({
         <Image src={adrenaLogo} alt="Adrena Logo" height={8} className="mb-3" />
         <div className="flex flex-row gap-3 items-center relative z-10">
           <div className="flex flex-row items-center gap-2">
-            <Image src={position.token.image} alt="Adrena Logo" height={20} />
-            <h2 className="archivo-black">{position.token.symbol}</h2>
+            <Image
+              src={getTokenImage(position.token)}
+              alt="Adrena Logo"
+              height={20}
+            />
+            <h2 className="archivo-black">
+              {getTokenSymbol(position.token.symbol)}
+            </h2>
           </div>
 
           <div
@@ -253,9 +265,10 @@ export default function SharePositionModal({
           size="lg"
           title="Share on"
           className="w-full mt-6 py-3 text-base"
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            twitterText,
-          )}&url=${encodeURIComponent(twitterUrl)}`}
+          // href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          //   twitterText,
+          // )}&url=${encodeURIComponent(twitterUrl)}`}
+          onClick={() => getTinyUrl(twitterUrl)}
           isOpenLinkInNewTab
           rightIcon={xIcon}
           rightIconClassName="w-4 h-4"

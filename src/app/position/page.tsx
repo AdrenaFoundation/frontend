@@ -21,8 +21,6 @@ export async function generateMetadata(
   const opt = searchParams.opt;
 
   // fetch data
-  const product = { title: `Product ${symbol}` };
-
   const url = `https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?opt=${opt}&pnl=${pnl ?? 0
     }&side=${side}&symbol=${symbol}&collateral=${collateralUsd}&mark=${mark ?? 0
     }&price=${price}&opened=${openedOn}&size=${sizeUsd}`;
@@ -31,14 +29,22 @@ export async function generateMetadata(
   const previousImages = (await parent).openGraph?.images || [];
 
   return {
-    title: product.title,
+    title: 'Adrena',
     openGraph: {
       images: [url, ...previousImages],
     },
+    description: 'Trade at the speed of light with up to 100x leverage',
   };
 }
 
 export default function Page({ searchParams }: Props) {
+  // return {
+  //   redirect: {
+  //     destination: 'https://app.adrena.xyz/trade',
+  //     permanent: true,
+  //   },
+  // };
+
   return (
     <div>
       <h1>Product: {searchParams.symbol}</h1>

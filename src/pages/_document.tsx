@@ -11,7 +11,7 @@ export const metadata = {
     description:
       'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
     images:
-      'https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?username=test',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/OG-nFshI7a1fxTEcp2L5XV8z9dormWh5w.png',
   },
   twitter: {
     card: 'summary_large_image',
@@ -20,7 +20,7 @@ export const metadata = {
       'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
     creator: '@adrenaprotocol',
     images:
-      'https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?username=test',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/OG-nFshI7a1fxTEcp2L5XV8z9dormWh5w.png',
   },
 } as const;
 
@@ -44,7 +44,7 @@ export default function Document() {
           rel="stylesheet"
         />
 
-        {/* <meta
+        <meta
           name="description"
           content="Trade at the speed of light with up to 100x leverage"
         />
@@ -64,7 +64,7 @@ export default function Document() {
           content={metadata.twitter.description}
         />
         <meta name="twitter:creator" content={metadata.twitter.creator} />
-        <meta name="twitter:image" content={metadata.twitter.images} /> */}
+        <meta name="twitter:image" content={metadata.twitter.images} />
         <Script
           src="https://terminal.jup.ag/main-v3.js"
           strategy="beforeInteractive"
