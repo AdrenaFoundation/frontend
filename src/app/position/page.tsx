@@ -1,5 +1,4 @@
 import type { Metadata, ResolvingMetadata } from 'next';
-import { redirect } from 'next/navigation';
 
 type Props = {
   params: { id: string };
@@ -39,5 +38,5 @@ export async function generateMetadata(
 }
 
 export default function Page() {
-  redirect('/trade');
+  return <div />
 }
