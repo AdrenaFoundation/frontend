@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import { useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -24,6 +25,53 @@ export default function CurrentStakingRoundTime({
   triggerAlpStakingAccountReload: () => void;
   triggerAdxStakingAccountReload: () => void;
 }) {
+  const [alpRoundPassed, setAlpRoundPassed] = useState<boolean>(false);
+  const [adxRoundPassed, setAdxRoundPassed] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!alpStakingAccount) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const nextRound = getNextStakingRoundStartTime(
+        alpStakingAccount.currentStakingRound.startTime,
+      ).getTime();
+
+      if ((nextRound - Date.now()) < 0) {
+        setAlpRoundPassed(true);
+      } else if (alpRoundPassed) {
+        setAlpRoundPassed(false);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [alpRoundPassed, alpStakingAccount]);
+
+  useEffect(() => {
+    if (!adxStakingAccount) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const nextRound = getNextStakingRoundStartTime(
+        adxStakingAccount.currentStakingRound.startTime,
+      ).getTime();
+
+      if ((nextRound - Date.now()) < 0) {
+        setAdxRoundPassed(true);
+      } else if (adxRoundPassed) {
+        setAdxRoundPassed(false);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [adxRoundPassed, adxStakingAccount]);
+
   const triggerManually = async (stakedTokenMint: PublicKey) => {
     const isALP =
       stakedTokenMint.toBase58() ===
@@ -51,16 +99,6 @@ export default function CurrentStakingRoundTime({
     }
   };
 
-  const nextAlpTimestamp =
-    getNextStakingRoundStartTime(
-      alpStakingAccount.currentStakingRound.startTime,
-    ).getTime() / 1000;
-
-  const nextAdxTimestamp =
-    getNextStakingRoundStartTime(
-      adxStakingAccount.currentStakingRound.startTime,
-    ).getTime() / 1000;
-
   return (
     <StyledContainer
       title="CURRENT STAKING ROUND TIME"
@@ -73,13 +111,15 @@ export default function CurrentStakingRoundTime({
 
         <div className="m-auto">
           <RemainingTimeToDate
-            timestamp={nextAlpTimestamp}
+            timestamp={getNextStakingRoundStartTime(
+              alpStakingAccount.currentStakingRound.startTime,
+            ).getTime() / 1000}
             className="items-center"
             classNameTime={bodyClassName}
             tippyText="The call is overdue, please check the thread."
           />
 
-          {nextAlpTimestamp < 0 ? (
+          {alpRoundPassed ? (
             <Button
               className="text-xs"
               title="Trigger manually"
@@ -94,13 +134,15 @@ export default function CurrentStakingRoundTime({
 
         <div className="m-auto flex items-center justify-center gap-4">
           <RemainingTimeToDate
-            timestamp={nextAdxTimestamp}
+            timestamp={getNextStakingRoundStartTime(
+              adxStakingAccount.currentStakingRound.startTime,
+            ).getTime() / 1000}
             className="items-center"
             classNameTime={bodyClassName}
             tippyText="The call is overdue, please check the thread."
           />
 
-          {nextAdxTimestamp < 0 ? (
+          {adxRoundPassed ? (
             <Button
               className="text-xs"
               title="Trigger manually"

@@ -90,9 +90,11 @@ export default function StakeOverview({
     }
 
     const interval = setInterval(() => {
-      if (getNextStakingRoundStartTime(
+      const nextRound = getNextStakingRoundStartTime(
         stakingAccount.currentStakingRound.startTime,
-      ).getTime() / 1000 < 0) {
+      ).getTime();
+
+      if ((nextRound - Date.now()) < 0) {
         setRoundPassed(true);
       } else if (roundPassed) {
         setRoundPassed(false);
