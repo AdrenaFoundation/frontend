@@ -18,12 +18,12 @@ export default async function handler(request: NextRequest) {
         searchParams.get('symbol') ||
         ('JITOSOL' as 'JITOSOL' | 'USDC' | 'BONK' | 'WBTC');
     const side = searchParams.get('side') || 'long';
-    const sizeUsd = searchParams.get('size') || '1000';
-    const collateralUsd = searchParams.get('collateral') || '100';
-    const price = searchParams.get('price') || '2000';
-    const mark = searchParams.get('mark') || '2000';
+    const sizeUsd = Number(searchParams.get('size'));
+    const collateralUsd = Number(searchParams.get('collateral'));
+    const price = Number(searchParams.get('price'));
+    const mark = Number(searchParams.get('mark'));
     const openedOn = new Date(
-        Number(searchParams.get('opened')) || '2024-10-10',
+        Number(searchParams.get('opened')),
     ).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -64,6 +64,10 @@ export default async function handler(request: NextRequest) {
         SOL: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/sol.png',
         BTC: 'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/btc.svg',
     };
+
+    const nFormat = new Intl.NumberFormat(undefined, {
+        minimumFractionDigits: symbol === 'BONK' ? 4 : 2,
+    });
 
     return new ImageResponse(
         (
@@ -112,7 +116,7 @@ export default async function handler(request: NextRequest) {
                             Entry Price
                         </span>
                         <span tw="archivo-black text-[40px] text-white mt-2">
-                            ${Number(price)}
+                            ${nFormat.format(price)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">
@@ -120,7 +124,7 @@ export default async function handler(request: NextRequest) {
                             Mark Price
                         </span>
                         <span tw="archivo-black text-[40px] text-white mt-2">
-                            ${Number(mark)}
+                            ${nFormat.format(mark)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">

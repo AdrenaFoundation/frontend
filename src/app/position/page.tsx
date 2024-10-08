@@ -1,5 +1,7 @@
 import type { Metadata, ResolvingMetadata } from 'next';
 
+import Redirect from '../components/Redirect';
+
 type Props = {
   params: { id: string };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -38,5 +40,5 @@ export async function generateMetadata(
 }
 
 export default function Page() {
-  return <div />
+  return <Redirect />;
 }

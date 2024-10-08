@@ -85,10 +85,10 @@ export default function SharePositionModal({
     2,
   )}&side=${position.side}&symbol=${getTokenSymbol(
     position.token.symbol,
-  )}&collateral=${formatNumber(position.collateralUsd, 2)}&mark=${formatNumber(
+  )}&collateral=${position.collateralUsd}&mark=${formatNumber(
     tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
     2,
-  )}&price=${formatNumber(position.price, 2)}&size=${position.sizeUsd}&opened=${Number(position.nativeObject.openTime) * 1000
+  )}&price=${position.price}&size=${position.sizeUsd}&opened=${Number(position.nativeObject.openTime) * 1000
     }`;
 
   const getTinyUrl = async (url: string) => {
@@ -266,9 +266,6 @@ export default function SharePositionModal({
           size="lg"
           title="Share on"
           className="w-full mt-6 py-3 text-base"
-          // href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          //   twitterText,
-          // )}&url=${encodeURIComponent(twitterUrl)}`}
           onClick={() => getTinyUrl(twitterUrl)}
           isOpenLinkInNewTab
           rightIcon={xIcon}
