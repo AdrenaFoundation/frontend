@@ -3836,6 +3836,231 @@ export class AdrenaClient {
     return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
+  // Return in Native unit
+  protected calculatePositionBorrowFee({
+    collateralCustody,
+    position,
+  }: {
+    collateralCustody: CustodyExtended;
+    position: PositionExtended;
+  }): BN {
+    const currentTime = new BN(Date.now());
+
+    // Calculate cumulative interest for the custody
+    let cumulativeInterest =
+      collateralCustody.nativeObject.borrowRateState.cumulativeInterest.low.add(
+        collateralCustody.nativeObject.borrowRateState.cumulativeInterest.high.mul(
+          new BN(2).pow(new BN(64)),
+        ),
+      );
+
+    if (
+      currentTime.gt(collateralCustody.nativeObject.borrowRateState.lastUpdate)
+    ) {
+      const newCumulativeInterest = currentTime
+        .sub(collateralCustody.nativeObject.borrowRateState.lastUpdate)
+        .mul(collateralCustody.nativeObject.borrowRateState.currentRate)
+        .div(new BN(3_600));
+
+      cumulativeInterest.add(newCumulativeInterest);
+    }
+
+    let cumulativeInterestSnapshot =
+      position.nativeObject.cumulativeInterestSnapshot.low.add(
+        position.nativeObject.cumulativeInterestSnapshot.high.mul(
+          new BN(2).pow(new BN(64)),
+        ),
+      );
+
+    // Calculate position borrow fee
+    const positionInterest = cumulativeInterest.gt(cumulativeInterestSnapshot)
+      ? cumulativeInterest.sub(cumulativeInterestSnapshot)
+      : new BN(0);
+
+    return positionInterest
+      .mul(position.nativeObject.borrowSizeUsd)
+      .div(new BN(1000000000));
+  }
+
+  public calculatePositionPnL({
+    position,
+    tokenPrices,
+  }: {
+    position: PositionExtended;
+    tokenPrices: TokenPricesState;
+  }): {
+    profitUsd: number;
+    lossUsd: number;
+    borrowFeeUsd: number;
+  } | null {
+    const custody = this.getCustodyByPubkey(position.custody);
+    const collateralCustody = this.getCustodyByPubkey(
+      position.collateralCustody,
+    );
+
+    if (!custody || !collateralCustody) return null;
+
+    const exitPriceUi = tokenPrices[custody.tradeTokenInfo.symbol];
+    const collateralTokenPriceUi =
+      tokenPrices[collateralCustody.tokenInfo.symbol];
+
+    if (!exitPriceUi || !collateralTokenPriceUi) return null;
+
+    const exitPrice = uiToNative(exitPriceUi, PRICE_DECIMALS);
+    const entryPrice = position.nativeObject.price;
+
+    const exitFeeUsd = position.nativeObject.exitFeeUsd;
+    const interestUsd = this.calculatePositionBorrowFee({
+      position,
+      collateralCustody,
+    });
+
+    const unrealizedLossUsd = exitFeeUsd.add(interestUsd);
+
+    const { priceDiffProfit, priceDiffLoss } = (() => {
+      if (position.side === 'long') {
+        if (exitPrice.gt(entryPrice)) {
+          return {
+            priceDiffProfit: exitPrice.sub(entryPrice),
+            priceDiffLoss: new BN(0),
+          };
+        }
+
+        return {
+          priceDiffProfit: new BN(0),
+          priceDiffLoss: entryPrice.sub(exitPrice),
+        };
+      }
+
+      if (exitPrice.lt(entryPrice)) {
+        return {
+          priceDiffProfit: entryPrice.sub(exitPrice),
+          priceDiffLoss: new BN(0),
+        };
+      }
+
+      return {
+        priceDiffProfit: new BN(0),
+        priceDiffLoss: exitPrice.sub(entryPrice),
+      };
+    })();
+
+    if (priceDiffProfit.gt(new BN(0))) {
+      const potentialProfitUsd = position.nativeObject.sizeUsd
+        .mul(priceDiffProfit)
+        .div(entryPrice);
+
+      if (potentialProfitUsd.gte(unrealizedLossUsd)) {
+        const curProfitUsd = potentialProfitUsd.sub(unrealizedLossUsd);
+
+        const maxProfitUsd = new BN(Date.now()).lte(
+          position.nativeObject.openTime,
+        )
+          ? new BN(0)
+          : uiToNative(
+              collateralTokenPriceUi *
+                nativeToUi(
+                  position.nativeObject.lockedAmount,
+                  collateralCustody.tokenInfo.decimals,
+                ),
+              USD_DECIMALS,
+            );
+
+        return {
+          profitUsd: nativeToUi(
+            maxProfitUsd.lte(curProfitUsd) ? maxProfitUsd : curProfitUsd,
+            USD_DECIMALS,
+          ),
+          lossUsd: 0,
+          borrowFeeUsd: nativeToUi(interestUsd, USD_DECIMALS),
+        };
+      }
+
+      return {
+        profitUsd: 0,
+        lossUsd: nativeToUi(
+          unrealizedLossUsd.sub(potentialProfitUsd),
+          USD_DECIMALS,
+        ),
+        borrowFeeUsd: nativeToUi(interestUsd, USD_DECIMALS),
+      };
+    }
+
+    const potentialLossUsd = position.nativeObject.sizeUsd
+      .mul(priceDiffLoss)
+      .div(entryPrice)
+      .add(unrealizedLossUsd);
+
+    return {
+      profitUsd: 0,
+      lossUsd: nativeToUi(potentialLossUsd, USD_DECIMALS),
+      borrowFeeUsd: nativeToUi(interestUsd, USD_DECIMALS),
+    };
+  }
+
+  public calculateLiquidationPrice({
+    position,
+  }: {
+    position: PositionExtended;
+  }): number | null {
+    const custody = this.getCustodyByPubkey(position.custody);
+
+    if (!custody) return null;
+
+    if (!position.borrowFeeUsd) return null;
+
+    const entryPrice = position.nativeObject.price;
+
+    const unrealizedLossUsd = position.nativeObject.liquidationFeeUsd.add(
+      uiToNative(position.borrowFeeUsd, USD_DECIMALS),
+    );
+
+    const maxLossUsd = position.nativeObject.sizeUsd
+      .mul(new BN(10000))
+      .div(new BN(custody.nativeObject.pricing.maxLeverage))
+      .add(unrealizedLossUsd);
+
+    const marginUsd = position.nativeObject.collateralUsd;
+
+    // 10 decimals
+    let maxPriceDiffScaled = (
+      maxLossUsd.gte(marginUsd)
+        ? maxLossUsd.sub(marginUsd)
+        : marginUsd.sub(maxLossUsd)
+    ).mul(new BN(10000));
+
+    // 10 decimals
+    const positionSizeUsdScaled = position.nativeObject.sizeUsd.mul(
+      new BN(10000),
+    );
+
+    maxPriceDiffScaled = maxPriceDiffScaled
+      .mul(entryPrice)
+      .div(positionSizeUsdScaled);
+
+    if (position.side === 'long') {
+      if (maxLossUsd.gte(marginUsd)) {
+        return nativeToUi(entryPrice.add(maxPriceDiffScaled), PRICE_DECIMALS);
+      }
+
+      if (entryPrice.gt(maxPriceDiffScaled)) {
+        return nativeToUi(entryPrice.sub(maxPriceDiffScaled), PRICE_DECIMALS);
+      }
+
+      return 0;
+    }
+
+    if (maxLossUsd.gte(marginUsd)) {
+      if (entryPrice.gt(maxPriceDiffScaled)) {
+        return nativeToUi(entryPrice.sub(maxPriceDiffScaled), PRICE_DECIMALS);
+      }
+
+      return 0;
+    }
+
+    return nativeToUi(entryPrice.add(maxPriceDiffScaled), PRICE_DECIMALS);
+  }
+
   // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
   // DO NOT LOAD PNL OR LIQUIDATION PRICE
   public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
@@ -3854,8 +4079,6 @@ export class AdrenaClient {
         possiblePositionAddresses,
         'recent',
       )) as (Position | null)[];
-
-    console.log('Positions', positions);
 
     // Create extended positions
     return positions.reduce(
