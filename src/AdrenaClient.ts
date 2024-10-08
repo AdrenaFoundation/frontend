@@ -3848,7 +3848,7 @@ export class AdrenaClient {
     const currentTime = new BN(Date.now());
 
     // Calculate cumulative interest for the custody
-    let cumulativeInterest =
+    const cumulativeInterest =
       collateralCustody.nativeObject.borrowRateState.cumulativeInterest.low.add(
         collateralCustody.nativeObject.borrowRateState.cumulativeInterest.high.mul(
           new BN(2).pow(new BN(64)),
@@ -3866,7 +3866,7 @@ export class AdrenaClient {
       cumulativeInterest.add(newCumulativeInterest);
     }
 
-    let cumulativeInterestSnapshot =
+    const cumulativeInterestSnapshot =
       position.nativeObject.cumulativeInterestSnapshot.low.add(
         position.nativeObject.cumulativeInterestSnapshot.high.mul(
           new BN(2).pow(new BN(64)),

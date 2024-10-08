@@ -1,12 +1,13 @@
+import { PublicKey } from '@solana/web3.js';
+
+import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { Staking } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
 import RemainingTimeToDate from '../RemainingTimeToDate';
-import Button from '@/components/common/Button/Button';
-import { PublicKey } from '@solana/web3.js';
-import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 
 export default function CurrentStakingRoundTime({
   alpStakingAccount,
