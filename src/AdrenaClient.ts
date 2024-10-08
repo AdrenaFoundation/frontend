@@ -4550,7 +4550,7 @@ export class AdrenaClient {
 
       transaction.instructions.unshift(
         ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: 1,
+          microLamports: 1429, // Tailored to reach 1000 lamports fee for 700k units (our biggest IX)
         }),
         ComputeBudgetProgram.setComputeUnitLimit({
           units: 1000000, // Use a lot of units to avoid any issues during simulation
