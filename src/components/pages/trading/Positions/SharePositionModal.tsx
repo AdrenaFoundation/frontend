@@ -255,6 +255,7 @@ export default function SharePositionModal({
                 alt="Monster"
                 width={200}
                 loading="eager"
+                draggable="false"
                 className="opacity-50 ml-auto mt-[30px] hover:translate-y-[-10px] transition duration-300"
               />
             </div>

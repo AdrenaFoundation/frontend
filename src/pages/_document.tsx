@@ -5,11 +5,11 @@ export const metadata = {
   metadataBase: new URL('https://app.adrena.xyz/'),
   title: 'Adrena',
   description:
-    'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
+    'Trade at the speed of light with up to 100x leverage',
   openGraph: {
     title: 'Adrena',
     description:
-      'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
+      'Trade at the speed of light with up to 100x leverage',
     images:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/OG-nFshI7a1fxTEcp2L5XV8z9dormWh5w.png',
   },
@@ -17,7 +17,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Adrena',
     description:
-      'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
+      'Trade at the speed of light with up to 100x leverage',
     creator: '@adrenaprotocol',
     images:
       'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/OG-nFshI7a1fxTEcp2L5XV8z9dormWh5w.png',
