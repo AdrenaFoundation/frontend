@@ -245,11 +245,11 @@ export default function Stake({
 
   const handleUpgradeLockedStake = async ({
     lockedStake,
-    updatedDuration,
+    upgradedDuration: updatedDuration,
     additionalAmount,
   }: {
     lockedStake: LockedStakeExtended;
-    updatedDuration?: AdxLockPeriod | AlpLockPeriod;
+    upgradedDuration?: AdxLockPeriod | AlpLockPeriod;
     additionalAmount?: number;
   }) => {
     if (!owner) {

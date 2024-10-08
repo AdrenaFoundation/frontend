@@ -106,7 +106,6 @@ export default function StakeOverview({
     };
   }, [roundPassed, stakingAccount]);
 
-
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(sortConfig));
   }, [sortConfig, storageKey]);
