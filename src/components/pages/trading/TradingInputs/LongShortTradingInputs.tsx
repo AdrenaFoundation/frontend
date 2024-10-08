@@ -456,13 +456,14 @@ export default function LongShortTradingInputs({
           />
           <span className="text-sm" >
             Short position have a max PnL of 100%, equivalent to the borrowed USDC. <br />More about the peer2pool perp model
-            <Link href="https://docs.adrena.xyz/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider" className="underline ml-1 text-sm">
+            <Link href="https://docs.adrena.xyz/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider" className="underline ml-1 text-sm" target='_blank'>
               in the docs
             </Link>
             .
           </span>
         </div>
       )}
+
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
 
