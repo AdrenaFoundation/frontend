@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -443,8 +444,25 @@ export default function LongShortTradingInputs({
   return (
     <div
       className={twMerge('relative flex flex-col sm:pb-2', className)}
-    // ref={componentRef}
     >
+      {side === 'short' && (
+        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+          <Image
+            className="opacity-60 absolute left-3 top-auto bottom-auto"
+            src={infoIcon}
+            height={16}
+            width={16}
+            alt="Info icon"
+          />
+          <span className="text-sm" >
+            Short position have a max PnL of 100%, equivalent to the borrowed USDC. <br />More about the peer2pool perp model
+            <Link href="https://docs.adrena.xyz/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider" className="underline ml-1 text-sm">
+              in the docs
+            </Link>
+            .
+          </span>
+        </div>
+      )}
       <div className="flex w-full justify-between items-center sm:mt-1 sm:mb-1">
         <h5 className="ml-4">Inputs</h5>
 
