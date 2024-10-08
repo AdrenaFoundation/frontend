@@ -452,6 +452,10 @@ export async function getTokenAccountBalanceNullable(
   }
 }
 
+export function sleep(timeInMs: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, timeInMs));
+}
+
 // Make sure the WSOL ATA is created and having enough tokens
 export async function createPrepareWSOLAccountInstructions({
   amount,

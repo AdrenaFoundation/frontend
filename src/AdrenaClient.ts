@@ -65,6 +65,7 @@ import {
   isAccountInitialized,
   nativeToUi,
   parseTransactionError,
+  sleep,
   u128SplitToBN,
   uiToNative,
 } from './utils';
@@ -4589,11 +4590,17 @@ export class AdrenaClient {
     );
 
     try {
-      result = await this.connection.confirmTransaction({
-        blockhash: latestBlockHash.blockhash,
-        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-        signature: txHash,
-      });
+      const d = Date.now();
+      result = await this.connection.confirmTransaction(
+        {
+          blockhash: latestBlockHash.blockhash,
+          lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+          signature: txHash,
+        },
+        'processed',
+      );
+
+      console.log('confirmTransaction took', Date.now() - d, 'to confirm tx');
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
       adrenaError.setTxHash(txHash);
