@@ -5,11 +5,15 @@ import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import useStakingAccount from '@/hooks/useStakingAccount';
-import { DEFAULT_LOCKED_STAKE_LOCK_DURATION, LIQUID_STAKE_LOCK_DURATION } from '@/pages/stake';
+import {
+  DEFAULT_LOCKED_STAKE_LOCK_DURATION,
+  LIQUID_STAKE_LOCK_DURATION,
+} from '@/pages/stake';
 import { AlpLockPeriod, LockedStakeExtended } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -63,17 +67,19 @@ export default function StakeOverview({
 }) {
   const isALP = token === 'ALP';
   const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
-  const stakingAccount = useStakingAccount(
+  const { stakingAccount, triggerReload } = useStakingAccount(
     isALP ? window.adrena.client.lpTokenMint : window.adrena.client.lmTokenMint,
   );
   const [isClaimingRewards, setIsClaimingRewards] = useState(false);
   const [sortConfig, setSortConfig] = useState<SortConfig>(() => {
     const savedConfig = localStorage.getItem(storageKey);
-    return savedConfig ? JSON.parse(savedConfig) : {
-      size: 'desc',
-      duration: 'asc',
-      lastClicked: 'size',
-    };
+    return savedConfig
+      ? JSON.parse(savedConfig)
+      : {
+        size: 'desc',
+        duration: 'asc',
+        lastClicked: 'size',
+      };
   });
 
   useEffect(() => {
@@ -101,6 +107,27 @@ export default function StakeOverview({
   const getEndDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+
+  const triggerResolveStakingRound = async () => {
+    const notification = MultiStepNotification.newForRegularTransaction(
+      `Resolve ${isALP ? 'ALP' : 'ADX'} Staking Round`,
+    ).fire();
+
+    try {
+      await window.adrena.client.resolveStakingRound({
+        stakedTokenMint: isALP
+          ? window.adrena.client.lpTokenMint
+          : window.adrena.client.lmTokenMint,
+        notification,
+      });
+
+      setTimeout(() => {
+        triggerReload();
+      }, 0);
+    } catch (error) {
+      console.error('error', error);
+    }
   };
 
   return (
@@ -195,7 +222,12 @@ export default function StakeOverview({
               title={isClaimingRewards ? 'Claiming...' : 'Claim'}
               className="px-5 ml-auto w-[9em]"
               onClick={handleClaim}
-              disabled={userPendingUsdcRewards + userPendingAdxRewards + pendingGenesisAdxRewards <= 0}
+              disabled={
+                userPendingUsdcRewards +
+                userPendingAdxRewards +
+                pendingGenesisAdxRewards <=
+                0
+              }
             />
           </div>
 
@@ -223,7 +255,9 @@ export default function StakeOverview({
                 <div className="flex justify-between">
                   <span className="text-txtfade">
                     LM rewards
-                    <span className="text-txtfade "> (see
+                    <span className="text-txtfade ">
+                      {' '}
+                      (see
                       <Link
                         href={
                           isALP
@@ -261,8 +295,8 @@ export default function StakeOverview({
                             days of the protocol. The amount is proportional to
                             your participation in the Genesis Liquidity
                             campaign. <br />
-                            <br /> Thank you for being an early supporter of
-                            the protocol! 🎊 🎁
+                            <br /> Thank you for being an early supporter of the
+                            protocol! 🎊 🎁
                           </p>
                         }
                         placement="auto"
@@ -353,6 +387,20 @@ export default function StakeOverview({
                 </div>
               </div>
             </div>
+
+            {stakingAccount &&
+              getNextStakingRoundStartTime(
+                stakingAccount.currentStakingRound.startTime,
+              ).getTime() /
+              1000 <
+              0 ? (
+              <Button
+                variant="outline"
+                className="text-xs"
+                title="Trigger Resolve Staking Round"
+                onClick={() => triggerResolveStakingRound()}
+              />
+            ) : null}
           </div>
         </div>
 
@@ -473,8 +521,9 @@ export default function StakeOverview({
                       size="sm"
                       title="Unstake"
                       className={twMerge(
-                        "px-5",
-                        (!totalLiquidStaked || totalLiquidStaked <= 0) && "opacity-50 cursor-not-allowed"
+                        'px-5',
+                        (!totalLiquidStaked || totalLiquidStaked <= 0) &&
+                        'opacity-50 cursor-not-allowed',
                       )}
                       onClick={handleClickOnRedeem}
                       disabled={!totalLiquidStaked || totalLiquidStaked <= 0}

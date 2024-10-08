@@ -463,8 +463,12 @@ export default function Stake({
     setAmount(Number(value));
   };
 
-  const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
-  const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
+  const { stakingAccount: alpStakingAccount } = useStakingAccount(
+    window.adrena.client.lpTokenMint,
+  );
+  const { stakingAccount: adxStakingAccount } = useStakingAccount(
+    window.adrena.client.lmTokenMint,
+  );
 
   const nextStakingRoundTimeAlp = alpStakingAccount
     ? getNextStakingRoundStartTime(

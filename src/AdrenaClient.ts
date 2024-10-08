@@ -4270,6 +4270,48 @@ export class AdrenaClient {
     return this.simulateInstructions<BN>([instruction], 'BN');
   }
 
+  public async resolveStakingRound({
+    stakedTokenMint,
+    notification,
+  }: {
+    stakedTokenMint: PublicKey;
+    notification: MultiStepNotification;
+  }) {
+    if (this.adrenaProgram === null) {
+      return null;
+    }
+
+    const connectedWallet = (this.adrenaProgram.provider as AnchorProvider)
+      .wallet.publicKey;
+
+    const staking = this.getStakingPda(stakedTokenMint);
+    const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+    const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
+
+    const transaction = await this.adrenaProgram.methods
+      .resolveStakingRound()
+      .accountsStrict({
+        cortex: AdrenaClient.cortexPda,
+        payer: connectedWallet,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        feeRedistributionMint: this.cortex?.feeRedistributionMint,
+        lmTokenMint: this.lmTokenMint,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        caller: connectedWallet,
+        adrenaProgram: this.adrenaProgram.programId,
+        stakingRewardTokenVault,
+        stakingLmRewardTokenVault,
+        staking,
+        stakingStakedTokenVault,
+      })
+      .transaction();
+
+    return this.signAndExecuteTx({ transaction, notification });
+  }
+
   /*
    * UTILS
    */
@@ -4408,6 +4450,8 @@ export class AdrenaClient {
               retry + 1,
             );
           }, 50);
+        } else {
+          reject(err);
         }
       });
   }
