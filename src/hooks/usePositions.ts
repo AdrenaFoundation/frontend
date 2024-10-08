@@ -32,6 +32,7 @@ export default function usePositions(): {
       console.log('Error loading positions', e, String(e));
       throw e;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet]);
 
   const calculatePnLandLiquidationPrice = useCallback(
