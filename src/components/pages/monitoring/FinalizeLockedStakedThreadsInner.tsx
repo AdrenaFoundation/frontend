@@ -4,9 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import Loader from '@/components/Loader/Loader';
 import useSablierFinalizeLockedStakedThreads from '@/hooks/useSablierFinalizeLockedStakedThreads';
 
-import warningImg from '../../../../public/images/Icons/warning.png';
 import refreshIcon from '../../../../public/images/refresh.png';
-import NumberInfo from './NumberInfo';
 import OnchainAccountInfo from './OnchainAccountInfo';
 import RemainingTimeToDate from './RemainingTimeToDate';
 import Table from './Table';
@@ -28,7 +26,7 @@ export default function FinalizeLockedStakedThreadsInner() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-[20em]">
       <Image
         className={twMerge(
           'absolute w-auto h-[1em] top-4 right-4 opacity-40',
@@ -50,10 +48,11 @@ export default function FinalizeLockedStakedThreadsInner() {
 
         <Table
           rowHovering={true}
-          className="mt-4"
-          rowTitleWidth="20%"
-          columnsTitles={['Funding', 'Paused', 'Until call']}
+          className="mt-4 w-full"
+          rowTitleWidth="50%"
+          columnsTitles={['Until call']}
           pagination={true}
+          nbItemPerPage={15}
           nbItemPerPageWhenBreakpoint={3}
           data={
             threads?.map((thread) => ({
@@ -67,33 +66,6 @@ export default function FinalizeLockedStakedThreadsInner() {
                 </div>
               ),
               values: [
-                <div className="flex" key="funding">
-                  {thread.funding !== null && thread.funding < 0.0175 ? (
-                    <Image
-                      className="w-auto h-[1.5em] mr-1"
-                      src={warningImg}
-                      alt="Error icon"
-                    />
-                  ) : null}
-
-                  <NumberInfo denomination="SOL" value={thread.funding} />
-                </div>,
-
-                <div className="flex" key="call">
-                  {thread.nativeObject.paused ? (
-                    <div className="flex">
-                      <Image
-                        className="w-auto h-[1.5em] mr-1"
-                        src={warningImg}
-                        alt="Error icon"
-                      />
-                      <span>Yes</span>
-                    </div>
-                  ) : (
-                    'No'
-                  )}
-                </div>,
-
                 <div className="flex" key="call">
                   {thread.nextTheoreticalExecutionDate ? (
                     <RemainingTimeToDate

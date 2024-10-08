@@ -214,7 +214,7 @@ export default function StopLossTakeProfit({
       MultiStepNotification.newForRegularTransaction('TP/SL').fire();
 
     try {
-      await window.adrena.client.signAndExecuteTx(transaction, notification);
+      await window.adrena.client.signAndExecuteTx({ transaction, notification });
 
       triggerPositionsReload();
       triggerUserProfileReload();

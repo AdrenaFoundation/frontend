@@ -26,7 +26,7 @@ export default function FinalizeLockedStakedThreads({
           />
         </>
       }
-      className="w-[37em] grow relative"
+      className="w-[24em] relative"
       titleClassName={twMerge('flex', titleClassName)}
     >
       <div
