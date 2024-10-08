@@ -1606,21 +1606,6 @@ export class AdrenaClient {
     if (!usdcTokenPrice)
       throw new Error(`needs find ${usdcToken.symbol} price to calculate fees`);
 
-    console.log(
-      'Call get info',
-      JSON.stringify(
-        {
-          mint: tokenB.mint.toBase58(),
-          collateralMint: tokenA.mint.toBase58(),
-          collateralAmount: collateralAmount.toString(),
-          leverage: leverage.toString(),
-          side,
-        },
-        null,
-        2,
-      ),
-    );
-
     const info = await this.getOpenPositionWithSwapAmountAndFees({
       mint: tokenB.mint,
       collateralMint: tokenA.mint,
@@ -1630,14 +1615,6 @@ export class AdrenaClient {
     });
 
     if (info === null) throw new Error('cannot calculate fees');
-
-    console.log('Info:', {
-      collateralAmount: collateralAmount.toString(),
-    });
-    console.log(
-      'Info:',
-      Object.entries(info).map(([k, v]) => [k, v.toString()]),
-    );
 
     const {
       size: nativeSize,
