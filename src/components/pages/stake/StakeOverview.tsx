@@ -82,6 +82,29 @@ export default function StakeOverview({
       };
   });
 
+  const [roundPassed, setRoundPassed] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!stakingAccount) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (getNextStakingRoundStartTime(
+        stakingAccount.currentStakingRound.startTime,
+      ).getTime() / 1000 < 0) {
+        setRoundPassed(true);
+      } else if (roundPassed) {
+        setRoundPassed(false);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [roundPassed, stakingAccount]);
+
+
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(sortConfig));
   }, [sortConfig, storageKey]);
@@ -388,12 +411,7 @@ export default function StakeOverview({
               </div>
             </div>
 
-            {stakingAccount &&
-              getNextStakingRoundStartTime(
-                stakingAccount.currentStakingRound.startTime,
-              ).getTime() /
-              1000 <
-              0 ? (
+            {roundPassed ? (
               <Button
                 variant="outline"
                 className="text-xs"
