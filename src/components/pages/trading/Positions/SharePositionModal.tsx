@@ -173,32 +173,33 @@ export default function SharePositionModal({
         />
         <ul className="flex flex-row gap-6 mt-[10px] sm:mt-7 relative z-10">
           <li className="flex flex-col gap-1">
-            <span className="text-txtfade text-sm font-semibold">
+            <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Entry Price
             </span>
-            <span className="archivo-black text-base sm:text-lg">
+            <span className="archivo-black text-sm sm:text-lg">
               {formatPriceInfo(position.price)}
             </span>
           </li>
           <li className="flex flex-col gap-1">
-            <span className="text-txtfade text-sm font-semibold">
+            <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Mark Price
             </span>
-            <span className="archivo-black text-base sm:text-lg">
+            <span className="archivo-black text-sm sm:text-lg">
               {formatPriceInfo(
                 tokenPrices[getTokenSymbol(position.token.symbol)],
               )}
             </span>
           </li>
           <li className="flex flex-col gap-1">
-            <span className="text-txtfade text-sm font-semibold">
+            <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Opened on
             </span>
-            <span className="archivo-black text-base sm:text-lg">
+            <span className="archivo-black text-sm sm:text-lg">
               {openedOn}
             </span>
           </li>
         </ul>
+
         <div className="absolute top-0 left-0 bg-[url('https://as2.ftcdn.net/v2/jpg/01/22/79/11/1000_F_122791110_aGlDtSjVieyAN8qbXl5q7M5SkSm2doV4.jpg')] w-full h-full opacity-5" />
 
         <motion.div
@@ -227,7 +228,7 @@ export default function SharePositionModal({
               src={OPTIONS[option].img}
               alt="Monster"
               loading="eager"
-              className="select-none w-[500px] sm:w-[200px] opacity-10 sm:opacity-100"
+              className="select-none w-[100px] sm:w-[200px] opacity-100"
               draggable="false"
             />
           </motion.div>

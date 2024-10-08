@@ -78,8 +78,8 @@ export default async function handler(request: NextRequest) {
                     tw="w-[150px] mt-[10px]"
                 />
 
-                <div tw="flex flex-row items-center relative">
-                    <div tw="flex flex-row items-center mt-[20px]">
+                <div tw="flex flex-row items-center relative mt-[20px]">
+                    <div tw="flex flex-row items-center">
                         <img
                             src={TOKEN_SYMBOL[symbol]}
                             alt="Adrena Logo"
