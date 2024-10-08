@@ -131,6 +131,8 @@ export default function PositionInfos({
                   if (!positionInfos || !tokenPriceB) return '-';
 
                   if (openedPosition) {
+                    if (!openedPosition.leverage) return '-';
+
                     const newLeverage =
                       (openedPosition.sizeUsd * openedPosition.leverage +
                         positionInfos.sizeUsd * leverage) /
@@ -248,7 +250,7 @@ export default function PositionInfos({
                       (openedPosition.sizeUsd *
                         openedPosition.liquidationPrice +
                         positionInfos.sizeUsd *
-                          positionInfos.liquidationPrice) /
+                        positionInfos.liquidationPrice) /
                       (openedPosition.sizeUsd + positionInfos.sizeUsd);
 
                     return (
@@ -296,9 +298,8 @@ export default function PositionInfos({
             <span className="text-sm flex">
               {openedPosition ? 'Increase' : 'Open'} Position Fees
               <InfoAnnotation
-                text={`Fees paid when ${
-                  openedPosition ? 'increasing' : 'opening'
-                } the position.`}
+                text={`Fees paid when ${openedPosition ? 'increasing' : 'opening'
+                  } the position.`}
                 className="mr-1 w-3"
               />
             </span>

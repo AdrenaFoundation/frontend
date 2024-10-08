@@ -405,7 +405,11 @@ export function parseTransactionError(
       return 'BlockhashNotFound';
     }
 
-    Sentry.captureException(err);
+    try {
+      Sentry.captureException(err);
+    } catch {
+      // ignore
+    }
 
     const idlError = adrenaProgram.idl.errors.find(({ code, name }) => {
       if (errName !== null && errName === name) return true;
@@ -446,6 +450,10 @@ export async function getTokenAccountBalanceNullable(
   } catch {
     return null;
   }
+}
+
+export function sleep(timeInMs: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, timeInMs));
 }
 
 // Make sure the WSOL ATA is created and having enough tokens
