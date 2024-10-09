@@ -91,14 +91,14 @@ export default function Header({
               key={page.name}
               target={page.external ? '_blank' : '_self'}
             >
-              <h5>{page.name}</h5>
+              <h5 className='whitespace-nowrap'>{page.name}</h5>
             </Link>
           );
         })}
       </div>
 
       <div className="flex flex-row items-center gap-2 sm:gap-3">
-        <Link href="/trade">
+        <Link href="/trade" className='w-[6.5em] ml-4'>
           <Button
             title="Trade now"
             disabled={pathname === '/trade'}

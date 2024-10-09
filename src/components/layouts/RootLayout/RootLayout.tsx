@@ -55,6 +55,7 @@ export default function RootLayout({
     { name: 'ALP', link: '/buy_alp' },
     { name: 'ADX', link: '/buy_adx' },
     { name: 'Docs', link: 'https://docs.adrena.xyz/', external: true },
+    { name: 'Governance', link: 'https://dao.adrena.xyz/', external: true },
   ]);
 
   useEffect(() => {

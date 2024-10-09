@@ -85,7 +85,7 @@ export default function BurgerMenu({
         <div className="flex flex-row items-center gap-3">
           <Button
             title="Trade now"
-            className="w-full"
+            className="w-full whitespace-nowrap"
             href={'/trade'}
             onClick={() => setIsOpen(false)}
           />
