@@ -86,20 +86,42 @@ export default function Table({
     nbItemPerPageWhenBreakpoint,
   ]);
 
+  let first = true;
+
   const paginationDiv = pagination ? (
     <div className="flex w-full justify-center align-center gap-2 mt-4 max-w-full flex-wrap">
-      {Array.from(Array(nbPages)).map((_, i) => (
-        <div
-          key={i + 1}
-          className={twMerge(
-            'cursor-pointer',
-            page === i + 1 ? 'text-primary' : 'text-txtfade',
-          )}
-          onClick={() => setPage(i + 1)}
-        >
-          {i + 1}
-        </div>
-      ))}
+      {Array.from(Array(nbPages)).map((_, i) => {
+        const hidden =
+          Math.abs(page - i - 1) > 3 && i !== 0 && i + 1 !== nbPages;
+
+        if (!hidden) first = true;
+
+        const shouldDisplay = hidden && first;
+
+        if (shouldDisplay) first = false;
+
+        return (
+          <>
+            {shouldDisplay ? (
+              <div key="..." className="cursor-pointer text-txtfade">
+                ..
+              </div>
+            ) : null}
+
+            <div
+              key={i + 1}
+              className={twMerge(
+                'cursor-pointer',
+                page === i + 1 ? 'text-primary' : 'text-txtfade',
+                hidden ? 'hidden' : '',
+              )}
+              onClick={() => setPage(i + 1)}
+            >
+              {i + 1}
+            </div>
+          </>
+        );
+      })}
     </div>
   ) : null;
 

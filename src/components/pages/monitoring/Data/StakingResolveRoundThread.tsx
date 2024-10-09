@@ -79,8 +79,8 @@ export default function StakingResolveRoundThread({
               ),
               value: (
                 <div className="md:ml-auto flex">
-                  {stakingResolveRoundCron.funding !== null &&
-                  stakingResolveRoundCron.funding < 1 ? (
+                  {stakingResolveRoundCron.funding !== null && typeof stakingResolveRoundCron.funding !== 'undefined' &&
+                    stakingResolveRoundCron.funding < 1 ? (
                     <Image
                       className="w-auto h-[1.5em] mr-1"
                       src={warningImg}
@@ -88,10 +88,10 @@ export default function StakingResolveRoundThread({
                     />
                   ) : null}
 
-                  <NumberInfo
+                  {stakingResolveRoundCron.funding !== null && typeof stakingResolveRoundCron.funding !== 'undefined' ? <NumberInfo
                     denomination="SOL"
                     value={stakingResolveRoundCron.funding}
-                  />
+                  /> : null}
                 </div>
               ),
             },

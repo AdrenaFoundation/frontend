@@ -54,8 +54,15 @@ export default function DetailedMonitoring({
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const cortex = useCortex();
   const vestRegistry = useVestRegistry();
-  const alpStakingAccount = useStakingAccount(window.adrena.client.lpTokenMint);
-  const adxStakingAccount = useStakingAccount(window.adrena.client.lmTokenMint);
+  const {
+    stakingAccount: alpStakingAccount,
+    triggerReload: triggerAlpStakingAccountReload,
+  } = useStakingAccount(window.adrena.client.lpTokenMint);
+  const {
+    stakingAccount: adxStakingAccount,
+    triggerReload: triggerAdxStakingAccountReload,
+  } = useStakingAccount(window.adrena.client.lmTokenMint);
+
   const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
     window.adrena.client.lpTokenMint,
   );
@@ -194,6 +201,8 @@ export default function DetailedMonitoring({
           bodyClassName={bodyClassName}
           alpStakingAccount={alpStakingAccount}
           adxStakingAccount={adxStakingAccount}
+          triggerAlpStakingAccountReload={triggerAlpStakingAccountReload}
+          triggerAdxStakingAccountReload={triggerAdxStakingAccountReload}
         />
       ) : null}
 

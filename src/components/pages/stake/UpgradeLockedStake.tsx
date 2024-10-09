@@ -164,9 +164,8 @@ export default function UpgradeLockedStake({
 
                 <span className="text-txtfade font-mono text-xs mr-1">
                   {walletBalance !== null
-                    ? `${formatNumber(walletBalance, 2)} ${
-                        lockedStake.tokenSymbol
-                      }`
+                    ? `${formatNumber(walletBalance, 2)} ${lockedStake.tokenSymbol
+                    }`
                     : '–'}
                 </span>
               </div>
@@ -254,14 +253,14 @@ export default function UpgradeLockedStake({
           size="lg"
           title={errorMessage ? errorMessage : '[U]pgrade'}
           disabled={!!errorMessage || (lockPeriod == actualDuration && !amount)}
-          onClick={() =>
-            handleUpgradeLockedStake({
+          onClick={(() => {
+            return handleUpgradeLockedStake({
               lockedStake,
               upgradedDuration:
                 lockPeriod !== actualDuration ? lockPeriod : undefined,
               additionalAmount: amount ?? undefined,
-            })
-          }
+            });
+          })}
         />
       </div>
     </div>

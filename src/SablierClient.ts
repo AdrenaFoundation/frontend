@@ -191,11 +191,7 @@ export default class SablierClient {
       thread.account.authority.equals(AdrenaClient.transferAuthorityAddress),
     );
 
-    const solBalances = await Promise.all(
-      filteredThreads.map((thread) => connection.getBalance(thread.publicKey)),
-    );
-
-    return filteredThreads.map((thread, index) => {
+    return filteredThreads.map((thread) => {
       // Hardcoded as we know the trigger type
       const nextTheoreticalExecutionDate =
         thread.account.trigger.timestamp?.unixTs.toNumber() ?? null;
@@ -210,7 +206,6 @@ export default class SablierClient {
           : null,
         paused: thread.account.paused,
         nativeObject: thread.account,
-        funding: nativeToUi(new BN(solBalances[index]), SOL_DECIMALS),
       };
     });
   }
