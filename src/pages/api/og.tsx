@@ -66,7 +66,7 @@ export default async function handler(request: NextRequest) {
     };
 
     const nFormat = new Intl.NumberFormat(undefined, {
-        minimumFractionDigits: symbol === 'BONK' ? 4 : 2,
+        minimumFractionDigits: symbol === 'BONK' ? 8 : 2,
     });
 
     return new ImageResponse(
@@ -112,26 +112,41 @@ export default async function handler(request: NextRequest) {
                 </p>
                 <ul tw="flex flex-row mt-[10px] mt-[120px]">
                     <li tw="flex flex-col">
-                        <span tw="opacity-50 text-[30px] font-semibold text-white">
+                        <span tw="opacity-50 text-[24px] font-semibold text-white">
                             Entry Price
                         </span>
-                        <span tw="archivo-black text-[40px] text-white mt-2">
+                        <span
+                            tw={twMerge(
+                                'archivo-black text-[36px] text-white mt-2',
+                                symbol === 'BONK' && 'text-[30px]',
+                            )}
+                        >
                             ${nFormat.format(price)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">
-                        <span tw="opacity-50 text-[30px] font-semibold text-white">
+                        <span tw="opacity-50 text-[24px] font-semibold text-white">
                             Mark Price
                         </span>
-                        <span tw="archivo-black text-[40px] text-white mt-2">
+                        <span
+                            tw={twMerge(
+                                'archivo-black text-[36px] text-white mt-2',
+                                symbol === 'BONK' && 'text-[30px]',
+                            )}
+                        >
                             ${nFormat.format(mark)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">
-                        <span tw="opacity-50 text-[30px] font-semibold text-white">
+                        <span tw="opacity-50 text-[24px] font-semibold text-white">
                             Opened on
                         </span>
-                        <span tw="archivo-black text-[40px] text-white mt-2">
+                        <span
+                            tw={twMerge(
+                                'archivo-black text-[36px] text-white mt-2',
+                                symbol === 'BONK' && 'text-[30px]',
+                            )}
+                        >
                             {openedOn}
                         </span>
                     </li>
