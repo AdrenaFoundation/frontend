@@ -333,17 +333,15 @@ export function addFailedTxNotification({
 export function getTxExplorer(txHash: string): string {
   const cluster = window.adrena.cluster;
 
-  return `https://explorer.solana.com/tx/${txHash}${
-    cluster === 'devnet' ? '?cluster=devnet' : ''
-  }`;
+  return `https://explorer.solana.com/tx/${txHash}${cluster === 'devnet' ? '?cluster=devnet' : ''
+    }`;
 }
 
 export function getAccountExplorer(address: PublicKey): string {
   const cluster = window.adrena.cluster;
 
-  return `https://explorer.solana.com/address/${address}${
-    cluster === 'devnet' ? '?cluster=devnet' : ''
-  }`;
+  return `https://explorer.solana.com/address/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
+    }`;
 }
 
 // Thrown as error when a transaction fails
@@ -351,7 +349,7 @@ export class AdrenaTransactionError {
   constructor(
     public txHash: string | null,
     public readonly errorString: string,
-  ) {}
+  ) { }
 
   public setTxHash(txHash: string): void {
     this.txHash = txHash;
@@ -536,25 +534,22 @@ export function formatMilliseconds(milliseconds: number): string {
   }
 
   if (hours || formatted.length) {
-    const h = `${hours < 0 ? '-' : ''}${
-      Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
-    }`;
+    const h = `${hours < 0 ? '-' : ''}${Math.abs(hours) < 10 ? `0${Math.abs(hours)}` : Math.abs(hours)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${h}h`;
   }
 
   if (minutes || formatted.length) {
-    const m = `${minutes < 0 ? '-' : ''}${
-      Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
-    }`;
+    const m = `${minutes < 0 ? '-' : ''}${Math.abs(minutes) < 10 ? `0${Math.abs(minutes)}` : Math.abs(minutes)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${m}m`;
   }
 
   if (seconds || formatted.length) {
-    const s = `${seconds < 0 ? '-' : ''}${
-      Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
-    }`;
+    const s = `${seconds < 0 ? '-' : ''}${Math.abs(seconds) < 10 ? `0${Math.abs(seconds)}` : Math.abs(seconds)
+      }`;
 
     formatted = `${formatted}${formatted.length ? ' ' : ''}${s}s`;
   }
@@ -741,3 +736,21 @@ export function formatDate(date: string | number | Date) {
 
   return `${month} ${day},${hour}:${minute}${ampm}`;
 }
+
+// Utility for encoding object to Base64 URL-safe
+export const encodeBase64Url = (params: {
+  [key: string]: string | number | boolean;
+}) => {
+  const json = JSON.stringify(params);
+  const base64 = Buffer.from(json).toString('base64');
+  // Convert Base64 to Base64 URL (replacing +, / with -, _ and removing =)
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+// Utility for decoding Base64 URL-safe back to object
+export const decodeBase64Url = (encodedParams: string) => {
+  // Convert Base64 URL to regular Base64 (replacing -, _ with +, /)
+  const base64 = encodedParams.replace(/-/g, '+').replace(/_/g, '/');
+  const json = Buffer.from(base64, 'base64').toString();
+  return JSON.parse(json);
+};
