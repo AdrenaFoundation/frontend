@@ -1,4 +1,3 @@
-import { createHash, randomBytes } from 'crypto';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
@@ -9,6 +8,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import {
+  encodeBase64Url,
   formatNumber,
   formatPriceInfo,
   getTokenImage,
@@ -55,13 +55,6 @@ export default function SharePositionModal({
     },
   ];
 
-  const createShortHash = () => {
-    const randomValue = randomBytes(16).toString('hex');
-    let hash = createHash('sha256').update(randomValue).digest('base64');
-    hash = hash.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    return hash.substring(0, 8);
-  };
-
   const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnlPercentage = position.pnl
@@ -77,51 +70,27 @@ export default function SharePositionModal({
     hour: 'numeric',
   });
 
+  const params = {
+    opt: option,
+    pnl: formatNumber(pnlPercentage ?? 0, 2),
+    side: position.side,
+    symbol: getTokenSymbol(position.token.symbol),
+    collateral: position.collateralUsd,
+    mark: formatNumber(
+      tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
+      2,
+    ),
+    price: position.price,
+    size: position.sizeUsd,
+    opened: Number(position.nativeObject.openTime) * 1000,
+  };
+
+  const encodedParams = encodeBase64Url(params);
+
+  const shortenedUrl = `/position?data=${encodedParams}`;
+
   const twitterText = `I just made ${formatNumber(pnlPercentage ?? 0, 2)}% on ${position.side
     } position on ${position.token.symbol}!`;
-
-  const twitterUrl = `https://frontend-devnet-git-pnlshare-adrena.vercel.app/position?opt=${option}&pnl=${formatNumber(
-    pnlPercentage ?? 0,
-    2,
-  )}&side=${position.side}&symbol=${getTokenSymbol(
-    position.token.symbol,
-  )}&collateral=${position.collateralUsd}&mark=${formatNumber(
-    tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
-    2,
-  )}&price=${position.price}&size=${position.sizeUsd}&opened=${Number(position.nativeObject.openTime) * 1000
-    }`;
-
-  const getTinyUrl = async (url: string) => {
-    const params = {
-      url,
-      domain: 'tinyurl.com',
-      alias: 'adrena-' + createShortHash(),
-      description: 'Adrena Protocol',
-    };
-
-    try {
-      const key = process.env.NEXT_PUBLIC_URL_KEY;
-      const response = await fetch('https://api.tinyurl.com/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${key}`,
-        },
-        body: JSON.stringify(params),
-      });
-
-      const { data } = await response.json();
-
-      window.open(
-        `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-          twitterText,
-        )}&url=${encodeURIComponent(data.tiny_url)}`,
-        '_blank',
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <div className="max-w-[600px] p-5">
@@ -194,9 +163,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Opened on
             </span>
-            <span className="archivo-black text-sm sm:text-lg">
-              {openedOn}
-            </span>
+            <span className="archivo-black text-sm sm:text-lg">{openedOn}</span>
           </li>
         </ul>
 
@@ -268,7 +235,10 @@ export default function SharePositionModal({
           size="lg"
           title="Share on"
           className="w-full mt-6 py-3 text-base"
-          onClick={() => getTinyUrl(twitterUrl)}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            twitterText,
+          )}&url=${encodeURIComponent(`
+          https://${window.location.hostname}/${shortenedUrl}`)}`}
           isOpenLinkInNewTab
           rightIcon={xIcon}
           rightIconClassName="w-4 h-4"

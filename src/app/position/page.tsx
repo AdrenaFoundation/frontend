@@ -1,4 +1,5 @@
 import type { Metadata, ResolvingMetadata } from 'next';
+import { headers } from 'next/headers';
 
 import Redirect from '../components/Redirect';
 
@@ -11,21 +12,28 @@ export async function generateMetadata(
   { searchParams }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  // read route params
-  const symbol = searchParams.symbol;
-  const pnl = searchParams.pnl;
-  const side = searchParams.side;
-  const sizeUsd = searchParams.size;
-  const collateralUsd = searchParams.collateral;
-  const price = searchParams.price;
-  const mark = searchParams.mark;
-  const openedOn = searchParams.opened;
-  const opt = searchParams.opt;
+  const data = searchParams.data as string | undefined;
 
-  // fetch data
-  const url = `https://frontend-devnet-git-pnlshare-adrena.vercel.app/api/og?opt=${opt}&pnl=${pnl ?? 0
-    }&side=${side}&symbol=${symbol}&collateral=${collateralUsd}&mark=${mark ?? 0
-    }&price=${price}&opened=${openedOn}&size=${sizeUsd}`;
+  if (!data) {
+    return {
+      title: 'Adrena',
+      description: 'Trade at the speed of light with up to 100x leverage',
+    };
+  }
+
+  const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
+  const json = Buffer.from(base64, 'base64').toString();
+
+  const { symbol, pnl, side, size, collateral, price, mark, opened, opt } =
+    JSON.parse(json);
+
+  const heads = headers();
+
+  const currentUrl = heads.get('host');
+
+  const url = `https://${currentUrl}/api/og?opt=${opt}&pnl=${pnl ?? 0
+    }&side=${side}&symbol=${symbol}&collateral=${collateral}&mark=${mark ?? 0
+    }&price=${price}&opened=${opened}&size=${size}`;
 
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || [];
