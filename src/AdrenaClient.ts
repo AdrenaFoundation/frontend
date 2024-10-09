@@ -3882,13 +3882,17 @@ export class AdrenaClient {
       position.collateralCustody,
     );
 
-    if (!custody || !collateralCustody) return null;
+    if (!custody || !collateralCustody) {
+      return null;
+    }
 
     const exitPriceUi = tokenPrices[custody.tradeTokenInfo.symbol];
     const collateralTokenPriceUi =
       tokenPrices[collateralCustody.tokenInfo.symbol];
 
-    if (!exitPriceUi || !collateralTokenPriceUi) return null;
+    if (!exitPriceUi || !collateralTokenPriceUi) {
+      return null;
+    }
 
     const exitPrice = uiToNative(exitPriceUi, PRICE_DECIMALS);
     const entryPrice = position.nativeObject.price;
@@ -3989,9 +3993,16 @@ export class AdrenaClient {
   }): number | null {
     const custody = this.getCustodyByPubkey(position.custody);
 
-    if (!custody) return null;
+    if (!custody) {
+      return null;
+    }
 
-    if (!position.borrowFeeUsd) return null;
+    if (
+      typeof position.borrowFeeUsd === 'undefined' ||
+      position.borrowFeeUsd === null
+    ) {
+      return null;
+    }
 
     const entryPrice = position.nativeObject.price;
 

@@ -90,7 +90,7 @@ export default function usePositions(): {
 
   useEffect(() => {
     calculatePnLandLiquidationPrice(positions);
-  }, [calculatePnLandLiquidationPrice]);
+  }, [calculatePnLandLiquidationPrice, positions]);
 
   return {
     positions,
