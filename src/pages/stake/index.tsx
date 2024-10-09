@@ -15,6 +15,7 @@ import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useClaimHistory from '@/hooks/useClaimHistory';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
@@ -62,7 +63,7 @@ export default function Stake({
 }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
+  const { claimsHistory } = useClaimHistory();
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
@@ -784,6 +785,7 @@ export default function Stake({
                 />
               </Modal>
             )}
+
           </AnimatePresence>
         </>
       </div>

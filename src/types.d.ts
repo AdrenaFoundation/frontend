@@ -441,3 +441,32 @@ export type PositionHistoryApi = {
 export type RechartsData = {
   [key: string]: number | string | boolean;
 };
+
+export type ClaimApi = {
+  claim_id: number;
+  rewards_adx: number;
+  rewards_usdc: number;
+  signature: string;
+  transaction_date: string; // ISO date-time string
+  created_at: string; // ISO date-time string
+  user_staking_mint: string;
+  // user_wallet?: string; // Uncomment if needed
+};
+
+export type ClaimHistoryApi = {
+  start_date: string; // ISO date-time string
+  end_date: string; // ISO date-time string
+  limit: number;
+  claims: ClaimApi[];
+};
+
+export type ClaimHistoryExtended = {
+  claim_id: number;
+  rewards_adx: number;
+  rewards_usdc: number;
+  signature: string;
+  transaction_date: Date;
+  created_at: Date;
+  user_staking_mint: string;
+  symbol: string;
+};
