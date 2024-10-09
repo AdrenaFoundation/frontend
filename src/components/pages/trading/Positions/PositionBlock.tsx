@@ -132,11 +132,10 @@ export default function PositionBlock({
           <FormatNumber
             nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
             format="currency"
-            className={`mr-0.5 font-bold text-${
-              (showAfterFees ? position.pnl : position.pnl - fees) > 0
+            className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
                 ? 'green'
                 : 'redbright'
-            }`}
+              }`}
             isDecimalDimmed={false}
           />
 
@@ -151,11 +150,10 @@ export default function PositionBlock({
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
-            className={`text-xs text-${
-              (showAfterFees ? position.pnl : position.pnl - fees) > 0
+            className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
                 ? 'green'
                 : 'redbright'
-            }`}
+              }`}
           />
 
           <label className="flex items-center ml-2 cursor-pointer">
@@ -181,9 +179,8 @@ export default function PositionBlock({
   const netValue = (
     <div className="flex flex-col items-center">
       <div
-        className={`flex w-full font-mono text-xxs text-txtfade ${
-          isSmallSize ? 'justify-center' : 'justify-end'
-        } items-center`}
+        className={`flex w-full font-mono text-xxs text-txtfade ${isSmallSize ? 'justify-center' : 'justify-end'
+          } items-center`}
       >
         Net value
       </div>
@@ -212,7 +209,7 @@ export default function PositionBlock({
     <>
       <div
         className={twMerge(
-          'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary',
+          'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary overflow-hidden',
           bodyClassName,
           borderColor,
         )}
@@ -339,8 +336,8 @@ export default function PositionBlock({
               tabIndex={0}
             >
               {position.takeProfitThreadIsSet &&
-              position.takeProfitLimitPrice &&
-              position.takeProfitLimitPrice > 0 ? (
+                position.takeProfitLimitPrice &&
+                position.takeProfitLimitPrice > 0 ? (
                 <FormatNumber
                   nb={position.takeProfitLimitPrice}
                   format="currency"
@@ -363,8 +360,8 @@ export default function PositionBlock({
               tabIndex={0}
             >
               {position.stopLossThreadIsSet &&
-              position.stopLossLimitPrice &&
-              position.stopLossLimitPrice > 0 ? (
+                position.stopLossLimitPrice &&
+                position.stopLossLimitPrice > 0 ? (
                 <FormatNumber
                   nb={position.stopLossLimitPrice}
                   format="currency"
@@ -377,13 +374,12 @@ export default function PositionBlock({
           </div>
         </div>
 
-        <div className="flex flex-wrap justify-center items-center w-full grow-0">
+        <div className="flex flex-col md:flex-row justify-center items-center w-full border-t">
           <Button
             size="xs"
-            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] grow w-[16em] h-8"
+            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
             title="Edit"
             rounded={false}
-            variant="outline"
             onClick={() => {
               triggerEditPositionCollateral(position);
             }}
@@ -391,35 +387,33 @@ export default function PositionBlock({
 
           <Button
             size="xs"
-            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] grow w-[16em] h-8"
+            className="text-txtfade border-bcolor border-t md:border-t-0 md:border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
             title="Take Profit & Stop Loss"
             rounded={false}
-            variant="outline"
             onClick={() => {
               triggerStopLossTakeProfit(position);
             }}
           />
-
-          <Button
-            size="xs"
-            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] grow w-[16em] h-8"
-            title="Close"
-            rounded={false}
-            variant="outline"
-            onClick={() => {
-              triggerClosePosition(position);
-            }}
-          />
-          <Button
-            size="xs"
-            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] grow w-[1em] h-8"
-            leftIcon={shareIcon}
-            rounded={false}
-            variant="outline"
-            onClick={() => {
-              setIsOpen(true);
-            }}
-          />
+          <div className="w-full flex flex-row">
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
+              title="Close"
+              rounded={false}
+              onClick={() => {
+                triggerClosePosition(position);
+              }}
+            />
+            <Button
+              size="xs"
+              className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-[90px]"
+              leftIcon={shareIcon}
+              rounded={false}
+              onClick={() => {
+                setIsOpen(true);
+              }}
+            />
+          </div>
         </div>
 
         {liquidable ? (
