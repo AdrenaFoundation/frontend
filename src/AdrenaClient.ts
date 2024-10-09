@@ -2726,6 +2726,12 @@ export class AdrenaClient {
       stakedTokenMint,
     );
 
+    builder.preInstructions([
+      ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1000000, // Use a lot of units to avoid any issues during simulation
+      }),
+    ]);
+
     const transaction = await builder.transaction();
 
     const messageV0 = new TransactionMessage({
@@ -4757,12 +4763,6 @@ export class AdrenaClient {
       this.getStakingLmRewardTokenVaultPda(staking);
 
     const preInstructions: TransactionInstruction[] = [];
-
-    preInstructions.push(
-      ComputeBudgetProgram.setComputeUnitLimit({
-        units: 1000000, // Use a lot of units to avoid any issues during simulation
-      }),
-    );
 
     if (
       this.connection &&
