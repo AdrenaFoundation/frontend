@@ -21,13 +21,16 @@ export default function usePositions(): {
     }
 
     try {
-      const positions = await window.adrena.client.loadUserPositions(
+      const oldPositions = positions;
+
+      const newPositions = await window.adrena.client.loadUserPositions(
         new PublicKey(wallet.walletAddress),
       );
 
-      calculatePnLandLiquidationPrice(positions);
+      // Provide oldPositions to avoid issues with tokenPrices not being updated due to React
+      calculatePnLandLiquidationPrice(newPositions, oldPositions);
 
-      setPositions(positions);
+      setPositions(newPositions);
     } catch (e) {
       console.log('Error loading positions', e, String(e));
       throw e;
@@ -36,20 +39,39 @@ export default function usePositions(): {
   }, [wallet]);
 
   const calculatePnLandLiquidationPrice = useCallback(
-    (positions: PositionExtended[] | null) => {
+    (
+      positions: PositionExtended[] | null,
+      oldPositions: PositionExtended[] | null,
+    ) => {
       if (!positions || !positions.length) {
-        return null;
+        return;
       }
 
       positions.forEach((position) => {
         // Calculate PnL
-        const pnl = window.adrena.client.calculatePositionPnL({
+        let pnl = window.adrena.client.calculatePositionPnL({
           position,
           tokenPrices,
         });
 
         if (pnl === null) {
-          return;
+          const oldPosition = oldPositions?.find(
+            (x) => x.pubkey.toBase58() === position.pubkey.toBase58(),
+          );
+
+          if (
+            !oldPosition ||
+            typeof oldPosition.profitUsd !== 'number' ||
+            typeof oldPosition.lossUsd !== 'number' ||
+            typeof oldPosition.borrowFeeUsd !== 'number'
+          )
+            return;
+
+          pnl = {
+            profitUsd: oldPosition.profitUsd,
+            lossUsd: oldPosition.lossUsd,
+            borrowFeeUsd: oldPosition.borrowFeeUsd,
+          };
         }
 
         const { profitUsd, lossUsd, borrowFeeUsd } = pnl;
@@ -66,6 +88,17 @@ export default function usePositions(): {
             position,
           },
         );
+
+        if (liquidationPrice === null) {
+          const oldPosition = oldPositions?.find(
+            (x) => x.pubkey.toBase58() === position.pubkey.toBase58(),
+          );
+
+          if (!oldPosition || typeof oldPosition.liquidationPrice !== 'number')
+            return;
+
+          position.liquidationPrice = oldPosition.liquidationPrice;
+        }
 
         if (liquidationPrice !== null) {
           position.liquidationPrice = liquidationPrice;
@@ -89,7 +122,7 @@ export default function usePositions(): {
   }, [loadPositions, trickReload, window.adrena.client.connection]);
 
   useEffect(() => {
-    calculatePnLandLiquidationPrice(positions);
+    calculatePnLandLiquidationPrice(positions, positions);
   }, [calculatePnLandLiquidationPrice, positions]);
 
   return {
