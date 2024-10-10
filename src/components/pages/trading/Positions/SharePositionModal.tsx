@@ -89,7 +89,7 @@ export default function SharePositionModal({
 
   const shortenedUrl = `/position?data=${encodedParams}`;
 
-  const twitterText = `I just made ${formatNumber(pnlPercentage ?? 0, 2)}% on ${position.side
+  const twitterText = `I just made ${pnlPercentage?.toFixed(2)}% on ${position.side
     } position on ${position.token.symbol}!`;
 
   return (
@@ -237,8 +237,9 @@ export default function SharePositionModal({
           className="w-full mt-6 py-3 text-base"
           href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
             twitterText,
-          )}&url=${encodeURIComponent(`
-          https://${window.location.hostname}/${shortenedUrl}`)}`}
+          )}&url=${encodeURIComponent(
+            `https://${window.location.hostname}/${shortenedUrl}`,
+          )}`}
           isOpenLinkInNewTab
           rightIcon={xIcon}
           rightIconClassName="w-4 h-4"
