@@ -41,6 +41,17 @@ export default function StakeLanding({
     token === 'ADX' ? handleClickOnStakeMoreADX() : handleClickOnStakeMoreALP();
   };
 
+  // exclude 0 days
+  const ALP_STAKE_MULTIPLIERS_EXCLUDE_0: {
+    [key: string]: { usdc: number; adx: number };
+  } = Object.entries(ALP_STAKE_MULTIPLIERS).reduce((acc, [key, value]) => {
+    if (key !== '0') {
+      acc[key] = value;
+    }
+    return acc;
+  }, {} as { [key: string]: { usdc: number; adx: number } });
+
+  console.log(ALP_STAKE_MULTIPLIERS_EXCLUDE_0);
   const TOKENS = [
     {
       name: 'ALP',
@@ -60,7 +71,7 @@ export default function StakeLanding({
         },
       ],
       days: ALP_LOCK_PERIODS,
-      benefits: ALP_STAKE_MULTIPLIERS,
+      benefits: ALP_STAKE_MULTIPLIERS_EXCLUDE_0,
       selectedDay: selectedAlpDays,
       setSelectedDay: setSelectedAlpDays,
     },
@@ -102,12 +113,11 @@ export default function StakeLanding({
         style={
           isMobile
             ? {
-                backgroundImage: `${
-                  token.name === 'ALP'
-                    ? 'radial-gradient(circle at bottom, #050F19 50%, #10112A 100%)'
-                    : 'radial-gradient(circle at bottom, #050F19 50%, #2A1010 100%)'
+              backgroundImage: `${token.name === 'ALP'
+                ? 'radial-gradient(circle at bottom, #050F19 50%, #10112A 100%)'
+                : 'radial-gradient(circle at bottom, #050F19 50%, #2A1010 100%)'
                 }`,
-              }
+            }
             : {}
         }
       >
@@ -190,11 +200,11 @@ export default function StakeLanding({
             ].concat(
               token.name === 'ADX'
                 ? {
-                    rowTitle: 'Voting power',
-                    values: Object.values(ADX_STAKE_MULTIPLIERS).map(
-                      (v) => `${v.votes}x`,
-                    ),
-                  }
+                  rowTitle: 'Voting power',
+                  values: Object.values(ADX_STAKE_MULTIPLIERS).map(
+                    (v) => `${v.votes}x`,
+                  ),
+                }
                 : [],
             )}
           />
