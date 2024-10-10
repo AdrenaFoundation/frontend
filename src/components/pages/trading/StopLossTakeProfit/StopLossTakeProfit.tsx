@@ -165,6 +165,9 @@ export default function StopLossTakeProfit({
         position.stopLossLimitPrice &&
         position.stopLossLimitPrice > 0;
 
+      const slippageMultiplier = position.side === 'long' ? 0.99 : 1.01;
+      const adjustedStopLossPrice = stopLossInput ? stopLossInput * slippageMultiplier : null;
+
       // Create Stop loss if not set or if it changed
       if (
         (!stopLossSet && stopLossInput !== null) ||
@@ -183,7 +186,7 @@ export default function StopLossTakeProfit({
             ))({
               position,
               stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
-              closePositionPrice: null, // TODO: Handle this one
+              closePositionPrice: new BN((adjustedStopLossPrice ? adjustedStopLossPrice : stopLossInput) * 10 ** PRICE_DECIMALS),
               userProfile: userProfile ? userProfile.pubkey : undefined,
             }),
         );
@@ -244,7 +247,7 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          SL/TP thread are executed at the limit price with 1% slippage.<br /> Custom slippage settings will be added in the near future, as for now sudden price movements and network conditions sometimes hinder execution.
+          Stop losses are executed at the limit price with up to 1% slippage.
         </div>
         <StyledSubSubContainer className="flex-col items-center justify-center gap-1 text-sm w-full p-4">
           <div className="flex w-full justify-between">
