@@ -84,7 +84,6 @@ export default function Button({
         sizes[size],
         variants[variant],
         rounded ? 'rounded-full' : '',
-        className,
         disabled || onClickInProgress
           ? 'cursor-not-allowed pointer-events-none'
           : null,
@@ -93,6 +92,7 @@ export default function Button({
           ? variantsBgDisabledOpacity[variant]
           : variants[variant],
         'transition duration-300',
+        className,
       )}
       disabled={disabled || onClickInProgress}
       onClick={async () => {

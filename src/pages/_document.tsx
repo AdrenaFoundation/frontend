@@ -5,22 +5,22 @@ export const metadata = {
   metadataBase: new URL('https://app.adrena.xyz/'),
   title: 'Adrena',
   description:
-    'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
+    'Trade at the speed of light with up to 100x leverage',
   openGraph: {
     title: 'Adrena',
     description:
-      'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
+      'Trade at the speed of light with up to 100x leverage',
     images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/OG-nFshI7a1fxTEcp2L5XV8z9dormWh5w.png',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Adrena',
     description:
-      'Get bonus $ADX for being first to seed liquidity to the Adrena Liquidity Pool',
+      'Trade at the speed of light with up to 100x leverage',
     creator: '@adrenaprotocol',
     images:
-      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/landing-dax9mhh6ElWRptAOFpjGqIHrgoR69T.png',
+      'https://iyd8atls7janm7g4.public.blob.vercel-storage.com/OG-nFshI7a1fxTEcp2L5XV8z9dormWh5w.png',
   },
 } as const;
 
@@ -40,7 +40,7 @@ export default function Document() {
           crossOrigin=""
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=Archivo+Black&family=JetBrains+Mono:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500;600&display=swap"
           rel="stylesheet"
         />
 

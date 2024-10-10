@@ -9,6 +9,10 @@ module.exports = (phase, { defaultConfig }) => {
       tunnelRoute: '/api/webpack/sentry',
     },
 
+    experimental: {
+      appDir: true,
+    },
+
     async redirects() {
       return [
         {
