@@ -12,9 +12,10 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, UserProfileExtended } from '@/types';
-import { addNotification, formatPriceInfo, getTokenSymbol } from '@/utils';
+import { addNotification, formatPriceInfo, getTokenImage, getTokenSymbol } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
+import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import StopLossTakeProfitInput from './StopLossTakeProfitInput';
 
 export default function StopLossTakeProfit({
@@ -249,61 +250,46 @@ export default function StopLossTakeProfit({
           />
           Stop losses are executed at the limit price with up to 1% slippage.
         </div>
-        <StyledSubSubContainer className="flex-col items-center justify-center gap-1 text-sm w-full p-4">
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Mark Price</span>
+
+        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg mb-2">
+          <div className="w-full flex justify-between mt-2">
+            <div className="flex items-center">
+              <Image
+                src={getTokenImage(position.token)}
+                width={20}
+                height={20}
+                alt={`${getTokenSymbol(position.token.symbol)} logo`}
+                className="mr-2"
+              />
+              <div className="text-sm text-bold">{getTokenSymbol(position.token.symbol)} Price</div>
+            </div>
             <FormatNumber
               nb={markPrice}
               format="currency"
-              precision={position.token.symbol === 'BONK' ? 8 : undefined}
-              className="font-regular"
-              isDecimalDimmed={true}
+              className="text-sm text"
             />
           </div>
 
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-600">Liquidation Price</span>
+          <div className="w-full flex justify-between mt-2">
+            <div className="flex w-full justify-between">
+              <span className="text-sm text-gray-600">Liquidation Price</span>
 
-            <FormatNumber
-              nb={position.liquidationPrice}
-              format="currency"
-              precision={position.token.symbol === 'BONK' ? 8 : undefined}
-              className="text-orange font-regular"
-              isDecimalDimmed={false}
-            />
-          </div>
-
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-600">Entry Price</span>
-
-            <FormatNumber
-              nb={position.price}
-              format="currency"
-              precision={position.token.symbol === 'BONK' ? 8 : undefined}
-              isDecimalDimmed={true}
-              className="text-gray-100 font-regular"
-            />
-          </div>
-
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Take Profit</span>
-            <div className={takeProfitInput !== null ? 'text-blue' : ''}>
-              {formatPriceInfo(takeProfitInput)}
-            </div>
-          </div>
-
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Stop Loss</span>
-            <div className={stopLossInput !== null ? 'text-blue' : ''}>
-              {formatPriceInfo(stopLossInput)}
-            </div>
-          </div>
-
-          <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-600">Initial collateral</span>
-            <div>
               <FormatNumber
-                nb={position.collateralUsd}
+                nb={position.liquidationPrice}
+                format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                className="text-orange font-regular"
+                isDecimalDimmed={false}
+              />
+            </div>
+          </div>
+
+          <div className="w-full flex justify-between">
+            <div className="flex w-full justify-between">
+              <span className="text-sm text-gray-600">Entry Price</span>
+
+              <FormatNumber
+                nb={position.price}
                 format="currency"
                 precision={position.token.symbol === 'BONK' ? 8 : undefined}
                 isDecimalDimmed={true}
@@ -312,18 +298,45 @@ export default function StopLossTakeProfit({
             </div>
           </div>
 
+        </div>
+
+        <StyledSubSubContainer className="flex-col items-center justify-center text-sm w-full p-4">
+
           <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-600">Initial Leverage</span>
-            <FormatNumber
-              nb={position.sizeUsd / position.collateralUsd}
-              suffix="x"
-              className="text-xs self-center"
-              isDecimalDimmed={false}
-            />
+            <span className="text-sm text-gray-400">Take Profit</span>
+            <div className={takeProfitInput !== null ? 'text-blue' : ''}>
+
+              <FormatNumber
+                nb={takeProfitInput}
+                format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                className={twMerge(
+                  'text-sm text-regular',
+                  takeProfitInput !== null ? 'text-blue' : '',
+                )}
+                isDecimalDimmed={false}
+              />
+            </div>
           </div>
 
           <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-600">PnL</span>
+            <span className="text-sm text-gray-400">Stop Loss</span>
+            <div className={stopLossInput !== null ? 'text-blue' : ''}>
+              <FormatNumber
+                nb={stopLossInput}
+                format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                className={twMerge(
+                  'text-sm text-regular',
+                  stopLossInput !== null ? 'text-blue' : '',
+                )}
+                isDecimalDimmed={false}
+              />
+            </div>
+          </div>
+
+          <div className="flex w-full justify-between">
+            <span className="text-sm text-gray-400">PnL</span>
             <div
               className={twMerge(
                 'font-bold text-sm',
@@ -335,13 +348,37 @@ export default function StopLossTakeProfit({
               )}
             >
               {positionNetPnl > 0 ? '+' : positionNetPnl < 0 ? '−' : ''}
-              {formatPriceInfo(Math.abs(positionNetPnl))}
+
+              <FormatNumber
+                nb={Math.abs(positionNetPnl)}
+                format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                className={twMerge(
+                  'font-bold text-sm',
+                  positionNetPnl > 0
+                    ? 'text-green'
+                    : positionNetPnl < 0
+                      ? 'text-red'
+                      : 'text-gray-400',
+                )}
+                isDecimalDimmed={false}
+              />
             </div>
           </div>
 
           <div className="flex w-full justify-between">
             <span className="text-sm text-gray-400">Net Value</span>
-            <div>{formatPriceInfo(positionNetValue)}</div>
+            <>
+              <NetValueTooltip position={position}>
+                <span className="underline-dashed">
+                  <FormatNumber
+                    nb={positionNetValue}
+                    format="currency"
+                    className="text-sm text-regular"
+                  />
+                </span>
+              </NetValueTooltip>
+            </>
           </div>
         </StyledSubSubContainer>
       </div>
@@ -379,6 +416,6 @@ export default function StopLossTakeProfit({
           onClick={() => applyConfiguration()}
         />
       </div>
-    </div>
+    </div >
   );
 }

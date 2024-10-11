@@ -19,6 +19,7 @@ import infoIcon from '../../../../../public/images/Icons/info.svg';
 import warningIcon from '../../../../../public/images/Icons/warning.png';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import TradingInput from '../TradingInput/TradingInput';
+import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 
 // hardcoded in backend too
 const MIN_LEVERAGE = 1.1;
@@ -288,7 +289,7 @@ export default function EditPositionCollateral({
     }
   };
 
-  const rowStyle = 'w-full flex justify-between mt-2';
+  const rowStyle = 'w-full flex justify-between mt-0.5';
 
   const rightArrowElement = (
     <Image
@@ -313,10 +314,10 @@ export default function EditPositionCollateral({
   }
 
   return (
-    <div className={twMerge('flex flex-col gap-3 h-full w-[24em] pt-4', className)}>
+    <div className={twMerge('flex flex-col gap-2 h-full w-[24em] pt-4', className)}>
       <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
-          <div className={rowStyle}>
+          <div className="w-full flex justify-between mt-2">
             <div className="flex items-center">
               <Image
                 src={getTokenImage(position.token)}
@@ -334,7 +335,7 @@ export default function EditPositionCollateral({
             />
           </div>
 
-          <div className={rowStyle}>
+          <div className="w-full flex justify-between mt-2">
             <div className="text-sm text-gray-400">Current position size</div>
             <FormatNumber
               nb={position.sizeUsd}
@@ -348,7 +349,7 @@ export default function EditPositionCollateral({
 
       <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">
 
-        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
+        <div className="flex flex-col border p-4 bg-third rounded-lg">
 
           <div className={rowStyle}>
             <div className="text-sm">Collateral</div>
@@ -392,12 +393,15 @@ export default function EditPositionCollateral({
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Net Value</div>
 
-            <FormatNumber
-              nb={position.collateralUsd + (position.pnl ?? 0)}
-              format="currency"
-              className={`font-bold`}
-              isDecimalDimmed={true}
-            />
+            <NetValueTooltip position={position}>
+              <span className="underline-dashed">
+                <FormatNumber
+                  nb={position.collateralUsd + (position.pnl ?? 0)}
+                  format="currency"
+                  className="text-sm text-regular"
+                />
+              </span>
+            </NetValueTooltip>
           </div>
 
           <div className={rowStyle}>
