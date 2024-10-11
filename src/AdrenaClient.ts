@@ -20,6 +20,7 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from '@solana/web3.js';
+import { track } from '@vercel/analytics';
 
 import { Adrena } from '@/target/adrena';
 import AdrenaJson from '@/target/adrena.json';
@@ -74,7 +75,6 @@ import {
   u128SplitToBN,
   uiToNative,
 } from './utils';
-import { track } from '@vercel/analytics';
 
 export class AdrenaClient {
   public static programId = new PublicKey(
