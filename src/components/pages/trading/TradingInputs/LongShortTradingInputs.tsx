@@ -440,6 +440,16 @@ export default function LongShortTradingInputs({
   const isLeverageIncreased =
     currentLeverage !== null && newOverallLeverage > currentLeverage;
 
+  const weightedAverageEntryPrice = openedPosition && positionInfos
+    ? (openedPosition.sizeUsd * openedPosition.price + positionInfos.sizeUsd * positionInfos.entryPrice) /
+    (openedPosition.sizeUsd + positionInfos.sizeUsd)
+    : positionInfos?.entryPrice ?? 0;
+
+  const weightedAverageLiquidationPrice = openedPosition && positionInfos
+    ? (openedPosition.sizeUsd * (openedPosition.liquidationPrice ?? 0) + positionInfos.sizeUsd * positionInfos.liquidationPrice) /
+    (openedPosition.sizeUsd + positionInfos.sizeUsd)
+    : positionInfos?.liquidationPrice ?? 0;
+
   return (
     <div
       className={twMerge('relative flex flex-col sm:pb-2', className)}
@@ -703,13 +713,12 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={positionInfos.entryPrice}
+                      nb={weightedAverageEntryPrice}
                       format="currency"
                       className="text-lg"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                     />
-
-                    {openedPosition ? (
+                    {openedPosition && (
                       <FormatNumber
                         nb={openedPosition.price}
                         format="currency"
@@ -717,7 +726,7 @@ export default function LongShortTradingInputs({
                         isDecimalDimmed={false}
                         precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                       />
-                    ) : null}
+                    )}
                   </TextExplainWrapper>
 
                   <div className="h-full w-[1px] bg-gray-800" />
@@ -727,7 +736,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={positionInfos.liquidationPrice}
+                      nb={weightedAverageLiquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
