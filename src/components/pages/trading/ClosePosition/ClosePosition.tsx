@@ -234,7 +234,7 @@ export default function ClosePosition({
           <div className="text-sm text-gray-400">Current Leverage</div>
 
           <FormatNumber
-            nb={position.leverage}
+            nb={position.currentLeverage}
             prefix="x"
             className="text-gray-400"
           />

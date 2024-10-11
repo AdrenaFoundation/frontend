@@ -64,9 +64,9 @@ export default function EditPositionCollateral({
 
   const walletBalance: number | null =
     walletTokenBalances?.[
-      position.side === 'long'
-        ? position.token.symbol
-        : position.collateralToken.symbol
+    position.side === 'long'
+      ? position.token.symbol
+      : position.collateralToken.symbol
     ] ?? null;
 
   const [underLeverage, setUnderLeverage] = useState<boolean>(false);
@@ -120,12 +120,12 @@ export default function EditPositionCollateral({
       await (position.side === 'long'
         ? window.adrena.client.removeCollateralLong.bind(window.adrena.client)
         : window.adrena.client.removeCollateralShort.bind(
-            window.adrena.client,
-          ))({
-        position,
-        collateralUsd: uiToNative(input, USD_DECIMALS),
-        notification,
-      });
+          window.adrena.client,
+        ))({
+          position,
+          collateralUsd: uiToNative(input, USD_DECIMALS),
+          notification,
+        });
 
       triggerPositionsReload();
     } catch (error) {
@@ -169,25 +169,25 @@ export default function EditPositionCollateral({
     (async () => {
       const liquidationPrice = await (selectedAction === 'deposit'
         ? window.adrena.client.getPositionLiquidationPrice({
-            position,
-            addCollateral: uiToNative(
-              input,
-              position.side === 'long'
-                ? position.token.decimals
-                : position.collateralToken.decimals,
-            ),
-            removeCollateral: new BN(0),
-          })
+          position,
+          addCollateral: uiToNative(
+            input,
+            position.side === 'long'
+              ? position.token.decimals
+              : position.collateralToken.decimals,
+          ),
+          removeCollateral: new BN(0),
+        })
         : window.adrena.client.getPositionLiquidationPrice({
-            position,
-            addCollateral: new BN(0),
-            removeCollateral: uiToNative(
-              input / markCollateralPrice,
-              position.side === 'long'
-                ? position.token.decimals
-                : position.collateralToken.decimals,
-            ),
-          }));
+          position,
+          addCollateral: new BN(0),
+          removeCollateral: uiToNative(
+            input / markCollateralPrice,
+            position.side === 'long'
+              ? position.token.decimals
+              : position.collateralToken.decimals,
+          ),
+        }));
 
       // Verify that information is not outdated
       // If loaderCounter doesn't match it means
@@ -472,9 +472,8 @@ export default function EditPositionCollateral({
               nb={position.pnl && markPrice ? position.pnl : null}
               prefix={position.pnl && position.pnl > 0 ? '+' : ''}
               format="currency"
-              className={`font-bold text-${
-                position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-              }`}
+              className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                }`}
               isDecimalDimmed={false}
             />
           </div>
@@ -512,7 +511,7 @@ export default function EditPositionCollateral({
             <div className="text-sm">Current Leverage</div>
             <div className="flex items-center">
               <FormatNumber
-                nb={position.leverage}
+                nb={position.currentLeverage}
                 suffix="x"
                 className={input ? ' text-xs' : 'text-sm'}
                 isDecimalDimmed={false}
