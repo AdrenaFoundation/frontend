@@ -12,11 +12,14 @@ import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { nativeToUi, uiToNative } from '@/utils';
+import { getTokenSymbol, nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
+import infoIcon from '../../../../../public/images/Icons/info.svg';
+import warningIcon from '../../../../../public/images/Icons/warning.png';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import TradingInput from '../TradingInput/TradingInput';
+
 const LEVERAGE_OVERFLOW = 999;
 
 // use the counter to handle asynchronous multiple loading
@@ -55,11 +58,8 @@ export default function EditPositionCollateral({
     collateralUsd: number;
   } | null>();
 
-  const markPrice: number | null =
-    position.side === 'long'
-      ? tokenPrices[position.token.symbol]
-      : tokenPrices[position.collateralToken.symbol];
-  const markCollateralPrice: number | null =
+  const markPrice: number | null = tokenPrices[getTokenSymbol(position.token.symbol)];
+  const collateralPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
   const walletBalance: number | null =
@@ -71,6 +71,7 @@ export default function EditPositionCollateral({
 
   const [underLeverage, setUnderLeverage] = useState<boolean>(false);
   const [overLeverage, setOverLeverage] = useState<boolean>(false);
+  const [belowMinLeverage, setBelowMinLeverage] = useState(false);
 
   const executeBtnText = (() => {
     if (!input) return 'Enter an amount';
@@ -159,7 +160,7 @@ export default function EditPositionCollateral({
   };
 
   useEffect(() => {
-    if (!input || !markCollateralPrice) {
+    if (!input || !collateralPrice) {
       setLiquidationPrice(null);
       return;
     }
@@ -182,7 +183,7 @@ export default function EditPositionCollateral({
           position,
           addCollateral: new BN(0),
           removeCollateral: uiToNative(
-            input / markCollateralPrice,
+            input / collateralPrice,
             position.side === 'long'
               ? position.token.decimals
               : position.collateralToken.decimals,
@@ -216,11 +217,12 @@ export default function EditPositionCollateral({
   useEffect(() => {
     if (
       !input ||
-      !markCollateralPrice ||
+      !collateralPrice ||
       position.pnl === null ||
       typeof position.pnl === 'undefined'
     ) {
       setUpdatedInfos(null);
+      setBelowMinLeverage(false);
       return;
     }
 
@@ -229,29 +231,34 @@ export default function EditPositionCollateral({
 
     if (selectedAction === 'deposit') {
       updatedCollateralAmount =
-        position.collateralUsd / markCollateralPrice + input;
-      updatedCollateralUsd = updatedCollateralAmount * markCollateralPrice;
+        position.collateralUsd / collateralPrice + input;
+      updatedCollateralUsd = updatedCollateralAmount * collateralPrice;
     } else {
       updatedCollateralUsd = position.collateralUsd - input;
-
-      updatedCollateralAmount = updatedCollateralUsd / markCollateralPrice;
+      updatedCollateralAmount = updatedCollateralUsd / collateralPrice;
     }
 
     let updatedLeverage = position.sizeUsd / updatedCollateralUsd;
 
-    // Leverage overflow
-    if (updatedLeverage < 0) {
-      updatedLeverage = LEVERAGE_OVERFLOW;
-    }
+    if (updatedLeverage < 1.1) {
+      setBelowMinLeverage(true);
+      setUpdatedInfos(null);
+    } else {
+      setBelowMinLeverage(false);
+      // Leverage overflow - should never happen
+      if (updatedLeverage < 0) {
+        updatedLeverage = LEVERAGE_OVERFLOW;
+      }
 
-    setUpdatedInfos({
-      leverage: updatedLeverage,
-      collateral: updatedCollateralAmount,
-      collateralUsd: updatedCollateralUsd,
-    });
+      setUpdatedInfos({
+        leverage: updatedLeverage,
+        collateral: updatedCollateralAmount,
+        collateralUsd: updatedCollateralUsd,
+      });
+    }
   }, [
     input,
-    markCollateralPrice,
+    collateralPrice,
     position.collateralAmount,
     position.collateralUsd,
     position.pnl,
@@ -262,7 +269,7 @@ export default function EditPositionCollateral({
   const calculateCollateralPercentage = (percentage: number) =>
     Number(
       Number((position.collateralUsd * Number(percentage)) / 100).toFixed(
-        USD_DECIMALS,
+        2,
       ),
     );
 
@@ -294,7 +301,168 @@ export default function EditPositionCollateral({
   );
 
   return (
-    <div className={twMerge('flex flex-col gap-3 h-full w-[24em]', className)}>
+    <div className={twMerge('flex flex-col gap-3 h-full w-[24em] pt-4', className)}>
+      <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">{getTokenSymbol(position.token.symbol)} Price</div>
+            <FormatNumber
+              nb={markPrice}
+              format="currency"
+              className="text-gray-400"
+            />
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">Current position size</div>
+            <FormatNumber
+              nb={position.sizeUsd}
+              format="currency"
+              precision={2}
+              className="text-gray-400"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">
+
+        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
+
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">Net Value</div>
+
+            <FormatNumber
+              nb={position.collateralUsd + (position.pnl ?? 0)}
+              format="currency"
+              className={`font-bold`}
+              isDecimalDimmed={true}
+            />
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">PnL</div>
+
+            <FormatNumber
+              nb={position.pnl && markPrice ? position.pnl : null}
+              prefix={position.pnl && position.pnl > 0 ? '+' : ''}
+              format="currency"
+              className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
+                }`}
+              isDecimalDimmed={false}
+            />
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">Entry Price</div>
+
+            <FormatNumber
+              nb={position.price}
+              format="currency"
+              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              className="text-gray-400"
+            />
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">Initial Leverage</div>
+            <div className="flex items-center ">
+              <FormatNumber
+                nb={position.sizeUsd / position.collateralUsd}
+                suffix="x"
+                className="text-gray-400"
+                isDecimalDimmed={true}
+              />
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm">Current Leverage</div>
+            <div className="flex items-center">
+              <FormatNumber
+                nb={position.currentLeverage}
+                suffix="x"
+                className={input ? ' text-xs' : 'text-sm'}
+                isDecimalDimmed={true}
+              />
+
+              {input ? (
+                <>
+                  {rightArrowElement}
+
+                  {updatedInfos ? (
+                    updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
+                      <span className="text-sm ">Overflow</span>
+                    ) : (
+                      <FormatNumber nb={updatedInfos?.leverage} suffix="x" />
+                    )
+                  ) : (
+                    '-'
+                  )}
+                </>
+              ) : null}
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm">Collateral</div>
+
+            <div className="flex">
+              <div className="flex flex-col items-end justify-center">
+                <FormatNumber
+                  nb={position.collateralUsd}
+                  format="currency"
+                  className={input ? 'text-xs' : 'text-sm'}
+                />
+              </div>
+
+              {input ? (
+                <>
+                  {rightArrowElement}
+
+                  <div className="flex flex-col">
+                    <div className="flex flex-col items-end">
+                      <FormatNumber
+                        nb={updatedInfos?.collateralUsd}
+                        format="currency"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm">Liquidation Price</div>
+            <div className="flex items-center">
+              <FormatNumber
+                nb={position.liquidationPrice}
+                format="currency"
+                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                className={`${input ? 'text-xs' : 'text-sm'} text-orange`}
+                isDecimalDimmed={false}
+              />
+
+              {input ? (
+                <>
+                  {rightArrowElement}
+
+                  <FormatNumber
+                    nb={liquidationPrice}
+                    format="currency"
+                    precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                    className={`text-orange`}
+                    isDecimalDimmed={false}
+
+                  />
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <TabSelect
         wrapperClassName="h-12 flex items-center"
         selected={selectedAction}
@@ -311,6 +479,21 @@ export default function EditPositionCollateral({
 
       {selectedAction === 'deposit' ? (
         <>
+          {belowMinLeverage && (
+            <div className="flex flex-col text-sm ml-4 mr-4">
+              <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full pl-10">
+                <Image
+                  className="opacity-100 absolute left-3 top-auto bottom-auto"
+                  src={warningIcon}
+                  height={20}
+                  width={20}
+                  alt="Warning icon"
+                />
+                This action would take the leverage below the minimum of 1.1x. Please adjust your input.
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
             <TradingInput
               className="text-sm"
@@ -366,6 +549,40 @@ export default function EditPositionCollateral({
         </>
       ) : (
         <>
+          {/* Withdraw collateral info */}
+          <div className="flex flex-col text-sm ml-4 mr-4">
+            <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+              <Image
+                className="opacity-60 absolute left-3 top-auto bottom-auto"
+                src={infoIcon}
+                height={16}
+                width={16}
+                alt="Info icon"
+              />
+              <span className="text-sm" >
+                Withdrawn collateral will be received in {position.collateralToken.symbol}
+              </span>
+            </div>
+          </div>
+
+          {/* Check for min leverage*/}
+          {position.currentLeverage && position.currentLeverage < 1.1 ? (
+            <div className="flex flex-col text-sm ml-4 mr-4">
+              <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+                <Image
+                  className="opacity-60 absolute left-3 top-auto bottom-auto"
+                  src={infoIcon}
+                  height={16}
+                  width={16}
+                  alt="Info icon"
+                />
+                <span className="text-sm" >
+                  Your position is under the minimum leverage of 1.1x, you cannot deposit more collateral.
+                </span>
+              </div>
+            </div>
+          ) : null}
+
           <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
             <TradingInput
               className="text-sm"
@@ -381,8 +598,37 @@ export default function EditPositionCollateral({
                 // One token only
               }}
               onChange={setInput}
+              disabled={position.currentLeverage !== null && position.currentLeverage <= 1.1}
             />
           </div>
+
+
+          {position.currentLeverage && position.currentLeverage >= 1.1 ? null : (
+            <div className="flex flex-col gap-3 text-sm ml-4 mr-4">
+              {selectedAction === 'withdraw' ? (
+                <div className="bg-third flex justify-evenly p-1 rounded-lg border">
+                  <div
+                    className="text-md  hover:text-white cursor-pointer font-mono"
+                    onClick={() => setInput(calculateCollateralPercentage(25))}
+                  >
+                    25%
+                  </div>
+                  <div
+                    className="text-md  hover:text-white cursor-pointer font-mono"
+                    onClick={() => setInput(calculateCollateralPercentage(50))}
+                  >
+                    50%
+                  </div>
+                  <div
+                    className="text-md  hover:text-white cursor-pointer font-mono"
+                    onClick={() => setInput(calculateCollateralPercentage(75))}
+                  >
+                    75%
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
 
           <div className="text-sm text-txtfade ml-auto mr-4">
             <FormatNumber
@@ -394,178 +640,20 @@ export default function EditPositionCollateral({
             of collateral in the position
           </div>
         </>
-      )}
+      )
+      }
 
-      <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">
-        {selectedAction === 'withdraw' ? (
-          <div className="bg-third flex justify-evenly p-2 rounded-lg border">
-            <div
-              className="text-md  hover:text-white cursor-pointer font-mono"
-              onClick={() => setInput(calculateCollateralPercentage(25))}
-            >
-              25%
-            </div>
-            <div
-              className="text-md  hover:text-white cursor-pointer font-mono"
-              onClick={() => setInput(calculateCollateralPercentage(50))}
-            >
-              50%
-            </div>
-            <div
-              className="text-md  hover:text-white cursor-pointer font-mono"
-              onClick={() => setInput(calculateCollateralPercentage(75))}
-            >
-              75%
-            </div>
-          </div>
-        ) : null}
-
-        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
-          <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Size</div>
-
-            <FormatNumber
-              nb={position.sizeUsd}
-              format="currency"
-              className="text-gray-400"
-            />
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Entry Price</div>
-
-            <FormatNumber
-              nb={position.price}
-              format="currency"
-              precision={position.token.symbol === 'BONK' ? 8 : undefined}
-              className="text-gray-400"
-            />
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Mark Price</div>
-
-            <FormatNumber
-              nb={markPrice}
-              format="currency"
-              precision={position.token.symbol === 'BONK' ? 8 : undefined}
-              className="text-gray-400"
-            />
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Initial Leverage</div>
-            <div className="flex items-center ">
-              <FormatNumber
-                nb={position.sizeUsd / position.collateralUsd}
-                suffix="x"
-                className="text-gray-400"
-                isDecimalDimmed={true}
-              />
-            </div>
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm text-gray-400">PnL</div>
-
-            <FormatNumber
-              nb={position.pnl && markPrice ? position.pnl : null}
-              prefix={position.pnl && position.pnl > 0 ? '+' : ''}
-              format="currency"
-              className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                }`}
-              isDecimalDimmed={false}
-            />
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm">Collateral</div>
-
-            <div className="flex">
-              <div className="flex flex-col items-end justify-center">
-                <FormatNumber
-                  nb={position.collateralUsd}
-                  format="currency"
-                  className={input ? 'text-xs' : 'text-sm'}
-                />
-              </div>
-
-              {input ? (
-                <>
-                  {rightArrowElement}
-
-                  <div className="flex flex-col">
-                    <div className="flex flex-col items-end">
-                      <FormatNumber
-                        nb={updatedInfos?.collateralUsd}
-                        format="currency"
-                      />
-                    </div>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm">Current Leverage</div>
-            <div className="flex items-center">
-              <FormatNumber
-                nb={position.currentLeverage}
-                suffix="x"
-                className={input ? ' text-xs' : 'text-sm'}
-                isDecimalDimmed={false}
-              />
-
-              {input ? (
-                <>
-                  {rightArrowElement}
-
-                  {updatedInfos ? (
-                    updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
-                      <span className="text-sm ">Overflow</span>
-                    ) : (
-                      <FormatNumber nb={updatedInfos?.leverage} suffix="x" />
-                    )
-                  ) : (
-                    '-'
-                  )}
-                </>
-              ) : null}
-            </div>
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm">Liquidation Price</div>
-            <div className="flex items-center">
-              <FormatNumber
-                nb={position.liquidationPrice}
-                format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
-                className={input ? ' text-xs' : 'text-sm'}
-              />
-
-              {input ? (
-                <>
-                  {rightArrowElement}
-
-                  <FormatNumber nb={liquidationPrice} format="currency" />
-                </>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
 
       <Button
         className="mt-4 rounded-none font-boldy text-lg"
         size="lg"
         title={executeBtnText}
         disabled={
-          executeBtnText !== 'Deposit' && !executeBtnText.startsWith('Withdraw')
+          executeBtnText !== 'Deposit' && !executeBtnText.startsWith('Withdraw') || belowMinLeverage
         }
         onClick={() => handleExecute()}
       />
-    </div>
+    </div >
+
   );
 }
