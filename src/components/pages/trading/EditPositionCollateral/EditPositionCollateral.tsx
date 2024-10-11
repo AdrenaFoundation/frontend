@@ -76,6 +76,8 @@ export default function EditPositionCollateral({
 
   const maxInitialLeverage = window.adrena.client.getCustodyByPubkey(position.custody)?.maxInitialLeverage;
 
+  const positionNetValue = position.collateralUsd + (position.pnl ?? 0);
+
   const executeBtnText = (() => {
     if (selectedAction === 'deposit' && !walletBalance) return `No ${position.collateralToken.symbol} in wallet`;
     if (!input) return 'Enter an amount';
@@ -269,7 +271,7 @@ export default function EditPositionCollateral({
 
   const calculateCollateralPercentage = (percentage: number) =>
     Number(
-      Number((position.collateralUsd * Number(percentage)) / 100).toFixed(
+      Number((positionNetValue * Number(percentage)) / 100).toFixed(
         2,
       ),
     );
@@ -302,7 +304,7 @@ export default function EditPositionCollateral({
   );
 
   if (selectedAction === 'withdraw') {
-    const maxWithdrawal = position.collateralUsd;
+    const maxWithdrawal = positionNetValue;
     if (input !== null && input > maxWithdrawal) {
       setInput(maxWithdrawal);
     }
@@ -392,16 +394,34 @@ export default function EditPositionCollateral({
 
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Net Value</div>
+            <div className="flex items-center justify-end">
 
-            <NetValueTooltip position={position}>
-              <span className="underline-dashed">
-                <FormatNumber
-                  nb={position.collateralUsd + (position.pnl ?? 0)}
-                  format="currency"
-                  className="text-sm text-regular"
-                />
-              </span>
-            </NetValueTooltip>
+              <NetValueTooltip position={position}>
+                <span className="underline-dashed">
+                  <FormatNumber
+                    nb={positionNetValue}
+                    format="currency"
+                    className={input ? 'text-xs' : 'text-sm'}
+                  />
+                </span>
+              </NetValueTooltip>
+
+              {input ? (
+                <>
+                  {rightArrowElement}
+
+                  <div className="flex flex-col">
+                    <div className="flex flex-col items-end text-sm">
+                      <FormatNumber
+                        nb={positionNetValue - input}
+                        format="currency"
+                        className="text-sm text-regular"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </div>
           </div>
 
           <div className={rowStyle}>
@@ -665,7 +685,7 @@ export default function EditPositionCollateral({
 
           <div className="text-sm text-txtfade ml-auto mr-4">
             <FormatNumber
-              nb={position.collateralUsd}
+              nb={Math.min(positionNetValue, position.collateralUsd)}
               format="currency"
               className="inline text-sm text-txtfade"
               isDecimalDimmed={false}
