@@ -12,7 +12,7 @@ import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSelector } from '@/store/store';
 import { PositionExtended, Token } from '@/types';
-import { getTokenSymbol, nativeToUi, uiToNative } from '@/utils';
+import { getTokenImage, getTokenSymbol, nativeToUi, uiToNative } from '@/utils';
 
 import arrowRightIcon from '../../../../../public/images/arrow-right.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
@@ -305,11 +305,20 @@ export default function EditPositionCollateral({
       <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
           <div className={rowStyle}>
-            <div className="text-sm text-gray-400">{getTokenSymbol(position.token.symbol)} Price</div>
+            <div className="flex items-center">
+              <Image
+                src={getTokenImage(position.token)}
+                width={20}
+                height={20}
+                alt={`${getTokenSymbol(position.token.symbol)} logo`}
+                className="mr-2"
+              />
+              <div className="text-sm text-bold">{getTokenSymbol(position.token.symbol)} Price</div>
+            </div>
             <FormatNumber
               nb={markPrice}
               format="currency"
-              className="text-gray-400"
+              className="text-sm text-bold"
             />
           </div>
 
