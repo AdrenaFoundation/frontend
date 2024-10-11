@@ -65,7 +65,6 @@ import {
   isAccountInitialized,
   nativeToUi,
   parseTransactionError,
-  sleep,
   u128SplitToBN,
   uiToNative,
 } from './utils';

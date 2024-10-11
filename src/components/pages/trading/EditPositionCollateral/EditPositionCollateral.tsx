@@ -20,7 +20,8 @@ import warningIcon from '../../../../../public/images/Icons/warning.png';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import TradingInput from '../TradingInput/TradingInput';
 
-const LEVERAGE_OVERFLOW = 999;
+// hardcoded in backend too
+const MIN_LEVERAGE = 1.1;
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -53,7 +54,7 @@ export default function EditPositionCollateral({
   const debouncedInput = useDebounce(input);
 
   const [updatedInfos, setUpdatedInfos] = useState<{
-    leverage: number;
+    currentLeverage: number;
     collateral: number;
     collateralUsd: number;
   } | null>();
@@ -96,18 +97,20 @@ export default function EditPositionCollateral({
       return;
     }
 
-    if (updatedInfos && updatedInfos.leverage < 1) {
+    if (updatedInfos && updatedInfos.currentLeverage < MIN_LEVERAGE) {
       setUnderLeverage(true);
       setOverLeverage(false);
       return;
     }
 
-    if (updatedInfos && updatedInfos.leverage > 52) {
+
+    const maxLeverage = window.adrena.client.getCustodyByPubkey(position.custody)?.maxLeverage;
+    if (updatedInfos && maxLeverage && updatedInfos.currentLeverage > maxLeverage) {
       setUnderLeverage(false);
       setOverLeverage(true);
       return;
     }
-  }, [updatedInfos]);
+  }, [position.custody, updatedInfos]);
 
   const doRemoveCollateral = async () => {
     if (!input) return;
@@ -238,20 +241,16 @@ export default function EditPositionCollateral({
       updatedCollateralAmount = updatedCollateralUsd / collateralPrice;
     }
 
-    let updatedLeverage = position.sizeUsd / updatedCollateralUsd;
+    const updatedCurrentLeverage = position.sizeUsd / (updatedCollateralUsd + position.pnl);
 
-    if (updatedLeverage < 1.1) {
+    if (updatedCurrentLeverage < 1.1) {
       setBelowMinLeverage(true);
       setUpdatedInfos(null);
     } else {
       setBelowMinLeverage(false);
-      // Leverage overflow - should never happen
-      if (updatedLeverage < 0) {
-        updatedLeverage = LEVERAGE_OVERFLOW;
-      }
 
       setUpdatedInfos({
-        leverage: updatedLeverage,
+        currentLeverage: updatedCurrentLeverage,
         collateral: updatedCollateralAmount,
         collateralUsd: updatedCollateralUsd,
       });
@@ -399,15 +398,15 @@ export default function EditPositionCollateral({
                 <>
                   {rightArrowElement}
 
-                  {updatedInfos ? (
-                    updatedInfos.leverage === LEVERAGE_OVERFLOW ? (
-                      <span className="text-sm ">Overflow</span>
-                    ) : (
-                      <FormatNumber nb={updatedInfos?.leverage} suffix="x" />
-                    )
-                  ) : (
-                    '-'
-                  )}
+                  <div className="flex flex-col">
+                    <div className="flex flex-col items-end text-sm">
+                      {updatedInfos ? (
+                        <FormatNumber nb={updatedInfos?.currentLeverage} suffix="x" />
+                      ) : (
+                        '-'
+                      )}
+                    </div>
+                  </div>
                 </>
               ) : null}
             </div>
@@ -415,22 +414,19 @@ export default function EditPositionCollateral({
 
           <div className={rowStyle}>
             <div className="text-sm">Collateral</div>
-
-            <div className="flex">
-              <div className="flex flex-col items-end justify-center">
-                <FormatNumber
-                  nb={position.collateralUsd}
-                  format="currency"
-                  className={input ? 'text-xs' : 'text-sm'}
-                />
-              </div>
+            <div className="flex items-center justify-end">
+              <FormatNumber
+                nb={position.collateralUsd}
+                format="currency"
+                className={input ? 'text-xs' : 'text-sm'}
+              />
 
               {input ? (
                 <>
                   {rightArrowElement}
 
                   <div className="flex flex-col">
-                    <div className="flex flex-col items-end">
+                    <div className="flex flex-col items-end text-sm">
                       <FormatNumber
                         nb={updatedInfos?.collateralUsd}
                         format="currency"
@@ -444,7 +440,7 @@ export default function EditPositionCollateral({
 
           <div className={rowStyle}>
             <div className="text-sm">Liquidation Price</div>
-            <div className="flex items-center">
+            <div className="flex items-center justify-end">
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
@@ -457,18 +453,27 @@ export default function EditPositionCollateral({
                 <>
                   {rightArrowElement}
 
-                  <FormatNumber
-                    nb={liquidationPrice}
-                    format="currency"
-                    precision={position.token.symbol === 'BONK' ? 8 : undefined}
-                    className={`text-orange`}
-                    isDecimalDimmed={false}
+                  <div className="flex flex-col">
+                    <div className="flex flex-col items-end text-sm">
+                      {updatedInfos ? (
+                        <FormatNumber
+                          nb={liquidationPrice}
+                          format="currency"
+                          precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                          className={`text-orange`}
+                          isDecimalDimmed={false}
 
-                  />
+                        />
+                      ) : (
+                        '-'
+                      )}
+                    </div>
+                  </div>
                 </>
               ) : null}
             </div>
           </div>
+
         </div>
       </div>
 

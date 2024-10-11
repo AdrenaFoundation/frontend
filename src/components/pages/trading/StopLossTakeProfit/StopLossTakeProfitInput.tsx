@@ -72,7 +72,7 @@ export default function StopLossTakeProfitInput({
         max = tmp;
       } else {
         max = markPrice;
-        // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.leverage` is equal to 100, and get that price as the min value
+        // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.initialLeverage` is equal to 100, and get that price as the min value
         min = position.price * (1 - 1 / position.initialLeverage);
       }
     }
