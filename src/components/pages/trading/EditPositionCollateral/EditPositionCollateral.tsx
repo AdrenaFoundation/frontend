@@ -70,47 +70,49 @@ export default function EditPositionCollateral({
       : position.collateralToken.symbol
     ] ?? null;
 
-  const [underLeverage, setUnderLeverage] = useState<boolean>(false);
-  const [overLeverage, setOverLeverage] = useState<boolean>(false);
   const [belowMinLeverage, setBelowMinLeverage] = useState(false);
+  const [aboveMaxLeverage, setAboveMaxLeverage] = useState(false);
+
+  const maxInitialLeverage = window.adrena.client.getCustodyByPubkey(position.custody)?.maxInitialLeverage;
 
   const executeBtnText = (() => {
     if (!input) return 'Enter an amount';
 
-    if (underLeverage) {
+    if (belowMinLeverage) {
       return 'Leverage under limit';
     }
 
-    if (overLeverage) {
+    if (aboveMaxLeverage) {
       return 'Leverage over limit';
     }
 
     return selectedAction === 'deposit'
       ? 'Deposit'
-      : `Withdraw ${position.collateralToken.symbol}`;
+      : `Withdraw`;
   })();
 
   useEffect(() => {
     if (!updatedInfos) {
-      setUnderLeverage(false);
-      setOverLeverage(false);
+      setBelowMinLeverage(false);
+      setAboveMaxLeverage(false);
       return;
     }
 
-    if (updatedInfos && updatedInfos.currentLeverage < MIN_LEVERAGE) {
-      setUnderLeverage(true);
-      setOverLeverage(false);
+    if (updatedInfos.currentLeverage < MIN_LEVERAGE) {
+      setBelowMinLeverage(true);
+      setAboveMaxLeverage(false);
       return;
     }
 
-
-    const maxLeverage = window.adrena.client.getCustodyByPubkey(position.custody)?.maxLeverage;
-    if (updatedInfos && maxLeverage && updatedInfos.currentLeverage > maxLeverage) {
-      setUnderLeverage(false);
-      setOverLeverage(true);
+    if (maxInitialLeverage && updatedInfos.currentLeverage > maxInitialLeverage) {
+      setBelowMinLeverage(false);
+      setAboveMaxLeverage(true);
       return;
     }
-  }, [position.custody, updatedInfos]);
+
+    setBelowMinLeverage(false);
+    setAboveMaxLeverage(false);
+  }, [maxInitialLeverage, position.custody, updatedInfos]);
 
   const doRemoveCollateral = async () => {
     if (!input) return;
@@ -237,7 +239,7 @@ export default function EditPositionCollateral({
         position.collateralUsd / collateralPrice + input;
       updatedCollateralUsd = updatedCollateralAmount * collateralPrice;
     } else {
-      updatedCollateralUsd = position.collateralUsd - input;
+      updatedCollateralUsd = Math.max(0, position.collateralUsd - (input || 0));
       updatedCollateralAmount = updatedCollateralUsd / collateralPrice;
     }
 
@@ -249,21 +251,19 @@ export default function EditPositionCollateral({
     } else {
       setBelowMinLeverage(false);
 
+      if (maxInitialLeverage && updatedCurrentLeverage > maxInitialLeverage) {
+        setAboveMaxLeverage(true);
+      } else {
+        setAboveMaxLeverage(false);
+
+      }
       setUpdatedInfos({
         currentLeverage: updatedCurrentLeverage,
         collateral: updatedCollateralAmount,
         collateralUsd: updatedCollateralUsd,
       });
     }
-  }, [
-    input,
-    collateralPrice,
-    position.collateralAmount,
-    position.collateralUsd,
-    position.pnl,
-    position.sizeUsd,
-    selectedAction,
-  ]);
+  }, [input, collateralPrice, position.collateralAmount, position.collateralUsd, position.pnl, position.sizeUsd, selectedAction, maxInitialLeverage]);
 
   const calculateCollateralPercentage = (percentage: number) =>
     Number(
@@ -298,6 +298,11 @@ export default function EditPositionCollateral({
       alt="Arrow"
     />
   );
+
+  const maxWithdrawal = position.collateralUsd;
+  if (input !== null && input > maxWithdrawal) {
+    setInput(maxWithdrawal);
+  }
 
   return (
     <div className={twMerge('flex flex-col gap-3 h-full w-[24em] pt-4', className)}>
@@ -338,14 +343,29 @@ export default function EditPositionCollateral({
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
 
           <div className={rowStyle}>
-            <div className="text-sm text-gray-400">Net Value</div>
+            <div className="text-sm">Collateral</div>
+            <div className="flex items-center justify-end">
+              <FormatNumber
+                nb={position.collateralUsd}
+                format="currency"
+                className={input ? 'text-xs' : 'text-sm'}
+              />
 
-            <FormatNumber
-              nb={position.collateralUsd + (position.pnl ?? 0)}
-              format="currency"
-              className={`font-bold`}
-              isDecimalDimmed={true}
-            />
+              {input ? (
+                <>
+                  {rightArrowElement}
+
+                  <div className="flex flex-col">
+                    <div className="flex flex-col items-end text-sm">
+                      <FormatNumber
+                        nb={updatedInfos?.collateralUsd}
+                        format="currency"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : null}
+            </div>
           </div>
 
           <div className={rowStyle}>
@@ -358,6 +378,17 @@ export default function EditPositionCollateral({
               className={`font-bold text-${position.pnl && position.pnl > 0 ? 'green' : 'redbright'
                 }`}
               isDecimalDimmed={false}
+            />
+          </div>
+
+          <div className={rowStyle}>
+            <div className="text-sm text-gray-400">Net Value</div>
+
+            <FormatNumber
+              nb={position.collateralUsd + (position.pnl ?? 0)}
+              format="currency"
+              className={`font-bold`}
+              isDecimalDimmed={true}
             />
           </div>
 
@@ -401,36 +432,14 @@ export default function EditPositionCollateral({
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end text-sm">
                       {updatedInfos ? (
-                        <FormatNumber nb={updatedInfos?.currentLeverage} suffix="x" />
+                        <FormatNumber
+                          nb={updatedInfos?.currentLeverage}
+                          suffix="x"
+                          className={maxInitialLeverage && updatedInfos.currentLeverage > maxInitialLeverage ? 'text-redbright' : ''}
+                        />
                       ) : (
                         '-'
                       )}
-                    </div>
-                  </div>
-                </>
-              ) : null}
-            </div>
-          </div>
-
-          <div className={rowStyle}>
-            <div className="text-sm">Collateral</div>
-            <div className="flex items-center justify-end">
-              <FormatNumber
-                nb={position.collateralUsd}
-                format="currency"
-                className={input ? 'text-xs' : 'text-sm'}
-              />
-
-              {input ? (
-                <>
-                  {rightArrowElement}
-
-                  <div className="flex flex-col">
-                    <div className="flex flex-col items-end text-sm">
-                      <FormatNumber
-                        nb={updatedInfos?.collateralUsd}
-                        format="currency"
-                      />
                     </div>
                   </div>
                 </>
@@ -615,9 +624,7 @@ export default function EditPositionCollateral({
               disabled={position.currentLeverage !== null && position.currentLeverage <= 1.1}
             />
           </div>
-
-
-          {position.currentLeverage && position.currentLeverage >= 1.1 ? null : (
+          {!aboveMaxLeverage && !belowMinLeverage && (
             <div className="flex flex-col gap-3 text-sm ml-4 mr-4">
               {selectedAction === 'withdraw' ? (
                 <div className="bg-third flex justify-evenly p-1 rounded-lg border">
@@ -657,13 +664,15 @@ export default function EditPositionCollateral({
       )
       }
 
-
       <Button
         className="mt-4 rounded-none font-boldy text-lg"
         size="lg"
         title={executeBtnText}
         disabled={
-          executeBtnText !== 'Deposit' && !executeBtnText.startsWith('Withdraw') || belowMinLeverage
+          !input ||
+          input > position.collateralUsd ||
+          belowMinLeverage ||
+          aboveMaxLeverage
         }
         onClick={() => handleExecute()}
       />
