@@ -74,6 +74,7 @@ import {
   u128SplitToBN,
   uiToNative,
 } from './utils';
+import { track } from '@vercel/analytics';
 
 export class AdrenaClient {
   public static programId = new PublicKey(
@@ -5070,6 +5071,7 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     try {
+      const start = Date.now();
       txHash = await this.connection.sendRawTransaction(
         signedTransaction.serialize({
           requireAllSignatures: false,
@@ -5080,6 +5082,12 @@ export class AdrenaClient {
           maxRetries: 0,
         },
       );
+
+      const end = Date.now();
+
+      track('transaction_duration', {
+        duration: `${(end - start) / 1000}s`,
+      });
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
