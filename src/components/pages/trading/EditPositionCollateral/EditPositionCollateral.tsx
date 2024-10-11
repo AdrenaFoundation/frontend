@@ -76,6 +76,7 @@ export default function EditPositionCollateral({
   const maxInitialLeverage = window.adrena.client.getCustodyByPubkey(position.custody)?.maxInitialLeverage;
 
   const executeBtnText = (() => {
+    if (selectedAction === 'deposit' && !walletBalance) return `No ${position.collateralToken.symbol} in wallet`;
     if (!input) return 'Enter an amount';
 
     if (belowMinLeverage) {
@@ -299,9 +300,16 @@ export default function EditPositionCollateral({
     />
   );
 
-  const maxWithdrawal = position.collateralUsd;
-  if (input !== null && input > maxWithdrawal) {
-    setInput(maxWithdrawal);
+  if (selectedAction === 'withdraw') {
+    const maxWithdrawal = position.collateralUsd;
+    if (input !== null && input > maxWithdrawal) {
+      setInput(maxWithdrawal);
+    }
+  } else {
+    const maxDeposit = walletBalance ?? 0;
+    if (input !== null && input > maxDeposit) {
+      setInput(maxDeposit);
+    }
   }
 
   return (
