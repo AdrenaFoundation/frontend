@@ -109,13 +109,14 @@ export type PositionExtended = {
   collateralCustody: PublicKey;
   owner: PublicKey;
   pubkey: PublicKey;
-  // Current leverage (not initial leverage)
-  leverage?: number | null;
+  initialLeverage: number;
+  currentLeverage: number | null;
   token: Token;
   collateralToken: Token;
   side: 'long' | 'short';
+  // Including fees
   pnl?: number | null;
-  priceChangeUsd?: number | null;
+  pnlMinusFees?: number | null;
   profitUsd?: number | null;
   lossUsd?: number | null;
   borrowFeeUsd?: number | null;

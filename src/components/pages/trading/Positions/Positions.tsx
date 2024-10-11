@@ -37,7 +37,6 @@ export default function Positions({
   const [positionToEdit, setPositionToEdit] = useState<PositionExtended | null>(
     null,
   );
-
   const [positionToStopLossTakeProfit, setPositionToStopLossTakeProfit] =
     useState<PositionExtended | null>(null);
 

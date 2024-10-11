@@ -37,7 +37,6 @@ import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionFeesTooltip from './PositionFeesTooltip';
-import PositionSizeTooltip from './PositionSizeTooltip';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -567,58 +566,51 @@ export default function LongShortTradingInputs({
           />
 
           {!isInfoLoading ? (
-            <PositionSizeTooltip
-              positionInfos={positionInfos}
-              openedPosition={openedPosition}
-              leverage={leverage}
-            >
-              <div className="flex ml-auto">
-                {openedPosition && tokenPriceB && inputB ? (
-                  <>
-                    {/* Opened position */}
-                    <div className="flex flex-col self-center items-end line-through mr-3">
-                      <FormatNumber
-                        nb={openedPosition.sizeUsd / tokenPriceB}
-                        precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
-                        className="text-txtfade"
-                        isAbbreviate={tokenB.symbol === 'BONK'}
-                        info={
-                          tokenB.symbol === 'BONK'
-                            ? (openedPosition.sizeUsd / tokenPriceB).toString()
-                            : null
-                        }
-                      />
-
-                      <FormatNumber
-                        nb={openedPosition.sizeUsd}
-                        format="currency"
-                        className="text-txtfade text-xs line-through"
-                      />
-                    </div>
-                  </>
-                ) : null}
-
-                <div className="relative flex flex-col">
-                  <div className="flex flex-col items-end font-mono">
+            <div className="flex ml-auto">
+              {openedPosition && tokenPriceB && inputB ? (
+                <>
+                  {/* Opened position */}
+                  <div className="flex flex-col self-center items-end line-through mr-3">
                     <FormatNumber
-                      nb={inputB}
+                      nb={openedPosition.sizeUsd / tokenPriceB}
                       precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
-                      className="text-lg"
+                      className="text-txtfade"
                       isAbbreviate={tokenB.symbol === 'BONK'}
                       info={
-                        tokenB.symbol === 'BONK' ? inputB?.toString() : null
+                        tokenB.symbol === 'BONK'
+                          ? (openedPosition.sizeUsd / tokenPriceB).toString()
+                          : null
                       }
                     />
-
                     <FormatNumber
-                      nb={priceB}
+                      nb={openedPosition.sizeUsd}
                       format="currency"
-                      className="text-txtfade text-sm"
+                      className="text-txtfade text-xs line-through"
                     />
                   </div>
+                </>
+              ) : null}
+
+              <div className="relative flex flex-col">
+                <div className="flex flex-col items-end font-mono">
+                  <FormatNumber
+                    nb={inputB}
+                    precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                    className="text-lg"
+                    isAbbreviate={tokenB.symbol === 'BONK'}
+                    info={
+                      tokenB.symbol === 'BONK' ? inputB?.toString() : null
+                    }
+                  />
+
+                  <FormatNumber
+                    nb={priceB}
+                    format="currency"
+                    className="text-txtfade text-sm"
+                  />
                 </div>
               </div>
-            </PositionSizeTooltip>
+            </div>
           ) : (
             <div className="w-full h-[40px] bg-bcolor rounded-xl" />
           )}
@@ -929,6 +921,6 @@ export default function LongShortTradingInputs({
           </>
         )}
       </div>
-    </div>
+    </div >
   );
 }
