@@ -23,7 +23,8 @@ const calculatePnLandLiquidationPrice = (
   position.lossUsd = lossUsd;
   position.borrowFeeUsd = borrowFeeUsd;
   position.pnl = profitUsd + -lossUsd;
-  position.priceChangeUsd = lossUsd !== 0 ? lossUsd : profitUsd;
+  position.pnlMinusFees = position.pnl + borrowFeeUsd + position.exitFeeUsd;
+  position.currentLeverage = position.sizeUsd / (position.collateralUsd + position.pnl);
 
   // Calculate liquidation price
   const liquidationPrice = window.adrena.client.calculateLiquidationPrice({
@@ -66,8 +67,8 @@ export default function usePositions(): {
         const freshPositions =
           (loadPosition
             ? await window.adrena.client.loadUserPositions(
-                new PublicKey(wallet.walletAddress),
-              )
+              new PublicKey(wallet.walletAddress),
+            )
             : positions) ?? [];
 
         freshPositions.forEach((position) => {

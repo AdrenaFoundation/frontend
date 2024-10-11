@@ -33,13 +33,12 @@ export default function NetValueTooltip({
             <div className="flex w-full items-center justify-between">
               <span className="text-sm">PnL</span>
               <FormatNumber
-                nb={position.priceChangeUsd}
+                nb={position.pnlMinusFees}
                 format="currency"
-                className={`text-${
-                  position.priceChangeUsd && position.priceChangeUsd > 0
-                    ? 'green'
-                    : 'redbright'
-                }`}
+                className={`text-${position.pnl && position.pnl > 0
+                  ? 'green'
+                  : 'redbright'
+                  }`}
                 isDecimalDimmed={false}
               />
             </div>
@@ -66,14 +65,11 @@ export default function NetValueTooltip({
             </div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">PnL After Fees</span>
+              <span className="text-sm">Resulting Net Value</span>
               <FormatNumber
-                nb={position.pnl}
                 format="currency"
-                className={`text-${
-                  position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                }`}
-                isDecimalDimmed={false}
+                nb={position.pnl ? position.collateralUsd + position.pnl : undefined}
+                isDecimalDimmed={true}
               />
             </div>
           </StyledSubContainer>
