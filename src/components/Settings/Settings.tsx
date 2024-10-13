@@ -1,9 +1,12 @@
 import { Connection } from '@solana/web3.js';
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { addNotification } from '@/utils';
+import { PriorityFee } from '@/types';
+import { addNotification, formatNumber, PRIORITY_FEE_LIST } from '@/utils';
 
+import infoIcon from '../../../public/images/Icons/info.svg';
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -11,6 +14,7 @@ import Switch from '../common/Switch/Switch';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function Settings({
+  priorityFee,
   activeRpc,
   rpcInfos,
   autoRpcMode,
@@ -20,8 +24,11 @@ export default function Settings({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
+  setPriorityFee,
   isGenesis = false,
 }: {
+  priorityFee: PriorityFee;
+  setPriorityFee: (priorityFee: PriorityFee) => void;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -206,6 +213,70 @@ export default function Settings({
           </li>
         ))}
       </ul>
+
+      <div className='h-[1px] w-full bg-bcolor mt-4 mb-4' />
+
+      <div className="flex flex-col mb-3">
+        <h2 className="flex">Priority Fees</h2>
+
+
+        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-sm mt-2 mb-2">
+          <Image
+            className="opacity-60 absolute left-3 top-[1.5em]"
+            src={infoIcon}
+            height={16}
+            width={16}
+            alt="Info icon"
+          />
+          <div className='flex flex-col'>
+            <div>Pay a priority fee to speed up your transaction on Solana. <a
+              href="https://docs.adrena.xyz/priority-fee"
+              target="_blank"
+              className='underline cursor-pointer'
+            >Learn more</a></div>
+          </div>
+        </div>
+
+        <ul
+          className={twMerge(
+            'flex flex-col gap-2 opacity-100 mt-2',
+            autoRpcMode && 'opacity-30 pointer-events-none',
+          )}
+        >
+          {PRIORITY_FEE_LIST.map(({
+            title,
+            microLamport,
+          }) => <li key={title} className='cursor-pointer'>
+              <div className="flex flex-row gap-2 items-center" onClick={() => setPriorityFee(microLamport)}>
+                <div className="w-10 flex items-center justify-center">
+                  <input
+                    type="radio"
+                    checked={microLamport === priorityFee}
+                    onChange={() => {
+                      // Handle the click on the level above
+                    }}
+                    className="cursor-pointer"
+                  />
+                </div>
+
+                <div
+                  className={twMerge(
+                    'text-sm font-medium opacity-50 hover:opacity-100',
+                    microLamport === priorityFee && 'opacity-100',
+                  )}
+                >
+                  {title}
+                </div>
+
+                <div className='ml-auto text-xs flex'>
+                  <div>{formatNumber(microLamport, 0)}</div>
+                  <div className='ml-1 text-txtfade'>μ-lamport</div>
+                  <div className='ml-1'>/ cu</div>
+                </div>
+              </div>
+            </li>)}
+        </ul>
+      </div>
     </Menu>
   );
 }

@@ -47,6 +47,7 @@ import {
   PoolExtended,
   Position,
   PositionExtended,
+  PriorityFee,
   ProfitAndLoss,
   Staking,
   SwapAmountAndFees,
@@ -61,6 +62,7 @@ import {
 import {
   AdrenaTransactionError,
   applySlippage,
+  DEFAULT_PRIORITY_FEE,
   findATAAddressSync,
   isAccountInitialized,
   nativeToUi,
@@ -264,6 +266,9 @@ export class AdrenaClient {
 
   protected adrenaProgram: Program<Adrena> | null = null;
 
+  // Expressed in micro lamports
+  protected priorityFee = DEFAULT_PRIORITY_FEE;
+
   constructor(
     // Adrena Program with readonly provider
     public readonly config: IConfiguration,
@@ -274,6 +279,10 @@ export class AdrenaClient {
     public tokens: Token[],
     public genesisLockPda: PublicKey,
   ) {}
+
+  public setPriorityFee(priorityFee: number) {
+    this.priorityFee = priorityFee;
+  }
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
     this.readonlyAdrenaProgram = program;
@@ -4545,9 +4554,15 @@ export class AdrenaClient {
         'finalized',
       );
 
+      console.log(
+        'Apply',
+        this.priorityFee,
+        'micro lamport priority fee to transaction',
+      );
+
       transaction.instructions.unshift(
         ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: 30000, // 700k compute unit for 21000 lamports (~4 tx price)
+          microLamports: this.priorityFee,
         }),
         ComputeBudgetProgram.setComputeUnitLimit({
           units: 1000000, // Use a lot of units to avoid any issues during simulation

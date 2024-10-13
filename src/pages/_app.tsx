@@ -29,6 +29,8 @@ import initializeApp, {
   createReadOnlySablierThreadProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
+import { PriorityFee } from '@/types';
+import { DEFAULT_PRIORITY_FEE } from '@/utils';
 
 import logo from '../../public/images/logo.svg';
 import DevnetConfiguration from '../config/devnet';
@@ -213,19 +215,35 @@ function AppComponent({
 
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
-  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance']);
+  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee']);
+  const [priorityFee, setPriorityFee] = useState<PriorityFee>(DEFAULT_PRIORITY_FEE);
+
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
 
   useEffect(() => {
-    const acceptanceDate = cookies['terms-and-conditions-acceptance'];
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    {
+      const acceptanceDate = cookies['terms-and-conditions-acceptance'];
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
-      setIsTermsAndConditionModalOpen(true);
+      if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
+        setIsTermsAndConditionModalOpen(true);
+      }
+    }
+
+    {
+      const priorityFeeCookie = cookies['priority-fee'];
+
+      if (!isNaN(priorityFeeCookie)) {
+        setPriorityFee(parseInt(priorityFeeCookie, 10));
+      }
     }
   }, [cookies]);
+
+  useEffect(() => {
+    window.adrena.client.setPriorityFee(priorityFee);
+  }, [priorityFee])
 
   useEffect(() => {
     if (!wallet) {
@@ -280,6 +298,20 @@ function AppComponent({
       </Head>
 
       <RootLayout
+        priorityFee={priorityFee}
+        setPriorityFee={((p: PriorityFee) => {
+          setCookie(
+            'priority-fee',
+            p,
+            {
+              path: '/',
+              maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+              sameSite: 'strict',
+            },
+          );
+
+          setPriorityFee(p);
+        })}
         userProfile={userProfile}
         activeRpc={activeRpc}
         rpcInfos={rpcInfos}
