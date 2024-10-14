@@ -1,17 +1,17 @@
 import { Connection } from '@solana/web3.js';
-import Image from 'next/image';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { PriorityFee } from '@/types';
 import { addNotification, formatNumber, PRIORITY_FEE_LIST } from '@/utils';
 
-import infoIcon from '../../../public/images/Icons/info.svg';
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Switch from '../common/Switch/Switch';
+import DisplayInfo from '../DisplayInfo/DisplayInfo';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
+import { SOL_DECIMALS } from '@/constant';
 
 export default function Settings({
   priorityFee,
@@ -219,23 +219,7 @@ export default function Settings({
       <div className="flex flex-col mb-3">
         <h2 className="flex">Priority Fees</h2>
 
-
-        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-sm mt-2 mb-2">
-          <Image
-            className="opacity-60 absolute left-3 top-[1.5em]"
-            src={infoIcon}
-            height={16}
-            width={16}
-            alt="Info icon"
-          />
-          <div className='flex flex-col'>
-            <div>Pay a priority fee to speed up your transaction on Solana. <a
-              href="https://docs.adrena.xyz/priority-fee"
-              target="_blank"
-              className='underline cursor-pointer'
-            >Learn more</a></div>
-          </div>
-        </div>
+        <DisplayInfo className='mt-2 mb-2' body={<div>Pay a priority fee to speed up your transaction on Solana.</div>} />
 
         <ul
           className={twMerge(
@@ -276,6 +260,33 @@ export default function Settings({
               </div>
             </li>)}
         </ul>
+
+        <div className='mt-4 ml-3'>
+          <div className='w-full flex flex-col border p-2 bg-third'>
+            <div className='flex w-full border-b pb-1'>
+              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Transaction Size</div>
+              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Extra Cost</div>
+            </div>
+
+            <div className='flex flex-col w-full opacity-50 mt-1'>
+              <div className='flex w-full text-xs'>
+                <div className='w-1/2 items-center justify-center flex'>Small (200,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex'>{formatNumber(200000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+              </div>
+
+              <div className='flex w-full text-xs'>
+                <div className='w-1/2 items-center justify-center flex'>Average (400,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex'>{formatNumber(400000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+              </div>
+
+              <div className='flex w-full text-xs'>
+                <div className='w-1/2 items-center justify-center flex'>Big (700,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex'>{formatNumber(700000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </Menu>
   );
