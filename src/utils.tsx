@@ -205,6 +205,15 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
   return d;
 }
 
+// Use High as default
+export const DEFAULT_PRIORITY_FEE = 160000;
+
+export const PRIORITY_FEE_LIST = [
+  { title: 'High', microLamport: 300000 },
+  { title: 'Medium', microLamport: 160000 },
+  { title: 'Low', microLamport: 60000 },
+] as const;
+
 export function addNotification({
   title,
   message,

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
 
-import { UserProfileExtended } from '@/types';
+import { PriorityFee, UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import logo from '../../../public/images/logo.svg';
@@ -17,6 +17,7 @@ import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
+  priorityFee,
   userProfile,
   PAGES,
   activeRpc,
@@ -25,10 +26,13 @@ export default function Header({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
 }: {
+  priorityFee: PriorityFee;
+  setPriorityFee: (priorityFee: PriorityFee) => void;
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string; external?: boolean }[];
   activeRpc: {
@@ -108,6 +112,8 @@ export default function Header({
         </Link>
 
         <Settings
+          priorityFee={priorityFee}
+          setPriorityFee={setPriorityFee}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}
           autoRpcMode={autoRpcMode}

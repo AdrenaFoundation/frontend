@@ -9,12 +9,13 @@ import { ToastContainer } from 'react-toastify';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import Featurebase from '@/components/Featurebase/Featurebase';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { UserProfileExtended } from '@/types';
+import { PriorityFee, UserProfileExtended } from '@/types';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
 export default function RootLayout({
+  priorityFee,
   children,
   userProfile,
   activeRpc,
@@ -23,10 +24,13 @@ export default function RootLayout({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
 }: {
+  priorityFee: PriorityFee;
+  setPriorityFee: (priorityFee: PriorityFee) => void;
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
   activeRpc: {
@@ -78,6 +82,8 @@ export default function RootLayout({
 
       {window.location.pathname === '/genesis' ? null : isBigScreen ? (
         <Header
+          priorityFee={priorityFee}
+          setPriorityFee={setPriorityFee}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -92,6 +98,8 @@ export default function RootLayout({
         />
       ) : (
         <BurgerMenu
+          priorityFee={priorityFee}
+          setPriorityFee={setPriorityFee}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
