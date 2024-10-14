@@ -2,6 +2,7 @@ import { Connection } from '@solana/web3.js';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import { SOL_DECIMALS } from '@/constant';
 import { PriorityFee } from '@/types';
 import { addNotification, formatNumber, PRIORITY_FEE_LIST } from '@/utils';
 
@@ -11,7 +12,6 @@ import Menu from '../common/Menu/Menu';
 import Switch from '../common/Switch/Switch';
 import DisplayInfo from '../DisplayInfo/DisplayInfo';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
-import { SOL_DECIMALS } from '@/constant';
 
 export default function Settings({
   priorityFee,
@@ -226,7 +226,7 @@ export default function Settings({
             title,
             microLamport,
           }) =>
-            <div className='flex w-1/3 flex-col items-center'>
+            <div className='flex w-1/3 flex-col items-center' key={microLamport}>
               <Button onClick={() => {
                 setPriorityFee(microLamport);
               }} variant={microLamport === priorityFee ? 'outline' : 'text'} className='w-20' title={title} key={title} />
