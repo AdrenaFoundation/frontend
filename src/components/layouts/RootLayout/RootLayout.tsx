@@ -56,7 +56,7 @@ export default function RootLayout({
     { name: 'Overview', link: '/my_dashboard' },
     { name: 'Trade', link: '/trade' },
     { name: 'Stake', link: '/stake' },
-    { name: 'Analyze', link: '/monitoring' },
+    { name: 'Monitor', link: '/monitoring' },
     { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
     { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true },
   ]);
