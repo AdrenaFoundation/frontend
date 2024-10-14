@@ -43,12 +43,12 @@ import PositionFeesTooltip from './PositionFeesTooltip';
 let loadingCounter = 0;
 
 // Helper function to convert number to BN
-const toBN = (value: number, decimals: number = 6): BN => {
+const toBN = (value: number, decimals = 6): BN => {
   return new BN(Math.round(value * 10 ** decimals));
 };
 
 // Helper function to convert BN to number
-const fromBN = (value: BN, decimals: number = 6): number => {
+const fromBN = (value: BN, decimals = 6): number => {
   return value.toNumber() / 10 ** decimals;
 };
 
@@ -751,7 +751,7 @@ export default function LongShortTradingInputs({
               <Tippy
                 content={
                   <p className="font-medium text-txtfade">
-                    The information below is calculated locally based on current market price, and does not account for confidence of the price feed at execution time, as such the Liquidation price and init. leverage may slightly differ.
+                    The information below is calculated locally based on current market prices, and does not account for confidence of the price feed at execution time, as such the Liquidation price and init. leverage may slightly differ.
                   </p>
                 }
               >
