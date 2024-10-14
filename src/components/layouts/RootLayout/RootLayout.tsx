@@ -53,13 +53,12 @@ export default function RootLayout({
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
-    { name: 'My Dashboard', link: '/my_dashboard' },
-    { name: 'Monitoring', link: '/monitoring' },
+    { name: 'Overview', link: '/my_dashboard' },
+    { name: 'Trade', link: '/trade' },
     { name: 'Stake', link: '/stake' },
-    { name: 'ALP', link: '/buy_alp' },
-    { name: 'ADX', link: '/buy_adx' },
-    { name: 'Docs', link: 'https://docs.adrena.xyz/', external: true },
-    { name: 'Governance', link: 'https://dao.adrena.xyz/', external: true },
+    { name: 'Analyze', link: '/monitoring' },
+    { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
+    { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true },
   ]);
 
   useEffect(() => {
