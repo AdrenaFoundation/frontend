@@ -96,7 +96,7 @@ export default function LongShortTradingInputs({
 
   const [custody, setCustody] = useState<CustodyExtended | null>(null);
 
-  const [newPositionInfos, setNewPositionInfos] = useState<{
+  const [newPositionInfo, setNewPositionInfo] = useState<{
     collateralUsd: number;
     sizeUsd: number;
     size: number;
@@ -107,7 +107,7 @@ export default function LongShortTradingInputs({
     liquidationFeeUsd: number;
   } | null>(null);
 
-  const [increasePositionInfos, setIncreasePositionInfos] = useState<{
+  const [increasePositionInfo, setIncreasePositionInfo] = useState<{
     currentLeverage: number;
     weightedAverageEntryPrice: number;
     isLeverageIncreased: boolean;
@@ -116,18 +116,16 @@ export default function LongShortTradingInputs({
     newOverallLeverage: number;
   } | null>(null);
 
-  const calculateIncreasePositionInfos = useCallback(() => {
-    if (!openedPosition || !newPositionInfos) {
-      setIncreasePositionInfos(null);
+  const calculateIncreasePositionInfo = useCallback(() => {
+    if (!openedPosition || !newPositionInfo) {
+      setIncreasePositionInfo(null);
       return;
     }
 
     const currentSizeUsdNative = uiToNative(openedPosition.sizeUsd, USD_DECIMALS);
-    const newSizeUsdNative = uiToNative(newPositionInfos.sizeUsd, USD_DECIMALS);
+    const newSizeUsdNative = uiToNative(newPositionInfo.sizeUsd, USD_DECIMALS);
     const currentCollateralUsdNative = uiToNative(openedPosition.collateralUsd, USD_DECIMALS);
-    const newCollateralUsdNative = uiToNative(newPositionInfos.collateralUsd, USD_DECIMALS);
-
-    const newSize = currentSizeUsdNative.add(newSizeUsdNative);
+    const newCollateralUsdNative = uiToNative(newPositionInfo.collateralUsd, USD_DECIMALS);
 
     // 4 (BPS -> 10000) + 2 (percentage -> 100)
     const currentLeverage: BN = currentSizeUsdNative.mul(new BN(10 ** (4 + 2))).div(currentCollateralUsdNative);
@@ -143,7 +141,7 @@ export default function LongShortTradingInputs({
 
     const weightedAverageEntryPrice: BN = (() => {
       const currentEntryPriceNative = uiToNative(openedPosition.price, PRICE_DECIMALS);
-      const newEntryPriceNative = uiToNative(newPositionInfos.entryPrice, PRICE_DECIMALS);
+      const newEntryPriceNative = uiToNative(newPositionInfo.entryPrice, PRICE_DECIMALS);
 
       const numerator = currentSizeUsdNative.mul(currentEntryPriceNative)
         .add(newSizeUsdNative.mul(newEntryPriceNative));
@@ -159,10 +157,10 @@ export default function LongShortTradingInputs({
         borrowFeeUsd: openedPosition.borrowFeeUsd,
         nativeObject: {
           price: weightedAverageEntryPrice,
-          liquidationFeeUsd: openedPosition.nativeObject.liquidationFeeUsd.add(uiToNative(newPositionInfos.liquidationFeeUsd, USD_DECIMALS)),
+          liquidationFeeUsd: openedPosition.nativeObject.liquidationFeeUsd.add(uiToNative(newPositionInfo.liquidationFeeUsd, USD_DECIMALS)),
           sizeUsd: openedPosition.nativeObject.sizeUsd.add(newSizeUsdNative),
           collateralUsd: openedPosition.nativeObject.collateralUsd.add(newCollateralUsdNative),
-          lockedAmount: openedPosition.nativeObject.lockedAmount?.add(uiToNative(newPositionInfos.size, tokenB.decimals)),
+          lockedAmount: openedPosition.nativeObject.lockedAmount?.add(uiToNative(newPositionInfo.size, tokenB.decimals)),
         },
         side: openedPosition.side,
         custody: openedPosition.custody,
@@ -173,19 +171,19 @@ export default function LongShortTradingInputs({
       });
     })();
 
-    setIncreasePositionInfos({
+    setIncreasePositionInfo({
       currentLeverage: nativeToUi(currentLeverage, (4 + 2)),
       weightedAverageEntryPrice: nativeToUi(weightedAverageEntryPrice, PRICE_DECIMALS),
       isLeverageIncreased,
       estimatedLiquidationPrice,
-      newSizeUsd: nativeToUi(newSize, USD_DECIMALS),
+      newSizeUsd: nativeToUi(newSizeUsdNative, USD_DECIMALS),
       newOverallLeverage: nativeToUi(newOverallLeverage, USD_DECIMALS),
     });
-  }, [openedPosition, newPositionInfos, tokenB.decimals]);
+  }, [openedPosition, newPositionInfo, tokenB.decimals]);
 
   useEffect(() => {
-    calculateIncreasePositionInfos()
-  }, [calculateIncreasePositionInfos]);
+    calculateIncreasePositionInfo()
+  }, [calculateIncreasePositionInfo]);
 
   const handleExecuteButton = async (): Promise<void> => {
     if (!connected || !dispatch || !wallet) {
@@ -273,8 +271,8 @@ export default function LongShortTradingInputs({
       setInputB(null);
       setPriceA(null);
       setPriceB(null);
-      setNewPositionInfos(null);
-      setIncreasePositionInfos(null);
+      setNewPositionInfo(null);
+      setIncreasePositionInfo(null);
     } catch (error) {
       console.log('Error', error);
     }
@@ -312,16 +310,16 @@ export default function LongShortTradingInputs({
 
   useEffect(() => {
     if (!tokenA || !tokenB || !inputA) {
-      setIncreasePositionInfos(null);
-      setNewPositionInfos(null);
+      setIncreasePositionInfo(null);
+      setNewPositionInfo(null);
       return;
     }
 
     setIsInfoLoading(true);
 
     // Reset inputB as the infos are not accurate anymore
-    setIncreasePositionInfos(null);
-    setNewPositionInfos(null);
+    setIncreasePositionInfo(null);
+    setNewPositionInfo(null);
     setInputB(null);
     setPriceB(null);
 
@@ -350,7 +348,7 @@ export default function LongShortTradingInputs({
         // an other request has been casted due to input change
         if (localLoadingCounter !== loadingCounter) return;
 
-        setNewPositionInfos(infos);
+        setNewPositionInfo(infos);
 
         console.log('Position infos', infos);
       } catch (err) {
@@ -392,9 +390,9 @@ export default function LongShortTradingInputs({
 
     setPriceA(inputA * tokenPriceA);
 
-    // Use newPositionInfos only
-    if (newPositionInfos) {
-      let priceUsd = newPositionInfos.sizeUsd;
+    // Use newPositionInfo only
+    if (newPositionInfo) {
+      let priceUsd = newPositionInfo.sizeUsd;
 
       // Add current position
       if (openedPosition) {
@@ -427,7 +425,7 @@ export default function LongShortTradingInputs({
     tokenA && tokenPrices[tokenA.symbol],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     tokenB && tokenPrices[tokenB.symbol],
-    newPositionInfos,
+    newPositionInfo,
   ]);
 
   useEffect(() => {
@@ -636,7 +634,7 @@ export default function LongShortTradingInputs({
                   <div className="flex flex-col self-center items-end line-through mr-3">
                     <FormatNumber
                       nb={openedPosition.sizeUsd / tokenPriceB}
-                      precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                      precision={tokenB.symbol === 'BTC' ? 4 : 2}
                       className="text-txtfade"
                       isAbbreviate={tokenB.symbol === 'BONK'}
                       info={
@@ -774,14 +772,14 @@ export default function LongShortTradingInputs({
                 openedPosition ? 'h-[5.5em]' : 'h-[5em]',
               )}
             >
-              {newPositionInfos && !isInfoLoading ? (
+              {newPositionInfo && !isInfoLoading ? (
                 <div className="flex w-full justify-evenly">
                   <TextExplainWrapper
                     title="Entry Price"
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfos?.weightedAverageEntryPrice : newPositionInfos.entryPrice}
+                      nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                       format="currency"
                       className="text-lg"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
@@ -805,7 +803,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfos?.estimatedLiquidationPrice : newPositionInfos.liquidationPrice}
+                      nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
@@ -841,27 +839,27 @@ export default function LongShortTradingInputs({
                 openedPosition ? 'h-[5.5em]' : 'h-[5em]',
               )}
             >
-              {newPositionInfos && !isInfoLoading ? (
+              {newPositionInfo && !isInfoLoading ? (
                 <div className="flex w-full justify-evenly">
                   <TextExplainWrapper
                     title="Init. Leverage"
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfos?.newOverallLeverage : newPositionInfos.sizeUsd / newPositionInfos.collateralUsd}
+                      nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
                       format="number"
                       prefix="x"
                       className={`text-lg ${openedPosition
-                        ? increasePositionInfos?.isLeverageIncreased
+                        ? increasePositionInfo?.isLeverageIncreased
                           ? 'text-orange'
                           : 'text-green'
                         : 'text-white'
                         }`}
                     />
 
-                    {openedPosition && increasePositionInfos?.newOverallLeverage ? (
+                    {openedPosition && increasePositionInfo?.newOverallLeverage ? (
                       <FormatNumber
-                        nb={increasePositionInfos?.currentLeverage}
+                        nb={increasePositionInfo?.currentLeverage}
                         format="number"
                         prefix="x"
                         className="text-txtfade text-xs self-center line-through"
@@ -877,7 +875,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfos?.newSizeUsd : newPositionInfos.sizeUsd}
+                      nb={openedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
                       format="number"
                       className="text-lg"
                     />
@@ -925,21 +923,21 @@ export default function LongShortTradingInputs({
 
             <PositionFeesTooltip
               borrowRate={(custody && tokenB && custody.borrowFee) ?? null}
-              positionInfos={newPositionInfos}
+              positionInfos={newPositionInfo}
               openedPosition={openedPosition}
             >
               <StyledSubSubContainer
                 className={twMerge(
                   'flex pl-6 pr-6 pb-4 items-center justify-center mt-2 sm:mt-0',
                   openedPosition ? 'h-[5.5em]' : 'h-[5em]',
-                  isInfoLoading || !newPositionInfos
+                  isInfoLoading || !newPositionInfo
                     ? 'pt-4'
                     : openedPosition
                       ? 'pt-2'
                       : 'pt-8',
                 )}
               >
-                {newPositionInfos && !isInfoLoading ? (
+                {newPositionInfo && !isInfoLoading ? (
                   <AutoScalableDiv>
                     {openedPosition ? (
                       <>
@@ -967,7 +965,7 @@ export default function LongShortTradingInputs({
                       className="flex-col mt-3"
                     >
                       <FormatNumber
-                        nb={newPositionInfos.exitFeeUsd}
+                        nb={newPositionInfo.exitFeeUsd}
                         format="currency"
                         className="text-lg"
                       />
