@@ -393,14 +393,14 @@ export default function LongShortTradingInputs({
 
     // Use newPositionInfo only
     if (newPositionInfo) {
-      let priceUsd = newPositionInfo.sizeUsd;
+      let sizeUsd = newPositionInfo.sizeUsd;
 
       // Add current position
       if (openedPosition) {
-        priceUsd += openedPosition.sizeUsd;
+        sizeUsd += openedPosition.sizeUsd;
       }
 
-      setPriceB(priceUsd);
+      setPriceB(sizeUsd);
 
       const tokenPriceBTrade = tokenPrices[getTokenSymbol(tokenB.symbol)];
 
@@ -409,7 +409,7 @@ export default function LongShortTradingInputs({
         return setInputB(null);
       }
 
-      const size = priceUsd / tokenPriceBTrade;
+      const size = sizeUsd / tokenPriceBTrade;
 
       setInputB(Number(size.toFixed(tokenB.decimals)));
     } else {
