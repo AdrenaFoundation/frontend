@@ -77,6 +77,7 @@ export default function LongShortTradingInputs({
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
+  const tokenPriceBTrade = tokenPrices?.[tokenB.symbol];
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
@@ -401,14 +402,14 @@ export default function LongShortTradingInputs({
 
       setPriceB(priceUsd);
 
-      const tokenPriceB = tokenPrices[getTokenSymbol(tokenB.symbol)];
+      const tokenPriceBTrade = tokenPrices[getTokenSymbol(tokenB.symbol)];
 
       // Cannot calculate size because we don't have price
-      if (tokenPriceB === null || tokenPriceB === 0) {
+      if (tokenPriceBTrade === null || tokenPriceBTrade === 0) {
         return setInputB(null);
       }
 
-      const size = priceUsd / tokenPriceB;
+      const size = priceUsd / tokenPriceBTrade;
 
       setInputB(Number(size.toFixed(tokenB.decimals)));
     } else {
@@ -455,10 +456,10 @@ export default function LongShortTradingInputs({
 
     const custody = window.adrena.client.getCustodyByMint(tokenB.mint) ?? null;
 
-    const tokenPriceB = tokenPrices[getTokenSymbol(tokenB.symbol)];
+    const tokenPriceBTrade = tokenPrices[getTokenSymbol(tokenB.symbol)];
 
-    if (tokenPriceB !== null) {
-      if (inputB * tokenPriceB > custody.maxPositionLockedUsd)
+    if (tokenPriceBTrade !== null) {
+      if (inputB * tokenPriceBTrade > custody.maxPositionLockedUsd)
         return setErrorMessage(`Position Exceeds Max Size`);
     }
 
@@ -472,7 +473,7 @@ export default function LongShortTradingInputs({
     inputB,
     tokenA.symbol,
     tokenB,
-    tokenPriceB,
+    tokenPriceBTrade,
     tokenPrices,
     walletTokenBalances,
     connected,
@@ -628,18 +629,18 @@ export default function LongShortTradingInputs({
 
           {!isInfoLoading ? (
             <div className="flex ml-auto">
-              {openedPosition && tokenPriceB && inputB ? (
+              {openedPosition && tokenPriceBTrade && inputB ? (
                 <>
                   {/* Opened position */}
                   <div className="flex flex-col self-center items-end line-through mr-3">
                     <FormatNumber
-                      nb={openedPosition.sizeUsd / tokenPriceB}
+                      nb={openedPosition.sizeUsd / tokenPriceBTrade}
                       precision={tokenB.symbol === 'BTC' ? 4 : 2}
                       className="text-txtfade"
                       isAbbreviate={tokenB.symbol === 'BONK'}
                       info={
                         tokenB.symbol === 'BONK'
-                          ? (openedPosition.sizeUsd / tokenPriceB).toString()
+                          ? (openedPosition.sizeUsd / tokenPriceBTrade).toString()
                           : null
                       }
                     />
@@ -656,7 +657,7 @@ export default function LongShortTradingInputs({
                 <div className="flex flex-col items-end font-mono">
                   <FormatNumber
                     nb={inputB}
-                    precision={tokenB.decimals <= 6 ? tokenB.decimals : 6} // Max 6 for UI
+                    precision={tokenB.symbol === 'BTC' ? 4 : 2}
                     className="text-lg"
                     isAbbreviate={tokenB.symbol === 'BONK'}
                     info={
