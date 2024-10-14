@@ -112,7 +112,7 @@ export default function PositionBlock({
               nb={position.initialLeverage}
               format="number"
               suffix="x"
-              precision={1}
+              precision={2}
               isDecimalDimmed={false}
               className="text-txtfade"
             />

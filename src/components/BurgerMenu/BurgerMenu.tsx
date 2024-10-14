@@ -6,7 +6,7 @@ import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { UserProfileExtended } from '@/types';
+import { PriorityFee, UserProfileExtended } from '@/types';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import githubLogo from '../../../public/images/github.svg';
@@ -23,6 +23,7 @@ import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
+  priorityFee,
   userProfile,
   PAGES,
   activeRpc,
@@ -31,10 +32,13 @@ export default function BurgerMenu({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
 }: {
+  priorityFee: PriorityFee;
+  setPriorityFee: (priorityFee: PriorityFee) => void;
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
   activeRpc: {
@@ -91,6 +95,8 @@ export default function BurgerMenu({
           />
           <WalletAdapter className="w-full" userProfile={userProfile} />
           <Settings
+            priorityFee={priorityFee}
+            setPriorityFee={setPriorityFee}
             activeRpc={activeRpc}
             rpcInfos={rpcInfos}
             autoRpcMode={autoRpcMode}

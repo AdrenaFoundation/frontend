@@ -1,38 +1,33 @@
 import Image from 'next/image';
+import { ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import infoIcon from '../../../public/images/Icons/info.svg';
+
 export default function DisplayInfo({
-  data,
   className,
+  bodyClassName,
+  body,
+  displayIcon = true,
 }: {
-  data: { title: string; value: string }[];
   className?: string;
+  bodyClassName?: string;
+  body: ReactNode;
+  displayIcon?: boolean;
 }) {
   return (
-    <div
-      className={twMerge(
-        'flex bg-bcolor p-4 rounded-lg border md:bg-transparent md:p-0 md:rounded-none md:border-none flex-col md:flex-row flex-wrap gap-2 md:gap-5 w-full',
-        className,
-      )}
-    >
-      {data.map(({ title, value }, i) => (
-        <div
-          className="flex flex-row gap-1 justify-between md:flex-col md:justify-normal md:bg-bcolor md:border md:rounded-lg md:p-4 flex-1"
-          key={'info' + i}
-        >
-          <p className="text-base md:text-sm opacity-50">{title}</p>
-          <div className="flex flex-row gap-2 w-full">
-            <Image
-              src={window.adrena.client.adxToken.image}
-              width={24}
-              height={24}
-              alt="adx"
-            />
+    <div className={twMerge("bg-blue/30 p-2 border-dashed border-blue rounded flex relative w-full text-sm", displayIcon ? 'pl-10' : '', className)}>
+      {displayIcon ? <Image
+        className="opacity-60 absolute left-3 top-[1.5em]"
+        src={infoIcon}
+        height={16}
+        width={16}
+        alt="Info icon"
+      /> : null}
 
-            <p className="text-base font-mono">{value}</p>
-          </div>
-        </div>
-      ))}
+      <div className={twMerge('flex flex-col', !displayIcon ? 'text-center items-center justify-center' : '', bodyClassName)}>
+        {body}
+      </div>
     </div>
   );
 }
