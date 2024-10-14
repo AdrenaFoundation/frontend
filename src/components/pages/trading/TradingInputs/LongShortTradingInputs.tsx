@@ -77,7 +77,7 @@ export default function LongShortTradingInputs({
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
-  const tokenPriceBTrade = tokenPrices?.[tokenB.symbol];
+  const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
 
   const [inputA, setInputA] = useState<number | null>(null);
   const [inputB, setInputB] = useState<number | null>(null);
