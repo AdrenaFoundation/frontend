@@ -1,4 +1,4 @@
-import { Wallet } from '@coral-xyz/anchor';
+import { BN, Wallet } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -16,7 +16,7 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import TextExplainWrapper from '@/components/common/TextExplain/TextExplainWrapper';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
-import { RATE_DECIMALS } from '@/constant';
+import { PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
@@ -41,6 +41,18 @@ import PositionFeesTooltip from './PositionFeesTooltip';
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
 let loadingCounter = 0;
+
+// Helper function to convert number to BN
+const toBN = (value: number, decimals: number = 6): BN => {
+  return new BN(Math.round(value * 10 ** decimals));
+};
+
+// Helper function to convert BN to number
+const fromBN = (value: BN, decimals: number = 6): number => {
+  return value.toNumber() / 10 ** decimals;
+};
+
+const PRECISION = 6;
 
 export default function LongShortTradingInputs({
   side,
@@ -418,37 +430,82 @@ export default function LongShortTradingInputs({
     usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
 
-  const currentSize = openedPosition?.sizeUsd ?? 0;
-  const newPositionSize = positionInfos?.sizeUsd ?? 0;
-  const newSize = currentSize + newPositionSize;
+  const currentSize = openedPosition ? toBN(openedPosition.sizeUsd, PRECISION) : new BN(0);
+  const newPositionSize = positionInfos ? toBN(positionInfos.sizeUsd, PRECISION) : new BN(0);
+  const newSize = currentSize.add(newPositionSize);
 
-  const currentLeverage =
-    openedPosition?.sizeUsd && openedPosition?.collateralUsd
-      ? openedPosition.sizeUsd / openedPosition.collateralUsd
-      : null;
+  let currentLeverage: BN | null = null;
+  if (openedPosition?.sizeUsd && openedPosition?.collateralUsd) {
+    const sizeUsdBN = toBN(openedPosition.sizeUsd, PRECISION);
+    const collateralUsdBN = toBN(openedPosition.collateralUsd, PRECISION);
+    currentLeverage = sizeUsdBN.mul(new BN(10 ** PRECISION)).div(collateralUsdBN);
+  }
 
-  const newPositionLeverage =
-    positionInfos?.sizeUsd && positionInfos?.collateralUsd
-      ? positionInfos.sizeUsd / positionInfos.collateralUsd
-      : 0;
+  let newPositionLeverage = new BN(0);
+  if (positionInfos?.sizeUsd && positionInfos?.collateralUsd) {
+    const sizeUsdBN = toBN(positionInfos.sizeUsd, PRECISION);
+    const collateralUsdBN = toBN(positionInfos.collateralUsd, PRECISION);
+    newPositionLeverage = sizeUsdBN.mul(new BN(10 ** PRECISION)).div(collateralUsdBN);
+  }
 
-  const newOverallLeverage = openedPosition
-    ? (openedPosition.sizeUsd + (positionInfos?.sizeUsd ?? 0)) /
-    (openedPosition.collateralUsd + (positionInfos?.collateralUsd ?? 0))
-    : newPositionLeverage;
+  let newOverallLeverage: BN;
+  if (openedPosition) {
+    const totalSizeUsdBN = toBN(openedPosition.sizeUsd + (positionInfos?.sizeUsd ?? 0), PRECISION);
+    const totalCollateralUsdBN = toBN(openedPosition.collateralUsd + (positionInfos?.collateralUsd ?? 0), PRECISION);
+    newOverallLeverage = totalSizeUsdBN.mul(new BN(10 ** PRECISION)).div(totalCollateralUsdBN);
+  } else {
+    newOverallLeverage = newPositionLeverage;
+  }
 
-  const isLeverageIncreased =
-    currentLeverage !== null && newOverallLeverage > currentLeverage;
+  const isLeverageIncreased = currentLeverage !== null && newOverallLeverage.gt(currentLeverage);
 
-  const weightedAverageEntryPrice = openedPosition && positionInfos
-    ? (openedPosition.sizeUsd * openedPosition.price + positionInfos.sizeUsd * positionInfos.entryPrice) /
-    (openedPosition.sizeUsd + positionInfos.sizeUsd)
-    : positionInfos?.entryPrice ?? 0;
+  let weightedAverageEntryPrice: BN;
+  if (openedPosition && positionInfos) {
+    const openedPositionSizeUsdBN = toBN(openedPosition.sizeUsd, PRECISION);
+    const openedPositionPriceBN = toBN(openedPosition.price, PRECISION);
+    const positionInfosSizeUsdBN = toBN(positionInfos.sizeUsd, PRECISION);
+    const positionInfosEntryPriceBN = toBN(positionInfos.entryPrice, PRECISION);
 
-  const weightedAverageLiquidationPrice = openedPosition && positionInfos
-    ? (openedPosition.sizeUsd * (openedPosition.liquidationPrice ?? 0) + positionInfos.sizeUsd * positionInfos.liquidationPrice) /
-    (openedPosition.sizeUsd + positionInfos.sizeUsd)
-    : positionInfos?.liquidationPrice ?? 0;
+    const numerator = openedPositionSizeUsdBN.mul(openedPositionPriceBN)
+      .add(positionInfosSizeUsdBN.mul(positionInfosEntryPriceBN));
+    const denominator = openedPositionSizeUsdBN.add(positionInfosSizeUsdBN);
+    weightedAverageEntryPrice = numerator.div(denominator);
+  } else {
+    weightedAverageEntryPrice = positionInfos ? toBN(positionInfos.entryPrice, PRECISION) : new BN(0);
+  }
+
+  // Convert back to number for display purposes
+  const newSizeNumber = fromBN(newSize, PRECISION);
+  const newOverallLeverageNumber = fromBN(newOverallLeverage, PRECISION);
+  const weightedAverageEntryPriceNumber = fromBN(weightedAverageEntryPrice, PRECISION);
+
+  // Calculate liquidation price
+  if (openedPosition && positionInfos) {
+    const provisionalPosition = {
+      borrowFeeUsd: openedPosition.borrowFeeUsd,
+      nativeObject: {
+        price: uiToNative(weightedAverageEntryPriceNumber, PRICE_DECIMALS),
+        liquidationFeeUsd: openedPosition.nativeObject.liquidationFeeUsd.add(uiToNative(positionInfos.liquidationFeeUsd, USD_DECIMALS)),
+        sizeUsd: openedPosition.nativeObject.sizeUsd.add(uiToNative(positionInfos.sizeUsd, USD_DECIMALS)),
+        collateralUsd: openedPosition.nativeObject.collateralUsd.add(uiToNative(positionInfos.collateralUsd, USD_DECIMALS)),
+        lockedAmount: openedPosition.nativeObject.lockedAmount?.add(uiToNative(positionInfos.size, tokenB.decimals)),
+      },
+      side: openedPosition.side,
+      custody: openedPosition.custody,
+    } as unknown as PositionExtended;
+
+    const liquidationPrice = openedPosition && window.adrena.client.calculateLiquidationPrice({
+      position: provisionalPosition,
+    });
+    console.log('liquidationPrice', liquidationPrice);
+  }
+
+
+  // const weightedAverageLiquidationPrice = openedPosition && positionInfos
+  //   ? (openedPosition.sizeUsd * (openedPosition.liquidationPrice ?? 0) + positionInfos.sizeUsd * positionInfos.liquidationPrice) /
+  //   (openedPosition.sizeUsd + positionInfos.sizeUsd)
+  //   : positionInfos?.liquidationPrice ?? 0;
+  // console.log('weightedAverageLiquidationPrice', weightedAverageLiquidationPrice);
 
   return (
     <div
@@ -713,7 +770,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={weightedAverageEntryPrice}
+                      nb={weightedAverageEntryPriceNumber}
                       format="currency"
                       className="text-lg"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
@@ -775,11 +832,11 @@ export default function LongShortTradingInputs({
               {positionInfos && !isInfoLoading ? (
                 <div className="flex w-full justify-evenly">
                   <TextExplainWrapper
-                    title="Leverage"
+                    title="Init. Leverage"
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={newOverallLeverage}
+                      nb={newOverallLeverageNumber}
                       format="number"
                       prefix="x"
                       className={`text-lg ${openedPosition
@@ -790,9 +847,9 @@ export default function LongShortTradingInputs({
                         }`}
                     />
 
-                    {openedPosition && newOverallLeverage ? (
+                    {openedPosition && newOverallLeverageNumber ? (
                       <FormatNumber
-                        nb={currentLeverage}
+                        nb={currentLeverage ? fromBN(currentLeverage, PRECISION) : null}
                         format="number"
                         prefix="x"
                         className="text-txtfade text-xs self-center line-through"
@@ -808,14 +865,14 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={newSize}
+                      nb={newSizeNumber}
                       format="number"
                       className="text-lg"
                     />
 
                     {openedPosition && openedPosition.sizeUsd ? (
                       <FormatNumber
-                        nb={currentSize}
+                        nb={currentSize.toNumber() / 10 ** PRECISION}
                         format="number"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}

@@ -190,7 +190,7 @@ export function uiLeverageToNative(leverage: number): number {
 }
 
 export function uiToNative(nb: number, decimals: number): BN {
-  return new BN(Math.floor(nb * 10 ** decimals));
+  return new BN(Math.floor(nb * 10 ** decimals).toString());
 }
 
 export function getTokenNameByMint(mint: PublicKey): string {

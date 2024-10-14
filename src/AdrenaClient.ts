@@ -3985,6 +3985,8 @@ export class AdrenaClient {
     };
   }
 
+  // Very important that needs to stay in line with the backend 
+  // This is a local calculation of the liquidation price, and that's what is presented to the user in the UI
   public calculateLiquidationPrice({
     position,
   }: {
