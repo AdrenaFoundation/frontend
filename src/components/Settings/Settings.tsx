@@ -221,67 +221,43 @@ export default function Settings({
 
         <DisplayInfo className='mt-2 mb-2' body={<div>Pay a priority fee to speed up your transaction on Solana.</div>} />
 
-        <ul
-          className={twMerge(
-            'flex flex-col gap-2 opacity-100 mt-2',
-            autoRpcMode && 'opacity-30 pointer-events-none',
-          )}
-        >
+        <div className='flex gap-2 mt-2'>
           {PRIORITY_FEE_LIST.map(({
             title,
             microLamport,
-          }) => <li key={title} className='cursor-pointer'>
-              <div className="flex flex-row gap-2 items-center" onClick={() => setPriorityFee(microLamport)}>
-                <div className="w-10 flex items-center justify-center">
-                  <input
-                    type="radio"
-                    checked={microLamport === priorityFee}
-                    onChange={() => {
-                      // Handle the click on the level above
-                    }}
-                    className="cursor-pointer"
-                  />
-                </div>
+          }) =>
+            <div className='flex w-1/3 flex-col items-center'>
+              <Button onClick={() => {
+                setPriorityFee(microLamport);
+              }} variant={microLamport === priorityFee ? 'outline' : 'text'} className='w-20' title={title} key={title} />
+            </div>)}
+        </div>
 
-                <div
-                  className={twMerge(
-                    'text-sm font-medium opacity-50 hover:opacity-100',
-                    microLamport === priorityFee && 'opacity-100',
-                  )}
-                >
-                  {title}
-                </div>
+        <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>
+          Pay {formatNumber(priorityFee, 0)} μLamport / CU
+        </div>
 
-                <div className='ml-auto text-xs flex'>
-                  <div>{formatNumber(microLamport, 0)}</div>
-                  <div className='ml-1 text-txtfade'>μ-lamport</div>
-                  <div className='ml-1'>/ cu</div>
-                </div>
-              </div>
-            </li>)}
-        </ul>
-
-        <div className='mt-4 ml-3'>
+        <div className='mt-2'>
           <div className='w-full flex flex-col border p-2 bg-third'>
-            <div className='flex w-full border-b pb-1'>
+            <div className='flex w-full'>
               <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Transaction Size</div>
               <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Extra Cost</div>
             </div>
 
-            <div className='flex flex-col w-full opacity-50 mt-1'>
+            <div className='flex flex-col w-full mt-1'>
               <div className='flex w-full text-xs'>
-                <div className='w-1/2 items-center justify-center flex'>Small (200,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex'>{formatNumber(200000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>Small (200,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(200000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
 
               <div className='flex w-full text-xs'>
-                <div className='w-1/2 items-center justify-center flex'>Average (400,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex'>{formatNumber(400000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>Average (400,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(400000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
 
               <div className='flex w-full text-xs'>
-                <div className='w-1/2 items-center justify-center flex'>Big (700,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex'>{formatNumber(700000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>Big (700,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(700000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
             </div>
           </div>
