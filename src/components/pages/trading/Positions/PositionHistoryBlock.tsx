@@ -3,7 +3,7 @@ import 'tippy.js/dist/tippy.css'; // Import Tippy's CSS
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
@@ -66,7 +66,7 @@ interface LeverageDisplayProps {
   finalCollateral: number;
 }
 
-const LeverageDisplay: React.FC<LeverageDisplayProps> = ({ leverage, positionSize, entryCollateral, finalCollateral}) => (
+const LeverageDisplay: React.FC<LeverageDisplayProps> = ({ leverage, positionSize, entryCollateral, finalCollateral }) => (
   <Tippy
     content={
       <>
@@ -245,13 +245,12 @@ export default function PositionHistoryBlock({
                 : positionHistory.pnl
             }
             format="currency"
-            className={`mr-0.5 opacity-90 font-bold text-sm text-${
-              (showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl) > 0
-                ? 'green'
-                : 'redbright'
-            }`}
+            className={`mr-0.5 opacity-90 font-bold text-sm text-${(showAfterFees
+              ? positionHistory.pnl + positionHistory.fees
+              : positionHistory.pnl) > 0
+              ? 'green'
+              : 'redbright'
+              }`}
             minimumFractionDigits={2}
             precision={2}
             isDecimalDimmed={false}
@@ -270,13 +269,12 @@ export default function PositionHistoryBlock({
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
-            className={`text-xxs opacity-90 text-${
-              (showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl) > 0
-                ? 'green'
-                : 'redbright'
-            }`}
+            className={`text-xxs opacity-90 text-${(showAfterFees
+              ? positionHistory.pnl + positionHistory.fees
+              : positionHistory.pnl) > 0
+              ? 'green'
+              : 'redbright'
+              }`}
           />
         </div>
       ) : (
@@ -302,9 +300,8 @@ export default function PositionHistoryBlock({
         suffix=")"
         precision={2}
         isDecimalDimmed={false}
-        className={`text-xxs opacity-90 text-${
-          pnlValue > 0 ? 'green' : 'redbright'
-        }`}
+        className={`text-xxs opacity-90 text-${pnlValue > 0 ? 'green' : 'redbright'
+          }`}
       />
     ) : null;
   }
