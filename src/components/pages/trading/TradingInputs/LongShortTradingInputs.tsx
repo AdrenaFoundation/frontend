@@ -480,6 +480,7 @@ export default function LongShortTradingInputs({
   const weightedAverageEntryPriceNumber = fromBN(weightedAverageEntryPrice, PRECISION);
 
   // Calculate liquidation price
+  let estimatedLiquidationPrice: number | null = null;
   if (openedPosition && positionInfos) {
     const provisionalPosition = {
       borrowFeeUsd: openedPosition.borrowFeeUsd,
@@ -494,18 +495,10 @@ export default function LongShortTradingInputs({
       custody: openedPosition.custody,
     } as unknown as PositionExtended;
 
-    const liquidationPrice = openedPosition && window.adrena.client.calculateLiquidationPrice({
+    estimatedLiquidationPrice = openedPosition && window.adrena.client.calculateLiquidationPrice({
       position: provisionalPosition,
     });
-    console.log('liquidationPrice', liquidationPrice);
   }
-
-
-  // const weightedAverageLiquidationPrice = openedPosition && positionInfos
-  //   ? (openedPosition.sizeUsd * (openedPosition.liquidationPrice ?? 0) + positionInfos.sizeUsd * positionInfos.liquidationPrice) /
-  //   (openedPosition.sizeUsd + positionInfos.sizeUsd)
-  //   : positionInfos?.liquidationPrice ?? 0;
-  // console.log('weightedAverageLiquidationPrice', weightedAverageLiquidationPrice);
 
   return (
     <div
@@ -753,9 +746,24 @@ export default function LongShortTradingInputs({
 
         {inputA && !errorMessage && (
           <>
-            <h5 className="hidden sm:flex items-center ml-4 mt-3 mb-2">
-              Position info
-            </h5>
+            <div className="flex items-center ml-4 mt-3 mb-2">
+              <h5 className="hidden sm:flex items-center">Position info</h5>
+              <Tippy
+                content={
+                  <p className="font-medium text-txtfade">
+                    The information below is calculated locally based on current market price, and does not account for confidence of the price feed at execution time, as such the Liquidation price and init. leverage may slightly differ.
+                  </p>
+                }
+              >
+                <Image
+                  src={infoIcon}
+                  width={14}
+                  height={14}
+                  alt="info icon"
+                  className="ml-1 cursor-pointer"
+                />
+              </Tippy>
+            </div>
 
             <StyledSubSubContainer
               className={twMerge(
@@ -793,7 +801,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={weightedAverageLiquidationPrice}
+                      nb={estimatedLiquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
