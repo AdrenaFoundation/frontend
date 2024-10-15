@@ -47,7 +47,6 @@ import {
   PoolExtended,
   Position,
   PositionExtended,
-  PriorityFee,
   ProfitAndLoss,
   Staking,
   SwapAmountAndFees,
@@ -278,7 +277,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) {}
+  ) { }
 
   public setPriorityFee(priorityFee: number) {
     this.priorityFee = priorityFee;
@@ -436,14 +435,14 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-              name: string;
-              color: string;
-              symbol: string;
-              image: ImageRef;
-              coingeckoId: string;
-              decimals: number;
-              pythPriceUpdateV2: PublicKey;
-            }
+            name: string;
+            color: string;
+            symbol: string;
+            image: ImageRef;
+            coingeckoId: string;
+            decimals: number;
+            pythPriceUpdateV2: PublicKey;
+          }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -1637,13 +1636,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-            swappedTokenDecimals: tokenB.decimals,
-            swappedTokenPrice: tokenBPrice,
-          }
+          swappedTokenDecimals: tokenB.decimals,
+          swappedTokenPrice: tokenBPrice,
+        }
         : {
-            swappedTokenDecimals: usdcToken.decimals,
-            swappedTokenPrice: usdcTokenPrice,
-          };
+          swappedTokenDecimals: usdcToken.decimals,
+          swappedTokenPrice: usdcTokenPrice,
+        };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1769,9 +1768,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-      position,
-      collateralAmount: addedCollateral,
-    })
+        position,
+        collateralAmount: addedCollateral,
+      })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2504,11 +2503,11 @@ export class AdrenaClient {
         stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
         amount: additionalAmount
           ? uiToNative(
-              additionalAmount,
-              lockedStake.tokenSymbol === 'ALP'
-                ? this.alpToken.decimals
-                : this.adxToken.decimals,
-            )
+            additionalAmount,
+            lockedStake.tokenSymbol === 'ALP'
+              ? this.alpToken.decimals
+              : this.adxToken.decimals,
+          )
           : null,
         lockedDays: updatedDuration ?? null,
       })
@@ -3954,13 +3953,13 @@ export class AdrenaClient {
         )
           ? new BN(0)
           : uiToNative(
-              collateralTokenPriceUi *
-                nativeToUi(
-                  position.nativeObject.lockedAmount,
-                  collateralCustody.tokenInfo.decimals,
-                ),
-              USD_DECIMALS,
-            );
+            collateralTokenPriceUi *
+            nativeToUi(
+              position.nativeObject.lockedAmount,
+              collateralCustody.tokenInfo.decimals,
+            ),
+            USD_DECIMALS,
+          );
 
         return {
           profitUsd: nativeToUi(
@@ -4138,9 +4137,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                    position.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
+                  position.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4151,6 +4150,7 @@ export class AdrenaClient {
               ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
               : null,
             takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
+            isPendingCleanupAndClose: position.pendingCleanupAndClose === 1,
 
             //
             nativeObject: position,
@@ -4635,8 +4635,7 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 

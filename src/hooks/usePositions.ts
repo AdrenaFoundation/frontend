@@ -65,12 +65,14 @@ export default function usePositions(): {
 
     if (loadPosition) {
       try {
-        const freshPositions =
+        let freshPositions =
           (loadPosition
             ? await window.adrena.client.loadUserPositions(
-                new PublicKey(wallet.walletAddress),
-              )
+              new PublicKey(wallet.walletAddress),
+            )
             : positions) ?? [];
+
+        freshPositions = freshPositions.filter(position => !position.isPendingCleanupAndClose);
 
         freshPositions.forEach((position) => {
           calculatePnLandLiquidationPrice(position, tokenPrices);
