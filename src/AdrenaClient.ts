@@ -3894,7 +3894,7 @@ export class AdrenaClient {
     collateralCustody: CustodyExtended;
     position: PositionExtended;
   }): BN {
-    const currentTime = new BN(Date.now());
+    const currentTime = new BN(Date.now() / 1000);
 
     // Calculate cumulative interest for the custody
     const cumulativeInterest =
