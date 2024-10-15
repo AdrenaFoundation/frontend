@@ -253,6 +253,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          existingPosition: openedPosition,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -262,6 +263,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
+          existingPosition: openedPosition,
         }));
 
       triggerPositionsReload();
@@ -285,15 +287,16 @@ export default function LongShortTradingInputs({
     setCustody(window.adrena.client.getCustodyByMint(tokenB.mint) ?? null);
   }, [tokenB]);
 
+  const isValidOpenedPosition = openedPosition && !openedPosition.pendingCleanupAndClose;
+
   useEffect(() => {
     // If wallet not connected, then user need to connect wallet
     if (!connected) return setButtonTitle('Connect wallet');
 
-    if (openedPosition) {
+    if (isValidOpenedPosition) {
       if (side === 'short') {
         return setButtonTitle('Increase Short');
       }
-
       return setButtonTitle('Increase Position');
     }
 
@@ -302,7 +305,7 @@ export default function LongShortTradingInputs({
     connected,
     inputA,
     inputB,
-    openedPosition,
+    isValidOpenedPosition,
     side,
     tokenA,
     wallet,
@@ -780,13 +783,13 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
+                      nb={isValidOpenedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                       format="currency"
                       className="text-lg"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                     />
 
-                    {openedPosition && (
+                    {isValidOpenedPosition && (
                       <FormatNumber
                         nb={openedPosition.price}
                         format="currency"
@@ -804,13 +807,13 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
+                      nb={isValidOpenedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
                       precision={tokenB.symbol === 'BONK' ? 8 : undefined}
                     />
 
-                    {openedPosition && openedPosition.liquidationPrice ? (
+                    {isValidOpenedPosition && openedPosition.liquidationPrice ? (
                       <FormatNumber
                         nb={openedPosition.liquidationPrice}
                         format="currency"
@@ -847,7 +850,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
+                      nb={isValidOpenedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
                       format="number"
                       prefix="x"
                       className={`text-lg ${openedPosition
@@ -858,7 +861,7 @@ export default function LongShortTradingInputs({
                         }`}
                     />
 
-                    {openedPosition && increasePositionInfo?.newOverallLeverage ? (
+                    {isValidOpenedPosition && increasePositionInfo?.newOverallLeverage ? (
                       <FormatNumber
                         nb={increasePositionInfo?.currentLeverage}
                         format="number"
@@ -876,12 +879,12 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={openedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
+                      nb={isValidOpenedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
                       format="number"
                       className="text-lg"
                     />
 
-                    {openedPosition && openedPosition.sizeUsd ? (
+                    {isValidOpenedPosition && openedPosition.sizeUsd ? (
                       <FormatNumber
                         nb={openedPosition.sizeUsd}
                         format="number"
