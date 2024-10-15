@@ -2536,6 +2536,15 @@ export class AdrenaClient {
     const stakeResolutionThread = this.getThreadAddressPda(
       lockedStake.stakeResolutionThreadId,
     );
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
+
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+
+    const rewardTokenAccount = findATAAddressSync(
+      owner,
+      this.cortex.feeRedistributionMint,
+    );
 
     const transaction = await this.adrenaProgram.methods
       .upgradeLockedStake({
@@ -2571,6 +2580,13 @@ export class AdrenaClient {
         staking,
         stakingStakedTokenVault,
         stakeResolutionThread,
+        lmTokenMint: this.lmTokenMint,
+        adrenaProgram: this.adrenaProgram.programId,
+        pool: this.mainPool.pubkey,
+        genesisLock: this.genesisLockPda,
+        rewardTokenAccount,
+        lmTokenAccount,
+        stakingLmRewardTokenVault,
       })
       .transaction();
 
