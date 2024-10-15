@@ -53,9 +53,10 @@ export default function RootLayout({
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
-    { name: 'Overview', link: '/my_dashboard' },
     { name: 'Trade', link: '/trade' },
+    { name: 'Profile', link: '/my_dashboard' },
     { name: 'Stake', link: '/stake' },
+    { name: 'Provide Liquidity', link: '/buy_alp' },
     { name: 'Monitor', link: '/monitoring' },
     { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
     { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true },
