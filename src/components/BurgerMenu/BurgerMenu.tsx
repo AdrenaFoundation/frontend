@@ -6,7 +6,10 @@ import router, { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { useSelector } from '@/store/store';
 import { PriorityFee, UserProfileExtended } from '@/types';
+import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
 import githubLogo from '../../../public/images/github.svg';
@@ -58,7 +61,18 @@ export default function BurgerMenu({
   setFavoriteRpc: (favoriteRpc: string) => void;
 }) {
   const { pathname } = useRouter();
+  const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const [alpPrice, setAlpPrice] = useState<number | null>(null);
+  const [adxPrice, setAdxPrice] = useState<number | null>(null);
+
+  const tokenPrices = useSelector((s) => s.tokenPrices);
+
+  useEffect(() => {
+    setAlpPrice(tokenPrices.ALP);
+    setAdxPrice(tokenPrices.ADX);
+  }, [tokenPrices]);
 
   const clusterSwitchEnabled = false;
 
@@ -87,13 +101,30 @@ export default function BurgerMenu({
         </div>
 
         <div className="flex flex-row items-center gap-3">
-          <Button
-            title="Trade now"
-            className="w-full whitespace-nowrap"
-            href={'/trade'}
-            onClick={() => setIsOpen(false)}
-          />
+          <div className='flex gap-1'>
+            <Link href="/buy_alp" className={twMerge('ml-2 items-center justify-center flex hover:opacity-100', isSmallScreen ? 'flex-col' : 'flex-row', pathname !== '/buy_alp' && 'opacity-50')}>
+              <div className={twMerge('text-sm font-boldy', isSmallScreen ? 'mr-0' : 'mr-2')}>ALP</div>
+
+              {alpPrice ?
+                <div className='w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded'>
+                  <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(alpPrice, 3, 3)}</div>
+                </div> :
+                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />}
+            </Link>
+
+            <Link href="/buy_adx" className={twMerge('ml-2 items-center justify-center flex hover:opacity-100', isSmallScreen ? 'flex-col' : 'flex-row', pathname !== '/buy_adx' && 'opacity-50')}>
+              <div className={twMerge('text-sm font-boldy', isSmallScreen ? 'mr-0' : 'mr-2')}>ADX</div>
+
+              {adxPrice ?
+                <div className='w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded'>
+                  <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(adxPrice, 3, 3)}</div>
+                </div> :
+                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />}
+            </Link>
+          </div>
+
           <WalletAdapter className="w-full" userProfile={userProfile} />
+
           <Settings
             priorityFee={priorityFee}
             setPriorityFee={setPriorityFee}
