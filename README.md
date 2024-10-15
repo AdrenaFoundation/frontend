@@ -24,7 +24,7 @@ Before you begin, ensure you have the following installed:
 
    ```bash
    cd frontend
-   yarn
+   npm i
    ```
 
 3. **Install Pre-commit hook**
