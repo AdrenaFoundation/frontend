@@ -1522,6 +1522,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    existingPosition,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1530,6 +1531,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    existingPosition?: PositionExtended | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1565,6 +1567,23 @@ export class AdrenaClient {
         userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction();
 
+    // Cleanup existing position in case Sablier did not work as expected
+    if (existingPosition && existingPosition.pendingCleanupAndClose == true) {
+      if (existingPosition.stopLossThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionStopLoss({
+            position: existingPosition,
+          }),
+        );
+      }
+      if (existingPosition.takeProfitThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionTakeProfit({
+            position: existingPosition,
+          }),
+        );
+      }
+    }
     const transaction = new Transaction();
     transaction.add(
       ...preInstructions,
@@ -1698,6 +1717,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    existingPosition,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1706,6 +1726,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    existingPosition?: PositionExtended | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1738,6 +1759,24 @@ export class AdrenaClient {
         leverage,
         userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction();
+
+    // Cleanup existing position in case Sablier did not work as expected
+    if (existingPosition && existingPosition.pendingCleanupAndClose == true) {
+      if (existingPosition.stopLossThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionStopLoss({
+            position: existingPosition,
+          }),
+        );
+      }
+      if (existingPosition.takeProfitThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionTakeProfit({
+            position: existingPosition,
+          }),
+        );
+      }
+    }
 
     const transaction = new Transaction();
     transaction.add(
@@ -3584,12 +3623,14 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     side,
+    position,
   }: {
     mint: PublicKey;
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
     side: 'long' | 'short';
+    position?: PositionExtended | null;
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
     if (this.adrenaProgram === null) {
       return null;
@@ -3634,8 +3675,26 @@ export class AdrenaClient {
       })
       .instruction();
 
+    const preInstructions: TransactionInstruction[] = [];
+    if (position && position.pendingCleanupAndClose == true) {
+      if (position.stopLossThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionStopLoss({
+            position,
+          }),
+        );
+      }
+      if (position.takeProfitThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionTakeProfit({
+            position,
+          }),
+        );
+      }
+    }
+
     return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
-      [instruction],
+      [...preInstructions, instruction],
       'OpenPositionWithSwapAmountAndFees',
     );
   }
@@ -4319,6 +4378,81 @@ export class AdrenaClient {
 
     return this.signAndExecuteTx({ transaction, notification });
   }
+
+  public buildCleanupPositionStopLoss({
+    position,
+  }: {
+    position: PositionExtended;
+  }): Promise<TransactionInstruction> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    return this.adrenaProgram.methods
+      .cleanupPositionStopLoss()
+      .accountsStrict({
+        position: position.pubkey,
+        owner: position.owner,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        caller: caller,
+        custody: position.custody,
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        sablierProgram: this.config.sablierThreadProgram,
+        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.takeProfitThreadId,
+          user: position.owner,
+        }).publicKey,
+        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.stopLossThreadId,
+          user: position.owner,
+        }).publicKey,
+      })
+      .instruction();
+  }
+
+  public buildCleanupPositionTakeProfit({
+    position,
+  }: {
+    position: PositionExtended;
+  }): Promise<TransactionInstruction> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    return this.adrenaProgram.methods
+      .cleanupPositionTakeProfit()
+      .accountsStrict({
+        position: position.pubkey,
+        owner: position.owner,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        caller: caller,
+        custody: position.custody,
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        sablierProgram: this.config.sablierThreadProgram,
+        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.takeProfitThreadId,
+          user: position.owner,
+        }).publicKey,
+        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.stopLossThreadId,
+          user: position.owner,
+        }).publicKey,
+      })
+      .instruction();
+  }
+
 
   /*
    * UTILS
