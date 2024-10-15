@@ -4150,7 +4150,7 @@ export class AdrenaClient {
               ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
               : null,
             takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
-            isPendingCleanupAndClose: position.pendingCleanupAndClose === 1,
+            pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
 
             //
             nativeObject: position,

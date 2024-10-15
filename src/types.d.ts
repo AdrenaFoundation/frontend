@@ -133,7 +133,7 @@ export type PositionExtended = {
   takeProfitLimitPrice?: number | null;
   takeProfitThreadIsSet: boolean;
   // The position is closed and still alive due to a pending cleanup and close from Sablier
-  isPendingCleanupAndClose: boolean;
+  pendingCleanupAndClose: boolean;
 
   // Onchain data
   nativeObject: Position;

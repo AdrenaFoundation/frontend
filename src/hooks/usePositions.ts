@@ -72,7 +72,7 @@ export default function usePositions(): {
             )
             : positions) ?? [];
 
-        freshPositions = freshPositions.filter(position => !position.isPendingCleanupAndClose);
+        freshPositions = freshPositions.filter(position => !position.pendingCleanupAndClose);
 
         freshPositions.forEach((position) => {
           calculatePnLandLiquidationPrice(position, tokenPrices);
