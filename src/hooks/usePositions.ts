@@ -68,8 +68,8 @@ export default function usePositions(): {
         const freshPositions =
           (loadPosition
             ? await window.adrena.client.loadUserPositions(
-                new PublicKey(wallet.walletAddress),
-              )
+              new PublicKey(wallet.walletAddress),
+            )
             : positions) ?? [];
 
         freshPositions.forEach((position) => {

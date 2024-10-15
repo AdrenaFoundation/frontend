@@ -42,6 +42,10 @@ export default function Positions({
 
   if (isBigScreen === null) return null;
 
+  const nonPendingCleanupAndClosePositions = positions?.filter(
+    position => !position.pendingCleanupAndClose
+  ) || null;
+
   return (
     <>
       <AnimatePresence>
@@ -113,7 +117,7 @@ export default function Positions({
         bodyClassName={bodyClassName}
         borderColor={borderColor}
         connected={connected}
-        positions={positions}
+        positions={nonPendingCleanupAndClosePositions}
         className={className}
         triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}

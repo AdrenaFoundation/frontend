@@ -1,5 +1,5 @@
 export type Adrena = {
-  "version": "1.0.6",
+  "version": "1.0.10",
   "name": "adrena",
   "instructions": [
     {
@@ -3838,7 +3838,10 @@ export type Adrena = {
             "defined": "ClosePositionLongParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "closePositionShort",
@@ -4062,7 +4065,10 @@ export type Adrena = {
             "defined": "ClosePositionShortParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "liquidateLong",
@@ -7610,7 +7616,10 @@ export type Adrena = {
             "defined": "FinalizeLockedStakeParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "resolveStakingRound",
@@ -9350,6 +9359,172 @@ export type Adrena = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "cleanupPositionTakeProfit",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "takeProfitThread",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "stopLossThread",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sablierProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
+    },
+    {
+      "name": "cleanupPositionStopLoss",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "stopLossThread",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "takeProfitThread",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sablierProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     }
   ],
   "accounts": [
@@ -9785,11 +9960,15 @@ export type Adrena = {
             "type": "u8"
           },
           {
+            "name": "pendingCleanupAndClose",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                4
+                3
               ]
             }
           },
@@ -9834,7 +10013,7 @@ export type Adrena = {
             "type": "u64"
           },
           {
-            "name": "unrealizedLossUsd",
+            "name": "unrealizedInterestUsd",
             "type": "u64"
           },
           {
@@ -12779,12 +12958,22 @@ export type Adrena = {
       "code": 6068,
       "name": "InvalidLockDuration",
       "msg": "The provided lock duration isn't valid"
+    },
+    {
+      "code": 6069,
+      "name": "StakeNotEstablished",
+      "msg": "The stake isn't established yet"
+    },
+    {
+      "code": 6070,
+      "name": "PositionAlreadyClosed",
+      "msg": "The position is already pending cleanup and close"
     }
   ]
 };
 
 export const IDL: Adrena = {
-  "version": "1.0.6",
+  "version": "1.0.10",
   "name": "adrena",
   "instructions": [
     {
@@ -16623,7 +16812,10 @@ export const IDL: Adrena = {
             "defined": "ClosePositionLongParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "closePositionShort",
@@ -16847,7 +17039,10 @@ export const IDL: Adrena = {
             "defined": "ClosePositionShortParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "liquidateLong",
@@ -20395,7 +20590,10 @@ export const IDL: Adrena = {
             "defined": "FinalizeLockedStakeParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "resolveStakingRound",
@@ -22135,6 +22333,172 @@ export const IDL: Adrena = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "cleanupPositionTakeProfit",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "takeProfitThread",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "stopLossThread",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sablierProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
+    },
+    {
+      "name": "cleanupPositionStopLoss",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#5"
+          ]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#6"
+          ]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#7"
+          ]
+        },
+        {
+          "name": "stopLossThread",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#8"
+          ]
+        },
+        {
+          "name": "takeProfitThread",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sablierProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     }
   ],
   "accounts": [
@@ -22570,11 +22934,15 @@ export const IDL: Adrena = {
             "type": "u8"
           },
           {
+            "name": "pendingCleanupAndClose",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                4
+                3
               ]
             }
           },
@@ -22619,7 +22987,7 @@ export const IDL: Adrena = {
             "type": "u64"
           },
           {
-            "name": "unrealizedLossUsd",
+            "name": "unrealizedInterestUsd",
             "type": "u64"
           },
           {
@@ -25564,6 +25932,16 @@ export const IDL: Adrena = {
       "code": 6068,
       "name": "InvalidLockDuration",
       "msg": "The provided lock duration isn't valid"
+    },
+    {
+      "code": 6069,
+      "name": "StakeNotEstablished",
+      "msg": "The stake isn't established yet"
+    },
+    {
+      "code": 6070,
+      "name": "PositionAlreadyClosed",
+      "msg": "The position is already pending cleanup and close"
     }
   ]
 };
