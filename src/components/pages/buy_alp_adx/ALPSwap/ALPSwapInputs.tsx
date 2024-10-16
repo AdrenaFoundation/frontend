@@ -140,12 +140,12 @@ export default function ALPSwapInputs({
 
           setCollateralPrice(
             collateralTokenPrice *
-              nativeToUi(amountAndFee.amount, collateralToken.decimals),
+            nativeToUi(amountAndFee.amount, collateralToken.decimals),
           );
 
           setFeesUsd(
             collateralTokenPrice *
-              nativeToUi(amountAndFee.fee, collateralToken.decimals),
+            nativeToUi(amountAndFee.fee, collateralToken.decimals),
           );
           setLoading(false);
         })
@@ -222,7 +222,7 @@ export default function ALPSwapInputs({
 
           setFeesUsd(
             collateralTokenPrice *
-              nativeToUi(amountAndFee.fee, collateralToken.decimals),
+            nativeToUi(amountAndFee.fee, collateralToken.decimals),
           );
           setLoading(false);
         })
@@ -365,15 +365,15 @@ export default function ALPSwapInputs({
               onClick={() =>
                 actionType === 'buy'
                   ? onChangeCollateralInput(
-                      walletTokenBalances?.[collateralToken.symbol] ?? 0,
-                    )
+                    walletTokenBalances?.[collateralToken.symbol] ?? 0,
+                  )
                   : onChangeAlpInput(
-                      walletTokenBalances?.[alpToken.symbol] ?? 0,
-                    )
+                    walletTokenBalances?.[alpToken.symbol] ?? 0,
+                  )
               }
             >
               <span className="text-txtfade text-sm font-mono">
-                {formatNumber(balance, 4)}
+                {formatNumber(balance, token.displayDecimalsPrecision)}
               </span>
               <span className="text-txtfade text-sm ml-1">
                 {token.symbol} in wallet

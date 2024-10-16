@@ -325,7 +325,7 @@ export default function SwapTradingInputs({
                 onClick={handleMax}
               >
                 {balance !== null
-                  ? formatNumber(balance, tokenA.decimals)
+                  ? formatNumber(balance, tokenA.displayDecimalsPrecision)
                   : '-'}{' '}
               </span>
               <span className="text-txtfade text-sm">

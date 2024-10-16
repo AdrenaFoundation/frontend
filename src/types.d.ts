@@ -178,7 +178,8 @@ export interface Token {
   color: string;
   name: TokenName;
   decimals: number;
-  // displayDecimals: number; TODO: Implement this to fix display in fields
+  displayDecimalsPrecision: number;
+  priceDecimalsPrecision: number;
   isStable: boolean;
   image: ImageRef;
   custody?: PublicKey;

@@ -26,6 +26,8 @@ export default class MainnetConfiguration implements IConfiguration {
       coingeckoId: string;
       decimals: number;
       pythPriceUpdateV2: PublicKey;
+      displayDecimalsPrecision: number;
+      priceDecimalsPrecision: number;
     };
   } = {
     EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v: {
@@ -35,6 +37,8 @@ export default class MainnetConfiguration implements IConfiguration {
       image: usdcLogo,
       coingeckoId: 'usd-coin',
       decimals: 6,
+      displayDecimalsPrecision: 2,
+      priceDecimalsPrecision: 4,
       pythPriceUpdateV2: new PublicKey(
         'Dpw1EAVrSB1ibxiDQyTAW6Zip3J4Btk2x4SgApQCeFbX',
       ),
@@ -46,6 +50,8 @@ export default class MainnetConfiguration implements IConfiguration {
       image: bonkLogo,
       coingeckoId: 'bonk',
       decimals: 5,
+      displayDecimalsPrecision: 0,
+      priceDecimalsPrecision: 8,
       pythPriceUpdateV2: new PublicKey(
         'DBE3N8uNjhKPRHfANdwGvCZghWXyLPdqdSbEW2XFwBiX',
       ),
@@ -57,6 +63,8 @@ export default class MainnetConfiguration implements IConfiguration {
       image: wbtcLogo,
       coingeckoId: 'wrapped-btc-wormhole',
       decimals: 8,
+      displayDecimalsPrecision: 6,
+      priceDecimalsPrecision: 2,
       pythPriceUpdateV2: new PublicKey(
         '9gNX5vguzarZZPjTnE1hWze3s6UsZ7dsU3UnAmKPnMHG',
       ),
@@ -69,6 +77,8 @@ export default class MainnetConfiguration implements IConfiguration {
       image: btcLogo,
       coingeckoId: 'bitcoin',
       decimals: 8,
+      displayDecimalsPrecision: 6,
+      priceDecimalsPrecision: 2,
       pythPriceUpdateV2: new PublicKey(
         '4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo',
       ),
@@ -80,6 +90,8 @@ export default class MainnetConfiguration implements IConfiguration {
       image: jitosolLogo,
       coingeckoId: 'solana',
       decimals: 9,
+      displayDecimalsPrecision: 4,
+      priceDecimalsPrecision: 2,
       pythPriceUpdateV2: new PublicKey(
         'AxaxyeDT8JnWERSaTKvFXvPKkEdxnamKSqpWbsSjYg1g',
       ),
@@ -91,6 +103,8 @@ export default class MainnetConfiguration implements IConfiguration {
       image: solLogo,
       coingeckoId: 'solana',
       decimals: 9,
+      displayDecimalsPrecision: 4,
+      priceDecimalsPrecision: 2,
       pythPriceUpdateV2: new PublicKey(
         '7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE',
       ),

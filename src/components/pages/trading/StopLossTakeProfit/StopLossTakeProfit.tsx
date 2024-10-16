@@ -12,7 +12,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
 import { PositionExtended, UserProfileExtended } from '@/types';
-import { addNotification, formatPriceInfo, getTokenImage, getTokenSymbol } from '@/utils';
+import { addNotification, getTokenImage, getTokenSymbol } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
@@ -277,7 +277,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayDecimalsPrecision}
                 className="text-orange font-regular"
                 isDecimalDimmed={false}
               />
@@ -291,7 +291,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={position.price}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayDecimalsPrecision}
                 isDecimalDimmed={true}
                 className="text-gray-100 font-regular"
               />
@@ -309,7 +309,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={takeProfitInput}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayDecimalsPrecision}
                 className={twMerge(
                   'text-sm text-regular',
                   takeProfitInput !== null ? 'text-blue' : '',
@@ -325,7 +325,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={stopLossInput}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayDecimalsPrecision}
                 className={twMerge(
                   'text-sm text-regular',
                   stopLossInput !== null ? 'text-blue' : '',
@@ -352,7 +352,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={Math.abs(positionNetPnl)}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayDecimalsPrecision}
                 className={twMerge(
                   'font-bold text-sm',
                   positionNetPnl > 0
