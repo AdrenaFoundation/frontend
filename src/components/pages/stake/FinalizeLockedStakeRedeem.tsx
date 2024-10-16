@@ -53,12 +53,12 @@ export default function FinalizeLockedStakeRedeem({
               precision={precision}
               placeholder="0"
               className="inline"
-            />{' '}
+            />
             <span className="ml-1">{lockedStake.tokenSymbol}</span>
           </span>
         </div>
         <div className="flex w-full items-center justify-between">
-          <div className="text-redbright text-sm ">Fee</div>
+          <div className="text-redbright text-sm">Fee</div>
 
           <span className="text-redbright text-sm">
             -
@@ -67,6 +67,7 @@ export default function FinalizeLockedStakeRedeem({
               precision={precision}
               placeholder="0"
               className="inline text-redbright"
+              isDecimalDimmed={false}
             />
             <span className="ml-1 text-redbright">({feePercentage}%)</span>
             <span className="ml-1 text-redbright">
@@ -75,7 +76,8 @@ export default function FinalizeLockedStakeRedeem({
           </span>
         </div>
 
-        <div className="border-b border-bcolor mt-2 mb-2"></div>
+        <div className="border-b border-[#ffffff10] mt-2 mb-2"></div>
+
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Amount out</div>
 
