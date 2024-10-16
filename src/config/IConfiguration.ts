@@ -9,8 +9,8 @@ export type TokenInfo = {
   image: ImageRef;
   coingeckoId: string;
   decimals: number;
-  displayDecimalsPrecision: number;
-  priceDecimalsPrecision: number;
+  displayAmountDecimalsPrecision: number;
+  displayPriceDecimalsPrecision: number;
   pythPriceUpdateV2: PublicKey;
 };
 

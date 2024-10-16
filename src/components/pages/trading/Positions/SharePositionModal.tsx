@@ -146,7 +146,7 @@ export default function SharePositionModal({
               Entry Price
             </span>
             <span className="archivo-black text-sm sm:text-lg">
-              {formatPriceInfo(position.price)}
+              {formatPriceInfo(position.price, position.token.displayPriceDecimalsPrecision)}
             </span>
           </li>
           <li className="flex flex-col gap-1">

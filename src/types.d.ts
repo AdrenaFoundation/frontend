@@ -178,8 +178,8 @@ export interface Token {
   color: string;
   name: TokenName;
   decimals: number;
-  displayDecimalsPrecision: number;
-  priceDecimalsPrecision: number;
+  displayAmountDecimalsPrecision: number;
+  displayPriceDecimalsPrecision: number;
   isStable: boolean;
   image: ImageRef;
   custody?: PublicKey;

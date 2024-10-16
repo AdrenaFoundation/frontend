@@ -430,7 +430,7 @@ export default function EditPositionCollateral({
             <FormatNumber
               nb={position.price}
               format="currency"
-              precision={position.token.displayDecimalsPrecision}
+              precision={position.token.displayAmountDecimalsPrecision}
               className="text-gray-400"
             />
           </div>
@@ -485,7 +485,7 @@ export default function EditPositionCollateral({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
-                precision={position.token.displayDecimalsPrecision}
+                precision={position.token.displayAmountDecimalsPrecision}
                 className={`${input ? 'text-xs' : 'text-sm'} text-orange`}
                 isDecimalDimmed={false}
               />
@@ -500,7 +500,7 @@ export default function EditPositionCollateral({
                         <FormatNumber
                           nb={liquidationPrice}
                           format="currency"
-                          precision={position.token.displayDecimalsPrecision}
+                          precision={position.token.displayAmountDecimalsPrecision}
                           className={`text-orange`}
                           isDecimalDimmed={false}
 

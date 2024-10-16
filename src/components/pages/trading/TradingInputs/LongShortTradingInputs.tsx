@@ -553,7 +553,7 @@ export default function LongShortTradingInputs({
                   className="text-txtfade font-mono text-xs cursor-pointer"
 
                 >
-                  {formatNumber(balance, tokenA.displayDecimalsPrecision, tokenA.displayDecimalsPrecision)}
+                  {formatNumber(balance, tokenA.displayAmountDecimalsPrecision, tokenA.displayAmountDecimalsPrecision)}
                 </span>
               </div>
 
@@ -662,7 +662,7 @@ export default function LongShortTradingInputs({
                 <div className="flex flex-col items-end font-mono">
                   <FormatNumber
                     nb={inputB}
-                    precision={tokenB.displayDecimalsPrecision}
+                    precision={tokenB.displayAmountDecimalsPrecision}
                     className="text-lg"
                     isAbbreviate={tokenB.symbol === 'BONK'}
                     info={
@@ -788,7 +788,7 @@ export default function LongShortTradingInputs({
                       nb={isValidOpenedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                       format="currency"
                       className="text-lg"
-                      precision={tokenB.displayDecimalsPrecision}
+                      precision={tokenB.displayAmountDecimalsPrecision}
                     />
 
                     {isValidOpenedPosition && (
@@ -797,7 +797,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
-                        precision={tokenB.displayDecimalsPrecision}
+                        precision={tokenB.displayAmountDecimalsPrecision}
                       />
                     )}
                   </TextExplainWrapper>
@@ -812,7 +812,7 @@ export default function LongShortTradingInputs({
                       nb={isValidOpenedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
-                      precision={tokenB.displayDecimalsPrecision}
+                      precision={tokenB.displayAmountDecimalsPrecision}
                     />
 
                     {isValidOpenedPosition && openedPosition.liquidationPrice ? (
@@ -821,7 +821,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
-                        precision={tokenB.displayDecimalsPrecision}
+                        precision={tokenB.displayAmountDecimalsPrecision}
                       />
                     ) : null}
                   </TextExplainWrapper>

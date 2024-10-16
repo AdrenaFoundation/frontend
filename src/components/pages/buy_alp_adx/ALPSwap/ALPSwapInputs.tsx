@@ -305,7 +305,7 @@ export default function ALPSwapInputs({
       subText={
         collateralPrice !== null ? (
           <span className="text-txtfade">
-            {formatPriceInfo(collateralPrice, 3)}
+            {formatPriceInfo(collateralPrice, collateralToken.displayPriceDecimalsPrecision)}
           </span>
         ) : null
       }
@@ -373,7 +373,7 @@ export default function ALPSwapInputs({
               }
             >
               <span className="text-txtfade text-sm font-mono">
-                {formatNumber(balance, token.displayDecimalsPrecision)}
+                {formatNumber(balance, token.displayAmountDecimalsPrecision)}
               </span>
               <span className="text-txtfade text-sm ml-1">
                 {token.symbol} in wallet

@@ -183,7 +183,7 @@ export default function ClosePosition({
           <FormatNumber
             nb={markPrice}
             format="currency"
-            precision={position.token.displayDecimalsPrecision}
+            precision={position.token.displayAmountDecimalsPrecision}
             className="text-sm font-bold"
           />
         </div>
@@ -204,7 +204,7 @@ export default function ClosePosition({
           <FormatNumber
             nb={position.price}
             format="currency"
-            precision={position.token.displayDecimalsPrecision}
+            precision={position.token.displayAmountDecimalsPrecision}
             className="text-gray-400"
           />
         </div>
@@ -215,7 +215,7 @@ export default function ClosePosition({
           <FormatNumber
             nb={position.liquidationPrice ?? 0}
             format="currency"
-            precision={position.token.displayDecimalsPrecision}
+            precision={position.token.displayAmountDecimalsPrecision}
             className="text-gray-400"
           />
         </div>

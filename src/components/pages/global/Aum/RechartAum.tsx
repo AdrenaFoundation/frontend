@@ -4,9 +4,6 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -14,7 +11,6 @@ import {
 } from 'recharts';
 import { twMerge } from 'tailwind-merge';
 
-import FormatNumber from '@/components/Number/FormatNumber';
 import { formatPriceInfo } from '@/utils';
 
 import { AumData } from './AumChart';
