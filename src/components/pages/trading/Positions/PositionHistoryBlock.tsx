@@ -373,14 +373,14 @@ export default function PositionHistoryBlock({
         <div className="w-[7em] flex grow items-center justify-center">{renderPositionName()}</div> <div className="w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
       </div>
       <div className="flex flex-row justify-between flex-wrap gap-6 px-3 py-5 sm:py-2 opacity-90">
-        <div className="hidden md:flex w-[7em] flex grow items-center justify-center">{renderPositionName()}</div>
+        <div className="md:flex w-[7em] flex grow items-center justify-center">{renderPositionName()}</div>
         <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
         </div>
         <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
         </div>
-        <div className="hidden md:flex w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
+        <div className="md:flex w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
         <div className="w-[7em] flex grow items-center justify-center">{renderExitDate()}</div>
         <div className="w-[7em] flex grow items-center justify-center">{renderFeesPaid()}</div>
       </div>

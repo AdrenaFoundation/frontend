@@ -128,7 +128,7 @@ export default function Header({
 
           {alpPrice ?
             <div className='w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded'>
-              <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(alpPrice, 3, 3)}</div>
+              <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(alpPrice, window.adrena.client.alpToken.displayPriceDecimalsPrecision, window.adrena.client.alpToken.displayPriceDecimalsPrecision)}</div>
             </div> :
             <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />}
         </Link>
@@ -138,7 +138,7 @@ export default function Header({
 
           {adxPrice ?
             <div className='w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded'>
-              <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(adxPrice, 3, 3)}</div>
+              <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(adxPrice, window.adrena.client.adxToken.displayPriceDecimalsPrecision, window.adrena.client.adxToken.displayPriceDecimalsPrecision)}</div>
             </div> :
             <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />}
         </Link>

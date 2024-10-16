@@ -78,6 +78,8 @@ export default function EditPositionCollateral({
 
   const positionNetValue = position.collateralUsd + (position.pnl ?? 0);
 
+  const [newPositionNetValue, setNewPositionNetValue] = useState<number | null>(null);
+
   const executeBtnText = (() => {
     if (selectedAction === 'deposit' && !walletBalance) return `No ${position.collateralToken.symbol} in wallet`;
     if (!input) return 'Enter an amount';
@@ -94,6 +96,18 @@ export default function EditPositionCollateral({
       ? 'Deposit'
       : `Withdraw`;
   })();
+
+  useEffect(() => {
+    if (input === null) return setNewPositionNetValue(null);
+
+    if (selectedAction === 'withdraw') {
+      return setNewPositionNetValue(positionNetValue - input);
+    }
+
+    if (!collateralPrice) return setNewPositionNetValue(null);
+
+    setNewPositionNetValue(positionNetValue + input * collateralPrice);
+  }, [collateralPrice, input, positionNetValue, selectedAction]);
 
   useEffect(() => {
     if (!updatedInfos) {
@@ -413,7 +427,7 @@ export default function EditPositionCollateral({
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end text-sm">
                       <FormatNumber
-                        nb={positionNetValue - input}
+                        nb={newPositionNetValue}
                         format="currency"
                         className="text-sm text-regular"
                       />
@@ -430,7 +444,7 @@ export default function EditPositionCollateral({
             <FormatNumber
               nb={position.price}
               format="currency"
-              precision={position.token.symbol === 'BONK' ? 8 : undefined}
+              precision={position.token.displayPriceDecimalsPrecision}
               className="text-gray-400"
             />
           </div>
@@ -485,7 +499,7 @@ export default function EditPositionCollateral({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className={`${input ? 'text-xs' : 'text-sm'} text-orange`}
                 isDecimalDimmed={false}
               />
@@ -500,7 +514,7 @@ export default function EditPositionCollateral({
                         <FormatNumber
                           nb={liquidationPrice}
                           format="currency"
-                          precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                          precision={position.token.displayPriceDecimalsPrecision}
                           className={`text-orange`}
                           isDecimalDimmed={false}
 
@@ -590,7 +604,7 @@ export default function EditPositionCollateral({
                   />
                   <FormatNumber
                     nb={balance}
-                    precision={position.collateralToken.decimals}
+                    precision={position.collateralToken.displayAmountDecimalsPrecision}
                     className="text-txtfade"
                     isDecimalDimmed={false}
                     suffix={` ${position.collateralToken.symbol}`}

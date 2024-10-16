@@ -101,6 +101,8 @@ export class AdrenaClient {
     name: 'Shares of a Adrena Liquidity Pool',
     symbol: 'ALP',
     decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 3,
     isStable: false,
     image: alpIcon,
   };
@@ -111,6 +113,8 @@ export class AdrenaClient {
     name: 'The Governance Token',
     symbol: 'ADX',
     decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 3,
     isStable: false,
     image: adxIcon,
   };
@@ -441,6 +445,8 @@ export class AdrenaClient {
               image: ImageRef;
               coingeckoId: string;
               decimals: number;
+              displayAmountDecimalsPrecision: number;
+              displayPriceDecimalsPrecision: number;
               pythPriceUpdateV2: PublicKey;
             }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
@@ -455,6 +461,8 @@ export class AdrenaClient {
           name: infos.name,
           symbol: infos.symbol,
           decimals: infos.decimals,
+          displayAmountDecimalsPrecision: infos.displayAmountDecimalsPrecision,
+          displayPriceDecimalsPrecision: infos.displayPriceDecimalsPrecision,
           isStable: custody.isStable,
           image: infos.image,
           // loadCustodies gets the custodies on the same order as in the main pool
