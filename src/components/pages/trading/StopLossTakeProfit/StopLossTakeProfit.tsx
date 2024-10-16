@@ -277,7 +277,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className="text-orange font-regular"
                 isDecimalDimmed={false}
               />
@@ -291,7 +291,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={position.price}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 isDecimalDimmed={true}
                 className="text-gray-100 font-regular"
               />
@@ -309,7 +309,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={takeProfitInput}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className={twMerge(
                   'text-sm text-regular',
                   takeProfitInput !== null ? 'text-blue' : '',
@@ -325,7 +325,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={stopLossInput}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className={twMerge(
                   'text-sm text-regular',
                   stopLossInput !== null ? 'text-blue' : '',
@@ -352,7 +352,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={Math.abs(positionNetPnl)}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className={twMerge(
                   'font-bold text-sm',
                   positionNetPnl > 0

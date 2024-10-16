@@ -296,7 +296,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={position.price}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className="text-xs bold"
               />
             </div>
@@ -310,7 +310,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={tokenPrices[getTokenSymbol(position.token.symbol)]}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className="text-gray-400 text-xs bold"
               />
             </div>
@@ -329,7 +329,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
-                precision={position.token.displayAmountDecimalsPrecision}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className="text-xs text-orange"
               />
             </div>
