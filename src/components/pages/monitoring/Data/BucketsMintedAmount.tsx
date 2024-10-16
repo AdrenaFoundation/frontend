@@ -108,7 +108,7 @@ export default function BucketsMintedAmount({
                           cortex[`${name}BucketMintedAmount`],
                           window.adrena.client.adxToken.decimals,
                         ),
-                        3,
+                        window.adrena.client.adxToken.displayAmountDecimalsPrecision,
                       )} ADX`,
                     ];
                   })(),

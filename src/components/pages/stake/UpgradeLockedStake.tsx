@@ -164,7 +164,7 @@ export default function UpgradeLockedStake({
 
                 <span className="text-txtfade font-mono text-xs mr-1">
                   {walletBalance !== null
-                    ? `${formatNumber(walletBalance, 2)} ${lockedStake.tokenSymbol
+                    ? `${formatNumber(walletBalance, lockedStake.tokenSymbol === 'ALP' ? window.adrena.client.alpToken.displayAmountDecimalsPrecision : window.adrena.client.adxToken.displayAmountDecimalsPrecision)} ${lockedStake.tokenSymbol
                     }`
                     : '–'}
                 </span>

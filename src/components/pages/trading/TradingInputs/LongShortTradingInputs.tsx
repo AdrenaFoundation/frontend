@@ -540,20 +540,22 @@ export default function LongShortTradingInputs({
 
           return (
             <div className="text-sm flex items-center justify-end h-6">
-              <Image
-                className="mr-1 opacity-60 relative"
-                src={walletImg}
-                height={14}
-                width={14}
-                alt="Wallet icon"
-              />
+              <div className='flex' onClick={handleMax}>
+                <Image
+                  className="mr-1 opacity-60 relative"
+                  src={walletImg}
+                  height={14}
+                  width={14}
+                  alt="Wallet icon"
+                />
 
-              <span
-                className="text-txtfade font-mono text-xs cursor-pointer"
-                onClick={handleMax}
-              >
-                {formatNumber(balance, tokenA.decimals)}
-              </span>
+                <span
+                  className="text-txtfade font-mono text-xs cursor-pointer"
+
+                >
+                  {formatNumber(balance, tokenA.displayAmountDecimalsPrecision, tokenA.displayAmountDecimalsPrecision)}
+                </span>
+              </div>
 
               <RefreshButton className="border-0 ml-[0.1em] relative -top-[0.1em]" />
             </div>
@@ -660,7 +662,7 @@ export default function LongShortTradingInputs({
                 <div className="flex flex-col items-end font-mono">
                   <FormatNumber
                     nb={inputB}
-                    precision={tokenB.symbol === 'BTC' ? 4 : 2}
+                    precision={tokenB.displayAmountDecimalsPrecision}
                     className="text-lg"
                     isAbbreviate={tokenB.symbol === 'BONK'}
                     info={
@@ -786,7 +788,7 @@ export default function LongShortTradingInputs({
                       nb={isValidOpenedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                       format="currency"
                       className="text-lg"
-                      precision={tokenB.symbol === 'BONK' ? 8 : undefined}
+                      precision={tokenB.displayPriceDecimalsPrecision}
                     />
 
                     {isValidOpenedPosition && (
@@ -795,7 +797,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
-                        precision={tokenB.symbol === 'BONK' ? 8 : undefined}
+                        precision={tokenB.displayPriceDecimalsPrecision}
                       />
                     )}
                   </TextExplainWrapper>
@@ -810,7 +812,7 @@ export default function LongShortTradingInputs({
                       nb={isValidOpenedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
-                      precision={tokenB.symbol === 'BONK' ? 8 : undefined}
+                      precision={tokenB.displayPriceDecimalsPrecision}
                     />
 
                     {isValidOpenedPosition && openedPosition.liquidationPrice ? (
@@ -819,7 +821,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
-                        precision={tokenB.symbol === 'BONK' ? 8 : undefined}
+                        precision={tokenB.displayPriceDecimalsPrecision}
                       />
                     ) : null}
                   </TextExplainWrapper>
