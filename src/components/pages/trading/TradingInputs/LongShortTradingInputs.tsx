@@ -50,7 +50,7 @@ export default function LongShortTradingInputs({
   tokenB,
   allowedTokenA,
   allowedTokenB,
-  openedPosition,
+  openedPosition: maybeZombiePosition,
   wallet,
   connected,
   setTokenA,
@@ -75,6 +75,7 @@ export default function LongShortTradingInputs({
   const dispatch = useDispatch();
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
+  const [openedPosition, setOpenedPosition] = useState<PositionExtended | null>(null);
 
   const tokenPriceB = tokenPrices?.[tokenB.symbol];
   const tokenPriceBTrade = tokenPrices?.[getTokenSymbol(tokenB.symbol)];
@@ -182,6 +183,17 @@ export default function LongShortTradingInputs({
     });
   }, [openedPosition, newPositionInfo, tokenB.decimals]);
 
+  // If the position is pending cleanup and close, we should consider there is no position
+  useEffect(() => {
+    if (!maybeZombiePosition) return setOpenedPosition(null);
+
+    if (maybeZombiePosition.pendingCleanupAndClose) {
+      return setOpenedPosition(null);
+    }
+
+    setOpenedPosition(maybeZombiePosition);
+  }, [maybeZombiePosition]);
+
   useEffect(() => {
     calculateIncreasePositionInfo()
   }, [calculateIncreasePositionInfo]);
@@ -253,7 +265,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          existingPosition: openedPosition,
+          existingPosition: maybeZombiePosition,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -263,7 +275,7 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          existingPosition: openedPosition,
+          existingPosition: maybeZombiePosition,
         }));
 
       triggerPositionsReload();
@@ -287,13 +299,11 @@ export default function LongShortTradingInputs({
     setCustody(window.adrena.client.getCustodyByMint(tokenB.mint) ?? null);
   }, [tokenB]);
 
-  const isValidOpenedPosition = openedPosition && !openedPosition.pendingCleanupAndClose;
-
   useEffect(() => {
     // If wallet not connected, then user need to connect wallet
     if (!connected) return setButtonTitle('Connect wallet');
 
-    if (isValidOpenedPosition) {
+    if (openedPosition) {
       if (side === 'short') {
         return setButtonTitle('Increase Short');
       }
@@ -305,7 +315,7 @@ export default function LongShortTradingInputs({
     connected,
     inputA,
     inputB,
-    isValidOpenedPosition,
+    openedPosition,
     side,
     tokenA,
     wallet,
@@ -785,13 +795,13 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={isValidOpenedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
+                      nb={openedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                       format="currency"
                       className="text-lg"
                       precision={tokenB.displayPriceDecimalsPrecision}
                     />
 
-                    {isValidOpenedPosition && (
+                    {openedPosition && (
                       <FormatNumber
                         nb={openedPosition.price}
                         format="currency"
@@ -809,13 +819,13 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={isValidOpenedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
+                      nb={openedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
                       precision={tokenB.displayPriceDecimalsPrecision}
                     />
 
-                    {isValidOpenedPosition && openedPosition.liquidationPrice ? (
+                    {openedPosition && openedPosition.liquidationPrice ? (
                       <FormatNumber
                         nb={openedPosition.liquidationPrice}
                         format="currency"
@@ -852,7 +862,7 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={isValidOpenedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
+                      nb={openedPosition ? increasePositionInfo?.newOverallLeverage : newPositionInfo.sizeUsd / newPositionInfo.collateralUsd}
                       format="number"
                       prefix="x"
                       className={`text-lg ${openedPosition
@@ -863,7 +873,7 @@ export default function LongShortTradingInputs({
                         }`}
                     />
 
-                    {isValidOpenedPosition && increasePositionInfo?.newOverallLeverage ? (
+                    {openedPosition && increasePositionInfo?.newOverallLeverage ? (
                       <FormatNumber
                         nb={increasePositionInfo?.currentLeverage}
                         format="number"
@@ -881,12 +891,12 @@ export default function LongShortTradingInputs({
                     className="flex-col mt-8"
                   >
                     <FormatNumber
-                      nb={isValidOpenedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
+                      nb={openedPosition ? increasePositionInfo?.newSizeUsd : newPositionInfo.sizeUsd}
                       format="number"
                       className="text-lg"
                     />
 
-                    {isValidOpenedPosition && openedPosition.sizeUsd ? (
+                    {openedPosition && openedPosition.sizeUsd ? (
                       <FormatNumber
                         nb={openedPosition.sizeUsd}
                         format="number"
