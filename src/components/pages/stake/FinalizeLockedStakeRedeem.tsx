@@ -36,6 +36,11 @@ export default function FinalizeLockedStakeRedeem({
     stakeTokenMintDecimals,
   );
 
+  const precision = lockedStake.tokenSymbol === 'ALP' ?
+    window.adrena.client.alpToken.displayAmountDecimalsPrecision :
+    window.adrena.client.adxToken.displayAmountDecimalsPrecision;
+
+
   return (
     <div className="flex flex-col rounded-lg sm:min-w-[400px] h-fit p-5">
       <StyledSubSubContainer className="flex flex-col">
@@ -45,23 +50,24 @@ export default function FinalizeLockedStakeRedeem({
           <span>
             <FormatNumber
               nb={numberOfStakedTokens}
-              precision={4}
+              precision={precision}
               placeholder="0"
               className="inline"
-            />{' '}
+            />
             <span className="ml-1">{lockedStake.tokenSymbol}</span>
           </span>
         </div>
         <div className="flex w-full items-center justify-between">
-          <div className="text-redbright text-sm ">Fee</div>
+          <div className="text-redbright text-sm">Fee</div>
 
           <span className="text-redbright text-sm">
             -
             <FormatNumber
               nb={estimatedFee}
-              precision={4}
+              precision={precision}
               placeholder="0"
               className="inline text-redbright"
+              isDecimalDimmed={false}
             />
             <span className="ml-1 text-redbright">({feePercentage}%)</span>
             <span className="ml-1 text-redbright">
@@ -70,14 +76,15 @@ export default function FinalizeLockedStakeRedeem({
           </span>
         </div>
 
-        <div className="border-b border-bcolor mt-2 mb-2"></div>
+        <div className="border-b border-[#ffffff10] mt-2 mb-2"></div>
+
         <div className="flex w-full items-center justify-between">
           <div className="text-sm">Amount out</div>
 
           <span>
             <FormatNumber
               nb={numberOfStakedTokens - estimatedFee}
-              precision={4}
+              precision={precision}
               placeholder="0"
               className="inline"
             />
@@ -85,9 +92,11 @@ export default function FinalizeLockedStakeRedeem({
           </span>
         </div>
       </StyledSubSubContainer>
+
       <div className="flex flex-row justify-between mt-6">
         <h2>How early exit works</h2>
       </div>
+
       <div className="flex flex-row justify-between mt-2">
         <span className="text-txtfade text-sm">
           The early exit feature allows the user to break the initial Locked
@@ -95,14 +104,16 @@ export default function FinalizeLockedStakeRedeem({
           the initial commitment duration.
         </span>
       </div>
+
       <div className="flex flex-row justify-between mt-4">
         <h2>Early exit fee</h2>
       </div>
+
       <div className="flex flex-row mt-2">
         <span className="text-txtfade text-sm">
           In order to early exit this staking position, the penalty will be
           <span className="text-white ml-1 mr-1">
-            {formatNumber(estimatedFee, 4)} {lockedStake.tokenSymbol} (
+            {formatNumber(estimatedFee, precision)} {lockedStake.tokenSymbol} (
             {formatNumber(feePercentage, 4)}% fee)
           </span>
           that you&apos;ll forfeit to the pool (other users).
