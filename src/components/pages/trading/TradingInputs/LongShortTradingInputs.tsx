@@ -788,7 +788,7 @@ export default function LongShortTradingInputs({
                       nb={isValidOpenedPosition ? increasePositionInfo?.weightedAverageEntryPrice : newPositionInfo.entryPrice}
                       format="currency"
                       className="text-lg"
-                      precision={tokenB.displayAmountDecimalsPrecision}
+                      precision={tokenB.displayPriceDecimalsPrecision}
                     />
 
                     {isValidOpenedPosition && (
@@ -797,7 +797,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
-                        precision={tokenB.displayAmountDecimalsPrecision}
+                        precision={tokenB.displayPriceDecimalsPrecision}
                       />
                     )}
                   </TextExplainWrapper>
@@ -812,7 +812,7 @@ export default function LongShortTradingInputs({
                       nb={isValidOpenedPosition ? increasePositionInfo?.estimatedLiquidationPrice : newPositionInfo.liquidationPrice}
                       format="currency"
                       className="text-lg text-orange"
-                      precision={tokenB.displayAmountDecimalsPrecision}
+                      precision={tokenB.displayPriceDecimalsPrecision}
                     />
 
                     {isValidOpenedPosition && openedPosition.liquidationPrice ? (
@@ -821,7 +821,7 @@ export default function LongShortTradingInputs({
                         format="currency"
                         className="text-txtfade text-xs self-center line-through"
                         isDecimalDimmed={false}
-                        precision={tokenB.displayAmountDecimalsPrecision}
+                        precision={tokenB.displayPriceDecimalsPrecision}
                       />
                     ) : null}
                   </TextExplainWrapper>
