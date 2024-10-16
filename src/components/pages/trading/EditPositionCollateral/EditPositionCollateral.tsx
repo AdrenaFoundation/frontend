@@ -590,7 +590,7 @@ export default function EditPositionCollateral({
                   />
                   <FormatNumber
                     nb={balance}
-                    precision={position.collateralToken.decimals}
+                    precision={position.collateralToken.displayAmountDecimalsPrecision}
                     className="text-txtfade"
                     isDecimalDimmed={false}
                     suffix={` ${position.collateralToken.symbol}`}
