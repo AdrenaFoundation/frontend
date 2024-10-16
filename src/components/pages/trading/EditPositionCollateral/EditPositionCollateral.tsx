@@ -78,6 +78,8 @@ export default function EditPositionCollateral({
 
   const positionNetValue = position.collateralUsd + (position.pnl ?? 0);
 
+  const [newPositionNetValue, setNewPositionNetValue] = useState<number | null>(null);
+
   const executeBtnText = (() => {
     if (selectedAction === 'deposit' && !walletBalance) return `No ${position.collateralToken.symbol} in wallet`;
     if (!input) return 'Enter an amount';
@@ -94,6 +96,18 @@ export default function EditPositionCollateral({
       ? 'Deposit'
       : `Withdraw`;
   })();
+
+  useEffect(() => {
+    if (input === null) return setNewPositionNetValue(null);
+
+    if (selectedAction === 'withdraw') {
+      return setNewPositionNetValue(positionNetValue - input);
+    }
+
+    if (!collateralPrice) return setNewPositionNetValue(null);
+
+    setNewPositionNetValue(positionNetValue + input * collateralPrice);
+  }, [collateralPrice, input, positionNetValue, selectedAction]);
 
   useEffect(() => {
     if (!updatedInfos) {
@@ -413,7 +427,7 @@ export default function EditPositionCollateral({
                   <div className="flex flex-col">
                     <div className="flex flex-col items-end text-sm">
                       <FormatNumber
-                        nb={positionNetValue - input}
+                        nb={newPositionNetValue}
                         format="currency"
                         className="text-sm text-regular"
                       />
