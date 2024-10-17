@@ -208,7 +208,7 @@ function AppComponent({
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
-  const { positions, triggerPositionsReload } = usePositions();
+  const { positions, triggerPositionsReload, addOptimisticPosition, removeOptimisticPosition } = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
   useWatchTokenPrices();
@@ -355,6 +355,8 @@ function AppComponent({
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           positions={positions}
           triggerPositionsReload={triggerPositionsReload}
+          addOptimisticPosition={addOptimisticPosition}
+          removeOptimisticPosition={removeOptimisticPosition}
           connected={connected}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}

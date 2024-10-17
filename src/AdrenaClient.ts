@@ -147,6 +147,13 @@ export class AdrenaClient {
     )[0];
   };
 
+  public getPositionPda = (owner: PublicKey, token: Token, side: 'long' | 'short') => {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from('position'), owner.toBuffer(), token.mint.toBuffer(), Buffer.from(side)],
+      AdrenaClient.programId,
+    )[0];
+  };
+
   public getThreadAddressPda = (threadId: BN) => {
     return PublicKey.findProgramAddressSync(
       [
@@ -281,7 +288,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) {}
+  ) { }
 
   public setPriorityFee(priorityFee: number) {
     this.priorityFee = priorityFee;
@@ -439,16 +446,16 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-              name: string;
-              color: string;
-              symbol: string;
-              image: ImageRef;
-              coingeckoId: string;
-              decimals: number;
-              displayAmountDecimalsPrecision: number;
-              displayPriceDecimalsPrecision: number;
-              pythPriceUpdateV2: PublicKey;
-            }
+            name: string;
+            color: string;
+            symbol: string;
+            image: ImageRef;
+            coingeckoId: string;
+            decimals: number;
+            displayAmountDecimalsPrecision: number;
+            displayPriceDecimalsPrecision: number;
+            pythPriceUpdateV2: PublicKey;
+          }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -1663,13 +1670,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-            swappedTokenDecimals: tokenB.decimals,
-            swappedTokenPrice: tokenBPrice,
-          }
+          swappedTokenDecimals: tokenB.decimals,
+          swappedTokenPrice: tokenBPrice,
+        }
         : {
-            swappedTokenDecimals: usdcToken.decimals,
-            swappedTokenPrice: usdcTokenPrice,
-          };
+          swappedTokenDecimals: usdcToken.decimals,
+          swappedTokenPrice: usdcTokenPrice,
+        };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1815,9 +1822,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-      position,
-      collateralAmount: addedCollateral,
-    })
+        position,
+        collateralAmount: addedCollateral,
+      })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2559,11 +2566,11 @@ export class AdrenaClient {
         stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
         amount: additionalAmount
           ? uiToNative(
-              additionalAmount,
-              lockedStake.tokenSymbol === 'ALP'
-                ? this.alpToken.decimals
-                : this.adxToken.decimals,
-            )
+            additionalAmount,
+            lockedStake.tokenSymbol === 'ALP'
+              ? this.alpToken.decimals
+              : this.adxToken.decimals,
+          )
           : null,
         lockedDays: updatedDuration ?? null,
       })
@@ -4038,13 +4045,13 @@ export class AdrenaClient {
         )
           ? new BN(0)
           : uiToNative(
-              collateralTokenPriceUi *
-                nativeToUi(
-                  position.nativeObject.lockedAmount,
-                  collateralCustody.tokenInfo.decimals,
-                ),
-              USD_DECIMALS,
-            );
+            collateralTokenPriceUi *
+            nativeToUi(
+              position.nativeObject.lockedAmount,
+              collateralCustody.tokenInfo.decimals,
+            ),
+            USD_DECIMALS,
+          );
 
         return {
           profitUsd: nativeToUi(
@@ -4222,9 +4229,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                    position.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
+                  position.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4236,7 +4243,7 @@ export class AdrenaClient {
               : null,
             takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
             pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
-
+            isOptimistic: false,
             //
             nativeObject: position,
           },
@@ -4743,7 +4750,7 @@ export class AdrenaClient {
 
       if (computeUnitUsed !== null) {
         transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-          units: computeUnitUsed + 50000, // Add an extra 50k units to avoid any issues
+          units: computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
         });
       }
 
@@ -4779,6 +4786,7 @@ export class AdrenaClient {
         }),
         {
           skipPreflight: true,
+          maxRetries: 0,
         },
       );
     } catch (err) {
@@ -4794,8 +4802,7 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 
