@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { SOL_DECIMALS } from '@/constant';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { PriorityFee } from '@/types';
-import { addNotification, formatNumber, PRIORITY_FEE_LIST } from '@/utils';
+import { addNotification, formatNumber } from '@/utils';
 
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
@@ -50,6 +51,7 @@ export default function Settings({
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
   );
+  const { medium, high, ultra } = usePriorityFee();
 
   return (
     <Menu
@@ -222,15 +224,23 @@ export default function Settings({
         <DisplayInfo className='mt-2 mb-2' body={<div>Pay a priority fee to speed up your transaction on Solana.</div>} />
 
         <div className='flex gap-2 mt-2'>
-          {PRIORITY_FEE_LIST.map(({
-            title,
-            microLamport,
-          }) =>
+          {[
+            { title: 'Medium', microLamport: medium },
+            { title: 'High', microLamport: high },
+            { title: 'Ultra', microLamport: ultra },
+          ].map(({ title, microLamport }) => (
             <div className='flex w-1/3 flex-col items-center' key={microLamport}>
-              <Button onClick={() => {
-                setPriorityFee(microLamport);
-              }} variant={microLamport === priorityFee ? 'outline' : 'text'} className='w-20' title={title} key={title} />
-            </div>)}
+              <Button
+                onClick={() => {
+                  setPriorityFee(microLamport);
+                }}
+                variant={microLamport === priorityFee ? 'outline' : 'text'}
+                className='w-20'
+                title={title}
+                key={title}
+              />
+            </div>
+          ))}
         </div>
 
         <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>

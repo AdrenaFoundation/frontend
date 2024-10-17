@@ -1,3 +1,5 @@
+import { PublicKey } from '@solana/web3.js';
+
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended, UserProfileExtended } from '@/types';
@@ -10,6 +12,7 @@ export default function PositionsStats({
   title,
   triggerPositionsReload,
   triggerUserProfileReload,
+  removeOptimisticPosition,
   userProfile,
 }: {
   connected: boolean;
@@ -17,6 +20,7 @@ export default function PositionsStats({
   title?: string;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
+  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   userProfile: UserProfileExtended | null | false;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
@@ -39,6 +43,7 @@ export default function PositionsStats({
         positions={positions}
         triggerPositionsReload={triggerPositionsReload}
         triggerUserProfileReload={triggerUserProfileReload}
+        removeOptimisticPosition={removeOptimisticPosition}
         isBigScreen={isBigScreen}
         userProfile={userProfile}
       />
