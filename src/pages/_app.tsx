@@ -19,6 +19,7 @@ import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
@@ -30,7 +31,6 @@ import initializeApp, {
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { PriorityFee } from '@/types';
-import { DEFAULT_PRIORITY_FEE } from '@/utils';
 
 import logo from '../../public/images/logo.svg';
 import DevnetConfiguration from '../config/devnet';
@@ -215,8 +215,10 @@ function AppComponent({
 
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
+  const { priorityFees } = usePriorityFee();
+
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee']);
-  const [priorityFee, setPriorityFee] = useState<PriorityFee>(DEFAULT_PRIORITY_FEE);
+  const [priorityFee, setPriorityFee] = useState<PriorityFee>('Medium');
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
@@ -236,14 +238,21 @@ function AppComponent({
       const priorityFeeCookie = cookies['priority-fee'];
 
       if (!isNaN(priorityFeeCookie)) {
-        setPriorityFee(parseInt(priorityFeeCookie, 10));
+        console.log("load priority fee cookie THERE", priorityFeeCookie);
+        setPriorityFee(priorityFeeCookie as PriorityFee);
       }
     }
   }, [cookies]);
 
   useEffect(() => {
-    window.adrena.client.setPriorityFee(priorityFee);
-  }, [priorityFee])
+    const priorityFeeValues = {
+      Medium: priorityFees.medium,
+      High: priorityFees.high,
+      Ultra: priorityFees.ultra
+    };
+    const priorityFeeValue = priorityFeeValues[priorityFee] || priorityFees.medium;
+    window.adrena.client.setPriorityFeeMicroLamports(priorityFeeValue);
+  }, [priorityFees, priorityFee])
 
   useEffect(() => {
     if (!wallet) {
@@ -300,16 +309,16 @@ function AppComponent({
       <RootLayout
         priorityFee={priorityFee}
         setPriorityFee={((p: PriorityFee) => {
+          console.log("set priorityFee cookie HERE", p);
           setCookie(
             'priority-fee',
             p,
             {
               path: '/',
-              maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+              maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
               sameSite: 'strict',
             },
           );
-
           setPriorityFee(p);
         })}
         userProfile={userProfile}

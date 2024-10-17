@@ -61,7 +61,7 @@ import {
 import {
   AdrenaTransactionError,
   applySlippage,
-  DEFAULT_PRIORITY_FEE,
+  DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU,
   findATAAddressSync,
   isAccountInitialized,
   nativeToUi,
@@ -276,8 +276,7 @@ export class AdrenaClient {
 
   protected adrenaProgram: Program<Adrena> | null = null;
 
-  // Expressed in micro lamports
-  protected priorityFee = DEFAULT_PRIORITY_FEE;
+  protected priorityFeeMicroLamports = DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU;
 
   constructor(
     // Adrena Program with readonly provider
@@ -290,8 +289,8 @@ export class AdrenaClient {
     public genesisLockPda: PublicKey,
   ) { }
 
-  public setPriorityFee(priorityFee: number) {
-    this.priorityFee = priorityFee;
+  public setPriorityFeeMicroLamports(amount: number) {
+    this.priorityFeeMicroLamports = amount;
   }
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
@@ -4722,15 +4721,17 @@ export class AdrenaClient {
         'finalized',
       );
 
+
+
       console.log(
         'Apply',
-        this.priorityFee,
+        this.priorityFeeMicroLamports,
         'micro lamport priority fee to transaction',
       );
 
       transaction.instructions.unshift(
         ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: this.priorityFee,
+          microLamports: this.priorityFeeMicroLamports,
         }),
         ComputeBudgetProgram.setComputeUnitLimit({
           units: 1000000, // Use a lot of units to avoid any issues during simulation

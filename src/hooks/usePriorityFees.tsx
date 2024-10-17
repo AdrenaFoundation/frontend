@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { getMeanPrioritizationFeeByPercentile, PrioritizationFeeLevels } from '../grpf';
+import { getMeanPrioritizationFeeByPercentile } from '../grpf';
 
 interface PriorityFees {
     medium: number;
@@ -18,45 +18,32 @@ export default function usePriorityFee() {
     useEffect(() => {
         const updatePriorityFees = async () => {
             if (!window.adrena.client.connection) return;
-            const fees_medium = await getMeanPrioritizationFeeByPercentile(
-                window.adrena.client.connection,
-                {
-                    percentile: PrioritizationFeeLevels.MEDIAN, // 50th percentile
+            const fees = {
+                medium: await getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                    percentile: 6000, // 60th percentile
                     fallback: true,
-                }
-            );
-
-            const fees_high = await getMeanPrioritizationFeeByPercentile(
-                window.adrena.client.connection,
-                {
-                    percentile: PrioritizationFeeLevels.HIGH, // 75th percentile
+                }),
+                high: await getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                    percentile: 8000, // 80th percentile
                     fallback: true,
-                }
-            );
-
-            const fees_ultra = await getMeanPrioritizationFeeByPercentile(
-                window.adrena.client.connection,
-                {
+                }),
+                ultra: await getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
                     percentile: 9000, // 90th percentile
                     fallback: true,
-                }
-            );
+                }),
+            };
 
-            console.log("priority fees (medium, high, ultra):", fees_medium, fees_high, fees_ultra);
+            console.log("priority fees (medium, high, ultra):", fees.medium, fees.high, fees.ultra);
 
-            setPriorityFees({
-                medium: fees_medium,
-                high: fees_high,
-                ultra: fees_ultra,
-            });
+            setPriorityFees(fees);
         };
 
         updatePriorityFees();
 
-        const interval = setInterval(updatePriorityFees, 20000); // Update every 20 seconds
+        const interval = setInterval(updatePriorityFees, 15000); // Update every 15 seconds
 
         return () => clearInterval(interval);
     }, []);
 
-    return priorityFees;
+    return { priorityFees };
 }

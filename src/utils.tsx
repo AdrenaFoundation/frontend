@@ -206,7 +206,7 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
 }
 
 // Use High as default
-export const DEFAULT_PRIORITY_FEE = 160000;
+export const DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU = 160_000;
 
 export function addNotification({
   title,

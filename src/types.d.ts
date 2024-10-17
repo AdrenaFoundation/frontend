@@ -265,9 +265,7 @@ export type SablierThreadExtended = {
   nativeObject: SablierThread;
 };
 
-export type PriorityFeeNames = 'Critical' | 'High' | 'Medium' | 'Low' | 'None';
-
-export type PriorityFee = number;
+export type PriorityFee = 'Medium' | 'High' | 'Ultra';
 
 //
 // Params Types
