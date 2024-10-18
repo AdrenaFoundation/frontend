@@ -89,7 +89,7 @@ export default function usePositions(): {
           )
         );
 
-        setPositions([...freshPositions]);
+        setPositions(freshPositions);
 
       } catch (e) {
         console.log('Error loading positions', e, String(e));
