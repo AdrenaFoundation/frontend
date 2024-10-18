@@ -14,7 +14,7 @@ import { nativeToUi } from '@/utils';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 export default function ClosePosition({
