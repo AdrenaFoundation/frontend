@@ -319,7 +319,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) { }
+  ) {}
 
   public setPriorityFeeOption(option: PriorityFeeOption) {
     this.priorityFeeOption = option;
@@ -481,16 +481,16 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-            name: string;
-            color: string;
-            symbol: string;
-            image: ImageRef;
-            coingeckoId: string;
-            decimals: number;
-            displayAmountDecimalsPrecision: number;
-            displayPriceDecimalsPrecision: number;
-            pythPriceUpdateV2: PublicKey;
-          }
+              name: string;
+              color: string;
+              symbol: string;
+              image: ImageRef;
+              coingeckoId: string;
+              decimals: number;
+              displayAmountDecimalsPrecision: number;
+              displayPriceDecimalsPrecision: number;
+              pythPriceUpdateV2: PublicKey;
+            }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -1628,11 +1628,7 @@ export class AdrenaClient {
     }
 
     const transaction = new Transaction();
-    transaction.add(
-      ...preInstructions,
-      ...instructions,
-      ...postInstructions,
-    );
+    transaction.add(...preInstructions, ...instructions, ...postInstructions);
 
     if (instructions.length === 0) {
       console.log('Nothing to cleanup');
@@ -1791,13 +1787,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-          swappedTokenDecimals: tokenB.decimals,
-          swappedTokenPrice: tokenBPrice,
-        }
+            swappedTokenDecimals: tokenB.decimals,
+            swappedTokenPrice: tokenBPrice,
+          }
         : {
-          swappedTokenDecimals: usdcToken.decimals,
-          swappedTokenPrice: usdcTokenPrice,
-        };
+            swappedTokenDecimals: usdcToken.decimals,
+            swappedTokenPrice: usdcTokenPrice,
+          };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1946,9 +1942,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-        position,
-        collateralAmount: addedCollateral,
-      })
+      position,
+      collateralAmount: addedCollateral,
+    })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2705,11 +2701,11 @@ export class AdrenaClient {
         stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
         amount: additionalAmount
           ? uiToNative(
-            additionalAmount,
-            lockedStake.tokenSymbol === 'ALP'
-              ? this.alpToken.decimals
-              : this.adxToken.decimals,
-          )
+              additionalAmount,
+              lockedStake.tokenSymbol === 'ALP'
+                ? this.alpToken.decimals
+                : this.adxToken.decimals,
+            )
           : null,
         lockedDays: updatedDuration ?? null,
       })
@@ -4202,13 +4198,13 @@ export class AdrenaClient {
         )
           ? new BN(0)
           : uiToNative(
-            collateralTokenPriceUi *
-            nativeToUi(
-              position.nativeObject.lockedAmount,
-              collateralCustody.tokenInfo.decimals,
-            ),
-            USD_DECIMALS,
-          );
+              collateralTokenPriceUi *
+                nativeToUi(
+                  position.nativeObject.lockedAmount,
+                  collateralCustody.tokenInfo.decimals,
+                ),
+              USD_DECIMALS,
+            );
 
         return {
           profitUsd: nativeToUi(
@@ -4386,9 +4382,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                  position.stopLossClosePositionPrice,
-                  PRICE_DECIMALS,
-                )
+                    position.stopLossClosePositionPrice,
+                    PRICE_DECIMALS,
+                  )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4475,9 +4471,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               positionAccount.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                  positionAccount.stopLossClosePositionPrice,
-                  PRICE_DECIMALS,
-                )
+                    positionAccount.stopLossClosePositionPrice,
+                    PRICE_DECIMALS,
+                  )
                 : null,
             stopLossLimitPrice:
               positionAccount.stopLossThreadIsSet === 1
@@ -4984,6 +4980,8 @@ export class AdrenaClient {
 
     let signedTransaction: Transaction;
 
+    let serializedTransaction: Buffer;
+
     try {
       const latestBlockHash = await this.connection.getLatestBlockhash(
         'finalized',
@@ -5049,7 +5047,23 @@ export class AdrenaClient {
       // Prepare the transaction succeeded
       notification?.currentStepSucceeded();
 
+      const start = Date.now();
+
       signedTransaction = await wallet.signTransaction(transaction);
+
+      serializedTransaction = signedTransaction.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      });
+
+      const end = Date.now();
+
+      track('transaction_duration', {
+        computeUnitUsed,
+        duration: `${end - start}ms`,
+        priorityFee: this.maxPriorityFee,
+        transactionSize: serializedTransaction.length,
+      });
     } catch (err) {
       console.log('sign error:', err);
 
@@ -5071,22 +5085,9 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     try {
-      const start = Date.now();
-      txHash = await this.connection.sendRawTransaction(
-        signedTransaction.serialize({
-          requireAllSignatures: false,
-          verifySignatures: false,
-        }),
-        {
-          skipPreflight: true,
-          maxRetries: 0,
-        },
-      );
-
-      const end = Date.now();
-
-      track('transaction_duration', {
-        duration: `${(end - start) / 1000}s`,
+      txHash = await this.connection.sendRawTransaction(serializedTransaction, {
+        skipPreflight: true,
+        maxRetries: 0,
       });
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
@@ -5101,7 +5102,8 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txHash}${
+        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 
