@@ -36,9 +36,9 @@ import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionFeesTooltip from './PositionFeesTooltip';
-import InfoAnnotation from '../../monitoring/InfoAnnotation';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information

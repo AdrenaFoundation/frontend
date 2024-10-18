@@ -94,10 +94,7 @@ export type CustodyExtended = {
   // The available liquidity for the short side for that custody (restricted by the custody configuration)
   maxCumulativeShortPositionSizeUsd: number;
   // TradeStats
-  // profitUsd: number;
-  // lossUsd: number;
   oiShortUsd: number;
-  // oiLongUsd: number;
 
   // Onchain data
   nativeObject: Custody;
