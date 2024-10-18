@@ -104,7 +104,7 @@ export default function TradingChartHeader({
             nb={streamingTokenPrices[getTokenSymbol(selected.symbol)]}
             format="currency"
             minimumFractionDigits={2}
-            precision={selected.symbol === 'BONK' ? 8 : undefined}
+            precision={selected.displayPriceDecimalsPrecision}
             className={twMerge('text-lg font-bold', tokenColor)}
           />
           <div className="flex flex-row gap-0 sm:gap-1">

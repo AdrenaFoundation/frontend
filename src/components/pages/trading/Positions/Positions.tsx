@@ -37,11 +37,14 @@ export default function Positions({
   const [positionToEdit, setPositionToEdit] = useState<PositionExtended | null>(
     null,
   );
-
   const [positionToStopLossTakeProfit, setPositionToStopLossTakeProfit] =
     useState<PositionExtended | null>(null);
 
   if (isBigScreen === null) return null;
+
+  const nonPendingCleanupAndClosePositions = positions?.filter(
+    position => !position.pendingCleanupAndClose
+  ) || null;
 
   return (
     <>
@@ -114,7 +117,7 @@ export default function Positions({
         bodyClassName={bodyClassName}
         borderColor={borderColor}
         connected={connected}
-        positions={positions}
+        positions={nonPendingCleanupAndClosePositions}
         className={className}
         triggerStopLossTakeProfit={setPositionToStopLossTakeProfit}
         triggerClosePosition={setPositionToClose}

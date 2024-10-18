@@ -266,8 +266,8 @@ export default function Trade({
                   selectedAction === 'short' || selectedAction === 'long'
                     ? tokenB
                     : tokenA.isStable
-                    ? tokenB
-                    : tokenA
+                      ? tokenB
+                      : tokenA
                 }
                 positions={positions}
               />
@@ -446,10 +446,9 @@ export default function Trade({
           <AnimatePresence>
             {activePositionModal && (
               <Modal
-                title={`${
-                  activePositionModal.charAt(0).toUpperCase() +
+                title={`${activePositionModal.charAt(0).toUpperCase() +
                   activePositionModal.slice(1)
-                } Position`}
+                  } Position`}
                 close={() => setActivePositionModal(null)}
                 className="flex flex-col p-2 sm:p-4 overflow-auto h-[100%]"
               >

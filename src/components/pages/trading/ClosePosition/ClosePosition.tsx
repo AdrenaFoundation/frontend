@@ -65,7 +65,7 @@ export default function ClosePosition({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position, (markPrice ?? 0) + (collateralMarkPrice ?? 0)]);
 
-  const rowStyle = 'w-full flex justify-between mt-2';
+  const rowStyle = 'w-full flex justify-between mt-0.5';
 
   const doFullClose = async () => {
     if (!markPrice) return;
@@ -183,7 +183,7 @@ export default function ClosePosition({
           <FormatNumber
             nb={markPrice}
             format="currency"
-            precision={position.token.symbol === 'BONK' ? 8 : undefined}
+            precision={position.token.displayPriceDecimalsPrecision}
             className="text-sm font-bold"
           />
         </div>
@@ -204,7 +204,7 @@ export default function ClosePosition({
           <FormatNumber
             nb={position.price}
             format="currency"
-            precision={position.token.symbol === 'BONK' ? 8 : undefined}
+            precision={position.token.displayPriceDecimalsPrecision}
             className="text-gray-400"
           />
         </div>
@@ -215,7 +215,7 @@ export default function ClosePosition({
           <FormatNumber
             nb={position.liquidationPrice ?? 0}
             format="currency"
-            precision={position.token.symbol === 'BONK' ? 8 : undefined}
+            precision={position.token.displayPriceDecimalsPrecision}
             className="text-gray-400"
           />
         </div>
@@ -234,7 +234,7 @@ export default function ClosePosition({
           <div className="text-sm text-gray-400">Current Leverage</div>
 
           <FormatNumber
-            nb={position.leverage}
+            nb={position.currentLeverage}
             prefix="x"
             className="text-gray-400"
           />

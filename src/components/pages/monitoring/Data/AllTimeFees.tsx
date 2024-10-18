@@ -28,7 +28,7 @@ export default function AllTimeFees({
       <div
         className={twMerge('items-center justify-center flex', bodyClassName)}
       >
-        {formatPriceInfo(mainPool.totalFeeCollected)}
+        {formatPriceInfo(mainPool.totalFeeCollected, 0)}
       </div>
     </StyledContainer>
   );

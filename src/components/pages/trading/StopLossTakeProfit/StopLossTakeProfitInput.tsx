@@ -5,7 +5,7 @@ import InputNumber from '@/components/common/InputNumber/InputNumber';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
-import { formatPriceInfo, getTokenSymbol, nativeToUi } from '@/utils';
+import { formatPriceInfo, getTokenSymbol } from '@/utils';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
@@ -72,17 +72,8 @@ export default function StopLossTakeProfitInput({
         max = tmp;
       } else {
         max = markPrice;
-        // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.leverage` is equal to 100, and get that price as the min value
-        const collateralUsd = nativeToUi(
-          position.nativeObject.collateralUsd,
-          position.token.decimals,
-        );
-        const sizeUsd = nativeToUi(
-          position.nativeObject.sizeUsd,
-          position.token.decimals,
-        );
-        const leverage = sizeUsd / collateralUsd;
-        min = position.price * (1 - 1 / leverage);
+        // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.initialLeverage` is equal to 100, and get that price as the min value
+        min = position.price * (1 - 1 / position.initialLeverage);
       }
     }
 
@@ -119,7 +110,7 @@ export default function StopLossTakeProfitInput({
     position.price,
     position.sizeUsd,
     position.side,
-    position.leverage,
+    position.initialLeverage,
     setIsError,
     type,
     position.token.decimals,

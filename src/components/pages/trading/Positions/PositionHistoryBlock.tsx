@@ -3,7 +3,7 @@ import 'tippy.js/dist/tippy.css'; // Import Tippy's CSS
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
@@ -66,7 +66,7 @@ interface LeverageDisplayProps {
   finalCollateral: number;
 }
 
-const LeverageDisplay: React.FC<LeverageDisplayProps> = ({ leverage, positionSize, entryCollateral, finalCollateral}) => (
+const LeverageDisplay: React.FC<LeverageDisplayProps> = ({ leverage, positionSize, entryCollateral, finalCollateral }) => (
   <Tippy
     content={
       <>
@@ -245,13 +245,12 @@ export default function PositionHistoryBlock({
                 : positionHistory.pnl
             }
             format="currency"
-            className={`mr-0.5 opacity-90 font-bold text-sm text-${
-              (showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl) > 0
-                ? 'green'
-                : 'redbright'
-            }`}
+            className={`mr-0.5 opacity-90 font-bold text-sm text-${(showAfterFees
+              ? positionHistory.pnl + positionHistory.fees
+              : positionHistory.pnl) > 0
+              ? 'green'
+              : 'redbright'
+              }`}
             minimumFractionDigits={2}
             precision={2}
             isDecimalDimmed={false}
@@ -270,13 +269,12 @@ export default function PositionHistoryBlock({
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
-            className={`text-xxs opacity-90 text-${
-              (showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl) > 0
-                ? 'green'
-                : 'redbright'
-            }`}
+            className={`text-xxs opacity-90 text-${(showAfterFees
+              ? positionHistory.pnl + positionHistory.fees
+              : positionHistory.pnl) > 0
+              ? 'green'
+              : 'redbright'
+              }`}
           />
         </div>
       ) : (
@@ -302,9 +300,8 @@ export default function PositionHistoryBlock({
         suffix=")"
         precision={2}
         isDecimalDimmed={false}
-        className={`text-xxs opacity-90 text-${
-          pnlValue > 0 ? 'green' : 'redbright'
-        }`}
+        className={`text-xxs opacity-90 text-${pnlValue > 0 ? 'green' : 'redbright'
+          }`}
       />
     ) : null;
   }
@@ -376,14 +373,14 @@ export default function PositionHistoryBlock({
         <div className="w-[7em] flex grow items-center justify-center">{renderPositionName()}</div> <div className="w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
       </div>
       <div className="flex flex-row justify-between flex-wrap gap-6 px-3 py-5 sm:py-2 opacity-90">
-        <div className="hidden md:flex w-[7em] flex grow items-center justify-center">{renderPositionName()}</div>
+        <div className="md:flex w-[7em] flex grow items-center justify-center">{renderPositionName()}</div>
         <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
         </div>
         <div className="w-[5em] flex grow items-center justify-center">
           {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
         </div>
-        <div className="hidden md:flex w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
+        <div className="md:flex w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
         <div className="w-[7em] flex grow items-center justify-center">{renderExitDate()}</div>
         <div className="w-[7em] flex grow items-center justify-center">{renderFeesPaid()}</div>
       </div>

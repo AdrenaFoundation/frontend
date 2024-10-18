@@ -9,12 +9,13 @@ import { ToastContainer } from 'react-toastify';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import Featurebase from '@/components/Featurebase/Featurebase';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { UserProfileExtended } from '@/types';
+import { PriorityFee, UserProfileExtended } from '@/types';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
 export default function RootLayout({
+  priorityFee,
   children,
   userProfile,
   activeRpc,
@@ -23,10 +24,13 @@ export default function RootLayout({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
 }: {
+  priorityFee: PriorityFee;
+  setPriorityFee: (priorityFee: PriorityFee) => void;
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
   activeRpc: {
@@ -49,13 +53,13 @@ export default function RootLayout({
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
-    { name: 'My Dashboard', link: '/my_dashboard' },
-    { name: 'Monitoring', link: '/monitoring' },
+    { name: 'Trade', link: '/trade' },
+    { name: 'Profile', link: '/my_dashboard' },
     { name: 'Stake', link: '/stake' },
-    { name: 'ALP', link: '/buy_alp' },
-    { name: 'ADX', link: '/buy_adx' },
-    { name: 'Docs', link: 'https://docs.adrena.xyz/', external: true },
-    { name: 'Governance', link: 'https://dao.adrena.xyz/', external: true },
+    { name: 'Provide Liquidity', link: '/buy_alp' },
+    { name: 'Monitor', link: '/monitoring' },
+    { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
+    { name: 'Learn', link: 'https://docs.adrena.xyz/', external: true },
   ]);
 
   useEffect(() => {
@@ -78,6 +82,8 @@ export default function RootLayout({
 
       {window.location.pathname === '/genesis' ? null : isBigScreen ? (
         <Header
+          priorityFee={priorityFee}
+          setPriorityFee={setPriorityFee}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -92,6 +98,8 @@ export default function RootLayout({
         />
       ) : (
         <BurgerMenu
+          priorityFee={priorityFee}
+          setPriorityFee={setPriorityFee}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}

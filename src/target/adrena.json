@@ -1,5 +1,5 @@
 {
-  "version": "1.0.6",
+  "version": "1.0.10",
   "name": "adrena",
   "instructions": [
     {
@@ -3002,7 +3002,10 @@
             "defined": "ClosePositionLongParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "closePositionShort",
@@ -3176,7 +3179,10 @@
             "defined": "ClosePositionShortParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "liquidateLong",
@@ -5167,59 +5173,89 @@
           "docs": ["#2"]
         },
         {
-          "name": "stakingStakedTokenVault",
+          "name": "rewardTokenAccount",
           "isMut": true,
           "isSigner": false,
           "docs": ["#3"]
         },
         {
-          "name": "stakingRewardTokenVault",
+          "name": "lmTokenAccount",
           "isMut": true,
           "isSigner": false,
           "docs": ["#4"]
         },
         {
-          "name": "transferAuthority",
-          "isMut": false,
+          "name": "stakingStakedTokenVault",
+          "isMut": true,
           "isSigner": false,
           "docs": ["#5"]
         },
         {
-          "name": "userStaking",
+          "name": "stakingRewardTokenVault",
           "isMut": true,
           "isSigner": false,
           "docs": ["#6"]
         },
         {
-          "name": "staking",
-          "isMut": true,
+          "name": "transferAuthority",
+          "isMut": false,
           "isSigner": false,
           "docs": ["#7"]
         },
         {
-          "name": "cortex",
+          "name": "userStaking",
           "isMut": true,
           "isSigner": false,
           "docs": ["#8"]
         },
         {
-          "name": "governanceTokenMint",
+          "name": "staking",
           "isMut": true,
           "isSigner": false,
           "docs": ["#9"]
         },
         {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#10"]
+        },
+        {
+          "name": "governanceTokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#11"]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#12"]
+        },
+        {
+          "name": "genesisLock",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#13"]
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#14"]
+        },
+        {
           "name": "feeRedistributionMint",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#10"]
+          "docs": ["#15"]
         },
         {
           "name": "governanceRealm",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#11",
+            "#16",
             "A realm represent one project within the governance program"
           ]
         },
@@ -5227,14 +5263,14 @@
           "name": "governanceRealmConfig",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#12"]
+          "docs": ["#17"]
         },
         {
           "name": "governanceGoverningTokenHolding",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#13",
+            "#18",
             "Token account owned by governance program holding user's locked tokens"
           ]
         },
@@ -5243,39 +5279,51 @@
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14",
+            "#19",
             "Account owned by governance storing user information"
           ]
+        },
+        {
+          "name": "stakingLmRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#20"]
         },
         {
           "name": "stakeResolutionThread",
           "isMut": true,
           "isSigner": false,
-          "docs": ["#15"]
+          "docs": ["#21"]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#22"]
         },
         {
           "name": "sablierProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#16"]
+          "docs": ["#23"]
         },
         {
           "name": "governanceProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#17"]
+          "docs": ["#24"]
         },
         {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#18"]
+          "docs": ["#25"]
         },
         {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
-          "docs": ["#19"]
+          "docs": ["#26"]
         }
       ],
       "args": [
@@ -5970,7 +6018,10 @@
             "defined": "FinalizeLockedStakeParams"
           }
         }
-      ]
+      ],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
     },
     {
       "name": "resolveStakingRound",
@@ -7350,6 +7401,224 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "cleanupPositionTakeProfit",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": ["#1"]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#2"]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#3"]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#4"]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#5"]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#6"]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#7"]
+        },
+        {
+          "name": "takeProfitThread",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#8"]
+        },
+        {
+          "name": "stopLossThread",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sablierProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
+    },
+    {
+      "name": "cleanupPositionStopLoss",
+      "accounts": [
+        {
+          "name": "caller",
+          "isMut": true,
+          "isSigner": true,
+          "docs": ["#1"]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#2"]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#3"]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#4"]
+        },
+        {
+          "name": "pool",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#5"]
+        },
+        {
+          "name": "position",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#6"]
+        },
+        {
+          "name": "custody",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#7"]
+        },
+        {
+          "name": "stopLossThread",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#8"]
+        },
+        {
+          "name": "takeProfitThread",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "sablierProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [],
+      "returns": {
+        "defined": "ThreadResponse"
+      }
+    },
+    {
+      "name": "patchStakingRound",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true,
+          "docs": ["#1"]
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true,
+          "docs": ["#2"]
+        },
+        {
+          "name": "fundingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#3"]
+        },
+        {
+          "name": "stakingRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#4"]
+        },
+        {
+          "name": "stakingLmRewardTokenVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#5"]
+        },
+        {
+          "name": "transferAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#6"]
+        },
+        {
+          "name": "staking",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#7"]
+        },
+        {
+          "name": "cortex",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#8"]
+        },
+        {
+          "name": "lmTokenMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": ["#9"]
+        },
+        {
+          "name": "feeRedistributionMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#10"]
+        },
+        {
+          "name": "adrenaProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#11"]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#12"]
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": ["#13"]
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -7764,9 +8033,13 @@
             "type": "u8"
           },
           {
+            "name": "pendingCleanupAndClose",
+            "type": "u8"
+          },
+          {
             "name": "padding",
             "type": {
-              "array": ["u8", 4]
+              "array": ["u8", 3]
             }
           },
           {
@@ -7810,7 +8083,7 @@
             "type": "u64"
           },
           {
-            "name": "unrealizedLossUsd",
+            "name": "unrealizedInterestUsd",
             "type": "u64"
           },
           {
@@ -10719,6 +10992,21 @@
       "code": 6068,
       "name": "InvalidLockDuration",
       "msg": "The provided lock duration isn't valid"
+    },
+    {
+      "code": 6069,
+      "name": "StakeNotEstablished",
+      "msg": "The stake isn't established yet"
+    },
+    {
+      "code": 6070,
+      "name": "PositionAlreadyClosed",
+      "msg": "The position is already pending cleanup and close"
+    },
+    {
+      "code": 6071,
+      "name": "NotEnoughRewardToPayForDebt",
+      "msg": "There is not enough rewards in the round to pay for the debt"
     }
   ],
   "metadata": {

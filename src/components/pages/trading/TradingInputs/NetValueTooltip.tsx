@@ -33,14 +33,15 @@ export default function NetValueTooltip({
             <div className="flex w-full items-center justify-between">
               <span className="text-sm">PnL</span>
               <FormatNumber
-                nb={position.priceChangeUsd}
+                nb={position.pnlMinusFees}
                 format="currency"
-                className={`text-${
-                  position.priceChangeUsd && position.priceChangeUsd > 0
-                    ? 'green'
-                    : 'redbright'
-                }`}
+                className={`text-${position.pnl && position.pnl > 0
+                  ? 'green'
+                  : 'redbright'
+                  }`}
                 isDecimalDimmed={false}
+                precision={2}
+                minimumFractionDigits={2}
               />
             </div>
 
@@ -52,6 +53,8 @@ export default function NetValueTooltip({
                 prefix="-"
                 className={'text-redbright'}
                 isDecimalDimmed={false}
+                precision={2}
+                minimumFractionDigits={2}
               />
             </div>
             <div className="flex w-full items-center justify-between">
@@ -62,18 +65,19 @@ export default function NetValueTooltip({
                 prefix="-"
                 className={'text-redbright'}
                 isDecimalDimmed={false}
+                precision={2}
+                minimumFractionDigits={2}
               />
             </div>
 
             <div className="flex w-full items-center justify-between">
-              <span className="text-sm">PnL After Fees</span>
+              <span className="text-sm">Resulting Net Value</span>
               <FormatNumber
-                nb={position.pnl}
                 format="currency"
-                className={`text-${
-                  position.pnl && position.pnl > 0 ? 'green' : 'redbright'
-                }`}
-                isDecimalDimmed={false}
+                nb={position.pnl ? position.collateralUsd + position.pnl : undefined}
+                isDecimalDimmed={true}
+                precision={2}
+                minimumFractionDigits={2}
               />
             </div>
           </StyledSubContainer>

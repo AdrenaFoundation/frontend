@@ -377,7 +377,7 @@ export default function TradingChart({
           ) ?? null;
 
         // handle creation / modification / deletion for long positions
-        if (longPosition) {
+        if (longPosition && !longPosition.pendingCleanupAndClose) {
           if (newPositionLines && newPositionLines?.long) {
             modifyPositionLine(chart, longPosition, newPositionLines.long);
           } else {
@@ -389,14 +389,14 @@ export default function TradingChart({
               position: longPosition.pubkey,
               takeProfit:
                 longPosition.takeProfitThreadIsSet &&
-                longPosition.takeProfitLimitPrice &&
-                longPosition.takeProfitLimitPrice > 0
+                  longPosition.takeProfitLimitPrice &&
+                  longPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, longPosition)
                   : undefined,
               stopLoss:
                 longPosition.stopLossThreadIsSet &&
-                longPosition.stopLossLimitPrice &&
-                longPosition.stopLossLimitPrice > 0
+                  longPosition.stopLossLimitPrice &&
+                  longPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, longPosition)
                   : undefined,
             };
@@ -415,7 +415,7 @@ export default function TradingChart({
         }
 
         // handle creation / modification / deletion for short positions
-        if (shortPosition) {
+        if (shortPosition && !shortPosition.pendingCleanupAndClose) {
           if (newPositionLines && newPositionLines?.short) {
             modifyPositionLine(chart, shortPosition, newPositionLines.short);
           } else {
@@ -427,14 +427,14 @@ export default function TradingChart({
               position: shortPosition.pubkey,
               takeProfit:
                 shortPosition.takeProfitThreadIsSet &&
-                shortPosition.takeProfitLimitPrice &&
-                shortPosition.takeProfitLimitPrice > 0
+                  shortPosition.takeProfitLimitPrice &&
+                  shortPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, shortPosition)
                   : undefined,
               stopLoss:
                 shortPosition.stopLossThreadIsSet &&
-                shortPosition.stopLossLimitPrice &&
-                shortPosition.stopLossLimitPrice > 0
+                  shortPosition.stopLossLimitPrice &&
+                  shortPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, shortPosition)
                   : undefined,
             };

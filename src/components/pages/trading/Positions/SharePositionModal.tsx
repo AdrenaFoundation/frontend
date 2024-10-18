@@ -120,7 +120,7 @@ export default function SharePositionModal({
             <p
               className={twMerge(
                 'text-sm archivo-black capitalize',
-                position.side === 'long' ? 'text-green' : 'text-red',
+                position.side === 'long' ? 'text-[#49d7ad]' : 'text-red',
               )}
             >
               {position.side}{' '}
@@ -146,7 +146,7 @@ export default function SharePositionModal({
               Entry Price
             </span>
             <span className="archivo-black text-sm sm:text-lg">
-              {formatPriceInfo(position.price)}
+              {formatPriceInfo(position.price, position.token.displayPriceDecimalsPrecision)}
             </span>
           </li>
           <li className="flex flex-col gap-1">
@@ -188,6 +188,7 @@ export default function SharePositionModal({
             initial={{ opacity: 0, translateX: 50 }}
             animate={{ opacity: 1, translateX: 0 }}
             exit={{ opacity: 0, translateX: 50 }}
+            transition={{ duration: 0.2 }}
             className="absolute bottom-0 right-0 -scale-[-1]"
             key={OPTIONS[option].id}
           >
@@ -197,6 +198,7 @@ export default function SharePositionModal({
               loading="eager"
               className="select-none w-[100px] sm:w-[200px] opacity-100"
               draggable="false"
+              key={OPTIONS[option].id}
             />
           </motion.div>
         </AnimatePresence>

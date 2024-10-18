@@ -16,20 +16,20 @@ export default function PositionsAllTime({
     <StyledContainer
       headerClassName="text-center justify-center"
       className="w-auto grow"
-      title="ALL TIME POSITIONS"
+      title="All Time"
       titleClassName={titleClassName}
     >
       <StyledSubContainer>
         <div className="flex items-center">
-          <div className={titleClassName}>Open Interest</div>
+          <div className={titleClassName}>Volume</div>
           <div className="font-boldy text-sm ml-2 text-txtfade">
-            Long / Short
+            Trading / Liquidation
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
           <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.oiLongUsd)}
+            {formatPriceInfo(mainPool.totalTradingVolume, 0, 0, 0)}
           </div>
 
           <>
@@ -41,7 +41,7 @@ export default function PositionsAllTime({
           </>
 
           <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.oiShortUsd)}
+            {formatPriceInfo(mainPool.totalLiquidationVolume, 0, 0, 0)}
           </div>
         </div>
       </StyledSubContainer>
@@ -53,7 +53,7 @@ export default function PositionsAllTime({
 
         <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
           <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.profitsUsd)}
+            {formatPriceInfo(mainPool.profitsUsd, 0, 0, 0)}
           </div>
 
           <>
@@ -65,7 +65,7 @@ export default function PositionsAllTime({
           </>
 
           <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.lossUsd * -1)}
+            {formatPriceInfo(mainPool.lossUsd * -1, 0, 0, 0)}
           </div>
         </div>
       </StyledSubContainer>

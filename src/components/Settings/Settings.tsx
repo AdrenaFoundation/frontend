@@ -2,15 +2,19 @@ import { Connection } from '@solana/web3.js';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { addNotification } from '@/utils';
+import { SOL_DECIMALS } from '@/constant';
+import { PriorityFee } from '@/types';
+import { addNotification, formatNumber, PRIORITY_FEE_LIST } from '@/utils';
 
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import Switch from '../common/Switch/Switch';
+import DisplayInfo from '../DisplayInfo/DisplayInfo';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function Settings({
+  priorityFee,
   activeRpc,
   rpcInfos,
   autoRpcMode,
@@ -20,8 +24,11 @@ export default function Settings({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
+  setPriorityFee,
   isGenesis = false,
 }: {
+  priorityFee: PriorityFee;
+  setPriorityFee: (priorityFee: PriorityFee) => void;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -206,6 +213,57 @@ export default function Settings({
           </li>
         ))}
       </ul>
+
+      <div className='h-[1px] w-full bg-bcolor mt-4 mb-4' />
+
+      <div className="flex flex-col mb-3">
+        <h2 className="flex">Priority Fees</h2>
+
+        <DisplayInfo className='mt-2 mb-2' body={<div>Pay a priority fee to speed up your transaction on Solana.</div>} />
+
+        <div className='flex gap-2 mt-2'>
+          {PRIORITY_FEE_LIST.map(({
+            title,
+            microLamport,
+          }) =>
+            <div className='flex w-1/3 flex-col items-center' key={microLamport}>
+              <Button onClick={() => {
+                setPriorityFee(microLamport);
+              }} variant={microLamport === priorityFee ? 'outline' : 'text'} className='w-20' title={title} key={title} />
+            </div>)}
+        </div>
+
+        <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>
+          Pay {formatNumber(priorityFee, 0)} μLamport / CU
+        </div>
+
+        <div className='mt-2'>
+          <div className='w-full flex flex-col border p-2 bg-third'>
+            <div className='flex w-full'>
+              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Transaction Size</div>
+              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Extra Cost</div>
+            </div>
+
+            <div className='flex flex-col w-full mt-1'>
+              <div className='flex w-full text-xs'>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>Small (200,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(200000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+              </div>
+
+              <div className='flex w-full text-xs'>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>Average (400,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(400000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+              </div>
+
+              <div className='flex w-full text-xs'>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>Big (700,000 cu)</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(700000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </Menu>
   );
 }

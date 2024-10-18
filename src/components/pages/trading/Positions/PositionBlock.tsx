@@ -107,6 +107,16 @@ export default function PositionBlock({
           >
             {position.side}
           </div>
+          <div className="ml-1 text-xs text-txtfade">
+            <FormatNumber
+              nb={position.initialLeverage}
+              format="number"
+              suffix="x"
+              precision={2}
+              isDecimalDimmed={false}
+              className="text-txtfade"
+            />
+          </div>
         </div>
 
         <OnchainAccountInfo
@@ -133,8 +143,8 @@ export default function PositionBlock({
             nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
             format="currency"
             className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-                ? 'green'
-                : 'redbright'
+              ? 'green'
+              : 'redbright'
               }`}
             isDecimalDimmed={false}
           />
@@ -151,8 +161,8 @@ export default function PositionBlock({
             precision={2}
             isDecimalDimmed={false}
             className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-                ? 'green'
-                : 'redbright'
+              ? 'green'
+              : 'redbright'
               }`}
           />
 
@@ -239,11 +249,11 @@ export default function PositionBlock({
         <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
           <div className="flex flex-col items-center min-w-[5em] w-[5em]">
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-              Leverage
+              Cur. Leverage
             </div>
             <div className="flex">
               <FormatNumber
-                nb={position.sizeUsd / position.collateralUsd}
+                nb={position.currentLeverage}
                 format="number"
                 className="text-gray-400 text-xs lowercase"
                 suffix="x"
@@ -286,7 +296,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={position.price}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className="text-xs bold"
               />
             </div>
@@ -300,7 +310,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={tokenPrices[getTokenSymbol(position.token.symbol)]}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className="text-gray-400 text-xs bold"
               />
             </div>
@@ -319,7 +329,7 @@ export default function PositionBlock({
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
-                precision={position.token.symbol === 'BONK' ? 8 : undefined}
+                precision={position.token.displayPriceDecimalsPrecision}
                 className="text-xs text-orange"
               />
             </div>

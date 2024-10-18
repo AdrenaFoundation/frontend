@@ -24,7 +24,7 @@ import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { GenesisLock, PageProps } from '@/types';
+import { GenesisLock, PageProps, PriorityFee } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
@@ -37,6 +37,7 @@ import logo from '../../../public/images/logo.png';
 import xIcon from '../../../public/images/x-black-bg.png';
 
 export default function Genesis({
+  priorityFee,
   connected,
   userProfile,
   triggerWalletTokenBalancesReload,
@@ -46,10 +47,13 @@ export default function Genesis({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
+  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
 }: PageProps & {
+  priorityFee: PriorityFee;
+  setPriorityFee: (priorityFee: PriorityFee) => void;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -93,9 +97,9 @@ export default function Genesis({
 
   const campaignEndDate = genesis
     ? new Date(
-        genesis.campaignStartDate.toNumber() * 1000 +
-          genesis.campaignDuration.toNumber() * 1000,
-      )
+      genesis.campaignStartDate.toNumber() * 1000 +
+      genesis.campaignDuration.toNumber() * 1000,
+    )
     : new Date();
 
   const { days, hours, minutes, seconds } = useCountDown(from, campaignEndDate);
@@ -161,12 +165,12 @@ export default function Genesis({
 
       const campaignEndDate = new Date(
         genesis.campaignStartDate.toNumber() * 1000 +
-          genesis.campaignDuration.toNumber() * 1000,
+        genesis.campaignDuration.toNumber() * 1000,
       );
 
       const resrevedCampaignEndDate = new Date(
         genesis.campaignStartDate.toNumber() * 1000 +
-          genesis.reservedGrantDuration.toNumber() * 1000,
+        genesis.reservedGrantDuration.toNumber() * 1000,
       );
 
       setHasCampaignEnded(new Date() >= campaignEndDate);
@@ -463,8 +467,8 @@ export default function Genesis({
               <div className="flex flex-col gap-6 justify-between flex-none min-h-[170px] bg-gradient-to-tr from-[#07111A] to-[#0B1722] rounded-lg p-5 shadow-lg border border-bcolor">
                 <h2>Liquidity pool</h2>
                 {genesis?.publicAmountClaimed &&
-                genesis?.publicAmount &&
-                usdc?.decimals ? (
+                  genesis?.publicAmount &&
+                  usdc?.decimals ? (
                   <div className="flex flex-row items-center">
                     <div className="w-full mt-auto">
                       <p className="opacity-50 text-sm sm:text-base mb-1">
@@ -490,17 +494,16 @@ export default function Genesis({
                         <motion.div
                           initial={{ width: '0%' }}
                           animate={{
-                            width: `${
-                              (nativeToUi(
-                                genesis.publicAmountClaimed,
+                            width: `${(nativeToUi(
+                              genesis.publicAmountClaimed,
+                              usdc.decimals,
+                            ) /
+                              nativeToUi(
+                                genesis.publicAmount,
                                 usdc.decimals,
-                              ) /
-                                nativeToUi(
-                                  genesis.publicAmount,
-                                  usdc.decimals,
-                                )) *
+                              )) *
                               100
-                            }%`,
+                              }%`,
                           }}
                           transition={{ duration: 0.5, delay: 0.5 }}
                           className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#1F2A8A] to-[#5B6AE8] rounded-full"
@@ -559,17 +562,16 @@ export default function Genesis({
                             <motion.div
                               initial={{ width: '0%' }}
                               animate={{
-                                width: `${
-                                  (nativeToUi(
-                                    genesis.reservedAmountClaimed,
+                                width: `${(nativeToUi(
+                                  genesis.reservedAmountClaimed,
+                                  usdc.decimals,
+                                ) /
+                                  nativeToUi(
+                                    genesis.reservedAmount,
                                     usdc.decimals,
-                                  ) /
-                                    nativeToUi(
-                                      genesis.reservedAmount,
-                                      usdc.decimals,
-                                    )) *
+                                  )) *
                                   100
-                                }%`,
+                                  }%`,
                               }}
                               transition={{ duration: 0.5, delay: 0.5 }}
                               className="flex items-center justify-center h-1 overflow-hidden break-all bg-gradient-to-r from-[#6D1324] to-[#A33D50] rounded-full"
@@ -606,6 +608,8 @@ export default function Genesis({
                 <div className="flex flex-row gap-1 justify-end items-center">
                   <RefreshButton />
                   <Settings
+                    priorityFee={priorityFee}
+                    setPriorityFee={setPriorityFee}
                     activeRpc={activeRpc}
                     rpcInfos={rpcInfos}
                     autoRpcMode={autoRpcMode}

@@ -108,7 +108,7 @@ export default function BucketsAllocation({
                           cortex[`${name}BucketAllocation`],
                           window.adrena.client.adxToken.decimals,
                         ),
-                        3,
+                        window.adrena.client.adxToken.displayAmountDecimalsPrecision,
                       )} ADX`,
                     ];
                   })(),
