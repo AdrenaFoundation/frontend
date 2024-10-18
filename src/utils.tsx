@@ -763,3 +763,10 @@ export const decodeBase64Url = (encodedParams: string) => {
   const json = Buffer.from(base64, 'base64').toString();
   return JSON.parse(json);
 };
+
+export const getCustodyByMint = async (mint: string) => {
+  const custody = await window.adrena.client.getCustodyByPubkey(
+    new PublicKey(mint),
+  );
+  return custody;
+};

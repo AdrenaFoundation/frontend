@@ -13,6 +13,7 @@ import AllTimeAddRemoveLiquidityVolume from '@/components/pages/monitoring/Data/
 import AllTimeFees from '@/components/pages/monitoring/Data/AllTimeFees';
 import AllTimeLiquidationsVolume from '@/components/pages/monitoring/Data/AllTimeLiquidationsVolume';
 import AllTimeTradingVolume from '@/components/pages/monitoring/Data/AllTimeTradingVolume';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
@@ -29,23 +30,7 @@ export default function BasicMonitoring({
   PageProps & {
     poolInfo: PoolInfo | null;
   }) {
-
-  const [isSmallScreen, setIsSmallSize] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const newIsSmallSize = window.innerWidth <= 500;
-      console.log(`Window width: ${window.innerWidth}, isSmallSize: ${newIsSmallSize}`);
-      setIsSmallSize(newIsSmallSize);
-    };
-
-    handleResize(); // Call once to set initial state
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
 
   return (
     <div className="flex flex-col gap-2 p-4">

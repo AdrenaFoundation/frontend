@@ -1,14 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import LineRechartAum from './RechartAum';
-
-export interface AumData {
-  value: number;
-  date: string;
-}
+import Loader from '@/components/Loader/Loader';
+import AreaRechart from '@/components/ReCharts/AreaRecharts';
+import { RechartsData } from '@/types';
 
 export default function AumChart() {
-  const [AUM, setAUM] = useState<AumData[] | null>(null);
+  const [AUM, setAUM] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
@@ -82,7 +79,7 @@ export default function AumChart() {
       });
 
       const formattedData = aum_usd.map((aum: number, i: string | number) => ({
-        name: timeStamp[i],
+        time: timeStamp[i],
         value: aum,
       }));
 
@@ -110,19 +107,20 @@ export default function AumChart() {
   if (!AUM) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartAum
+    <AreaRechart
       title={'AUM'}
-      subValue={AUM[AUM.length - 1].value}
+      subValue={AUM[AUM.length - 1].value as number}
       data={AUM}
       labels={[{ name: 'value' }]}
       period={period}
       setPeriod={setPeriod}
+      domain={['dataMin', 'dataMax']}
     />
   );
 }
