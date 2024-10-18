@@ -515,8 +515,7 @@ export default function LongShortTradingInputs({
     usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
 
-  const currentOiShort = custody && nativeToUi(custody.tradeStats.oiShortUsd, USD_DECIMALS);
-  const availableLiquidityShort = (custody && (custody.maxCumulativeShortPositionSizeUsd - (currentOiShort ?? 0))) ?? 0;
+  const availableLiquidityShort = (custody && (custody.maxCumulativeShortPositionSizeUsd - (custody.oiShortUsd ?? 0))) ?? 0;
 
   return (
     <div

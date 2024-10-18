@@ -687,7 +687,7 @@ export class AdrenaClient {
           custody.pricing.maxCumulativeShortPositionSizeUsd,
           USD_DECIMALS,
         ),
-        tradeStats: custody.tradeStats,
+        oiShortUsd: nativeToUi(custody.tradeStats.oiShortUsd, USD_DECIMALS),
         nativeObject: custody,
       };
     });
