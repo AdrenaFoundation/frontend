@@ -60,6 +60,8 @@ export default function Trade({
   wallet,
   connected,
   triggerPositionsReload,
+  addOptimisticPosition,
+  removeOptimisticPosition,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   userProfile,
@@ -309,6 +311,7 @@ export default function Trade({
                     connected={connected}
                     positions={positions}
                     triggerPositionsReload={triggerPositionsReload}
+                    removeOptimisticPosition={removeOptimisticPosition}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
@@ -351,6 +354,7 @@ export default function Trade({
                     connected={connected}
                     positions={positions}
                     triggerPositionsReload={triggerPositionsReload}
+                    removeOptimisticPosition={removeOptimisticPosition}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
@@ -370,6 +374,7 @@ export default function Trade({
                 wallet={wallet}
                 connected={connected}
                 triggerPositionsReload={triggerPositionsReload}
+                addOptimisticPosition={addOptimisticPosition}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
                 }
@@ -396,6 +401,7 @@ export default function Trade({
             wallet={wallet}
             connected={connected}
             triggerPositionsReload={triggerPositionsReload}
+            addOptimisticPosition={addOptimisticPosition}
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
@@ -465,6 +471,7 @@ export default function Trade({
                     wallet={wallet}
                     connected={connected}
                     triggerPositionsReload={triggerPositionsReload}
+                    addOptimisticPosition={addOptimisticPosition}
                     triggerWalletTokenBalancesReload={
                       triggerWalletTokenBalancesReload
                     }

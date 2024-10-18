@@ -19,6 +19,7 @@ import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
@@ -30,7 +31,6 @@ import initializeApp, {
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { PriorityFee } from '@/types';
-import { DEFAULT_PRIORITY_FEE } from '@/utils';
 
 import logo from '../../public/images/logo.svg';
 import DevnetConfiguration from '../config/devnet';
@@ -208,7 +208,7 @@ function AppComponent({
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
-  const { positions, triggerPositionsReload } = usePositions();
+  const { positions, triggerPositionsReload, addOptimisticPosition, removeOptimisticPosition } = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
   useWatchTokenPrices();
@@ -216,34 +216,38 @@ function AppComponent({
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee']);
-  const [priorityFee, setPriorityFee] = useState<PriorityFee>(DEFAULT_PRIORITY_FEE);
+  const [priorityFee, setPriorityFee] = useState<PriorityFee>('Medium');
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
 
-  useEffect(() => {
-    {
-      const acceptanceDate = cookies['terms-and-conditions-acceptance'];
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-      if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
-        setIsTermsAndConditionModalOpen(true);
-      }
-    }
+  // Priority fees
+  const { priorityFees } = usePriorityFee();
+  const priorityFeeValues = {
+    Medium: priorityFees.medium,
+    High: priorityFees.high,
+    Ultra: priorityFees.ultra
+  };
+  const priorityFeeValue = priorityFeeValues[priorityFee] || priorityFees.medium;
+  window.adrena.client.setPriorityFeeMicroLamports(priorityFeeValue);
 
-    {
-      const priorityFeeCookie = cookies['priority-fee'];
+  // Cookies
+  const acceptanceDate = cookies['terms-and-conditions-acceptance'];
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-      if (!isNaN(priorityFeeCookie)) {
-        setPriorityFee(parseInt(priorityFeeCookie, 10));
-      }
-    }
-  }, [cookies]);
+  if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
+    setIsTermsAndConditionModalOpen(true);
+  }
 
-  useEffect(() => {
-    window.adrena.client.setPriorityFee(priorityFee);
-  }, [priorityFee])
+  const priorityFeeCookie = cookies['priority-fee'];
+
+  if (!isNaN(priorityFeeCookie)) {
+    setPriorityFee(priorityFeeCookie as PriorityFee);
+  }
+
+
 
   useEffect(() => {
     if (!wallet) {
@@ -300,16 +304,16 @@ function AppComponent({
       <RootLayout
         priorityFee={priorityFee}
         setPriorityFee={((p: PriorityFee) => {
+          console.log("set priorityFee cookie HERE", p);
           setCookie(
             'priority-fee',
             p,
             {
               path: '/',
-              maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+              maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
               sameSite: 'strict',
             },
           );
-
           setPriorityFee(p);
         })}
         userProfile={userProfile}
@@ -355,6 +359,8 @@ function AppComponent({
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           positions={positions}
           triggerPositionsReload={triggerPositionsReload}
+          addOptimisticPosition={addOptimisticPosition}
+          removeOptimisticPosition={removeOptimisticPosition}
           connected={connected}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}

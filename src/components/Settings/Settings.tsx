@@ -3,8 +3,9 @@ import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { SOL_DECIMALS } from '@/constant';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { PriorityFee } from '@/types';
-import { addNotification, formatNumber, PRIORITY_FEE_LIST } from '@/utils';
+import { addNotification, DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU, formatNumber } from '@/utils';
 
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
@@ -50,6 +51,9 @@ export default function Settings({
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
   );
+  const { priorityFees } = usePriorityFee();
+
+  const [lastMicroLamportValueSelected, setLastMicroLamportValueSelected] = useState(DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU);
 
   return (
     <Menu
@@ -222,19 +226,29 @@ export default function Settings({
         <DisplayInfo className='mt-2 mb-2' body={<div>Pay a priority fee to speed up your transaction on Solana.</div>} />
 
         <div className='flex gap-2 mt-2'>
-          {PRIORITY_FEE_LIST.map(({
-            title,
-            microLamport,
-          }) =>
+          {[
+            { title: 'Medium', microLamport: priorityFees.medium },
+            { title: 'High', microLamport: priorityFees.high },
+            { title: 'Ultra', microLamport: priorityFees.ultra },
+          ].map(({ title, microLamport }) => (
+
             <div className='flex w-1/3 flex-col items-center' key={microLamport}>
-              <Button onClick={() => {
-                setPriorityFee(microLamport);
-              }} variant={microLamport === priorityFee ? 'outline' : 'text'} className='w-20' title={title} key={title} />
-            </div>)}
+              <Button
+                onClick={() => {
+                  setLastMicroLamportValueSelected(microLamport);
+                  setPriorityFee(title as PriorityFee);
+                }}
+                variant={title === priorityFee ? 'outline' : 'text'}
+                className='w-20'
+                title={title}
+                key={title}
+              />
+            </div>
+          ))}
         </div>
 
         <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>
-          Pay {formatNumber(priorityFee, 0)} μLamport / CU
+          Pay {formatNumber(lastMicroLamportValueSelected, 0)} μLamport / CU
         </div>
 
         <div className='mt-2'>
@@ -247,17 +261,17 @@ export default function Settings({
             <div className='flex flex-col w-full mt-1'>
               <div className='flex w-full text-xs'>
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>Small (200,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(200000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(200000 * lastMicroLamportValueSelected / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
 
               <div className='flex w-full text-xs'>
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>Average (400,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(400000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(400000 * lastMicroLamportValueSelected / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
 
               <div className='flex w-full text-xs'>
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>Big (700,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(700000 * priorityFee / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(700000 * lastMicroLamportValueSelected / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
             </div>
           </div>
