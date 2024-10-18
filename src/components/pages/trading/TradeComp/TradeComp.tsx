@@ -28,6 +28,7 @@ export default function TradeComp({
   isBigScreen,
   activeRpc,
   terminalId,
+  updatePriorityFees,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -48,6 +49,7 @@ export default function TradeComp({
     connection: Connection;
   };
   terminalId: string;
+  updatePriorityFees: () => Promise<void>;
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
 
@@ -117,6 +119,7 @@ export default function TradeComp({
                     triggerWalletTokenBalancesReload={
                       triggerWalletTokenBalancesReload
                     }
+                    updatePriorityFees={updatePriorityFees}
                   />
                 )}
 

@@ -69,6 +69,7 @@ export type PageProps = {
     name: string;
     connection: Connection;
   };
+  updatePriorityFees: () => Promise<void>;
 };
 
 export type CustodyExtended = {

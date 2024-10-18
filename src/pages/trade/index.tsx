@@ -66,6 +66,7 @@ export default function Trade({
   triggerWalletTokenBalancesReload,
   userProfile,
   activeRpc,
+  updatePriorityFees,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -315,6 +316,7 @@ export default function Trade({
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
+                    updatePriorityFees={updatePriorityFees}
                   />
                 </div>
               )}
@@ -358,6 +360,7 @@ export default function Trade({
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
+                    updatePriorityFees={updatePriorityFees}
                   />
                 </div>
               )}
@@ -381,6 +384,7 @@ export default function Trade({
                 isBigScreen={isBigScreen}
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
+                updatePriorityFees={updatePriorityFees}
               />
             </div>
           </div>
@@ -406,6 +410,7 @@ export default function Trade({
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
+            updatePriorityFees={updatePriorityFees}
           />
         ) : null}
 
@@ -477,6 +482,7 @@ export default function Trade({
                     }
                     activeRpc={activeRpc}
                     terminalId="integrated-terminal-3"
+                    updatePriorityFees={updatePriorityFees}
                   />
                 </div>
               </Modal>

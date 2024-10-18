@@ -34,12 +34,14 @@ export default function EditPositionCollateral({
   triggerPositionsReload,
   triggerUserProfileReload,
   onClose,
+  updatePriorityFees,
 }: {
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   onClose: () => void;
+  updatePriorityFees: () => Promise<void>;
 }) {
   const [selectedAction, setSelectedAction] = useState<'deposit' | 'withdraw'>(
     'deposit',
@@ -149,6 +151,7 @@ export default function EditPositionCollateral({
           position,
           collateralUsd: uiToNative(input, USD_DECIMALS),
           notification,
+          updatePriorityFees,
         });
 
       triggerPositionsReload();
@@ -173,6 +176,7 @@ export default function EditPositionCollateral({
             : position.collateralToken.decimals,
         ),
         notification,
+        updatePriorityFees,
       });
 
       triggerPositionsReload();
