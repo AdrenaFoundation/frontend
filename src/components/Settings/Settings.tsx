@@ -1,5 +1,5 @@
 import { Connection } from '@solana/web3.js';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { SOL_DECIMALS } from '@/constant';
@@ -51,9 +51,19 @@ export default function Settings({
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
   );
-  const { priorityFees } = usePriorityFee();
+  const { priorityFees, updatePriorityFees } = usePriorityFee();
 
   const [lastMicroLamportValueSelected, setLastMicroLamportValueSelected] = useState(DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU);
+
+  // Load priority fees once when component appears - TODO: Update each time when the menu is open
+  useEffect(() => {
+    const fetchPriorityFees = async () => {
+      await updatePriorityFees();
+    };
+
+    console.log("priority fees (medium, high, ultra):", priorityFees);
+    fetchPriorityFees();
+  }, []);
 
   return (
     <Menu

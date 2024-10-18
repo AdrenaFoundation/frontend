@@ -6,6 +6,7 @@ import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -65,6 +66,8 @@ export default function ALPSwap({
   const [errorDescription, setErrorDescription] = useState<string | null>(null);
   const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
 
+  const { updatePriorityFees } = usePriorityFee();
+
   const handleExecuteButton = async () => {
     if (!connected) {
       dispatch(openCloseConnectionModalAction(true));
@@ -94,6 +97,7 @@ export default function ALPSwap({
           // TODO: Apply proper slippage
           minLpAmountOut: new BN(0),
           notification,
+          updatePriorityFees,
         });
 
         triggerWalletTokenBalancesReload();

@@ -817,12 +817,14 @@ export class AdrenaClient {
     amountIn,
     minLpAmountOut,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     amountIn: BN;
     minLpAmountOut: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -843,7 +845,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   protected async buildRemoveLiquidityTx({
@@ -4720,13 +4722,18 @@ export class AdrenaClient {
   public async signAndExecuteTx({
     transaction,
     notification,
+    updatePriorityFees,
   }: {
     transaction: Transaction;
     notification?: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
+
+    // Refresh priority fees before proceeding
+    await updatePriorityFees();
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
@@ -4736,8 +4743,6 @@ export class AdrenaClient {
       const latestBlockHash = await this.connection.getLatestBlockhash(
         'finalized',
       );
-
-
 
       console.log(
         'Apply',

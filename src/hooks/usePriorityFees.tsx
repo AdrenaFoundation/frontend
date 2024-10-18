@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 import { getMeanPrioritizationFeeByPercentile } from '../grpf';
 
@@ -15,43 +16,43 @@ export default function usePriorityFee() {
         ultra: 300_000,
     });
 
-    useEffect(() => {
-        const updatePriorityFees = async () => {
-            if (!window.adrena.client.connection) return;
-            const fees = await Promise.all([
-                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: 6000, // 60th percentile
-                    fallback: true,
-                }),
-                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: 8000, // 80th percentile
-                    fallback: true,
-                }),
-                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: 9000, // 90th percentile
-                    fallback: true,
-                }),
-            ]);
 
-            const [medium, high, ultra] = fees;
+    const [cookies] = useCookies(['priority-fee']);
 
-            const priorityFees = {
-                medium,
-                high,
-                ultra,
-            };
+    const updatePriorityFees = async () => {
+        if (!window.adrena.client.connection) return;
+        const fees = await Promise.all([
+            getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                percentile: 6000, // 60th percentile
+                fallback: true,
+            }),
+            getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                percentile: 8000, // 80th percentile
+                fallback: true,
+            }),
+            getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                percentile: 9000, // 90th percentile
+                fallback: true,
+            }),
+        ]);
 
-            console.log("priority fees (medium, high, ultra):", priorityFees);
+        const [medium, high, ultra] = fees;
 
-            setPriorityFees(priorityFees);
+        const priorityFees = {
+            medium,
+            high,
+            ultra,
         };
 
-        updatePriorityFees();
+        console.log("priority fees (medium, high, ultra):", priorityFees);
 
-        const interval = setInterval(updatePriorityFees, 15000); // Update every 15 seconds
+        // Update the priority fee in the AdrenaClient based on user's selection from the Settings menu (or cookie stored value)
+        const selectedPriorityFee = cookies['priority-fee'] || 'medium';
+        const selectedFee = priorityFees[selectedPriorityFee as keyof PriorityFees];
+        window.adrena.client.setPriorityFeeMicroLamports(selectedFee);
 
-        return () => clearInterval(interval);
-    }, []);
+        setPriorityFees(priorityFees);
+    };
 
-    return { priorityFees };
+    return { priorityFees, updatePriorityFees };
 }
