@@ -89,7 +89,12 @@ export type CustodyExtended = {
   // Do liquidity * tokenPrice to get liquidityUsd
   liquidity: number;
   borrowFee: number;
+  // The maximum size of the position you can open, for that market and side.
   maxPositionLockedUsd: number;
+  // The available liquidity for the short side for that custody (restricted by the custody configuration)
+  maxCumulativeShortPositionSizeUsd: number;
+  // current short OI
+  tradeStats: TradeStats;
 
   // Onchain data
   nativeObject: Custody;
