@@ -215,8 +215,6 @@ function AppComponent({
 
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
-  const { priorityFees } = usePriorityFee();
-
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee']);
   const [priorityFee, setPriorityFee] = useState<PriorityFee>('Medium');
 
@@ -224,35 +222,32 @@ function AppComponent({
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
 
-  useEffect(() => {
-    {
-      const acceptanceDate = cookies['terms-and-conditions-acceptance'];
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-      if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
-        setIsTermsAndConditionModalOpen(true);
-      }
-    }
+  // Priority fees
+  const { priorityFees } = usePriorityFee();
+  const priorityFeeValues = {
+    Medium: priorityFees.medium,
+    High: priorityFees.high,
+    Ultra: priorityFees.ultra
+  };
+  const priorityFeeValue = priorityFeeValues[priorityFee] || priorityFees.medium;
+  window.adrena.client.setPriorityFeeMicroLamports(priorityFeeValue);
 
-    {
-      const priorityFeeCookie = cookies['priority-fee'];
+  // Cookies
+  const acceptanceDate = cookies['terms-and-conditions-acceptance'];
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-      if (!isNaN(priorityFeeCookie)) {
-        console.log("load priority fee cookie THERE", priorityFeeCookie);
-        setPriorityFee(priorityFeeCookie as PriorityFee);
-      }
-    }
-  }, [cookies]);
+  if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
+    setIsTermsAndConditionModalOpen(true);
+  }
 
-  useEffect(() => {
-    const priorityFeeValues = {
-      Medium: priorityFees.medium,
-      High: priorityFees.high,
-      Ultra: priorityFees.ultra
-    };
-    const priorityFeeValue = priorityFeeValues[priorityFee] || priorityFees.medium;
-    window.adrena.client.setPriorityFeeMicroLamports(priorityFeeValue);
-  }, [priorityFees, priorityFee])
+  const priorityFeeCookie = cookies['priority-fee'];
+
+  if (!isNaN(priorityFeeCookie)) {
+    setPriorityFee(priorityFeeCookie as PriorityFee);
+  }
+
+
 
   useEffect(() => {
     if (!wallet) {
