@@ -53,6 +53,8 @@ export default function Genesis({
   priorityFeeOption,
   setPriorityFeeOption,
   priorityFeeAmounts,
+  maxPriorityFee,
+  setMaxPriorityFee,
 }: PageProps & {
   activeRpc: {
     name: string;
@@ -72,6 +74,8 @@ export default function Genesis({
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
   priorityFeeAmounts: PriorityFeesAmounts;
+  maxPriorityFee: number | null;
+  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -626,6 +630,8 @@ export default function Genesis({
                     setAutoRpcMode={setAutoRpcMode}
                     setCustomRpcUrl={setCustomRpcUrl}
                     setFavoriteRpc={setFavoriteRpc}
+                    maxPriorityFee={maxPriorityFee}
+                    setMaxPriorityFee={setMaxPriorityFee}
                     isIcon
                     isGenesis
                   />

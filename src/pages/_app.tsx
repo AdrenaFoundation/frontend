@@ -215,9 +215,11 @@ function AppComponent({
 
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
-  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee']);
+  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee', 'max-priority-fee']);
   const initialPriorityFeeOption = cookies['priority-fee'] || 'medium'; // Load from cookie or default to 'medium'
   const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(initialPriorityFeeOption);
+  // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
+  const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(cookies['max-priority-fee'] || null);
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
@@ -228,7 +230,7 @@ function AppComponent({
   const { priorityFeeAmounts, updatePriorityFees } = usePriorityFee();
   const priorityFeeValue = priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
   window.adrena.client.setPriorityFeeMicroLamports(priorityFeeValue);
-
+  window.adrena.client.setMaxPriorityFee(maxPriorityFee);
   // Cookies
   const acceptanceDate = cookies['terms-and-conditions-acceptance'];
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -304,7 +306,22 @@ function AppComponent({
               sameSite: 'strict',
             },
           );
+          window.adrena.client.setPriorityFeeMicroLamports(priorityFeeAmounts[p]);
           setPriorityFeeOption(p);
+        })}
+        maxPriorityFee={maxPriorityFee}
+        setMaxPriorityFee={((p: number | null) => {
+          setCookie(
+            'max-priority-fee',
+            p ?? '0',
+            {
+              path: '/',
+              maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
+              sameSite: 'strict',
+            },
+          );
+          window.adrena.client.setMaxPriorityFee(p);
+          setMaxPriorityFee(p);
         })}
         priorityFeeAmounts={priorityFeeAmounts}
         userProfile={userProfile}

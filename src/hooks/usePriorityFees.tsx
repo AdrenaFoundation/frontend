@@ -22,11 +22,11 @@ export default function usePriorityFee() {
         if (!window.adrena.client.connection) return;
         const fees = await Promise.all([
             getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                percentile: 6000, // 60th percentile
+                percentile: 5500, // 55th percentile
                 fallback: true,
             }),
             getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                percentile: 8000, // 80th percentile
+                percentile: 7500, // 75th percentile
                 fallback: true,
             }),
             getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
@@ -45,16 +45,6 @@ export default function usePriorityFee() {
 
         console.log("Refreshed priority fee amounts (medium, high, ultra):", priorityFeeAmounts);
         setPriorityFeeAmounts(priorityFeeAmounts);
-
-        // Update the priority fee in the AdrenaClient based on user's selection from the Settings menu (or cookie stored value)
-        const selectedPriorityFee = cookies['priority-fee'] || 'medium';
-        // console.log("Selected priority fee:", selectedPriorityFee);
-
-        const correspondingPriorityFeeAmount = priorityFeeAmounts[selectedPriorityFee as keyof PriorityFeesAmounts];
-        // console.log("Updating priority fee amount to (in AdrenaClient):", correspondingPriorityFeeAmount);
-
-        window.adrena.client.setPriorityFeeMicroLamports(correspondingPriorityFeeAmount);
-
     };
 
     return { priorityFeeAmounts, updatePriorityFees };

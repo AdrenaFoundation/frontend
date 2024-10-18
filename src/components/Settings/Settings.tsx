@@ -1,9 +1,9 @@
 import { Connection } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { SOL_DECIMALS } from '@/constant';
-import usePriorityFee, { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
+import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import { PriorityFeeOption as PriorityFeeOption } from '@/types';
 import { addNotification, formatNumber } from '@/utils';
 
@@ -27,6 +27,8 @@ export default function Settings({
   priorityFeeOption,
   setPriorityFeeOption,
   priorityFeeAmounts,
+  maxPriorityFee,
+  setMaxPriorityFee,
   isGenesis = false,
 }: {
   activeRpc: {
@@ -48,6 +50,8 @@ export default function Settings({
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
   priorityFeeAmounts: PriorityFeesAmounts;
+  maxPriorityFee: number | null;
+  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   isGenesis?: boolean;
 }) {
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
@@ -247,14 +251,14 @@ export default function Settings({
         </div>
 
         <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>
-          Pay {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
+          Now @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
         </div>
 
         <div className='mt-2'>
           <div className='w-full flex flex-col border p-2 bg-third'>
             <div className='flex w-full'>
-              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Transaction Size</div>
-              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Extra Cost</div>
+              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>TX Size</div>
+              <div className='w-1/2 items-center justify-center flex text-xs font-boldy'>Extra Fee</div>
             </div>
 
             <div className='flex flex-col w-full mt-1'>
@@ -272,6 +276,32 @@ export default function Settings({
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>Big (700,000 cu)</div>
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(700000 * currentPriorityFeeValue / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4">
+          <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>
+            Max Priority Fee per TX (SOL)
+            <InfoAnnotation className="w-3 h-3" text={"Maximum amount of SOL to be spent on priority fees per transaction, this ensure you never go over your limit."} />
+          </div>
+
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <input
+              type="number"
+              name="maxPriorityFee"
+              id="maxPriorityFee"
+              className="focus:ring-primary focus:border-primary block w-full pl-2 pr-12 sm:text-sm border-gray-300 rounded-md bg-third"
+              placeholder="0.01"
+              step="0.001"
+              min="0"
+              value={maxPriorityFee ?? ''}
+              onChange={(e) => setMaxPriorityFee(parseFloat(e.target.value))}
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center">
+              <label htmlFor="currency" className="sr-only">Currency</label>
+              <span className="text-gray-500 sm:text-sm mr-2">
+                SOL
+              </span>
             </div>
           </div>
         </div>

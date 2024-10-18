@@ -36,6 +36,8 @@ export default function Header({
   setCustomRpcUrl,
   setFavoriteRpc,
   priorityFeeAmounts,
+  maxPriorityFee,
+  setMaxPriorityFee,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
@@ -57,6 +59,8 @@ export default function Header({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   priorityFeeAmounts: PriorityFeesAmounts;
+  maxPriorityFee: number | null;
+  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
   const pathname = usePathname();
 
@@ -159,6 +163,8 @@ export default function Header({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           priorityFeeAmounts={priorityFeeAmounts}
+          maxPriorityFee={maxPriorityFee}
+          setMaxPriorityFee={setMaxPriorityFee}
         />
 
         <WalletAdapter userProfile={userProfile} />

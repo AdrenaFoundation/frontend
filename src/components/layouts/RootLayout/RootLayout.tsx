@@ -30,6 +30,8 @@ export default function RootLayout({
   priorityFeeOption,
   setPriorityFeeOption,
   priorityFeeAmounts,
+  maxPriorityFee,
+  setMaxPriorityFee,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
@@ -51,6 +53,8 @@ export default function RootLayout({
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
   priorityFeeAmounts: PriorityFeesAmounts;
+  maxPriorityFee: number | null;
+  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
   const [pages, setPages] = useState<
@@ -99,6 +103,8 @@ export default function RootLayout({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           priorityFeeAmounts={priorityFeeAmounts}
+          maxPriorityFee={maxPriorityFee}
+          setMaxPriorityFee={setMaxPriorityFee}
         />
       ) : (
         <BurgerMenu
@@ -116,6 +122,8 @@ export default function RootLayout({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           priorityFeeAmounts={priorityFeeAmounts}
+          maxPriorityFee={maxPriorityFee}
+          setMaxPriorityFee={setMaxPriorityFee}
         />
       )}
 

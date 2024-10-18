@@ -41,6 +41,8 @@ export default function BurgerMenu({
   priorityFeeOption,
   setPriorityFeeOption,
   priorityFeeAmounts,
+  maxPriorityFee,
+  setMaxPriorityFee,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
@@ -62,6 +64,8 @@ export default function BurgerMenu({
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
   priorityFeeAmounts: PriorityFeesAmounts;
+  maxPriorityFee: number | null;
+  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
@@ -141,6 +145,8 @@ export default function BurgerMenu({
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
             priorityFeeAmounts={priorityFeeAmounts}
+            maxPriorityFee={maxPriorityFee}
+            setMaxPriorityFee={setMaxPriorityFee}
           />
         </div>
       </div>

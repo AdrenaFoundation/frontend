@@ -8,6 +8,7 @@ import {
 import {
   ComputeBudgetProgram,
   Connection,
+  LAMPORTS_PER_SOL,
   PublicKey,
   RpcResponseAndContext,
   SignatureResult,
@@ -293,7 +294,7 @@ export class AdrenaClient {
   protected adrenaProgram: Program<Adrena> | null = null;
 
   protected priorityFeeMicroLamports = DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU;
-
+  protected maxPriorityFee: number | null = null;
   constructor(
     // Adrena Program with readonly provider
     public readonly config: IConfiguration,
@@ -307,6 +308,10 @@ export class AdrenaClient {
 
   public setPriorityFeeMicroLamports(amount: number) {
     this.priorityFeeMicroLamports = amount;
+  }
+
+  public setMaxPriorityFee(amount: number | null) {
+    this.maxPriorityFee = amount;
   }
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
@@ -4817,6 +4822,19 @@ export class AdrenaClient {
       });
 
       console.log('computeUnitUsed', computeUnitUsed);
+
+      if (this.maxPriorityFee !== null && computeUnitUsed !== null) {
+        const maxPriorityFeeLamports = this.maxPriorityFee * LAMPORTS_PER_SOL;
+        const totalPriorityFee = (this.priorityFeeMicroLamports * computeUnitUsed) / 1_000_000;
+
+        if (totalPriorityFee > maxPriorityFeeLamports) {
+          const adjustedMicroLamports = Math.floor((maxPriorityFeeLamports * 1_000_000) / computeUnitUsed);
+          console.log(`Adjusting priority fee to ${adjustedMicroLamports} microLamports per CU to stay within max priority fee`);
+          transaction.instructions[0] = ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: adjustedMicroLamports,
+          });
+        }
+      }
 
       if (computeUnitUsed !== null) {
         transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
