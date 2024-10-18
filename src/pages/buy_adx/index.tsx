@@ -4,7 +4,6 @@ import React from 'react';
 import ADXFeeStreamAnimation from '@/components/buy_adx/ADXFeeStreamAnimation';
 import ADXVoteAnimation from '@/components/buy_adx/ADXVoteAnimation';
 import Button from '@/components/common/Button/Button';
-import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
 import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import { PageProps } from '@/types';
