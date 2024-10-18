@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
+import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import { useSelector } from '@/store/store';
-import { PriorityFee, UserProfileExtended } from '@/types';
+import { PriorityFeeOption, UserProfileExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
@@ -21,7 +22,6 @@ import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function Header({
-  priorityFee,
   userProfile,
   PAGES,
   activeRpc,
@@ -30,13 +30,15 @@ export default function Header({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
-  setPriorityFee,
+  priorityFeeOption,
+  setPriorityFeeOption,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
+  priorityFeeAmounts,
 }: {
-  priorityFee: PriorityFee;
-  setPriorityFee: (priorityFee: PriorityFee) => void;
+  priorityFeeOption: PriorityFeeOption;
+  setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string; external?: boolean }[];
   activeRpc: {
@@ -54,6 +56,7 @@ export default function Header({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
+  priorityFeeAmounts: PriorityFeesAmounts;
 }) {
   const pathname = usePathname();
 
@@ -144,8 +147,8 @@ export default function Header({
         </Link>
 
         <Settings
-          priorityFee={priorityFee}
-          setPriorityFee={setPriorityFee}
+          priorityFeeOption={priorityFeeOption}
+          setPriorityFeeOption={setPriorityFeeOption}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}
           autoRpcMode={autoRpcMode}
@@ -155,6 +158,7 @@ export default function Header({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
+          priorityFeeAmounts={priorityFeeAmounts}
         />
 
         <WalletAdapter userProfile={userProfile} />

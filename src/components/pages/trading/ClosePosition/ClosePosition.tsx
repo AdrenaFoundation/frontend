@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -36,6 +37,7 @@ export default function ClosePosition({
   tokenImage: ImageRef;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const { updatePriorityFees } = usePriorityFee();
 
   const [exitPriceAndFee, setExitPriceAndFee] =
     useState<ExitPriceAndFee | null>(null);
@@ -43,6 +45,7 @@ export default function ClosePosition({
   const markPrice: number | null = tokenPrices[position.token.symbol];
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
+
 
   useEffect(() => {
     const localLoadingCounter = ++loadingCounter;
@@ -101,6 +104,7 @@ export default function ClosePosition({
           position,
           price: priceWithSlippage,
           notification,
+          updatePriorityFees,
         });
 
       // Reload positions just after closing the popup

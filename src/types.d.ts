@@ -265,7 +265,8 @@ export type SablierThreadExtended = {
   nativeObject: SablierThread;
 };
 
-export type PriorityFee = 'Medium' | 'High' | 'Ultra';
+// The UI options for priority fees - Stored in cookies
+export type PriorityFeeOption = 'medium' | 'high' | 'ultra';
 
 //
 // Params Types

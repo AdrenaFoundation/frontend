@@ -922,12 +922,14 @@ export class AdrenaClient {
     lpAmountIn,
     minAmountOut,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     mint: PublicKey;
     lpAmountIn: BN;
     minAmountOut: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -948,7 +950,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   protected buildOpenOrIncreasePositionWithSwapLong({
@@ -1262,6 +1264,7 @@ export class AdrenaClient {
     mintA,
     mintB,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     amountIn: BN;
@@ -1269,6 +1272,7 @@ export class AdrenaClient {
     mintA: PublicKey;
     mintB: PublicKey;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1303,17 +1307,19 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async closePositionLong({
     position,
     price,
     notification,
+    updatePriorityFees,
   }: {
     position: PositionExtended;
     price: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1411,6 +1417,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
+      updatePriorityFees,
     });
   }
 
@@ -1418,10 +1425,12 @@ export class AdrenaClient {
     position,
     price,
     notification,
+    updatePriorityFees,
   }: {
     position: PositionExtended;
     price: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -1526,6 +1535,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
+      updatePriorityFees,
     });
   }
 
@@ -1555,6 +1565,7 @@ export class AdrenaClient {
     leverage,
     notification,
     existingPosition,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1564,6 +1575,7 @@ export class AdrenaClient {
     leverage: number;
     notification: MultiStepNotification;
     existingPosition?: PositionExtended | null;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1623,7 +1635,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   // Estimate the fee + other infos that will be paid by user if opening a new position with conditional swap
@@ -1750,6 +1762,7 @@ export class AdrenaClient {
     leverage,
     notification,
     existingPosition,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1759,6 +1772,7 @@ export class AdrenaClient {
     leverage: number;
     notification: MultiStepNotification;
     existingPosition?: PositionExtended | null;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1817,17 +1831,19 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async addCollateralToPosition({
     position,
     addedCollateral,
     notification,
+    updatePriorityFees,
   }: {
     position: PositionExtended;
     addedCollateral: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.connection) {
       throw new Error('not connected');
@@ -1846,15 +1862,17 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async initUserProfile({
     nickname,
     notification,
+    updatePriorityFees,
   }: {
     nickname: string;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1879,15 +1897,17 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async editUserProfile({
     nickname,
     notification,
+    updatePriorityFees,
   }: {
     nickname: string;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.connection || !this.adrenaProgram) {
       throw new Error('adrena program not ready');
@@ -1911,7 +1931,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async deleteUserProfile(): Promise<string> {
@@ -2029,10 +2049,12 @@ export class AdrenaClient {
     position,
     collateralUsd,
     notification,
+    updatePriorityFees,
   }: {
     position: PositionExtended;
     collateralUsd: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2080,6 +2102,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
+      updatePriorityFees,
     });
   }
 
@@ -2087,10 +2110,12 @@ export class AdrenaClient {
     position,
     collateralUsd,
     notification,
+    updatePriorityFees,
   }: {
     position: PositionExtended;
     collateralUsd: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2150,6 +2175,7 @@ export class AdrenaClient {
         .postInstructions(postInstructions)
         .transaction(),
       notification,
+      updatePriorityFees,
     });
   }
 
@@ -2176,7 +2202,11 @@ export class AdrenaClient {
     };
   }
 
-  public async claimUserVest() {
+  public async claimUserVest({
+    updatePriorityFees,
+  }: {
+    updatePriorityFees: () => Promise<void>;
+  }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
     }
@@ -2231,7 +2261,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction });
+    return this.signAndExecuteTx({ transaction, updatePriorityFees });
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {
@@ -2300,11 +2330,13 @@ export class AdrenaClient {
     amount,
     stakedTokenMint,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     amount: number;
     stakedTokenMint: PublicKey;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2412,7 +2444,7 @@ export class AdrenaClient {
 
     console.log('transaction debug in AdrenaClient', transaction);
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async addLockedStake({
@@ -2421,12 +2453,14 @@ export class AdrenaClient {
     lockedDays,
     stakedTokenMint,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     amount: number;
     lockedDays: AlpLockPeriod | AdxLockPeriod;
     stakedTokenMint: PublicKey;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2534,7 +2568,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async upgradeLockedStake({
@@ -2542,11 +2576,13 @@ export class AdrenaClient {
     updatedDuration,
     additionalAmount,
     notification,
+    updatePriorityFees,
   }: {
     lockedStake: LockedStakeExtended;
     updatedDuration?: AdxLockPeriod | AlpLockPeriod;
     additionalAmount?: number;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2622,7 +2658,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async removeLiquidStake({
@@ -2630,11 +2666,13 @@ export class AdrenaClient {
     amount,
     stakedTokenMint,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     amount: number;
     stakedTokenMint: PublicKey;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2711,7 +2749,7 @@ export class AdrenaClient {
       // .preInstructions([modifyComputeUnits])
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async buildFinalizeLockedStakeTx({
@@ -2781,10 +2819,12 @@ export class AdrenaClient {
     owner,
     stakedTokenMint,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2796,7 +2836,7 @@ export class AdrenaClient {
     );
     const transaction = await builder.transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   // Simulation for getting pending rewards
@@ -2899,6 +2939,7 @@ export class AdrenaClient {
     stakedTokenMint,
     earlyExit = false,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     resolved: boolean;
@@ -2907,6 +2948,7 @@ export class AdrenaClient {
     stakedTokenMint: PublicKey;
     earlyExit?: boolean;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -2994,7 +3036,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async initUserStaking({
@@ -3002,11 +3044,13 @@ export class AdrenaClient {
     stakedTokenMint,
     threadId,
     notification,
+    updatePriorityFees,
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
     threadId: BN;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3099,7 +3143,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public async getGenesisLock(): Promise<GenesisLock | null> {
@@ -3116,10 +3160,12 @@ export class AdrenaClient {
     amountIn,
     minLpAmountOut,
     notification,
+    updatePriorityFees,
   }: {
     amountIn: number;
     minLpAmountOut: BN;
     notification?: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3214,7 +3260,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public buildCancelStopLossIx({
@@ -4390,9 +4436,11 @@ export class AdrenaClient {
   public async resolveStakingRound({
     stakedTokenMint,
     notification,
+    updatePriorityFees,
   }: {
     stakedTokenMint: PublicKey;
     notification: MultiStepNotification;
+    updatePriorityFees: () => Promise<void>;
   }) {
     if (this.adrenaProgram === null) {
       return null;
@@ -4426,7 +4474,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({ transaction, notification });
+    return this.signAndExecuteTx({ transaction, notification, updatePriorityFees });
   }
 
   public buildCleanupPositionStopLoss({

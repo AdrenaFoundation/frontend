@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { SOL_DECIMALS } from '@/constant';
-import usePriorityFee from '@/hooks/usePriorityFees';
-import { PriorityFee } from '@/types';
-import { addNotification, DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU, formatNumber } from '@/utils';
+import usePriorityFee, { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
+import { PriorityFeeOption as PriorityFeeOption } from '@/types';
+import { addNotification, formatNumber } from '@/utils';
 
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
@@ -15,7 +15,6 @@ import DisplayInfo from '../DisplayInfo/DisplayInfo';
 import InfoAnnotation from '../pages/monitoring/InfoAnnotation';
 
 export default function Settings({
-  priorityFee,
   activeRpc,
   rpcInfos,
   autoRpcMode,
@@ -25,11 +24,11 @@ export default function Settings({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  setPriorityFee,
+  priorityFeeOption,
+  setPriorityFeeOption,
+  priorityFeeAmounts,
   isGenesis = false,
 }: {
-  priorityFee: PriorityFee;
-  setPriorityFee: (priorityFee: PriorityFee) => void;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -46,24 +45,15 @@ export default function Settings({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   isIcon?: boolean;
+  priorityFeeOption: PriorityFeeOption;
+  setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
+  priorityFeeAmounts: PriorityFeesAmounts;
   isGenesis?: boolean;
 }) {
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
   );
-  const { priorityFees, updatePriorityFees } = usePriorityFee();
-
-  const [lastMicroLamportValueSelected, setLastMicroLamportValueSelected] = useState(DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU);
-
-  // Load priority fees once when component appears - TODO: Update each time when the menu is open
-  useEffect(() => {
-    const fetchPriorityFees = async () => {
-      await updatePriorityFees();
-    };
-
-    console.log("priority fees (medium, high, ultra):", priorityFees);
-    fetchPriorityFees();
-  }, []);
+  const currentPriorityFeeValue = priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
 
   return (
     <Menu
@@ -233,22 +223,21 @@ export default function Settings({
       <div className="flex flex-col mb-3">
         <h2 className="flex">Priority Fees</h2>
 
-        <DisplayInfo className='mt-2 mb-2' body={<div>Pay a priority fee to speed up your transaction on Solana.</div>} />
+        <DisplayInfo className='mt-2 mb-2' body={<div>Speed up your transactions with Dynamic Priority Fees following the market rate.</div>} />
 
         <div className='flex gap-2 mt-2'>
           {[
-            { title: 'Medium', microLamport: priorityFees.medium },
-            { title: 'High', microLamport: priorityFees.high },
-            { title: 'Ultra', microLamport: priorityFees.ultra },
+            { title: 'medium', microLamport: priorityFeeAmounts.medium },
+            { title: 'high', microLamport: priorityFeeAmounts.high },
+            { title: 'ultra', microLamport: priorityFeeAmounts.ultra },
           ].map(({ title, microLamport }) => (
 
             <div className='flex w-1/3 flex-col items-center' key={microLamport}>
               <Button
                 onClick={() => {
-                  setLastMicroLamportValueSelected(microLamport);
-                  setPriorityFee(title as PriorityFee);
+                  setPriorityFeeOption(title as PriorityFeeOption);
                 }}
-                variant={title === priorityFee ? 'outline' : 'text'}
+                variant={title === priorityFeeOption ? 'outline' : 'text'}
                 className='w-20'
                 title={title}
                 key={title}
@@ -258,7 +247,7 @@ export default function Settings({
         </div>
 
         <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>
-          Pay {formatNumber(lastMicroLamportValueSelected, 0)} μLamport / CU
+          Pay {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
         </div>
 
         <div className='mt-2'>
@@ -271,17 +260,17 @@ export default function Settings({
             <div className='flex flex-col w-full mt-1'>
               <div className='flex w-full text-xs'>
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>Small (200,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(200000 * lastMicroLamportValueSelected / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(200000 * currentPriorityFeeValue / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
 
               <div className='flex w-full text-xs'>
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>Average (400,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(400000 * lastMicroLamportValueSelected / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(400000 * currentPriorityFeeValue / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
 
               <div className='flex w-full text-xs'>
                 <div className='w-1/2 items-center justify-center flex text-txtfade'>Big (700,000 cu)</div>
-                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(700000 * lastMicroLamportValueSelected / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
+                <div className='w-1/2 items-center justify-center flex text-txtfade'>{formatNumber(700000 * currentPriorityFeeValue / 1000000 / 1000000000, SOL_DECIMALS)} SOL</div>
               </div>
             </div>
           </div>

@@ -122,6 +122,7 @@ export default function ALPSwap({
         // TODO: Apply proper slippage
         minAmountOut: new BN(0),
         notification,
+        updatePriorityFees,
       });
 
       triggerWalletTokenBalancesReload();

@@ -30,7 +30,7 @@ import initializeApp, {
   createReadOnlySablierThreadProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { PriorityFee } from '@/types';
+import { PriorityFeeOption } from '@/types';
 
 import logo from '../../public/images/logo.svg';
 import DevnetConfiguration from '../config/devnet';
@@ -216,7 +216,8 @@ function AppComponent({
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee']);
-  const [priorityFee, setPriorityFee] = useState<PriorityFee>('Medium');
+  const initialPriorityFeeOption = cookies['priority-fee'] || 'medium'; // Load from cookie or default to 'medium'
+  const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(initialPriorityFeeOption);
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
@@ -224,13 +225,8 @@ function AppComponent({
 
 
   // Priority fees
-  const { priorityFees } = usePriorityFee();
-  const priorityFeeValues = {
-    Medium: priorityFees.medium,
-    High: priorityFees.high,
-    Ultra: priorityFees.ultra
-  };
-  const priorityFeeValue = priorityFeeValues[priorityFee] || priorityFees.medium;
+  const { priorityFeeAmounts, updatePriorityFees } = usePriorityFee();
+  const priorityFeeValue = priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
   window.adrena.client.setPriorityFeeMicroLamports(priorityFeeValue);
 
   // Cookies
@@ -240,14 +236,6 @@ function AppComponent({
   if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
     setIsTermsAndConditionModalOpen(true);
   }
-
-  const priorityFeeCookie = cookies['priority-fee'];
-
-  if (!isNaN(priorityFeeCookie)) {
-    setPriorityFee(priorityFeeCookie as PriorityFee);
-  }
-
-
 
   useEffect(() => {
     if (!wallet) {
@@ -267,6 +255,9 @@ function AppComponent({
         }),
       ),
     );
+
+    // Update priority fees on connection
+    updatePriorityFees();
   }, [wallet]);
 
   useEffect(() => {
@@ -302,9 +293,8 @@ function AppComponent({
       </Head>
 
       <RootLayout
-        priorityFee={priorityFee}
-        setPriorityFee={((p: PriorityFee) => {
-          console.log("set priorityFee cookie HERE", p);
+        priorityFeeOption={priorityFeeOption}
+        setPriorityFeeOption={((p: PriorityFeeOption) => {
           setCookie(
             'priority-fee',
             p,
@@ -314,8 +304,9 @@ function AppComponent({
               sameSite: 'strict',
             },
           );
-          setPriorityFee(p);
+          setPriorityFeeOption(p);
         })}
+        priorityFeeAmounts={priorityFeeAmounts}
         userProfile={userProfile}
         activeRpc={activeRpc}
         rpcInfos={rpcInfos}

@@ -7,8 +7,9 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import { useSelector } from '@/store/store';
-import { PriorityFee, UserProfileExtended } from '@/types';
+import { PriorityFeeOption, UserProfileExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
@@ -26,7 +27,6 @@ import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
 export default function BurgerMenu({
-  priorityFee,
   userProfile,
   PAGES,
   activeRpc,
@@ -35,13 +35,13 @@ export default function BurgerMenu({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
-  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
+  priorityFeeOption,
+  setPriorityFeeOption,
+  priorityFeeAmounts,
 }: {
-  priorityFee: PriorityFee;
-  setPriorityFee: (priorityFee: PriorityFee) => void;
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
   activeRpc: {
@@ -59,6 +59,9 @@ export default function BurgerMenu({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
+  priorityFeeOption: PriorityFeeOption;
+  setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
+  priorityFeeAmounts: PriorityFeesAmounts;
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
@@ -126,8 +129,8 @@ export default function BurgerMenu({
           <WalletAdapter className="w-full" userProfile={userProfile} />
 
           <Settings
-            priorityFee={priorityFee}
-            setPriorityFee={setPriorityFee}
+            priorityFeeOption={priorityFeeOption}
+            setPriorityFeeOption={setPriorityFeeOption}
             activeRpc={activeRpc}
             rpcInfos={rpcInfos}
             autoRpcMode={autoRpcMode}
@@ -137,6 +140,7 @@ export default function BurgerMenu({
             setAutoRpcMode={setAutoRpcMode}
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
+            priorityFeeAmounts={priorityFeeAmounts}
           />
         </div>
       </div>

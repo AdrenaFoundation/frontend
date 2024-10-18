@@ -3,19 +3,18 @@ import { useCookies } from 'react-cookie';
 
 import { getMeanPrioritizationFeeByPercentile } from '../grpf';
 
-interface PriorityFees {
+export interface PriorityFeesAmounts {
     medium: number;
     high: number;
     ultra: number;
 }
 
 export default function usePriorityFee() {
-    const [priorityFees, setPriorityFees] = useState<PriorityFees>({
+    const [priorityFeeAmounts, setPriorityFeeAmounts] = useState<PriorityFeesAmounts>({
         medium: 50_000,
         high: 100_000,
         ultra: 300_000,
     });
-
 
     const [cookies] = useCookies(['priority-fee']);
 
@@ -38,21 +37,25 @@ export default function usePriorityFee() {
 
         const [medium, high, ultra] = fees;
 
-        const priorityFees = {
+        const priorityFeeAmounts: PriorityFeesAmounts = {
             medium,
             high,
             ultra,
         };
 
-        console.log("priority fees (medium, high, ultra):", priorityFees);
+        console.log("Refreshed priority fee amounts (medium, high, ultra):", priorityFeeAmounts);
+        setPriorityFeeAmounts(priorityFeeAmounts);
 
         // Update the priority fee in the AdrenaClient based on user's selection from the Settings menu (or cookie stored value)
         const selectedPriorityFee = cookies['priority-fee'] || 'medium';
-        const selectedFee = priorityFees[selectedPriorityFee as keyof PriorityFees];
-        window.adrena.client.setPriorityFeeMicroLamports(selectedFee);
+        // console.log("Selected priority fee:", selectedPriorityFee);
 
-        setPriorityFees(priorityFees);
+        const correspondingPriorityFeeAmount = priorityFeeAmounts[selectedPriorityFee as keyof PriorityFeesAmounts];
+        // console.log("Updating priority fee amount to (in AdrenaClient):", correspondingPriorityFeeAmount);
+
+        window.adrena.client.setPriorityFeeMicroLamports(correspondingPriorityFeeAmount);
+
     };
 
-    return { priorityFees, updatePriorityFees };
+    return { priorityFeeAmounts, updatePriorityFees };
 }
