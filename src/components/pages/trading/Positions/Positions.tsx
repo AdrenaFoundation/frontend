@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
@@ -17,9 +18,11 @@ export default function Positions({
   className,
   positions,
   triggerPositionsReload,
+  removeOptimisticPosition,
   triggerUserProfileReload,
   isBigScreen,
   userProfile,
+  updatePriorityFees,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -27,9 +30,11 @@ export default function Positions({
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
+  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   userProfile: UserProfileExtended | null | false;
+  updatePriorityFees: () => Promise<void>;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -66,6 +71,7 @@ export default function Positions({
             <ClosePosition
               position={positionToClose}
               triggerPositionsReload={triggerPositionsReload}
+              removeOptimisticPosition={removeOptimisticPosition}
               triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToClose(null);
@@ -96,6 +102,7 @@ export default function Positions({
               onClose={() => {
                 setPositionToEdit(null);
               }}
+              updatePriorityFees={updatePriorityFees}
             />
           </Modal>
         )}
@@ -122,6 +129,7 @@ export default function Positions({
                 setPositionToStopLossTakeProfit(null);
               }}
               userProfile={userProfile}
+              updatePriorityFees={updatePriorityFees}
             />
           </Modal>
         )}

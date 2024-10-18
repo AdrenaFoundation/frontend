@@ -22,10 +22,12 @@ export default function VestStats({
   vest,
   getUserVesting,
   triggerWalletTokenBalancesReload,
+  updatePriorityFees,
 }: {
   vest: Vest;
   getUserVesting: () => void;
   triggerWalletTokenBalancesReload: () => void;
+  updatePriorityFees: () => Promise<void>;
 }) {
   const amount = nativeToUi(
     vest.amount,
@@ -58,7 +60,7 @@ export default function VestStats({
     (vest.lastClaimTimestamp.toNumber() === 0
       ? vest.unlockStartTimestamp.toNumber()
       : vest.lastClaimTimestamp.toNumber()) *
-      1000;
+    1000;
 
   const claimableAmount = hasVestStarted
     ? nbSecondsSinceLastClaim * amountPerSecond
@@ -73,7 +75,9 @@ export default function VestStats({
 
   const claimVest = async () => {
     try {
-      const txHash = await window.adrena.client.claimUserVest();
+      const txHash = await window.adrena.client.claimUserVest({
+        updatePriorityFees,
+      });
 
       getUserVesting();
       triggerWalletTokenBalancesReload();
@@ -119,9 +123,9 @@ export default function VestStats({
             nb={
               vest
                 ? nativeToUi(
-                    vest.amount,
-                    window.adrena.client.adxToken.decimals,
-                  )
+                  vest.amount,
+                  window.adrena.client.adxToken.decimals,
+                )
                 : null
             }
             placeholder="0"
@@ -137,9 +141,9 @@ export default function VestStats({
             nb={
               vest
                 ? nativeToUi(
-                    vest.claimedAmount,
-                    window.adrena.client.adxToken.decimals,
-                  )
+                  vest.claimedAmount,
+                  window.adrena.client.adxToken.decimals,
+                )
                 : null
             }
             placeholder="0"
