@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useCookies } from 'react-cookie';
 
 import { getMeanPrioritizationFeeByPercentile } from '../grpf';
 
@@ -15,8 +14,6 @@ export default function usePriorityFee() {
         high: 100_000,
         ultra: 300_000,
     });
-
-    const [cookies] = useCookies(['priority-fee']);
 
     const updatePriorityFees = async () => {
         if (!window.adrena.client.connection) return;
