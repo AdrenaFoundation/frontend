@@ -61,11 +61,11 @@ import {
 import {
   AdrenaTransactionError,
   applySlippage,
+  DEFAULT_PRIORITY_FEE,
   findATAAddressSync,
   isAccountInitialized,
   nativeToUi,
   parseTransactionError,
-  sleep,
   u128SplitToBN,
   uiToNative,
 } from './utils';
@@ -101,6 +101,8 @@ export class AdrenaClient {
     name: 'Shares of a Adrena Liquidity Pool',
     symbol: 'ALP',
     decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 3,
     isStable: false,
     image: alpIcon,
   };
@@ -111,6 +113,8 @@ export class AdrenaClient {
     name: 'The Governance Token',
     symbol: 'ADX',
     decimals: 6,
+    displayAmountDecimalsPrecision: 2,
+    displayPriceDecimalsPrecision: 3,
     isStable: false,
     image: adxIcon,
   };
@@ -265,6 +269,9 @@ export class AdrenaClient {
 
   protected adrenaProgram: Program<Adrena> | null = null;
 
+  // Expressed in micro lamports
+  protected priorityFee = DEFAULT_PRIORITY_FEE;
+
   constructor(
     // Adrena Program with readonly provider
     public readonly config: IConfiguration,
@@ -275,6 +282,10 @@ export class AdrenaClient {
     public tokens: Token[],
     public genesisLockPda: PublicKey,
   ) {}
+
+  public setPriorityFee(priorityFee: number) {
+    this.priorityFee = priorityFee;
+  }
 
   public setReadonlyAdrenaProgram(program: Program<Adrena>) {
     this.readonlyAdrenaProgram = program;
@@ -434,6 +445,8 @@ export class AdrenaClient {
               image: ImageRef;
               coingeckoId: string;
               decimals: number;
+              displayAmountDecimalsPrecision: number;
+              displayPriceDecimalsPrecision: number;
               pythPriceUpdateV2: PublicKey;
             }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
@@ -448,6 +461,8 @@ export class AdrenaClient {
           name: infos.name,
           symbol: infos.symbol,
           decimals: infos.decimals,
+          displayAmountDecimalsPrecision: infos.displayAmountDecimalsPrecision,
+          displayPriceDecimalsPrecision: infos.displayPriceDecimalsPrecision,
           isStable: custody.isStable,
           image: infos.image,
           // loadCustodies gets the custodies on the same order as in the main pool
@@ -1515,6 +1530,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    existingPosition,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1523,6 +1539,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    existingPosition?: PositionExtended | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1558,6 +1575,23 @@ export class AdrenaClient {
         userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction();
 
+    // Cleanup existing position in case Sablier did not work as expected
+    if (existingPosition && existingPosition.pendingCleanupAndClose == true) {
+      if (existingPosition.stopLossThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionStopLoss({
+            position: existingPosition,
+          }),
+        );
+      }
+      if (existingPosition.takeProfitThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionTakeProfit({
+            position: existingPosition,
+          }),
+        );
+      }
+    }
     const transaction = new Transaction();
     transaction.add(
       ...preInstructions,
@@ -1691,6 +1725,7 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
+    existingPosition,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1699,6 +1734,7 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
+    existingPosition?: PositionExtended | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1731,6 +1767,24 @@ export class AdrenaClient {
         leverage,
         userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction();
+
+    // Cleanup existing position in case Sablier did not work as expected
+    if (existingPosition && existingPosition.pendingCleanupAndClose == true) {
+      if (existingPosition.stopLossThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionStopLoss({
+            position: existingPosition,
+          }),
+        );
+      }
+      if (existingPosition.takeProfitThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionTakeProfit({
+            position: existingPosition,
+          }),
+        );
+      }
+    }
 
     const transaction = new Transaction();
     transaction.add(
@@ -2490,6 +2544,15 @@ export class AdrenaClient {
     const stakeResolutionThread = this.getThreadAddressPda(
       lockedStake.stakeResolutionThreadId,
     );
+    const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
+
+    const stakingLmRewardTokenVault =
+      this.getStakingLmRewardTokenVaultPda(staking);
+
+    const rewardTokenAccount = findATAAddressSync(
+      owner,
+      this.cortex.feeRedistributionMint,
+    );
 
     const transaction = await this.adrenaProgram.methods
       .upgradeLockedStake({
@@ -2525,6 +2588,13 @@ export class AdrenaClient {
         staking,
         stakingStakedTokenVault,
         stakeResolutionThread,
+        lmTokenMint: this.lmTokenMint,
+        adrenaProgram: this.adrenaProgram.programId,
+        pool: this.mainPool.pubkey,
+        genesisLock: this.genesisLockPda,
+        rewardTokenAccount,
+        lmTokenAccount,
+        stakingLmRewardTokenVault,
       })
       .transaction();
 
@@ -3577,12 +3647,14 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     side,
+    position,
   }: {
     mint: PublicKey;
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
     side: 'long' | 'short';
+    position?: PositionExtended | null;
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
     if (this.adrenaProgram === null) {
       return null;
@@ -3627,8 +3699,26 @@ export class AdrenaClient {
       })
       .instruction();
 
+    const preInstructions: TransactionInstruction[] = [];
+    if (position && position.pendingCleanupAndClose == true) {
+      if (position.stopLossThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionStopLoss({
+            position,
+          }),
+        );
+      }
+      if (position.takeProfitThreadIsSet) {
+        preInstructions.push(
+          await this.buildCleanupPositionTakeProfit({
+            position,
+          }),
+        );
+      }
+    }
+
     return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
-      [instruction],
+      [...preInstructions, instruction],
       'OpenPositionWithSwapAmountAndFees',
     );
   }
@@ -3828,7 +3918,7 @@ export class AdrenaClient {
     collateralCustody: CustodyExtended;
     position: PositionExtended;
   }): BN {
-    const currentTime = new BN(Date.now());
+    const currentTime = new BN(Date.now() / 1000);
 
     // Calculate cumulative interest for the custody
     const cumulativeInterest =
@@ -3861,9 +3951,11 @@ export class AdrenaClient {
       ? cumulativeInterest.sub(cumulativeInterestSnapshot)
       : new BN(0);
 
-    return positionInterest
+    const totalInterestUsd = positionInterest
       .mul(position.nativeObject.borrowSizeUsd)
       .div(new BN(1000000000));
+
+    return totalInterestUsd.add(position.nativeObject.unrealizedInterestUsd);
   }
 
   public calculatePositionPnL({
@@ -3986,6 +4078,8 @@ export class AdrenaClient {
     };
   }
 
+  // Very important that needs to stay in line with the backend
+  // This is a local calculation of the liquidation price, and that's what is presented to the user in the UI
   public calculateLiquidationPrice({
     position,
   }: {
@@ -4056,7 +4150,7 @@ export class AdrenaClient {
     return nativeToUi(entryPrice.add(maxPriceDiffScaled), PRICE_DECIMALS);
   }
 
-  // Positions PDA can be found by derivating each mints supported by the pool for 2 sides
+  // Positions PDA can be found by deriving each mints supported by the pool for 2 sides
   // DO NOT LOAD PNL OR LIQUIDATION PRICE
   public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
     const possiblePositionAddresses = this.tokens.reduce((acc, token) => {
@@ -4095,7 +4189,7 @@ export class AdrenaClient {
 
         // Ignore position with unknown tokens
         if (!token || !collateralToken) {
-          console.log('Ignore postion with unknown tokens', position);
+          console.log('Ignore position with unknown tokens', position);
           return acc;
         }
 
@@ -4106,6 +4200,10 @@ export class AdrenaClient {
             collateralCustody: position.collateralCustody,
             owner: position.owner,
             pubkey: possiblePositionAddresses[index],
+            initialLeverage:
+              nativeToUi(position.sizeUsd, USD_DECIMALS) /
+              nativeToUi(position.collateralUsd, USD_DECIMALS),
+            currentLeverage: null,
             token,
             collateralToken,
             side: (position.side === 1 ? 'long' : 'short') as 'long' | 'short',
@@ -4137,6 +4235,7 @@ export class AdrenaClient {
               ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
               : null,
             takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
+            pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
 
             //
             nativeObject: position,
@@ -4304,6 +4403,80 @@ export class AdrenaClient {
       .transaction();
 
     return this.signAndExecuteTx({ transaction, notification });
+  }
+
+  public buildCleanupPositionStopLoss({
+    position,
+  }: {
+    position: PositionExtended;
+  }): Promise<TransactionInstruction> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    return this.adrenaProgram.methods
+      .cleanupPositionStopLoss()
+      .accountsStrict({
+        position: position.pubkey,
+        owner: position.owner,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        caller: caller,
+        custody: position.custody,
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        sablierProgram: this.config.sablierThreadProgram,
+        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.takeProfitThreadId,
+          user: position.owner,
+        }).publicKey,
+        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.stopLossThreadId,
+          user: position.owner,
+        }).publicKey,
+      })
+      .instruction();
+  }
+
+  public buildCleanupPositionTakeProfit({
+    position,
+  }: {
+    position: PositionExtended;
+  }): Promise<TransactionInstruction> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
+      .publicKey;
+
+    return this.adrenaProgram.methods
+      .cleanupPositionTakeProfit()
+      .accountsStrict({
+        position: position.pubkey,
+        owner: position.owner,
+        transferAuthority: AdrenaClient.transferAuthorityAddress,
+        caller: caller,
+        custody: position.custody,
+        cortex: AdrenaClient.cortexPda,
+        pool: this.mainPool.pubkey,
+        sablierProgram: this.config.sablierThreadProgram,
+        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.takeProfitThreadId,
+          user: position.owner,
+        }).publicKey,
+        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
+          authority: AdrenaClient.transferAuthorityAddress,
+          threadId: position.nativeObject.stopLossThreadId,
+          user: position.owner,
+        }).publicKey,
+      })
+      .instruction();
   }
 
   /*
@@ -4542,9 +4715,15 @@ export class AdrenaClient {
         'finalized',
       );
 
+      console.log(
+        'Apply',
+        this.priorityFee,
+        'micro lamport priority fee to transaction',
+      );
+
       transaction.instructions.unshift(
         ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: 10000, // 700k compute unit for 7000 lamports
+          microLamports: this.priorityFee,
         }),
         ComputeBudgetProgram.setComputeUnitLimit({
           units: 1000000, // Use a lot of units to avoid any issues during simulation

@@ -18,7 +18,8 @@ export default function ADXCirculatingSupply({
       bodyClassName="items-center"
     >
       <div className="flex items-center">
-        <div className={bodyClassName}>{formatNumber(adxTotalSupply, 2)}</div>
+        <div className={bodyClassName}>{formatNumber(adxTotalSupply,
+          window.adrena.client.adxToken.displayAmountDecimalsPrecision)}</div>
         <div className="ml-1">ADX</div>
       </div>
     </StyledContainer>

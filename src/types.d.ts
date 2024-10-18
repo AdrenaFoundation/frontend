@@ -109,13 +109,14 @@ export type PositionExtended = {
   collateralCustody: PublicKey;
   owner: PublicKey;
   pubkey: PublicKey;
-  // Current leverage (not initial leverage)
-  leverage?: number | null;
+  initialLeverage: number;
+  currentLeverage: number | null;
   token: Token;
   collateralToken: Token;
   side: 'long' | 'short';
+  // Including fees
   pnl?: number | null;
-  priceChangeUsd?: number | null;
+  pnlMinusFees?: number | null;
   profitUsd?: number | null;
   lossUsd?: number | null;
   borrowFeeUsd?: number | null;
@@ -131,6 +132,8 @@ export type PositionExtended = {
   stopLossThreadIsSet: boolean;
   takeProfitLimitPrice?: number | null;
   takeProfitThreadIsSet: boolean;
+  // The position is closed and still alive due to a pending cleanup and close from Sablier
+  pendingCleanupAndClose: boolean;
 
   // Onchain data
   nativeObject: Position;
@@ -175,7 +178,8 @@ export interface Token {
   color: string;
   name: TokenName;
   decimals: number;
-  // displayDecimals: number; TODO: Implement this to fix display in fields
+  displayAmountDecimalsPrecision: number;
+  displayPriceDecimalsPrecision: number;
   isStable: boolean;
   image: ImageRef;
   custody?: PublicKey;
@@ -256,6 +260,10 @@ export type SablierThreadExtended = {
   funding?: number;
   nativeObject: SablierThread;
 };
+
+export type PriorityFeeNames = 'Critical' | 'High' | 'Medium' | 'Low' | 'None';
+
+export type PriorityFee = number;
 
 //
 // Params Types

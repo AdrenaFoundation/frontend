@@ -1,20 +1,27 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { PythSolanaReceiver } from '@pythnetwork/pyth-solana-receiver';
 import { PublicKey } from '@solana/web3.js';
+import {
+  AggregatorAccount,
+  SwitchboardProgram,
+} from '@switchboard-xyz/solana.js';
+import Big from 'big.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setTokenPriceAction } from '@/actions/tokenPricesActions';
-import { PRICE_DECIMALS, USD_DECIMALS } from '@/constant';
+import { PRICE_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { Token } from '@/types';
 import { nativeToUi } from '@/utils';
 
 let pythPriceInterval: NodeJS.Timeout | null = null;
 let alpPriceInterval: NodeJS.Timeout | null = null;
+let adxPriceInterval: NodeJS.Timeout | null = null;
 
 // 2 requests are made when fetching prices
-const PYTH_PRICE_LOADING_INTERVAL_IN_MS = 3_000;
+const PYTH_PRICE_LOADING_INTERVAL_IN_MS = 5_000;
 const ALP_PRICE_LOADING_INTERVAL_IN_MS = 10_000;
+const ADX_PRICE_LOADING_INTERVAL_IN_MS = 5_000;
 
 export default function useWatchTokenPrices() {
   const dispatch = useDispatch();
@@ -106,7 +113,7 @@ export default function useWatchTokenPrices() {
 
     // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadPythPrices]);
+  }, [loadPythPrices, !!window.adrena.client.connection]);
 
   const loadALPTokenPrice = useCallback(async () => {
     try {
@@ -117,6 +124,35 @@ export default function useWatchTokenPrices() {
           window.adrena.client.alpToken.symbol,
           price ? nativeToUi(price, PRICE_DECIMALS) : null,
         ),
+      );
+    } catch (e) {
+      console.log('error happened loading lp token price', e);
+    }
+  }, [dispatch]);
+
+  const loadADXTokenPrice = useCallback(async () => {
+    if (!window.adrena.client.connection) return;
+
+    try {
+      const switchboardProgram = await SwitchboardProgram.load(
+        window.adrena.client.connection,
+      );
+
+      const aggregatorAccount = new AggregatorAccount(
+        switchboardProgram,
+        new PublicKey('FKMg7sMStMhfC3CeEUZyu6PRYhsawNW5kLy24koZzmiw'),
+      );
+
+      const result: Big | null = await aggregatorAccount.fetchLatestValue();
+
+      if (result === null) {
+        throw new Error('Aggregator holds no value');
+      }
+
+      const price = parseFloat(result.toString());
+
+      dispatch(
+        setTokenPriceAction(window.adrena.client.adxToken.symbol, price),
       );
     } catch (e) {
       console.log('error happened loading lp token price', e);
@@ -144,5 +180,28 @@ export default function useWatchTokenPrices() {
     };
     // Manually handle dependencies to avoid unwanted refresh
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadALPTokenPrice]);
+  }, [loadALPTokenPrice, !!window.adrena.client.connection]);
+
+  useEffect(() => {
+    if (!dispatch) {
+      return;
+    }
+
+    loadADXTokenPrice();
+
+    adxPriceInterval = setInterval(() => {
+      loadADXTokenPrice();
+    }, ADX_PRICE_LOADING_INTERVAL_IN_MS);
+
+    return () => {
+      if (!adxPriceInterval) {
+        return;
+      }
+
+      clearInterval(adxPriceInterval);
+      adxPriceInterval = null;
+    };
+    // Manually handle dependencies to avoid unwanted refresh
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadADXTokenPrice, !!window.adrena.client.connection]);
 }

@@ -23,6 +23,7 @@ export default function InfoAnnotation({
     >
       <div className="h-auto w-auto flex items-center justify-center">
         {title ? <h3>{title}</h3> : <></>}
+
         <Image
           className={twMerge('opacity-50 hover:opacity-100 ml-1', className)}
           src={infoIcon}
