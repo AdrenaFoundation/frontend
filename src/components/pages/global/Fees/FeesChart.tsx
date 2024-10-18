@@ -124,7 +124,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
 
   if (!chartData) {
     return (
-      <div className="h-full w-full flex items-center justify-center text-sm">
+      <div className="h-full w-full flex items-center justify-center text-sm ">
         <Loader />
       </div>
     );
@@ -138,15 +138,15 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
       labels={[
         {
           name: 'Swap Fees',
-          color: '#f7931a',
+          color: '#cec161',
         },
         {
           name: 'Mint/Redeem ALP Fees',
-          color: '#2775ca',
+          color: '#5460cb',
         },
         {
           name: 'Open/Close Fees',
-          color: '#84CC90',
+          color: '#7ccbd7',
         },
         {
           name: 'Liquidation Fees',
