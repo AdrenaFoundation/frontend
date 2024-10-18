@@ -124,7 +124,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
 
   if (!chartData) {
     return (
-      <div className="h-full w-full flex items-center justify-center text-sm ">
+      <div className="h-full w-full flex items-center justify-center text-sm">
         <Loader />
       </div>
     );
