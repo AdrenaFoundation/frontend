@@ -12,7 +12,7 @@ import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 export default function ALPSwapInputs({
@@ -86,7 +86,7 @@ export default function ALPSwapInputs({
       if (actionType === 'buy') return;
 
       const collateralTokenPrice = tokenPrices[collateralToken.symbol] ?? null;
-      // missing informations or empty input
+      // missing information or empty input
       if (
         alpInput === 0 ||
         alpInput === null ||
@@ -168,7 +168,7 @@ export default function ALPSwapInputs({
       const alpTokenPrice = tokenPrices[alpToken.symbol] ?? null;
       const collateralTokenPrice = tokenPrices[collateralToken.symbol] ?? null;
 
-      // missing informations or empty input
+      // missing information or empty input
       if (
         collateralInput === null ||
         alpTokenPrice === null ||
