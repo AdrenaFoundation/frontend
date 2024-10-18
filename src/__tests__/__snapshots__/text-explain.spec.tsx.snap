@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`text-explain.tsx > matches snapshot 1`] = `
+<div>
+  <div
+    class="absolute left-0 w-full z-20 flex flex-col justify-center items-center top-[-1em]"
+  >
+    <span
+      class="text-gray-500 whitespace-nowrap"
+    >
+      Testing
+    </span>
+    <div
+      class="h-1 border-l-2 border-r-2 border-gray-600 w-full border-t-2 mt-[0.15em]"
+    />
+  </div>
+</div>
+`;
+
+exports[`text-explain.tsx > renders 1`] = `
+<div>
+  <div
+    class="absolute left-0 w-full z-20 flex flex-col justify-center items-center top-[-1em]"
+  >
+    <span
+      class="text-gray-500 whitespace-nowrap"
+    >
+      Testing
+    </span>
+    <div
+      class="h-1 border-l-2 border-r-2 border-gray-600 w-full border-t-2 mt-[0.15em]"
+    />
+  </div>
+</div>
+`;
