@@ -18,24 +18,32 @@ export default function usePriorityFee() {
     useEffect(() => {
         const updatePriorityFees = async () => {
             if (!window.adrena.client.connection) return;
-            const fees = {
-                medium: await getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+            const fees = await Promise.all([
+                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
                     percentile: 6000, // 60th percentile
                     fallback: true,
                 }),
-                high: await getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
                     percentile: 8000, // 80th percentile
                     fallback: true,
                 }),
-                ultra: await getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
                     percentile: 9000, // 90th percentile
                     fallback: true,
                 }),
+            ]);
+
+            const [medium, high, ultra] = fees;
+
+            const priorityFees = {
+                medium,
+                high,
+                ultra,
             };
 
-            console.log("priority fees (medium, high, ultra):", fees.medium, fees.high, fees.ultra);
+            console.log("priority fees (medium, high, ultra):", priorityFees);
 
-            setPriorityFees(fees);
+            setPriorityFees(priorityFees);
         };
 
         updatePriorityFees();
