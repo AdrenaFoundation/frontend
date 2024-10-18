@@ -147,11 +147,27 @@ export class AdrenaClient {
     )[0];
   };
 
+  // Cache to store computed PDAs
+  private positionPdaCache: { [key: string]: PublicKey } = {};
+
   public getPositionPda = (owner: PublicKey, token: Token, side: 'long' | 'short') => {
-    return PublicKey.findProgramAddressSync(
+    const cacheKey = `${owner.toBase58()}-${token.mint.toBase58()}-${side}`;
+
+    // Check if the result is already cached
+    if (this.positionPdaCache[cacheKey]) {
+      return this.positionPdaCache[cacheKey];
+    }
+
+    // Compute the PDA
+    const pda = PublicKey.findProgramAddressSync(
       [Buffer.from('position'), owner.toBuffer(), token.mint.toBuffer(), Buffer.from(side)],
       AdrenaClient.programId,
     )[0];
+
+    // Store the result in the cache
+    this.positionPdaCache[cacheKey] = pda;
+
+    return pda;
   };
 
   public getThreadAddressPda = (threadId: BN) => {
