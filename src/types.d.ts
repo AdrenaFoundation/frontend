@@ -425,3 +425,7 @@ export type PositionHistoryApi = {
   last_ix: string;
   collateral_amount: number;
 };
+
+export type RechartsData = {
+  [key: string]: number | string | boolean;
+};

@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import LineRechartAum from './RechartALPPrice';
+import Loader from '@/components/Loader/Loader';
+import AreaRechart from '@/components/ReCharts/AreaRecharts';
+import { RechartsData } from '@/types';
 
 export default function ALPPriceChart() {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
@@ -81,7 +83,7 @@ export default function ALPPriceChart() {
 
       const formattedData = lp_token_price.map(
         (price: number, i: string | number) => ({
-          name: timeStamp[i],
+          time: timeStamp[i],
           value: price,
         }),
       );
@@ -105,19 +107,20 @@ export default function ALPPriceChart() {
   if (!chartData) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartAum
+    <AreaRechart
       title={'ALP Price'}
-      subValue={chartData[chartData.length - 1].value}
+      subValue={chartData[chartData.length - 1].value as number}
       data={chartData}
       labels={[{ name: 'value' }]}
       period={period}
       setPeriod={setPeriod}
+      domain={['dataMin', 'dataMax']}
     />
   );
 }

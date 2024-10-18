@@ -1,84 +1,82 @@
 import Tippy from '@tippyjs/react';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
   CartesianGrid,
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import { AxisDomain, TickItem } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
-import FormatNumber from '@/components/Number/FormatNumber';
-import { formatPriceInfo } from '@/utils';
+import { RechartsData } from '@/types';
+import { formatNumberShort, formatPercentage, formatPriceInfo } from '@/utils';
 
-function CustomToolTip(props: any) {
-  const { active, payload, label } = props;
+import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
+import FormatNumber from '../Number/FormatNumber';
 
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-third p-3 border border-white rounded-lg min-w-[14em]">
-        <p className="text-lg mb-2 font-mono">{label}</p>
-        {payload.map((item: any) => (
-          <div
-            key={item.dataKey}
-            className="text-sm font-mono flex justify-between"
-            style={{ color: item.fill }}
-          >
-            <span style={{ color: item.fill }}>{item.dataKey}:</span>
-            <span className="ml-2 font-mono" style={{ color: item.fill }}>
-              {formatPriceInfo(item.value, 2, 2)}
-            </span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  return null;
-}
-
-export default function LineRechartFees({
+export default function LineRechart({
   title,
-  subValue,
   data,
   labels,
   period,
   setPeriod,
-  isSmallScreen,
+  domain,
+  tippyContent,
+  isSmallScreen = true,
+  subValue,
+  isReferenceLine,
+  formatY = 'currency',
 }: {
   title: string;
-  subValue: number;
-  data: any;
+  data: RechartsData[];
   labels: {
     name: string;
     color?: string;
   }[];
   period: string | null;
   setPeriod: (v: string | null) => void;
-  isSmallScreen: boolean;
+  domain?: AxisDomain;
+  tippyContent?: ReactNode;
+  isSmallScreen?: boolean;
+  subValue?: number;
+  isReferenceLine?: boolean;
+  formatY?: 'percentage' | 'currency' | 'number';
 }) {
-  const formatYAxis = (tickItem: any) => {
-    return formatPriceInfo(tickItem, 0);
+  const formatYAxis = (tickItem: number) => {
+    if (formatY === 'percentage') {
+      return formatPercentage(tickItem, 0);
+    }
+
+    if (formatY === 'currency') {
+      return formatPriceInfo(tickItem, 0);
+    }
+    return formatNumberShort(tickItem);
   };
 
   return (
     <div className="flex flex-col h-full w-full max-h-[18em]">
       <div className="flex mb-3 justify-between items-center">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-row gap-3 items-center">
           <h2 className="">{title}</h2>
-          <Tippy content="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps.">
-            <span className="cursor-help text-txtfade">ⓘ</span>
-          </Tippy>
+
+          {tippyContent && (
+            <Tippy content={tippyContent}>
+              <span className="cursor-help text-txtfade">ⓘ</span>
+            </Tippy>
+          )}
 
           {!isSmallScreen && (
             <FormatNumber
               nb={subValue}
               className="text-sm text-txtfade sm:text-xs"
-              prefix="($"
+              format="currency"
+              prefix="("
               suffix=")"
               precision={0}
             />
@@ -128,20 +126,22 @@ export default function LineRechartFees({
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart width={600} height={400} data={data}>
+        <LineChart data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
-          <XAxis dataKey="name" fontSize="12" />
+          <XAxis dataKey="time" fontSize="12" />
 
-          <YAxis
-            domain={[0, 'auto']}
-            tickFormatter={formatYAxis}
-            fontSize="11"
+          <YAxis domain={domain} tickFormatter={formatYAxis} fontSize="11" />
+
+          <Tooltip
+            content={
+              <CustomRechartsToolTip isValueOnly={labels.length === 1} />
+            }
+            cursor={false}
           />
-          <Legend />
-          <Tooltip content={<CustomToolTip />} cursor={false} />
 
-          {labels?.map(({ name, color }) => {
+          <Legend />
+          {labels.map(({ name, color }) => {
             return (
               <Line
                 type="monotone"
@@ -153,6 +153,19 @@ export default function LineRechartFees({
               />
             );
           })}
+
+          {isReferenceLine && (
+            <ReferenceLine
+              y={100}
+              stroke="white"
+              label={{
+                position: 'top',
+                value: 'Max utilization',
+                fill: 'white',
+                fontSize: 12,
+              }}
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
