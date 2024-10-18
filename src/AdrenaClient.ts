@@ -4711,6 +4711,8 @@ export class AdrenaClient {
 
     let signedTransaction: Transaction;
 
+    let serializedTransaction: Buffer;
+
     try {
       const latestBlockHash = await this.connection.getLatestBlockhash(
         'finalized',
@@ -4751,7 +4753,23 @@ export class AdrenaClient {
       // Prepare the transaction succeeded
       notification?.currentStepSucceeded();
 
+      const start = Date.now();
+
       signedTransaction = await wallet.signTransaction(transaction);
+
+      serializedTransaction = signedTransaction.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      });
+
+      const end = Date.now();
+
+      track('transaction_duration', {
+        computeUnitUsed,
+        duration: `${end - start}ms`,
+        priorityFee: this.priorityFee,
+        transactionSize: serializedTransaction.length,
+      });
     } catch (err) {
       console.log('sign error:', err);
 
@@ -4773,21 +4791,8 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     try {
-      const start = Date.now();
-      txHash = await this.connection.sendRawTransaction(
-        signedTransaction.serialize({
-          requireAllSignatures: false,
-          verifySignatures: false,
-        }),
-        {
-          skipPreflight: true,
-        },
-      );
-
-      const end = Date.now();
-
-      track('transaction_duration', {
-        duration: `${(end - start) / 1000}s`,
+      txHash = await this.connection.sendRawTransaction(serializedTransaction, {
+        skipPreflight: true,
       });
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
