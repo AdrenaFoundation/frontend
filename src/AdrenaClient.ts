@@ -1,4 +1,4 @@
-import { BN } from '@coral-xyz/anchor';
+import { BN, ProgramAccount } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -281,7 +281,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) {}
+  ) { }
 
   public setPriorityFee(priorityFee: number) {
     this.priorityFee = priorityFee;
@@ -439,16 +439,16 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-              name: string;
-              color: string;
-              symbol: string;
-              image: ImageRef;
-              coingeckoId: string;
-              decimals: number;
-              displayAmountDecimalsPrecision: number;
-              displayPriceDecimalsPrecision: number;
-              pythPriceUpdateV2: PublicKey;
-            }
+            name: string;
+            color: string;
+            symbol: string;
+            image: ImageRef;
+            coingeckoId: string;
+            decimals: number;
+            displayAmountDecimalsPrecision: number;
+            displayPriceDecimalsPrecision: number;
+            pythPriceUpdateV2: PublicKey;
+          }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -1663,13 +1663,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-            swappedTokenDecimals: tokenB.decimals,
-            swappedTokenPrice: tokenBPrice,
-          }
+          swappedTokenDecimals: tokenB.decimals,
+          swappedTokenPrice: tokenBPrice,
+        }
         : {
-            swappedTokenDecimals: usdcToken.decimals,
-            swappedTokenPrice: usdcTokenPrice,
-          };
+          swappedTokenDecimals: usdcToken.decimals,
+          swappedTokenPrice: usdcTokenPrice,
+        };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1815,9 +1815,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-      position,
-      collateralAmount: addedCollateral,
-    })
+        position,
+        collateralAmount: addedCollateral,
+      })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2559,11 +2559,11 @@ export class AdrenaClient {
         stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
         amount: additionalAmount
           ? uiToNative(
-              additionalAmount,
-              lockedStake.tokenSymbol === 'ALP'
-                ? this.alpToken.decimals
-                : this.adxToken.decimals,
-            )
+            additionalAmount,
+            lockedStake.tokenSymbol === 'ALP'
+              ? this.alpToken.decimals
+              : this.adxToken.decimals,
+          )
           : null,
         lockedDays: updatedDuration ?? null,
       })
@@ -4038,13 +4038,13 @@ export class AdrenaClient {
         )
           ? new BN(0)
           : uiToNative(
-              collateralTokenPriceUi *
-                nativeToUi(
-                  position.nativeObject.lockedAmount,
-                  collateralCustody.tokenInfo.decimals,
-                ),
-              USD_DECIMALS,
-            );
+            collateralTokenPriceUi *
+            nativeToUi(
+              position.nativeObject.lockedAmount,
+              collateralCustody.tokenInfo.decimals,
+            ),
+            USD_DECIMALS,
+          );
 
         return {
           profitUsd: nativeToUi(
@@ -4222,9 +4222,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                    position.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
+                  position.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4239,6 +4239,87 @@ export class AdrenaClient {
 
             //
             nativeObject: position,
+          },
+        ];
+      },
+      [],
+    );
+  }
+
+  public async loadAllPositions(): Promise<PositionExtended[]> {
+    const positions = (await this.readonlyAdrenaProgram.account.position.all()) as (ProgramAccount<Position> | null)[];
+
+    return positions.reduce<PositionExtended[]>(
+      (acc: PositionExtended[], position: ProgramAccount<Position> | null) => {
+        if (!position) {
+          return acc;
+        }
+        const positionPubkey = position.publicKey;
+        const positionAccount = position.account;
+
+        const token =
+          this.tokens.find(
+            (token) => token.custody && token.custody.equals(positionAccount.custody),
+          ) ?? null;
+
+        const collateralToken =
+          this.tokens.find(
+            (token) =>
+              token.custody && token.custody.equals(positionAccount.collateralCustody),
+          ) ?? null;
+
+        // Ignore position with unknown tokens
+        if (!token || !collateralToken) {
+          console.log('Ignore position with unknown tokens', position);
+          return acc;
+        }
+
+        return [
+          ...acc,
+          {
+            custody: positionAccount.custody,
+            collateralCustody: positionAccount.collateralCustody,
+            owner: positionAccount.owner,
+            pubkey: positionPubkey,
+            initialLeverage:
+              nativeToUi(positionAccount.sizeUsd, USD_DECIMALS) /
+              nativeToUi(positionAccount.collateralUsd, USD_DECIMALS),
+            currentLeverage: null,
+            token,
+            collateralToken,
+            side: (positionAccount.side === 1 ? 'long' : 'short') as 'long' | 'short',
+            sizeUsd: nativeToUi(positionAccount.sizeUsd, USD_DECIMALS),
+            collateralUsd: nativeToUi(positionAccount.collateralUsd, USD_DECIMALS),
+            price: nativeToUi(positionAccount.price, PRICE_DECIMALS),
+            collateralAmount: nativeToUi(
+              positionAccount.collateralAmount,
+              collateralToken.decimals,
+            ),
+            exitFeeUsd: nativeToUi(positionAccount.exitFeeUsd, USD_DECIMALS),
+            liquidationFeeUsd: nativeToUi(
+              positionAccount.liquidationFeeUsd,
+              USD_DECIMALS,
+            ),
+            stopLossClosePositionPrice:
+              positionAccount.stopLossThreadIsSet === 1
+                ? nativeToUi(
+                  positionAccount.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
+                : null,
+            stopLossLimitPrice:
+              positionAccount.stopLossThreadIsSet === 1
+                ? nativeToUi(positionAccount.stopLossLimitPrice, PRICE_DECIMALS)
+                : null,
+            stopLossThreadIsSet: positionAccount.stopLossThreadIsSet === 1,
+            takeProfitLimitPrice: positionAccount.takeProfitThreadIsSet
+              ? nativeToUi(positionAccount.takeProfitLimitPrice, PRICE_DECIMALS)
+              : null,
+            takeProfitThreadIsSet: positionAccount.takeProfitThreadIsSet === 1,
+            pendingCleanupAndClose: positionAccount.pendingCleanupAndClose === 1,
+
+            //
+            nativeObject: positionAccount,
           },
         ];
       },
@@ -4794,8 +4875,7 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 

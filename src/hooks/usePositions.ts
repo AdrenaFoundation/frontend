@@ -5,7 +5,7 @@ import { TokenPricesState } from '@/reducers/tokenPricesReducer';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 
-const calculatePnLandLiquidationPrice = (
+export const calculatePnLandLiquidationPrice = (
   position: PositionExtended,
   tokenPrices: TokenPricesState,
 ) => {
