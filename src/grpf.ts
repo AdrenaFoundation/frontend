@@ -1,3 +1,4 @@
+import { consoleIntegration } from "@sentry/nextjs";
 import type { RecentPrioritizationFees } from "@solana/web3.js";
 import {
   Connection,
@@ -155,6 +156,7 @@ export const getRecentPrioritizationFeesByPercentile = async (
   // to save fallback roundtrips if your RPC is not Triton, both RPCs are called in parallel to minimize latency
   promises.push(
     getRecentPrioritizationFeesFromRpc(config, rpcRequest).then((result) => {
+      console.log('GRPF tritonRpcResponse', result);
       tritonRpcResponse = result;
     })
   );
@@ -165,6 +167,7 @@ export const getRecentPrioritizationFeesByPercentile = async (
         { lockedWritableAccounts },
         rpcRequest
       ).then((result) => {
+        console.log('GRPF fallbackRpcResponse', result);
         fallbackRpcResponse = result;
       })
     );
