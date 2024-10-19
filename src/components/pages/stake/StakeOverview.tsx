@@ -43,7 +43,6 @@ export default function StakeOverview({
   userPendingAdxRewards,
   pendingGenesisAdxRewards,
   handleClickOnUpdateLockedStake,
-  updatePriorityFees,
 }: {
   token: 'ADX' | 'ALP';
   totalLockedStake: number | null;
@@ -65,7 +64,6 @@ export default function StakeOverview({
   pendingGenesisAdxRewards: number;
   nextRoundTime: number;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
-  updatePriorityFees: () => Promise<void>;
 }) {
   const isALP = token === 'ALP';
   const storageKey = isALP ? 'alpStakeSortConfig' : 'adxStakeSortConfig';
@@ -146,7 +144,7 @@ export default function StakeOverview({
           ? window.adrena.client.lpTokenMint
           : window.adrena.client.lmTokenMint,
         notification,
-        updatePriorityFees,
+
       });
 
       setTimeout(() => {

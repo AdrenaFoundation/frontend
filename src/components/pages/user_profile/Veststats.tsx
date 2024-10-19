@@ -22,12 +22,10 @@ export default function VestStats({
   vest,
   getUserVesting,
   triggerWalletTokenBalancesReload,
-  updatePriorityFees,
 }: {
   vest: Vest;
   getUserVesting: () => void;
   triggerWalletTokenBalancesReload: () => void;
-  updatePriorityFees: () => Promise<void>;
 }) {
   const amount = nativeToUi(
     vest.amount,
@@ -75,9 +73,7 @@ export default function VestStats({
 
   const claimVest = async () => {
     try {
-      const txHash = await window.adrena.client.claimUserVest({
-        updatePriorityFees,
-      });
+      const txHash = await window.adrena.client.claimUserVest();
 
       getUserVesting();
       triggerWalletTokenBalancesReload();

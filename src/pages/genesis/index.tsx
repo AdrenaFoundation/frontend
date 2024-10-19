@@ -100,7 +100,6 @@ export default function Genesis({
   const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
     null,
   );
-  const { updatePriorityFees } = usePriorityFee();
   const from = new Date();
 
   const campaignEndDate = genesis
@@ -245,7 +244,7 @@ export default function Genesis({
           stakedTokenMint: window.adrena.client.alpToken.mint,
           threadId: new BN(Date.now()),
           notification,
-          updatePriorityFees,
+
         });
       } catch (error) {
         console.error('error', error);
@@ -266,7 +265,7 @@ export default function Genesis({
         // TODO: Apply proper slippage
         minLpAmountOut: new BN(0),
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();

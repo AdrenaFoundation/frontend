@@ -205,8 +205,16 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
   return d;
 }
 
-// Use High as default
-export const DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU = 160_000;
+export const DEFAULT_PRIORITY_FEE_OPTION = 'medium';
+
+// in SOL
+export const DEFAULT_MAX_PRIORITY_FEE = 0.0001;
+
+export const PercentilePriorityFeeList = {
+  medium: 5500,
+  high: 7500,
+  ultra: 9000,
+} as const;
 
 export function addNotification({
   title,

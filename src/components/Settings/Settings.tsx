@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import { SOL_DECIMALS } from '@/constant';
-import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { PriorityFeeOption as PriorityFeeOption } from '@/types';
-import { addNotification, formatNumber } from '@/utils';
+import { addNotification, DEFAULT_MAX_PRIORITY_FEE, formatNumber } from '@/utils';
 
 import settingsIcon from '../../../public/images/Icons/settings.svg';
 import Button from '../common/Button/Button';
@@ -26,7 +26,6 @@ export default function Settings({
   setFavoriteRpc,
   priorityFeeOption,
   setPriorityFeeOption,
-  priorityFeeAmounts,
   maxPriorityFee,
   setMaxPriorityFee,
   isGenesis = false,
@@ -49,7 +48,6 @@ export default function Settings({
   isIcon?: boolean;
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
-  priorityFeeAmounts: PriorityFeesAmounts;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   isGenesis?: boolean;
@@ -57,6 +55,9 @@ export default function Settings({
   const [editCustomRpcUrl, setEditCustomRpcUrl] = useState<string | null>(
     customRpcUrl,
   );
+
+  const priorityFeeAmounts = usePriorityFee();
+
   const currentPriorityFeeValue = priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
 
   return (
@@ -291,9 +292,9 @@ export default function Settings({
               name="maxPriorityFee"
               id="maxPriorityFee"
               className="focus:ring-primary focus:border-primary block w-full pl-2 pr-12 sm:text-sm border-gray-300 rounded-md bg-third"
-              placeholder="0.01"
-              step="0.001"
-              min="0"
+              placeholder={DEFAULT_MAX_PRIORITY_FEE.toString()}
+              step="0.000000001"
+              min="0.000000001"
               value={maxPriorityFee ?? ''}
               onChange={(e) => setMaxPriorityFee(parseFloat(e.target.value))}
             />
