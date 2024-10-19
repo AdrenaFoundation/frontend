@@ -52,7 +52,6 @@ export default function Genesis({
   setFavoriteRpc,
   priorityFeeOption,
   setPriorityFeeOption,
-  priorityFeeAmounts,
   maxPriorityFee,
   setMaxPriorityFee,
 }: PageProps & {
