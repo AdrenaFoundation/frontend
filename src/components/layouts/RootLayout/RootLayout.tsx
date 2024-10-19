@@ -9,13 +9,13 @@ import { ToastContainer } from 'react-toastify';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import Featurebase from '@/components/Featurebase/Featurebase';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PriorityFee, UserProfileExtended } from '@/types';
+import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
+import { PriorityFeeOption, UserProfileExtended } from '@/types';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
 
 export default function RootLayout({
-  priorityFee,
   children,
   userProfile,
   activeRpc,
@@ -24,13 +24,15 @@ export default function RootLayout({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
-  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
+  priorityFeeOption,
+  setPriorityFeeOption,
+  priorityFeeAmounts,
+  maxPriorityFee,
+  setMaxPriorityFee,
 }: {
-  priorityFee: PriorityFee;
-  setPriorityFee: (priorityFee: PriorityFee) => void;
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
   activeRpc: {
@@ -48,6 +50,11 @@ export default function RootLayout({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
+  priorityFeeOption: PriorityFeeOption;
+  setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
+  priorityFeeAmounts: PriorityFeesAmounts;
+  maxPriorityFee: number | null;
+  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
   const [pages, setPages] = useState<
@@ -82,8 +89,8 @@ export default function RootLayout({
 
       {window.location.pathname === '/genesis' ? null : isBigScreen ? (
         <Header
-          priorityFee={priorityFee}
-          setPriorityFee={setPriorityFee}
+          priorityFeeOption={priorityFeeOption}
+          setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -95,11 +102,14 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
+          priorityFeeAmounts={priorityFeeAmounts}
+          maxPriorityFee={maxPriorityFee}
+          setMaxPriorityFee={setMaxPriorityFee}
         />
       ) : (
         <BurgerMenu
-          priorityFee={priorityFee}
-          setPriorityFee={setPriorityFee}
+          priorityFeeOption={priorityFeeOption}
+          setPriorityFeeOption={setPriorityFeeOption}
           userProfile={userProfile}
           PAGES={pages}
           activeRpc={activeRpc}
@@ -111,6 +121,9 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
+          priorityFeeAmounts={priorityFeeAmounts}
+          maxPriorityFee={maxPriorityFee}
+          setMaxPriorityFee={setMaxPriorityFee}
         />
       )}
 
