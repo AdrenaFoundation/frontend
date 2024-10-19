@@ -5061,7 +5061,7 @@ export class AdrenaClient {
       track('transaction_duration', {
         computeUnitUsed,
         duration: `${end - start}ms`,
-        priorityFee: this.maxPriorityFee,
+        maxPriorityFee: this.maxPriorityFee,
         transactionSize: serializedTransaction.length,
       });
     } catch (err) {
