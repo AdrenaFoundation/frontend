@@ -29,6 +29,7 @@ import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
 import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
+import { getMeanPrioritizationFeeByPercentile } from './grpf';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
   AdrenaProgram,
@@ -72,7 +73,6 @@ import {
   u128SplitToBN,
   uiToNative,
 } from './utils';
-import { getMeanPrioritizationFeeByPercentile } from './grpf';
 
 export class AdrenaClient {
   public static programId = new PublicKey(
