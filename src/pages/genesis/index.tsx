@@ -22,7 +22,7 @@ import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
-import usePriorityFee, { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
+import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { GenesisLock, PageProps, PriorityFeeOption } from '@/types';
@@ -619,7 +619,6 @@ export default function Genesis({
                   <Settings
                     priorityFeeOption={priorityFeeOption}
                     setPriorityFeeOption={setPriorityFeeOption}
-                    priorityFeeAmounts={priorityFeeAmounts}
                     activeRpc={activeRpc}
                     rpcInfos={rpcInfos}
                     autoRpcMode={autoRpcMode}
