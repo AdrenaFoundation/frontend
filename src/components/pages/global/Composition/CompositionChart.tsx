@@ -1,13 +1,14 @@
-import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useRef, useState } from 'react';
 
+import Loader from '@/components/Loader/Loader';
+import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
-
-import LineRechartComposition from './LineRechartComposition';
+import { RechartsData } from '@/types';
+import { getCustodyByMint } from '@/utils';
 
 export default function CompositionChart() {
-  const [custody, setCustody] = useState<any>(null);
-  const [custodyInfo, setCustodyInfo] = useState<any>(null);
+  const [data, setData] = useState<RechartsData[] | null>(null);
+  const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
@@ -15,13 +16,6 @@ export default function CompositionChart() {
     periodRef.current = period;
     getCustodyInfo();
   }, [period]);
-
-  const getCustody = async (mint: string) => {
-    const custody = await window.adrena.client.getCustodyByPubkey(
-      new PublicKey(mint),
-    );
-    return custody;
-  };
 
   const getCustodyInfo = async () => {
     try {
@@ -92,7 +86,7 @@ export default function CompositionChart() {
         });
       });
 
-      const custodyInfos = [];
+      const custodyInfos: TokenInfo[] = [];
 
       let custodyData = {
         USDC: [],
@@ -102,7 +96,7 @@ export default function CompositionChart() {
       };
 
       for (const [key, value] of Object.entries(assets_value_usd)) {
-        const custody = await getCustody(key);
+        const custody = await getCustodyByMint(key);
         if (!custody || !value) return;
 
         custodyInfos.push(custody.tokenInfo);
@@ -113,15 +107,17 @@ export default function CompositionChart() {
         };
       }
 
-      const formatted = timeStamp.map((time: string, i: number) => ({
-        time,
-        WBTC: Number(custodyData.WBTC[i]) ? Number(custodyData.WBTC[i]) : 0,
-        USDC: Number(custodyData.USDC[i]) ?? 0,
-        BONK: Number(custodyData.BONK[i]) ?? 0,
-        JITOSOL: Number(custodyData.JITOSOL[i]) ?? 0,
-      }));
+      const formatted: RechartsData[] = timeStamp.map(
+        (time: string, i: number) => ({
+          time,
+          WBTC: Number(custodyData.WBTC[i]) ? Number(custodyData.WBTC[i]) : 0,
+          USDC: Number(custodyData.USDC[i]) ?? 0,
+          BONK: Number(custodyData.BONK[i]) ?? 0,
+          JITOSOL: Number(custodyData.JITOSOL[i]) ?? 0,
+        }),
+      );
 
-      setCustody(formatted);
+      setData(formatted);
       setCustodyInfo(custodyInfos);
     } catch (e) {
       console.error(e);
@@ -138,25 +134,24 @@ export default function CompositionChart() {
     return () => clearInterval(interval);
   }, []);
 
-  if (!custody) {
+  if (!data || !custodyInfo) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartComposition
+    <LineRechart
       title="Pool Composition"
-      data={custody}
-      labels={
-        custodyInfo.map((info: TokenInfo) => ({
-          symbol: info.symbol,
-          color: info.color,
-        })) ?? []
-      }
+      data={data}
+      labels={custodyInfo.map((info: TokenInfo) => ({
+        name: info.symbol,
+        color: info.color,
+      }))}
       period={period}
+      domain={['dataMax']}
       setPeriod={setPeriod}
     />
   );

@@ -18,6 +18,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
@@ -56,6 +57,7 @@ export default function LongShortTradingInputs({
   connected,
   setTokenA,
   setTokenB,
+  addOptimisticPosition,
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
 }: {
@@ -70,6 +72,7 @@ export default function LongShortTradingInputs({
   connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
+  addOptimisticPosition: (position: PositionExtended) => void;
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
 }) {
@@ -93,6 +96,8 @@ export default function LongShortTradingInputs({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [isInfoLoading, setIsInfoLoading] = useState(false);
+
+  const { updatePriorityFees } = usePriorityFee();
 
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
@@ -222,8 +227,16 @@ export default function LongShortTradingInputs({
       });
     }
 
+
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
+    if (!tokenAPrice) {
+      return addNotification({
+        type: 'info',
+        title: 'Cannot open position',
+        message: `Missing ${tokenA.symbol} price`,
+      });
+    }
     if (tokenAPrice) {
       const collateralValue = inputA * tokenAPrice;
       if (collateralValue < 9.5) {
@@ -267,6 +280,7 @@ export default function LongShortTradingInputs({
           leverage: uiLeverageToNative(leverage),
           notification,
           existingPosition: maybeZombiePosition,
+          updatePriorityFees,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -277,9 +291,44 @@ export default function LongShortTradingInputs({
           leverage: uiLeverageToNative(leverage),
           notification,
           existingPosition: maybeZombiePosition,
+          updatePriorityFees,
         }));
 
-      triggerPositionsReload();
+      // If position already exists, reload positions (which does not really work for now as it takes time to get updated account states, TO IMPROVE)
+      if (openedPosition) {
+        triggerPositionsReload();
+      } else {
+        const collateralUsd = nativeToUi(collateralAmount, tokenA.decimals) * tokenAPrice;
+        const sizeUsd = collateralUsd * leverage;
+
+        // Add optimistic position
+        const positionPda = window.adrena.client.getPositionPda(new PublicKey(wallet.publicKey), tokenB, side);
+        const tempPosition: PositionExtended = {
+          side,
+          isOptimistic: true,
+          owner: new PublicKey(wallet.publicKey),
+          initialLeverage: leverage,
+          pubkey: positionPda,
+          token: tokenB,
+          collateralToken: tokenB,
+          liquidationFeeUsd: nativeToUi(openPositionWithSwapAmountAndFees.liquidationFee, USD_DECIMALS),
+          custody: new PublicKey(tokenB.mint),
+          collateralCustody: new PublicKey(tokenB.mint),
+          collateralUsd: collateralUsd,
+          sizeUsd: sizeUsd,
+          liquidationPrice: nativeToUi(openPositionWithSwapAmountAndFees.liquidationPrice, PRICE_DECIMALS),
+          pnl: 0,
+          pnlMinusFees: 0,
+          profitUsd: 0,
+          lossUsd: 0,
+          borrowFeeUsd: 0,
+          exitFeeUsd: nativeToUi(openPositionWithSwapAmountAndFees.exitFee, USD_DECIMALS),
+          currentLeverage: leverage,
+        } as unknown as PositionExtended;
+
+        addOptimisticPosition(tempPosition);
+      }
+
       triggerWalletTokenBalancesReload();
 
       setInputA(null);

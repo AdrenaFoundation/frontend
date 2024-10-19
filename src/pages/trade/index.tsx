@@ -60,10 +60,13 @@ export default function Trade({
   wallet,
   connected,
   triggerPositionsReload,
+  addOptimisticPosition,
+  removeOptimisticPosition,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   userProfile,
   activeRpc,
+  updatePriorityFees,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -309,9 +312,11 @@ export default function Trade({
                     connected={connected}
                     positions={positions}
                     triggerPositionsReload={triggerPositionsReload}
+                    removeOptimisticPosition={removeOptimisticPosition}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
+                    updatePriorityFees={updatePriorityFees}
                   />
                 </div>
               )}
@@ -351,9 +356,11 @@ export default function Trade({
                     connected={connected}
                     positions={positions}
                     triggerPositionsReload={triggerPositionsReload}
+                    removeOptimisticPosition={removeOptimisticPosition}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
+                    updatePriorityFees={updatePriorityFees}
                   />
                 </div>
               )}
@@ -370,12 +377,14 @@ export default function Trade({
                 wallet={wallet}
                 connected={connected}
                 triggerPositionsReload={triggerPositionsReload}
+                addOptimisticPosition={addOptimisticPosition}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
                 }
                 isBigScreen={isBigScreen}
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
+                updatePriorityFees={updatePriorityFees}
               />
             </div>
           </div>
@@ -396,10 +405,12 @@ export default function Trade({
             wallet={wallet}
             connected={connected}
             triggerPositionsReload={triggerPositionsReload}
+            addOptimisticPosition={addOptimisticPosition}
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
+            updatePriorityFees={updatePriorityFees}
           />
         ) : null}
 
@@ -465,11 +476,13 @@ export default function Trade({
                     wallet={wallet}
                     connected={connected}
                     triggerPositionsReload={triggerPositionsReload}
+                    addOptimisticPosition={addOptimisticPosition}
                     triggerWalletTokenBalancesReload={
                       triggerWalletTokenBalancesReload
                     }
                     activeRpc={activeRpc}
                     terminalId="integrated-terminal-3"
+                    updatePriorityFees={updatePriorityFees}
                   />
                 </div>
               </Modal>

@@ -1,4 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
+import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image'; // Ensure correct import
 import { useEffect, useState } from 'react';
@@ -7,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import FormatNumber from '@/components/Number/FormatNumber';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -14,13 +16,14 @@ import { nativeToUi } from '@/utils';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 
 // use the counter to handle asynchronous multiple loading
-// always ignore outdated informations
+// always ignore outdated information
 let loadingCounter = 0;
 
 export default function ClosePosition({
   className,
   position,
   triggerPositionsReload,
+  removeOptimisticPosition,
   triggerUserProfileReload,
   onClose,
   tokenImage,
@@ -28,11 +31,13 @@ export default function ClosePosition({
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
+  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   triggerUserProfileReload: () => void;
   onClose: () => void;
   tokenImage: ImageRef;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const { updatePriorityFees } = usePriorityFee();
 
   const [exitPriceAndFee, setExitPriceAndFee] =
     useState<ExitPriceAndFee | null>(null);
@@ -40,6 +45,7 @@ export default function ClosePosition({
   const markPrice: number | null = tokenPrices[position.token.symbol];
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
+
 
   useEffect(() => {
     const localLoadingCounter = ++loadingCounter;
@@ -98,11 +104,13 @@ export default function ClosePosition({
           position,
           price: priceWithSlippage,
           notification,
+          updatePriorityFees,
         });
 
       // Reload positions just after closing the popup
       setTimeout(() => {
         triggerPositionsReload();
+        removeOptimisticPosition(position.side, position.custody);
         triggerUserProfileReload();
       }, 0);
 

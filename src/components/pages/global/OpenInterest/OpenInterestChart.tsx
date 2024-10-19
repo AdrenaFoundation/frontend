@@ -1,7 +1,10 @@
-import { PublicKey } from '@solana/web3.js';
 import React, { useEffect, useRef, useState } from 'react';
 
-import LineRechartOpenInterest from './LineRechartOpenInterest';
+import Loader from '@/components/Loader/Loader';
+import LineRechart from '@/components/ReCharts/LineRecharts';
+import { TokenInfo } from '@/config/IConfiguration';
+import { RechartsData } from '@/types';
+import { getCustodyByMint } from '@/utils';
 
 interface OpenInterestChartProps {
   isSmallScreen: boolean;
@@ -10,8 +13,8 @@ interface OpenInterestChartProps {
 export default function OpenInterestChart({
   isSmallScreen,
 }: OpenInterestChartProps) {
-  const [custody, setCustody] = useState<any>(null);
-  const [custodyInfo, setCustodyInfo] = useState<any>(null);
+  const [data, setData] = useState<RechartsData[] | null>(null);
+  const [custodyInfo, setCustodyInfo] = useState<TokenInfo[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
@@ -31,13 +34,6 @@ export default function OpenInterestChart({
 
     return () => clearInterval(interval);
   }, []);
-
-  const getCustody = async (mint: string) => {
-    const custody = await window.adrena.client.getCustodyByPubkey(
-      new PublicKey(mint),
-    );
-    return custody;
-  };
 
   const getCustodyInfo = async () => {
     try {
@@ -112,7 +108,7 @@ export default function OpenInterestChart({
         });
       });
 
-      const custodyInfos = [];
+      const custodyInfos: TokenInfo[] = [];
 
       let custodyData = {
         WBTC: { short: [], long: [] },
@@ -121,7 +117,7 @@ export default function OpenInterestChart({
       };
 
       for (const [key, value] of Object.entries(open_interest_long_usd)) {
-        const custody = await getCustody(key);
+        const custody = await getCustodyByMint(key);
         if (!custody || !value) return;
 
         // Ignore USDC
@@ -138,32 +134,34 @@ export default function OpenInterestChart({
         };
       }
 
-      const formatted = timeStamp.map((time: string, i: number) => {
-        const Total =
-          Number(custodyData.WBTC.long[i]) +
-          Number(custodyData.BONK.long[i]) +
-          Number(custodyData.JITOSOL.long[i]) +
-          Number(custodyData.JITOSOL.short[i]) +
-          Number(custodyData.WBTC.short[i]) +
-          Number(custodyData.BONK.short[i]);
-
-        return {
-          time,
-          WBTC:
+      const formatted: RechartsData[] = timeStamp.map(
+        (time: string, i: number) => {
+          const Total =
             Number(custodyData.WBTC.long[i]) +
-            Number(custodyData.WBTC.short[i]),
-          BONK:
             Number(custodyData.BONK.long[i]) +
-            Number(custodyData.BONK.short[i]),
-          JITOSOL:
             Number(custodyData.JITOSOL.long[i]) +
-            Number(custodyData.JITOSOL.short[i]),
-          Total,
-        };
-      });
+            Number(custodyData.JITOSOL.short[i]) +
+            Number(custodyData.WBTC.short[i]) +
+            Number(custodyData.BONK.short[i]);
 
-      setTotalOpenInterest(formatted[formatted.length - 1].Total);
-      setCustody(formatted);
+          return {
+            time,
+            WBTC:
+              Number(custodyData.WBTC.long[i]) +
+              Number(custodyData.WBTC.short[i]),
+            BONK:
+              Number(custodyData.BONK.long[i]) +
+              Number(custodyData.BONK.short[i]),
+            JITOSOL:
+              Number(custodyData.JITOSOL.long[i]) +
+              Number(custodyData.JITOSOL.short[i]),
+            Total,
+          };
+        },
+      );
+
+      setTotalOpenInterest(Number(formatted[formatted.length - 1].Total));
+      setData(formatted);
 
       setCustodyInfo(custodyInfos);
     } catch (e) {
@@ -171,19 +169,38 @@ export default function OpenInterestChart({
     }
   };
 
-  if (!custody || !custodyInfo) {
+  if (!data || !custodyInfo) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartOpenInterest
+    <LineRechart
       title="Open Interest USD"
-      totalOpenInterest={totalOpenInterest}
-      data={custody}
+      subValue={totalOpenInterest}
+      data={data}
+      labels={[
+        {
+          name: 'Total',
+          color: '#ff0000',
+        },
+        {
+          name: 'WBTC',
+          color: '#f7931a',
+        },
+        {
+          name: 'BONK',
+          color: '#dfaf92',
+        },
+        {
+          name: 'JITOSOL',
+          color: '#84CC90',
+        },
+      ]}
+      domain={['dataMax']}
       period={period}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}

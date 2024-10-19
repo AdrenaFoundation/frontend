@@ -9,6 +9,7 @@ import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { IDL as SABLIER_THREAD_IDL } from '@/target/thread_program';
 
 import SablierClient from './SablierClient';
+import { PriorityFeeOption } from './types';
 
 export function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(

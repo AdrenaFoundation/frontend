@@ -5,6 +5,7 @@ import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { Staking } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -27,6 +28,7 @@ export default function CurrentStakingRoundTime({
 }) {
   const [alpRoundPassed, setAlpRoundPassed] = useState<boolean>(false);
   const [adxRoundPassed, setAdxRoundPassed] = useState<boolean>(false);
+  const { updatePriorityFees } = usePriorityFee();
 
   useEffect(() => {
     if (!alpStakingAccount) {
@@ -85,6 +87,7 @@ export default function CurrentStakingRoundTime({
       await window.adrena.client.resolveStakingRound({
         stakedTokenMint,
         notification,
+        updatePriorityFees,
       });
 
       setTimeout(() => {

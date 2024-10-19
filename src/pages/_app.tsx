@@ -19,6 +19,7 @@ import IConfiguration from '@/config/IConfiguration';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
@@ -29,8 +30,7 @@ import initializeApp, {
   createReadOnlySablierThreadProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { PriorityFee } from '@/types';
-import { DEFAULT_PRIORITY_FEE } from '@/utils';
+import { PriorityFeeOption } from '@/types';
 
 import logo from '../../public/images/logo.svg';
 import DevnetConfiguration from '../config/devnet';
@@ -208,42 +208,36 @@ function AppComponent({
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
-  const { positions, triggerPositionsReload } = usePositions();
+  const { positions, triggerPositionsReload, addOptimisticPosition, removeOptimisticPosition } = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
   useWatchTokenPrices();
 
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
-  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee']);
-  const [priorityFee, setPriorityFee] = useState<PriorityFee>(DEFAULT_PRIORITY_FEE);
+  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee', 'max-priority-fee']);
+  const initialPriorityFeeOption = cookies['priority-fee'] || 'medium'; // Load from cookie or default to 'medium'
+  const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(initialPriorityFeeOption);
+  // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
+  const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(cookies['max-priority-fee'] || null);
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
   const [connected, setConnected] = useState<boolean>(false);
 
-  useEffect(() => {
-    {
-      const acceptanceDate = cookies['terms-and-conditions-acceptance'];
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-      if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
-        setIsTermsAndConditionModalOpen(true);
-      }
-    }
+  // Priority fees
+  const { priorityFeeAmounts, updatePriorityFees } = usePriorityFee();
+  const priorityFeeValue = priorityFeeAmounts[priorityFeeOption] || priorityFeeAmounts.medium;
+  window.adrena.client.setPriorityFeeMicroLamports(priorityFeeValue);
+  window.adrena.client.setMaxPriorityFee(maxPriorityFee);
+  // Cookies
+  const acceptanceDate = cookies['terms-and-conditions-acceptance'];
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    {
-      const priorityFeeCookie = cookies['priority-fee'];
-
-      if (!isNaN(priorityFeeCookie)) {
-        setPriorityFee(parseInt(priorityFeeCookie, 10));
-      }
-    }
-  }, [cookies]);
-
-  useEffect(() => {
-    window.adrena.client.setPriorityFee(priorityFee);
-  }, [priorityFee])
+  if (!acceptanceDate || new Date(acceptanceDate) < thirtyDaysAgo) {
+    setIsTermsAndConditionModalOpen(true);
+  }
 
   useEffect(() => {
     if (!wallet) {
@@ -263,6 +257,9 @@ function AppComponent({
         }),
       ),
     );
+
+    // Update priority fees on connection
+    updatePriorityFees();
   }, [wallet]);
 
   useEffect(() => {
@@ -298,20 +295,35 @@ function AppComponent({
       </Head>
 
       <RootLayout
-        priorityFee={priorityFee}
-        setPriorityFee={((p: PriorityFee) => {
+        priorityFeeOption={priorityFeeOption}
+        setPriorityFeeOption={((p: PriorityFeeOption) => {
           setCookie(
             'priority-fee',
             p,
             {
               path: '/',
-              maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+              maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
               sameSite: 'strict',
             },
           );
-
-          setPriorityFee(p);
+          window.adrena.client.setPriorityFeeMicroLamports(priorityFeeAmounts[p]);
+          setPriorityFeeOption(p);
         })}
+        maxPriorityFee={maxPriorityFee}
+        setMaxPriorityFee={((p: number | null) => {
+          setCookie(
+            'max-priority-fee',
+            p ?? '0',
+            {
+              path: '/',
+              maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
+              sameSite: 'strict',
+            },
+          );
+          window.adrena.client.setMaxPriorityFee(p);
+          setMaxPriorityFee(p);
+        })}
+        priorityFeeAmounts={priorityFeeAmounts}
         userProfile={userProfile}
         activeRpc={activeRpc}
         rpcInfos={rpcInfos}
@@ -355,6 +367,8 @@ function AppComponent({
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           positions={positions}
           triggerPositionsReload={triggerPositionsReload}
+          addOptimisticPosition={addOptimisticPosition}
+          removeOptimisticPosition={removeOptimisticPosition}
           connected={connected}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}

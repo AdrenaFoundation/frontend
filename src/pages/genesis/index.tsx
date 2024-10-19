@@ -22,9 +22,10 @@ import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
+import usePriorityFee, { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { GenesisLock, PageProps, PriorityFee } from '@/types';
+import { GenesisLock, PageProps, PriorityFeeOption } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
@@ -37,7 +38,6 @@ import logo from '../../../public/images/logo.png';
 import xIcon from '../../../public/images/x-black-bg.png';
 
 export default function Genesis({
-  priorityFee,
   connected,
   userProfile,
   triggerWalletTokenBalancesReload,
@@ -47,13 +47,15 @@ export default function Genesis({
   customRpcUrl,
   customRpcLatency,
   favoriteRpc,
-  setPriorityFee,
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
+  priorityFeeOption,
+  setPriorityFeeOption,
+  priorityFeeAmounts,
+  maxPriorityFee,
+  setMaxPriorityFee,
 }: PageProps & {
-  priorityFee: PriorityFee;
-  setPriorityFee: (priorityFee: PriorityFee) => void;
   activeRpc: {
     name: string;
     connection: Connection;
@@ -69,6 +71,11 @@ export default function Genesis({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
+  priorityFeeOption: PriorityFeeOption;
+  setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
+  priorityFeeAmounts: PriorityFeesAmounts;
+  maxPriorityFee: number | null;
+  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -93,6 +100,7 @@ export default function Genesis({
   const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
     null,
   );
+  const { updatePriorityFees } = usePriorityFee();
   const from = new Date();
 
   const campaignEndDate = genesis
@@ -237,6 +245,7 @@ export default function Genesis({
           stakedTokenMint: window.adrena.client.alpToken.mint,
           threadId: new BN(Date.now()),
           notification,
+          updatePriorityFees,
         });
       } catch (error) {
         console.error('error', error);
@@ -257,6 +266,7 @@ export default function Genesis({
         // TODO: Apply proper slippage
         minLpAmountOut: new BN(0),
         notification,
+        updatePriorityFees,
       });
 
       triggerWalletTokenBalancesReload();
@@ -608,8 +618,9 @@ export default function Genesis({
                 <div className="flex flex-row gap-1 justify-end items-center">
                   <RefreshButton />
                   <Settings
-                    priorityFee={priorityFee}
-                    setPriorityFee={setPriorityFee}
+                    priorityFeeOption={priorityFeeOption}
+                    setPriorityFeeOption={setPriorityFeeOption}
+                    priorityFeeAmounts={priorityFeeAmounts}
                     activeRpc={activeRpc}
                     rpcInfos={rpcInfos}
                     autoRpcMode={autoRpcMode}
@@ -619,6 +630,8 @@ export default function Genesis({
                     setAutoRpcMode={setAutoRpcMode}
                     setCustomRpcUrl={setCustomRpcUrl}
                     setFavoriteRpc={setFavoriteRpc}
+                    maxPriorityFee={maxPriorityFee}
+                    setMaxPriorityFee={setMaxPriorityFee}
                     isIcon
                     isGenesis
                   />

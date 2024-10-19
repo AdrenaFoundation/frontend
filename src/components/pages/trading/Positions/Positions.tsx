@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
@@ -17,9 +18,11 @@ export default function Positions({
   className,
   positions,
   triggerPositionsReload,
+  removeOptimisticPosition,
   triggerUserProfileReload,
   isBigScreen,
   userProfile,
+  updatePriorityFees,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -27,9 +30,11 @@ export default function Positions({
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
+  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   userProfile: UserProfileExtended | null | false;
+  updatePriorityFees: () => Promise<void>;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -53,11 +58,11 @@ export default function Positions({
           <Modal
             title={
               <>
-                Close{' '}
-                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToClose.side === 'long' ? 'text-green' : 'text-red'}`}>
+                Close
+                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToClose.side === 'long' ? 'text-green' : 'text-red'}  ml-1 mr-1`}>
                   {positionToClose.side}
-                </span>{' '}
-                {positionToClose.token.symbol}
+                </span>
+                {getTokenSymbol(positionToClose.token.symbol)}
               </>
             }
             close={() => setPositionToClose(null)}
@@ -66,6 +71,7 @@ export default function Positions({
             <ClosePosition
               position={positionToClose}
               triggerPositionsReload={triggerPositionsReload}
+              removeOptimisticPosition={removeOptimisticPosition}
               triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToClose(null);
@@ -77,7 +83,15 @@ export default function Positions({
 
         {positionToEdit && (
           <Modal
-            title="Edit Collateral"
+            title={
+              <>
+                Edit
+                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToEdit.side === 'long' ? 'text-green' : 'text-red'} ml-1 mr-1`}>
+                  {positionToEdit.side}
+                </span>
+                {getTokenSymbol(positionToEdit.token.symbol)}
+              </>
+            }
             close={() => setPositionToEdit(null)}
             className="flex flex-col items-center"
           >
@@ -88,15 +102,22 @@ export default function Positions({
               onClose={() => {
                 setPositionToEdit(null);
               }}
+              updatePriorityFees={updatePriorityFees}
             />
           </Modal>
         )}
 
         {positionToStopLossTakeProfit && (
           <Modal
-            title={`${getTokenSymbol(
-              positionToStopLossTakeProfit.token.symbol,
-            )} ${positionToStopLossTakeProfit.side} SL/TP`}
+            title={
+              <>
+                TP/SL
+                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToStopLossTakeProfit.side === 'long' ? 'text-green' : 'text-red'} ml-1 mr-1`}>
+                  {positionToStopLossTakeProfit.side}
+                </span>
+                {getTokenSymbol(positionToStopLossTakeProfit.token.symbol)}
+              </>
+            }
             close={() => setPositionToStopLossTakeProfit(null)}
             className="flex flex-col items-center min-w-[25em] w-[25em] max-w-full justify-center"
           >
@@ -108,6 +129,7 @@ export default function Positions({
                 setPositionToStopLossTakeProfit(null);
               }}
               userProfile={userProfile}
+              updatePriorityFees={updatePriorityFees}
             />
           </Modal>
         )}

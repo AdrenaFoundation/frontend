@@ -62,11 +62,14 @@ export type PageProps = {
   triggerWalletTokenBalancesReload: () => void;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
+  addOptimisticPosition: (position: PositionExtended) => void;
+  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   connected: boolean;
   activeRpc: {
     name: string;
     connection: Connection;
   };
+  updatePriorityFees: () => Promise<void>;
 };
 
 export type CustodyExtended = {
@@ -139,6 +142,8 @@ export type PositionExtended = {
   takeProfitThreadIsSet: boolean;
   // The position is closed and still alive due to a pending cleanup and close from Sablier
   pendingCleanupAndClose: boolean;
+  // Informs if the position is optimistic (generated locally while waiting for onchain confirmation)
+  isOptimistic: boolean;
 
   // Onchain data
   nativeObject: Position;
@@ -266,9 +271,8 @@ export type SablierThreadExtended = {
   nativeObject: SablierThread;
 };
 
-export type PriorityFeeNames = 'Critical' | 'High' | 'Medium' | 'Low' | 'None';
-
-export type PriorityFee = number;
+// The UI options for priority fees - Stored in cookies
+export type PriorityFeeOption = 'medium' | 'high' | 'ultra';
 
 //
 // Params Types
@@ -429,4 +433,8 @@ export type PositionHistoryApi = {
   token_account_mint: string;
   last_ix: string;
   collateral_amount: number;
+};
+
+export type RechartsData = {
+  [key: string]: number | string | boolean;
 };

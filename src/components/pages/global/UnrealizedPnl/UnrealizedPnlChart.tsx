@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import LineRechartPercentage from './LineRechartUnrealizedPnl';
+import Loader from '@/components/Loader/Loader';
+import LineRechart from '@/components/ReCharts/LineRecharts';
 
 interface UnrealizedPnlChartProps {
   isSmallScreen: boolean;
@@ -10,8 +11,8 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-          time: string;
-        }
+        time: string;
+      }
       | { [key: string]: number }
     )[];
 
@@ -165,13 +166,13 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
   if (!infos) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartPercentage
+    <LineRechart
       title="Traders Unrealized PnL"
       subValue={totalUnrealizedPnl}
       data={infos.formattedData}
@@ -186,6 +187,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
             };
           }),
       ]}
+      domain={[0]}
       period={period}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}

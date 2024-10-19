@@ -85,9 +85,8 @@ export default function Button({
         variants[variant],
         rounded ? 'rounded-full' : '',
         disabled || onClickInProgress
-          ? 'cursor-not-allowed pointer-events-none'
+          ? 'cursor-not-allowed pointer-events-none opacity-50'
           : null,
-
         disabled || onClickInProgress
           ? variantsBgDisabledOpacity[variant]
           : variants[variant],

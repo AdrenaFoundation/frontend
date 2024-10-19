@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import LineRechartFees from './LineRechartFees';
+import Loader from '@/components/Loader/Loader';
+import LineRechart from '@/components/ReCharts/LineRecharts';
+import { RechartsData } from '@/types';
 
 interface FeesChartProps {
   isSmallScreen: boolean;
 }
 
 export default function FeesChart({ isSmallScreen }: FeesChartProps) {
-  const [chartData, setChartData] = useState<any>(null);
+  const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const [totalFees, setTotalFees] = useState<number>(0);
   const periodRef = useRef(period);
@@ -97,9 +99,9 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
         });
       });
 
-      const formattedData = timeStamp.map(
+      const formattedData: RechartsData[] = timeStamp.map(
         (time: number, i: string | number) => ({
-          name: time,
+          time,
           'Swap Fees': cumulative_swap_fee_usd[i],
           'Mint/Redeem ALP Fees': cumulative_liquidity_fee_usd[i],
           'Open/Close Fees': cumulative_close_position_fee_usd[i],
@@ -123,28 +125,28 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
   if (!chartData) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartFees
+    <LineRechart
       title={'Cumulative Fees'}
       subValue={totalFees}
       data={chartData}
       labels={[
         {
           name: 'Swap Fees',
-          color: '#f7931a',
+          color: '#cec161',
         },
         {
           name: 'Mint/Redeem ALP Fees',
-          color: '#2775ca',
+          color: '#5460cb',
         },
         {
           name: 'Open/Close Fees',
-          color: '#84CC90',
+          color: '#7ccbd7',
         },
         {
           name: 'Liquidation Fees',
@@ -157,6 +159,8 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
       ]}
       period={period}
       setPeriod={setPeriod}
+      domain={[0, 'auto']}
+      tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
       isSmallScreen={isSmallScreen}
     />
   );
