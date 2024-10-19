@@ -9,7 +9,6 @@ import { ToastContainer } from 'react-toastify';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import Featurebase from '@/components/Featurebase/Featurebase';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import { PriorityFeeOption, UserProfileExtended } from '@/types';
 
 import Footer from '../../Footer/Footer';
@@ -29,7 +28,6 @@ export default function RootLayout({
   setFavoriteRpc,
   priorityFeeOption,
   setPriorityFeeOption,
-  priorityFeeAmounts,
   maxPriorityFee,
   setMaxPriorityFee,
 }: {
@@ -52,7 +50,6 @@ export default function RootLayout({
   setFavoriteRpc: (favoriteRpc: string) => void;
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
-  priorityFeeAmounts: PriorityFeesAmounts;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
@@ -102,7 +99,6 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          priorityFeeAmounts={priorityFeeAmounts}
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
         />
@@ -121,7 +117,6 @@ export default function RootLayout({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          priorityFeeAmounts={priorityFeeAmounts}
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
         />

@@ -66,8 +66,6 @@ export default function ALPSwap({
   const [errorDescription, setErrorDescription] = useState<string | null>(null);
   const [isDisabledButton, setIsDisabledButton] = useState<boolean>(false);
 
-  const { updatePriorityFees } = usePriorityFee();
-
   const handleExecuteButton = async () => {
     if (!connected) {
       dispatch(openCloseConnectionModalAction(true));
@@ -97,7 +95,7 @@ export default function ALPSwap({
           // TODO: Apply proper slippage
           minLpAmountOut: new BN(0),
           notification,
-          updatePriorityFees,
+
         });
 
         triggerWalletTokenBalancesReload();
@@ -122,7 +120,7 @@ export default function ALPSwap({
         // TODO: Apply proper slippage
         minAmountOut: new BN(0),
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();

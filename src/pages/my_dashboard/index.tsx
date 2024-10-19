@@ -42,7 +42,7 @@ export default function MyDashboard({
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   readonly,
-  updatePriorityFees,
+
   removeOptimisticPosition,
 }: PageProps & {
   readonly?: boolean;
@@ -136,7 +136,7 @@ export default function MyDashboard({
       await window.adrena.client.initUserProfile({
         nickname: trimmedNickname,
         notification,
-        updatePriorityFees,
+
       });
 
       triggerUserProfileReload();
@@ -177,7 +177,7 @@ export default function MyDashboard({
         lockedStakeIndex: new BN(lockedStake.index),
         earlyExit,
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();
@@ -219,7 +219,7 @@ export default function MyDashboard({
         updatedDuration: upgradeDuration,
         additionalAmount,
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();
@@ -289,7 +289,6 @@ export default function MyDashboard({
                     triggerUserProfileReload={triggerUserProfileReload}
                     canUpdateNickname={!readonly}
                     className="flex w-full w-min-[30em]"
-                    updatePriorityFees={updatePriorityFees}
                   />
                   <div className="flex flex-1 flex-col md:flex-row gap-4">
                     <TradingStats userProfile={userProfile} className="flex" />
@@ -306,7 +305,6 @@ export default function MyDashboard({
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
                 }
-                updatePriorityFees={updatePriorityFees}
               />
             )}
 
@@ -318,7 +316,6 @@ export default function MyDashboard({
               removeOptimisticPosition={removeOptimisticPosition}
               title="Opened Positions"
               userProfile={userProfile}
-              updatePriorityFees={updatePriorityFees}
             />
 
             <StakesStats

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { getMeanPrioritizationFeeByPercentile } from '../grpf';
 
@@ -15,8 +15,9 @@ export default function usePriorityFee() {
         ultra: 300_000,
     });
 
-    const updatePriorityFees = async () => {
+    const updatePriorityFees = useCallback(async () => {
         if (!window.adrena.client.connection) return;
+
         const fees = await Promise.all([
             getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
                 percentile: 5500, // 55th percentile
@@ -42,7 +43,18 @@ export default function usePriorityFee() {
 
         console.log("Refreshed priority fee amounts (medium, high, ultra):", priorityFeeAmounts);
         setPriorityFeeAmounts(priorityFeeAmounts);
-    };
+    }, []);
 
-    return { priorityFeeAmounts, updatePriorityFees };
+    useEffect(() => {
+        updatePriorityFees();
+
+        const interval = setInterval(() => {
+            updatePriorityFees();
+        }, 20000);
+
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [window.adrena.client.connection, updatePriorityFees]);
+
+    return priorityFeeAmounts;
 }

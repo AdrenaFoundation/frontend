@@ -17,13 +17,12 @@ export default function OwnerBloc({
   className,
   triggerUserProfileReload,
   canUpdateNickname = true,
-  updatePriorityFees,
+
 }: {
   userProfile: UserProfileExtended;
   className?: string;
   triggerUserProfileReload: () => void;
   canUpdateNickname?: boolean;
-  updatePriorityFees: () => Promise<void>;
 }) {
   const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
   const [updatedNickname, setUpdatedNickname] = useState<string | null>(null);
@@ -44,7 +43,7 @@ export default function OwnerBloc({
       await window.adrena.client.editUserProfile({
         nickname: trimmedNickname,
         notification,
-        updatePriorityFees,
+
       });
 
       triggerUserProfileReload();

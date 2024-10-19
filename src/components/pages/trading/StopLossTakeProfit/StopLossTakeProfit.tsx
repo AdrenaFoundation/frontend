@@ -25,7 +25,6 @@ export default function StopLossTakeProfit({
   triggerUserProfileReload,
   onClose,
   userProfile,
-  updatePriorityFees,
 }: {
   className?: string;
   position: PositionExtended;
@@ -33,7 +32,6 @@ export default function StopLossTakeProfit({
   triggerUserProfileReload: () => void;
   onClose: () => void;
   userProfile: UserProfileExtended | null | false;
-  updatePriorityFees: () => Promise<void>;
 }) {
   const [stopLossInput, setStopLossInput] = useState<number | null>(
     position.stopLossThreadIsSet &&
@@ -220,7 +218,7 @@ export default function StopLossTakeProfit({
       MultiStepNotification.newForRegularTransaction('TP/SL').fire();
 
     try {
-      await window.adrena.client.signAndExecuteTx({ transaction, notification, updatePriorityFees });
+      await window.adrena.client.signAndExecuteTx({ transaction, notification });
 
       triggerPositionsReload();
       triggerUserProfileReload();

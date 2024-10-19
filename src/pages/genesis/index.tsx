@@ -22,7 +22,7 @@ import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
-import usePriorityFee, { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
+import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
 import { GenesisLock, PageProps, PriorityFeeOption } from '@/types';
@@ -52,7 +52,6 @@ export default function Genesis({
   setFavoriteRpc,
   priorityFeeOption,
   setPriorityFeeOption,
-  priorityFeeAmounts,
   maxPriorityFee,
   setMaxPriorityFee,
 }: PageProps & {
@@ -100,7 +99,6 @@ export default function Genesis({
   const [totalStakedAmount, setTotalStakedAmount] = useState<number | null>(
     null,
   );
-  const { updatePriorityFees } = usePriorityFee();
   const from = new Date();
 
   const campaignEndDate = genesis
@@ -245,7 +243,7 @@ export default function Genesis({
           stakedTokenMint: window.adrena.client.alpToken.mint,
           threadId: new BN(Date.now()),
           notification,
-          updatePriorityFees,
+
         });
       } catch (error) {
         console.error('error', error);
@@ -266,7 +264,7 @@ export default function Genesis({
         // TODO: Apply proper slippage
         minLpAmountOut: new BN(0),
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();
@@ -620,7 +618,6 @@ export default function Genesis({
                   <Settings
                     priorityFeeOption={priorityFeeOption}
                     setPriorityFeeOption={setPriorityFeeOption}
-                    priorityFeeAmounts={priorityFeeAmounts}
                     activeRpc={activeRpc}
                     rpcInfos={rpcInfos}
                     autoRpcMode={autoRpcMode}

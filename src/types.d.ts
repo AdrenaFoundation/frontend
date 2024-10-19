@@ -63,13 +63,15 @@ export type PageProps = {
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
   addOptimisticPosition: (position: PositionExtended) => void;
-  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
+  removeOptimisticPosition: (
+    positionSide: 'long' | 'short',
+    positionCustody: PublicKey,
+  ) => void;
   connected: boolean;
   activeRpc: {
     name: string;
     connection: Connection;
   };
-  updatePriorityFees: () => Promise<void>;
 };
 
 export type CustodyExtended = {

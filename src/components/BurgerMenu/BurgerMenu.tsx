@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import { useSelector } from '@/store/store';
 import { PriorityFeeOption, UserProfileExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
@@ -40,7 +39,6 @@ export default function BurgerMenu({
   setFavoriteRpc,
   priorityFeeOption,
   setPriorityFeeOption,
-  priorityFeeAmounts,
   maxPriorityFee,
   setMaxPriorityFee,
 }: {
@@ -63,7 +61,6 @@ export default function BurgerMenu({
   setFavoriteRpc: (favoriteRpc: string) => void;
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
-  priorityFeeAmounts: PriorityFeesAmounts;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
@@ -144,7 +141,6 @@ export default function BurgerMenu({
             setAutoRpcMode={setAutoRpcMode}
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
-            priorityFeeAmounts={priorityFeeAmounts}
             maxPriorityFee={maxPriorityFee}
             setMaxPriorityFee={setMaxPriorityFee}
           />
