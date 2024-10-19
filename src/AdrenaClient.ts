@@ -1,4 +1,4 @@
-import { BN } from '@coral-xyz/anchor';
+import { BN, ProgramAccount } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
@@ -4318,6 +4318,87 @@ export class AdrenaClient {
             isOptimistic: false,
             //
             nativeObject: position,
+          },
+        ];
+      },
+      [],
+    );
+  }
+
+  public async loadAllPositions(): Promise<PositionExtended[]> {
+    const positions = (await this.readonlyAdrenaProgram.account.position.all()) as (ProgramAccount<Position> | null)[];
+
+    return positions.reduce<PositionExtended[]>(
+      (acc: PositionExtended[], position: ProgramAccount<Position> | null) => {
+        if (!position) {
+          return acc;
+        }
+        const positionPubkey = position.publicKey;
+        const positionAccount = position.account;
+
+        const token =
+          this.tokens.find(
+            (token) => token.custody && token.custody.equals(positionAccount.custody),
+          ) ?? null;
+
+        const collateralToken =
+          this.tokens.find(
+            (token) =>
+              token.custody && token.custody.equals(positionAccount.collateralCustody),
+          ) ?? null;
+
+        // Ignore position with unknown tokens
+        if (!token || !collateralToken) {
+          console.log('Ignore position with unknown tokens', position);
+          return acc;
+        }
+
+        return [
+          ...acc,
+          {
+            custody: positionAccount.custody,
+            collateralCustody: positionAccount.collateralCustody,
+            owner: positionAccount.owner,
+            pubkey: positionPubkey,
+            initialLeverage:
+              nativeToUi(positionAccount.sizeUsd, USD_DECIMALS) /
+              nativeToUi(positionAccount.collateralUsd, USD_DECIMALS),
+            currentLeverage: null,
+            token,
+            collateralToken,
+            side: (positionAccount.side === 1 ? 'long' : 'short') as 'long' | 'short',
+            sizeUsd: nativeToUi(positionAccount.sizeUsd, USD_DECIMALS),
+            collateralUsd: nativeToUi(positionAccount.collateralUsd, USD_DECIMALS),
+            price: nativeToUi(positionAccount.price, PRICE_DECIMALS),
+            collateralAmount: nativeToUi(
+              positionAccount.collateralAmount,
+              collateralToken.decimals,
+            ),
+            exitFeeUsd: nativeToUi(positionAccount.exitFeeUsd, USD_DECIMALS),
+            liquidationFeeUsd: nativeToUi(
+              positionAccount.liquidationFeeUsd,
+              USD_DECIMALS,
+            ),
+            stopLossClosePositionPrice:
+              positionAccount.stopLossThreadIsSet === 1
+                ? nativeToUi(
+                  positionAccount.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
+                : null,
+            stopLossLimitPrice:
+              positionAccount.stopLossThreadIsSet === 1
+                ? nativeToUi(positionAccount.stopLossLimitPrice, PRICE_DECIMALS)
+                : null,
+            stopLossThreadIsSet: positionAccount.stopLossThreadIsSet === 1,
+            takeProfitLimitPrice: positionAccount.takeProfitThreadIsSet
+              ? nativeToUi(positionAccount.takeProfitLimitPrice, PRICE_DECIMALS)
+              : null,
+            takeProfitThreadIsSet: positionAccount.takeProfitThreadIsSet === 1,
+            pendingCleanupAndClose: positionAccount.pendingCleanupAndClose === 1,
+
+            //
+            nativeObject: positionAccount,
           },
         ];
       },

@@ -7,6 +7,7 @@ import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
+import AllPositions from './allPositions';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
 
@@ -15,6 +16,7 @@ import DetailedMonitoring from './detailed';
 export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
   const [detailedDisplay, setDetailedDisplay] = useState<boolean>(false);
+  const [allPositionsDisplay, setAllPositionsDisplay] = useState<boolean>(false); // New state for AllPositions
 
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
     useState<(typeof tabs)[number]>('All');
@@ -91,14 +93,14 @@ export default function Monitoring(pageProps: PageProps) {
       <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10">
         <div
           className={twMerge(
-            'flex items-center justify-evenly w-[14em] ml-auto mr-auto',
-            detailedDisplay ? 'pt-2 pb-2' : '',
+            'flex items-center justify-evenly w-[20em] ml-auto mr-auto', // Adjusted width
+            detailedDisplay || allPositionsDisplay ? 'pt-2 pb-2' : '',
           )}
         >
           <span
             className={twMerge(
               'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              !detailedDisplay ? 'opacity-100' : '',
+              !detailedDisplay && !allPositionsDisplay ? 'opacity-100' : '',
             )}
             onClick={() => {
               searchParams.delete('tab');
@@ -107,8 +109,8 @@ export default function Monitoring(pageProps: PageProps) {
                 '',
                 `${window.location.pathname}?${searchParams.toString()}`,
               );
-
               setDetailedDisplay(false);
+              setAllPositionsDisplay(false);
             }}
           >
             Lite
@@ -129,9 +131,25 @@ export default function Monitoring(pageProps: PageProps) {
                 `${window.location.pathname}?${searchParams.toString()}`,
               );
               setDetailedDisplay(true);
+              setAllPositionsDisplay(false);
             }}
           >
             Full
+          </span>
+
+          <span className="opacity-20 text-2xl">/</span>
+
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              allPositionsDisplay ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              setAllPositionsDisplay(true);
+              setDetailedDisplay(false);
+            }}
+          >
+            Live Positions
           </span>
         </div>
 
@@ -151,6 +169,10 @@ export default function Monitoring(pageProps: PageProps) {
         ) : null}
       </div>
 
+      <div className={twMerge('hidden', allPositionsDisplay ? 'block' : '')}>
+        <AllPositions />
+      </div>
+
       <div className={twMerge('hidden', detailedDisplay ? 'block' : '')}>
         <DetailedMonitoring
           {...pageProps}
@@ -159,7 +181,7 @@ export default function Monitoring(pageProps: PageProps) {
         />
       </div>
 
-      <div className={twMerge('hidden', !detailedDisplay ? 'block' : '')}>
+      <div className={twMerge('hidden', !detailedDisplay && !allPositionsDisplay ? 'block' : '')}>
         <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
       </div>
     </>
