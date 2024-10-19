@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import LineRechartPercentage from './LineRechartPercentage';
+import Loader from '@/components/Loader/Loader';
+import LineRechart from '@/components/ReCharts/LineRecharts';
 
 export default function UtilizationChart() {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-          time: string;
-        }
+        time: string;
+      }
       | { [key: string]: number }
     )[];
 
@@ -151,13 +152,13 @@ export default function UtilizationChart() {
   if (!infos) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartPercentage
+    <LineRechart
       title="Utilization"
       data={infos.formattedData}
       labels={Object.keys(infos.formattedData[0])
@@ -168,8 +169,11 @@ export default function UtilizationChart() {
             color: infos.custodiesColors[i],
           };
         })}
+      domain={[0, 100]}
       period={period}
       setPeriod={setPeriod}
+      isReferenceLine
+      formatY="percentage"
     />
   );
 }

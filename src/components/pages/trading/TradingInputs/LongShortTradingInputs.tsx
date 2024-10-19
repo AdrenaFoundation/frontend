@@ -18,6 +18,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
+import usePriorityFee from '@/hooks/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
@@ -36,6 +37,7 @@ import errorImg from '../../../../../public/images/Icons/error.svg';
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 import walletImg from '../../../../../public/images/wallet-icon.svg';
 import LeverageSlider from '../../../common/LeverageSlider/LeverageSlider';
+import InfoAnnotation from '../../monitoring/InfoAnnotation';
 import TradingInput from '../TradingInput/TradingInput';
 import PositionFeesTooltip from './PositionFeesTooltip';
 
@@ -55,6 +57,7 @@ export default function LongShortTradingInputs({
   connected,
   setTokenA,
   setTokenB,
+  addOptimisticPosition,
   triggerPositionsReload,
   triggerWalletTokenBalancesReload,
 }: {
@@ -69,6 +72,7 @@ export default function LongShortTradingInputs({
   connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
+  addOptimisticPosition: (position: PositionExtended) => void;
   triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
 }) {
@@ -92,6 +96,8 @@ export default function LongShortTradingInputs({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [isInfoLoading, setIsInfoLoading] = useState(false);
+
+  const { updatePriorityFees } = usePriorityFee();
 
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
@@ -221,8 +227,16 @@ export default function LongShortTradingInputs({
       });
     }
 
+
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
+    if (!tokenAPrice) {
+      return addNotification({
+        type: 'info',
+        title: 'Cannot open position',
+        message: `Missing ${tokenA.symbol} price`,
+      });
+    }
     if (tokenAPrice) {
       const collateralValue = inputA * tokenAPrice;
       if (collateralValue < 9.5) {
@@ -266,6 +280,7 @@ export default function LongShortTradingInputs({
           leverage: uiLeverageToNative(leverage),
           notification,
           existingPosition: maybeZombiePosition,
+          updatePriorityFees,
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -276,9 +291,44 @@ export default function LongShortTradingInputs({
           leverage: uiLeverageToNative(leverage),
           notification,
           existingPosition: maybeZombiePosition,
+          updatePriorityFees,
         }));
 
-      triggerPositionsReload();
+      // If position already exists, reload positions (which does not really work for now as it takes time to get updated account states, TO IMPROVE)
+      if (openedPosition) {
+        triggerPositionsReload();
+      } else {
+        const collateralUsd = nativeToUi(collateralAmount, tokenA.decimals) * tokenAPrice;
+        const sizeUsd = collateralUsd * leverage;
+
+        // Add optimistic position
+        const positionPda = window.adrena.client.getPositionPda(new PublicKey(wallet.publicKey), tokenB, side);
+        const tempPosition: PositionExtended = {
+          side,
+          isOptimistic: true,
+          owner: new PublicKey(wallet.publicKey),
+          initialLeverage: leverage,
+          pubkey: positionPda,
+          token: tokenB,
+          collateralToken: tokenB,
+          liquidationFeeUsd: nativeToUi(openPositionWithSwapAmountAndFees.liquidationFee, USD_DECIMALS),
+          custody: new PublicKey(tokenB.mint),
+          collateralCustody: new PublicKey(tokenB.mint),
+          collateralUsd: collateralUsd,
+          sizeUsd: sizeUsd,
+          liquidationPrice: nativeToUi(openPositionWithSwapAmountAndFees.liquidationPrice, PRICE_DECIMALS),
+          pnl: 0,
+          pnlMinusFees: 0,
+          profitUsd: 0,
+          lossUsd: 0,
+          borrowFeeUsd: 0,
+          exitFeeUsd: nativeToUi(openPositionWithSwapAmountAndFees.exitFee, USD_DECIMALS),
+          currentLeverage: leverage,
+        } as unknown as PositionExtended;
+
+        addOptimisticPosition(tempPosition);
+      }
+
       triggerWalletTokenBalancesReload();
 
       setInputA(null);
@@ -514,6 +564,7 @@ export default function LongShortTradingInputs({
     usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
   const usdcPrice = tokenPrices['USDC'];
 
+  const availableLiquidityShort = (custody && (custody.maxCumulativeShortPositionSizeUsd - (custody.oiShortUsd ?? 0))) ?? 0;
 
   return (
     <div
@@ -694,7 +745,7 @@ export default function LongShortTradingInputs({
         </div>
 
         <div className="flex sm:mt-2">
-          <div>
+          <div className="flex items-center ml-2">
             <span className="text-txtfade">max size:</span>
 
             <FormatNumber
@@ -706,23 +757,31 @@ export default function LongShortTradingInputs({
               format="currency"
               className="text-txtfade text-xs ml-1"
             />
+
+            <InfoAnnotation
+              className="ml-1 inline-flex"
+              text="The maximum size of the position you can open, for that market and side."
+            />
           </div>
 
-          <div className="ml-auto sm:mb-2">
+          <div className="ml-auto items-center flex mr-2">
+            <span className="text-txtfade mr-1">avail. liq.:</span>
             <FormatNumber
               nb={
                 side === 'long'
                   ? custody && tokenPriceB && custody.liquidity * tokenPriceB
                   : usdcPrice &&
-                  usdcCustody &&
-                  usdcCustody.liquidity * usdcPrice
+                  usdcCustody && custody &&
+                  Math.min(usdcCustody.liquidity * usdcPrice, availableLiquidityShort)
               }
               format="currency"
               precision={0}
               className="text-txtfade text-xs"
             />
-
-            <span className="text-txtfade ml-1">avail. liq.</span>
+            <InfoAnnotation
+              className=" inline-flex"
+              text="This value is how much total size is available to be borrowed for that market and side by all traders. It depend of the available liquidities in the pool and restrictions from the configuration."
+            />
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import LineRechartPercentage from './LineRechartRealizedPnl';
+import Loader from '@/components/Loader/Loader';
+import LineRechart from '@/components/ReCharts/LineRecharts';
 
 interface CumulativePnlChartProps {
   isSmallScreen: boolean;
@@ -10,8 +11,8 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
-          time: string;
-        }
+        time: string;
+      }
       | { [key: string]: number }
     )[];
 
@@ -180,13 +181,13 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
   if (!infos) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
-        Loading...
+        <Loader />
       </div>
     );
   }
 
   return (
-    <LineRechartPercentage
+    <LineRechart
       title="Traders Realized PnL"
       subValue={totalRealizedPnl}
       data={infos.formattedData}
@@ -203,6 +204,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
             )[i],
           })),
       ]}
+      domain={[0]}
       period={period}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}

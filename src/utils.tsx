@@ -206,13 +206,7 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
 }
 
 // Use High as default
-export const DEFAULT_PRIORITY_FEE = 160000;
-
-export const PRIORITY_FEE_LIST = [
-  { title: 'High', microLamport: 300000 },
-  { title: 'Medium', microLamport: 160000 },
-  { title: 'Low', microLamport: 60000 },
-] as const;
+export const DEFAULT_PRIORITY_FEE_MICRO_LAMPORTS_PER_CU = 160_000;
 
 export function addNotification({
   title,
@@ -762,4 +756,11 @@ export const decodeBase64Url = (encodedParams: string) => {
   const base64 = encodedParams.replace(/-/g, '+').replace(/_/g, '/');
   const json = Buffer.from(base64, 'base64').toString();
   return JSON.parse(json);
+};
+
+export const getCustodyByMint = async (mint: string) => {
+  const custody = await window.adrena.client.getCustodyByPubkey(
+    new PublicKey(mint),
+  );
+  return custody;
 };

@@ -27,6 +27,7 @@ export default function Button({
   height = 12,
   width = 12,
   // isLoading,
+  icon,
   ...rest
 }: {
   title?: ReactNode;
@@ -48,6 +49,7 @@ export default function Button({
   height?: number;
   width?: number;
   // isLoading?: boolean;
+  icon?: ImageRef;
 }) {
   const [onClickInProgress, setOnClickInProgress] = useState<boolean>(false);
 
@@ -85,9 +87,8 @@ export default function Button({
         variants[variant],
         rounded ? 'rounded-full' : '',
         disabled || onClickInProgress
-          ? 'cursor-not-allowed pointer-events-none'
+          ? 'cursor-not-allowed pointer-events-none opacity-50'
           : null,
-
         disabled || onClickInProgress
           ? variantsBgDisabledOpacity[variant]
           : variants[variant],
@@ -104,6 +105,16 @@ export default function Button({
       }}
       {...rest}
     >
+      {icon && !onClickInProgress ? (
+        <Image
+          src={icon}
+          alt={alt}
+          width={width ? width : '12'}
+          height={height ? height : '12'}
+          className={twMerge(iconClassName, leftIconClassName)}
+        />
+      ) : null}
+
       {leftIcon && !onClickInProgress ? (
         <Image
           src={leftIcon}
