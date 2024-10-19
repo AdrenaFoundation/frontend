@@ -59,7 +59,6 @@ export const LIQUID_STAKE_LOCK_DURATION = 0;
 export default function Stake({
   connected,
   triggerWalletTokenBalancesReload,
-  updatePriorityFees,
 }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
@@ -173,7 +172,6 @@ export default function Stake({
           stakedTokenMint,
           threadId: new BN(Date.now()),
           notification,
-          updatePriorityFees,
         });
       } catch (error) {
         console.error('error', error);
@@ -194,7 +192,6 @@ export default function Stake({
           amount,
           stakedTokenMint,
           notification,
-          updatePriorityFees,
         })
         : await window.adrena.client.addLockedStake({
           owner,
@@ -202,7 +199,6 @@ export default function Stake({
           lockedDays: Number(lockPeriod) as AdxLockPeriod | AlpLockPeriod,
           stakedTokenMint,
           notification,
-          updatePriorityFees,
         });
 
       setAmount(null);
@@ -237,7 +233,7 @@ export default function Stake({
         amount,
         stakedTokenMint,
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();
@@ -275,7 +271,7 @@ export default function Stake({
         updatedDuration,
         additionalAmount,
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();
@@ -317,7 +313,6 @@ export default function Stake({
         lockedStakeIndex: new BN(lockedStake.index),
         earlyExit,
         notification,
-        updatePriorityFees,
       });
 
       triggerWalletTokenBalancesReload();
@@ -354,7 +349,6 @@ export default function Stake({
         owner,
         stakedTokenMint,
         notification,
-        updatePriorityFees,
       });
 
       triggerWalletTokenBalancesReload();
@@ -678,7 +672,6 @@ export default function Stake({
               setUpgradeLockedStake(true);
               setFinalizeLockedStakeRedeem(false);
             }}
-            updatePriorityFees={updatePriorityFees}
           />
 
           <StakeOverview
@@ -718,7 +711,6 @@ export default function Stake({
               setUpgradeLockedStake(true);
               setFinalizeLockedStakeRedeem(false);
             }}
-            updatePriorityFees={updatePriorityFees}
           />
 
           <AnimatePresence>

@@ -40,7 +40,6 @@ export default function SwapTradingInputs({
   setTokenA,
   setTokenB,
   triggerWalletTokenBalancesReload,
-  updatePriorityFees,
 }: {
   className?: string;
   tokenA: Token;
@@ -52,7 +51,6 @@ export default function SwapTradingInputs({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   triggerWalletTokenBalancesReload: () => void;
-  updatePriorityFees: () => Promise<void>;
 }) {
   const dispatch = useDispatch();
 
@@ -233,7 +231,7 @@ export default function SwapTradingInputs({
         mintA: tokenA.mint,
         mintB: tokenB.mint,
         notification,
-        updatePriorityFees,
+
       });
 
       triggerWalletTokenBalancesReload();

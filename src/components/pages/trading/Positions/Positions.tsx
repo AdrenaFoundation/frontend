@@ -22,7 +22,6 @@ export default function Positions({
   triggerUserProfileReload,
   isBigScreen,
   userProfile,
-  updatePriorityFees,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -34,7 +33,6 @@ export default function Positions({
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   userProfile: UserProfileExtended | null | false;
-  updatePriorityFees: () => Promise<void>;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -102,7 +100,6 @@ export default function Positions({
               onClose={() => {
                 setPositionToEdit(null);
               }}
-              updatePriorityFees={updatePriorityFees}
             />
           </Modal>
         )}
@@ -129,7 +126,6 @@ export default function Positions({
                 setPositionToStopLossTakeProfit(null);
               }}
               userProfile={userProfile}
-              updatePriorityFees={updatePriorityFees}
             />
           </Modal>
         )}

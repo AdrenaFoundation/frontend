@@ -97,8 +97,6 @@ export default function LongShortTradingInputs({
 
   const [isInfoLoading, setIsInfoLoading] = useState(false);
 
-  const { updatePriorityFees } = usePriorityFee();
-
   const debouncedInputA = useDebounce(inputA);
   const debouncedLeverage = useDebounce(leverage);
 
@@ -280,7 +278,7 @@ export default function LongShortTradingInputs({
           leverage: uiLeverageToNative(leverage),
           notification,
           existingPosition: maybeZombiePosition,
-          updatePriorityFees,
+
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -291,7 +289,7 @@ export default function LongShortTradingInputs({
           leverage: uiLeverageToNative(leverage),
           notification,
           existingPosition: maybeZombiePosition,
-          updatePriorityFees,
+
         }));
 
       // If position already exists, reload positions (which does not really work for now as it takes time to get updated account states, TO IMPROVE)

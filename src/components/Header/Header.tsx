@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
-import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import { useSelector } from '@/store/store';
 import { PriorityFeeOption, UserProfileExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
@@ -35,7 +34,6 @@ export default function Header({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  priorityFeeAmounts,
   maxPriorityFee,
   setMaxPriorityFee,
 }: {
@@ -58,7 +56,6 @@ export default function Header({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  priorityFeeAmounts: PriorityFeesAmounts;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
@@ -162,7 +159,6 @@ export default function Header({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
-          priorityFeeAmounts={priorityFeeAmounts}
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
         />
