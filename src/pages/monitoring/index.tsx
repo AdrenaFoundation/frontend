@@ -93,8 +93,8 @@ export default function Monitoring(pageProps: PageProps) {
       <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10">
         <div
           className={twMerge(
-            'flex items-center justify-evenly w-[20em] ml-auto mr-auto', // Adjusted width
-            detailedDisplay || allPositionsDisplay ? 'pt-2 pb-2' : '',
+            'flex items-center justify-evenly w-[20em] ml-auto mr-auto',
+            detailedDisplay ? 'pt-2 pb-2' : '',
           )}
         >
           <span
