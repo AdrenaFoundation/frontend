@@ -10,39 +10,43 @@ export interface PriorityFeesAmounts {
 
 export default function usePriorityFee() {
     const [priorityFeeAmounts, setPriorityFeeAmounts] = useState<PriorityFeesAmounts>({
-        medium: 50_000,
-        high: 100_000,
-        ultra: 300_000,
+        medium: 250000,
+        high: 400000,
+        ultra: 800000,
     });
 
     const updatePriorityFees = useCallback(async () => {
         if (!window.adrena.client.connection) return;
 
-        const fees = await Promise.all([
-            getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                percentile: 5500, // 55th percentile
-                fallback: true,
-            }),
-            getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                percentile: 7500, // 75th percentile
-                fallback: true,
-            }),
-            getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                percentile: 9000, // 90th percentile
-                fallback: true,
-            }),
-        ]);
+        try {
+            const fees = await Promise.all([
+                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                    percentile: 5500, // 55th percentile
+                    fallback: true,
+                }),
+                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                    percentile: 7500, // 75th percentile
+                    fallback: true,
+                }),
+                getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
+                    percentile: 9000, // 90th percentile
+                    fallback: true,
+                }),
+            ]);
 
-        const [medium, high, ultra] = fees;
+            const [medium, high, ultra] = fees;
 
-        const priorityFeeAmounts: PriorityFeesAmounts = {
-            medium,
-            high,
-            ultra,
-        };
+            const priorityFeeAmounts: PriorityFeesAmounts = {
+                medium,
+                high,
+                ultra,
+            };
 
-        console.log("Refreshed priority fee amounts (medium, high, ultra):", priorityFeeAmounts);
-        setPriorityFeeAmounts(priorityFeeAmounts);
+            console.log("Refreshed priority fee amounts (medium, high, ultra):", priorityFeeAmounts);
+            setPriorityFeeAmounts(priorityFeeAmounts);
+        } catch (err) {
+            console.error("Failed to update priority fees:", err);
+        }
     }, []);
 
     useEffect(() => {
