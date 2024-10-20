@@ -163,7 +163,9 @@ const getRecentPrioritizationFeesFromRpc = async (
   const accounts = config?.lockedWritableAccounts?.map(
     (key: { toBase58: () => any }) => key.toBase58(),
   );
+
   const args = accounts?.length ? [accounts] : [[]];
+
   config.percentile && args.push({ percentile: config.percentile });
 
   const response = await rpcRequest('getRecentPrioritizationFees', args);
@@ -177,6 +179,7 @@ export const getRecentPrioritizationFeesByPercentile = async (
   slotsToReturn?: number,
 ): Promise<RecentPrioritizationFees[] | unknown> => {
   const { fallback = true, lockedWritableAccounts = [] } = config || {};
+
   slotsToReturn =
     slotsToReturn && Number.isInteger(slotsToReturn) ? slotsToReturn : -1;
 

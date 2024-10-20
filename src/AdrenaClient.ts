@@ -65,6 +65,7 @@ import {
   AdrenaTransactionError,
   applySlippage,
   DEFAULT_PRIORITY_FEE_OPTION,
+  DEFAULT_PRIORITY_FEES,
   findATAAddressSync,
   isAccountInitialized,
   nativeToUi,
@@ -4891,14 +4892,22 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    // Refresh priority fees before proceeding
-    const priorityFeeMicroLamports = await getMeanPrioritizationFeeByPercentile(
-      this.connection,
-      {
-        percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-        fallback: true,
-      },
-    );
+    // Default value
+    let priorityFeeMicroLamports: number =
+      DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
+
+    try {
+      // Refresh priority fees before proceeding
+      priorityFeeMicroLamports = await getMeanPrioritizationFeeByPercentile(
+        this.connection,
+        {
+          percentile: PercentilePriorityFeeList[this.priorityFeeOption],
+          fallback: true,
+        },
+      );
+    } catch (err) {
+      console.log('Error fetching priority fee', err);
+    }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
