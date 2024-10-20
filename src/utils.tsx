@@ -205,6 +205,12 @@ export function getNextStakingRoundStartTime(timestamp: BN): Date {
   return d;
 }
 
+export const DEFAULT_PRIORITY_FEES = {
+  medium: 250000,
+  high: 400000,
+  ultra: 800000,
+} as const;
+
 export const DEFAULT_PRIORITY_FEE_OPTION = 'medium';
 
 // in SOL

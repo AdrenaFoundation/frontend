@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { DEFAULT_PRIORITY_FEES } from '@/utils';
+
 import { getMeanPrioritizationFeeByPercentile } from '../grpf';
 
 export interface PriorityFeesAmounts {
@@ -9,11 +11,7 @@ export interface PriorityFeesAmounts {
 }
 
 export default function usePriorityFee() {
-    const [priorityFeeAmounts, setPriorityFeeAmounts] = useState<PriorityFeesAmounts>({
-        medium: 250000,
-        high: 400000,
-        ultra: 800000,
-    });
+    const [priorityFeeAmounts, setPriorityFeeAmounts] = useState<PriorityFeesAmounts>(DEFAULT_PRIORITY_FEES);
 
     const updatePriorityFees = useCallback(async () => {
         if (!window.adrena.client.connection) return;
