@@ -272,6 +272,7 @@ export default function PositionBlockReadOnly({
                                 className="text-gray-400 text-xs lowercase"
                                 suffix="x"
                                 isDecimalDimmed={false}
+                                precision={2}
                             />
                         </div>
                     </div>
