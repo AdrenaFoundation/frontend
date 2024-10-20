@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
@@ -211,6 +212,19 @@ export default function PositionBlockReadOnly({
         </div>
     );
 
+    const handleCleanupAndClose = async () => {
+        const notification = MultiStepNotification.newForRegularTransaction(
+            position.side + ' Position Cleanup',
+        ).fire();
+        await window.adrena.client.cleanupPosition({
+            owner: position.owner,
+            collateralMint: position.collateralToken.mint,
+            notification,
+            position: position,
+        });
+        console.log('Cleanup and close position');
+    };
+
     return (
         <>
             <div
@@ -258,6 +272,7 @@ export default function PositionBlockReadOnly({
                                 className="text-gray-400 text-xs lowercase"
                                 suffix="x"
                                 isDecimalDimmed={false}
+                                precision={2}
                             />
                         </div>
                     </div>
@@ -288,7 +303,7 @@ export default function PositionBlockReadOnly({
                         </div>
                     </div>
 
-                    <div className="flex flex-col min-w-[5em] w-[5em] items-center">
+                    <div className="flex flex-col items-center min-w-[5em] w-[5em]">
                         <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                             Entry Price
                         </div>
@@ -381,11 +396,21 @@ export default function PositionBlockReadOnly({
                     </div>
                 </div>
 
-                {liquidable ? (
-                    <div className="flex items-center justify-center pt-2 pb-2 border-t">
-                        <h2 className="text-red text-xs">Liquidable</h2>
+                {(liquidable || position.pendingCleanupAndClose) && (
+                    <div className="flex items-center justify-center pt-2 pb-2 border-t gap-4">
+                        {liquidable && !position.pendingCleanupAndClose && (
+                            <h2 className="text-red text-xs">Liquidable</h2>
+                        )}
+                        {position.pendingCleanupAndClose && (
+                            <button
+                                onClick={handleCleanupAndClose}
+                                className="text-txtfade border-bcolor border-t bg-[#a8a8a810] hover:bg-bcolor h-8 w-full rounded-none"
+                            >
+                                Cleanup SL/TP and Close
+                            </button>
+                        )}
                     </div>
-                ) : null}
+                )}
             </div>
         </>
     );

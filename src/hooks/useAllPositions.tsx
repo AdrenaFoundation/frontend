@@ -70,7 +70,7 @@ export function useAllPositions(): {
 
         const interval = setInterval(async () => {
             await loadAllPositions();
-        }, 30000);
+        }, 60000);
 
         return () => {
             clearInterval(interval);

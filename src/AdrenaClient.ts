@@ -65,6 +65,7 @@ import {
   AdrenaTransactionError,
   applySlippage,
   DEFAULT_PRIORITY_FEE_OPTION,
+  DEFAULT_PRIORITY_FEES,
   findATAAddressSync,
   isAccountInitialized,
   nativeToUi,
@@ -317,7 +318,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) {}
+  ) { }
 
   public setPriorityFeeOption(option: PriorityFeeOption) {
     this.priorityFeeOption = option;
@@ -479,16 +480,16 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-              name: string;
-              color: string;
-              symbol: string;
-              image: ImageRef;
-              coingeckoId: string;
-              decimals: number;
-              displayAmountDecimalsPrecision: number;
-              displayPriceDecimalsPrecision: number;
-              pythPriceUpdateV2: PublicKey;
-            }
+            name: string;
+            color: string;
+            symbol: string;
+            image: ImageRef;
+            coingeckoId: string;
+            decimals: number;
+            displayAmountDecimalsPrecision: number;
+            displayPriceDecimalsPrecision: number;
+            pythPriceUpdateV2: PublicKey;
+          }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -1574,6 +1575,76 @@ export class AdrenaClient {
   }
 
   // When shorting, stable token must be used.
+  public async cleanupPosition({
+    owner,
+    notification,
+    position,
+  }: {
+    owner: PublicKey;
+    collateralMint: PublicKey;
+    notification: MultiStepNotification;
+    position: PositionExtended;
+  }) {
+    if (!this.connection) {
+      throw new Error('no connection');
+    }
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
+    const usdcToken = this.getUsdcToken();
+
+    const usdcAta = findATAAddressSync(owner, usdcToken.mint);
+
+    if (!(await isAccountInitialized(this.connection, usdcAta))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: usdcAta,
+          mint: usdcToken.mint,
+          owner,
+        }),
+      );
+    }
+
+    const instructions: TransactionInstruction[] = [];
+
+    // Cleanup existing position in case Sablier did not work as expected
+    if (position && position.pendingCleanupAndClose == true) {
+      if (position.stopLossThreadIsSet) {
+        instructions.push(
+          await this.buildCleanupPositionStopLoss({
+            position: position,
+          }),
+        );
+      }
+      if (position.takeProfitThreadIsSet) {
+        instructions.push(
+          await this.buildCleanupPositionTakeProfit({
+            position: position,
+          }),
+        );
+      }
+    }
+
+    const transaction = new Transaction();
+    transaction.add(
+      ...preInstructions,
+      ...instructions,
+      ...postInstructions,
+    );
+
+    if (instructions.length === 0) {
+      console.log('Nothing to cleanup');
+      return;
+    }
+
+    return this.signAndExecuteTx({
+      transaction,
+      notification,
+    });
+  }
+
+  // When shorting, stable token must be used.
   public async openOrIncreasePositionWithSwapShort({
     owner,
     collateralMint,
@@ -1719,13 +1790,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-            swappedTokenDecimals: tokenB.decimals,
-            swappedTokenPrice: tokenBPrice,
-          }
+          swappedTokenDecimals: tokenB.decimals,
+          swappedTokenPrice: tokenBPrice,
+        }
         : {
-            swappedTokenDecimals: usdcToken.decimals,
-            swappedTokenPrice: usdcTokenPrice,
-          };
+          swappedTokenDecimals: usdcToken.decimals,
+          swappedTokenPrice: usdcTokenPrice,
+        };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1874,9 +1945,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-      position,
-      collateralAmount: addedCollateral,
-    })
+        position,
+        collateralAmount: addedCollateral,
+      })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2633,11 +2704,11 @@ export class AdrenaClient {
         stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
         amount: additionalAmount
           ? uiToNative(
-              additionalAmount,
-              lockedStake.tokenSymbol === 'ALP'
-                ? this.alpToken.decimals
-                : this.adxToken.decimals,
-            )
+            additionalAmount,
+            lockedStake.tokenSymbol === 'ALP'
+              ? this.alpToken.decimals
+              : this.adxToken.decimals,
+          )
           : null,
         lockedDays: updatedDuration ?? null,
       })
@@ -4130,13 +4201,13 @@ export class AdrenaClient {
         )
           ? new BN(0)
           : uiToNative(
-              collateralTokenPriceUi *
-                nativeToUi(
-                  position.nativeObject.lockedAmount,
-                  collateralCustody.tokenInfo.decimals,
-                ),
-              USD_DECIMALS,
-            );
+            collateralTokenPriceUi *
+            nativeToUi(
+              position.nativeObject.lockedAmount,
+              collateralCustody.tokenInfo.decimals,
+            ),
+            USD_DECIMALS,
+          );
 
         return {
           profitUsd: nativeToUi(
@@ -4314,9 +4385,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                    position.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
+                  position.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4403,9 +4474,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               positionAccount.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                    positionAccount.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
+                  positionAccount.stopLossClosePositionPrice,
+                  PRICE_DECIMALS,
+                )
                 : null,
             stopLossLimitPrice:
               positionAccount.stopLossThreadIsSet === 1
@@ -4891,14 +4962,22 @@ export class AdrenaClient {
       throw new Error('adrena program not ready');
     }
 
-    // Refresh priority fees before proceeding
-    const priorityFeeMicroLamports = await getMeanPrioritizationFeeByPercentile(
-      this.connection,
-      {
-        percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-        fallback: true,
-      },
-    );
+    // Default value
+    let priorityFeeMicroLamports: number =
+      DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
+
+    try {
+      // Refresh priority fees before proceeding
+      priorityFeeMicroLamports = await getMeanPrioritizationFeeByPercentile(
+        this.connection,
+        {
+          percentile: PercentilePriorityFeeList[this.priorityFeeOption],
+          fallback: true,
+        },
+      );
+    } catch (err) {
+      console.log('Error fetching priority fee', err);
+    }
 
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
 
@@ -5014,8 +5093,7 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${
-        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 
