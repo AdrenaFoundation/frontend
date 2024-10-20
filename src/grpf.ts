@@ -1,8 +1,8 @@
-import type { RecentPrioritizationFees } from "@solana/web3.js";
+import type { RecentPrioritizationFees } from '@solana/web3.js';
 import {
   Connection,
   type GetRecentPrioritizationFeesConfig,
-} from "@solana/web3.js";
+} from '@solana/web3.js';
 
 // easy to use values for user convenience
 export const enum PrioritizationFeeLevels {
@@ -29,14 +29,24 @@ interface RpcResponse {
 export const getMinPrioritizationFeeByPercentile = async (
   connection: Connection,
   config: GetRecentPrioritizationFeesByPercentileConfig,
-  slotsToReturn?: number
+  slotsToReturn?: number,
 ): Promise<number> => {
   const recentPrioritizationFees =
     await getRecentPrioritizationFeesByPercentile(
       connection,
       config,
-      slotsToReturn
+      slotsToReturn,
     );
+
+  if (
+    typeof recentPrioritizationFees === 'undefined' ||
+    recentPrioritizationFees instanceof Error ||
+    recentPrioritizationFees === null ||
+    !(recentPrioritizationFees instanceof Array)
+  ) {
+    console.log('Error fetching prioritization fees', recentPrioritizationFees);
+    throw new Error('Error fetching prioritization fees');
+  }
 
   const minPriorityFee = recentPrioritizationFees.reduce((min, current) => {
     return current.prioritizationFee < min.prioritizationFee ? current : min;
@@ -48,14 +58,24 @@ export const getMinPrioritizationFeeByPercentile = async (
 export const getMaxPrioritizationFeeByPercentile = async (
   connection: Connection,
   config: GetRecentPrioritizationFeesByPercentileConfig,
-  slotsToReturn?: number
+  slotsToReturn?: number,
 ): Promise<number> => {
   const recentPrioritizationFees =
     await getRecentPrioritizationFeesByPercentile(
       connection,
       config,
-      slotsToReturn
+      slotsToReturn,
     );
+
+  if (
+    typeof recentPrioritizationFees === 'undefined' ||
+    recentPrioritizationFees instanceof Error ||
+    recentPrioritizationFees === null ||
+    !(recentPrioritizationFees instanceof Array)
+  ) {
+    console.log('Error fetching prioritization fees', recentPrioritizationFees);
+    throw new Error('Error fetching prioritization fees');
+  }
 
   const maxPriorityFee = recentPrioritizationFees.reduce((max, current) => {
     return current.prioritizationFee > max.prioritizationFee ? current : max;
@@ -67,20 +87,30 @@ export const getMaxPrioritizationFeeByPercentile = async (
 export const getMeanPrioritizationFeeByPercentile = async (
   connection: Connection,
   config: GetRecentPrioritizationFeesByPercentileConfig,
-  slotsToReturn?: number
+  slotsToReturn?: number,
 ): Promise<number> => {
   const recentPrioritizationFees =
     await getRecentPrioritizationFeesByPercentile(
       connection,
       config,
-      slotsToReturn
+      slotsToReturn,
     );
+
+  if (
+    typeof recentPrioritizationFees === 'undefined' ||
+    recentPrioritizationFees instanceof Error ||
+    recentPrioritizationFees === null ||
+    !(recentPrioritizationFees instanceof Array)
+  ) {
+    console.log('Error fetching prioritization fees', recentPrioritizationFees);
+    throw new Error('Error fetching prioritization fees');
+  }
 
   const mean = Math.ceil(
     recentPrioritizationFees.reduce(
       (acc, fee) => acc + fee.prioritizationFee,
-      0
-    ) / recentPrioritizationFees.length
+      0,
+    ) / recentPrioritizationFees.length,
   );
 
   return mean;
@@ -89,17 +119,27 @@ export const getMeanPrioritizationFeeByPercentile = async (
 export const getMedianPrioritizationFeeByPercentile = async (
   connection: Connection,
   config: GetRecentPrioritizationFeesByPercentileConfig,
-  slotsToReturn?: number
+  slotsToReturn?: number,
 ): Promise<number> => {
   const recentPrioritizationFees =
     await getRecentPrioritizationFeesByPercentile(
       connection,
       config,
-      slotsToReturn
+      slotsToReturn,
     );
 
+  if (
+    typeof recentPrioritizationFees === 'undefined' ||
+    recentPrioritizationFees instanceof Error ||
+    recentPrioritizationFees === null ||
+    !(recentPrioritizationFees instanceof Array)
+  ) {
+    console.log('Error fetching prioritization fees', recentPrioritizationFees);
+    throw new Error('Error fetching prioritization fees');
+  }
+
   recentPrioritizationFees.sort(
-    (a, b) => a.prioritizationFee - b.prioritizationFee
+    (a, b) => a.prioritizationFee - b.prioritizationFee,
   );
 
   const half = Math.floor(recentPrioritizationFees.length / 2);
@@ -111,22 +151,22 @@ export const getMedianPrioritizationFeeByPercentile = async (
   return Math.ceil(
     (recentPrioritizationFees[half - 1].prioritizationFee +
       recentPrioritizationFees[half].prioritizationFee) /
-    2
+      2,
   );
 };
 
 // this function gets the recent prioritization fees from the RPC. The `rpcRequest` comes from webjs.Connection
 const getRecentPrioritizationFeesFromRpc = async (
   config: any,
-  rpcRequest: any
+  rpcRequest: any,
 ) => {
   const accounts = config?.lockedWritableAccounts?.map(
-    (key: { toBase58: () => any }) => key.toBase58()
+    (key: { toBase58: () => any }) => key.toBase58(),
   );
   const args = accounts?.length ? [accounts] : [[]];
   config.percentile && args.push({ percentile: config.percentile });
 
-  const response = await rpcRequest("getRecentPrioritizationFees", args);
+  const response = await rpcRequest('getRecentPrioritizationFees', args);
 
   return response;
 };
@@ -134,8 +174,8 @@ const getRecentPrioritizationFeesFromRpc = async (
 export const getRecentPrioritizationFeesByPercentile = async (
   connection: Connection,
   config: GetRecentPrioritizationFeesByPercentileConfig,
-  slotsToReturn?: number
-): Promise<RecentPrioritizationFees[]> => {
+  slotsToReturn?: number,
+): Promise<RecentPrioritizationFees[] | unknown> => {
   const { fallback = true, lockedWritableAccounts = [] } = config || {};
   slotsToReturn =
     slotsToReturn && Number.isInteger(slotsToReturn) ? slotsToReturn : -1;
@@ -156,17 +196,17 @@ export const getRecentPrioritizationFeesByPercentile = async (
   promises.push(
     getRecentPrioritizationFeesFromRpc(config, rpcRequest).then((result) => {
       tritonRpcResponse = result;
-    })
+    }),
   );
 
   if (fallback) {
     promises.push(
       getRecentPrioritizationFeesFromRpc(
         { lockedWritableAccounts },
-        rpcRequest
+        rpcRequest,
       ).then((result) => {
         fallbackRpcResponse = result;
-      })
+      }),
     );
   }
 
