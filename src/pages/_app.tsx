@@ -13,9 +13,8 @@ import { Provider } from 'react-redux';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
-import Pause from '@/components/Pause/Pause';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
-import IConfiguration from '@/config/IConfiguration';
+import initConfig from '@/config/init';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
@@ -33,8 +32,6 @@ import { PriorityFeeOption } from '@/types';
 import { DEFAULT_MAX_PRIORITY_FEE, DEFAULT_PRIORITY_FEE_OPTION, PercentilePriorityFeeList } from '@/utils';
 
 import logo from '../../public/images/logo.svg';
-import DevnetConfiguration from '../config/devnet';
-import MainnetConfiguration from '../config/mainnet';
 import store from '../store/store';
 
 function Loader(): JSX.Element {
@@ -51,14 +48,21 @@ function Loader(): JSX.Element {
   );
 }
 
+// Make explicit that the config is constant.
+// initalized once, doesn't move afterwards.
+// actually twice, once on the server to `null` & once on the client.
+const CONFIG = initConfig();
+const PYTH_CONNECTION =
+  CONFIG && new Connection(CONFIG.pythnetRpc.url, 'processed');
+
 // Load cluster from URL then load the config and initialize the app.
 // When everything is ready load the main component
 export default function App(props: AppProps) {
-  const [config, setConfig] = useState<IConfiguration | null>(null);
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [initializationInProgress, setInitializationInProgress] =
-    useState<boolean>(false);
-
+  const [initStatus, setInitStatus] = useState<
+    'not-started' | 'starting' | 'done'
+  >('not-started');
+  // FIXME: RPC selection shouldn't be hook / effect-based.
+  // A default RPC should be picked by the server durring ssr.
   const {
     activeRpc,
     rpcInfos,
@@ -69,99 +73,42 @@ export default function App(props: AppProps) {
     setAutoRpcMode,
     setCustomRpcUrl,
     setFavoriteRpc,
-  } = useRpc(config);
+  } = useRpc(CONFIG);
 
-  // The URL determine in which configuration we are
-  // If the URL is not in the list, it means we are developing in local or we are in vercel preview
-  // In that case, use env variable/query params to determine the configuration
-  useEffect(() => {
-    const config = (() => {
-      // If devMode, adapts the RPCs to use ones that are different from production
-      // Protects from being stolen as the repo and devtools are public
-      const devMode = !window.location.hostname.endsWith('adrena.xyz');
-
-      const mainnetConfiguration = new MainnetConfiguration(devMode);
-      const devnetConfiguration = new DevnetConfiguration(devMode);
-
-      // Specific configuration for specific URLs (users front)
-      const specificUrlConfig = (
-        {
-          'app.adrena.xyz': mainnetConfiguration,
-          'devnet.adrena.xyz': devnetConfiguration,
-          'alpha.adrena.xyz': devnetConfiguration,
-        } as Record<string, IConfiguration>
-      )[window.location.hostname];
-
-      if (specificUrlConfig) return specificUrlConfig;
-
-      // Configuration depending on query params, can be useful for dev or testing to force a cluster
-      const urlParams = new URLSearchParams(window.location.search);
-      const queryParam = urlParams.get('cluster');
-
-      if (queryParam) {
-        const queryParamConfig = {
-          mainnet: mainnetConfiguration,
-          devnet: devnetConfiguration,
-        }[queryParam];
-
-        if (queryParamConfig) return queryParamConfig;
-      }
-
-      // Dev default configuration, can be setup in local or in vercel preview settings
-      return (
-        {
-          mainnet: mainnetConfiguration,
-          devnet: devnetConfiguration,
-        }[process.env.NEXT_PUBLIC_DEV_CLUSTER ?? 'devnet'] ??
-        devnetConfiguration
-      );
-    })();
-
-    console.info(
-      `Loaded config is ${config.cluster} in dev mode: ${config.devMode}`,
-    );
-
-    setConfig(config);
-  }, []);
-
-  // Initialize the app once the config and rpc are ready
-  useEffect(() => {
-    if (!config || !activeRpc || isInitialized || initializationInProgress)
-      return;
-
-    setInitializationInProgress(true);
-
-    const pythConnection = new Connection(config.pythnetRpc.url, 'processed');
-
-    initializeApp(config, activeRpc.connection, pythConnection).then(() => {
-      setIsInitialized(true);
-      setInitializationInProgress(false);
+  // Initialize the app as soon as possible:
+  // - when the client-side app boots..
+  //   - and the RPC has been picked by usePRC hook.
+  // No need to use an Effect as long as we guard with the correct conditions.
+  if (
+    CONFIG !== null &&
+    PYTH_CONNECTION !== null &&
+    initStatus === 'not-started' &&
+    activeRpc !== null
+  ) {
+    setInitStatus('starting');
+    initializeApp(CONFIG, activeRpc.connection, PYTH_CONNECTION).then(() => {
+      setInitStatus('done');
     });
-  }, [activeRpc, config, initializationInProgress, isInitialized]);
+  }
 
-  if (!isInitialized || !activeRpc) return <Loader />;
-
-  const paused = process.env.NEXT_PUBLIC_PAUSED === 'true';
+  // The Loaded is rendered while the app init, but also rendered in SSR.
+  if (initStatus !== 'done' || !activeRpc) return <Loader />;
 
   return (
     <Provider store={store}>
       <CookiesProvider>
-        {paused ? (
-          <Pause />
-        ) : (
-          <AppComponent
-            activeRpc={activeRpc}
-            rpcInfos={rpcInfos}
-            autoRpcMode={autoRpcMode}
-            customRpcUrl={customRpcUrl}
-            customRpcLatency={customRpcLatency}
-            favoriteRpc={favoriteRpc}
-            setAutoRpcMode={setAutoRpcMode}
-            setCustomRpcUrl={setCustomRpcUrl}
-            setFavoriteRpc={setFavoriteRpc}
-            {...props}
-          />
-        )}
+        <AppComponent
+          activeRpc={activeRpc}
+          rpcInfos={rpcInfos}
+          autoRpcMode={autoRpcMode}
+          customRpcUrl={customRpcUrl}
+          customRpcLatency={customRpcLatency}
+          favoriteRpc={favoriteRpc}
+          setAutoRpcMode={setAutoRpcMode}
+          setCustomRpcUrl={setCustomRpcUrl}
+          setFavoriteRpc={setFavoriteRpc}
+          {...props}
+        />
 
         <Analytics />
       </CookiesProvider>
