@@ -7,8 +7,11 @@ import PositionBlockReadOnly from '@/components/pages/trading/Positions/Position
 import { useAllPositions } from '@/hooks/useAllPositions';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
+import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
+import resetIcon from '../../../public/images/Icons/cross.svg'
+
 export default function AllPositions() {
-    const { allPositions } = useAllPositions();
+    const { allPositions, triggerAllPositionsReload } = useAllPositions();
     const [currentPage, setCurrentPage] = useState(1);
     const [sideFilter, setSideFilter] = useState('all');
     const [mintFilter, setMintFilter] = useState('all');
@@ -73,6 +76,10 @@ export default function AllPositions() {
         setOwnerFilter('');
         setPnlFilter('all');
         setCurrentPage(1);
+    };
+
+    const refreshPositions = () => {
+        triggerAllPositionsReload();
     };
 
     return (
@@ -150,13 +157,21 @@ export default function AllPositions() {
                             className="bg-gray-800 text-white border border-gray-700 rounded p-1 w-full md:w-auto"
                         />
                     </div>
-                    <Button
-                        onClick={resetFilters}
-                        variant="outline"
-                        className="ml-2 w-full md:w-auto"
-                        title="x Reset"
-                    >
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            onClick={resetFilters}
+                            variant="outline"
+                            className="w-full md:w-auto"
+                            icon={resetIcon}
+                        />
+                        <Button
+                            onClick={refreshPositions}
+                            variant="outline"
+                            className="w-full md:w-auto"
+                            icon={reloadIcon}
+                        >
+                        </Button>
+                    </div>
                 </div>
                 <div className="flex flex-wrap justify-between gap-2">
                     {paginatedPositions.length ? (
