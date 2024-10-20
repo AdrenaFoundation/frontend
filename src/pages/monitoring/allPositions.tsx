@@ -7,8 +7,11 @@ import PositionBlockReadOnly from '@/components/pages/trading/Positions/Position
 import { useAllPositions } from '@/hooks/useAllPositions';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
+import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
+import resetIcon from '../../../public/images/Icons/cross.svg'
+
 export default function AllPositions() {
-    const { allPositions } = useAllPositions();
+    const { allPositions, triggerAllPositionsReload } = useAllPositions();
     const [currentPage, setCurrentPage] = useState(1);
     const [sideFilter, setSideFilter] = useState('all');
     const [mintFilter, setMintFilter] = useState('all');
@@ -75,38 +78,42 @@ export default function AllPositions() {
         setCurrentPage(1);
     };
 
+    const refreshPositions = () => {
+        triggerAllPositionsReload();
+    };
+
     return (
         <div className="flex flex-col gap-2 p-4">
             <StyledContainer className="p-4">
                 <h2 style={{ textAlign: 'center' }}>Live Positions from all Traders</h2>
-                <div className="flex flex-wrap justify-between mb-4 items-center">
-                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary">
+                <div className="flex flex-col md:flex-row flex-wrap justify-between mb-4 items-center gap-2">
+                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
                         {['all', 'long', 'short'].map(type => (
                             <Button
                                 key={type}
                                 onClick={() => setSideFilter(type)}
                                 variant={type === sideFilter ? 'outline' : 'text'}
-                                className={`w-20 ${type === 'long' ? 'text-green' : type === 'short' ? 'text-red' : ''}`}
+                                className={`w-full md:w-20 ${type === 'long' ? 'text-green' : type === 'short' ? 'text-red' : ''}`}
                                 title={type.charAt(0).toUpperCase() + type.slice(1)}
                             />
                         ))}
                     </div>
-                    <div className="flex flex-wrap gap-2 border border-gray-700 rounded-lg p-2 bg-secondary">
+                    <div className="flex flex-wrap justify-center gap-2 border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
                         <Button
                             onClick={() => setMintFilter('all')}
                             variant={mintFilter === 'all' ? 'outline' : 'text'}
-                            className="w-20 flex items-center"
+                            className="w-full md:w-20 flex items-center justify-center"
                             title="All"
                         >
                         </Button>
                         {window.adrena.client.tokens
                             .filter(token => token.symbol !== 'USDC')
                             .map(token => (
-                                <div key={token.mint.toBase58()} className='flex items-center'>
+                                <div key={token.mint.toBase58()} className='flex items-center justify-center'>
                                     <Button
                                         onClick={() => setMintFilter(token.mint.toBase58())}
                                         variant={token.mint.toBase58() === mintFilter ? 'outline' : 'text'}
-                                        className="w-20 flex items-center"
+                                        className="w-full md:w-20 flex items-center justify-center"
                                         title={getTokenSymbol(token.symbol)}
                                         icon={getTokenImage(token)}
                                     >
@@ -114,23 +121,22 @@ export default function AllPositions() {
                                 </div>
                             ))}
                     </div>
-                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary">
+                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
                         {['all', 'profit', 'loss'].map(type => (
                             <Button
                                 key={type}
                                 onClick={() => setPnlFilter(type)}
                                 variant={type === pnlFilter ? 'outline' : 'text'}
-                                className={`w-20 ${type === 'profit' ? 'text-green' : type === 'loss' ? 'text-redbright' : ''}`}
+                                className={`w-full md:w-20 ${type === 'profit' ? 'text-green' : type === 'loss' ? 'text-redbright' : ''}`}
                                 title={type.charAt(0).toUpperCase() + type.slice(1)}
                             />
                         ))}
                     </div>
-                    <div className="w-px h-6 bg-bcolor mx-2 hidden md:block"></div>
-                    <div className="flex flex-wrap items-center text-base bg-secondary rounded-full p-[2px] border border-bcolor">
+                    <div className="flex flex-wrap justify-center items-center text-base bg-secondary rounded-full p-[2px] border border-bcolor w-full md:w-auto">
                         {['pnl', 'size', 'leverage'].map(criteria => (
                             <React.Fragment key={criteria}>
                                 <button
-                                    className="px-2 py-1 rounded-full transition-colors flex items-center"
+                                    className="px-2 py-1 rounded-full transition-colors flex items-center w-auto"
                                     onClick={() => toggleSortOrder(criteria)}
                                 >
                                     {criteria.charAt(0).toUpperCase() + criteria.slice(1)}
@@ -138,27 +144,34 @@ export default function AllPositions() {
                                         {sortConfigs[criteria] === 'asc' ? '↑' : '↓'}
                                     </span>
                                 </button>
-                                {criteria !== 'leverage' && <div className="w-px h-4 bg-bcolor mx-[1px] hidden md:block"></div>}
+                                {criteria !== 'leverage' && <div className="w-px h-4 bg-bcolor mx-[1px]"></div>}
                             </React.Fragment>
                         ))}
                     </div>
-                    <div className="w-px h-6 bg-bcolor mx-2 hidden md:block"></div>
-                    <div className="flex flex-wrap items-center">
+                    <div className="flex flex-wrap items-center w-full md:w-auto">
                         <input
                             type="pubkey"
                             placeholder="Filter by owner (pubkey)"
                             value={ownerFilter}
                             onChange={(e) => setOwnerFilter(e.target.value)}
-                            className="bg-gray-800 text-white border border-gray-700 rounded p-1"
+                            className="bg-gray-800 text-white border border-gray-700 rounded p-1 w-full md:w-auto"
                         />
                     </div>
-                    <Button
-                        onClick={resetFilters}
-                        variant="outline"
-                        className="ml-2"
-                        title="x Reset"
-                    >
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            onClick={resetFilters}
+                            variant="outline"
+                            className="w-full md:w-auto"
+                            icon={resetIcon}
+                        />
+                        <Button
+                            onClick={refreshPositions}
+                            variant="outline"
+                            className="w-full md:w-auto"
+                            icon={reloadIcon}
+                        >
+                        </Button>
+                    </div>
                 </div>
                 <div className="flex flex-wrap justify-between gap-2">
                     {paginatedPositions.length ? (
