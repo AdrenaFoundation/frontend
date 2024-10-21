@@ -352,6 +352,18 @@ export default function Stake({
       });
 
       triggerWalletTokenBalancesReload();
+      // Reset rewards in the ui until next fetch
+      if (tokenSymbol === 'ADX') {
+        adxRewards.pendingUsdcRewards = 0;
+        adxRewards.pendingAdxRewards = 0;
+        adxRewards.pendingGenesisAdxRewards = 0;
+        fetchAdxRewards();
+      } else {
+        alpRewards.pendingUsdcRewards = 0;
+        alpRewards.pendingAdxRewards = 0;
+        alpRewards.pendingGenesisAdxRewards = 0;
+        fetchAlpRewards();
+      }
       triggerWalletStakingAccountsReload();
     } catch (error) {
       console.error('error', error);
@@ -485,8 +497,8 @@ export default function Stake({
     : null;
 
   // The rewards pending for the user
-  const adxRewards = useStakingClaimableRewards(false); // For ADX
-  const alpRewards = useStakingClaimableRewards(true); // For ALP
+  const { rewards: adxRewards, fetchRewards: fetchAdxRewards } = useStakingClaimableRewards('ADX');
+  const { rewards: alpRewards, fetchRewards: fetchAlpRewards } = useStakingClaimableRewards('ALP');
 
   // The rewards pending collection in the current round
   const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
