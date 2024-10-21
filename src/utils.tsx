@@ -386,6 +386,10 @@ export function parseTransactionError(
   // Also depends what type of error, quite a lot of cases
   //
 
+  if (err instanceof AdrenaTransactionError) {
+    return err;
+  }
+
   const errStr: string | null = (() => {
     const errCodeHex = (() => {
       const match = String(err).match(/custom program error: (0x[\da-fA-F]+)/);
