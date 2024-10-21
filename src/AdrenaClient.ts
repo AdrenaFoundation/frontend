@@ -5153,7 +5153,7 @@ export class AdrenaClient {
       }
 
       if (!confirmedTx) {
-        console.log(`Tx not confirmed after ${TX_RETRY_INTERVAL * txSendAttempts++}ms, resending`);
+        console.log(`Tx not confirmed after ${TX_RETRY_INTERVAL * txSendAttempts++}ms, resending (${txSendAttempts} / ${MAX_TX_SEND_ATTEMPTS})`);
         await this.connection.sendRawTransaction(signedTransaction.serialize(), {
           skipPreflight: true,
           maxRetries: 0,
