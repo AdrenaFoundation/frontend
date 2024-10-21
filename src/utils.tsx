@@ -31,7 +31,10 @@ import arrowRightIcon from '../public/images/arrow-right.svg';
 import arrowUp from '../public/images/arrow-up.png';
 import btcLogo from '../public/images/btc.svg';
 import solLogo from '../public/images/sol.svg';
-import { ROUND_MIN_DURATION_SECONDS } from './constant';
+import {
+  ROUND_MIN_DURATION_SECONDS,
+  SOLANA_EXPLORERS_OPTIONS,
+} from './constant';
 import { WalletStakingAccounts } from './hooks/useWalletStakingAccounts';
 import {
   ImageRef,
@@ -350,16 +353,25 @@ export function addFailedTxNotification({
 
 export function getTxExplorer(txHash: string): string {
   const cluster = window.adrena.cluster;
-
-  return `https://explorer.solana.com/tx/${txHash}${cluster === 'devnet' ? '?cluster=devnet' : ''
-    }`;
+  return (
+    SOLANA_EXPLORERS_OPTIONS[window.adrena.settings.solanaExplorer].getTxUrl(
+      txHash,
+      cluster,
+    ) ?? SOLANA_EXPLORERS_OPTIONS['Solana Explorer'].getTxUrl(txHash, cluster)
+  );
 }
 
 export function getAccountExplorer(address: PublicKey): string {
   const cluster = window.adrena.cluster;
-
-  return `https://explorer.solana.com/address/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
-    }`;
+  return (
+    SOLANA_EXPLORERS_OPTIONS[
+      window.adrena.settings.solanaExplorer
+    ].getWalletAddressUrl(address, cluster) ??
+    SOLANA_EXPLORERS_OPTIONS['Solana Explorer'].getWalletAddressUrl(
+      address,
+      cluster,
+    )
+  );
 }
 
 // Thrown as error when a transaction fails
