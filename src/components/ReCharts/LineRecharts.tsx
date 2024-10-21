@@ -135,7 +135,10 @@ export default function LineRechart({
 
           <Tooltip
             content={
-              <CustomRechartsToolTip isValueOnly={labels.length === 1} />
+              <CustomRechartsToolTip
+                isValueOnly={labels.length === 1}
+                format={formatY}
+              />
             }
             cursor={false}
           />
