@@ -104,16 +104,16 @@ export default function Buy({
         try {
           const amountAndFees = await (selectedAction === 'buy'
             ? window.adrena.client.getAddLiquidityAmountAndFee({
-                amountIn: uiToNative(equivalentAmount, token.decimals),
-                token,
-              })
+              amountIn: uiToNative(equivalentAmount, token.decimals),
+              token,
+            })
             : window.adrena.client.getRemoveLiquidityAmountAndFee({
-                lpAmountIn: uiToNative(
-                  alpInput,
-                  window.adrena.client.alpToken.decimals,
-                ),
-                token,
-              }));
+              lpAmountIn: uiToNative(
+                alpInput,
+                window.adrena.client.alpToken.decimals,
+              ),
+              token,
+            }));
 
           if (amountAndFees === null) {
             return {
@@ -220,7 +220,7 @@ export default function Buy({
               })
             }
             className="absolute top-0 left-0 h-full w-full scale-x-[-1]"
-            imageClassName="absolute top-0 left-0 w-full scale-x-[-1]"
+            imageClassName="absolute top-0 left-0 w-[300px] sm:w-[400px] scale-x-[-1]"
           />
 
           <RiveAnimation
@@ -232,7 +232,7 @@ export default function Buy({
               })
             }
             className="absolute top-0 right-0 w-full h-full scale-y-[-1.2]"
-            imageClassName="absolute top-0 right-0 w-full"
+            imageClassName="absolute top-0 right-0 w-[300px] sm:w-[400px] scale-y-[-1.2]"
           />
         </div>
 

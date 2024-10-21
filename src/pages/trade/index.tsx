@@ -228,7 +228,7 @@ export default function Trade({
             })
           }
           className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
-          imageClassName="absolute w-[500px] bottom-0 left-[-10vh] scale-x-[-1]"
+          imageClassName="absolute w-full max-w-[1200px] bottom-0 left-[-10vh] scale-x-[-1]"
         />
 
         <RiveAnimation
@@ -240,7 +240,7 @@ export default function Trade({
             })
           }
           className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
-          imageClassName="absolute w-[500px] top-0 right-0 -z-10"
+          imageClassName="absolute w-full max-w-[1200px] top-0 right-0 -z-10"
         />
       </div>
 
