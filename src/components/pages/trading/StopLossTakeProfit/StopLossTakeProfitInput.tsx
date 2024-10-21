@@ -174,7 +174,7 @@ export default function StopLossTakeProfitInput({
     <div className="flex flex-col w-full">
       <div className="border-t border-bcolor w-full h-[1px]" />
 
-      <div className="flex justify-center mt-4 pb-2 h-8 items-center gap-2">
+      <div className="flex justify-center mt-1 pb-2 h-8 items-center gap-2">
         <h5>{type}</h5>
 
         {priceIsOk === true && displayValue !== null ? (
@@ -199,7 +199,7 @@ export default function StopLossTakeProfitInput({
         ) : null}
       </div>
 
-      <div className="flex flex-col items-center justify-center w-full pl-6 pr-6 gap-4">
+      <div className="flex flex-col items-center justify-center w-full pl-6 pr-6 gap-2">
         <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 grow text-sm w-full relative">
           <InputNumber
             value={input === null ? undefined : input}

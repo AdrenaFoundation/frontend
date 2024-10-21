@@ -2961,7 +2961,7 @@ export class AdrenaClient {
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       // Use finalize to get the latest blockhash accepted by leader
-      recentBlockhash: (await this.connection.getLatestBlockhash('finalized'))
+      recentBlockhash: (await this.connection.getLatestBlockhash('confirmed'))
         .blockhash,
       instructions: transaction.instructions,
     }).compileToV0Message();
@@ -4371,6 +4371,7 @@ export class AdrenaClient {
             collateralToken,
             side: (position.side === 1 ? 'long' : 'short') as 'long' | 'short',
             sizeUsd: nativeToUi(position.sizeUsd, USD_DECIMALS),
+            size: nativeToUi(position.lockedAmount, token.decimals),
             collateralUsd: nativeToUi(position.collateralUsd, USD_DECIMALS),
             price: nativeToUi(position.price, PRICE_DECIMALS),
             collateralAmount: nativeToUi(
@@ -4457,6 +4458,7 @@ export class AdrenaClient {
               | 'long'
               | 'short',
             sizeUsd: nativeToUi(positionAccount.sizeUsd, USD_DECIMALS),
+            size: nativeToUi(positionAccount.lockedAmount, token.decimals),
             collateralUsd: nativeToUi(
               positionAccount.collateralUsd,
               USD_DECIMALS,
@@ -4894,7 +4896,7 @@ export class AdrenaClient {
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       // Use finalize to get the latest blockhash accepted by the leader
-      recentBlockhash: (await this.connection.getLatestBlockhash('finalized'))
+      recentBlockhash: (await this.connection.getLatestBlockhash('confirmed'))
         .blockhash,
       instructions,
     }).compileToV0Message();
@@ -4985,7 +4987,7 @@ export class AdrenaClient {
 
     try {
       const latestBlockHash = await this.connection.getLatestBlockhash(
-        'finalized',
+        'confirmed',
       );
 
       console.log(
@@ -5107,13 +5109,13 @@ export class AdrenaClient {
     try {
       const d = Date.now();
       result = await this.connection.confirmTransaction(
-        {
-          blockhash: latestBlockHash.blockhash,
-          lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-          signature: txHash,
-        },
-        'processed',
-      );
+      {
+        blockhash: latestBlockHash.blockhash,
+        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+        signature: txHash,
+      },
+      'processed',
+    );
 
       console.log('confirmTransaction took', Date.now() - d, 'to confirm tx');
     } catch (err) {
@@ -5125,22 +5127,22 @@ export class AdrenaClient {
       throw adrenaError;
     }
 
-    if (result.value.err) {
-      const adrenaError = parseTransactionError(
-        this.adrenaProgram,
-        result.value.err,
-      );
-      adrenaError.setTxHash(txHash);
+      if (result.value.err) {
+        const adrenaError = parseTransactionError(
+          this.adrenaProgram,
+          result.value.err,
+        );
+        adrenaError.setTxHash(txHash);
 
-      // Confirm the transaction errored
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
+        // Confirm the transaction errored
+        notification?.currentStepErrored(adrenaError);
+        throw adrenaError;
+      }
 
-    // Confirm the transaction succeeded
-    notification?.currentStepSucceeded();
+      // Confirm the transaction succeeded
+      notification?.currentStepSucceeded();
 
-    return txHash;
+      return txHash;
   }
 
   public findCustodyAddress(mint: PublicKey): PublicKey {

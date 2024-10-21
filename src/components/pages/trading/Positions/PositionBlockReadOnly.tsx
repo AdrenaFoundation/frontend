@@ -406,7 +406,7 @@ export default function PositionBlockReadOnly({
                                 onClick={handleCleanupAndClose}
                                 className="text-txtfade border-bcolor border-t bg-[#a8a8a810] hover:bg-bcolor h-8 w-full rounded-none"
                             >
-                                Cleanup SL/TP and Close
+                                Cleanup SL/TP dangling threads
                             </button>
                         )}
                     </div>
