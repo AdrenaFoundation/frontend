@@ -4984,7 +4984,7 @@ export class AdrenaClient {
     }
   }
 
-  public async signAndExecuteTxAlternativeAlternative({
+  public async signAndExecuteTxAlternative({
     transaction,
     notification,
   }: {
@@ -5187,7 +5187,7 @@ export class AdrenaClient {
     // return txSignatureBase58;
   }
 
-  public async signAndExecuteTxAlternative({
+  public async signAndExecuteTx({
     transaction,
     notification,
   }: {
