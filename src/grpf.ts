@@ -151,7 +151,7 @@ export const getMedianPrioritizationFeeByPercentile = async (
   return Math.ceil(
     (recentPrioritizationFees[half - 1].prioritizationFee +
       recentPrioritizationFees[half].prioritizationFee) /
-      2,
+    2,
   );
 };
 
