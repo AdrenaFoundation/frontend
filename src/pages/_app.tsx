@@ -30,7 +30,11 @@ import initializeApp, {
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { PriorityFeeOption } from '@/types';
-import { DEFAULT_MAX_PRIORITY_FEE, DEFAULT_PRIORITY_FEE_OPTION, PercentilePriorityFeeList } from '@/utils';
+import {
+  DEFAULT_MAX_PRIORITY_FEE,
+  DEFAULT_PRIORITY_FEE_OPTION,
+  PercentilePriorityFeeList,
+} from '@/utils';
 
 import logo from '../../public/images/logo.svg';
 import DevnetConfiguration from '../config/devnet';
@@ -58,6 +62,8 @@ export default function App(props: AppProps) {
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [initializationInProgress, setInitializationInProgress] =
     useState<boolean>(false);
+
+  const [cookies] = useCookies(['solanaExplorer']);
 
   const {
     activeRpc,
@@ -133,7 +139,12 @@ export default function App(props: AppProps) {
 
     const pythConnection = new Connection(config.pythnetRpc.url, 'processed');
 
-    initializeApp(config, activeRpc.connection, pythConnection).then(() => {
+    initializeApp(
+      cookies.solanaExplorer,
+      config,
+      activeRpc.connection,
+      pythConnection,
+    ).then(() => {
       setIsInitialized(true);
       setInitializationInProgress(false);
     });
@@ -208,19 +219,32 @@ function AppComponent({
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
-  const { positions, triggerPositionsReload, addOptimisticPosition, removeOptimisticPosition } = usePositions();
+  const {
+    positions,
+    triggerPositionsReload,
+    addOptimisticPosition,
+    removeOptimisticPosition,
+  } = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
   useWatchTokenPrices();
 
   const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
 
-  const [cookies, setCookie] = useCookies(['terms-and-conditions-acceptance', 'priority-fee', 'max-priority-fee']);
+  const [cookies, setCookie] = useCookies([
+    'terms-and-conditions-acceptance',
+    'priority-fee',
+    'max-priority-fee',
+  ]);
 
-  const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(DEFAULT_PRIORITY_FEE_OPTION);
+  const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(
+    DEFAULT_PRIORITY_FEE_OPTION,
+  );
 
   // This represent the maximum extra amount of SOL per IX for priority fees, priority fees will be capped at this value
-  const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(DEFAULT_MAX_PRIORITY_FEE);
+  const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(
+    DEFAULT_MAX_PRIORITY_FEE,
+  );
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
@@ -237,7 +261,10 @@ function AppComponent({
     // Priority fees
     const priorityFeeOption = cookies['priority-fee'];
 
-    if (priorityFeeOption && Object.keys(PercentilePriorityFeeList).includes(priorityFeeOption)) {
+    if (
+      priorityFeeOption &&
+      Object.keys(PercentilePriorityFeeList).includes(priorityFeeOption)
+    ) {
       setPriorityFeeOption(priorityFeeOption);
     }
 
@@ -310,33 +337,25 @@ function AppComponent({
 
       <RootLayout
         priorityFeeOption={priorityFeeOption}
-        setPriorityFeeOption={((p: PriorityFeeOption) => {
-          setCookie(
-            'priority-fee',
-            p,
-            {
-              path: '/',
-              maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-              sameSite: 'strict',
-            },
-          );
+        setPriorityFeeOption={(p: PriorityFeeOption) => {
+          setCookie('priority-fee', p, {
+            path: '/',
+            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
+            sameSite: 'strict',
+          });
 
           setPriorityFeeOption(p);
-        })}
+        }}
         maxPriorityFee={maxPriorityFee}
-        setMaxPriorityFee={((p: number | null) => {
-          setCookie(
-            'max-priority-fee',
-            p,
-            {
-              path: '/',
-              maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
-              sameSite: 'strict',
-            },
-          );
+        setMaxPriorityFee={(p: number | null) => {
+          setCookie('max-priority-fee', p, {
+            path: '/',
+            maxAge: 360 * 24 * 60 * 60, // 360 days in seconds
+            sameSite: 'strict',
+          });
 
           setMaxPriorityFee(p);
-        })}
+        }}
         userProfile={userProfile}
         activeRpc={activeRpc}
         rpcInfos={rpcInfos}

@@ -22,6 +22,7 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import MenuSeparator from '../common/Menu/MenuSeparator';
+import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
 
@@ -105,33 +106,90 @@ export default function BurgerMenu({
         </div>
 
         <div className="flex flex-row items-center gap-3">
-          <div className='flex gap-1'>
-            <Link href="/buy_alp" className={twMerge('ml-2 items-center justify-center flex hover:opacity-100', isSmallScreen ? 'flex-col' : 'flex-row', pathname !== '/buy_alp' && 'opacity-50')}>
-              <div className={twMerge('text-sm font-boldy', isSmallScreen ? 'mr-0' : 'mr-2')}>ALP</div>
+          <div className="flex gap-1">
+            <Link
+              href="/buy_alp"
+              className={twMerge(
+                'ml-2 items-center justify-center flex hover:opacity-100',
+                isSmallScreen ? 'flex-col' : 'flex-row',
+                pathname !== '/buy_alp' && 'opacity-50',
+              )}
+            >
+              <div
+                className={twMerge(
+                  'text-sm font-boldy',
+                  isSmallScreen ? 'mr-0' : 'mr-2',
+                )}
+              >
+                ALP
+              </div>
 
-              {alpPrice ?
-                <div className='w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded'>
-                  <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(alpPrice, window.adrena.client.alpToken.displayPriceDecimalsPrecision, window.adrena.client.alpToken.displayPriceDecimalsPrecision)}</div>
-                </div> :
-                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />}
+              {alpPrice ? (
+                <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
+                  <div className="text-xxs font-mono flex items-center justify-center">
+                    {formatPriceInfo(
+                      alpPrice,
+                      window.adrena.client.alpToken
+                        .displayPriceDecimalsPrecision,
+                      window.adrena.client.alpToken
+                        .displayPriceDecimalsPrecision,
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+              )}
             </Link>
 
-            <Link href="/buy_adx" className={twMerge('ml-2 items-center justify-center flex hover:opacity-100', isSmallScreen ? 'flex-col' : 'flex-row', pathname !== '/buy_adx' && 'opacity-50')}>
-              <div className={twMerge('text-sm font-boldy', isSmallScreen ? 'mr-0' : 'mr-2')}>ADX</div>
+            <Link
+              href="/buy_adx"
+              className={twMerge(
+                'ml-2 items-center justify-center flex hover:opacity-100',
+                isSmallScreen ? 'flex-col' : 'flex-row',
+                pathname !== '/buy_adx' && 'opacity-50',
+              )}
+            >
+              <div
+                className={twMerge(
+                  'text-sm font-boldy',
+                  isSmallScreen ? 'mr-0' : 'mr-2',
+                )}
+              >
+                ADX
+              </div>
 
-              {adxPrice ?
-                <div className='w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded'>
-                  <div className='text-xxs font-mono flex items-center justify-center'>{formatPriceInfo(adxPrice, window.adrena.client.adxToken.displayPriceDecimalsPrecision, window.adrena.client.adxToken.displayPriceDecimalsPrecision)}</div>
-                </div> :
-                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />}
+              {adxPrice ? (
+                <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
+                  <div className="text-xxs font-mono flex items-center justify-center">
+                    {formatPriceInfo(
+                      adxPrice,
+                      window.adrena.client.adxToken
+                        .displayPriceDecimalsPrecision,
+                      window.adrena.client.adxToken
+                        .displayPriceDecimalsPrecision,
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="w-[3em] h-4 bg-gray-800 rounded-xl" />
+              )}
             </Link>
           </div>
 
-          <WalletAdapter className="w-full" userProfile={userProfile} />
+          <WalletAdapter
+            className="w-full"
+            userProfile={userProfile}
+            isIconOnly
+          />
 
-          <Settings
+          <PriorityFeeSetting
             priorityFeeOption={priorityFeeOption}
             setPriorityFeeOption={setPriorityFeeOption}
+            maxPriorityFee={maxPriorityFee}
+            setMaxPriorityFee={setMaxPriorityFee}
+          />
+
+          <Settings
             activeRpc={activeRpc}
             rpcInfos={rpcInfos}
             autoRpcMode={autoRpcMode}
@@ -141,8 +199,6 @@ export default function BurgerMenu({
             setAutoRpcMode={setAutoRpcMode}
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
-            maxPriorityFee={maxPriorityFee}
-            setMaxPriorityFee={setMaxPriorityFee}
           />
         </div>
       </div>
