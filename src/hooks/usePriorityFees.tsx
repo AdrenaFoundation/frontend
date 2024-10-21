@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { DEFAULT_PRIORITY_FEES } from '@/utils';
 
-import { getMeanPrioritizationFeeByPercentile } from '../grpf';
+import { getMeanPrioritizationFeeByPercentile, PrioritizationFeeLevels } from '../grpf';
 
 export interface PriorityFeesAmounts {
     medium: number;
@@ -19,15 +19,15 @@ export default function usePriorityFee() {
         try {
             const fees = await Promise.all([
                 getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: 5500, // 55th percentile
+                    percentile: PrioritizationFeeLevels.LOW, // 25th percentile
                     fallback: true,
                 }),
                 getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: 7500, // 75th percentile
+                    percentile: PrioritizationFeeLevels.MEDIAN, // 50th percentile
                     fallback: true,
                 }),
                 getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: 9000, // 90th percentile
+                    percentile: PrioritizationFeeLevels.HIGH, // 75th percentile
                     fallback: true,
                 }),
             ]);
@@ -35,7 +35,7 @@ export default function usePriorityFee() {
             const [medium, high, ultra] = fees;
 
             const priorityFeeAmounts: PriorityFeesAmounts = {
-                medium,
+                medium: medium,
                 high,
                 ultra,
             };
