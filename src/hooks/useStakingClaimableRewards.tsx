@@ -1,21 +1,55 @@
 import { PublicKey } from '@solana/web3.js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
 
-interface RewardsData {
+export interface RewardsData {
   pendingUsdcRewards: number;
   pendingAdxRewards: number;
   pendingGenesisAdxRewards: number;
 }
 
-export const useStakingClaimableRewards = (isALP: boolean) => {
+export const defaultRewardsData: RewardsData = {
+  pendingUsdcRewards: 0,
+  pendingAdxRewards: 0,
+  pendingGenesisAdxRewards: 0,
+};
+
+export const useStakingClaimableRewards = (tokenSymbol: 'ADX' | 'ALP') => {
   const [rewards, setRewards] = useState<RewardsData>({
     pendingUsdcRewards: 0,
     pendingAdxRewards: 0,
     pendingGenesisAdxRewards: 0,
   });
   const wallet = useSelector((s) => s.walletState.wallet);
+
+
+  const fetchRewards = useCallback(async () => {
+    const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
+
+    if (
+      !walletAddress ||
+      !window.adrena.client ||
+      !window.adrena.client.connection
+    ) {
+      return;
+    }
+
+    try {
+      const stakedTokenMint = tokenSymbol === 'ALP'
+        ? window.adrena.client.lpTokenMint
+        : window.adrena.client.lmTokenMint;
+      const simulatedRewards = await window.adrena.client.simulateClaimStakes(
+        walletAddress,
+        stakedTokenMint,
+      );
+
+      setRewards(simulatedRewards);
+    } catch (error) {
+      console.log('error fetching rewards', error);
+      setRewards(defaultRewardsData);
+    }
+  }, [wallet, tokenSymbol]);
 
   useEffect(() => {
     const walletAddress = wallet ? new PublicKey(wallet.walletAddress) : null;
@@ -28,40 +62,14 @@ export const useStakingClaimableRewards = (isALP: boolean) => {
       return;
     }
 
-    const fetchRewards = async () => {
-      try {
-        const stakedTokenMint = isALP
-          ? window.adrena.client.lpTokenMint
-          : window.adrena.client.lmTokenMint;
-        const simulatedRewards = await window.adrena.client.simulateClaimStakes(
-          walletAddress,
-          stakedTokenMint,
-        );
-
-        setRewards(simulatedRewards);
-      } catch (error) {
-        console.log('error fetching rewards', error);
-        setRewards({
-          pendingUsdcRewards: 0,
-          pendingAdxRewards: 0,
-          pendingGenesisAdxRewards: 0,
-        });
-      }
-    };
-
     fetchRewards();
-    const intervalId = setInterval(fetchRewards, 10000); // Refresh every 10 seconds
+    const intervalId = setInterval(() => fetchRewards(), 10000);
 
     return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    !!window.adrena.client.connection,
-    isALP,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    !!window.adrena.client,
-    wallet,
-  ]);
+  }, [fetchRewards, tokenSymbol, wallet]);
 
-  return rewards;
+  return {
+    rewards,
+    fetchRewards,
+  };
 };

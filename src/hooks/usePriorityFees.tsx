@@ -52,7 +52,7 @@ export default function usePriorityFee() {
 
         const interval = setInterval(() => {
             updatePriorityFees();
-        }, 20000);
+        }, 60000); // Doesn't need to be too frequent as it's only used for display in the settings menu
 
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps

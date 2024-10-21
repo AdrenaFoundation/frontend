@@ -116,13 +116,16 @@ export default function usePositions(): {
     setOptimisticPositions((prev) => {
       const isDuplicate = prev.some(
         (p) => p.side === position.side && p.custody.equals(position.custody)
-      );
+      ) || (positions && positions.some(
+        (p) => p.side === position.side && p.custody.equals(position.custody)
+      ));
+
       if (isDuplicate) {
         return prev;
       }
       calculatePnLandLiquidationPrice(position, tokenPrices);
       return [...prev, position];
-    });;
+    });
   };
 
   const removeOptimisticPosition = (positionSide: 'long' | 'short', positionCustody: PublicKey) => {

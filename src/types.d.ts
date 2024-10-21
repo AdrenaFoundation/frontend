@@ -132,9 +132,10 @@ export type PositionExtended = {
   borrowFeeUsd?: number | null;
   liquidationPrice?: number | null;
   sizeUsd: number;
+  size: number; // The size in tokens
   collateralUsd: number;
-  price: number;
   collateralAmount: number;
+  price: number;
   exitFeeUsd: number;
   liquidationFeeUsd: number;
   stopLossClosePositionPrice?: number | null;

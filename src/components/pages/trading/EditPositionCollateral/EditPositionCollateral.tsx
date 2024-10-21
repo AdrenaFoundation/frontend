@@ -331,11 +331,16 @@ export default function EditPositionCollateral({
     }
   }
 
+  const isInputValid = input !== null && input > 0 && (
+    (selectedAction === 'deposit') || // the input is capped at what the user has in wallet
+    (selectedAction === 'withdraw' && input <= position.collateralUsd)
+  );
+
   return (
     <div className={twMerge('flex flex-col gap-2 h-full w-[24em] pt-4', className)}>
       <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
-          <div className="w-full flex justify-between mt-2">
+          <div className="w-full flex justify-between mt-">
             <div className="flex items-center">
               <Image
                 src={getTokenImage(position.token)}
@@ -350,16 +355,27 @@ export default function EditPositionCollateral({
               nb={markPrice}
               format="currency"
               className="text-sm text-bold"
+              precision={position.token.displayPriceDecimalsPrecision}
             />
           </div>
 
           <div className="w-full flex justify-between mt-2">
-            <div className="text-sm text-gray-400">Current position size</div>
+            <div className="text-sm text-gray-400">Pos. Size</div>
             <FormatNumber
               nb={position.sizeUsd}
               format="currency"
               precision={2}
               className="text-gray-400"
+            />
+          </div>
+          <div className="w-full flex justify-between">
+            <div className="text-sm text-gray-400">Pos. Size native</div>
+            <FormatNumber
+              nb={position.size}
+              className="text-gray-400"
+              precision={position.collateralToken.displayAmountDecimalsPrecision}
+              suffix={` ${getTokenSymbol(position.collateralToken.symbol)}`}
+              isDecimalDimmed={true}
             />
           </div>
         </div>
@@ -636,8 +652,8 @@ export default function EditPositionCollateral({
             </div>
           </div>
 
-          {/* Check for min leverage*/}
-          {position.currentLeverage && position.currentLeverage < 1.1 ? (
+          {/* Check for max leverage*/}
+          {maxInitialLeverage && position.currentLeverage && position.currentLeverage >= maxInitialLeverage ? (
             <div className="flex flex-col text-sm ml-4 mr-4">
               <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
                 <Image
@@ -648,7 +664,7 @@ export default function EditPositionCollateral({
                   alt="Info icon"
                 />
                 <span className="text-sm" >
-                  Your position is under the minimum leverage of 1.1x, you cannot deposit more collateral.
+                  Your position is above the maximum leverage of {maxInitialLeverage}x, you cannot withdraw more collateral.
                 </span>
               </div>
             </div>
@@ -717,10 +733,7 @@ export default function EditPositionCollateral({
         size="lg"
         title={executeBtnText}
         disabled={
-          !input ||
-          input > position.collateralUsd ||
-          belowMinLeverage ||
-          aboveMaxLeverage
+          !isInputValid || belowMinLeverage || aboveMaxLeverage
         }
         onClick={() => handleExecute()}
       />

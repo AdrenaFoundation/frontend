@@ -295,7 +295,7 @@ export default function StakeOverview({
                       >
                         schedule
                       </Link>
-                      )
+                      ):
                     </span>
                   </span>
                   <div className="flex items-center">
