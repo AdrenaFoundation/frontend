@@ -150,10 +150,10 @@ export default class MainnetConfiguration implements IConfiguration {
           name: 'Triton RPC',
           url: 'https://adrena-solanam-6f0c.mainnet.rpcpool.com',
         },
-        {
-          name: 'Helius RPC',
-          url: 'https://mainnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
-        },
+        // {
+        //   name: 'Helius RPC',
+        //   url: 'https://mainnet.helius-rpc.com/?api-key=1e567222-acdb-43ee-80dc-926f9c06d89d',
+        // },
       ];
 
   public readonly pythnetRpc: RpcOption = {
