@@ -16,7 +16,8 @@ import DetailedMonitoring from './detailed';
 export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
   const [detailedDisplay, setDetailedDisplay] = useState<boolean>(false);
-  const [allPositionsDisplay, setAllPositionsDisplay] = useState<boolean>(false); // New state for AllPositions
+  const [allPositionsDisplay, setAllPositionsDisplay] =
+    useState<boolean>(false); // New state for AllPositions
 
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
     useState<(typeof tabs)[number]>('All');
@@ -73,8 +74,8 @@ export default function Monitoring(pageProps: PageProps) {
               alignment: Alignment.TopLeft,
             })
           }
-          className="absolute top-0 left-[-10vh] h-[100vh] w-[140vh] scale-x-[-1]"
-          imageClassName="absolute w-[500px] bottom-0 left-[-10vh] scale-x-[-1] -z-10"
+
+          imageClassName="absolute w-full max-w-[1200px] bottom-0 left-[-10vh] scale-x-[-1] -z-10"
         />
 
         <RiveAnimation
@@ -85,8 +86,7 @@ export default function Monitoring(pageProps: PageProps) {
               alignment: Alignment.TopLeft,
             })
           }
-          className="absolute hidden md:block top-0 right-[-20vh] h-[90vh] w-[110vh] -z-10"
-          imageClassName="absolute w-[500px] top-0 right-0 -z-10"
+          imageClassName="absolute w-full max-w-[1200px] top-0 right-0 -z-10"
         />
       </div>
 
@@ -181,7 +181,12 @@ export default function Monitoring(pageProps: PageProps) {
         />
       </div>
 
-      <div className={twMerge('hidden', !detailedDisplay && !allPositionsDisplay ? 'block' : '')}>
+      <div
+        className={twMerge(
+          'hidden',
+          !detailedDisplay && !allPositionsDisplay ? 'block' : '',
+        )}
+      >
         <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
       </div>
     </>

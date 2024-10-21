@@ -632,7 +632,7 @@ export default function Stake({
             })
           }
           className="absolute top-0 left-[-10vh] h-[85vh] w-[110vh] scale-x-[-1]"
-          imageClassName="absolute w-[500px] top-0 right-0 scale-x-[-1]"
+          imageClassName="absolute w-full max-w-[1200px] top-0 left-0 scale-x-[-1]"
         />
 
         <RiveAnimation
@@ -644,7 +644,7 @@ export default function Stake({
             })
           }
           className="absolute hidden md:block bottom-0 right-[-20vh] h-[50vh] w-[80vh] scale-y-[-1] -z-10"
-          imageClassName="absolute w-[500px] bottom-0 right-0 scale-y-[-1]"
+          imageClassName="absolute w-full max-w-[500px] bottom-0 right-0 scale-y-[-1]"
         />
       </div>
       <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[1300px] m-auto">
