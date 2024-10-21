@@ -6,6 +6,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import {
+  Blockhash,
   ComputeBudgetProgram,
   Connection,
   LAMPORTS_PER_SOL,
@@ -5026,26 +5027,53 @@ export class AdrenaClient {
 
     /////////////////////// TRANSACTION ///////////////////////
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-    const latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+
+    let latestBlockHash: {
+      blockhash: Blockhash;
+      lastValidBlockHeight: number;
+    };
+
+    try {
+      latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+    } catch (err) {
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+
     transaction.recentBlockhash = latestBlockHash.blockhash;
     transaction.feePayer = wallet.publicKey;
 
     // Simulate the transaction
-    const simulationResult = await this.simulateTransaction({
-      payer: wallet.publicKey,
-      transaction: transaction,
-      recentBlockhash: latestBlockHash.blockhash,
-    });
+    let computeUnitUsed: number | null | undefined = null;
 
-    // check for simulation error
-    if (simulationResult.err) {
-      throw new Error(`Transaction simulation failed: ${JSON.stringify(simulationResult.err)}`);
+    try {
+      const simulationResult = await this.simulateTransaction({
+        payer: wallet.publicKey,
+        transaction: transaction,
+        recentBlockhash: latestBlockHash.blockhash,
+      });
+
+      // check for simulation error
+      if (simulationResult.err) {
+        throw new Error(
+          `Transaction simulation failed: ${JSON.stringify(
+            simulationResult.err,
+          )}`,
+        );
+      }
+
+      computeUnitUsed = simulationResult.unitsConsumed;
+      console.log('computeUnitUsed', computeUnitUsed);
+    } catch (err) {
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
     }
 
     // adjust priority fee base on max priority fee
-    const computeUnitUsed = simulationResult.unitsConsumed;
-    console.log('computeUnitUsed', computeUnitUsed);
-
     if (
       computeUnitUsed !== undefined &&
       this.maxPriorityFee !== null &&
@@ -5064,10 +5092,9 @@ export class AdrenaClient {
           `Adjusting priority fee to ${adjustedMicroLamports} microLamports per CU to stay within max priority fee`,
         );
 
-        transaction.instructions[0] =
-          ComputeBudgetProgram.setComputeUnitPrice({
-            microLamports: adjustedMicroLamports,
-          });
+        transaction.instructions[0] = ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: adjustedMicroLamports,
+        });
       }
     }
 
@@ -5097,6 +5124,7 @@ export class AdrenaClient {
       notification?.currentStepErrored(adrenaError);
       throw adrenaError;
     }
+
     const txSignature = signedTransaction.signatures[0].signature;
     if (!txSignature) throw new Error('Transaction signature missing');
     const txSignatureBase58 = bs58.encode(txSignature);
@@ -5105,25 +5133,29 @@ export class AdrenaClient {
 
     /////////////////////// Send the transaction ///////////////////////
     try {
-      await this.connection.sendRawTransaction(signedTransaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      }), {
-        skipPreflight: true,
-        maxRetries: 0,
-      });
+      await this.connection.sendRawTransaction(
+        signedTransaction.serialize({
+          requireAllSignatures: false,
+          verifySignatures: false,
+        }),
+        {
+          skipPreflight: true,
+          maxRetries: 0,
+        },
+      );
     } catch (err) {
       const adrenaError = parseTransactionError(this.adrenaProgram, err);
 
-      // Execute the transaction errored
       notification?.currentStepErrored(adrenaError);
       throw adrenaError;
     }
+
     // Execute the transaction succeeded
     notification?.setTxHash(txSignatureBase58);
     notification?.currentStepSucceeded();
     console.log(
-      `tx: https://explorer.solana.com/tx/${txSignatureBase58}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txSignatureBase58}${
+        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 
@@ -5133,55 +5165,80 @@ export class AdrenaClient {
     const MAX_TX_SEND_ATTEMPTS = 12;
     let txSendAttempts = 1;
 
-    while (!confirmedTx && txSendAttempts <= MAX_TX_SEND_ATTEMPTS) {
-      confirmedTx = await Promise.race([
-        this.connection.confirmTransaction(
-          {
-            signature: txSignatureBase58,
-            blockhash: latestBlockHash.blockhash,
-            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-          },
-          'processed'
-        ),
-        new Promise((resolve) => setTimeout(() => resolve(null), TX_RETRY_INTERVAL)),
-      ]) as unknown as RpcResponseAndContext<SignatureResult> | null;
+    try {
+      while (!confirmedTx && txSendAttempts <= MAX_TX_SEND_ATTEMPTS) {
+        confirmedTx = (await Promise.race([
+          this.connection.confirmTransaction(
+            {
+              signature: txSignatureBase58,
+              blockhash: latestBlockHash.blockhash,
+              lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+            },
+            'processed',
+          ),
+          new Promise((resolve) =>
+            setTimeout(() => resolve(null), TX_RETRY_INTERVAL),
+          ),
+        ])) as unknown as RpcResponseAndContext<SignatureResult> | null;
+
+        if (confirmedTx) {
+          break;
+        }
+
+        if (!confirmedTx) {
+          console.log(
+            `Tx not confirmed after ${
+              TX_RETRY_INTERVAL * txSendAttempts++
+            }ms, resending (${txSendAttempts} / ${MAX_TX_SEND_ATTEMPTS})`,
+          );
+
+          await this.connection.sendRawTransaction(
+            signedTransaction.serialize(),
+            {
+              skipPreflight: true,
+              maxRetries: 0,
+            },
+          );
+        }
+      }
+
       if (confirmedTx) {
-        break;
-      }
+        if (confirmedTx.value.err) {
+          const adrenaError = parseTransactionError(
+            this.adrenaProgram,
+            confirmedTx.value.err,
+          );
+          adrenaError.setTxHash(txSignatureBase58);
 
-      if (!confirmedTx) {
-        console.log(`Tx not confirmed after ${TX_RETRY_INTERVAL * txSendAttempts++}ms, resending (${txSendAttempts} / ${MAX_TX_SEND_ATTEMPTS})`);
-        await this.connection.sendRawTransaction(signedTransaction.serialize(), {
-          skipPreflight: true,
-          maxRetries: 0,
-        });
-      }
-    }
+          console.log('Transaction failed', adrenaError);
+          // Confirm the transaction errored
+          notification?.currentStepErrored(adrenaError);
+          throw adrenaError;
+        }
 
-    if (confirmedTx) {
-      if (confirmedTx.value.err) {
-        const adrenaError = parseTransactionError(this.adrenaProgram, confirmedTx.value.err);
-        adrenaError.setTxHash(txSignatureBase58);
-
-        console.log('Transaction failed', adrenaError);
-        // Confirm the transaction errored
-        notification?.currentStepErrored(adrenaError);
-        throw adrenaError;
-      } else {
         notification?.setTxHash(txSignatureBase58);
         notification?.currentStepSucceeded();
-
         return txSignatureBase58;
       }
+    } catch (err) {
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+      adrenaError.setTxHash(txSignatureBase58);
+      notification?.currentStepErrored(adrenaError);
+
+      throw adrenaError;
     }
 
     // Transaction not confirmed
-    const adrenaError = new AdrenaTransactionError(null, 'Transaction not confirmed');
-    adrenaError.setTxHash(txSignatureBase58);
-    notification?.currentStepErrored(adrenaError);
-    throw adrenaError;
+    const adrenaError = new AdrenaTransactionError(
+      null,
+      'Transaction not confirmed',
+    );
 
-    // return txSignatureBase58;
+    adrenaError.setTxHash(txSignatureBase58);
+
+    notification?.currentStepErrored(adrenaError);
+
+    throw adrenaError;
   }
 
   public async signAndExecuteTx({

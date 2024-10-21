@@ -266,7 +266,7 @@ export default function MyDashboard({
             })
           }
           className={'absolute right-0 w-[1500px] h-full'}
-          imageClassName="hidden"
+          imageClassName="absolute top-0 right-0 w-[400px]"
         />
       </div>
 
