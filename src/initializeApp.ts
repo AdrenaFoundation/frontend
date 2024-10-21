@@ -4,12 +4,12 @@ import { Connection, Transaction } from '@solana/web3.js';
 
 import { AdrenaClient } from '@/AdrenaClient';
 import IConfiguration from '@/config/IConfiguration';
-import { DEFAULT_PERPS_USER } from '@/constant';
+import { DEFAULT_PERPS_USER, SOLANA_EXPLORERS_OPTIONS } from '@/constant';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { IDL as SABLIER_THREAD_IDL } from '@/target/thread_program';
 
 import SablierClient from './SablierClient';
-import { PriorityFeeOption } from './types';
+import { SolanaExplorerOptions } from './types';
 
 export function createReadOnlyAdrenaProgram(connection: Connection) {
   const readOnlyProvider = new AnchorProvider(
@@ -91,6 +91,7 @@ export function createReadOnlySablierThreadProgram(connection: Connection) {
 // theses objects doesn't change on the way
 // for changing objects, use hooks like useCustodies/usePositions etc.
 export default async function initializeApp(
+  solanaExplorer: SolanaExplorerOptions,
   config: IConfiguration,
   mainConnection: Connection,
   pythConnection: Connection,
@@ -112,5 +113,8 @@ export default async function initializeApp(
     mainConnection,
     pythConnection,
     cluster: config.cluster,
+    settings: {
+      solanaExplorer: 'Solana Explorer',
+    },
   };
 }

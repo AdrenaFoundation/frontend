@@ -1,15 +1,18 @@
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
   BackpackWalletAdapter,
   CoinbaseWalletAdapter,
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-  WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import { Keypair } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
-import { AdxLockPeriod, AlpLockPeriod, WalletAdapterName } from './types';
+import {
+  AdxLockPeriod,
+  AlpLockPeriod,
+  SupportedCluster,
+  WalletAdapterName,
+} from './types';
 
 export const walletAdapters: Record<
   WalletAdapterName,
@@ -17,25 +20,11 @@ export const walletAdapters: Record<
   | BackpackWalletAdapter
   | CoinbaseWalletAdapter
   | SolflareWalletAdapter
-  | WalletConnectWalletAdapter /* | ... */
 > = {
   phantom: new PhantomWalletAdapter(),
   backpack: new BackpackWalletAdapter(),
   coinbase: new CoinbaseWalletAdapter(),
   solflare: new SolflareWalletAdapter(),
-  walletConnect: new WalletConnectWalletAdapter({
-    network: WalletAdapterNetwork.Devnet,
-    options: {
-      relayUrl: 'wss://relay.walletconnect.com',
-      projectId: '398435404513d41887c13aee450d5773',
-      metadata: {
-        name: 'Adrena',
-        description: 'Perpetuals DEX for the Solana community',
-        url: 'https://github.com/AdrenaDEX/adrena',
-        icons: ['https://avatars.githubusercontent.com/u/122066701?s=400&v=4'],
-      },
-    },
-  }),
 };
 
 export const RATE_DECIMALS = 9;
@@ -145,3 +134,49 @@ export const VEST_BUCKETS = [
   'Foundation',
   'Ecosystem',
 ] as const;
+
+// if you add a new explorer, make sure to add the icon in settings component
+export const SOLANA_EXPLORERS_OPTIONS = {
+  'Solana Beach': {
+    url: 'https://solanabeach.io',
+    getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
+      `https://solanabeach.io/address/${address}`,
+    getTxUrl: (tx: string, cluster: SupportedCluster) =>
+      `https://solanabeach.io/transaction/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
+      }`,
+  },
+  Solscan: {
+    url: 'https://solscan.io',
+    getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
+      `https://solscan.io/account/${address}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
+      }`,
+    getTxUrl: (tx: string, cluster: SupportedCluster) =>
+      `https://solscan.io/tx/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
+      }`,
+  },
+  'Solana Explorer': {
+    url: 'https://explorer.solana.com',
+    getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
+      `https://explorer.solana.com/address/${address}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
+      }`,
+    getTxUrl: (tx: string, cluster: SupportedCluster) =>
+      `https://explorer.solana.com/tx/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet' : ''
+      }`,
+  },
+  'Solana FM': {
+    url: 'https://solana.fm',
+    getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
+      `https://solana.fm/address/${address}${
+        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      }`,
+    getTxUrl: (tx: string, cluster: SupportedCluster) =>
+      `https://solana.fm/tx/${tx}${
+        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      }`,
+  },
+} as const;
