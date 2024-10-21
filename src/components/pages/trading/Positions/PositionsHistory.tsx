@@ -50,8 +50,10 @@ export default function PositionsHistory({
                     ))}
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center grow">
-                    No trade history available.
+                  <div className="flex overflow-hidden bg-main/90 grow border rounded-lg h-[15em] items-center justify-center">
+                    <div className="text-sm opacity-50 font-normal mt-5 font-boldy">
+                      No trade history available.
+                    </div>
                   </div>
                 )}
               </>

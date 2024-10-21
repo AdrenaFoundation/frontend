@@ -285,9 +285,9 @@ export default function useRpc(config: IConfiguration | null): {
 
     activeRpc: activeRpc
       ? {
-          name: activeRpc.name,
-          connection: activeRpc.connection,
-        }
+        name: activeRpc.name,
+        connection: activeRpc.connection,
+      }
       : null,
 
     customRpcLatency,

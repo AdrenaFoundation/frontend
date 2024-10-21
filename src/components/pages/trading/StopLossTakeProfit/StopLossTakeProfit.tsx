@@ -218,7 +218,7 @@ export default function StopLossTakeProfit({
       MultiStepNotification.newForRegularTransaction('TP/SL').fire();
 
     try {
-      await window.adrena.client.signAndExecuteTx({ transaction, notification });
+      await window.adrena.client.signAndExecuteTxAlternative({ transaction, notification });
 
       triggerPositionsReload();
       triggerUserProfileReload();
@@ -240,7 +240,7 @@ export default function StopLossTakeProfit({
       )}
     >
       <div className="w-[90%] ml-auto mr-auto">
-        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-sm mb-2">
           <Image
             className="opacity-60 absolute left-3 top-auto bottom-auto"
             src={infoIcon}
@@ -248,7 +248,7 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          Stop losses are executed at the limit price with up to 1% slippage.
+          Stop losses are executed with up to 1% slippage.
         </div>
 
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg mb-2">
@@ -267,6 +267,7 @@ export default function StopLossTakeProfit({
               nb={markPrice}
               format="currency"
               className="text-sm text"
+              precision={position.token.displayPriceDecimalsPrecision}
             />
           </div>
 
@@ -278,8 +279,8 @@ export default function StopLossTakeProfit({
                 nb={position.liquidationPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                className="text-orange font-regular"
                 isDecimalDimmed={false}
+                className="text-orange"
               />
             </div>
           </div>
@@ -293,7 +294,7 @@ export default function StopLossTakeProfit({
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
                 isDecimalDimmed={true}
-                className="text-gray-100 font-regular"
+                className="text-gray-100"
               />
             </div>
           </div>
@@ -352,7 +353,7 @@ export default function StopLossTakeProfit({
               <FormatNumber
                 nb={Math.abs(positionNetPnl)}
                 format="currency"
-                precision={position.token.displayPriceDecimalsPrecision}
+                precision={2}
                 className={twMerge(
                   'font-bold text-sm',
                   positionNetPnl > 0

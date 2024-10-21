@@ -78,7 +78,7 @@ export default function Document() {
           strategy="lazyOnload"
         ></Script>
 
-        {isMainnet ? (
+        {/* {isMainnet ? (
           <Script
             id="hotjar-script"
             type="text/javascript"
@@ -96,7 +96,7 @@ export default function Document() {
           })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');`,
             }}
           />
-        ) : null}
+        ) : null} */}
 
         <NextScript />
       </body>

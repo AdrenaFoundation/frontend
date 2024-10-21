@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -272,12 +273,20 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Size
             </div>
-            <div className="flex">
-              <FormatNumber
-                nb={position.sizeUsd}
-                format="currency"
+            <div className="flex underline-dashed">
+              <Tippy content={<FormatNumber
+                nb={position.size}
+                format="number"
                 className="text-gray-400 text-xs"
-              />
+                precision={position.token.displayAmountDecimalsPrecision}
+                suffix={` ${getTokenSymbol(position.token.symbol)}`}
+              />}>
+                <FormatNumber
+                  nb={position.sizeUsd}
+                  format="currency"
+                  className="text-gray-400 text-xs"
+                />
+              </Tippy>
             </div>
           </div>
 
@@ -285,12 +294,20 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Collateral
             </div>
-            <div className="flex">
-              <FormatNumber
-                nb={position.collateralUsd}
-                format="currency"
-                className="text-xs"
-              />
+            <div className="flex underline-dashed">
+              <Tippy content={<FormatNumber
+                nb={position.collateralAmount}
+                format="number"
+                className="text-gray-400 text-xs"
+                precision={position.collateralToken.displayAmountDecimalsPrecision}
+                suffix={` ${getTokenSymbol(position.collateralToken.symbol)} (at init.)`}
+              />}>
+                <FormatNumber
+                  nb={position.collateralUsd}
+                  format="currency"
+                  className="text-xs"
+                />
+              </Tippy>
             </div>
           </div>
 
@@ -441,7 +458,7 @@ export default function PositionBlock({
             <h2 className="text-red text-xs">Liquidable</h2>
           </div>
         ) : null}
-      </div>
+      </div >
       <AnimatePresence>
         {isOpen && (
           <Modal title="Share PnL" close={() => setIsOpen(false)}>

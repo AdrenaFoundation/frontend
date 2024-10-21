@@ -10,7 +10,7 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { ExitPriceAndFee, ImageRef, PositionExtended } from '@/types';
-import { nativeToUi } from '@/utils';
+import { getTokenSymbol, nativeToUi } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
 
@@ -178,7 +178,7 @@ export default function ClosePosition({
         </div>
       </div>
 
-      <div className="text-white text-sm mt-6 ml-4 font-boldy">
+      <div className="text-white text-sm mt-4 ml-4 font-boldy">
         Position to close
       </div>
 
@@ -201,6 +201,18 @@ export default function ClosePosition({
             nb={position.sizeUsd}
             format="currency"
             className="text-gray-400"
+          />
+        </div>
+
+        <div className={rowStyle}>
+          <div className="text-sm text-gray-400">Size native</div>
+
+          <FormatNumber
+            nb={position.size}
+            className="text-gray-400"
+            precision={position.collateralToken.displayAmountDecimalsPrecision}
+            suffix={` ${getTokenSymbol(position.collateralToken.symbol)}`}
+            isDecimalDimmed={true}
           />
         </div>
 
@@ -264,7 +276,7 @@ export default function ClosePosition({
         </div>
       </div>
 
-      <div className="text-white text-sm mt-6 ml-4 font-boldy">
+      <div className="text-white text-sm mt-4 ml-4 font-boldy">
         Fees Breakdown
       </div>
 

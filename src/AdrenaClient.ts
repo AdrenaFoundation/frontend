@@ -1,6 +1,6 @@
 import { BN, ProgramAccount } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
-import { base64 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
+import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 import {
   createAssociatedTokenAccountInstruction,
   TOKEN_PROGRAM_ID,
@@ -867,7 +867,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -973,7 +973,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -1331,7 +1331,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -1396,7 +1396,7 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .closePositionLong({
           price,
@@ -1510,7 +1510,7 @@ export class AdrenaClient {
 
     const userProfile = await this.loadUserProfile();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .closePositionShort({
           price,
@@ -1635,7 +1635,7 @@ export class AdrenaClient {
       return;
     }
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -1720,7 +1720,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -1917,7 +1917,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -1949,7 +1949,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -1985,7 +1985,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -2020,7 +2020,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -2169,7 +2169,7 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .removeCollateralLong({
           collateralUsd,
@@ -2238,7 +2238,7 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .removeCollateralShort({
           collateralUsd,
@@ -2343,7 +2343,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({ transaction });
+    return this.signAndExecuteTxAlternative({ transaction });
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {
@@ -2524,7 +2524,7 @@ export class AdrenaClient {
 
     console.log('transaction debug in AdrenaClient', transaction);
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -2649,7 +2649,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -2740,7 +2740,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -2832,7 +2832,7 @@ export class AdrenaClient {
       // .preInstructions([modifyComputeUnits])
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -2920,7 +2920,7 @@ export class AdrenaClient {
     );
     const transaction = await builder.transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -2958,7 +2958,7 @@ export class AdrenaClient {
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       // Use finalize to get the latest blockhash accepted by leader
-      recentBlockhash: (await this.connection.getLatestBlockhash('finalized'))
+      recentBlockhash: (await this.connection.getLatestBlockhash('confirmed'))
         .blockhash,
       instructions: transaction.instructions,
     }).compileToV0Message();
@@ -3121,7 +3121,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -3229,7 +3229,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -3347,7 +3347,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -4368,6 +4368,7 @@ export class AdrenaClient {
             collateralToken,
             side: (position.side === 1 ? 'long' : 'short') as 'long' | 'short',
             sizeUsd: nativeToUi(position.sizeUsd, USD_DECIMALS),
+            size: nativeToUi(position.lockedAmount, token.decimals),
             collateralUsd: nativeToUi(position.collateralUsd, USD_DECIMALS),
             price: nativeToUi(position.price, PRICE_DECIMALS),
             collateralAmount: nativeToUi(
@@ -4454,6 +4455,7 @@ export class AdrenaClient {
               | 'long'
               | 'short',
             sizeUsd: nativeToUi(positionAccount.sizeUsd, USD_DECIMALS),
+            size: nativeToUi(positionAccount.lockedAmount, token.decimals),
             collateralUsd: nativeToUi(
               positionAccount.collateralUsd,
               USD_DECIMALS,
@@ -4652,7 +4654,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTx({
+    return this.signAndExecuteTxAlternative({
       transaction,
       notification,
     });
@@ -4891,7 +4893,7 @@ export class AdrenaClient {
     const messageV0 = new TransactionMessage({
       payerKey: wallet.publicKey,
       // Use finalize to get the latest blockhash accepted by the leader
-      recentBlockhash: (await this.connection.getLatestBlockhash('finalized'))
+      recentBlockhash: (await this.connection.getLatestBlockhash('confirmed'))
         .blockhash,
       instructions,
     }).compileToV0Message();
@@ -4948,6 +4950,240 @@ export class AdrenaClient {
     }
   }
 
+  protected async simulateTransaction({
+    payer,
+    transaction,
+    recentBlockhash,
+  }: {
+    payer: PublicKey;
+    transaction: Transaction;
+    recentBlockhash: string;
+  }): Promise<SimulatedTransactionResponse> {
+    if (!this.connection) throw new Error('Connection missing');
+
+    try {
+      const messageV0 = new TransactionMessage({
+        payerKey: payer,
+        recentBlockhash,
+        instructions: transaction.instructions,
+      }).compileToV0Message();
+
+      const versionedTransaction = new VersionedTransaction(messageV0);
+
+      // Simulate the transaction
+      const result = await this.simulateTransactionStrong(versionedTransaction);
+
+      return result;
+    } catch (err) {
+      console.log('Error', err);
+
+      throw err;
+    }
+  }
+
+  public async signAndExecuteTxAlternative({
+    transaction,
+    notification,
+  }: {
+    transaction: Transaction;
+    notification?: MultiStepNotification;
+  }): Promise<string> {
+    if (!this.adrenaProgram || !this.connection) {
+      throw new Error('adrena program not ready');
+    }
+
+    /////////////////////// PRIORITY FEES ///////////////////////
+    let priorityFeeMicroLamports: number =
+      DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
+
+    try {
+      // Refresh priority fees before proceeding
+      priorityFeeMicroLamports = await getMeanPrioritizationFeeByPercentile(
+        this.connection,
+        {
+          percentile: PercentilePriorityFeeList[this.priorityFeeOption],
+          fallback: true,
+        },
+      );
+    } catch (err) {
+      console.log('Error fetching priority fee', err);
+    }
+
+    console.log(
+      'Apply',
+      priorityFeeMicroLamports,
+      'micro lamport priority fee to transaction',
+    );
+
+    transaction.instructions.unshift(
+      ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: priorityFeeMicroLamports,
+      }),
+      ComputeBudgetProgram.setComputeUnitLimit({
+        units: 1000000, // Use a lot of units to avoid any issues during next simulation
+      }),
+    );
+
+    /////////////////////// TRANSACTION ///////////////////////
+    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+    const latestBlockHash = await this.connection.getLatestBlockhash('confirmed');
+    transaction.recentBlockhash = latestBlockHash.blockhash;
+    transaction.feePayer = wallet.publicKey;
+
+    // Simulate the transaction
+    const simulationResult = await this.simulateTransaction({
+      payer: wallet.publicKey,
+      transaction: transaction,
+      recentBlockhash: latestBlockHash.blockhash,
+    });
+
+    // check for simulation error
+    if (simulationResult.err) {
+      throw new Error(`Transaction simulation failed: ${JSON.stringify(simulationResult.err)}`);
+    }
+
+    // adjust priority fee base on max priority fee
+    const computeUnitUsed = simulationResult.unitsConsumed;
+    console.log('computeUnitUsed', computeUnitUsed);
+
+    if (
+      computeUnitUsed !== undefined &&
+      this.maxPriorityFee !== null &&
+      computeUnitUsed > 0
+    ) {
+      const maxPriorityFeeLamports = this.maxPriorityFee * LAMPORTS_PER_SOL;
+      const totalPriorityFee =
+        (priorityFeeMicroLamports * computeUnitUsed) / 1_000_000;
+
+      if (totalPriorityFee > maxPriorityFeeLamports) {
+        const adjustedMicroLamports = Math.floor(
+          (maxPriorityFeeLamports * 1_000_000) / computeUnitUsed,
+        );
+
+        console.log(
+          `Adjusting priority fee to ${adjustedMicroLamports} microLamports per CU to stay within max priority fee`,
+        );
+
+        transaction.instructions[0] =
+          ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: adjustedMicroLamports,
+          });
+      }
+    }
+
+    // Adjust compute unit limit
+    if (computeUnitUsed !== undefined) {
+      transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
+        units: computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
+      });
+    }
+
+    // Prepare the transaction succeeded
+    notification?.currentStepSucceeded();
+
+    // Sign the transaction
+    let signedTransaction: Transaction;
+    try {
+      signedTransaction = await wallet.signTransaction(transaction);
+    } catch (err) {
+      console.log('sign error:', err);
+
+      const adrenaError = new AdrenaTransactionError(
+        null,
+        'User rejected the request',
+      );
+
+      // Sign the transaction failed
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+    const txSignature = signedTransaction.signatures[0].signature;
+    if (!txSignature) throw new Error('Transaction signature missing');
+    const txSignatureBase58 = bs58.encode(txSignature);
+
+    notification?.currentStepSucceeded();
+
+    /////////////////////// Send the transaction ///////////////////////
+    try {
+      await this.connection.sendRawTransaction(signedTransaction.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      }), {
+        skipPreflight: true,
+        maxRetries: 0,
+      });
+    } catch (err) {
+      const adrenaError = parseTransactionError(this.adrenaProgram, err);
+
+      // Execute the transaction errored
+      notification?.currentStepErrored(adrenaError);
+      throw adrenaError;
+    }
+    // Execute the transaction succeeded
+    notification?.setTxHash(txSignatureBase58);
+    notification?.currentStepSucceeded();
+    console.log(
+      `tx: https://explorer.solana.com/tx/${txSignatureBase58}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      }`,
+    );
+
+    /////////////////////// Confirm the transaction (and retry if needed) ///////////////////////
+    let confirmedTx: RpcResponseAndContext<SignatureResult> | null = null;
+    const TX_RETRY_INTERVAL = 2000;
+    const MAX_TX_SEND_ATTEMPTS = 12;
+    let txSendAttempts = 1;
+
+    while (!confirmedTx && txSendAttempts <= MAX_TX_SEND_ATTEMPTS) {
+      confirmedTx = await Promise.race([
+        this.connection.confirmTransaction(
+          {
+            signature: txSignatureBase58,
+            blockhash: latestBlockHash.blockhash,
+            lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+          },
+          'processed'
+        ),
+        new Promise((resolve) => setTimeout(() => resolve(null), TX_RETRY_INTERVAL)),
+      ]) as unknown as RpcResponseAndContext<SignatureResult> | null;
+      if (confirmedTx) {
+        break;
+      }
+
+      if (!confirmedTx) {
+        console.log(`Tx not confirmed after ${TX_RETRY_INTERVAL * txSendAttempts++}ms, resending (${txSendAttempts} / ${MAX_TX_SEND_ATTEMPTS})`);
+        await this.connection.sendRawTransaction(signedTransaction.serialize(), {
+          skipPreflight: true,
+          maxRetries: 0,
+        });
+      }
+    }
+
+    if (confirmedTx) {
+      if (confirmedTx.value.err) {
+        const adrenaError = parseTransactionError(this.adrenaProgram, confirmedTx.value.err);
+        adrenaError.setTxHash(txSignatureBase58);
+
+        console.log('Transaction failed', adrenaError);
+        // Confirm the transaction errored
+        notification?.currentStepErrored(adrenaError);
+        throw adrenaError;
+      } else {
+        notification?.setTxHash(txSignatureBase58);
+        notification?.currentStepSucceeded();
+
+        return txSignatureBase58;
+      }
+    }
+
+    // Transaction not confirmed
+    const adrenaError = new AdrenaTransactionError(null, 'Transaction not confirmed');
+    adrenaError.setTxHash(txSignatureBase58);
+    notification?.currentStepErrored(adrenaError);
+    throw adrenaError;
+
+    // return txSignatureBase58;
+  }
+
   public async signAndExecuteTx({
     transaction,
     notification,
@@ -4984,7 +5220,7 @@ export class AdrenaClient {
 
     try {
       const latestBlockHash = await this.connection.getLatestBlockhash(
-        'finalized',
+        'confirmed',
       );
 
       console.log(
@@ -5111,7 +5347,7 @@ export class AdrenaClient {
 
     // use finalized to get the latest blockhash accepted by the leader
     const latestBlockHash = await this.connection.getLatestBlockhash(
-      'finalized',
+      'confirmed',
     );
 
     try {
