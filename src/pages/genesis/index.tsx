@@ -616,8 +616,6 @@ export default function Genesis({
                 <div className="flex flex-row gap-1 justify-end items-center">
                   <RefreshButton />
                   <Settings
-                    priorityFeeOption={priorityFeeOption}
-                    setPriorityFeeOption={setPriorityFeeOption}
                     activeRpc={activeRpc}
                     rpcInfos={rpcInfos}
                     autoRpcMode={autoRpcMode}
@@ -627,8 +625,6 @@ export default function Genesis({
                     setAutoRpcMode={setAutoRpcMode}
                     setCustomRpcUrl={setCustomRpcUrl}
                     setFavoriteRpc={setFavoriteRpc}
-                    maxPriorityFee={maxPriorityFee}
-                    setMaxPriorityFee={setMaxPriorityFee}
                     isIcon
                     isGenesis
                   />
