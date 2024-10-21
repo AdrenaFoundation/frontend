@@ -35,7 +35,7 @@ export default function usePriorityFee() {
             const [medium, high, ultra] = fees;
 
             const priorityFeeAmounts: PriorityFeesAmounts = {
-                medium: medium,
+                medium,
                 high,
                 ultra,
             };
