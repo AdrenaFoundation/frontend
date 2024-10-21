@@ -2172,7 +2172,7 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    return this.signAndExecuteTxAlternativeAlternative({
+    return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
         .removeCollateralLong({
           collateralUsd,
