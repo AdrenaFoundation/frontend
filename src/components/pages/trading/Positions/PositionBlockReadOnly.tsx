@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -281,12 +282,20 @@ export default function PositionBlockReadOnly({
                         <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                             Size
                         </div>
-                        <div className="flex">
-                            <FormatNumber
-                                nb={position.sizeUsd}
-                                format="currency"
+                        <div className="flex underline-dashed">
+                            <Tippy content={<FormatNumber
+                                nb={position.size}
+                                format="number"
                                 className="text-gray-400 text-xs"
-                            />
+                                precision={position.token.displayAmountDecimalsPrecision}
+                                suffix={` ${getTokenSymbol(position.token.symbol)}`}
+                            />}>
+                                <FormatNumber
+                                    nb={position.sizeUsd}
+                                    format="currency"
+                                    className="text-gray-400 text-xs"
+                                />
+                            </Tippy>
                         </div>
                     </div>
 
@@ -294,12 +303,20 @@ export default function PositionBlockReadOnly({
                         <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                             Collateral
                         </div>
-                        <div className="flex">
-                            <FormatNumber
-                                nb={position.collateralUsd}
-                                format="currency"
-                                className="text-xs"
-                            />
+                        <div className="flex underline-dashed">
+                            <Tippy content={<FormatNumber
+                                nb={position.collateralAmount}
+                                format="number"
+                                className="text-gray-400 text-xs"
+                                precision={position.collateralToken.displayAmountDecimalsPrecision}
+                                suffix={` ${getTokenSymbol(position.collateralToken.symbol)} (at init.)`}
+                            />}>
+                                <FormatNumber
+                                    nb={position.collateralUsd}
+                                    format="currency"
+                                    className="text-xs"
+                                />
+                            </Tippy>
                         </div>
                     </div>
 
