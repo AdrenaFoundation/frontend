@@ -5133,7 +5133,7 @@ export class AdrenaClient {
     /////////////////////// Confirm the transaction (and retry if needed) ///////////////////////
     let confirmedTx: RpcResponseAndContext<SignatureResult> | null = null;
     const TX_RETRY_INTERVAL = 1000;
-    const MAX_TX_SEND_ATTEMPTS = 15;
+    const MAX_TX_SEND_ATTEMPTS = 20;
     let txSendAttempts = 1;
 
     while (!confirmedTx && txSendAttempts <= MAX_TX_SEND_ATTEMPTS) {
