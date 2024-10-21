@@ -5337,7 +5337,7 @@ export class AdrenaClient {
 
     // use finalized to get the latest blockhash accepted by the leader
     const latestBlockHash = await this.connection.getLatestBlockhash(
-      'finalized',
+      'confirmed',
     );
 
     try {
