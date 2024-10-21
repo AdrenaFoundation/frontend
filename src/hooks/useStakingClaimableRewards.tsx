@@ -66,7 +66,14 @@ export const useStakingClaimableRewards = (tokenSymbol: 'ADX' | 'ALP') => {
     const intervalId = setInterval(() => fetchRewards(), 10000);
 
     return () => clearInterval(intervalId);
-  }, [fetchRewards, tokenSymbol, wallet]);
+  }, [
+    fetchRewards,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!window.adrena.client.connection,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    !!window.adrena.client,
+    wallet,
+  ]);
 
   return {
     rewards,
