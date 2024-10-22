@@ -44,14 +44,24 @@ export default function usePositions(): {
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
   addOptimisticPosition: (position: PositionExtended) => void;
-  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
+  removeOptimisticPosition: (
+    positionSide: 'long' | 'short',
+    positionCustody: PublicKey,
+  ) => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
   const wallet = useSelector((s) => s.walletState.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
-  const [optimisticPositions, setOptimisticPositions] = useState<PositionExtended[]>([]);
+  const [optimisticPositions, setOptimisticPositions] = useState<
+    PositionExtended[]
+  >([]);
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
+
+  useEffect(() => {
+    // Reset when loading the hook
+    lastCall = 0;
+  }, []);
 
   const loadPositions = useCallback(async () => {
     if (!wallet || !tokenPrices) {
@@ -71,8 +81,8 @@ export default function usePositions(): {
         const freshPositions =
           (loadPosition
             ? await window.adrena.client.loadUserPositions(
-              new PublicKey(wallet.walletAddress),
-            )
+                new PublicKey(wallet.walletAddress),
+              )
             : positions) ?? [];
 
         freshPositions.forEach((position) => {
@@ -82,15 +92,15 @@ export default function usePositions(): {
         // Filter out optimistic positions that now exist in freshPositions
         setOptimisticPositions((prev) =>
           prev.filter((optimisticPosition) =>
-            freshPositions.some((freshPosition) =>
-              freshPosition.side === optimisticPosition.side &&
-              freshPosition.custody.equals(optimisticPosition.custody)
-            )
-          )
+            freshPositions.some(
+              (freshPosition) =>
+                freshPosition.side === optimisticPosition.side &&
+                freshPosition.custody.equals(optimisticPosition.custody),
+            ),
+          ),
         );
 
         setPositions(freshPositions);
-
       } catch (e) {
         console.log('Error loading positions', e, String(e));
 
@@ -111,14 +121,17 @@ export default function usePositions(): {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet, tokenPrices]);
 
-
   const addOptimisticPosition = (position: PositionExtended) => {
     setOptimisticPositions((prev) => {
-      const isDuplicate = prev.some(
-        (p) => p.side === position.side && p.custody.equals(position.custody)
-      ) || (positions && positions.some(
-        (p) => p.side === position.side && p.custody.equals(position.custody)
-      ));
+      const isDuplicate =
+        prev.some(
+          (p) => p.side === position.side && p.custody.equals(position.custody),
+        ) ||
+        (positions &&
+          positions.some(
+            (p) =>
+              p.side === position.side && p.custody.equals(position.custody),
+          ));
 
       if (isDuplicate) {
         return prev;
@@ -128,8 +141,18 @@ export default function usePositions(): {
     });
   };
 
-  const removeOptimisticPosition = (positionSide: 'long' | 'short', positionCustody: PublicKey) => {
-    setPositions((prev = []) => prev ? prev.filter(p => !(p.side === positionSide && p.custody.equals(positionCustody))) : null);
+  const removeOptimisticPosition = (
+    positionSide: 'long' | 'short',
+    positionCustody: PublicKey,
+  ) => {
+    setPositions((prev = []) =>
+      prev
+        ? prev.filter(
+            (p) =>
+              !(p.side === positionSide && p.custody.equals(positionCustody)),
+          )
+        : null,
+    );
   };
 
   useEffect(() => {

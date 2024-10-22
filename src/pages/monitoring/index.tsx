@@ -169,26 +169,15 @@ export default function Monitoring(pageProps: PageProps) {
         ) : null}
       </div>
 
-      <div className={twMerge('hidden', allPositionsDisplay ? 'block' : '')}>
-        <AllPositions />
-      </div>
+      {allPositionsDisplay ? <AllPositions /> : null}
 
-      <div className={twMerge('hidden', detailedDisplay ? 'block' : '')}>
-        <DetailedMonitoring
-          {...pageProps}
-          selectedTab={detailedDisplaySelectedTab}
-          poolInfo={poolInfo}
-        />
-      </div>
+      {detailedDisplay ? <DetailedMonitoring
+        {...pageProps}
+        selectedTab={detailedDisplaySelectedTab}
+        poolInfo={poolInfo}
+      /> : null}
 
-      <div
-        className={twMerge(
-          'hidden',
-          !detailedDisplay && !allPositionsDisplay ? 'block' : '',
-        )}
-      >
-        <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
-      </div>
+      {!detailedDisplay && !allPositionsDisplay ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
     </>
   );
 }

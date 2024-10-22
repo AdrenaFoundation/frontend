@@ -18,6 +18,11 @@ export function useAllPositions(): {
 
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
+    useEffect(() => {
+        // Reset when loading the hook
+        lastCall = 0;
+    }, []);
+
     const loadAllPositions = useCallback(async () => {
         if (!wallet || !tokenPrices) {
             setAllPositions([]);
