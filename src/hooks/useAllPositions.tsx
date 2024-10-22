@@ -13,7 +13,6 @@ export function useAllPositions(): {
     triggerAllPositionsReload: () => void;
 } {
     const [trickReload, triggerReload] = useState<number>(0);
-    const wallet = useSelector((s) => s.walletState.wallet);
     const [allPositions, setAllPositions] = useState<PositionExtended[]>([]);
 
     const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -24,7 +23,7 @@ export function useAllPositions(): {
     }, []);
 
     const loadAllPositions = useCallback(async () => {
-        if (!wallet || !tokenPrices) {
+        if (!tokenPrices) {
             setAllPositions([]);
             return;
         }
@@ -66,7 +65,7 @@ export function useAllPositions(): {
             calculatePnLandLiquidationPrice(position, tokenPrices);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [wallet, tokenPrices]);
+    }, [tokenPrices]);
 
     useEffect(() => {
         loadAllPositions();
@@ -79,7 +78,7 @@ export function useAllPositions(): {
             clearInterval(interval);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loadAllPositions, trickReload, window.adrena.client.connection]);
+    }, [loadAllPositions, trickReload, window.adrena.client.readonlyConnection]);
 
     return {
         allPositions,
