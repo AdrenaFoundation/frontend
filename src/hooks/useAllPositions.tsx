@@ -43,8 +43,6 @@ export function useAllPositions(): {
                         ? await window.adrena.client.loadAllPositions()
                         : allPositions) ?? [];
 
-                console.log('freshPositions count', freshPositions.length);
-
                 freshPositions.forEach((position) => {
                     calculatePnLandLiquidationPrice(position, tokenPrices);
                 });

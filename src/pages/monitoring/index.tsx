@@ -15,9 +15,8 @@ import DetailedMonitoring from './detailed';
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
-  const [detailedDisplay, setDetailedDisplay] = useState<boolean>(false);
-  const [allPositionsDisplay, setAllPositionsDisplay] =
-    useState<boolean>(false); // New state for AllPositions
+
+  const [view, setView] = useState<'lite' | 'full' | 'livePositions'>('lite');
 
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
     useState<(typeof tabs)[number]>('All');
@@ -25,24 +24,19 @@ export default function Monitoring(pageProps: PageProps) {
   const searchParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
-    if (searchParams.has('tab')) {
-      setDetailedDisplay(true);
+    if (searchParams.has('view')) {
+      const searchParamsView = searchParams.get('view');
 
-      return setDetailedDisplaySelectedTab(
-        tabs.find((tab) => tab === searchParams.get('tab')) ?? 'All',
-      );
+      if (!['lite', 'full', 'livePositions'].includes(searchParamsView as string)) {
+        return;
+      }
+
+      setView(searchParamsView as 'lite' | 'full' | 'livePositions');
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleTabChange = (tab: (typeof tabs)[number]) => {
-    searchParams.set('tab', tab);
-    window.history.replaceState(
-      null,
-      '',
-      `${window.location.pathname}?${searchParams.toString()}`,
-    );
     setDetailedDisplaySelectedTab(tab);
   };
 
@@ -94,23 +88,22 @@ export default function Monitoring(pageProps: PageProps) {
         <div
           className={twMerge(
             'flex items-center justify-evenly w-[20em] ml-auto mr-auto',
-            detailedDisplay ? 'pt-2 pb-2' : '',
+            view === 'full' ? 'pt-2 pb-2' : '',
           )}
         >
           <span
             className={twMerge(
               'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              !detailedDisplay && !allPositionsDisplay ? 'opacity-100' : '',
+              view === 'lite' ? 'opacity-100' : '',
             )}
             onClick={() => {
-              searchParams.delete('tab');
+              searchParams.set('view', 'lite');
               window.history.replaceState(
                 null,
                 '',
                 `${window.location.pathname}?${searchParams.toString()}`,
               );
-              setDetailedDisplay(false);
-              setAllPositionsDisplay(false);
+              setView('lite');
             }}
           >
             Lite
@@ -121,17 +114,16 @@ export default function Monitoring(pageProps: PageProps) {
           <span
             className={twMerge(
               'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              detailedDisplay ? 'opacity-100' : '',
+              view === 'full' ? 'opacity-100' : '',
             )}
             onClick={() => {
-              searchParams.set('tab', detailedDisplaySelectedTab);
+              searchParams.set('view', 'full');
               window.history.replaceState(
                 null,
                 '',
                 `${window.location.pathname}?${searchParams.toString()}`,
               );
-              setDetailedDisplay(true);
-              setAllPositionsDisplay(false);
+              setView('full');
             }}
           >
             Full
@@ -142,18 +134,23 @@ export default function Monitoring(pageProps: PageProps) {
           <span
             className={twMerge(
               'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
-              allPositionsDisplay ? 'opacity-100' : '',
+              view === 'livePositions' ? 'opacity-100' : '',
             )}
             onClick={() => {
-              setAllPositionsDisplay(true);
-              setDetailedDisplay(false);
+              searchParams.set('view', 'livePositions');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setView('livePositions');
             }}
           >
             Live Positions
           </span>
         </div>
 
-        {detailedDisplay ? (
+        {view === "full" ? (
           <TabSelect
             wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
             titleClassName="whitespace-nowrap text-sm"
@@ -169,15 +166,15 @@ export default function Monitoring(pageProps: PageProps) {
         ) : null}
       </div>
 
-      {allPositionsDisplay ? <AllPositions /> : null}
+      {view === "livePositions" ? <AllPositions /> : null}
 
-      {detailedDisplay ? <DetailedMonitoring
+      {view === "full" ? <DetailedMonitoring
         {...pageProps}
         selectedTab={detailedDisplaySelectedTab}
         poolInfo={poolInfo}
       /> : null}
 
-      {!detailedDisplay && !allPositionsDisplay ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
+      {view === 'lite' ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
     </>
   );
 }
