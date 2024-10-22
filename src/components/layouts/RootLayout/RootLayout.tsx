@@ -53,7 +53,7 @@ export default function RootLayout({
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
 }) {
-  const isBigScreen = useBetterMediaQuery('(min-width: 945px)');
+  const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
   const [pages, setPages] = useState<
     { name: string; link: string; external?: boolean }[]
   >([
