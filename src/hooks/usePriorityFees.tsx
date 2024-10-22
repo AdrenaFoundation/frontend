@@ -19,15 +19,15 @@ export default function usePriorityFee() {
         try {
             const fees = await Promise.all([
                 getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: PrioritizationFeeLevels.LOW, // 25th percentile
+                    percentile: PrioritizationFeeLevels.MEDIUM, // 35th percentile
                     fallback: true,
                 }),
                 getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: PrioritizationFeeLevels.MEDIAN, // 50th percentile
+                    percentile: PrioritizationFeeLevels.HIGH, // 50th percentile
                     fallback: true,
                 }),
                 getMeanPrioritizationFeeByPercentile(window.adrena.client.connection, {
-                    percentile: PrioritizationFeeLevels.HIGH, // 75th percentile
+                    percentile: PrioritizationFeeLevels.ULTRA, // 90th percentile
                     fallback: true,
                 }),
             ]);

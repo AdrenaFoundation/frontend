@@ -253,7 +253,7 @@ export default function Settings({
 
         <div className={twMerge('flex items-center justify-center mt-2 border-t pt-2 text-txtfade text-xs')}>
           Now @ {formatNumber(currentPriorityFeeValue, 0)} μLamport / CU
-          <InfoAnnotation className="w-3 h-3" text={"The Medium/High/Ultra options are based on the 35th/50th/75th percentile of the current market rate. Accurate values are fetched right before each transaction."} />
+          <InfoAnnotation className="w-3 h-3" text={"The Medium/High/Ultra options are based on the 35th/50th/90th percentile of the current market rate. Accurate values are fetched right before each transaction."} />
         </div>
 
         <div className='mt-2'>
