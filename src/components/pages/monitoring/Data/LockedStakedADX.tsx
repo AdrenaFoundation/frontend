@@ -25,7 +25,7 @@ export default function LockedStakedADX({
               adxStakingAccount.nbLockedTokens,
               adxStakingAccount.stakedTokenDecimals,
             ),
-            2,
+            0,
           )}
         </div>
         <div className="ml-1">ADX</div>

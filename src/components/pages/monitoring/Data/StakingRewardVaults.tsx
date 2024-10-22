@@ -3,31 +3,75 @@ import { twMerge } from 'tailwind-merge';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { Staking } from '@/types';
-import { formatNumber } from '@/utils';
+import { formatNumber, nativeToUi } from '@/utils';
 
 export default function StakingRewardVaults({
-  alpStakingCurrentRoundRewards,
-  adxStakingCurrentRoundRewards,
+  alpStakingAccount,
+  adxStakingAccount,
+  alpStakingRewardsAccumulated,
+  adxStakingRewardsAccumulated,
   titleClassName,
   bodyClassName,
 }: {
   alpStakingAccount: Staking;
   adxStakingAccount: Staking;
-  alpStakingCurrentRoundRewards: {
+  alpStakingRewardsAccumulated: {
     usdcRewards: number | null;
     adxRewards: number | null;
   } | null;
-  adxStakingCurrentRoundRewards: {
+  adxStakingRewardsAccumulated: {
     usdcRewards: number | null;
     adxRewards: number | null;
   } | null;
   titleClassName?: string;
   bodyClassName?: string;
 }) {
+
+  let nextAlpRoundUsdcRewards = 0;
+  let nextAdxRoundUsdcRewards = 0;
+  let nextAlpRoundAdxRewards = 0;
+  let nextAdxRoundAdxRewards = 0;
+
+
+  if (
+    alpStakingRewardsAccumulated !== null &&
+    alpStakingRewardsAccumulated.usdcRewards !== null &&
+    adxStakingRewardsAccumulated !== null &&
+    adxStakingRewardsAccumulated.usdcRewards !== null &&
+    alpStakingAccount !== null &&
+    adxStakingAccount !== null &&
+    alpStakingAccount.resolvedRewardTokenAmount !== null &&
+    adxStakingAccount.resolvedRewardTokenAmount !== null
+  ) {
+    // USDC rewards
+    nextAlpRoundUsdcRewards =
+      alpStakingRewardsAccumulated.usdcRewards -
+      nativeToUi(
+        alpStakingAccount.resolvedRewardTokenAmount,
+        alpStakingAccount.rewardTokenDecimals,
+      );
+    nextAdxRoundUsdcRewards =
+      adxStakingRewardsAccumulated.usdcRewards -
+      nativeToUi(
+        adxStakingAccount.resolvedRewardTokenAmount,
+        adxStakingAccount.rewardTokenDecimals,
+      );
+
+    // ADX rewards
+    nextAlpRoundAdxRewards = nativeToUi(
+      alpStakingAccount.currentMonthEmissionAmountPerRound,
+      window.adrena.client.adxToken.decimals,
+    );
+    nextAdxRoundAdxRewards = nativeToUi(
+      adxStakingAccount.currentMonthEmissionAmountPerRound,
+      window.adrena.client.adxToken.decimals,
+    );
+  }
+
   return (
     <StyledContainer
       title="Current round rewards"
-      subTitle="Rewards accruing to be redistributed to stakers at the end of the staking round."
+      subTitle="Rewards accruing that will become available at the end of the current staking round."
       className="grow w-[40em]"
       titleClassName={titleClassName}
       bodyClassName="flex flex-col sm:flex-row grow items-center justify-center"
@@ -38,9 +82,8 @@ export default function StakingRewardVaults({
         <div className={twMerge('m-auto flex-col', bodyClassName)}>
           <div className="flex items-center">
             <div>
-              {alpStakingCurrentRoundRewards !== null &&
-              alpStakingCurrentRoundRewards.usdcRewards !== null
-                ? formatNumber(alpStakingCurrentRoundRewards.usdcRewards, 2)
+              {nextAlpRoundUsdcRewards !== 0
+                ? formatNumber(nextAlpRoundUsdcRewards, 2)
                 : '-'}
             </div>
 
@@ -49,9 +92,8 @@ export default function StakingRewardVaults({
 
           <div className="flex items-center">
             <div>
-              {alpStakingCurrentRoundRewards !== null &&
-              alpStakingCurrentRoundRewards.adxRewards !== null
-                ? formatNumber(alpStakingCurrentRoundRewards.adxRewards, 2)
+              {nextAlpRoundAdxRewards !== 0
+                ? formatNumber(nextAlpRoundAdxRewards, 2)
                 : '-'}
             </div>
 
@@ -66,9 +108,8 @@ export default function StakingRewardVaults({
         <div className={twMerge('m-auto flex-col', bodyClassName)}>
           <div className="flex items-center">
             <div>
-              {adxStakingCurrentRoundRewards !== null &&
-              adxStakingCurrentRoundRewards.usdcRewards !== null
-                ? formatNumber(adxStakingCurrentRoundRewards.usdcRewards, 2)
+              {nextAdxRoundUsdcRewards !== 0
+                ? formatNumber(nextAdxRoundUsdcRewards, 2)
                 : '-'}
             </div>
 
@@ -77,9 +118,8 @@ export default function StakingRewardVaults({
 
           <div className="flex items-center">
             <div>
-              {adxStakingCurrentRoundRewards !== null &&
-              adxStakingCurrentRoundRewards.adxRewards !== null
-                ? formatNumber(adxStakingCurrentRoundRewards.adxRewards, 2)
+              {nextAdxRoundAdxRewards !== 0
+                ? formatNumber(nextAdxRoundAdxRewards, 2)
                 : '-'}
             </div>
 

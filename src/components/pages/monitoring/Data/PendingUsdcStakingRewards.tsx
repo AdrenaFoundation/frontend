@@ -1,17 +1,17 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { formatNumber } from '@/utils';
 
-export default function CurrentStakingRoundFees({
-  alpStakingCurrentRoundRewards,
-  adxStakingCurrentRoundRewards,
+export default function PendingUsdcStakingRewards({
+  alpStakingRewardsAccumulated,
+  adxStakingRewardsAccumulated,
   titleClassName,
   bodyClassName,
 }: {
-  alpStakingCurrentRoundRewards: {
+  alpStakingRewardsAccumulated: {
     usdcRewards: number | null;
     adxRewards: number | null;
   } | null;
-  adxStakingCurrentRoundRewards: {
+  adxStakingRewardsAccumulated: {
     usdcRewards: number | null;
     adxRewards: number | null;
   } | null;
@@ -21,8 +21,8 @@ export default function CurrentStakingRoundFees({
   return (
     <StyledContainer
       headerClassName="text-center justify-center"
-      title="CURRENT STAKING ROUND FEES"
-      subTitle="Accumulating fees to be redistributed to stakers at the end of the current staking round. ALP and ADX staking rewards combined."
+      title="Pending Staking Rewards"
+      subTitle="Shows the total amount of unclaimed USDC rewards, combining ALP and ADX staking rewards."
       className="grow flex items-center min-w-[22em] w-[22em]"
       titleClassName={titleClassName}
     >
@@ -30,15 +30,15 @@ export default function CurrentStakingRoundFees({
         <div className={bodyClassName}>
           <div className="flex items-center">
             <div>
-              {alpStakingCurrentRoundRewards !== null &&
-              adxStakingCurrentRoundRewards !== null &&
-              alpStakingCurrentRoundRewards.usdcRewards !== null &&
-              adxStakingCurrentRoundRewards.usdcRewards !== null
+              {alpStakingRewardsAccumulated !== null &&
+                adxStakingRewardsAccumulated !== null &&
+                alpStakingRewardsAccumulated.usdcRewards !== null &&
+                adxStakingRewardsAccumulated.usdcRewards !== null
                 ? formatNumber(
-                    alpStakingCurrentRoundRewards.usdcRewards +
-                      adxStakingCurrentRoundRewards.usdcRewards,
-                    2,
-                  )
+                  alpStakingRewardsAccumulated.usdcRewards +
+                  adxStakingRewardsAccumulated.usdcRewards,
+                  0,
+                )
                 : '-'}
             </div>
 

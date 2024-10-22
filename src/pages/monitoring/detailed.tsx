@@ -6,13 +6,13 @@ import AUM from '@/components/pages/monitoring/Data/AUM';
 import AUMBreakdown from '@/components/pages/monitoring/Data/AUMBreakdown';
 import BucketsAllocation from '@/components/pages/monitoring/Data/BucketsAllocation';
 import BucketsMintedAmount from '@/components/pages/monitoring/Data/BucketsMintedAmount';
-import CurrentStakingRoundFees from '@/components/pages/monitoring/Data/CurrentStakingRoundFees';
 import CurrentStakingRoundTime from '@/components/pages/monitoring/Data/CurrentStakingRoundTime';
 import FinalizeLockedStakedThreads from '@/components/pages/monitoring/Data/FinalizeLockedStakeThreads';
 import GovernanceAccounts from '@/components/pages/monitoring/Data/GovernanceAccounts';
 import LockedStakedADX from '@/components/pages/monitoring/Data/LockedStakedADX';
 import MintAccounts from '@/components/pages/monitoring/Data/MintsAccounts';
 import OracleAccounts from '@/components/pages/monitoring/Data/OracleAccounts';
+import PendingUsdcStakingRewards from '@/components/pages/monitoring/Data/PendingUsdcStakingRewards';
 import PoolRatios from '@/components/pages/monitoring/Data/PoolRatios';
 import PositionsAllTime from '@/components/pages/monitoring/Data/PositionsAllTime';
 import PositionsNow from '@/components/pages/monitoring/Data/PositionsNow';
@@ -33,7 +33,7 @@ import useCortex from '@/hooks/useCortex';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import useSablierStakingResolveStakingRoundCronThreads from '@/hooks/useSablierStakingResolveStakingRoundCronThreads';
 import useStakingAccount from '@/hooks/useStakingAccount';
-import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
+import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import useVestRegistry from '@/hooks/useVestRegistry';
 import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
@@ -63,10 +63,10 @@ export default function DetailedMonitoring({
     triggerReload: triggerAdxStakingAccountReload,
   } = useStakingAccount(window.adrena.client.lmTokenMint);
 
-  const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+  const alpStakingRewardsAccumulated = useStakingAccountRewardsAccumulated(
     window.adrena.client.lpTokenMint,
   );
-  const adxStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+  const adxStakingRewardsAccumulated = useStakingAccountRewardsAccumulated(
     window.adrena.client.lmTokenMint,
   );
   const adxTotalSupply = useADXTotalSupply();
@@ -126,8 +126,8 @@ export default function DetailedMonitoring({
           />
         ) : null}
         {selectedTab === 'All' ||
-        selectedTab === 'Vesting' ||
-        selectedTab === 'ADX tokenomics' ? (
+          selectedTab === 'Vesting' ||
+          selectedTab === 'ADX tokenomics' ? (
           <VestedADX
             titleClassName={titleClassName}
             bodyClassName={bodyClassName}
@@ -135,8 +135,8 @@ export default function DetailedMonitoring({
           />
         ) : null}
         {selectedTab === 'All' ||
-        selectedTab === 'Vesting' ||
-        selectedTab === 'ADX tokenomics' ? (
+          selectedTab === 'Vesting' ||
+          selectedTab === 'ADX tokenomics' ? (
           <VestedTokens
             titleClassName={titleClassName}
             bodyClassName={bodyClassName}
@@ -158,13 +158,13 @@ export default function DetailedMonitoring({
           />
         ) : null}
         {selectedTab === 'All' ||
-        selectedTab === 'Fees' ||
-        selectedTab === 'Staking' ? (
-          <CurrentStakingRoundFees
+          selectedTab === 'Fees' ||
+          selectedTab === 'Staking' ? (
+          <PendingUsdcStakingRewards
             titleClassName={titleClassName}
             bodyClassName={bodyClassName}
-            alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-            adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+            alpStakingRewardsAccumulated={alpStakingRewardsAccumulated}
+            adxStakingRewardsAccumulated={adxStakingRewardsAccumulated}
           />
         ) : null}
       </div>
@@ -183,8 +183,8 @@ export default function DetailedMonitoring({
           bodyClassName={bodyClassName}
           alpStakingAccount={alpStakingAccount}
           adxStakingAccount={adxStakingAccount}
-          alpStakingCurrentRoundRewards={alpStakingCurrentRoundRewards}
-          adxStakingCurrentRoundRewards={adxStakingCurrentRoundRewards}
+          alpStakingRewardsAccumulated={alpStakingRewardsAccumulated}
+          adxStakingRewardsAccumulated={adxStakingRewardsAccumulated}
         />
       ) : null}
       {selectedTab === 'All' || selectedTab === 'Staking' ? (
@@ -270,9 +270,9 @@ export default function DetailedMonitoring({
       ) : null}
 
       {sablierStakingResolveStakingRoundCronThreads &&
-      (selectedTab === 'All' ||
-        selectedTab === 'Staking' ||
-        selectedTab === 'Automation') ? (
+        (selectedTab === 'All' ||
+          selectedTab === 'Staking' ||
+          selectedTab === 'Automation') ? (
         <StakingResolveRoundThread
           titleClassName={titleClassName}
           title="LM Staking Resolve Round Thread"
@@ -282,9 +282,9 @@ export default function DetailedMonitoring({
         />
       ) : null}
       {sablierStakingResolveStakingRoundCronThreads &&
-      (selectedTab === 'All' ||
-        selectedTab === 'Staking' ||
-        selectedTab === 'Automation') ? (
+        (selectedTab === 'All' ||
+          selectedTab === 'Staking' ||
+          selectedTab === 'Automation') ? (
         <StakingResolveRoundThread
           titleClassName={titleClassName}
           title="LP Staking Resolve Round Thread"

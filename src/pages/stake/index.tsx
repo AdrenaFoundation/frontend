@@ -16,7 +16,7 @@ import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useStakingAccount from '@/hooks/useStakingAccount';
-import useStakingAccountCurrentRoundRewards from '@/hooks/useStakingAccountCurrentRoundRewards';
+import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
@@ -501,10 +501,10 @@ export default function Stake({
   const { rewards: alpRewards, fetchRewards: fetchAlpRewards } = useStakingClaimableRewards('ALP');
 
   // The rewards pending collection in the current round
-  const alpStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+  const alpStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
     window.adrena.client.lpTokenMint,
   );
-  const adxStakingCurrentRoundRewards = useStakingAccountCurrentRoundRewards(
+  const adxStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
     window.adrena.client.lmTokenMint,
   );
 
