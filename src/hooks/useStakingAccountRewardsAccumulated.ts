@@ -7,17 +7,17 @@ export default function useStakingAccountRewardsAccumulated(
   const [usdcAmount, setUsdcAmount] = useState<number | null>(null);
   const [adxAmount, setAdxAmount] = useState<number | null>(null);
 
-  const usdcPda = window.adrena.client.getStakingRewardTokenVaultPda(
+  const usdcRewardsVaultPda = window.adrena.client.getStakingRewardTokenVaultPda(
     window.adrena.client.getStakingPda(stakedTokenMint),
   );
-  const adxPda = window.adrena.client.getStakingLmRewardTokenVaultPda(
+  const adxRewardsVaultPda = window.adrena.client.getStakingLmRewardTokenVaultPda(
     window.adrena.client.getStakingPda(stakedTokenMint),
   );
 
   const fetchRewards = useCallback(async () => {
     const [usdcBalance, adxBalance] = await Promise.all([
-      window.adrena.client.readonlyConnection?.getTokenAccountBalance(usdcPda),
-      window.adrena.client.readonlyConnection?.getTokenAccountBalance(adxPda),
+      window.adrena.client.readonlyConnection?.getTokenAccountBalance(usdcRewardsVaultPda),
+      window.adrena.client.readonlyConnection?.getTokenAccountBalance(adxRewardsVaultPda),
     ]);
 
     setUsdcAmount(usdcBalance?.value.uiAmount ?? null);
