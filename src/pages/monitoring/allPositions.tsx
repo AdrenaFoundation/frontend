@@ -86,7 +86,7 @@ export default function AllPositions() {
     };
 
     return (
-        <div className="flex flex-col gap-2 p-4">
+        <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
                 <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2">
                     <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
