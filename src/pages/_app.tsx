@@ -422,6 +422,7 @@ function AppComponent({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
+          preferredSolanaExplorer={preferredSolanaExplorer}
         />
       </RootLayout>
     </>
