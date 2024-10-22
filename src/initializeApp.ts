@@ -114,7 +114,7 @@ export default async function initializeApp(
     pythConnection,
     cluster: config.cluster,
     settings: {
-      solanaExplorer: 'Solana Explorer',
+      solanaExplorer,
     },
   };
 }

@@ -61,21 +61,15 @@ export default function PriorityFeeSetting({
           {[
             {
               title: 'medium',
-              microLamport: priorityFeeAmounts.medium,
             },
             {
               title: 'high',
-              microLamport: priorityFeeAmounts.high,
             },
             {
               title: 'ultra',
-              microLamport: priorityFeeAmounts.ultra,
             },
-          ].map(({ title, microLamport }) => (
-            <div
-              className="flex w-1/3 flex-col items-center"
-              key={microLamport}
-            >
+          ].map(({ title }) => (
+            <div className="flex w-1/3 flex-col items-center" key={title}>
               <Button
                 onClick={() => {
                   setPriorityFeeOption(title as PriorityFeeOption);
@@ -83,7 +77,6 @@ export default function PriorityFeeSetting({
                 variant={title === priorityFeeOption ? 'outline' : 'text'}
                 className="w-20"
                 title={title}
-                key={title}
               />
             </div>
           ))}
