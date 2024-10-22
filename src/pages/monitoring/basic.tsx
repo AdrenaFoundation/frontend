@@ -33,7 +33,7 @@ export default function BasicMonitoring({
   const isSmallScreen = Boolean(useBetterMediaQuery('(max-width: 500px)'));
 
   return (
-    <div className="flex flex-col gap-2 p-4">
+    <div className="flex flex-col gap-2 p-2">
       {mainPool && (
         <StyledContainer className="p-1">
           <div className="flex flex-wrap justify-between gap-2">

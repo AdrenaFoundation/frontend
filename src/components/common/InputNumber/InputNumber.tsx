@@ -21,7 +21,7 @@ export default function InputNumber({
   max?: number;
   inputFontSize?: string;
   decimalConstraint?: number;
-  onBlur?: () => void; 
+  onBlur?: () => void;
 }) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -29,9 +29,9 @@ export default function InputNumber({
     onChange(num);
   };
 
-   const stepValue = decimalConstraint
-     ? `0.${'0'.repeat(decimalConstraint - 1)}1`
-     : '0.01';
+  const stepValue = decimalConstraint
+    ? `0.${'0'.repeat(decimalConstraint - 1)}1`
+    : '0.01';
 
   return (
     <input
@@ -52,7 +52,7 @@ export default function InputNumber({
         fontSize: inputFontSize ?? '1.4em',
       }}
       onBlur={onBlur} // Pass onBlur to the input element
-      step={stepValue} 
+      step={stepValue}
     />
   );
 }
