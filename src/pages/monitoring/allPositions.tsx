@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
 import { useAllPositions } from '@/hooks/useAllPositions';
+import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
@@ -25,13 +26,52 @@ export default function AllPositions() {
     });
     const [sortOrder, setSortOrder] = useState<string[]>(['pnl', 'size', 'age']);
 
-    const filteredPositions = allPositions.filter(position => {
-        const matchesSide = sideFilter === 'all' || position.side === sideFilter;
-        const matchesMint = mintFilter === 'all' || position.token.mint.toBase58() === mintFilter;
-        const matchesUser = ownerFilter === '' || position.owner.toBase58().toLowerCase().includes(ownerFilter.toLowerCase());
-        const matchesPnl = pnlFilter === 'all' || (pnlFilter === "profit" && position.pnl && position.pnl > 0) || (pnlFilter === "loss" && position.pnl && position.pnl < 0);
-        return matchesSide && matchesMint && matchesUser && matchesPnl;
-    });
+    const [sortedPositions, setSortedPositions] = useState<PositionExtended[]>([]);
+    const [paginatedPositions, setPaginatedPositions] = useState<PositionExtended[]>([]);
+
+
+    useEffect(() => {
+        const filteredPositions = allPositions.filter(position => {
+            const matchesSide = sideFilter === 'all' || position.side === sideFilter;
+            const matchesMint = mintFilter === 'all' || position.token.mint.toBase58() === mintFilter;
+            const matchesUser = ownerFilter === '' || position.owner.toBase58().toLowerCase().includes(ownerFilter.toLowerCase());
+            const matchesPnl = pnlFilter === 'all' || (pnlFilter === "profit" && position.pnl && position.pnl > 0) || (pnlFilter === "loss" && position.pnl && position.pnl < 0);
+            return matchesSide && matchesMint && matchesUser && matchesPnl;
+        });
+
+        setSortedPositions(filteredPositions.sort((a, b) => {
+            for (const criteria of sortOrder) {
+                const order = sortConfigs[criteria];
+                const multiplier = order === 'asc' ? 1 : -1;
+                let comparison = 0;
+
+                switch (criteria) {
+                    case 'pnl':
+                        comparison = multiplier * ((b.pnl || 0) - (a.pnl || 0));
+                        break;
+                    case 'size':
+                        comparison = multiplier * (b.sizeUsd - a.sizeUsd);
+                        break;
+                    case 'leverage':
+                        comparison = multiplier * ((b.currentLeverage || 0) - (a.currentLeverage || 0));
+                        break;
+                }
+
+                if (comparison !== 0) return comparison;
+            }
+
+            return 0;
+        }));
+    }, [allPositions, mintFilter, ownerFilter, pnlFilter, sideFilter, sortConfigs, sortOrder]);
+
+    useEffect(() => {
+        const paginatedPositions = sortedPositions.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+        );
+
+        setPaginatedPositions(paginatedPositions);
+    }, [currentPage, sortedPositions]);
 
     const toggleSortOrder = (criteria: string) => {
         setSortConfigs(prevConfigs => ({
@@ -43,35 +83,6 @@ export default function AllPositions() {
             return [criteria, ...newOrder];
         });
     };
-
-    const sortedPositions = [...filteredPositions].sort((a, b) => {
-        for (const criteria of sortOrder) {
-            const order = sortConfigs[criteria];
-            const multiplier = order === 'asc' ? 1 : -1;
-            let comparison = 0;
-
-            switch (criteria) {
-                case 'pnl':
-                    comparison = multiplier * ((b.pnl || 0) - (a.pnl || 0));
-                    break;
-                case 'size':
-                    comparison = multiplier * (b.sizeUsd - a.sizeUsd);
-                    break;
-                case 'leverage':
-                    comparison = multiplier * ((b.currentLeverage || 0) - (a.currentLeverage || 0));
-                    break;
-            }
-
-            if (comparison !== 0) return comparison;
-        }
-
-        return 0;
-    });
-
-    const paginatedPositions = sortedPositions.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
 
     const resetFilters = () => {
         setSideFilter('all');
@@ -202,7 +213,7 @@ export default function AllPositions() {
 
                 <Pagination
                     currentPage={currentPage}
-                    totalItems={filteredPositions.length}
+                    totalItems={sortedPositions.length}
                     itemsPerPage={itemsPerPage}
                     onPageChange={setCurrentPage}
                 />
