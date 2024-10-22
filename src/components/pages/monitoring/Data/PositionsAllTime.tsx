@@ -16,7 +16,7 @@ export default function PositionsAllTime({
     <StyledContainer
       headerClassName="text-center justify-center"
       className="w-auto grow"
-      title="All Time"
+      title="Positions (All Time)"
       titleClassName={titleClassName}
     >
       <StyledSubContainer>

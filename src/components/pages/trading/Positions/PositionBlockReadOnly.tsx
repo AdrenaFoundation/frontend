@@ -405,6 +405,8 @@ export default function PositionBlockReadOnly({
                                     nb={position.stopLossLimitPrice}
                                     format="currency"
                                     className="text-xs text-blue"
+                                    precision={position.token.displayPriceDecimalsPrecision}
+                                    minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
                                 />
                             ) : (
                                 <div className="flex text-xs">-</div>

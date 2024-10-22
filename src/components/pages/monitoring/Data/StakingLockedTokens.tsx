@@ -18,14 +18,14 @@ export default function StakingLockedTokens({
 }) {
   return (
     <StyledContainer
-      title="LOCKED TOKENS"
+      title="Locked Stakes amounts"
       subTitle="Tokens locked in the staking program."
       className="w-auto grow"
       bodyClassName="flex flex-col sm:flex-row grow items-center justify-center"
       titleClassName={titleClassName}
     >
       <StyledSubContainer>
-        <div className={titleClassName}>LOCKED ALP</div>
+        <div className={titleClassName}>Locked ALP</div>
 
         <div className={twMerge('m-auto', bodyClassName)}>
           {formatNumber(
@@ -33,13 +33,13 @@ export default function StakingLockedTokens({
               alpStakingAccount.nbLockedTokens,
               alpStakingAccount.stakedTokenDecimals,
             ),
-            2,
+            0,
           )}
         </div>
       </StyledSubContainer>
 
       <StyledSubContainer>
-        <div className={titleClassName}>LOCKED ADX</div>
+        <div className={titleClassName}>Locked ADX</div>
 
         <div className={twMerge('m-auto', bodyClassName)}>
           {formatNumber(
@@ -47,7 +47,7 @@ export default function StakingLockedTokens({
               adxStakingAccount.nbLockedTokens,
               adxStakingAccount.stakedTokenDecimals,
             ),
-            2,
+            0,
           )}
         </div>
       </StyledSubContainer>

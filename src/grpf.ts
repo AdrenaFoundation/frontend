@@ -6,10 +6,9 @@ import {
 
 // easy to use values for user convenience
 export const enum PrioritizationFeeLevels {
-  LOW = 2500,
-  MEDIAN = 5000,
-  HIGH = 7500,
-  MAX = 10000,
+  MEDIUM = 3500,
+  HIGH = 5000,
+  ULTRA = 9000,
 }
 
 // extending the original interface to include the percentile and fallback options and maintain compatibility
@@ -151,7 +150,7 @@ export const getMedianPrioritizationFeeByPercentile = async (
   return Math.ceil(
     (recentPrioritizationFees[half - 1].prioritizationFee +
       recentPrioritizationFees[half].prioritizationFee) /
-      2,
+    2,
   );
 };
 
