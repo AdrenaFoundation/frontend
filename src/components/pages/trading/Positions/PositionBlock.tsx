@@ -398,7 +398,9 @@ export default function PositionBlock({
                 <FormatNumber
                   nb={position.stopLossLimitPrice}
                   format="currency"
-                  className="text-xs text-blue"
+                    className="text-xs text-blue"
+                    precision={position.token.displayPriceDecimalsPrecision}
+                    minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
                 />
               ) : (
                 <div className="flex text-xs">-</div>

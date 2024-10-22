@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
-export default function useStakingAccountCurrentRoundRewards(
+export default function useStakingAccountRewardsAccumulated(
   stakedTokenMint: PublicKey,
 ): { usdcRewards: number | null; adxRewards: number | null } {
   const [usdcAmount, setUsdcAmount] = useState<number | null>(null);

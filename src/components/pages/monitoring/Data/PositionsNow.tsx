@@ -15,13 +15,13 @@ export default function PositionsNow({
   return (
     <StyledContainer
       headerClassName="text-center justify-center"
-      title="LIVE POSITIONS COUNT"
+      title="Positions (LIVE)"
       className="w-auto grow"
       titleClassName={titleClassName}
     >
       <StyledSubContainer>
         <div className="flex items-center">
-          <div className={titleClassName}>Position count</div>
+          <div className={titleClassName}>Positions count</div>
           <div className="font-boldy text-sm ml-2 text-txtfade">
             Long / Short
           </div>
@@ -56,7 +56,7 @@ export default function PositionsNow({
 
         <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
           <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.longPositions)}
+            {formatPriceInfo(mainPool.longPositions, 0)}
           </div>
 
           <>
@@ -68,7 +68,7 @@ export default function PositionsNow({
           </>
 
           <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.shortPositions)}
+            {formatPriceInfo(mainPool.shortPositions, 0)}
           </div>
         </div>
       </StyledSubContainer>

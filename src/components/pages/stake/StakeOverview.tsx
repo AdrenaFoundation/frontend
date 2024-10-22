@@ -360,7 +360,7 @@ export default function StakeOverview({
           {/* Bottom line */}
           <div className="flex flex-col mt-2 gap-2 text-sm pl-2 pr-6">
             <div className="flex items-center justify-between">
-              <span className="text-txtfade">
+              <span className="text-txtfade flex items-center">
                 <Tippy
                   content={
                     <p className="font-medium">
