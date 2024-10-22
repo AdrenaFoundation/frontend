@@ -168,13 +168,18 @@ export default function DetailedMonitoring({
           />
         ) : null}
       </div>
-
-      {selectedTab === 'All' || selectedTab === 'Pool' ? (
-        <AUMBreakdown
+      {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        <PositionsNow
           titleClassName={titleClassName}
-          mainWholeNumberClassName={bodyClassName}
-          dollarWholeNumberClassName={dollarBodyClassName}
-          custodies={custodies}
+          bodyClassName={bodyClassName}
+          mainPool={mainPool}
+        />
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        <PositionsAllTime
+          titleClassName={titleClassName}
+          bodyClassName={bodyClassName}
+          mainPool={mainPool}
         />
       ) : null}
       {selectedTab === 'All' || selectedTab === 'Staking' ? (
@@ -205,13 +210,20 @@ export default function DetailedMonitoring({
           triggerAdxStakingAccountReload={triggerAdxStakingAccountReload}
         />
       ) : null}
-
       {selectedTab === 'All' || selectedTab === 'Staking' ? (
         <StakingLockedTokens
           titleClassName={titleClassName}
           bodyClassName={bodyClassName}
           alpStakingAccount={alpStakingAccount}
           adxStakingAccount={adxStakingAccount}
+        />
+      ) : null}
+      {selectedTab === 'All' || selectedTab === 'Trading' ? (
+        <PositionsNowBreakdown
+          titleClassName={titleClassName}
+          custodies={custodies}
+          mainWholeNumberClassName={bodyClassName}
+          dollarWholeNumberClassName={dollarBodyClassName}
         />
       ) : null}
       {selectedTab === 'All' || selectedTab === 'Pool' ? (
@@ -228,29 +240,14 @@ export default function DetailedMonitoring({
           custodies={custodies}
         />
       ) : null}
-      {selectedTab === 'All' || selectedTab === 'Trading' ? (
-        <PositionsNow
+      {selectedTab === 'All' || selectedTab === 'Pool' ? (
+        <AUMBreakdown
           titleClassName={titleClassName}
-          bodyClassName={bodyClassName}
-          mainPool={mainPool}
-        />
-      ) : null}
-      {selectedTab === 'All' || selectedTab === 'Trading' ? (
-        <PositionsAllTime
-          titleClassName={titleClassName}
-          bodyClassName={bodyClassName}
-          mainPool={mainPool}
-        />
-      ) : null}
-      {selectedTab === 'All' || selectedTab === 'Trading' ? (
-        <PositionsNowBreakdown
-          titleClassName={titleClassName}
-          custodies={custodies}
           mainWholeNumberClassName={bodyClassName}
           dollarWholeNumberClassName={dollarBodyClassName}
+          custodies={custodies}
         />
       ) : null}
-
       {selectedTab === 'All' || selectedTab === 'Vesting' ? (
         <VestsBreakdown titleClassName={titleClassName} vests={vests} />
       ) : null}

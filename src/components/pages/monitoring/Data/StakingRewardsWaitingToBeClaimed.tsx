@@ -16,14 +16,14 @@ export default function StakingRewardsWaitingToBeClaimed({
 }) {
   return (
     <StyledContainer
-      title="Staking rewards pending claims"
+      title="Staking rewards (available, pending claims)"
       subTitle="Rewards from past rounds (resolved), waiting to be claimed."
       className="w-auto grow"
       titleClassName={titleClassName}
       bodyClassName="flex sm:flex-row grow flex-col"
     >
       <StyledSubContainer>
-        <div className={titleClassName}>ALP STAKING</div>
+        <div className={titleClassName}>ALP Staking</div>
 
         <div className="m-auto flex-col">
           <div className="flex items-center">
@@ -34,7 +34,7 @@ export default function StakingRewardsWaitingToBeClaimed({
                     alpStakingAccount.resolvedRewardTokenAmount,
                     alpStakingAccount.rewardTokenDecimals,
                   ),
-                  2,
+                  0,
                 )
                 : '-'}
             </div>
@@ -49,7 +49,7 @@ export default function StakingRewardsWaitingToBeClaimed({
                     alpStakingAccount.resolvedLmRewardTokenAmount,
                     window.adrena.client.adxToken.decimals,
                   ),
-                  2,
+                  0,
                 )
                 : '-'}
             </div>
@@ -59,7 +59,7 @@ export default function StakingRewardsWaitingToBeClaimed({
       </StyledSubContainer>
 
       <StyledSubContainer>
-        <div className={titleClassName}>ADX STAKING</div>
+        <div className={titleClassName}>ADX Staking</div>
 
         <div className="m-auto flex-col">
           <div className="flex items-center">
@@ -70,7 +70,7 @@ export default function StakingRewardsWaitingToBeClaimed({
                     adxStakingAccount.resolvedRewardTokenAmount,
                     adxStakingAccount.rewardTokenDecimals,
                   ),
-                  2,
+                  0,
                 )
                 : '-'}
             </div>
@@ -85,7 +85,7 @@ export default function StakingRewardsWaitingToBeClaimed({
                     adxStakingAccount.resolvedLmRewardTokenAmount,
                     window.adrena.client.adxToken.decimals,
                   ),
-                  2,
+                  0,
                 )
                 : '-'}
             </div>

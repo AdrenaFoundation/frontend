@@ -102,13 +102,13 @@ export default function CurrentStakingRoundTime({
 
   return (
     <StyledContainer
-      title="CURRENT STAKING ROUND TIME"
+      title="Next staking rounds starting in"
       className="grow w-[30em]"
       bodyClassName="flex grow"
       titleClassName={titleClassName}
     >
       <StyledSubContainer>
-        <div className={titleClassName}>ALP TOKEN STAKING ROUND ENDS IN</div>
+        <div className={titleClassName}>ALP Staking</div>
 
         <div className="m-auto">
           <RemainingTimeToDate
@@ -131,7 +131,7 @@ export default function CurrentStakingRoundTime({
       </StyledSubContainer>
 
       <StyledSubContainer>
-        <div className={titleClassName}>ADX TOKEN STAKING ROUND ENDS IN</div>
+        <div className={titleClassName}>ADX Staking</div>
 
         <div className="m-auto flex items-center justify-center gap-4">
           <RemainingTimeToDate

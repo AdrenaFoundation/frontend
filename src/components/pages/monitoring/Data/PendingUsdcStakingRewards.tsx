@@ -21,7 +21,7 @@ export default function PendingUsdcStakingRewards({
   return (
     <StyledContainer
       headerClassName="text-center justify-center"
-      title="Pending Staking Rewards"
+      title="Staking rewards (pending claims)"
       subTitle="Shows the total amount of unclaimed USDC rewards, combining ALP and ADX staking rewards."
       className="grow flex items-center min-w-[22em] w-[22em]"
       titleClassName={titleClassName}
