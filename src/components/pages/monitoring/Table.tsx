@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
@@ -28,13 +28,13 @@ export default function Table({
   columnWrapperClassName?: string;
   data: (
     | {
-        rowTitle: ReactNode;
-        values: ReactNode[];
-      }
+      rowTitle: ReactNode;
+      values: ReactNode[];
+    }
     | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-      }
+      rowTitle: ReactNode;
+      value: ReactNode;
+    }
   )[];
   rowTitleWidth?: string;
   pagination?: boolean;
@@ -51,13 +51,13 @@ export default function Table({
   const [pageData, setPageData] = useState<
     (
       | {
-          rowTitle: ReactNode;
-          values: ReactNode[];
-        }
+        rowTitle: ReactNode;
+        values: ReactNode[];
+      }
       | {
-          rowTitle: ReactNode;
-          value: ReactNode;
-        }
+        rowTitle: ReactNode;
+        value: ReactNode;
+      }
     )[]
   >([]);
 
@@ -86,44 +86,47 @@ export default function Table({
     nbItemPerPageWhenBreakpoint,
   ]);
 
-  let first = true;
 
-  const paginationDiv = pagination ? (
-    <div className="flex w-full justify-center align-center gap-2 mt-4 max-w-full flex-wrap">
-      {Array.from(Array(nbPages)).map((_, i) => {
-        const hidden =
-          Math.abs(page - i - 1) > 3 && i !== 0 && i + 1 !== nbPages;
+  const paginationDiv = useMemo(() => {
+    let first = true;
 
-        if (!hidden) first = true;
+    return (
+      <div className="flex w-full justify-center align-center gap-2 mt-4 max-w-full flex-wrap">
+        {Array.from(Array(nbPages)).map((_, i) => {
+          const hidden =
+            Math.abs(page - i - 1) > 3 && i !== 0 && i + 1 !== nbPages;
 
-        const shouldDisplay = hidden && first;
+          if (!hidden) first = true;
 
-        if (shouldDisplay) first = false;
+          const shouldDisplay = hidden && first;
 
-        return (
-          <>
-            {shouldDisplay ? (
-              <div key="..." className="cursor-pointer text-txtfade">
-                ..
+          if (shouldDisplay) first = false;
+
+          return (
+            <div key={`pagination-${i}`}>
+              {shouldDisplay ? (
+                <div key={`pagination-none-${i}`} className="cursor-pointer text-txtfade">
+                  ..
+                </div>
+              ) : null}
+
+              <div
+                key={`pagination-${i}`}
+                className={twMerge(
+                  'cursor-pointer',
+                  page === i + 1 ? 'text-primary' : 'text-txtfade',
+                  hidden ? 'hidden' : '',
+                )}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
               </div>
-            ) : null}
-
-            <div
-              key={i + 1}
-              className={twMerge(
-                'cursor-pointer',
-                page === i + 1 ? 'text-primary' : 'text-txtfade',
-                hidden ? 'hidden' : '',
-              )}
-              onClick={() => setPage(i + 1)}
-            >
-              {i + 1}
             </div>
-          </>
-        );
-      })}
-    </div>
-  ) : null;
+          );
+        })}
+      </div>
+    );
+  }, [nbPages, page]);
 
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
@@ -137,7 +140,7 @@ export default function Table({
 
         {(columnsTitles ?? []).map((title, i) => (
           <div
-            key={i}
+            key={`columns-${title}-${i}`}
             className={twMerge(
               'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
               columnTitlesClassName,
@@ -150,7 +153,7 @@ export default function Table({
 
       {pageData.map(({ rowTitle, ...v }, i) => (
         <div
-          key={i}
+          key={`page-data-${rowTitle}-${i}`}
           className={twMerge(
             'flex w-full border border-transparent text-base pl-1',
             rowHovering ? 'hover:bg-secondary hover:border-bcolor' : '',
@@ -172,7 +175,7 @@ export default function Table({
 
             return values.map((value, j) => (
               <div
-                key={j}
+                key={`values-${rowTitle}${i}-${j}`}
                 className="p-[0.3em] flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well

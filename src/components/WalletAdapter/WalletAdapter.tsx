@@ -75,7 +75,7 @@ export default function WalletAdapter({
         <Menu
           trigger={
             <Button
-              className={twMerge(className, 'gap-2 pl-4 pr-3')}
+              className={twMerge(className, 'gap-2 pl-4 pr-3 h-7')}
               title={
                 userProfile
                   ? getAbbrevNickname(userProfile.nickname)
@@ -109,7 +109,7 @@ export default function WalletAdapter({
         </Menu>
       ) : (
         <Button
-          className={twMerge(className, 'gap-2 pl-4 pr-3')}
+          className={twMerge(className, 'gap-2 pl-4 pr-3 h-7')}
           title="Connect wallet"
           rightIcon={walletIcon}
           alt="wallet icon"

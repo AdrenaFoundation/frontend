@@ -40,7 +40,6 @@ export default function usePriorityFee() {
                 ultra,
             };
 
-            console.log("Refreshed priority fee amounts (medium, high, ultra):", priorityFeeAmounts);
             setPriorityFeeAmounts(priorityFeeAmounts);
         } catch (err) {
             console.error("Failed to update priority fees:", err);

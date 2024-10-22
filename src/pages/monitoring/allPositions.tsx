@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
 import { useAllPositions } from '@/hooks/useAllPositions';
+import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
@@ -25,13 +26,52 @@ export default function AllPositions() {
     });
     const [sortOrder, setSortOrder] = useState<string[]>(['pnl', 'size', 'age']);
 
-    const filteredPositions = allPositions.filter(position => {
-        const matchesSide = sideFilter === 'all' || position.side === sideFilter;
-        const matchesMint = mintFilter === 'all' || position.token.mint.toBase58() === mintFilter;
-        const matchesUser = ownerFilter === '' || position.owner.toBase58().toLowerCase().includes(ownerFilter.toLowerCase());
-        const matchesPnl = pnlFilter === 'all' || (pnlFilter === "profit" && position.pnl && position.pnl > 0) || (pnlFilter === "loss" && position.pnl && position.pnl < 0);
-        return matchesSide && matchesMint && matchesUser && matchesPnl;
-    });
+    const [sortedPositions, setSortedPositions] = useState<PositionExtended[]>([]);
+    const [paginatedPositions, setPaginatedPositions] = useState<PositionExtended[]>([]);
+
+
+    useEffect(() => {
+        const filteredPositions = allPositions.filter(position => {
+            const matchesSide = sideFilter === 'all' || position.side === sideFilter;
+            const matchesMint = mintFilter === 'all' || position.token.mint.toBase58() === mintFilter;
+            const matchesUser = ownerFilter === '' || position.owner.toBase58().toLowerCase().includes(ownerFilter.toLowerCase());
+            const matchesPnl = pnlFilter === 'all' || (pnlFilter === "profit" && position.pnl && position.pnl > 0) || (pnlFilter === "loss" && position.pnl && position.pnl < 0);
+            return matchesSide && matchesMint && matchesUser && matchesPnl;
+        });
+
+        setSortedPositions(filteredPositions.sort((a, b) => {
+            for (const criteria of sortOrder) {
+                const order = sortConfigs[criteria];
+                const multiplier = order === 'asc' ? 1 : -1;
+                let comparison = 0;
+
+                switch (criteria) {
+                    case 'pnl':
+                        comparison = multiplier * ((b.pnl || 0) - (a.pnl || 0));
+                        break;
+                    case 'size':
+                        comparison = multiplier * (b.sizeUsd - a.sizeUsd);
+                        break;
+                    case 'leverage':
+                        comparison = multiplier * ((b.currentLeverage || 0) - (a.currentLeverage || 0));
+                        break;
+                }
+
+                if (comparison !== 0) return comparison;
+            }
+
+            return 0;
+        }));
+    }, [allPositions, mintFilter, ownerFilter, pnlFilter, sideFilter, sortConfigs, sortOrder]);
+
+    useEffect(() => {
+        const paginatedPositions = sortedPositions.slice(
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+        );
+
+        setPaginatedPositions(paginatedPositions);
+    }, [currentPage, sortedPositions]);
 
     const toggleSortOrder = (criteria: string) => {
         setSortConfigs(prevConfigs => ({
@@ -43,32 +83,6 @@ export default function AllPositions() {
             return [criteria, ...newOrder];
         });
     };
-
-    const sortedPositions = [...filteredPositions].sort((a, b) => {
-        for (const criteria of sortOrder) {
-            const order = sortConfigs[criteria];
-            const multiplier = order === 'asc' ? 1 : -1;
-            let comparison = 0;
-            switch (criteria) {
-                case 'pnl':
-                    comparison = multiplier * ((b.pnl || 0) - (a.pnl || 0));
-                    break;
-                case 'size':
-                    comparison = multiplier * (b.sizeUsd - a.sizeUsd);
-                    break;
-                case 'leverage':
-                    comparison = multiplier * ((b.currentLeverage || 0) - (a.currentLeverage || 0));
-                    break;
-            }
-            if (comparison !== 0) return comparison;
-        }
-        return 0;
-    });
-
-    const paginatedPositions = sortedPositions.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
 
     const resetFilters = () => {
         setSideFilter('all');
@@ -83,10 +97,9 @@ export default function AllPositions() {
     };
 
     return (
-        <div className="flex flex-col gap-2 p-4">
+        <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
-                <h2 style={{ textAlign: 'center' }}>Live Positions from all Traders</h2>
-                <div className="flex flex-col md:flex-row flex-wrap justify-between mb-4 items-center gap-2">
+                <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2">
                     <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
                         {['all', 'long', 'short'].map(type => (
                             <Button
@@ -94,10 +107,12 @@ export default function AllPositions() {
                                 onClick={() => setSideFilter(type)}
                                 variant={type === sideFilter ? 'outline' : 'text'}
                                 className={`w-full md:w-20 ${type === 'long' ? 'text-green' : type === 'short' ? 'text-red' : ''}`}
+                                size="xs"
                                 title={type.charAt(0).toUpperCase() + type.slice(1)}
                             />
                         ))}
                     </div>
+
                     <div className="flex flex-wrap justify-center gap-2 border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
                         <Button
                             onClick={() => setMintFilter('all')}
@@ -116,11 +131,11 @@ export default function AllPositions() {
                                         className="w-full md:w-20 flex items-center justify-center"
                                         title={getTokenSymbol(token.symbol)}
                                         icon={getTokenImage(token)}
-                                    >
-                                    </Button>
+                                        size="xs" />
                                 </div>
                             ))}
                     </div>
+
                     <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
                         {['all', 'profit', 'loss'].map(type => (
                             <Button
@@ -129,10 +144,12 @@ export default function AllPositions() {
                                 variant={type === pnlFilter ? 'outline' : 'text'}
                                 className={`w-full md:w-20 ${type === 'profit' ? 'text-green' : type === 'loss' ? 'text-redbright' : ''}`}
                                 title={type.charAt(0).toUpperCase() + type.slice(1)}
+                                size="xs"
                             />
                         ))}
                     </div>
-                    <div className="flex flex-wrap justify-center items-center text-base bg-secondary rounded-full p-[2px] border border-bcolor w-full md:w-auto">
+
+                    <div className="flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor w-full md:w-auto">
                         {['pnl', 'size', 'leverage'].map(criteria => (
                             <React.Fragment key={criteria}>
                                 <button
@@ -148,15 +165,17 @@ export default function AllPositions() {
                             </React.Fragment>
                         ))}
                     </div>
+
                     <div className="flex flex-wrap items-center w-full md:w-auto">
                         <input
                             type="pubkey"
                             placeholder="Filter by owner (pubkey)"
                             value={ownerFilter}
                             onChange={(e) => setOwnerFilter(e.target.value)}
-                            className="bg-gray-800 text-white border border-gray-700 rounded p-1 w-full md:w-auto"
+                            className="bg-gray-800 text-white border border-gray-700 rounded p-1 w-[15em] text-sm"
                         />
                     </div>
+
                     <div className="flex items-center gap-2">
                         <Button
                             onClick={resetFilters}
@@ -173,6 +192,7 @@ export default function AllPositions() {
                         </Button>
                     </div>
                 </div>
+
                 <div className="flex flex-wrap justify-between gap-2">
                     {paginatedPositions.length ? (
                         <div className='flex flex-col bg-first w-full h-full gap-2'>
@@ -190,9 +210,10 @@ export default function AllPositions() {
                         </div>
                     )}
                 </div>
+
                 <Pagination
                     currentPage={currentPage}
-                    totalItems={filteredPositions.length}
+                    totalItems={sortedPositions.length}
                     itemsPerPage={itemsPerPage}
                     onPageChange={setCurrentPage}
                 />
