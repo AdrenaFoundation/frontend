@@ -47,10 +47,14 @@ export default function Settings({
 }) {
   const [cookies, setCookies] = useCookies(['solanaExplorer']);
 
+  const preferredSolanaExplorer: SolanaExplorerOptions =
+    cookies?.solanaExplorer &&
+      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
+      ? cookies?.solanaExplorer
+      : 'Solana Explorer';
+
   const [activeSolanaExplorer, setActiveSolanaExplorer] =
-    useState<SolanaExplorerOptions>(
-      cookies.solanaExplorer || 'Solana Explorer',
-    );
+    useState<SolanaExplorerOptions>(preferredSolanaExplorer);
 
   const SOLANA_EXPLORERS = Object.keys(
     SOLANA_EXPLORERS_OPTIONS,
@@ -62,7 +66,7 @@ export default function Settings({
     setCookies('solanaExplorer', activeSolanaExplorer);
   }, [activeSolanaExplorer]);
 
-  const WALLETS = {
+  const EXPLORERS = {
     'Solana Explorer': {
       img: solanaExplorerIcon,
     },
@@ -117,14 +121,14 @@ export default function Settings({
               onClick={() => {
                 setActiveSolanaExplorer(exp);
               }}
-              leftIcon={WALLETS[exp].img}
+              leftIcon={EXPLORERS[exp].img}
               className={twMerge(
                 'justify-start transition duration-300',
                 exp !== activeSolanaExplorer &&
                 'grayscale border-transparent hover:bg-transparent opacity-50',
               )}
               iconClassName="w-[20px] h-[20px]"
-              variant={exp === activeSolanaExplorer ? 'outline' : 'outline'}
+              variant="outline"
               title={exp}
               key={exp}
             />

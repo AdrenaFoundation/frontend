@@ -16,6 +16,7 @@ import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import Pause from '@/components/Pause/Pause';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
 import IConfiguration from '@/config/IConfiguration';
+import { SOLANA_EXPLORERS_OPTIONS } from '@/constant';
 import useCustodies from '@/hooks/useCustodies';
 import useMainPool from '@/hooks/useMainPool';
 import usePositions from '@/hooks/usePositions';
@@ -29,7 +30,7 @@ import initializeApp, {
   createReadOnlySablierThreadProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
-import { PriorityFeeOption } from '@/types';
+import { PriorityFeeOption, SolanaExplorerOptions } from '@/types';
 import {
   DEFAULT_MAX_PRIORITY_FEE,
   DEFAULT_PRIORITY_FEE_OPTION,
@@ -139,8 +140,14 @@ export default function App(props: AppProps) {
 
     const pythConnection = new Connection(config.pythnetRpc.url, 'processed');
 
+    const preferredSolanaExplorer: SolanaExplorerOptions =
+      cookies?.solanaExplorer &&
+        SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
+        ? cookies?.solanaExplorer
+        : 'Solana Explorer';
+
     initializeApp(
-      cookies.solanaExplorer,
+      preferredSolanaExplorer,
       config,
       activeRpc.connection,
       pythConnection,

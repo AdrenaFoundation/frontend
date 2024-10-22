@@ -26,7 +26,8 @@ export type GeoBlockingData = {
 export type SolanaExplorerOptions =
   | 'Solana Explorer'
   | 'Solscan'
-  | 'Solana Beach';
+  | 'Solana Beach'
+  | 'Solana FM';
 
 export type Settings = {
   // priorityFee: PriorityFeeOption;
