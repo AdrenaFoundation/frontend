@@ -248,7 +248,9 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          Stop losses are executed with up to 1% slippage.
+          Adding new stop loss is currently disabled as we are working on improving their execution.
+          You still can remove existing stop losses.
+          {/* Stop losses are executed with up to 1% slippage. */}
         </div>
 
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg mb-2">
@@ -279,6 +281,7 @@ export default function StopLossTakeProfit({
                 nb={position.liquidationPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
                 isDecimalDimmed={false}
                 className="text-orange"
               />
@@ -293,6 +296,7 @@ export default function StopLossTakeProfit({
                 nb={position.price}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
                 isDecimalDimmed={true}
                 className="text-gray-100"
               />
@@ -311,6 +315,7 @@ export default function StopLossTakeProfit({
                 nb={takeProfitInput}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
                 className={twMerge(
                   'text-sm text-regular',
                   takeProfitInput !== null ? 'text-blue' : '',
@@ -327,6 +332,7 @@ export default function StopLossTakeProfit({
                 nb={stopLossInput}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
                 className={twMerge(
                   'text-sm text-regular',
                   stopLossInput !== null ? 'text-blue' : '',
@@ -413,7 +419,7 @@ export default function StopLossTakeProfit({
           className="font-boldy text-xs w-[10em] grow"
           size="lg"
           title="Confirm"
-          disabled={stopLossError || takeProfitError}
+          disabled={stopLossError || takeProfitError || (stopLossInput !== null || takeProfitInput !== null)}
           onClick={() => applyConfiguration()}
         />
       </div>
