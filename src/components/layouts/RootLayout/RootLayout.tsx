@@ -9,7 +9,7 @@ import { ToastContainer } from 'react-toastify';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import Featurebase from '@/components/Featurebase/Featurebase';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PriorityFeeOption, UserProfileExtended } from '@/types';
+import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
@@ -30,6 +30,7 @@ export default function RootLayout({
   setPriorityFeeOption,
   maxPriorityFee,
   setMaxPriorityFee,
+  preferredSolanaExplorer,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
@@ -52,6 +53,7 @@ export default function RootLayout({
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
+  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
   const [pages, setPages] = useState<
@@ -101,6 +103,7 @@ export default function RootLayout({
           setFavoriteRpc={setFavoriteRpc}
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
+          preferredSolanaExplorer={preferredSolanaExplorer}
         />
       ) : (
         <BurgerMenu
@@ -119,6 +122,7 @@ export default function RootLayout({
           setFavoriteRpc={setFavoriteRpc}
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
+          preferredSolanaExplorer={preferredSolanaExplorer}
         />
       )}
 

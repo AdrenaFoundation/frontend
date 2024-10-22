@@ -66,6 +66,12 @@ export default function App(props: AppProps) {
 
   const [cookies] = useCookies(['solanaExplorer']);
 
+  const preferredSolanaExplorer: SolanaExplorerOptions =
+    cookies?.solanaExplorer &&
+      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
+      ? cookies?.solanaExplorer
+      : 'Solana Explorer';
+
   const {
     activeRpc,
     rpcInfos,
@@ -140,12 +146,6 @@ export default function App(props: AppProps) {
 
     const pythConnection = new Connection(config.pythnetRpc.url, 'processed');
 
-    const preferredSolanaExplorer: SolanaExplorerOptions =
-      cookies?.solanaExplorer &&
-        SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
-        ? cookies?.solanaExplorer
-        : 'Solana Explorer';
-
     initializeApp(
       preferredSolanaExplorer,
       config,
@@ -177,6 +177,7 @@ export default function App(props: AppProps) {
             setAutoRpcMode={setAutoRpcMode}
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
+            preferredSolanaExplorer={preferredSolanaExplorer}
             {...props}
           />
         )}
@@ -205,6 +206,7 @@ function AppComponent({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
+  preferredSolanaExplorer,
 }: AppProps & {
   activeRpc: {
     name: string;
@@ -221,6 +223,7 @@ function AppComponent({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
+  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
   const router = useRouter();
   const mainPool = useMainPool();
@@ -373,6 +376,7 @@ function AppComponent({
         setAutoRpcMode={setAutoRpcMode}
         setCustomRpcUrl={setCustomRpcUrl}
         setFavoriteRpc={setFavoriteRpc}
+        preferredSolanaExplorer={preferredSolanaExplorer}
       >
         {
           <TermsAndConditionsModal

@@ -8,7 +8,7 @@ import { twMerge } from 'tailwind-merge';
 
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
-import { PriorityFeeOption, UserProfileExtended } from '@/types';
+import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
@@ -42,6 +42,7 @@ export default function BurgerMenu({
   setPriorityFeeOption,
   maxPriorityFee,
   setMaxPriorityFee,
+  preferredSolanaExplorer,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
@@ -64,6 +65,7 @@ export default function BurgerMenu({
   setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
+  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
@@ -199,6 +201,7 @@ export default function BurgerMenu({
             setAutoRpcMode={setAutoRpcMode}
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
+            preferredSolanaExplorer={preferredSolanaExplorer}
           />
         </div>
       </div>

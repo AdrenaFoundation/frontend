@@ -26,6 +26,7 @@ export default function Settings({
   setCustomRpcUrl,
   setFavoriteRpc,
   isGenesis = false,
+  preferredSolanaExplorer,
 }: {
   activeRpc: {
     name: string;
@@ -44,14 +45,10 @@ export default function Settings({
   setFavoriteRpc: (favoriteRpc: string) => void;
   isIcon?: boolean;
   isGenesis?: boolean;
+  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
-  const [cookies, setCookies] = useCookies(['solanaExplorer']);
+  const [, setCookies] = useCookies(['solanaExplorer']);
 
-  const preferredSolanaExplorer: SolanaExplorerOptions =
-    cookies?.solanaExplorer &&
-      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
-      ? cookies?.solanaExplorer
-      : 'Solana Explorer';
 
   const [activeSolanaExplorer, setActiveSolanaExplorer] =
     useState<SolanaExplorerOptions>(preferredSolanaExplorer);

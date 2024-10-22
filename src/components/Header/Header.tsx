@@ -7,7 +7,7 @@ import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
-import { PriorityFeeOption, UserProfileExtended } from '@/types';
+import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
@@ -37,6 +37,7 @@ export default function Header({
   setFavoriteRpc,
   maxPriorityFee,
   setMaxPriorityFee,
+  preferredSolanaExplorer,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
@@ -59,6 +60,7 @@ export default function Header({
   setFavoriteRpc: (favoriteRpc: string) => void;
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
+  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
   const pathname = usePathname();
 
@@ -195,6 +197,7 @@ export default function Header({
           setAutoRpcMode={setAutoRpcMode}
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
+          preferredSolanaExplorer={preferredSolanaExplorer}
         />
 
         <WalletAdapter userProfile={userProfile} />
