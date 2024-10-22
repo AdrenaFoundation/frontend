@@ -467,7 +467,7 @@ export default function TradingChart({
   ]);
 
   return (
-    <div className="flex flex-col w-full overflow-hidden bg-secondary backdrop-blur-md">
+    <div className="flex flex-col w-full overflow-hidden bg-secondary select-none">
       <Loader className={twMerge('mt-[20%]', isLoading ? '' : 'hidden')} />
       <div
         id="wrapper-trading-chart"

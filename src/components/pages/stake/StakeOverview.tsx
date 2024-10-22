@@ -232,6 +232,7 @@ export default function StakeOverview({
                   )}
                 </div>
               }
+              placement="auto"
             >
               <Image
                 src={infoIcon}
@@ -373,6 +374,7 @@ export default function StakeOverview({
                       The ADX and ALP rounds are not necessarily in sync.
                     </p>
                   }
+                  placement="auto"
                 >
                   <Image
                     src={infoIcon}

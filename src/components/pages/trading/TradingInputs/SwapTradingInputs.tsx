@@ -231,7 +231,6 @@ export default function SwapTradingInputs({
         mintA: tokenA.mint,
         mintB: tokenB.mint,
         notification,
-
       });
 
       triggerWalletTokenBalancesReload();
@@ -383,7 +382,6 @@ export default function SwapTradingInputs({
             </div>
           ) : null
         }
-        maxButton={false}
         selectedToken={tokenB}
         tokenList={allowedTokenB}
         onTokenSelect={setTokenB}

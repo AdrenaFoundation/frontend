@@ -42,7 +42,7 @@ export default function ProfitsAndLossesChart({
             </div>
           </div>
         }
-        placement="top"
+        placement="auto"
       >
         <div className="relative">
           <Doughnut

@@ -631,9 +631,6 @@ export default function LongShortTradingInputs({
             tokenListClassName="border-none bg-inputcolor"
             menuClassName="shadow-none"
             menuOpenBorderClassName="rounded-tr-lg"
-            maxClassName={
-              side === 'short' ? 'bg-red text-white' : 'bg-green text-white'
-            }
             value={inputA}
             subText={
               priceA ? (

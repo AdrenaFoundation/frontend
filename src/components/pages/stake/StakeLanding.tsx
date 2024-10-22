@@ -219,7 +219,7 @@ export default function StakeLanding({
         <Image
           src={alpMonster}
           alt="ALP Monster"
-          className="absolute bottom-0 left-0 w-1/2 grayscale scale-[0.75]"
+          className="absolute bottom-0 left-0 w-1/2 grayscale select-none scale-[0.75]"
         />
         <div
           className="hidden sm:block absolute left-0 top-0 w-1/2 h-full flex-1 opacity-60"
@@ -238,7 +238,7 @@ export default function StakeLanding({
         <Image
           src={adxMonster}
           alt="ADX Monster"
-          className="absolute bottom-10 right-32 w-1/2 grayscale"
+          className="absolute bottom-10 right-32 w-1/2 grayscale select-none"
         />
         <div
           className="hidden sm:block absolute right-0 top-0 w-1/2 h-full flex-1 opacity-60"

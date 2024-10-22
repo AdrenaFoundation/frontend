@@ -62,7 +62,12 @@ export default function PositionBlockReadOnly({
     }, []);
 
     const positionName = (
-        <div className={twMerge("flex items-center justify-center h-full  min-w-[12em]", className)}>
+        <div
+            className={twMerge(
+                'flex items-center justify-center h-full  min-w-[12em]',
+                className,
+            )}
+        >
             <Image
                 className="w-[2em] h-[2em] mr-2"
                 src={getTokenImage(position.token)}
@@ -127,8 +132,8 @@ export default function PositionBlockReadOnly({
                         nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
                         format="currency"
                         className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-                            ? 'green'
-                            : 'redbright'
+                                ? 'green'
+                                : 'redbright'
                             }`}
                         isDecimalDimmed={false}
                     />
@@ -145,8 +150,8 @@ export default function PositionBlockReadOnly({
                         precision={2}
                         isDecimalDimmed={false}
                         className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-                            ? 'green'
-                            : 'redbright'
+                                ? 'green'
+                                : 'redbright'
                             }`}
                     />
 
@@ -283,13 +288,18 @@ export default function PositionBlockReadOnly({
                             Size
                         </div>
                         <div className="flex underline-dashed">
-                            <Tippy content={<FormatNumber
-                                nb={position.size}
-                                format="number"
-                                className="text-gray-400 text-xs"
-                                precision={position.token.displayAmountDecimalsPrecision}
-                                suffix={` ${getTokenSymbol(position.token.symbol)}`}
-                            />}>
+                            <Tippy
+                                content={
+                                    <FormatNumber
+                                        nb={position.size}
+                                        format="number"
+                                        className="text-gray-400 text-xs"
+                                        precision={position.token.displayAmountDecimalsPrecision}
+                                        suffix={` ${getTokenSymbol(position.token.symbol)}`}
+                                    />
+                                }
+                                placement="auto"
+                            >
                                 <FormatNumber
                                     nb={position.sizeUsd}
                                     format="currency"
@@ -304,13 +314,22 @@ export default function PositionBlockReadOnly({
                             Collateral
                         </div>
                         <div className="flex underline-dashed">
-                            <Tippy content={<FormatNumber
-                                nb={position.collateralAmount}
-                                format="number"
-                                className="text-gray-400 text-xs"
-                                precision={position.collateralToken.displayAmountDecimalsPrecision}
-                                suffix={` ${getTokenSymbol(position.collateralToken.symbol)} (at init.)`}
-                            />}>
+                            <Tippy
+                                content={
+                                    <FormatNumber
+                                        nb={position.collateralAmount}
+                                        format="number"
+                                        className="text-gray-400 text-xs"
+                                        precision={
+                                            position.collateralToken.displayAmountDecimalsPrecision
+                                        }
+                                        suffix={` ${getTokenSymbol(
+                                            position.collateralToken.symbol,
+                                        )} (at init.)`}
+                                    />
+                                }
+                                placement="auto"
+                            >
                                 <FormatNumber
                                     nb={position.collateralUsd}
                                     format="currency"
@@ -352,11 +371,7 @@ export default function PositionBlockReadOnly({
                         <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                             Liq. Price
                         </div>
-                        <div
-                            className="flex p-1 rounded"
-                            role="button"
-                            tabIndex={0}
-                        >
+                        <div className="flex p-1 rounded" role="button" tabIndex={0}>
                             <FormatNumber
                                 nb={position.liquidationPrice}
                                 format="currency"
@@ -370,11 +385,7 @@ export default function PositionBlockReadOnly({
                         <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
                             Take Profit
                         </div>
-                        <div
-                            className="flex p-1 rounded"
-                            role="button"
-                            tabIndex={0}
-                        >
+                        <div className="flex p-1 rounded" role="button" tabIndex={0}>
                             {position.takeProfitThreadIsSet &&
                                 position.takeProfitLimitPrice &&
                                 position.takeProfitLimitPrice > 0 ? (
@@ -393,11 +404,7 @@ export default function PositionBlockReadOnly({
                         <div className="flex w-full font-mono text-xxs justify-center items-center text-txtfade">
                             Stop Loss
                         </div>
-                        <div
-                            className="flex p-1 rounded"
-                            role="button"
-                            tabIndex={0}
-                        >
+                        <div className="flex p-1 rounded" role="button" tabIndex={0}>
                             {position.stopLossThreadIsSet &&
                                 position.stopLossLimitPrice &&
                                 position.stopLossLimitPrice > 0 ? (
@@ -406,7 +413,9 @@ export default function PositionBlockReadOnly({
                                     format="currency"
                                     className="text-xs text-blue"
                                     precision={position.token.displayPriceDecimalsPrecision}
-                                    minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                                    minimumFractionDigits={
+                                        position.token.displayPriceDecimalsPrecision
+                                    }
                                 />
                             ) : (
                                 <div className="flex text-xs">-</div>

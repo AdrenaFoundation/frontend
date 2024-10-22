@@ -243,7 +243,6 @@ export default function Genesis({
           stakedTokenMint: window.adrena.client.alpToken.mint,
           threadId: new BN(Date.now()),
           notification,
-
         });
       } catch (error) {
         console.error('error', error);
@@ -264,7 +263,6 @@ export default function Genesis({
         // TODO: Apply proper slippage
         minLpAmountOut: new BN(0),
         notification,
-
       });
 
       triggerWalletTokenBalancesReload();
@@ -506,10 +504,10 @@ export default function Genesis({
                               genesis.publicAmountClaimed,
                               usdc.decimals,
                             ) /
-                              nativeToUi(
-                                genesis.publicAmount,
-                                usdc.decimals,
-                              )) *
+                                nativeToUi(
+                                  genesis.publicAmount,
+                                  usdc.decimals,
+                                )) *
                               100
                               }%`,
                           }}
@@ -574,10 +572,10 @@ export default function Genesis({
                                   genesis.reservedAmountClaimed,
                                   usdc.decimals,
                                 ) /
-                                  nativeToUi(
-                                    genesis.reservedAmount,
-                                    usdc.decimals,
-                                  )) *
+                                    nativeToUi(
+                                      genesis.reservedAmount,
+                                      usdc.decimals,
+                                    )) *
                                   100
                                   }%`,
                               }}
@@ -651,13 +649,8 @@ export default function Genesis({
                           menuClassName="shadow-none justify-end mr-2"
                           menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
                           value={fundsAmount}
-                          maxButton={connected}
-                          maxClassName="relative ml-auto"
                           selectedToken={usdc}
                           tokenList={[usdc]}
-                          onMaxButtonClick={() => {
-                            setFundsAmount(maxAmount);
-                          }}
                           onChange={(e) => {
                             if (e !== null && e >= MAX_USDC_AMOUNT) {
                               setFundsAmount(MAX_USDC_AMOUNT);
