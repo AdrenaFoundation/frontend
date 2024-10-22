@@ -364,7 +364,7 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() => triggerStopLossTakeProfit(position)}
+              onClick={() => !position.isOptimistic && triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
             >
@@ -388,7 +388,7 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() => triggerStopLossTakeProfit(position)}
+              onClick={() => !position.isOptimistic && triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
             >
@@ -398,9 +398,9 @@ export default function PositionBlock({
                 <FormatNumber
                   nb={position.stopLossLimitPrice}
                   format="currency"
-                    className="text-xs text-blue"
-                    precision={position.token.displayPriceDecimalsPrecision}
-                    minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                  className="text-xs text-blue"
+                  precision={position.token.displayPriceDecimalsPrecision}
+                  minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
                 />
               ) : (
                 <div className="flex text-xs">-</div>
