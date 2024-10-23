@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
+import { CSSTransition } from 'react-transition-group';
+import '../../../styles/Animation.css';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -187,9 +189,8 @@ export default function StakeOverview({
   const totalStakeAmount = (isALP ? totalLockedStake : Number(totalLockedStake) + Number(totalLiquidStaked)) ?? 0;
   const isBigStakeAmount = totalStakeAmount > 1000000;
 
-
   const allTimeClaimedUsdc = claimsHistory?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0;
-  const allTimeClaimedAdx = claimsHistory?.reduce((sum, claim) => sum + claim.rewards_adx, 0) ?? 0;
+  const allTimeClaimedAdx = claimsHistory?.reduce((sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis, 0) ?? 0;
   const isBigUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 100_000;
   const isBigAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1_000_000;
 
@@ -206,26 +207,16 @@ export default function StakeOverview({
             <div className="flex flex-row items-center gap-6">
               <div>
                 <p className="opacity-50 text-base">Total staked</p>
-                {isBigStakeAmount ? (
-                  <FormatNumber
-                    nb={totalStakeAmount}
-                    minimumFractionDigits={2}
-                    isAbbreviate={isBigStakeAmount}
-                    suffix={` ${token}`}
-                    className="text-2xl cursor-pointer"
-                    info={formatNumber(totalStakeAmount, 2, 2)}
-                  />
-                ) : (
-                  <FormatNumber
-                    nb={totalStakeAmount}
-                    minimumFractionDigits={2}
-                    isAbbreviate={
-                      isBigStakeAmount
-                    }
-                    suffix={` ${token}`}
-                    className="text-2xl"
-                  />
-                )}
+                <FormatNumber
+                  nb={totalStakeAmount}
+                  minimumFractionDigits={totalStakeAmount < 1000 ? 2 : 0}
+                  precision={totalStakeAmount < 1000 ? 2 : 0}
+                  precisionIfPriceDecimalsBelow={totalStakeAmount < 1000 ? 2 : 0}
+                  isAbbreviate={isBigStakeAmount}
+                  suffix={` ${token}`}
+                  className="text-2xl cursor-pointer"
+                  info={isBigStakeAmount ? formatNumber(totalStakeAmount, 2, 2) : undefined}
+                />
               </div>
 
               <Image
@@ -474,7 +465,7 @@ export default function StakeOverview({
           </div>
         </div>
 
-        <div className="h-[1px] bg-bcolor w-full my-5" />
+        <div className="h-[1px] bg-bcolor w-full my-4" />
 
         <div className="flex flex-col text-sm py-0 px-5">
           <button
@@ -548,7 +539,13 @@ export default function StakeOverview({
 
           </button>
           {/* Claim History Section */}
-          {isClaimHistoryVisible && (
+
+          <CSSTransition
+            in={isClaimHistoryVisible}
+            timeout={300}
+            classNames="claim-history"
+            unmountOnExit
+          >
             <div className="mt-4">
               <div mt-2>
                 {paginatedClaimsHistory.length > 0 ? (
@@ -570,11 +567,12 @@ export default function StakeOverview({
                 onPageChange={setCurrentPage}
               />
             </div>
-          )}
+          </CSSTransition>
         </div>
 
+        <div className="h-[1px] bg-bcolor w-full my-4" />
+
         {/* Locked stakes section */}
-        <div className="h-[1px] bg-bcolor w-full my-5" />
         <div className="px-5">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
             <div className="flex items-center justify-between">

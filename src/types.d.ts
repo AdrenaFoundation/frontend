@@ -445,6 +445,7 @@ export type RechartsData = {
 export type ClaimApi = {
   claim_id: number;
   rewards_adx: number;
+  rewards_adx_genesis: number;
   rewards_usdc: number;
   signature: string;
   transaction_date: string; // ISO date-time string
@@ -465,6 +466,7 @@ export type ClaimHistoryExtended = {
   created_at: Date;
   stake_mint: string;
   rewards_adx: number;
+  rewards_adx_genesis: number;
   rewards_usdc: number;
   signature: string;
   source: 'manual' | 'auto';

@@ -49,6 +49,7 @@ export default function useClaimHistory(): {
         return {
           claim_id: claim.claim_id,
           rewards_adx: claim.rewards_adx,
+          rewards_adx_genesis: claim.rewards_adx_genesis ?? 0,
           rewards_usdc: claim.rewards_usdc,
           signature: claim.signature,
           transaction_date: new Date(claim.transaction_date),

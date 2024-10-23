@@ -4,7 +4,7 @@ import React from 'react';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { formatDate, getTxExplorer } from '@/utils';
+import { formatDate, formatNumber, getTxExplorer } from '@/utils';
 
 import { ClaimHistoryExtended } from '../../../types';
 
@@ -59,12 +59,13 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
 
                 <div className="flex flex-row items-center justify-end min-w-[5em] w-[12em]">
                     <FormatNumber
-                        nb={claim.rewards_adx}
+                        nb={claim.rewards_adx + claim.rewards_adx_genesis}
                         format="number"
                         className="text-gray-400 text-xs mr-1"
                         minimumFractionDigits={2}
                         prefix="+ "
                         suffix=" ADX"
+                        info={`Base rewards: ${formatNumber(claim.rewards_adx, 2, 2)} Genesis rewards: ${formatNumber(claim.rewards_adx_genesis, 2, 2)}`}
                     />
                     {/* <Image
                         src={adxTokenLogo}
