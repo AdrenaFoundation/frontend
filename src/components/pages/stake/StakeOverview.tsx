@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
+import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
@@ -16,8 +17,6 @@ import {
 } from '@/pages/stake';
 import { AlpLockPeriod, ClaimHistoryExtended, LockedStakeExtended } from '@/types';
 import { formatNumber, getNextStakingRoundStartTime } from '@/utils';
-import ClaimBlock from './ClaimBlock';
-import Pagination from '@/components/common/Pagination/Pagination';
 
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
 import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
@@ -25,6 +24,7 @@ import adxTokenLogo from '../../../../public/images/adx.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import InfoAnnotation from '../monitoring/InfoAnnotation';
+import ClaimBlock from './ClaimBlock';
 
 interface SortConfig {
   size: 'asc' | 'desc';

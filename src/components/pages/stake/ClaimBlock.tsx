@@ -1,13 +1,12 @@
-import React from 'react';
-import { ClaimHistoryExtended } from '../../../types';
-import FormatNumber from '@/components/Number/FormatNumber';
-import { formatDate, getTxExplorer } from '@/utils';
-import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
 
-import adxTokenLogo from '../../../../public/images/adx.svg';
-import usdcTokenLogo from '../../../../public/images/usdc.svg';
+import externalLinkLogo from '@/../public/images/external-link-logo.png';
+import FormatNumber from '@/components/Number/FormatNumber';
+import { formatDate, getTxExplorer } from '@/utils';
+
+import { ClaimHistoryExtended } from '../../../types';
 
 const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
 

@@ -16,13 +16,11 @@ export default function useClaimHistory(): {
     ClaimHistoryExtended[] | null
   >(null);
 
-  async function fetchClaimsHistory(): Promise<
-    ClaimHistoryExtended[] | null
-  > {
+  async function fetchClaimsHistory(): Promise<ClaimHistoryExtended[] | null> {
     if (!wallet) return null;
 
     const response = await fetch(
-      `https://datapi.adrena.xyz/claim?user_wallet=${wallet.walletAddress}`,
+      `https://datapi.adrena.xyz/claim?user_wallet=${wallet.walletAddress}&start_date=2024-09-01T00:00:00Z`,
     );
 
     if (!response.ok) {
@@ -43,7 +41,10 @@ export default function useClaimHistory(): {
 
     const enrichedClaimsWithSymbol: ClaimHistoryExtended[] = apiData.claims
       .map((claim) => {
-        const symbol = claim.mint === window.adrena.client.lmTokenMint.toBase58() ? 'ADX' : 'ALP';
+        const symbol =
+          claim.mint === window.adrena.client.lmTokenMint.toBase58()
+            ? 'ADX'
+            : 'ALP';
 
         return {
           claim_id: claim.claim_id,
@@ -57,7 +58,8 @@ export default function useClaimHistory(): {
           source: claim.source,
         } as ClaimHistoryExtended;
       })
-      .filter((claim) => claim !== null).reverse() as ClaimHistoryExtended[];
+      .filter((claim) => claim !== null)
+      .reverse() as ClaimHistoryExtended[];
 
     return enrichedClaimsWithSymbol;
   }
@@ -80,16 +82,8 @@ export default function useClaimHistory(): {
         return;
       }
 
-      setClaimsHistoryAdx(
-        claimsHistory.filter(
-          (c) => c.symbol === 'ADX',
-        ),
-      );
-      setClaimsHistoryAlp(
-        claimsHistory.filter(
-          (c) => c.symbol === 'ALP',
-        ),
-      );
+      setClaimsHistoryAdx(claimsHistory.filter((c) => c.symbol === 'ADX'));
+      setClaimsHistoryAlp(claimsHistory.filter((c) => c.symbol === 'ALP'));
     } catch (e) {
       console.log('Error loading claims history', e, String(e));
       throw e;
