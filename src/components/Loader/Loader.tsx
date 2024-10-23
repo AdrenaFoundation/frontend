@@ -23,7 +23,7 @@ export default function Loader({
 }) {
   return (
     <div className={className ?? ''}>
-      {/* <Lottie options={defaultOptions} height={height} width={width} /> */}
+      <Lottie options={defaultOptions} height={height} width={width} />
     </div>
   );
 }
