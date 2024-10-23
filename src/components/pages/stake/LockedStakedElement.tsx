@@ -95,7 +95,6 @@ export default function LockedStakedElement({
             nb={lockStakedAmount}
             className="text-xl inline-block"
             suffix={` ${token.symbol}`}
-            isSuffixDimmed={true}
             isAbbreviate={lockStakedAmount >= 100_000}
             isDecimalDimmed={lockStakedAmount < 100_000}
             precision={lockStakedAmount < 1000 ? 2 : 0}
