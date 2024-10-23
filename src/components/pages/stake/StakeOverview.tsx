@@ -493,20 +493,21 @@ export default function StakeOverview({
                   <p className="text-txtfade">All time claimed amounts:</p>
                   <InfoAnnotation text="Data collection does not start from protocol launch as we updated an instruction (upgradeClaim), numbers might not include some initial claims." />
                 </div>
-                <div className="flex flex-row space-x-4 text-xs opacity-70">
+                <div className="flex flex-row space-x-4 text-xs">
                   <div className="flex items-center">
                     <FormatNumber
                       nb={allTimeClaimedUsdc}
                       minimumFractionDigits={2}
                       isAbbreviate={isBigUsdcAllTimeClaimAmount}
                       info={isBigUsdcAllTimeClaimAmount ? formatNumber(allTimeClaimedUsdc, 2, 2) : undefined}
+                      className='text-txtfade'
                     />
                     <Image
                       src={usdcTokenLogo}
                       width={16}
                       height={16}
                       alt="USDC logo"
-                      className="ml-1"
+                      className="ml-1 opacity-50"
                     />
                   </div>
                   <div className="flex items-center">
@@ -516,13 +517,14 @@ export default function StakeOverview({
                       minimumFractionDigits={2}
                       isAbbreviate={isBigAdxAllTimeClaimAmount}
                       info={isBigAdxAllTimeClaimAmount ? formatNumber(allTimeClaimedAdx, 2, 2) : undefined}
+                      className='text-txtfade'
                     />
                     <Image
                       src={adxTokenLogo}
                       width={16}
                       height={16}
                       alt="ADX logo"
-                      className="ml-1"
+                      className="ml-1 opacity-50"
                     />
                   </div>
                 </div>
