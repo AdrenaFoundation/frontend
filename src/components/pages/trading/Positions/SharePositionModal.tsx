@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
+import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -28,6 +29,7 @@ export default function SharePositionModal({
   position: PositionExtended;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
+  const [isPnlUsd, setIsPnlUsd] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [option, setOption] = useState(0);
@@ -61,6 +63,8 @@ export default function SharePositionModal({
     ? ((position.pnl - fees) / position.collateralUsd) * 100
     : undefined;
 
+  const pnlUsd = position.pnl ? position.pnl - fees : undefined;
+
   const openedOn = new Date(
     Number(position.nativeObject.openTime) * 1000,
   ).toLocaleDateString('en-US', {
@@ -73,6 +77,8 @@ export default function SharePositionModal({
   const params = {
     opt: option,
     pnl: formatNumber(pnlPercentage ?? 0, 2),
+    pnlUsd: pnlUsd ?? 0,
+    isPnlUsd: isPnlUsd,
     side: position.side,
     symbol: getTokenSymbol(position.token.symbol),
     collateral: position.collateralUsd,
@@ -129,8 +135,8 @@ export default function SharePositionModal({
           </div>
         </div>
         <FormatNumber
-          nb={pnlPercentage}
-          format="percentage"
+          nb={isPnlUsd ? pnlUsd : pnlPercentage}
+          format={isPnlUsd ? 'currency' : 'percentage'}
           className={twMerge(
             'text-[60px] sm:text-[70px] archivo-black relative z-10',
             pnlPercentage && pnlPercentage < 99 && 'sm:text-[85px]',
@@ -146,7 +152,10 @@ export default function SharePositionModal({
               Entry Price
             </span>
             <span className="archivo-black text-sm sm:text-lg">
-              {formatPriceInfo(position.price, position.token.displayPriceDecimalsPrecision)}
+              {formatPriceInfo(
+                position.price,
+                position.token.displayPriceDecimalsPrecision,
+              )}
             </span>
           </li>
           <li className="flex flex-col gap-1">
@@ -204,7 +213,9 @@ export default function SharePositionModal({
         </AnimatePresence>
       </div>
 
-      <div className="flex flex-row gap-3 mt-3">
+      <p className="opacity-50 mb-3 mt-6">Customize</p>
+
+      <div className="flex flex-row gap-3">
         {OPTIONS.map((opt) => (
           <div
             className={twMerge(
@@ -231,6 +242,25 @@ export default function SharePositionModal({
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-3">
+        <div
+          className="flex flex-row justify-between gap-3 bg-secondary border border-bcolor p-3 rounded-md cursor-pointer select-none"
+          onClick={() => setIsPnlUsd(!isPnlUsd)}
+        >
+          <p className="font-boldy text-base">Display PnL in USD</p>
+          <label className="flex items-center ml-1 cursor-pointer">
+            <Switch
+              className="mr-0.5"
+              checked={isPnlUsd}
+              onChange={() => {
+                // Handle the click on the level above
+              }}
+              size="large"
+            />
+          </label>
+        </div>
       </div>
       <div className="mt-3">
         <Button

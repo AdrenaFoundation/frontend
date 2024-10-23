@@ -22,6 +22,8 @@ export default async function handler(request: NextRequest) {
     const collateralUsd = Number(searchParams.get('collateral'));
     const price = Number(searchParams.get('price'));
     const mark = Number(searchParams.get('mark'));
+    const isPnlUsd = Boolean(searchParams.get('isPnlUsd'));
+    const pnlUsd = Number(searchParams.get('pnlUsd'));
     const openedOn = new Date(
         Number(searchParams.get('opened')),
     ).toLocaleDateString('en-US', {
@@ -108,7 +110,7 @@ export default async function handler(request: NextRequest) {
                         pnlPercentage < 0 ? 'text-[#c9243a]' : 'text-[#07956b]',
                     )}
                 >
-                    {pnlPercentage.toFixed(2)}%
+                    {isPnlUsd ? `$${pnlUsd.toFixed(2)}` : `${pnlPercentage.toFixed(2)}%`}
                 </p>
                 <ul tw="flex flex-row mt-[10px] mt-[120px]">
                     <li tw="flex flex-col">
