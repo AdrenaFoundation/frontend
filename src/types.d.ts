@@ -23,6 +23,17 @@ export type GeoBlockingData = {
   allowed: boolean;
 };
 
+export type SolanaExplorerOptions =
+  | 'Solana Explorer'
+  | 'Solscan'
+  | 'Solana Beach'
+  | 'Solana FM';
+
+export type Settings = {
+  // priorityFee: PriorityFeeOption;
+  solanaExplorer: SolanaExplorerOptions;
+};
+
 export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
@@ -30,6 +41,7 @@ export type AdrenaGlobal = {
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
+  settings: Settings;
 };
 
 // Rive doesn't expose the type
@@ -49,7 +61,6 @@ declare global {
 export type WalletAdapterName =
   | 'phantom'
   | 'backpack'
-  | 'walletConnect'
   | 'coinbase'
   | 'solflare';
 
