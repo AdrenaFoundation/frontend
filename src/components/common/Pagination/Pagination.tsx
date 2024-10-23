@@ -20,11 +20,12 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="flex justify-center items-center space-x-2">
+      <span className="text-sm text-txtfade opacity-0">{`(${itemsSeen}/${totalItems})`}</span>
       <div className="flex items-center space-x-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50"
+          className="px-3 py-1 rounded bg-secondary text-txtfade text-base disabled:opacity-50 "
         >
           &lt;
         </button>
