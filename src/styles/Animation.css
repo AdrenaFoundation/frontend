@@ -1,0 +1,20 @@
+/* ClaimHistoryAnimation.css */
+.claim-history-enter {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease-in-out;
+}
+
+.claim-history-enter-active {
+  max-height: 500px; /* Adjust based on content */
+}
+
+.claim-history-exit {
+  max-height: 500px; /* Match the enter-active max-height */
+  overflow: hidden;
+  transition: max-height 300ms ease-in-out;
+}
+
+.claim-history-exit-active {
+  max-height: 0;
+}

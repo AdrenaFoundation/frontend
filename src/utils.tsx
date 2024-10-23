@@ -248,11 +248,6 @@ export function addNotification({
     <p className="text-sm font-mono font-medium">{title}</p>
   );
 
-  console.log(
-    'autoClose',
-    { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,
-  );
-
   toast[type](content, {
     position: 'bottom-left',
     autoClose: { fast: 1_000, regular: 2_000, long: 10_000 }[duration] ?? 5_000,

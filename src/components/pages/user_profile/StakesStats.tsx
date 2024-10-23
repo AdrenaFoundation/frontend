@@ -3,6 +3,8 @@ import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { LockedStakeExtended } from '@/types';
+import { useState } from 'react';
+import Pagination from '@/components/common/Pagination/Pagination';
 
 export default function StakesStats({
   liquidStakedADX,
@@ -17,10 +19,23 @@ export default function StakesStats({
   lockedStakedADX: number | null;
   lockedStakedALP: number | null;
   lockedStakes: LockedStakeExtended[] | null;
-  handleLockedStakeRedeem: (lockedStake: LockedStakeExtended) => void;
+  handleLockedStakeRedeem: (
+    lockedStake: LockedStakeExtended,
+    earlyExit: boolean,
+  ) => void;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lockedStakesPerPage, setLockedStakesPerPage] = useState(4);
+
+  const paginatedLockedStakes = lockedStakes
+    ? lockedStakes.slice(
+        (currentPage - 1) * lockedStakesPerPage,
+        currentPage * lockedStakesPerPage
+      )
+    : [];
+
   return (
     <StyledContainer title="Ongoing Stakes" titleClassName="text-2xl">
       <div className="flex flex-col sm:flex-row gap-3">
@@ -57,8 +72,8 @@ export default function StakesStats({
           </span>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 mt-2 gap-3">
-            {lockedStakes ? (
-              lockedStakes.map((lockedStake, i) => (
+            {paginatedLockedStakes.length > 0 ? (
+              paginatedLockedStakes.map((lockedStake, i) => (
                 <LockedStakedElement
                   lockedStake={lockedStake}
                   key={i}
@@ -88,6 +103,13 @@ export default function StakesStats({
               </div>
             )}
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalItems={lockedStakes ? lockedStakes.length : 0}
+            itemsPerPage={lockedStakesPerPage}
+            onPageChange={setCurrentPage}
+          />
         </div>
       ) : null}
     </StyledContainer>
