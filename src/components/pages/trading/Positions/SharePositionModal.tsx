@@ -95,8 +95,8 @@ export default function SharePositionModal({
 
   const shortenedUrl = `/position?data=${encodedParams}`;
 
-  const twitterText = `I just made ${pnlPercentage?.toFixed(2)}% on ${position.side
-    } position on ${position.token.symbol}!`;
+  const twitterText = `I just made ${isPnlUsd ? `$${pnlUsd?.toFixed(2)}` : `${pnlPercentage?.toFixed(2)}%`
+    } on ${position.side} position on ${position.token.symbol}!`;
 
   return (
     <div className="max-w-[600px] p-5">
