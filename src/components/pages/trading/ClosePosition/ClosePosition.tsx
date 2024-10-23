@@ -292,6 +292,7 @@ export default function ClosePosition({
                   the requested position size.
                 </p>
               }
+              placement="auto"
             >
               <Image
                 src={infoIcon}
@@ -317,6 +318,7 @@ export default function ClosePosition({
                   from the Liquidity Pool.
                 </p>
               }
+              placement="auto"
             >
               <Image
                 src={infoIcon}

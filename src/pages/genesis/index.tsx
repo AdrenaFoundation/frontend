@@ -22,10 +22,9 @@ import WalletAdapter from '@/components/WalletAdapter/WalletAdapter';
 import { GENESIS_REWARD_ADX_PER_USDC } from '@/constant';
 import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
-import { PriorityFeesAmounts } from '@/hooks/usePriorityFees';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { GenesisLock, PageProps, PriorityFeeOption } from '@/types';
+import { GenesisLock, PageProps, SolanaExplorerOptions } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
@@ -50,10 +49,7 @@ export default function Genesis({
   setAutoRpcMode,
   setCustomRpcUrl,
   setFavoriteRpc,
-  priorityFeeOption,
-  setPriorityFeeOption,
-  maxPriorityFee,
-  setMaxPriorityFee,
+  preferredSolanaExplorer,
 }: PageProps & {
   activeRpc: {
     name: string;
@@ -70,11 +66,7 @@ export default function Genesis({
   setAutoRpcMode: (autoRpcMode: boolean) => void;
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
-  priorityFeeOption: PriorityFeeOption;
-  setPriorityFeeOption: (priorityFeeOption: PriorityFeeOption) => void;
-  priorityFeeAmounts: PriorityFeesAmounts;
-  maxPriorityFee: number | null;
-  setMaxPriorityFee: (maxPriorityFee: number | null) => void;
+  preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -243,7 +235,6 @@ export default function Genesis({
           stakedTokenMint: window.adrena.client.alpToken.mint,
           threadId: new BN(Date.now()),
           notification,
-
         });
       } catch (error) {
         console.error('error', error);
@@ -264,7 +255,6 @@ export default function Genesis({
         // TODO: Apply proper slippage
         minLpAmountOut: new BN(0),
         notification,
-
       });
 
       triggerWalletTokenBalancesReload();
@@ -506,10 +496,10 @@ export default function Genesis({
                               genesis.publicAmountClaimed,
                               usdc.decimals,
                             ) /
-                              nativeToUi(
-                                genesis.publicAmount,
-                                usdc.decimals,
-                              )) *
+                                nativeToUi(
+                                  genesis.publicAmount,
+                                  usdc.decimals,
+                                )) *
                               100
                               }%`,
                           }}
@@ -574,10 +564,10 @@ export default function Genesis({
                                   genesis.reservedAmountClaimed,
                                   usdc.decimals,
                                 ) /
-                                  nativeToUi(
-                                    genesis.reservedAmount,
-                                    usdc.decimals,
-                                  )) *
+                                    nativeToUi(
+                                      genesis.reservedAmount,
+                                      usdc.decimals,
+                                    )) *
                                   100
                                   }%`,
                               }}
@@ -616,8 +606,6 @@ export default function Genesis({
                 <div className="flex flex-row gap-1 justify-end items-center">
                   <RefreshButton />
                   <Settings
-                    priorityFeeOption={priorityFeeOption}
-                    setPriorityFeeOption={setPriorityFeeOption}
                     activeRpc={activeRpc}
                     rpcInfos={rpcInfos}
                     autoRpcMode={autoRpcMode}
@@ -627,8 +615,7 @@ export default function Genesis({
                     setAutoRpcMode={setAutoRpcMode}
                     setCustomRpcUrl={setCustomRpcUrl}
                     setFavoriteRpc={setFavoriteRpc}
-                    maxPriorityFee={maxPriorityFee}
-                    setMaxPriorityFee={setMaxPriorityFee}
+                    preferredSolanaExplorer={preferredSolanaExplorer}
                     isIcon
                     isGenesis
                   />
@@ -651,13 +638,8 @@ export default function Genesis({
                           menuClassName="shadow-none justify-end mr-2"
                           menuOpenBorderClassName="rounded-tr-lg rounded-br-lg"
                           value={fundsAmount}
-                          maxButton={connected}
-                          maxClassName="relative ml-auto"
                           selectedToken={usdc}
                           tokenList={[usdc]}
-                          onMaxButtonClick={() => {
-                            setFundsAmount(maxAmount);
-                          }}
                           onChange={(e) => {
                             if (e !== null && e >= MAX_USDC_AMOUNT) {
                               setFundsAmount(MAX_USDC_AMOUNT);

@@ -250,6 +250,7 @@ export default function Buy({
                     The total value of all assets in the pool
                   </p>
                 }
+                placement="auto"
               >
                 <Image src={infoIcon} width={16} height={16} alt="info icon" />
               </Tippy>

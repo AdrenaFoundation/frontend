@@ -42,7 +42,14 @@ export default function ADXStakeToken({
           <div className="flex flex-row justify-between mb-1">
             <h5 className="ml-4"> Amount</h5>
 
-            <div className="text-sm flex items-center justify-end h-6">
+            <div
+              className="text-sm flex items-center justify-end h-6 cursor-pointer"
+              onClick={() => {
+                if (balance === null) return;
+
+                setAmount(balance);
+              }}
+            >
               <Image
                 className="mr-1 opacity-60 relative"
                 src={walletImg}
@@ -71,16 +78,6 @@ export default function ADXStakeToken({
               value={amount ?? ''}
               onChange={onStakeAmountChange}
               placeholder="0.00"
-            />
-            <Button
-              className="absolute right-2 bottom-3.5 text-main"
-              title="MAX"
-              variant="primary"
-              onClick={() => {
-                if (balance === null) return;
-
-                setAmount(balance);
-              }}
             />
           </div>
         </div>

@@ -125,7 +125,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       <div className={twMerge(info && 'flex flex-row gap-1 items-center')}>
         <Tippy
           content={
-            <div className="text-sm w-60 flex flex-col justify-around">
+            <div className="text-sm w-60 flex flex-col justify-around items-center">
               {info}
             </div>
           }

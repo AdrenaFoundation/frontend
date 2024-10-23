@@ -86,7 +86,6 @@ export default function Table({
     nbItemPerPageWhenBreakpoint,
   ]);
 
-
   const paginationDiv = useMemo(() => {
     let first = true;
 
@@ -105,7 +104,10 @@ export default function Table({
           return (
             <div key={`pagination-${i}`}>
               {shouldDisplay ? (
-                <div key={`pagination-none-${i}`} className="cursor-pointer text-txtfade">
+                <div
+                  key={`pagination-none-${i}`}
+                  className="cursor-pointer text-txtfade"
+                >
                   ..
                 </div>
               ) : null}
@@ -189,7 +191,7 @@ export default function Table({
         </div>
       ))}
 
-      {paginationDiv}
+      {nbPages && nbPages > 1 && paginationDiv}
     </StyledSubSubContainer>
   ) : (
     <>
@@ -201,7 +203,7 @@ export default function Table({
         className={className}
       />
 
-      {paginationDiv}
+      {nbPages && nbPages > 1 && paginationDiv}
     </>
   );
 }

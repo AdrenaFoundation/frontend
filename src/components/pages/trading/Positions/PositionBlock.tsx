@@ -274,13 +274,18 @@ export default function PositionBlock({
               Size
             </div>
             <div className="flex underline-dashed">
-              <Tippy content={<FormatNumber
-                nb={position.size}
-                format="number"
-                className="text-gray-400 text-xs"
-                precision={position.token.displayAmountDecimalsPrecision}
-                suffix={` ${getTokenSymbol(position.token.symbol)}`}
-              />}>
+              <Tippy
+                content={
+                  <FormatNumber
+                    nb={position.size}
+                    format="number"
+                    className="text-gray-400 text-xs"
+                    precision={position.token.displayAmountDecimalsPrecision}
+                    suffix={` ${getTokenSymbol(position.token.symbol)}`}
+                  />
+                }
+                placement="auto"
+              >
                 <FormatNumber
                   nb={position.sizeUsd}
                   format="currency"
@@ -295,13 +300,22 @@ export default function PositionBlock({
               Collateral
             </div>
             <div className="flex underline-dashed">
-              <Tippy content={<FormatNumber
-                nb={position.collateralAmount}
-                format="number"
-                className="text-gray-400 text-xs"
-                precision={position.collateralToken.displayAmountDecimalsPrecision}
-                suffix={` ${getTokenSymbol(position.collateralToken.symbol)} (at init.)`}
-              />}>
+              <Tippy
+                content={
+                  <FormatNumber
+                    nb={position.collateralAmount}
+                    format="number"
+                    className="text-gray-400 text-xs"
+                    precision={
+                      position.collateralToken.displayAmountDecimalsPrecision
+                    }
+                    suffix={` ${getTokenSymbol(
+                      position.collateralToken.symbol,
+                    )} (at init.)`}
+                  />
+                }
+                placement="auto"
+              >
                 <FormatNumber
                   nb={position.collateralUsd}
                   format="currency"
@@ -364,7 +378,9 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() => !position.isOptimistic && triggerStopLossTakeProfit(position)}
+              onClick={() =>
+                !position.isOptimistic && triggerStopLossTakeProfit(position)
+              }
               role="button"
               tabIndex={0}
             >
@@ -388,7 +404,9 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() => !position.isOptimistic && triggerStopLossTakeProfit(position)}
+              onClick={() =>
+                !position.isOptimistic && triggerStopLossTakeProfit(position)
+              }
               role="button"
               tabIndex={0}
             >
@@ -400,7 +418,9 @@ export default function PositionBlock({
                   format="currency"
                   className="text-xs text-blue"
                   precision={position.token.displayPriceDecimalsPrecision}
-                  minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                  minimumFractionDigits={
+                    position.token.displayPriceDecimalsPrecision
+                  }
                 />
               ) : (
                 <div className="flex text-xs">-</div>
@@ -460,7 +480,7 @@ export default function PositionBlock({
             <h2 className="text-red text-xs">Liquidable</h2>
           </div>
         ) : null}
-      </div >
+      </div>
       <AnimatePresence>
         {isOpen && (
           <Modal title="Share PnL" close={() => setIsOpen(false)}>

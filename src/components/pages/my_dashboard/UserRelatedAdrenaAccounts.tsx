@@ -50,9 +50,9 @@ export default function UserRelatedAdrenaAccounts({
   const [rent, setRent] = useState<number | null>(null);
   const [data, setData] = useState<
     | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-      }[]
+      rowTitle: ReactNode;
+      value: ReactNode;
+    }[]
     | null
   >(null);
 
@@ -178,9 +178,8 @@ export default function UserRelatedAdrenaAccounts({
     positions?.forEach((position) => {
       data.push(
         onchainAccountData({
-          title: `${getTokenSymbol(position.token.symbol)} ${
-            position.side === 'long' ? 'Long' : 'Short'
-          } Position`,
+          title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
+            } Position`,
           address: position.pubkey,
           program: 'Adrena',
         }),
@@ -200,9 +199,8 @@ export default function UserRelatedAdrenaAccounts({
 
         data.push(
           onchainAccountData({
-            title: `${getTokenSymbol(position.token.symbol)} ${
-              position.side === 'long' ? 'Long' : 'Short'
-            } Position Take Profit`,
+            title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
+              } Position Take Profit`,
             address: takeProfitThread,
             program: 'Sablier',
           }),
@@ -221,9 +219,8 @@ export default function UserRelatedAdrenaAccounts({
 
         data.push(
           onchainAccountData({
-            title: `${getTokenSymbol(position.token.symbol)} ${
-              position.side === 'long' ? 'Long' : 'Short'
-            } Position Stop Loss`,
+            title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
+              } Position Stop Loss`,
             address: stopLossThread,
             program: 'Sablier',
           }),
@@ -291,6 +288,8 @@ export default function UserRelatedAdrenaAccounts({
         rowTitleWidth="50%"
         data={data}
         rowTitleClassName="text-sm"
+        pagination={true}
+        nbItemPerPage={10}
       />
     </StyledContainer>
   );

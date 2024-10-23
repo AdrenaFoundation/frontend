@@ -51,11 +51,10 @@ export default function StakeLanding({
     return acc;
   }, {} as { [key: string]: { usdc: number; adx: number } });
 
-  console.log(ALP_STAKE_MULTIPLIERS_EXCLUDE_0);
   const TOKENS = [
     {
       name: 'ALP',
-      desc: 'Provide liquidities long term: the longer the period, the higher the rewards. 70% of protocol fees are distributed to ALP holder and stakers.',
+      desc: 'Provide liquidities: the longer the period, the higher the rewards. 70% of protocol fees are distributed to ALP holder and stakers.',
       logo: alpLogo,
       sellingPoints: [
         {
@@ -219,7 +218,7 @@ export default function StakeLanding({
         <Image
           src={alpMonster}
           alt="ALP Monster"
-          className="absolute bottom-0 left-0 w-1/2 grayscale scale-[0.75]"
+          className="absolute bottom-0 left-0 w-1/2 grayscale select-none scale-[0.75]"
         />
         <div
           className="hidden sm:block absolute left-0 top-0 w-1/2 h-full flex-1 opacity-60"
@@ -238,7 +237,7 @@ export default function StakeLanding({
         <Image
           src={adxMonster}
           alt="ADX Monster"
-          className="absolute bottom-10 right-32 w-1/2 grayscale"
+          className="absolute bottom-10 right-32 w-1/2 grayscale select-none"
         />
         <div
           className="hidden sm:block absolute right-0 top-0 w-1/2 h-full flex-1 opacity-60"

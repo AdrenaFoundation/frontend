@@ -23,6 +23,17 @@ export type GeoBlockingData = {
   allowed: boolean;
 };
 
+export type SolanaExplorerOptions =
+  | 'Solana Explorer'
+  | 'Solscan'
+  | 'Solana Beach'
+  | 'Solana FM';
+
+export type Settings = {
+  // priorityFee: PriorityFeeOption;
+  solanaExplorer: SolanaExplorerOptions;
+};
+
 export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
@@ -30,6 +41,7 @@ export type AdrenaGlobal = {
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
+  settings: Settings;
 };
 
 // Rive doesn't expose the type
@@ -49,7 +61,6 @@ declare global {
 export type WalletAdapterName =
   | 'phantom'
   | 'backpack'
-  | 'walletConnect'
   | 'coinbase'
   | 'solflare';
 
@@ -440,4 +451,36 @@ export type PositionHistoryApi = {
 
 export type RechartsData = {
   [key: string]: number | string | boolean;
+};
+
+export type ClaimApi = {
+  claim_id: number;
+  rewards_adx: number;
+  rewards_adx_genesis: number;
+  rewards_usdc: number;
+  signature: string;
+  transaction_date: string; // ISO date-time string
+  created_at: string; // ISO date-time string
+  mint: string;
+  source: 'manual' | 'auto';
+};
+
+export type ClaimHistoryApi = {
+  start_date: string; // ISO date-time string
+  end_date: string; // ISO date-time string
+  limit: number;
+  claims: ClaimApi[];
+};
+
+export type ClaimHistoryExtended = {
+  claim_id: number;
+  created_at: Date;
+  stake_mint: string;
+  rewards_adx: number;
+  rewards_adx_genesis: number;
+  rewards_usdc: number;
+  signature: string;
+  source: 'manual' | 'auto';
+  symbol: string;
+  transaction_date: Date;
 };

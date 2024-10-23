@@ -1,7 +1,7 @@
 import { BN } from '@coral-xyz/anchor';
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -15,6 +15,7 @@ import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useClaimHistory from '@/hooks/useClaimHistory';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import { useStakingClaimableRewards } from '@/hooks/useStakingClaimableRewards';
@@ -62,7 +63,8 @@ export default function Stake({
 }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-
+  const { claimsHistoryAdx, claimsHistoryAlp, triggerClaimsReload } =
+    useClaimHistory();
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
     null;
@@ -233,7 +235,6 @@ export default function Stake({
         amount,
         stakedTokenMint,
         notification,
-
       });
 
       triggerWalletTokenBalancesReload();
@@ -271,7 +272,6 @@ export default function Stake({
         updatedDuration,
         additionalAmount,
         notification,
-
       });
 
       triggerWalletTokenBalancesReload();
@@ -365,6 +365,7 @@ export default function Stake({
         fetchAlpRewards();
       }
       triggerWalletStakingAccountsReload();
+      triggerClaimsReload();
     } catch (error) {
       console.error('error', error);
     }
@@ -497,8 +498,10 @@ export default function Stake({
     : null;
 
   // The rewards pending for the user
-  const { rewards: adxRewards, fetchRewards: fetchAdxRewards } = useStakingClaimableRewards('ADX');
-  const { rewards: alpRewards, fetchRewards: fetchAlpRewards } = useStakingClaimableRewards('ALP');
+  const { rewards: adxRewards, fetchRewards: fetchAdxRewards } =
+    useStakingClaimableRewards('ADX');
+  const { rewards: alpRewards, fetchRewards: fetchAlpRewards } =
+    useStakingClaimableRewards('ALP');
 
   // The rewards pending collection in the current round
   const alpStakingCurrentRoundRewards = useStakingAccountRewardsAccumulated(
@@ -536,7 +539,7 @@ export default function Stake({
 
     setTimeout(() => {
       setIsStakeLoaded(true);
-    }, 500);
+    }, 100);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -590,37 +593,39 @@ export default function Stake({
     </Modal>
   );
 
-  if (!isStakeLoaded && connected) {
+  if (!isStakeLoaded) {
     return (
-      <div className="m-auto">
-        <Loader />
-      </div>
+      <AnimatePresence>
+        <motion.div
+          key="loader"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="m-auto"
+        >
+          <Loader />
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
-  if (
-    !connected ||
-    (adxDetails.totalStaked === 0 && alpDetails.totalLockedStake === 0)
-  ) {
-    return (
-      <>
-        {modal}
-        <StakeLanding
-          connected={connected}
-          handleClickOnStakeMoreALP={() => {
-            setLockPeriod(180);
-            setActiveStakingToken('ALP');
-          }}
-          handleClickOnStakeMoreADX={() => {
-            setLockPeriod(180);
-            setActiveStakingToken('ADX');
-          }}
-        />
-      </>
-    );
-  }
-
-  return (
+  return !connected ||
+    (adxDetails.totalStaked === 0 && alpDetails.totalLockedStake === 0) ? (
+    <>
+      {modal}
+      <StakeLanding
+        connected={connected}
+        handleClickOnStakeMoreALP={() => {
+          setLockPeriod(180);
+          setActiveStakingToken('ALP');
+        }}
+        handleClickOnStakeMoreADX={() => {
+          setLockPeriod(180);
+          setActiveStakingToken('ADX');
+        }}
+      />
+    </>
+  ) : (
     <>
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0">
         <RiveAnimation
@@ -649,81 +654,88 @@ export default function Stake({
       </div>
       <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[1300px] m-auto">
         <>
-          <StakeOverview
-            token={'ALP'}
-            totalLockedStake={alpDetails.totalLockedStake}
-            totalRedeemableLockedStake={getTotalRedeemableLockedStake('ALP')}
-            lockedStakes={alpLockedStakes}
-            handleLockedStakeRedeem={handleLockedStakeRedeem}
-            handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
-            handleClickOnStakeMore={(initialLockPeriod: AlpLockPeriod) => {
-              setLockPeriod(initialLockPeriod);
-              setActiveStakingToken('ALP');
-            }}
-            handleClickOnFinalizeLockedRedeem={(
-              lockedStake: LockedStakeExtended,
-            ) => {
-              setLockedStake(lockedStake);
-              setUpgradeLockedStake(false);
-              setFinalizeLockedStakeRedeem(true);
-            }}
-            userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
-            userPendingAdxRewards={alpRewards.pendingAdxRewards}
-            roundPendingUsdcRewards={
-              alpStakingCurrentRoundRewards.usdcRewards ?? 0
-            }
-            roundPendingAdxRewards={
-              alpStakingCurrentRoundRewards.adxRewards ?? 0
-            }
-            pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
-            nextRoundTime={nextStakingRoundTimeAlp ?? 0}
-            handleClickOnUpdateLockedStake={(
-              lockedStake: LockedStakeExtended,
-            ) => {
-              setLockedStake(lockedStake);
-              setUpgradeLockedStake(true);
-              setFinalizeLockedStakeRedeem(false);
-            }}
-          />
 
-          <StakeOverview
-            token={'ADX'}
-            totalLockedStake={adxDetails.totalLockedStake}
-            totalLiquidStaked={adxDetails.totalLiquidStaked}
-            totalRedeemableLockedStake={getTotalRedeemableLockedStake('ADX')}
-            lockedStakes={adxLockedStakes}
-            handleLockedStakeRedeem={handleLockedStakeRedeem}
-            handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
-            handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
-              setLockPeriod(initialLockPeriod);
-              setActiveStakingToken('ADX');
-            }}
-            handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
-            handleClickOnFinalizeLockedRedeem={(
-              lockedStake: LockedStakeExtended,
-            ) => {
-              setLockedStake(lockedStake);
-              setUpgradeLockedStake(false);
-              setFinalizeLockedStakeRedeem(true);
-            }}
-            userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
-            userPendingAdxRewards={adxRewards.pendingAdxRewards}
-            roundPendingUsdcRewards={
-              adxStakingCurrentRoundRewards.usdcRewards ?? 0
-            }
-            roundPendingAdxRewards={
-              adxStakingCurrentRoundRewards.adxRewards ?? 0
-            }
-            pendingGenesisAdxRewards={adxRewards.pendingGenesisAdxRewards}
-            nextRoundTime={nextStakingRoundTimeAdx ?? 0}
-            handleClickOnUpdateLockedStake={(
-              lockedStake: LockedStakeExtended,
-            ) => {
-              setLockedStake(lockedStake);
-              setUpgradeLockedStake(true);
-              setFinalizeLockedStakeRedeem(false);
-            }}
-          />
+          <div className="flex-1">
+            <StakeOverview
+              token={'ALP'}
+              totalLockedStake={alpDetails.totalLockedStake}
+              totalRedeemableLockedStake={getTotalRedeemableLockedStake('ALP')}
+              lockedStakes={alpLockedStakes}
+              handleLockedStakeRedeem={handleLockedStakeRedeem}
+              handleClickOnClaimRewards={() => handleClaimRewards('ALP')}
+              handleClickOnStakeMore={(initialLockPeriod: AlpLockPeriod) => {
+                setLockPeriod(initialLockPeriod);
+                setActiveStakingToken('ALP');
+              }}
+              handleClickOnFinalizeLockedRedeem={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setUpgradeLockedStake(false);
+                setFinalizeLockedStakeRedeem(true);
+              }}
+              userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
+              userPendingAdxRewards={alpRewards.pendingAdxRewards}
+              roundPendingUsdcRewards={
+                alpStakingCurrentRoundRewards.usdcRewards ?? 0
+              }
+              roundPendingAdxRewards={
+                alpStakingCurrentRoundRewards.adxRewards ?? 0
+              }
+              pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
+              nextRoundTime={nextStakingRoundTimeAlp ?? 0}
+              handleClickOnUpdateLockedStake={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setUpgradeLockedStake(true);
+                setFinalizeLockedStakeRedeem(false);
+              }}
+              claimsHistory={claimsHistoryAlp}
+            />
+          </div>
+
+          <div className="flex-1">
+            <StakeOverview
+              token={'ADX'}
+              totalLockedStake={adxDetails.totalLockedStake}
+              totalLiquidStaked={adxDetails.totalLiquidStaked}
+              totalRedeemableLockedStake={getTotalRedeemableLockedStake('ADX')}
+              lockedStakes={adxLockedStakes}
+              handleLockedStakeRedeem={handleLockedStakeRedeem}
+              handleClickOnClaimRewards={() => handleClaimRewards('ADX')}
+              handleClickOnStakeMore={(initialLockPeriod: AdxLockPeriod) => {
+                setLockPeriod(initialLockPeriod);
+                setActiveStakingToken('ADX');
+              }}
+              handleClickOnRedeem={() => setActiveRedeemLiquidADX(true)}
+              handleClickOnFinalizeLockedRedeem={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setUpgradeLockedStake(false);
+                setFinalizeLockedStakeRedeem(true);
+              }}
+              userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
+              userPendingAdxRewards={adxRewards.pendingAdxRewards}
+              roundPendingUsdcRewards={
+                adxStakingCurrentRoundRewards.usdcRewards ?? 0
+              }
+              roundPendingAdxRewards={
+                adxStakingCurrentRoundRewards.adxRewards ?? 0
+              }
+              pendingGenesisAdxRewards={adxRewards.pendingGenesisAdxRewards}
+              nextRoundTime={nextStakingRoundTimeAdx ?? 0}
+              handleClickOnUpdateLockedStake={(
+                lockedStake: LockedStakeExtended,
+              ) => {
+                setLockedStake(lockedStake);
+                setUpgradeLockedStake(true);
+                setFinalizeLockedStakeRedeem(false);
+              }}
+              claimsHistory={claimsHistoryAdx}
+            />
+          </div>
 
           <AnimatePresence>
             {modal}
@@ -784,9 +796,10 @@ export default function Stake({
                 />
               </Modal>
             )}
+
           </AnimatePresence>
         </>
-      </div>
+      </div >
     </>
   );
 }

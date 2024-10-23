@@ -62,7 +62,7 @@ export default function AreaRechart({
           <h2 className="">{title}</h2>
 
           {tippyContent && (
-            <Tippy content={tippyContent}>
+            <Tippy content={tippyContent} placement="auto">
               <span className="cursor-help text-txtfade">ⓘ</span>
             </Tippy>
           )}
