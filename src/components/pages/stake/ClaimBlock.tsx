@@ -22,7 +22,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
 
     return (
         <div className="min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2">
-            <div className="flex flex-row justify-between items-center p-4">
+            <div className="flex flex-row justify-between items-center p-2 mx-2">
 
                 <div className="flex flex-col items-center min-w-[5em] w-[8em]">
                     <div className="flex w-full font-mono text-xxs justify-center items-center">
@@ -64,14 +64,15 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                         format="number"
                         className="text-gray-400 text-xs mr-1"
                         minimumFractionDigits={2}
-                        prefix="+"
+                        prefix="+ "
+                        suffix=" ADX"
                     />
-                    <Image
+                    {/* <Image
                         src={adxTokenLogo}
                         width={14}
                         height={14}
                         alt="ADX logo"
-                    />
+                    /> */}
                 </div>
 
                 <div className="flex flex-row items-center justify-end min-w-[5em] w-[8em]">
@@ -80,14 +81,15 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                         format="number"
                         className="text-gray-400 text-xs mr-1"
                         minimumFractionDigits={2}
-                        prefix="+"
+                        prefix="+ "
+                        suffix=" USDC"
                     />
-                    <Image
+                    {/* <Image
                         src={usdcTokenLogo}
                         width={14}
                         height={14}
                         alt="USDC logo"
-                    />
+                    /> */}
                 </div>
 
             </div>
