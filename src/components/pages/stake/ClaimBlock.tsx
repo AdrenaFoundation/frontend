@@ -20,11 +20,11 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
     );
 
     return (
-        <div className="min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2">
+        <div className="w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2">
             <div className="flex flex-row justify-between items-center p-2 mx-2">
 
-                <div className="flex flex-col items-center min-w-[5em] w-[8em]">
-                    <div className="flex w-full font-mono text-xxs justify-center items-center">
+                <div className="flex flex-1 flex-col ">
+                    <div className="flex w-full font-mono text-xxs ">
                         <Link
                             href={getTxExplorer(claim.signature)}
                             target="_blank"
@@ -45,7 +45,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     <DateDisplay date={claim.transaction_date} />
                 </div>
 
-                <div className="flex flex-col items-center min-w-[5em] w-[8em]">
+                <div className="flex flex-1 flex-col items-center">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                         Source
                     </div>
@@ -57,7 +57,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     </p>
                 </div>
 
-                <div className="flex flex-row items-center justify-end min-w-[5em] w-[12em]">
+                <div className="flex flex-1 items-center justify-center">
                     <FormatNumber
                         nb={claim.rewards_adx + claim.rewards_adx_genesis}
                         format="number"
@@ -75,7 +75,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     /> */}
                 </div>
 
-                <div className="flex flex-row items-center justify-end min-w-[5em] w-[12em]">
+                <div className="flex flex-1 items-center justify-end">
                     <FormatNumber
                         nb={claim.rewards_usdc}
                         format="number"

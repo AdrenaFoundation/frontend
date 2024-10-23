@@ -184,6 +184,9 @@ export default function StakeOverview({
 
   const toggleClaimHistory = () => {
     setIsClaimHistoryVisible(!isClaimHistoryVisible);
+    setTimeout(() => {
+      setLockedStakesPerPage(isClaimHistoryVisible ? 6 : 4);
+    }, isClaimHistoryVisible ? 300 : 0); // Delay matches the duration of the CSS transition
   };
 
   const totalStakeAmount = (isALP ? totalLockedStake : Number(totalLockedStake) + Number(totalLiquidStaked)) ?? 0;
@@ -467,7 +470,7 @@ export default function StakeOverview({
 
         <div className="h-[1px] bg-bcolor w-full my-4" />
 
-        <div className="flex flex-col text-sm py-0 px-5">
+        <div className="flex flex-col text-sm py-0 px-5 w-full">
           <button
             onClick={toggleClaimHistory}
             className="w-full text-white rounded-lg transition-colors duration-200 flex items-center"
