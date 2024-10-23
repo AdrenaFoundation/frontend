@@ -57,7 +57,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     </p>
                 </div>
 
-                <div className="flex flex-row items-center justify-end min-w-[5em] w-[8em]">
+                <div className="flex flex-row items-center justify-end min-w-[5em] w-[12em]">
                     <FormatNumber
                         nb={claim.rewards_adx}
                         format="number"
@@ -74,7 +74,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     /> */}
                 </div>
 
-                <div className="flex flex-row items-center justify-end min-w-[5em] w-[8em]">
+                <div className="flex flex-row items-center justify-end min-w-[5em] w-[12em]">
                     <FormatNumber
                         nb={claim.rewards_usdc}
                         format="number"

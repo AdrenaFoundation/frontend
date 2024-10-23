@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended, Token } from '@/types';
-import { formatMilliseconds, nativeToUi } from '@/utils';
+import { formatMilliseconds, formatNumber, nativeToUi } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
 
@@ -28,7 +28,7 @@ export default function LockedStakedElement({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
 
   const calculateTimeRemaining = useCallback(() => {
     const timeRemaining = lockedStake.endTime.toNumber() * 1000 - Date.now();
@@ -49,37 +49,32 @@ export default function LockedStakedElement({
   }, [calculateTimeRemaining]);
 
   const today = new Date();
+
   const endDate = timeRemaining
     ? new Date(today.getTime() + timeRemaining)
     : null;
 
-  const isLessThan30Days =
-    timeRemaining && timeRemaining < 30 * 3600 * 24 * 1000;
-
   const remainingDaysDiv = (
     <div>
-      <p className="opacity-50">
-        Ends{' '}
-        {!isLessThan30Days
-          ? endDate?.toLocaleString('en', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-            })
-          : `in ${formatMilliseconds(timeRemaining)}`}
-      </p>
+      <Tippy content={`Precisely on ${endDate?.toLocaleString()}`}>
+        <span className="opacity-50 underline-dashed">
+          {`Unlocks in ${Math.ceil(timeRemaining / (3600 * 24 * 1000))} days`}
+        </span>
+      </Tippy>
     </div>
   );
+
+  const lockStakedAmount = nativeToUi(lockedStake.amount, token.decimals);
 
   return (
     <div
       className={twMerge(
-        'flex flex-col gap-3 border justify-between items-center bg-secondary rounded-xl shadow-lg flex-1 overflow-hidden',
+        'flex flex-col gap-2 border justify-between items-center bg-secondary rounded-xl shadow-lg flex-1 overflow-hidden',
         lockedStake.resolved && 'border-green',
       )}
       ref={containerRef}
     >
-      <div className="flex flex-col w-full p-3 pb-0">
+      <div className="flex flex-col w-full p-2 pb-0">
         <div className="flex flex-row items-center justify-between">
           <div className="flex items-center opacity-50">
             <Image src={lockIcon} width={10} height={10} alt="Lock icon" />
@@ -97,9 +92,15 @@ export default function LockedStakedElement({
 
         <div className="flex justify-between items-center">
           <FormatNumber
-            nb={nativeToUi(lockedStake.amount, token.decimals)}
+            nb={lockStakedAmount}
             className="text-xl inline-block"
             suffix={` ${token.symbol}`}
+            isSuffixDimmed={true}
+            isAbbreviate={lockStakedAmount >= 100_000}
+            isDecimalDimmed={lockStakedAmount < 100_000}
+            precision={lockStakedAmount < 1000 ? 2 : 0}
+            minimumFractionDigits={lockStakedAmount < 1000 ? 2 : 0}
+            info={formatNumber(lockStakedAmount, 2, 0, 6)}
           />
 
           {lockedStake.isGenesis ? (
@@ -128,7 +129,7 @@ export default function LockedStakedElement({
 
       <div className="flex-col w-full flex items-center flex-none">
         <ul className="flex flex-row border-y border-bcolor w-full items-center flex-none">
-          <li className="flex-1 p-3 text-center">
+          <li className="flex-1 p-2 text-center">
             <p className="font-mono">
               {Math.floor((lockedStake.lmRewardMultiplier / 10_000) * 100)}%
             </p>
@@ -138,9 +139,9 @@ export default function LockedStakedElement({
           <li
             className={twMerge(
               lockedStake.voteMultiplier > 0
-                ? 'border-x px-5'
-                : 'border-l pl-5',
-              'flex-1 p-3 border-bcolor text-center',
+                ? 'border-x px-4'
+                : 'border-l pl-4',
+              'flex-1 p-2 border-bcolor text-center',
             )}
           >
             <p className="font-mono">
@@ -150,7 +151,7 @@ export default function LockedStakedElement({
           </li>
 
           {lockedStake.voteMultiplier > 0 && (
-            <li className="flex-1 p-3 text-center">
+            <li className="flex-1 p-2 text-center">
               <p className="font-mono">
                 {Math.floor((lockedStake.voteMultiplier / 10_000) * 100)}%
               </p>
@@ -172,7 +173,7 @@ export default function LockedStakedElement({
                     variant="secondary"
                     size="lg"
                     title="Redeem"
-                    className="rounded-lg rounded-t-none border-none py-3 bg-green text-white w-full"
+                    className="rounded-lg rounded-t-none border-none py-2 bg-green text-white w-full"
                     onClick={() => handleRedeem(lockedStake, false)}
                   />
                 );
@@ -185,7 +186,7 @@ export default function LockedStakedElement({
                   variant="outline"
                   size="xs"
                   title="Early Exit"
-                  className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
+                  className="rounded-none border-none py-2 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
                   onClick={() =>
                     handleClickOnFinalizeLockedRedeem(lockedStake, true)
                   }
@@ -196,7 +197,7 @@ export default function LockedStakedElement({
                     variant="outline"
                     size="xs"
                     title="Upgrade"
-                    className="rounded-none border-none py-3 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
+                    className="rounded-none border-none py-2 w-20 grow text-txtfade border-bcolor border-b-0 bg-[#a8a8a810]"
                     onClick={() => handleClickOnUpdateLockedStake(lockedStake)}
                   />
                 )}

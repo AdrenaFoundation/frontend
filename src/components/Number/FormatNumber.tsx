@@ -10,6 +10,7 @@ interface FormatNumberProps {
   precision?: number;
   prefix?: string;
   suffix?: string;
+  isSuffixDimmed?: boolean;
   placeholder?: string;
   className?: string;
   placeholderClassName?: string;
@@ -29,6 +30,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       precision = 2,
       prefix = '',
       suffix = '',
+      isSuffixDimmed = false,
       placeholder = '-',
       className,
       placeholderClassName,
@@ -113,7 +115,17 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
           </span>
         )}
         {format === 'percentage' && '%'}
-        {suffix}
+        {suffix && (
+          <span
+            className={twMerge(
+              'ml-2 font-mono inline-block',
+              isSuffixDimmed && 'opacity-50',
+              className,
+            )}
+          >
+            {suffix}
+          </span>
+        )}
       </p>
     );
 

@@ -91,13 +91,23 @@ export default function StakeOverview({
   const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [claimHistoryItemsPerPage, setClaimHistoryItemsPerPage] = useState(3);
+
+  const [lockedStakesPage, setLockedStakesPage] = useState(1);
+  const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
 
   const paginatedClaimsHistory = claimsHistory
-    ? claimsHistory.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    ? claimsHistory.slice((currentPage - 1) * claimHistoryItemsPerPage, currentPage * claimHistoryItemsPerPage)
     : [];
 
-  const totalPages = claimsHistory ? Math.ceil(claimsHistory.length / itemsPerPage) : 0;
+  const totalPages = claimsHistory ? Math.ceil(claimsHistory.length / claimHistoryItemsPerPage) : 0;
+
+  const paginatedLockedStakes = lockedStakes
+    ? lockedStakes.slice(
+      (lockedStakesPage - 1) * lockedStakesPerPage,
+      lockedStakesPage * lockedStakesPerPage
+    )
+    : [];
 
   useEffect(() => {
     if (!stakingAccount) {
@@ -277,7 +287,7 @@ export default function StakeOverview({
                 width={16}
                 height={16}
                 alt="info icon"
-                className="inline-block ml-2 cursor-pointer"
+                className="inline-block ml-2 cursor-pointer txt op center"
               />
             </Tippy>
             <Button
@@ -397,7 +407,7 @@ export default function StakeOverview({
           </div>
 
           {/* Bottom line */}
-          <div className="flex flex-col gap-2 text-sm pl-2 pr-3">
+          <div className="flex flex-col gap-2 text-sm px-3">
             <div className="flex items-center justify-between mt-2">
               <span className="text-txtfade flex items-center">
                 <Tippy
@@ -471,10 +481,14 @@ export default function StakeOverview({
             onClick={toggleClaimHistory}
             className="w-full text-white rounded-lg transition-colors duration-200 flex items-center"
           >
-            <h3 className="text-lg font-semibold">
-              Claim History{' '}
-              {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold mr-1">
+                Claim History
+              </h3>
+              <h3 className="text-lg font-semibold text-txtfade">
+                {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
+              </h3>
+            </div>
             <svg
               className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''}`}
               fill="none"
@@ -552,7 +566,7 @@ export default function StakeOverview({
               <Pagination
                 currentPage={currentPage}
                 totalItems={claimsHistory ? claimsHistory.length : 0}
-                itemsPerPage={itemsPerPage}
+                itemsPerPage={claimHistoryItemsPerPage}
                 onPageChange={setCurrentPage}
               />
             </div>
@@ -563,10 +577,14 @@ export default function StakeOverview({
         <div className="h-[1px] bg-bcolor w-full my-5" />
         <div className="px-5">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold">
-              My Locked Stakes{' '}
-              {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold mr-1">
+                My Locked Stakes
+              </h3>
+              <h3 className="text-lg font-semibold text-txtfade">
+                {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
+              </h3>
+            </div>
 
             <div className="flex items-center gap-2 mt-4 sm:mt-0 flex-col sm:flex-row w-full sm:w-auto">
               <div className="flex items-center text-xs bg-secondary rounded-full p-[2px] border border-bcolor">
@@ -603,14 +621,12 @@ export default function StakeOverview({
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            {lockedStakes && lockedStakes.length > 0 ? (
-              lockedStakes
+            {paginatedLockedStakes.length > 0 ? (
+              paginatedLockedStakes
                 .sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
                   const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
-                  const durationModifier =
-                    sortConfig.duration === 'asc' ? 1 : -1;
-                  const sizeDiff =
-                    (Number(a.amount) - Number(b.amount)) * sizeModifier;
+                  const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
+                  const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
                   const durationDiff =
                     (getEndDate(Number(a.endTime)).getTime() -
                       getEndDate(Number(b.endTime)).getTime()) *
@@ -632,12 +648,8 @@ export default function StakeOverview({
                         : window.adrena.client.adxToken
                     }
                     handleRedeem={handleLockedStakeRedeem}
-                    handleClickOnFinalizeLockedRedeem={
-                      handleClickOnFinalizeLockedRedeem
-                    }
-                    handleClickOnUpdateLockedStake={
-                      handleClickOnUpdateLockedStake
-                    }
+                    handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
+                    handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
                   />
                 ))
             ) : (
@@ -646,6 +658,12 @@ export default function StakeOverview({
               </div>
             )}
           </div>
+          <Pagination
+            currentPage={lockedStakesPage}
+            totalItems={lockedStakes ? lockedStakes.length : 0}
+            itemsPerPage={lockedStakesPerPage}
+            onPageChange={setLockedStakesPage}
+          />
         </div>
 
         {/* Liquid stake section */}
