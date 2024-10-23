@@ -59,24 +59,6 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
 
                 <div className="flex flex-1 items-center justify-center">
                     <FormatNumber
-                        nb={claim.rewards_adx + claim.rewards_adx_genesis}
-                        format="number"
-                        className={`text-gray-400 text-xs mr-1 ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''}`}
-                        minimumFractionDigits={2}
-                        prefix="+ "
-                        suffix=" ADX"
-                        info={claim.rewards_adx_genesis > 0 ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(claim.rewards_adx_genesis, 2, 2)} (Genesis)` : undefined}
-                    />
-                    {/* <Image
-                        src={adxTokenLogo}
-                        width={14}
-                        height={14}
-                        alt="ADX logo"
-                    /> */}
-                </div>
-
-                <div className="flex flex-1 items-center justify-end">
-                    <FormatNumber
                         nb={claim.rewards_usdc}
                         format="number"
                         className="text-gray-400 text-xs mr-1"
@@ -92,6 +74,23 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     /> */}
                 </div>
 
+                <div className="flex flex-1 items-center justify-end">
+                    <FormatNumber
+                        nb={claim.rewards_adx + claim.rewards_adx_genesis}
+                        format="number"
+                        className={`text-gray-400 text-xs mr-1 ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''}`}
+                        minimumFractionDigits={2}
+                        prefix="+ "
+                        suffix=" ADX"
+                        info={claim.rewards_adx_genesis > 0 ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(claim.rewards_adx_genesis, 2, 2)} (Genesis)` : undefined}
+                    />
+                    {/* <Image
+                        src={adxTokenLogo}
+                        width={14}
+                        height={14}
+                        alt="ADX logo"
+                    /> */}
+                </div>
             </div>
         </div >
     );

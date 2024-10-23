@@ -103,14 +103,34 @@ export default function StakeOverview({
     ? claimsHistory.slice((currentPage - 1) * claimHistoryItemsPerPage, currentPage * claimHistoryItemsPerPage)
     : [];
 
-  const totalPages = claimsHistory ? Math.ceil(claimsHistory.length / claimHistoryItemsPerPage) : 0;
 
-  const paginatedLockedStakes = lockedStakes
-    ? lockedStakes.slice(
-      (lockedStakesPage - 1) * lockedStakesPerPage,
-      lockedStakesPage * lockedStakesPerPage
-    )
+  const getEndDate = (timestamp: number) => {
+    const date = new Date(timestamp * 1000);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+
+  const sortedLockedStakes = lockedStakes
+    ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
+      const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
+      const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
+      const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
+      const durationDiff =
+        (getEndDate(Number(a.endTime)).getTime() -
+          getEndDate(Number(b.endTime)).getTime()) *
+        durationModifier;
+
+      if (sortConfig.lastClicked === 'size') {
+        return sizeDiff || durationDiff;
+      }
+
+      return durationDiff || sizeDiff;
+    })
     : [];
+
+  const paginatedLockedStakes = sortedLockedStakes.slice(
+    (lockedStakesPage - 1) * lockedStakesPerPage,
+    lockedStakesPage * lockedStakesPerPage
+  );
 
   useEffect(() => {
     if (!stakingAccount) {
@@ -154,11 +174,6 @@ export default function StakeOverview({
       [key]: prev[key] === 'desc' ? 'asc' : 'desc',
       lastClicked: key,
     }));
-  };
-
-  const getEndDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   };
 
   const triggerResolveStakingRound = async () => {
@@ -629,21 +644,6 @@ export default function StakeOverview({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {paginatedLockedStakes.length > 0 ? (
               paginatedLockedStakes
-                .sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
-                  const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
-                  const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
-                  const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
-                  const durationDiff =
-                    (getEndDate(Number(a.endTime)).getTime() -
-                      getEndDate(Number(b.endTime)).getTime()) *
-                    durationModifier;
-
-                  if (sortConfig.lastClicked === 'size') {
-                    return sizeDiff || durationDiff;
-                  }
-
-                  return durationDiff || sizeDiff;
-                })
                 .map((lockedStake, i) => (
                   <LockedStakedElement
                     lockedStake={lockedStake}
