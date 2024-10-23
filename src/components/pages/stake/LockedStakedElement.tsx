@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended, Token } from '@/types';
-import { formatMilliseconds, formatNumber, nativeToUi } from '@/utils';
+import { formatNumber, nativeToUi } from '@/utils';
 
 import lockIcon from '../../../../public/images/Icons/lock.svg';
 
