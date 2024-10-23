@@ -14,6 +14,24 @@ export default function StakingRewardsWaitingToBeClaimed({
   titleClassName?: string;
   bodyClassName?: string;
 }) {
+
+  const alpStakingPendingRewards = nativeToUi(
+    alpStakingAccount.resolvedRewardTokenAmount,
+    alpStakingAccount.rewardTokenDecimals,
+  );
+  const adxStakingPendingRewards = nativeToUi(
+    adxStakingAccount.resolvedRewardTokenAmount,
+    adxStakingAccount.rewardTokenDecimals,
+  );
+
+  const alpStakingPendingLmRewards = nativeToUi(
+    alpStakingAccount.resolvedLmRewardTokenAmount,
+    window.adrena.client.adxToken.decimals,
+  );
+  const adxStakingPendingLmRewards = nativeToUi(
+    adxStakingAccount.resolvedLmRewardTokenAmount,
+    window.adrena.client.adxToken.decimals,
+  )
   return (
     <StyledContainer
       title="Staking rewards (available, pending claims)"
@@ -30,10 +48,7 @@ export default function StakingRewardsWaitingToBeClaimed({
             <div className={bodyClassName}>
               {alpStakingAccount.resolvedRewardTokenAmount !== null
                 ? formatNumber(
-                  nativeToUi(
-                    alpStakingAccount.resolvedRewardTokenAmount,
-                    alpStakingAccount.rewardTokenDecimals,
-                  ),
+                  alpStakingPendingRewards,
                   0,
                 )
                 : '-'}
@@ -45,10 +60,7 @@ export default function StakingRewardsWaitingToBeClaimed({
             <div className={bodyClassName}>
               {alpStakingAccount.resolvedRewardTokenAmount !== null
                 ? formatNumber(
-                  nativeToUi(
-                    alpStakingAccount.resolvedLmRewardTokenAmount,
-                    window.adrena.client.adxToken.decimals,
-                  ),
+                  alpStakingPendingLmRewards,
                   0,
                 )
                 : '-'}
@@ -66,10 +78,7 @@ export default function StakingRewardsWaitingToBeClaimed({
             <div className={bodyClassName}>
               {adxStakingAccount.resolvedRewardTokenAmount !== null
                 ? formatNumber(
-                  nativeToUi(
-                    adxStakingAccount.resolvedRewardTokenAmount,
-                    adxStakingAccount.rewardTokenDecimals,
-                  ),
+                  adxStakingPendingRewards,
                   0,
                 )
                 : '-'}
@@ -81,10 +90,7 @@ export default function StakingRewardsWaitingToBeClaimed({
             <div className={bodyClassName}>
               {adxStakingAccount.resolvedRewardTokenAmount !== null
                 ? formatNumber(
-                  nativeToUi(
-                    adxStakingAccount.resolvedLmRewardTokenAmount,
-                    window.adrena.client.adxToken.decimals,
-                  ),
+                  adxStakingPendingLmRewards,
                   0,
                 )
                 : '-'}
