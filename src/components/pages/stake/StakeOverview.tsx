@@ -495,14 +495,15 @@ export default function StakeOverview({
             {claimsHistory && (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
                 <div className="flex flex-row items-center">
-                  <p className="text-txtfade">All time claimed amounts</p>
+                  <p className="text-txtfade">All time claimed amounts:</p>
                 </div>
                 <div className="flex flex-row space-x-4 text-xs">
                   <div className="flex items-center">
                     <FormatNumber
                       nb={allTimeClaimedUsdc}
-                      precisionIfPriceDecimalsBelow={2}
-                      minimumFractionDigits={2}
+                      precisionIfPriceDecimalsBelow={isBigUsdcAllTimeClaimAmount ? 0 : 2}
+                      minimumFractionDigits={isBigUsdcAllTimeClaimAmount ? 0 : 2}
+                      precision={isBigUsdcAllTimeClaimAmount ? 0 : 2}
                       isAbbreviate={isBigUsdcAllTimeClaimAmount}
                       info={isBigUsdcAllTimeClaimAmount ? formatNumber(allTimeClaimedUsdc, 2, 2) : undefined}
                       className='text-txtfade'
@@ -519,8 +520,9 @@ export default function StakeOverview({
 
                     <FormatNumber
                       nb={allTimeClaimedAdx}
-                      precisionIfPriceDecimalsBelow={2}
-                      minimumFractionDigits={2}
+                      precisionIfPriceDecimalsBelow={isBigAdxAllTimeClaimAmount ? 0 : 2}
+                      minimumFractionDigits={isBigAdxAllTimeClaimAmount ? 0 : 2}
+                      precision={isBigAdxAllTimeClaimAmount ? 0 : 2}
                       isAbbreviate={isBigAdxAllTimeClaimAmount}
                       info={isBigAdxAllTimeClaimAmount ? formatNumber(allTimeClaimedAdx, 2, 2) : undefined}
                       className='text-txtfade'

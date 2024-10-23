@@ -61,11 +61,11 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     <FormatNumber
                         nb={claim.rewards_adx + claim.rewards_adx_genesis}
                         format="number"
-                        className="text-gray-400 text-xs mr-1"
+                        className={`text-gray-400 text-xs mr-1 ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''}`}
                         minimumFractionDigits={2}
                         prefix="+ "
                         suffix=" ADX"
-                        info={`Base rewards: ${formatNumber(claim.rewards_adx, 2, 2)} Genesis rewards: ${formatNumber(claim.rewards_adx_genesis, 2, 2)}`}
+                        info={claim.rewards_adx_genesis > 0 ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(claim.rewards_adx_genesis, 2, 2)} (Genesis)` : undefined}
                     />
                     {/* <Image
                         src={adxTokenLogo}
