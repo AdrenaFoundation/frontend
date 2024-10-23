@@ -490,8 +490,7 @@ export default function StakeOverview({
             {claimsHistory && (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
                 <div className="flex flex-row items-center">
-                  <p className="text-txtfade">All time claimed amounts:</p>
-                  <InfoAnnotation text="Data collection does not start from protocol launch as we updated an instruction (upgradeClaim), numbers might not include some initial claims." />
+                  <p className="text-txtfade">All time claimed amounts</p>
                 </div>
                 <div className="flex flex-row space-x-4 text-xs">
                   <div className="flex items-center">
