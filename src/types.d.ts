@@ -449,8 +449,8 @@ export type ClaimApi = {
   signature: string;
   transaction_date: string; // ISO date-time string
   created_at: string; // ISO date-time string
-  user_staking_mint: string;
-  // user_wallet?: string; // Uncomment if needed
+  mint: string;
+  source: 'manual' | 'auto';
 };
 
 export type ClaimHistoryApi = {
@@ -462,11 +462,12 @@ export type ClaimHistoryApi = {
 
 export type ClaimHistoryExtended = {
   claim_id: number;
+  created_at: Date;
+  stake_mint: string;
   rewards_adx: number;
   rewards_usdc: number;
   signature: string;
-  transaction_date: Date;
-  created_at: Date;
-  user_staking_mint: string;
+  source: 'manual' | 'auto';
   symbol: string;
+  transaction_date: Date;
 };

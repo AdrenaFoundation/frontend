@@ -51,11 +51,10 @@ export default function StakeLanding({
     return acc;
   }, {} as { [key: string]: { usdc: number; adx: number } });
 
-  console.log(ALP_STAKE_MULTIPLIERS_EXCLUDE_0);
   const TOKENS = [
     {
       name: 'ALP',
-      desc: 'Provide liquidities long term: the longer the period, the higher the rewards. 70% of protocol fees are distributed to ALP holder and stakers.',
+      desc: 'Provide liquidities: the longer the period, the higher the rewards. 70% of protocol fees are distributed to ALP holder and stakers.',
       logo: alpLogo,
       sellingPoints: [
         {

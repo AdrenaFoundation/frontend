@@ -65,7 +65,10 @@ export default function ADXStakeOverview({
             <h5 className="flex items-center">Total stake</h5>
 
             <div>
-              <FormatNumber nb={totalLiquidStaked} />
+              <FormatNumber
+                nb={totalLiquidStaked}
+                minimumFractionDigits={2}
+              />
               <span className="ml-1">ADX</span>
             </div>
           </StyledSubSubContainer>
@@ -136,7 +139,10 @@ export default function ADXStakeOverview({
             <h5 className="flex items-center">Locked</h5>
 
             <div>
-              <FormatNumber nb={totalLockedStake} />
+              <FormatNumber
+                nb={totalLockedStake}
+                minimumFractionDigits={2}
+              />
               <span className="ml-1">ADX</span>
             </div>
           </StyledSubSubContainer>
