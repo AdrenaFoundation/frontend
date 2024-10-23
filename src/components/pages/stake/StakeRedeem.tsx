@@ -19,7 +19,15 @@ export default function StakeRedeem({
       <div>
         <div className="flex flex-row justify-between">
           <p className="text-sm opacity-50 font-medium"> Amount</p>
-          <p className="text-sm font-medium">
+          <p
+            className="text-sm font-medium font cursor-pointer"
+            onClick={() => {
+              if (!totalLiquidStaked) {
+                return;
+              }
+              setAmount(totalLiquidStaked);
+            }}
+          >
             <span className="opacity-50"> Total reedemable · </span>
             {totalLiquidStaked
               ? `${formatNumber(totalLiquidStaked, 2)} ${tokenSymbol}`
@@ -51,18 +59,6 @@ export default function StakeRedeem({
             }}
             placeholder="0.00"
             max={totalLiquidStaked}
-          />
-
-          <Button
-            className="absolute right-2 bottom-3.5"
-            title="MAX"
-            variant="primary"
-            onClick={() => {
-              if (!totalLiquidStaked) {
-                return;
-              }
-              setAmount(totalLiquidStaked);
-            }}
           />
         </div>
       </div>

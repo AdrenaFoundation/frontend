@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { AxisDomain, TickItem } from 'recharts/types/util/types';
+import { AxisDomain, DataKey, TickItem } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
@@ -48,6 +48,10 @@ export default function LineRechart({
   isReferenceLine?: boolean;
   formatY?: 'percentage' | 'currency' | 'number';
 }) {
+  const [hiddenLabels, setHiddenLabels] = React.useState<
+    DataKey<string | number>[]
+  >([]);
+
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
       return formatPercentage(tickItem, 0);
@@ -66,7 +70,7 @@ export default function LineRechart({
           <h2 className="">{title}</h2>
 
           {tippyContent && (
-            <Tippy content={tippyContent}>
+            <Tippy content={tippyContent} placement="auto">
               <span className="cursor-help text-txtfade">ⓘ</span>
             </Tippy>
           )}
@@ -143,13 +147,32 @@ export default function LineRechart({
             cursor={false}
           />
 
-          <Legend />
+          <Legend
+            onClick={(e) => {
+              setHiddenLabels(() => {
+                if (
+                  hiddenLabels.includes(
+                    String(e.dataKey).trim() as DataKey<string | number>,
+                  )
+                ) {
+                  return hiddenLabels.filter(
+                    (l) => l !== String(e.dataKey).trim(),
+                  ) as DataKey<string | number>[];
+                }
+                return [
+                  ...hiddenLabels,
+                  String(e.dataKey).trim() as DataKey<string | number>,
+                ];
+              });
+            }}
+            wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
+          />
           {labels.map(({ name, color }) => {
             return (
               <Line
                 type="monotone"
-                dataKey={name}
-                stroke={color}
+                dataKey={hiddenLabels.includes(name) ? name + ' ' : name} // Add space to remove the line but keep the legend
+                stroke={hiddenLabels.includes(name) ? `${color}80` : color} // 50% opacity for hidden labels
                 fill={color}
                 dot={false}
                 key={name}

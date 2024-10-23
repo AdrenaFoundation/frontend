@@ -76,6 +76,7 @@ export default function TradingStatsBloc({
                     This is the sum of all your profits and losses over all trades, including fees.
                   </p>
                 }
+                placement="auto"
               >
                 <Image src={infoIcon} width={12} height={12} alt="info icon" />
               </Tippy>
@@ -100,6 +101,7 @@ export default function TradingStatsBloc({
                     This include the Open/Close fees (0 bps open, 16bps close) and the Borrow fees.
                   </p>
                 }
+                placement="auto"
               >
                 <Image src={infoIcon} width={12} height={12} alt="info icon" />
               </Tippy>

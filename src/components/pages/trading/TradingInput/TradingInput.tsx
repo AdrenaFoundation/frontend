@@ -13,19 +13,16 @@ export default function TradingInput({
   tokenListClassName,
   menuClassName,
   menuOpenBorderClassName,
-  maxClassName,
   disabled,
   loading,
   value,
   subText,
-  maxButton,
   selectedToken,
   tokenList,
   prefix,
   placeholder = '0.00',
   onTokenSelect,
   onChange,
-  onMaxButtonClick,
 }: {
   className?: string;
   inputClassName?: string;
@@ -36,15 +33,12 @@ export default function TradingInput({
   loading?: boolean;
   subText?: ReactNode;
   value?: number | null;
-  maxButton?: boolean;
   selectedToken?: Token;
   tokenList: Token[];
   prefix?: ReactNode;
   placeholder?: string;
-  maxClassName?: string;
   onTokenSelect?: (t: Token) => void;
   onChange: (v: number | null) => void;
-  onMaxButtonClick?: () => void;
 }) {
   const decimalConstraint = selectedToken?.decimals ?? 18;
 
@@ -58,9 +52,9 @@ export default function TradingInput({
         style={
           disabled
             ? {
-                backgroundSize: '10px 10px',
-                cursor: 'not-allowed',
-              }
+              backgroundSize: '10px 10px',
+              cursor: 'not-allowed',
+            }
             : {}
         }
       >
@@ -99,18 +93,6 @@ export default function TradingInput({
         </div>
 
         <div className="flex flex-row gap-3 items-center">
-          {maxButton ? (
-            <div className="mr-1">
-              <Button
-                title="MAX"
-                variant="primary"
-                className={twMerge('text-sm h-6 w-14', maxClassName)}
-                onClick={() => onMaxButtonClick?.()}
-                loaderClassName="w-14"
-              />
-            </div>
-          ) : null}
-
           {tokenList.length ? (
             <Select
               className={twMerge(

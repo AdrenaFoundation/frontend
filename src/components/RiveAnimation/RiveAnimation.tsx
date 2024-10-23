@@ -128,7 +128,7 @@ export default function RiveAnimation({
     return (
       <Image
         className={twMerge(
-          'transition-opacity duration-300',
+          'select-none transition-opacity duration-300',
           isImageLoaded ? 'opacity-100' : 'opacity-0',
           imageClassName,
         )}

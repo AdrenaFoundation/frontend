@@ -8,12 +8,10 @@ import { PositionExtended } from '@/types';
 export default function NetValueTooltip({
   children,
   className,
-  placement = 'auto',
   position,
 }: {
   children: ReactElement;
   className?: string;
-  placement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
   position: PositionExtended;
 }) {
   return (
@@ -83,7 +81,7 @@ export default function NetValueTooltip({
           </StyledSubContainer>
         </div>
       }
-      placement={placement}
+      placement='auto'
       className={className}
       maxWidth="none"
     >

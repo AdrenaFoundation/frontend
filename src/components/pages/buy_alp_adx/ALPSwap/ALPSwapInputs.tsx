@@ -277,7 +277,6 @@ export default function ALPSwapInputs({
       loading={actionType === 'buy' && isLoading}
       disabled={actionType === 'buy'}
       value={alpInput}
-      maxClassName="relative left-6"
       selectedToken={alpToken}
       tokenList={[alpToken]}
       onTokenSelect={() => {
@@ -305,7 +304,10 @@ export default function ALPSwapInputs({
       subText={
         collateralPrice !== null ? (
           <span className="text-txtfade">
-            {formatPriceInfo(collateralPrice, collateralToken.displayPriceDecimalsPrecision)}
+            {formatPriceInfo(
+              collateralPrice,
+              collateralToken.displayPriceDecimalsPrecision,
+            )}
           </span>
         ) : null
       }
