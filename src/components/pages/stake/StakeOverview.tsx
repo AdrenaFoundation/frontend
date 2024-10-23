@@ -1,10 +1,11 @@
+import '../../../styles/Animation.css';
+
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 import { CSSTransition } from 'react-transition-group';
-import '../../../styles/Animation.css';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
