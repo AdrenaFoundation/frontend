@@ -496,6 +496,7 @@ export default function StakeOverview({
                   <div className="flex items-center">
                     <FormatNumber
                       nb={allTimeClaimedUsdc}
+                      precisionIfPriceDecimalsBelow={2}
                       minimumFractionDigits={2}
                       isAbbreviate={isBigUsdcAllTimeClaimAmount}
                       info={isBigUsdcAllTimeClaimAmount ? formatNumber(allTimeClaimedUsdc, 2, 2) : undefined}
@@ -513,6 +514,7 @@ export default function StakeOverview({
 
                     <FormatNumber
                       nb={allTimeClaimedAdx}
+                      precisionIfPriceDecimalsBelow={2}
                       minimumFractionDigits={2}
                       isAbbreviate={isBigAdxAllTimeClaimAmount}
                       info={isBigAdxAllTimeClaimAmount ? formatNumber(allTimeClaimedAdx, 2, 2) : undefined}
