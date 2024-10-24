@@ -1359,15 +1359,6 @@ export class AdrenaClient {
       throw new Error('Cannot find custody related to position');
     }
 
-    const custodyOracle = custody.nativeObject.oracle;
-    const custodyTradeOracle = custody.nativeObject.tradeOracle;
-
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
-
-    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
-
     console.log('Close position:', {
       position: position.pubkey.toBase58(),
       price: price.toString(),
@@ -1375,6 +1366,24 @@ export class AdrenaClient {
 
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
+
+    const custodyOracle = custody.nativeObject.oracle;
+    const custodyTradeOracle = custody.nativeObject.tradeOracle;
+    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
+      custody.mint,
+    );
+
+    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
+
+    if (!(await isAccountInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: custody.mint,
+          owner: position.owner,
+        }),
+      );
+    }
 
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
@@ -1477,6 +1486,14 @@ export class AdrenaClient {
       throw new Error('Cannot find collateral custody related to position');
     }
 
+    console.log('Close short position:', {
+      position: position.pubkey.toBase58(),
+      price: price.toString(),
+    });
+
+    const preInstructions: TransactionInstruction[] = [];
+    const postInstructions: TransactionInstruction[] = [];
+
     const collateralCustodyOracle = collateralCustody.nativeObject.oracle;
     const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
       collateralCustody.mint,
@@ -1487,13 +1504,15 @@ export class AdrenaClient {
       collateralCustody.mint,
     );
 
-    console.log('Close short position:', {
-      position: position.pubkey.toBase58(),
-      price: price.toString(),
-    });
-
-    const preInstructions: TransactionInstruction[] = [];
-    const postInstructions: TransactionInstruction[] = [];
+    if (!(await isAccountInitialized(this.connection, receivingAccount))) {
+      preInstructions.push(
+        this.createATAInstruction({
+          ataAddress: receivingAccount,
+          mint: collateralCustody.mint,
+          owner: position.owner,
+        }),
+      );
+    }
 
     const stakingRewardTokenMint = this.getStakingRewardTokenMint();
     const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
