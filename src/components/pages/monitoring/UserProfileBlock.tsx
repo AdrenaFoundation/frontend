@@ -11,12 +11,14 @@ interface UserProfileBlockProps {
 function getLeverageColorClass(leverage: number): string {
     if (leverage < 10) return 'text-white';
     if (leverage < 25) return 'text-green';
-    if (leverage < 50) return 'text-yellow';
+    if (leverage < 50) return 'text-orange';
     return 'text-red';
 }
 
 export default function UserProfileBlock({ profile, className }: UserProfileBlockProps) {
     const leverageColorClass = getLeverageColorClass(profile.openingAverageLeverage);
+
+    const longShortRatio = profile.longStats.openedPositionCount / (profile.longStats.openedPositionCount + profile.shortStats.openedPositionCount) * 100;
 
     return (
         <div className={`w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2 ${className}`}>
@@ -55,7 +57,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                         <FormatNumber
                             nb={profile.openingAverageLeverage}
                             format="number"
-                            className={`text-gray-400 text-xs lowercase ${leverageColorClass}`}
+                            className={`text-xs lowercase ${leverageColorClass}`}
                             suffix="x"
                             isDecimalDimmed={leverageColorClass === 'text-white'}
                         />
@@ -78,7 +80,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
 
                 <div className="flex flex-1 flex-col items-center">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-                        Total Trade Volume
+                        Total Volume Traded
                     </div>
                     <div className="flex">
                         <FormatNumber
@@ -92,6 +94,21 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
 
                 <div className="flex flex-1 flex-col items-center">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+                        Long/Short Ratio
+                    </div>
+                    <div className="flex">
+                        <FormatNumber
+                            nb={longShortRatio}
+                            format="percentage"
+                            className="text-gray-400 text-xs lowercase"
+                            isDecimalDimmed={true}
+                            suffix="%"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex flex-1 flex-col items-center">
+                    <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                         Total PnL
                     </div>
                     <div className="flex">
@@ -99,7 +116,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                             nb={profile.totalPnlUsd}
                             format="currency"
                             className={`text-gray-400 text-xs lowercase ${profile.totalPnlUsd > 0 ? 'text-green' : 'text-red'}`}
-                            isDecimalDimmed={true}
+                            isDecimalDimmed={false}
                         />
                     </div>
                 </div>
