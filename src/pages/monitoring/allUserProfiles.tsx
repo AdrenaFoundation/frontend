@@ -111,7 +111,7 @@ export default function AllUserProfiles() {
 
                     <label className="flex items-center ml-1 cursor-pointer">
                         <span className="mx-1 text-txtfade whitespace-nowrap text-center">
-                            {hideZeroTradeVolume ? 'Hide' : 'Show'} 0 trade volume profiles
+                            Hide profiles w/o trades
                         </span>
                         <Switch
                             className="mr-0.5"
