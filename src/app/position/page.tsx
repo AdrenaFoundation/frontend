@@ -24,15 +24,26 @@ export async function generateMetadata(
   const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
   const json = Buffer.from(base64, 'base64').toString();
 
-  const { symbol, pnl, side, size, collateral, price, mark, opened, opt } =
-    JSON.parse(json);
+  const {
+    symbol,
+    pnl,
+    side,
+    size,
+    collateral,
+    price,
+    mark,
+    opened,
+    opt,
+    pnlUsd,
+    isPnlUsd,
+  } = JSON.parse(json);
 
   const heads = headers();
 
   const currentUrl = heads.get('host');
 
   const url = `https://${currentUrl}/api/og?opt=${opt}&pnl=${pnl ?? 0
-    }&side=${side}&symbol=${symbol}&collateral=${collateral}&mark=${mark ?? 0
+    }&pnlUsd=${pnlUsd}&isPnlUsd=${isPnlUsd}&side=${side}&symbol=${symbol}&collateral=${collateral}&mark=${mark ?? 0
     }&price=${price}&opened=${opened}&size=${size}`;
 
   // optionally access and extend (rather than replace) parent metadata
