@@ -1,7 +1,9 @@
 import React from 'react';
-import { UserProfileExtended } from '@/types';
-import OnchainAccountInfo from './OnchainAccountInfo';
+
 import FormatNumber from '@/components/Number/FormatNumber';
+import { UserProfileExtended } from '@/types';
+
+import OnchainAccountInfo from './OnchainAccountInfo';
 
 interface UserProfileBlockProps {
     profile: UserProfileExtended & { rank: number };

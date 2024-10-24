@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
+
+import Button from '@/components/common/Button/Button';
+import Pagination from '@/components/common/Pagination/Pagination';
+import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import Switch from '@/components/common/Switch/Switch';
+import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { UserProfileExtended } from '@/types';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import Pagination from '@/components/common/Pagination/Pagination';
-import Button from '@/components/common/Button/Button';
-import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
 import resetIcon from '../../../public/images/Icons/cross.svg'
-import Switch from '@/components/common/Switch/Switch';
 
 type SortableKeys = keyof Pick<UserProfileExtended, 'totalTradeVolumeUsd' | 'totalPnlUsd' | 'openingAverageLeverage' | 'totalFeesPaidUsd'>;
 

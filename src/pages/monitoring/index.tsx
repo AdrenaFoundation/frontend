@@ -8,9 +8,9 @@ import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
 import AllPositions from './allPositions';
+import AllUserProfiles from './allUserProfiles';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
-import AllUserProfiles from './allUserProfiles';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
