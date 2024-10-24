@@ -10,13 +10,14 @@ import { PageProps } from '@/types';
 import AllPositions from './allPositions';
 import BasicMonitoring from './basic';
 import DetailedMonitoring from './detailed';
+import AllUserProfiles from './allUserProfiles';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
 export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
-  const [view, setView] = useState<'lite' | 'full' | 'livePositions'>('lite');
+  const [view, setView] = useState<'lite' | 'full' | 'livePositions' | 'userProfiles'>('lite');
 
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
     useState<(typeof tabs)[number]>('All');
@@ -27,11 +28,11 @@ export default function Monitoring(pageProps: PageProps) {
     if (searchParams.has('view')) {
       const searchParamsView = searchParams.get('view');
 
-      if (!['lite', 'full', 'livePositions'].includes(searchParamsView as string)) {
+      if (!['lite', 'full', 'livePositions', 'userProfiles'].includes(searchParamsView as string)) {
         return;
       }
 
-      setView(searchParamsView as 'lite' | 'full' | 'livePositions');
+      setView(searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -148,21 +149,43 @@ export default function Monitoring(pageProps: PageProps) {
           >
             Live Positions
           </span>
+
+          <span className="opacity-20 text-2xl">/</span>
+
+          <span
+            className={twMerge(
+              'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
+              view === 'userProfiles' ? 'opacity-100' : '',
+            )}
+            onClick={() => {
+              searchParams.set('view', 'userProfiles');
+              window.history.replaceState(
+                null,
+                '',
+                `${window.location.pathname}?${searchParams.toString()}`,
+              );
+              setView('userProfiles');
+            }}
+          >
+            User Profiles
+          </span>
         </div>
 
         {view === "full" ? (
-          <TabSelect
-            wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
-            titleClassName="whitespace-nowrap text-sm"
-            selected={detailedDisplaySelectedTab}
-            initialSelectedIndex={tabsFormatted.findIndex(
-              (tab) => tab.title === detailedDisplaySelectedTab,
-            )}
-            tabs={tabsFormatted}
-            onClick={(tab) => {
-              handleTabChange(tab);
-            }}
-          />
+          <>
+            <TabSelect
+              wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
+              titleClassName="whitespace-nowrap text-sm"
+              selected={detailedDisplaySelectedTab}
+              initialSelectedIndex={tabsFormatted.findIndex(
+                (tab) => tab.title === detailedDisplaySelectedTab,
+              )}
+              tabs={tabsFormatted}
+              onClick={(tab) => {
+                handleTabChange(tab);
+              }}
+            />
+          </>
         ) : null}
       </div>
 
@@ -175,6 +198,8 @@ export default function Monitoring(pageProps: PageProps) {
       /> : null}
 
       {view === 'lite' ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
+
+      {view === 'userProfiles' ? <AllUserProfiles /> : null}
     </>
   );
 }

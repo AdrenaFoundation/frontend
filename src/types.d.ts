@@ -219,6 +219,12 @@ export type UserProfileExtended = {
   swapCount: number;
   swapVolumeUsd: number;
   swapFeePaidUsd: number;
+  // Aggregates
+  totalPnlUsd: number;
+  totalTradeVolumeUsd: number;
+  totalFeesPaidUsd: number;
+  openingAverageLeverage: number;
+  //
   shortStats: {
     openedPositionCount: number;
     liquidatedPositionCount: number;
