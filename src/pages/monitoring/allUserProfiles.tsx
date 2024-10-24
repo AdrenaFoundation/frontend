@@ -39,11 +39,12 @@ export default function AllUserProfiles() {
 
     useEffect(() => {
         const filteredProfiles = allUserProfiles.filter(profile => {
+            const ownerCondition = ownerFilter === '' || profile.pubkey.toBase58().toLowerCase().includes(ownerFilter.toLowerCase());
             const pnlCondition = pnlFilter === 'all' ||
                 (pnlFilter === "profit" && profile.totalPnlUsd > 0) ||
                 (pnlFilter === "loss" && profile.totalPnlUsd < 0);
             const tradeVolumeCondition = !hideZeroTradeVolume || profile.totalTradeVolumeUsd > 0;
-            return pnlCondition && tradeVolumeCondition;
+            return ownerCondition && pnlCondition && tradeVolumeCondition;
         });
 
         const sortedByPnl = [...filteredProfiles].sort((a, b) => b.totalPnlUsd - a.totalPnlUsd);
@@ -70,7 +71,7 @@ export default function AllUserProfiles() {
         });
 
         setSortedProfiles(sorted);
-    }, [allUserProfiles, sortConfigs, sortOrder, pnlFilter, hideZeroTradeVolume]);
+    }, [allUserProfiles, sortConfigs, sortOrder, pnlFilter, hideZeroTradeVolume, ownerFilter]);
 
     useEffect(() => {
         const paginated = sortedProfiles.slice(
@@ -96,16 +97,6 @@ export default function AllUserProfiles() {
             <StyledContainer className="p-4">
                 <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2">
                     <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
-                        <input
-                            type="text"
-                            placeholder="Filter by owner (pubkey)"
-                            value={ownerFilter}
-                            onChange={(e) => setOwnerFilter(e.target.value)}
-                            className="bg-gray-800 text-white border border-gray-700 rounded p-1 w-[15em] text-sm"
-                        />
-                    </div>
-
-                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
                         {['all', 'profit', 'loss'].map(type => (
                             <Button
                                 key={type}
@@ -117,6 +108,18 @@ export default function AllUserProfiles() {
                             />
                         ))}
                     </div>
+
+                    <label className="flex items-center ml-1 cursor-pointer">
+                        <span className="mx-1 text-txtfade whitespace-nowrap text-center">
+                            {hideZeroTradeVolume ? 'Hide' : 'Show'} 0 trade volume profiles
+                        </span>
+                        <Switch
+                            className="mr-0.5"
+                            checked={hideZeroTradeVolume}
+                            onChange={() => setHideZeroTradeVolume(prev => !prev)}
+                            size="medium"
+                        />
+                    </label>
 
                     <div className="flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor w-full md:w-auto">
                         {['totalPnlUsd', 'totalTradeVolumeUsd', 'openingAverageLeverage', 'totalFeesPaidUsd'].map(criteria => (
@@ -136,17 +139,17 @@ export default function AllUserProfiles() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <label className="flex items-center ml-1 cursor-pointer">
-                            <span className="mx-1 text-txtfade whitespace-nowrap text-center">
-                                {hideZeroTradeVolume ? 'Hide' : 'Show'} 0 trade volume profiles
-                            </span>
-                            <Switch
-                                className="mr-0.5"
-                                checked={hideZeroTradeVolume}
-                                onChange={() => setHideZeroTradeVolume(prev => !prev)}
-                                size="medium"
+
+                        <div className="flex flex-wrap rounded-lg p-2 bg-secondary w-full md:w-auto">
+                            <input
+                                type="text"
+                                placeholder="Filter by owner (pubkey)"
+                                value={ownerFilter}
+                                onChange={(e) => setOwnerFilter(e.target.value)}
+                                className="bg-gray-800 text-white border border-gray-700 rounded p-1 w-[15em] text-sm"
                             />
-                        </label>
+                        </div>
+
                         <Button
                             onClick={resetFilters}
                             variant="outline"

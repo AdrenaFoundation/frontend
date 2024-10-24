@@ -26,14 +26,14 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
         <div className={`w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2 ${className}`}>
             <div className="flex flex-row justify-between items-center p-1 mx-2">
 
-                <span
+                {/* <span
                     className={`text-lg font-bold mx-2 min-w-[2em] ${profile.rank === 1 ? 'text-gold' :
                         profile.rank === 2 ? 'text-silver' :
                             profile.rank === 3 ? 'text-bronze' : 'text-txtfade'
                         }`}
                 >
                     #{profile.rank}
-                </span>
+                </span> */}
 
                 <div className="h-full border-r border-gray-700 mx-2"></div>
 
