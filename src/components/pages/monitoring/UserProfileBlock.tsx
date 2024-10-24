@@ -24,20 +24,11 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
 
     return (
         <div className={`w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2 ${className}`}>
-            <div className="flex flex-row justify-between items-center p-1 mx-2">
+            <div className="flex flex-col md:flex-row justify-between items-center p-2 mx-2">
 
-                {/* <span
-                    className={`text-lg font-bold mx-2 min-w-[2em] ${profile.rank === 1 ? 'text-gold' :
-                        profile.rank === 2 ? 'text-silver' :
-                            profile.rank === 3 ? 'text-bronze' : 'text-txtfade'
-                        }`}
-                >
-                    #{profile.rank}
-                </span> */}
+                <div className="h-full border-r border-gray-700 mx-2 hidden md:block"></div>
 
-                <div className="h-full border-r border-gray-700 mx-2"></div>
-
-                <div className="flex flex-1 flex-col">
+                <div className="flex flex-1 flex-col items-center md:items-start">
                     <div className="flex w-full font-mono text-xxs">
                         <span className="text-blue cursor-pointer hover:underline mr-1 text-lg">
                             {profile.nickname}
@@ -51,7 +42,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     />
                 </div>
 
-                <div className="flex flex-1 flex-col items-center">
+                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                         Average Leverage
                     </div>
@@ -66,7 +57,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center">
+                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                         Total Fees Paid
                     </div>
@@ -80,7 +71,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center">
+                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                         Total Volume Traded
                     </div>
@@ -94,7 +85,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center">
+                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                         Long/Short Ratio
                     </div>
@@ -109,7 +100,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center">
+                <div className="flex flex-1 flex-col items-center mt-2 sm:mt-0">
                     <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                         Total PnL
                     </div>
