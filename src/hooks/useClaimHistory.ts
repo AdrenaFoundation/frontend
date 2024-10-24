@@ -26,13 +26,10 @@ export default function useClaimHistory(): {
     if (!response.ok) {
       console.log('API response was not ok');
     }
-    console.log('API response was ok');
 
     const apiBody = await response.json();
 
     const apiData: ClaimHistoryApi | undefined = apiBody.data;
-
-    console.log('apiData', apiData);
 
     if (typeof apiData === 'undefined') {
       console.log('apiData is undefined');
@@ -66,13 +63,11 @@ export default function useClaimHistory(): {
   }
 
   const loadClaimsHistory = useCallback(async () => {
-    console.log('loadClaimsHistory');
     if (!wallet) {
       setClaimsHistoryAdx(null);
       setClaimsHistoryAlp(null);
       return;
     }
-    console.log('loadClaimsHistory');
 
     try {
       const claimsHistory = await fetchClaimsHistory();
