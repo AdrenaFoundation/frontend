@@ -15,7 +15,7 @@ import resetIcon from '../../../public/images/Icons/cross.svg'
 
 type SortableKeys = keyof Pick<UserProfileExtended, 'totalTradeVolumeUsd' | 'totalPnlUsd' | 'openingAverageLeverage' | 'totalFeesPaidUsd'>;
 
-export default function AllUserProfiles() {
+export default function AllUserProfiles({ isSmallSize }: { isSmallSize: boolean }) {
     const wallet = useSelector(state => state.walletState.wallet);
 
     const connected = !!wallet;
@@ -107,8 +107,8 @@ export default function AllUserProfiles() {
     return (
         <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
-                <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2">
-                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
+                <div className="flex flex-row flex-wrap justify-between items-center gap-2 items-stretch">
+                    <div className={`flex border border-gray-700 rounded-lg p-2 bg-secondary gap-1`}>
                         {['all', 'profit', 'loss'].map(type => (
                             <Button
                                 key={type}
@@ -133,7 +133,7 @@ export default function AllUserProfiles() {
                         />
                     </label>
 
-                    <div className="flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor w-full md:w-auto">
+                    <div className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor gap-1`}>
                         {['totalPnlUsd', 'totalTradeVolumeUsd', 'openingAverageLeverage', 'totalFeesPaidUsd'].map(criteria => (
                             <React.Fragment key={criteria}>
                                 <button
@@ -152,7 +152,7 @@ export default function AllUserProfiles() {
 
                     <div className="flex items-center gap-2">
 
-                        <div className="flex flex-wrap rounded-lg p-2 bg-secondary w-full md:w-auto">
+                        <div className="flex flex-wrap rounded-lg p-2 bg-secondary w-full">
                             <input
                                 type="text"
                                 placeholder="Filter by owner (pubkey)"
@@ -176,7 +176,7 @@ export default function AllUserProfiles() {
                         >
                         </Button>
                     </div>
-                </div>
+                </div >
 
                 <div className="flex flex-wrap flex-col gap-0">
                     {paginatedProfiles.map((profile) => (
@@ -189,7 +189,7 @@ export default function AllUserProfiles() {
                     itemsPerPage={itemsPerPage}
                     onPageChange={setCurrentPage}
                 />
-            </StyledContainer>
-        </div>
+            </StyledContainer >
+        </div >
     );
 }

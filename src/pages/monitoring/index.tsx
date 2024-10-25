@@ -18,11 +18,23 @@ export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
   const [view, setView] = useState<'lite' | 'full' | 'livePositions' | 'userProfiles'>('lite');
+  const [isSmallSize, setIsSmallSize] = useState(false);
 
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
     useState<(typeof tabs)[number]>('All');
 
   const searchParams = new URLSearchParams(window.location.search);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallSize(window.innerWidth < 400);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (searchParams.has('view')) {
@@ -189,7 +201,7 @@ export default function Monitoring(pageProps: PageProps) {
         ) : null}
       </div>
 
-      {view === "livePositions" ? <AllPositions /> : null}
+      {view === "livePositions" ? <AllPositions isSmallSize={isSmallSize} /> : null}
 
       {view === "full" ? <DetailedMonitoring
         {...pageProps}
@@ -199,7 +211,7 @@ export default function Monitoring(pageProps: PageProps) {
 
       {view === 'lite' ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
 
-      {view === 'userProfiles' ? <AllUserProfiles /> : null}
+      {view === 'userProfiles' ? <AllUserProfiles isSmallSize={isSmallSize} /> : null}
     </>
   );
 }
