@@ -5,7 +5,9 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Switch from '@/components/common/Switch/Switch';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
+import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
@@ -14,7 +16,11 @@ import resetIcon from '../../../public/images/Icons/cross.svg'
 type SortableKeys = keyof Pick<UserProfileExtended, 'totalTradeVolumeUsd' | 'totalPnlUsd' | 'openingAverageLeverage' | 'totalFeesPaidUsd'>;
 
 export default function AllUserProfiles() {
-    const { allUserProfiles, triggerAllUserProfilesReload } = useAllUserProfiles();
+    const wallet = useSelector(state => state.walletState.wallet);
+
+    const connected = !!wallet;
+
+    const { allUserProfiles, triggerAllUserProfilesReload } = useAllUserProfiles({ connected });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [sortConfigs, setSortConfigs] = useState<{ [key: string]: 'asc' | 'desc' }>({
@@ -91,6 +97,12 @@ export default function AllUserProfiles() {
             return [criteria, ...newOrder];
         });
     };
+
+    if (!connected) {
+        return <div className="flex h-[10em] bg-main w-full border items-center justify-center rounded-xl z-10 mt-3">
+            <WalletConnection connected={connected} />
+        </div>
+    }
 
     return (
         <div className="flex flex-col gap-2 p-2">
