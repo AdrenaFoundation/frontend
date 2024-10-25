@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 
 import { UserProfileExtended } from '@/types';
 
-export function useAllUserProfiles(): {
+export function useAllUserProfiles({ connected }: { connected: boolean }): {
     allUserProfiles: UserProfileExtended[];
     triggerAllUserProfilesReload: () => void;
 } {
     const [trickReload, triggerReload] = useState<number>(0);
-    const [allUserProfiles, setAllUserProfiles] = useState<UserProfileExtended[]>([]);
+    const [allUserProfiles, setAllUserProfiles] = useState<UserProfileExtended[]>(
+        [],
+    );
 
     useEffect(() => {
         const loadAllUserProfiles = async () => {
@@ -24,7 +26,7 @@ export function useAllUserProfiles(): {
         const interval = setInterval(loadAllUserProfiles, 60000);
 
         return () => clearInterval(interval);
-    }, [trickReload]);
+    }, [connected, trickReload]);
 
     return {
         allUserProfiles,
