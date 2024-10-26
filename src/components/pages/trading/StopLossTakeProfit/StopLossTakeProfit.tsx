@@ -419,7 +419,7 @@ export default function StopLossTakeProfit({
           className="font-boldy text-xs w-[10em] grow"
           size="lg"
           title="Confirm"
-          disabled={stopLossError || takeProfitError || (stopLossInput !== null || takeProfitInput !== null)}
+          disabled={stopLossError || takeProfitError}
           onClick={() => applyConfiguration()}
         />
       </div>

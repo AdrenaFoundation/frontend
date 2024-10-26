@@ -5,14 +5,19 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
 import { useAllPositions } from '@/hooks/useAllPositions';
+import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
 import resetIcon from '../../../public/images/Icons/cross.svg'
 
-export default function AllPositions() {
-    const { allPositions, triggerAllPositionsReload } = useAllPositions();
+export default function AllPositions({ isSmallSize }: { isSmallSize: boolean }) {
+    const wallet = useSelector(state => state.walletState.wallet);
+
+    const connected = !!wallet;
+
+    const { allPositions, triggerAllPositionsReload } = useAllPositions({ connected });
     const [currentPage, setCurrentPage] = useState(1);
     const [sideFilter, setSideFilter] = useState('all');
     const [mintFilter, setMintFilter] = useState('all');
@@ -99,8 +104,8 @@ export default function AllPositions() {
     return (
         <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
-                <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2">
-                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
+                <div className="flex flex-row flex-wrap justify-between items-stretch gap-2">
+                    <div className={`flex border border-gray-700 rounded-lg p-2 bg-secondary gap-1 ${isSmallSize ? 'w-full' : 'w-auto'}`}>
                         {['all', 'long', 'short'].map(type => (
                             <Button
                                 key={type}
@@ -113,14 +118,16 @@ export default function AllPositions() {
                         ))}
                     </div>
 
-                    <div className="flex flex-wrap justify-center gap-2 border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
-                        <Button
-                            onClick={() => setMintFilter('all')}
-                            variant={mintFilter === 'all' ? 'outline' : 'text'}
-                            className="w-full md:w-20 flex items-center justify-center"
-                            title="All"
-                        >
-                        </Button>
+                    <div className={`flex border border-gray-700 rounded-lg py-2 pl-2 bg-secondary gap-1 ${isSmallSize ? 'w-full' : 'w-auto'}`}>
+                        <div className='flex items-center justify-center'>
+                            <Button
+                                onClick={() => setMintFilter('all')}
+                                variant={mintFilter === 'all' ? 'outline' : 'text'}
+                                className="w-full md:w-20 flex items-center justify-center"
+                                title="All"
+                            >
+                            </Button>
+                        </div>
                         {window.adrena.client.tokens
                             .filter(token => token.symbol !== 'USDC')
                             .map(token => (
@@ -136,7 +143,7 @@ export default function AllPositions() {
                             ))}
                     </div>
 
-                    <div className="flex flex-wrap border border-gray-700 rounded-lg p-2 bg-secondary w-full md:w-auto">
+                    <div className={`flex border border-gray-700 rounded-lg p-2 bg-secondary gap-1 ${isSmallSize ? 'w-full' : 'w-auto'}`}>
                         {['all', 'profit', 'loss'].map(type => (
                             <Button
                                 key={type}
@@ -149,7 +156,7 @@ export default function AllPositions() {
                         ))}
                     </div>
 
-                    <div className="flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor w-full md:w-auto">
+                    <div className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor`}>
                         {['pnl', 'size', 'leverage'].map(criteria => (
                             <React.Fragment key={criteria}>
                                 <button
@@ -166,7 +173,7 @@ export default function AllPositions() {
                         ))}
                     </div>
 
-                    <div className="flex flex-wrap items-center w-full md:w-auto">
+                    <div className="flex flex-wrap items-center w-full md:w-auto justify-center gap-2">
                         <input
                             type="pubkey"
                             placeholder="Filter by owner (pubkey)"
@@ -174,23 +181,25 @@ export default function AllPositions() {
                             onChange={(e) => setOwnerFilter(e.target.value)}
                             className="bg-gray-800 text-white border border-gray-700 rounded p-1 w-[15em] text-sm"
                         />
+
+                        <div className="flex items-center gap-2">
+                            <Button
+                                onClick={resetFilters}
+                                variant="outline"
+                                className="w-full md:w-auto"
+                                icon={resetIcon}
+                            />
+                            <Button
+                                onClick={refreshPositions}
+                                variant="outline"
+                                className="w-full md:w-auto"
+                                icon={reloadIcon}
+                            >
+                            </Button>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <Button
-                            onClick={resetFilters}
-                            variant="outline"
-                            className="w-full md:w-auto"
-                            icon={resetIcon}
-                        />
-                        <Button
-                            onClick={refreshPositions}
-                            variant="outline"
-                            className="w-full md:w-auto"
-                            icon={reloadIcon}
-                        >
-                        </Button>
-                    </div>
+
                 </div>
 
                 <div className="flex flex-wrap justify-between gap-2">
@@ -217,7 +226,7 @@ export default function AllPositions() {
                     itemsPerPage={itemsPerPage}
                     onPageChange={setCurrentPage}
                 />
-            </StyledContainer>
-        </div>
+            </StyledContainer >
+        </div >
     );
 }

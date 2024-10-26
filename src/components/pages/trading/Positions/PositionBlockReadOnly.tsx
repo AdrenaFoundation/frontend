@@ -51,7 +51,7 @@ export default function PositionBlockReadOnly({
 
             const width = blockRef.current.clientWidth;
 
-            setIsSmallSize(width <= 400);
+            setIsSmallSize(width <= 700);
         };
 
         window.addEventListener('resize', handleResize);
@@ -64,7 +64,7 @@ export default function PositionBlockReadOnly({
     const positionName = (
         <div
             className={twMerge(
-                'flex items-center justify-center h-full  min-w-[12em]',
+                'flex items-center justify-left h-full  min-w-[12em]',
                 className,
             )}
         >
@@ -132,8 +132,8 @@ export default function PositionBlockReadOnly({
                         nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
                         format="currency"
                         className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-                                ? 'green'
-                                : 'redbright'
+                            ? 'green'
+                            : 'redbright'
                             }`}
                         isDecimalDimmed={false}
                     />
@@ -150,8 +150,8 @@ export default function PositionBlockReadOnly({
                         precision={2}
                         isDecimalDimmed={false}
                         className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
-                                ? 'green'
-                                : 'redbright'
+                            ? 'green'
+                            : 'redbright'
                             }`}
                     />
 
@@ -235,7 +235,7 @@ export default function PositionBlockReadOnly({
         <>
             <div
                 className={twMerge(
-                    'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary overflow-hidden',
+                    'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary',
                     bodyClassName,
                     borderColor,
                 )}
@@ -244,16 +244,12 @@ export default function PositionBlockReadOnly({
             >
                 {isSmallSize ? (
                     <div className="flex flex-col w-full overflow-hidden items-center">
-                        <div className="border-b pb-2 pt-2 flex w-full justify-center">
+                        <div className="border-b py-2 flex-1 flex w-full justify-between px-8">
                             {positionName}
-                        </div>
-                        <div className="border-b pb-2 pt-2 flex w-full justify-center">
                             {ownerInfo}
                         </div>
-                        <div className="border-b pb-2 pt-2 flex w-full justify-center">
+                        <div className="border-b py-2 flex-1 flex w-full justify-between px-8">
                             {pnl}
-                        </div>
-                        <div className="border-b pb-2 pt-2 flex w-full justify-center">
                             {netValue}
                         </div>
                     </div>

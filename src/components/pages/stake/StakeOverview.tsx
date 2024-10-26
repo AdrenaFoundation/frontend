@@ -210,6 +210,8 @@ export default function StakeOverview({
 
   const allTimeClaimedUsdc = claimsHistory?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0;
   const allTimeClaimedAdx = claimsHistory?.reduce((sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis, 0) ?? 0;
+  const isMediumUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 1000;
+  const isMediumAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1000;
   const isBigUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 100_000;
   const isBigAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1_000_000;
 
@@ -522,9 +524,9 @@ export default function StakeOverview({
                   <div className="flex items-center">
                     <FormatNumber
                       nb={allTimeClaimedUsdc}
-                      precisionIfPriceDecimalsBelow={isBigUsdcAllTimeClaimAmount ? 0 : 2}
-                      minimumFractionDigits={isBigUsdcAllTimeClaimAmount ? 0 : 2}
-                      precision={isBigUsdcAllTimeClaimAmount ? 0 : 2}
+                      precisionIfPriceDecimalsBelow={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
+                      minimumFractionDigits={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
+                      precision={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
                       isAbbreviate={isBigUsdcAllTimeClaimAmount}
                       info={isBigUsdcAllTimeClaimAmount ? formatNumber(allTimeClaimedUsdc, 2, 2) : undefined}
                       className='text-txtfade'
@@ -541,9 +543,9 @@ export default function StakeOverview({
 
                     <FormatNumber
                       nb={allTimeClaimedAdx}
-                      precisionIfPriceDecimalsBelow={isBigAdxAllTimeClaimAmount ? 0 : 2}
-                      minimumFractionDigits={isBigAdxAllTimeClaimAmount ? 0 : 2}
-                      precision={isBigAdxAllTimeClaimAmount ? 0 : 2}
+                      precisionIfPriceDecimalsBelow={isMediumAdxAllTimeClaimAmount ? 0 : 2}
+                      minimumFractionDigits={isMediumAdxAllTimeClaimAmount ? 0 : 2}
+                      precision={isMediumAdxAllTimeClaimAmount ? 0 : 2}
                       isAbbreviate={isBigAdxAllTimeClaimAmount}
                       info={isBigAdxAllTimeClaimAmount ? formatNumber(allTimeClaimedAdx, 2, 2) : undefined}
                       className='text-txtfade'
