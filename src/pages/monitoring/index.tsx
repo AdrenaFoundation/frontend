@@ -4,6 +4,7 @@ import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
@@ -18,23 +19,13 @@ export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
   const [view, setView] = useState<'lite' | 'full' | 'livePositions' | 'userProfiles'>('lite');
-  const [isSmallSize, setIsSmallSize] = useState(false);
 
   const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
     useState<(typeof tabs)[number]>('All');
 
   const searchParams = new URLSearchParams(window.location.search);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmallSize(window.innerWidth < 400);
-    };
-
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initial check
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const isSmallSize = useBetterMediaQuery('(max-width: 400px)') ?? false;
 
   useEffect(() => {
     if (searchParams.has('view')) {

@@ -5,12 +5,12 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
 import { useAllPositions } from '@/hooks/useAllPositions';
+import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg'
 import resetIcon from '../../../public/images/Icons/cross.svg'
-import { useSelector } from '@/store/store';
 
 export default function AllPositions({ isSmallSize }: { isSmallSize: boolean }) {
     const wallet = useSelector(state => state.walletState.wallet);
@@ -105,7 +105,7 @@ export default function AllPositions({ isSmallSize }: { isSmallSize: boolean }) 
         <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
                 <div className="flex flex-row flex-wrap justify-between items-stretch gap-2">
-                    <div className={`flex border border-gray-700 rounded-lg p-2 bg-secondary gap-1`}>
+                    <div className={`flex border border-gray-700 rounded-lg p-2 bg-secondary gap-1 ${isSmallSize ? 'w-full' : 'w-auto'}`}>
                         {['all', 'long', 'short'].map(type => (
                             <Button
                                 key={type}
@@ -118,14 +118,16 @@ export default function AllPositions({ isSmallSize }: { isSmallSize: boolean }) 
                         ))}
                     </div>
 
-                    <div className={`flex justify-center gap-2 border border-gray-700 rounded-lg p-2 bg-secondary gap-1`}>
-                        <Button
-                            onClick={() => setMintFilter('all')}
-                            variant={mintFilter === 'all' ? 'outline' : 'text'}
-                            className="w-full md:w-20 flex items-center justify-center"
-                            title="All"
-                        >
-                        </Button>
+                    <div className={`flex border border-gray-700 rounded-lg py-2 pl-2 bg-secondary gap-1 ${isSmallSize ? 'w-full' : 'w-auto'}`}>
+                        <div className='flex items-center justify-center'>
+                            <Button
+                                onClick={() => setMintFilter('all')}
+                                variant={mintFilter === 'all' ? 'outline' : 'text'}
+                                className="w-full md:w-20 flex items-center justify-center"
+                                title="All"
+                            >
+                            </Button>
+                        </div>
                         {window.adrena.client.tokens
                             .filter(token => token.symbol !== 'USDC')
                             .map(token => (
@@ -141,7 +143,7 @@ export default function AllPositions({ isSmallSize }: { isSmallSize: boolean }) 
                             ))}
                     </div>
 
-                    <div className={`flex border border-gray-700 rounded-lg p-2 bg-secondary gap-1`}>
+                    <div className={`flex border border-gray-700 rounded-lg p-2 bg-secondary gap-1 ${isSmallSize ? 'w-full' : 'w-auto'}`}>
                         {['all', 'profit', 'loss'].map(type => (
                             <Button
                                 key={type}
@@ -154,7 +156,7 @@ export default function AllPositions({ isSmallSize }: { isSmallSize: boolean }) 
                         ))}
                     </div>
 
-                    <div className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor ${isSmallSize ? 'w-auto' : 'w-auto'}`}>
+                    <div className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-[2px] border border-bcolor`}>
                         {['pnl', 'size', 'leverage'].map(criteria => (
                             <React.Fragment key={criteria}>
                                 <button
