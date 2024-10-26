@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Id, toast } from 'react-toastify';
+import { twMerge } from 'tailwind-merge';
 
 import { AdrenaTransactionError, getTxExplorer } from '@/utils';
 
@@ -10,7 +11,6 @@ import doneIcon from '../../../../public/images/Icons/done.png';
 import errorIcon from '../../../../public/images/Icons/error-full.png';
 import loaderIcon from '../../../../public/images/Icons/loader.svg';
 import AutoScalableDiv from '../AutoScalableDiv/AutoScalableDiv';
-import { twMerge } from 'tailwind-merge';
 
 export enum NotificationStepState {
   waiting,
