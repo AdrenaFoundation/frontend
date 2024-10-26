@@ -8,7 +8,7 @@ import { calculatePnLandLiquidationPrice } from './usePositions';
 let lastDealtTrickReload = 0;
 let lastCall = 0;
 
-export function useAllPositions(): {
+export function useAllPositions({ connected }: { connected: boolean }): {
     allPositions: PositionExtended[];
     triggerAllPositionsReload: () => void;
 } {
@@ -78,7 +78,7 @@ export function useAllPositions(): {
             clearInterval(interval);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loadAllPositions, trickReload, window.adrena.client.readonlyConnection]);
+    }, [connected, loadAllPositions, trickReload, window.adrena.client.readonlyConnection]);
 
     return {
         allPositions,

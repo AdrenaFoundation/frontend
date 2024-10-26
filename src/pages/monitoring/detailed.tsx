@@ -125,46 +125,11 @@ export default function DetailedMonitoring({
             adxStakingAccount={adxStakingAccount}
           />
         ) : null}
-        {selectedTab === 'All' ||
-          selectedTab === 'Vesting' ||
-          selectedTab === 'ADX tokenomics' ? (
-          <VestedADX
-            titleClassName={titleClassName}
-            bodyClassName={bodyClassName}
-            vestRegistry={vestRegistry}
-          />
-        ) : null}
-        {selectedTab === 'All' ||
-          selectedTab === 'Vesting' ||
-          selectedTab === 'ADX tokenomics' ? (
-          <VestedTokens
-            titleClassName={titleClassName}
-            bodyClassName={bodyClassName}
-            vestRegistry={vestRegistry}
-          />
-        ) : null}
-        {selectedTab === 'All' || selectedTab === 'Vesting' ? (
-          <VestsCount
-            titleClassName={titleClassName}
-            bodyClassName={bodyClassName}
-            vestRegistry={vestRegistry}
-          />
-        ) : null}
         {selectedTab === 'All' || selectedTab === 'Fees' ? (
           <AllTimeFees
             titleClassName={titleClassName}
             bodyClassName={bodyClassName}
             mainPool={mainPool}
-          />
-        ) : null}
-        {selectedTab === 'All' ||
-          selectedTab === 'Fees' ||
-          selectedTab === 'Staking' ? (
-          <PendingUsdcStakingRewards
-            titleClassName={titleClassName}
-            bodyClassName={bodyClassName}
-            alpStakingRewardsAccumulated={alpStakingRewardsAccumulated}
-            adxStakingRewardsAccumulated={adxStakingRewardsAccumulated}
           />
         ) : null}
       </div>

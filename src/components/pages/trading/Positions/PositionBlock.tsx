@@ -121,7 +121,7 @@ export default function PositionBlock({
 
           {position.isOptimistic && (
             <div className="text-xs text-yellow-900 bg-yellow-300 border border-yellow-600 rounded-md px-1 py-0.25 ml-2">
-              pending
+              Confirmation...
             </div>
           )}
         </div>
