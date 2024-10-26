@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Id, toast } from 'react-toastify';
+import { twMerge } from 'tailwind-merge';
 
 import { AdrenaTransactionError, getTxExplorer } from '@/utils';
 
@@ -38,7 +39,7 @@ export default class MultiStepNotification {
   protected constructor(
     protected title: string,
     protected steps: NotificationSteps,
-  ) {}
+  ) { }
 
   public static new({
     title,
@@ -174,7 +175,7 @@ export default class MultiStepNotification {
           <div className="h-[1px] mt-2 w-full bg-bcolor" />
 
           <div className="flex grow w-full items-center justify-center">
-            <div className="h-[6em] min-w-[8em] shrink w-full flex flex-col justify-center gap-2">
+            <div className="h-[6em] min-w-[9em] shrink w-full flex flex-col justify-center gap-2">
               {this.steps.map((step, index) => (
                 <div key={index} className="w-full items-center flex h-4">
                   <div className="w-[1.6em] mr-1 flex items-center justify-center">
@@ -227,13 +228,18 @@ export default class MultiStepNotification {
               <>
                 <div className="h-full w-[1px] bg-bcolor shrink-0 grow-0" />
 
-                <div className="flex flex-col pl-2 pr-2">
-                  <AutoScalableDiv className="flex items-center justify-center text-center w-full h-full pl-4 pr-4">
+                <div className="flex flex-col pl-2 pr-2 w-full">
+                  <p
+                    className={twMerge(
+                      'flex items-center text-sm justify-center text-center w-full h-full pl-4 pr-4',
+                      errorMessage.length >= 70 && 'text-xs',
+                    )}
+                  >
                     {errorMessage}
-                  </AutoScalableDiv>
+                  </p>
 
                   {this.error instanceof AdrenaTransactionError &&
-                  this.error.txHash ? (
+                    this.error.txHash ? (
                     <Link
                       href={getTxExplorer(this.error.txHash)}
                       target="_blank"
