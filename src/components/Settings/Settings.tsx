@@ -1,4 +1,5 @@
 import { Connection } from '@solana/web3.js';
+import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
@@ -13,6 +14,7 @@ import solscanIcon from '../../../public/images/Icons/solscan.svg';
 import solanaExplorerIcon from '../../../public/images/sol.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
+import Modal from '../common/Modal/Modal';
 import RPCSetting from './RPCSetting';
 
 export default function Settings({
@@ -27,6 +29,7 @@ export default function Settings({
   setFavoriteRpc,
   isGenesis = false,
   preferredSolanaExplorer,
+  isMobile = false,
 }: {
   activeRpc: {
     name: string;
@@ -46,9 +49,11 @@ export default function Settings({
   isIcon?: boolean;
   isGenesis?: boolean;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  isMobile?: boolean;
 }) {
-  const [, setCookies] = useCookies(['solanaExplorer']);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [, setCookies] = useCookies(['solanaExplorer']);
 
   const [activeSolanaExplorer, setActiveSolanaExplorer] =
     useState<SolanaExplorerOptions>(preferredSolanaExplorer);
@@ -78,23 +83,8 @@ export default function Settings({
     },
   } as const;
 
-  return (
-    <Menu
-      trigger={
-        <Button
-          variant={isGenesis ? 'text' : 'lightbg'}
-          leftIcon={settingsIcon}
-          className={'w-7 h-7 p-0'}
-          iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
-        />
-      }
-      openMenuClassName={twMerge(
-        'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300',
-        isGenesis ? 'sm:right-0 right-[-175px]' : 'right-0',
-      )}
-      disableOnClickInside={true}
-      isDim={true}
-    >
+  const content = (
+    <>
       <RPCSetting
         activeRpc={activeRpc}
         rpcInfos={rpcInfos}
@@ -132,6 +122,48 @@ export default function Settings({
           ))}
         </div>
       </div>
+    </>
+  );
+
+  if (isMobile) {
+    return (
+      <AnimatePresence>
+        <Button
+          variant={isGenesis ? 'text' : 'lightbg'}
+          leftIcon={settingsIcon}
+          className={'w-7 h-7 p-0'}
+          iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+          onClick={() => setIsModalOpen(true)}
+        />
+        {isModalOpen && (
+          <Modal
+            close={() => setIsModalOpen(false)}
+            className="flex flex-col w-full p-5 relative overflow-visible"
+          >
+            {content}
+          </Modal>
+        )}
+      </AnimatePresence>
+    );
+  }
+  return (
+    <Menu
+      trigger={
+        <Button
+          variant={isGenesis ? 'text' : 'lightbg'}
+          leftIcon={settingsIcon}
+          className={'w-7 h-7 p-0'}
+          iconClassName="w-4 h-4 opacity-75 hover:opacity-100"
+        />
+      }
+      openMenuClassName={twMerge(
+        'rounded-lg w-[300px] bg-secondary border border-bcolor p-3 shadow-lg transition duration-300',
+        isGenesis ? 'sm:right-0 right-[-175px]' : 'right-0',
+      )}
+      disableOnClickInside={true}
+      isDim={true}
+    >
+      {content}
     </Menu>
   );
 }

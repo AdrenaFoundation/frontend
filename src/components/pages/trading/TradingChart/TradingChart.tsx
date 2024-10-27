@@ -333,7 +333,7 @@ export default function TradingChart({
             });
 
             const copiedDrawings = { ...drawings };
-            console.log('drawings', copiedDrawings);
+
             setDrawings(drawings);
 
             localStorage.setItem(
@@ -355,7 +355,6 @@ export default function TradingChart({
       }
     }
 
-    console.log('createWidget', drawings);
     onLoadScriptRef.current = createWidget;
 
     if (!tvScriptLoadingPromise) {

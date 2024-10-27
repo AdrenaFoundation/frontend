@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { UserProfileExtended } from '@/types';
 
-export function useAllUserProfiles({ connected }: { connected: boolean }): {
+export function useAllUserProfiles(): {
     allUserProfiles: UserProfileExtended[];
     triggerAllUserProfilesReload: () => void;
 } {
@@ -15,6 +15,7 @@ export function useAllUserProfiles({ connected }: { connected: boolean }): {
         const loadAllUserProfiles = async () => {
             try {
                 const profiles = await window.adrena.client.loadAllUserProfiles();
+                console.log('profiles', profiles);
                 setAllUserProfiles(profiles);
             } catch (e) {
                 console.log('Error loading user profiles', e);
@@ -26,7 +27,7 @@ export function useAllUserProfiles({ connected }: { connected: boolean }): {
         const interval = setInterval(loadAllUserProfiles, 60000);
 
         return () => clearInterval(interval);
-    }, [connected, trickReload]);
+    }, [trickReload, window.adrena.client.readonlyConnection]);
 
     return {
         allUserProfiles,
