@@ -171,7 +171,7 @@ export default function AllPositions() {
                             className="bg-gray-800 text-white border border-gray-700 rounded p-1 px-2 w-full sm:max-w-[20em] text-sm"
                         />
 
-                        <div className="flex flex-row gap-3 items-center justify-between">
+                        <div className="flex flex-row gap-3 items-center justify-between w-full sm:w-auto">
                             <div
                                 className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-0.5 px-4 border border-bcolor`}
                             >
