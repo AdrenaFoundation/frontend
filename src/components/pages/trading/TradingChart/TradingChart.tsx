@@ -390,7 +390,7 @@ export default function TradingChart({
         .split('/')[0] as TokenSymbol;
 
       const savedDrawings = drawings[symbol];
-      if (savedDrawings.length > 0) {
+      if (savedDrawings && savedDrawings.length > 0) {
         savedDrawings.forEach(({ name, points }) => {
           widget.activeChart().createMultipointShape(points, {
             shape: name,
