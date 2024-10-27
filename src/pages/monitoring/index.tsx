@@ -192,7 +192,7 @@ export default function Monitoring(pageProps: PageProps) {
         ) : null}
       </div>
 
-      {view === "livePositions" ? <AllPositions isSmallSize={isSmallSize} /> : null}
+      {view === "livePositions" ? <AllPositions /> : null}
 
       {view === "full" ? <DetailedMonitoring
         {...pageProps}
@@ -202,7 +202,7 @@ export default function Monitoring(pageProps: PageProps) {
 
       {view === 'lite' ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
 
-      {view === 'userProfiles' ? <AllUserProfiles isSmallSize={isSmallSize} /> : null}
+      {view === 'userProfiles' ? <AllUserProfiles /> : null}
     </>
   );
 }

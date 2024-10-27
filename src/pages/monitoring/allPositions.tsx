@@ -13,11 +13,7 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
 
-export default function AllPositions({
-    isSmallSize,
-}: {
-    isSmallSize: boolean;
-}) {
+export default function AllPositions() {
     const wallet = useSelector((state) => state.walletState.wallet);
 
     const connected = !!wallet;
