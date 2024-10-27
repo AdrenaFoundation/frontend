@@ -43,25 +43,43 @@ let lastCall = 0;
 export default function usePositions(): {
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
-  addOptimisticPosition: (position: PositionExtended) => void;
-  removeOptimisticPosition: (
-    positionSide: 'long' | 'short',
-    positionCustody: PublicKey,
-  ) => void;
 } {
   const [trickReload, triggerReload] = useState<number>(0);
   const wallet = useSelector((s) => s.walletState.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
-  const [optimisticPositions, setOptimisticPositions] = useState<
-    PositionExtended[]
-  >([]);
 
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
-  useEffect(() => {
-    // Reset when loading the hook
-    lastCall = 0;
-  }, []);
+  // const subscribeToAccountChanges = useCallback(() => {
+  //   const connection = window.adrena.client.connection;
+  //   if (!wallet || !connection) return;
+
+  //   // subscribe to each position pda of the user
+  //   positions?.forEach((position) => {
+
+
+  //     const publicKey = new PublicKey(cortexPda.publicKey.toBase58());
+  //     const subscriptionId = connection.onProgramAccountChange(
+  //       publicKey,
+  //       (updatedAccountInfo) => {
+  //         // Handle the updated account info
+  //         loadPositions(); // Recalculate positions based on new data
+  //       },
+  //       { commitment: 'processed' } // Updated to use an options object
+  //     );
+
+  //     return () => {
+  //       if (subscriptionId) {
+  //         connection.removeAccountChangeListener(subscriptionId);
+  //       }
+  //     };
+  //   }, [wallet]);
+  // useEffect(() => {
+  //   const unsubscribe = subscribeToAccountChanges();
+  //   return () => {
+  //     if (unsubscribe) unsubscribe();
+  //   };
+  // }, [subscribeToAccountChanges]);
 
   const loadPositions = useCallback(async () => {
     if (!wallet || !tokenPrices) {
@@ -81,24 +99,13 @@ export default function usePositions(): {
         const freshPositions =
           (loadPosition
             ? await window.adrena.client.loadUserPositions(
-                new PublicKey(wallet.walletAddress),
-              )
+              new PublicKey(wallet.walletAddress),
+            )
             : positions) ?? [];
 
         freshPositions.forEach((position) => {
           calculatePnLandLiquidationPrice(position, tokenPrices);
         });
-
-        // Filter out optimistic positions that now exist in freshPositions
-        setOptimisticPositions((prev) =>
-          prev.filter((optimisticPosition) =>
-            freshPositions.some(
-              (freshPosition) =>
-                freshPosition.side === optimisticPosition.side &&
-                freshPosition.custody.equals(optimisticPosition.custody),
-            ),
-          ),
-        );
 
         setPositions(freshPositions);
       } catch (e) {
@@ -121,59 +128,18 @@ export default function usePositions(): {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet, tokenPrices]);
 
-  const addOptimisticPosition = (position: PositionExtended) => {
-    setOptimisticPositions((prev) => {
-      const isDuplicate =
-        prev.some(
-          (p) => p.side === position.side && p.custody.equals(position.custody),
-        ) ||
-        (positions &&
-          positions.some(
-            (p) =>
-              p.side === position.side && p.custody.equals(position.custody),
-          ));
-
-      if (isDuplicate) {
-        return prev;
-      }
-      calculatePnLandLiquidationPrice(position, tokenPrices);
-      return [...prev, position];
-    });
-  };
-
-  const removeOptimisticPosition = (
-    positionSide: 'long' | 'short',
-    positionCustody: PublicKey,
-  ) => {
-    setPositions((prev = []) =>
-      prev
-        ? prev.filter(
-            (p) =>
-              !(p.side === positionSide && p.custody.equals(positionCustody)),
-          )
-        : null,
-    );
-  };
 
   useEffect(() => {
     loadPositions();
 
-    const interval = setInterval(async () => {
-      await loadPositions();
-    }, 10000);
+    // subscribeToAccountChanges();
 
-    return () => {
-      clearInterval(interval);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadPositions, trickReload, window.adrena.client.connection]);
 
   return {
-    positions: positions ? [...optimisticPositions, ...positions] : null,
+    positions: positions ? positions : null,
     triggerPositionsReload: () => {
       triggerReload(trickReload + 1);
     },
-    addOptimisticPosition,
-    removeOptimisticPosition,
   };
 }

@@ -1,5 +1,4 @@
 import { BN } from '@coral-xyz/anchor';
-import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -21,17 +20,11 @@ let loadingCounter = 0;
 export default function ClosePosition({
   className,
   position,
-  triggerPositionsReload,
-  removeOptimisticPosition,
-  triggerUserProfileReload,
   onClose,
   tokenImage,
 }: {
   className?: string;
   position: PositionExtended;
-  triggerPositionsReload: () => void;
-  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
-  triggerUserProfileReload: () => void;
   onClose: () => void;
   tokenImage: ImageRef;
 }) {
@@ -104,13 +97,6 @@ export default function ClosePosition({
           notification,
 
         });
-
-      // Reload positions just after closing the popup
-      setTimeout(() => {
-        triggerPositionsReload();
-        removeOptimisticPosition(position.side, position.custody);
-        triggerUserProfileReload();
-      }, 0);
 
       onClose();
     } catch (error) {

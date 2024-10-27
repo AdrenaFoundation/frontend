@@ -42,8 +42,6 @@ export default function MyDashboard({
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   readonly,
-
-  removeOptimisticPosition,
 }: PageProps & {
   readonly?: boolean;
 }) {
@@ -313,7 +311,6 @@ export default function MyDashboard({
               positions={positions}
               triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
-              removeOptimisticPosition={removeOptimisticPosition}
               title="Opened Positions"
               userProfile={userProfile}
             />

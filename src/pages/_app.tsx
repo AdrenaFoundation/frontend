@@ -232,8 +232,6 @@ function AppComponent({
   const {
     positions,
     triggerPositionsReload,
-    addOptimisticPosition,
-    removeOptimisticPosition,
   } = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
@@ -410,8 +408,6 @@ function AppComponent({
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           positions={positions}
           triggerPositionsReload={triggerPositionsReload}
-          addOptimisticPosition={addOptimisticPosition}
-          removeOptimisticPosition={removeOptimisticPosition}
           connected={connected}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}

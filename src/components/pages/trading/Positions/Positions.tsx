@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import { PositionExtended, UserProfileExtended } from '@/types';
@@ -18,7 +18,6 @@ export default function Positions({
   className,
   positions,
   triggerPositionsReload,
-  removeOptimisticPosition,
   triggerUserProfileReload,
   isBigScreen,
   userProfile,
@@ -29,7 +28,6 @@ export default function Positions({
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
-  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   userProfile: UserProfileExtended | null | false;
@@ -48,6 +46,12 @@ export default function Positions({
   const nonPendingCleanupAndClosePositions = positions?.filter(
     position => !position.pendingCleanupAndClose
   ) || null;
+
+  useEffect(() => {
+    console.log('Trigger positions reload');
+    triggerPositionsReload();
+  }, []);
+
 
   return (
     <>
@@ -69,7 +73,6 @@ export default function Positions({
             <ClosePosition
               position={positionToClose}
               triggerPositionsReload={triggerPositionsReload}
-              removeOptimisticPosition={removeOptimisticPosition}
               triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToClose(null);
