@@ -118,12 +118,6 @@ export default function PositionBlock({
               className="text-txtfade"
             />
           </div>
-
-          {position.isOptimistic && (
-            <div className="text-xs text-yellow-900 bg-yellow-300 border border-yellow-600 rounded-md px-1 py-0.25 ml-2">
-              Confirmation...
-            </div>
-          )}
         </div>
 
         <OnchainAccountInfo
@@ -379,7 +373,7 @@ export default function PositionBlock({
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
               onClick={() =>
-                !position.isOptimistic && triggerStopLossTakeProfit(position)
+                triggerStopLossTakeProfit(position)
               }
               role="button"
               tabIndex={0}
@@ -405,7 +399,7 @@ export default function PositionBlock({
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
               onClick={() =>
-                !position.isOptimistic && triggerStopLossTakeProfit(position)
+                triggerStopLossTakeProfit(position)
               }
               role="button"
               tabIndex={0}
@@ -438,7 +432,6 @@ export default function PositionBlock({
             onClick={() => {
               triggerEditPositionCollateral(position);
             }}
-            disabled={position.isOptimistic}
           />
 
           <Button
@@ -449,7 +442,6 @@ export default function PositionBlock({
             onClick={() => {
               triggerStopLossTakeProfit(position);
             }}
-            disabled={position.isOptimistic}
           />
           <div className="w-full flex flex-row">
             <Button
@@ -460,7 +452,6 @@ export default function PositionBlock({
               onClick={() => {
                 triggerClosePosition(position);
               }}
-              disabled={position.isOptimistic}
             />
             <Button
               size="xs"
@@ -470,7 +461,6 @@ export default function PositionBlock({
               onClick={() => {
                 setIsOpen(true);
               }}
-              disabled={position.isOptimistic}
             />
           </div>
         </div>

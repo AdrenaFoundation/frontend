@@ -23,7 +23,7 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
     const longShortRatio = profile.longStats.openedPositionCount / (profile.longStats.openedPositionCount + profile.shortStats.openedPositionCount) * 100;
 
     return (
-        <div className={`w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2 ${className}`}>
+        <div className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden mb-2 ${className}`}>
             <div className="flex flex-col md:flex-row justify-between items-center p-2 mx-2">
 
                 <div className="h-full border-r border-gray-700 mx-2 hidden md:block"></div>

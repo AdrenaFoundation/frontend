@@ -4,7 +4,6 @@ import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
@@ -25,7 +24,6 @@ export default function Monitoring(pageProps: PageProps) {
 
   const searchParams = new URLSearchParams(window.location.search);
 
-  const isSmallSize = useBetterMediaQuery('(max-width: 400px)') ?? false;
 
   useEffect(() => {
     if (searchParams.has('view')) {
@@ -192,7 +190,7 @@ export default function Monitoring(pageProps: PageProps) {
         ) : null}
       </div>
 
-      {view === "livePositions" ? <AllPositions isSmallSize={isSmallSize} /> : null}
+      {view === "livePositions" ? <AllPositions /> : null}
 
       {view === "full" ? <DetailedMonitoring
         {...pageProps}
@@ -202,7 +200,7 @@ export default function Monitoring(pageProps: PageProps) {
 
       {view === 'lite' ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
 
-      {view === 'userProfiles' ? <AllUserProfiles isSmallSize={isSmallSize} /> : null}
+      {view === 'userProfiles' ? <AllUserProfiles /> : null}
     </>
   );
 }

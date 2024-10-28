@@ -321,7 +321,7 @@ export class AdrenaClient {
     public custodies: CustodyExtended[],
     public tokens: Token[],
     public genesisLockPda: PublicKey,
-  ) { }
+  ) {}
 
   public setPriorityFeeOption(option: PriorityFeeOption) {
     this.priorityFeeOption = option;
@@ -400,18 +400,35 @@ export class AdrenaClient {
       return false;
     }
 
+    const shortOpeningSizeUsd = p.shortStats.openingSizeUsd
+      ? nativeToUi(p.shortStats.openingSizeUsd, USD_DECIMALS)
+      : 0;
+    const longOpeningSizeUsd = p.longStats.openingSizeUsd
+      ? nativeToUi(p.longStats.openingSizeUsd, USD_DECIMALS)
+      : 0;
 
-    const shortOpeningSizeUsd = p.shortStats.openingSizeUsd ? nativeToUi(p.shortStats.openingSizeUsd, USD_DECIMALS) : 0;
-    const longOpeningSizeUsd = p.longStats.openingSizeUsd ? nativeToUi(p.longStats.openingSizeUsd, USD_DECIMALS) : 0;
+    const shortProfitsUsd = p.shortStats.profitsUsd
+      ? nativeToUi(p.shortStats.profitsUsd, USD_DECIMALS)
+      : 0;
+    const longProfitsUsd = p.longStats.profitsUsd
+      ? nativeToUi(p.longStats.profitsUsd, USD_DECIMALS)
+      : 0;
+    const shortLossesUsd = p.shortStats.lossesUsd
+      ? nativeToUi(p.shortStats.lossesUsd, USD_DECIMALS)
+      : 0;
+    const longLossesUsd = p.longStats.lossesUsd
+      ? nativeToUi(p.longStats.lossesUsd, USD_DECIMALS)
+      : 0;
 
-    const shortProfitsUsd = p.shortStats.profitsUsd ? nativeToUi(p.shortStats.profitsUsd, USD_DECIMALS) : 0;
-    const longProfitsUsd = p.longStats.profitsUsd ? nativeToUi(p.longStats.profitsUsd, USD_DECIMALS) : 0;
-    const shortLossesUsd = p.shortStats.lossesUsd ? nativeToUi(p.shortStats.lossesUsd, USD_DECIMALS) : 0;
-    const longLossesUsd = p.longStats.lossesUsd ? nativeToUi(p.longStats.lossesUsd, USD_DECIMALS) : 0;
-
-    const swapFeePaidUsd = p.swapFeePaidUsd ? nativeToUi(p.swapFeePaidUsd, USD_DECIMALS) : 0;
-    const longFeePaidUsd = p.longStats.feePaidUsd ? nativeToUi(p.longStats.feePaidUsd, USD_DECIMALS) : 0;
-    const shortFeePaidUsd = p.shortStats.feePaidUsd ? nativeToUi(p.shortStats.feePaidUsd, USD_DECIMALS) : 0;
+    const swapFeePaidUsd = p.swapFeePaidUsd
+      ? nativeToUi(p.swapFeePaidUsd, USD_DECIMALS)
+      : 0;
+    const longFeePaidUsd = p.longStats.feePaidUsd
+      ? nativeToUi(p.longStats.feePaidUsd, USD_DECIMALS)
+      : 0;
+    const shortFeePaidUsd = p.shortStats.feePaidUsd
+      ? nativeToUi(p.shortStats.feePaidUsd, USD_DECIMALS)
+      : 0;
 
     const longOpeningAverageLeverage =
       p.longStats.openingAverageLeverage.toNumber() / 10_000;
@@ -419,7 +436,8 @@ export class AdrenaClient {
       p.shortStats.openingAverageLeverage.toNumber() / 10_000;
 
     const totalTradeVolumeUsd = longOpeningSizeUsd + shortOpeningSizeUsd;
-    const totalPnlUsd = longProfitsUsd - longLossesUsd + shortProfitsUsd - shortLossesUsd;
+    const totalPnlUsd =
+      longProfitsUsd - longLossesUsd + shortProfitsUsd - shortLossesUsd;
     const totalFeesPaidUsd = swapFeePaidUsd + longFeePaidUsd + shortFeePaidUsd;
     const openingAverageLeverage =
       (longOpeningAverageLeverage + shortOpeningAverageLeverage) / 2;
@@ -442,7 +460,8 @@ export class AdrenaClient {
       totalFeesPaidUsd,
       shortStats: {
         openedPositionCount: p.shortStats.openedPositionCount.toNumber(),
-        liquidatedPositionCount: p.shortStats.liquidatedPositionCount.toNumber(),
+        liquidatedPositionCount:
+          p.shortStats.liquidatedPositionCount.toNumber(),
         // From BPS to regular number
         openingAverageLeverage: shortOpeningAverageLeverage,
         openingSizeUsd: shortOpeningSizeUsd,
@@ -508,16 +527,16 @@ export class AdrenaClient {
       .map((custody, i) => {
         const infos:
           | {
-            name: string;
-            color: string;
-            symbol: string;
-            image: ImageRef;
-            coingeckoId: string;
-            decimals: number;
-            displayAmountDecimalsPrecision: number;
-            displayPriceDecimalsPrecision: number;
-            pythPriceUpdateV2: PublicKey;
-          }
+              name: string;
+              color: string;
+              symbol: string;
+              image: ImageRef;
+              coingeckoId: string;
+              decimals: number;
+              displayAmountDecimalsPrecision: number;
+              displayPriceDecimalsPrecision: number;
+              pythPriceUpdateV2: PublicKey;
+            }
           | undefined = config.tokensInfo[custody.mint.toBase58()];
 
         if (!infos) {
@@ -1833,13 +1852,13 @@ export class AdrenaClient {
     const { swappedTokenDecimals, swappedTokenPrice } =
       side === 'long'
         ? {
-          swappedTokenDecimals: tokenB.decimals,
-          swappedTokenPrice: tokenBPrice,
-        }
+            swappedTokenDecimals: tokenB.decimals,
+            swappedTokenPrice: tokenBPrice,
+          }
         : {
-          swappedTokenDecimals: usdcToken.decimals,
-          swappedTokenPrice: usdcTokenPrice,
-        };
+            swappedTokenDecimals: usdcToken.decimals,
+            swappedTokenPrice: usdcTokenPrice,
+          };
 
     const swapFeeUsd =
       nativeToUi(swapFeeIn, tokenA.decimals) * tokenAPrice +
@@ -1988,9 +2007,9 @@ export class AdrenaClient {
     const transaction = await (position.side === 'long'
       ? this.buildAddCollateralLongTx.bind(this)
       : this.buildAddCollateralShortTx.bind(this))({
-        position,
-        collateralAmount: addedCollateral,
-      })
+      position,
+      collateralAmount: addedCollateral,
+    })
       .preInstructions(preInstructions)
       .postInstructions(postInstructions)
       .transaction();
@@ -2747,11 +2766,11 @@ export class AdrenaClient {
         stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
         amount: additionalAmount
           ? uiToNative(
-            additionalAmount,
-            lockedStake.tokenSymbol === 'ALP'
-              ? this.alpToken.decimals
-              : this.adxToken.decimals,
-          )
+              additionalAmount,
+              lockedStake.tokenSymbol === 'ALP'
+                ? this.alpToken.decimals
+                : this.adxToken.decimals,
+            )
           : null,
         lockedDays: updatedDuration ?? null,
       })
@@ -4244,13 +4263,13 @@ export class AdrenaClient {
         )
           ? new BN(0)
           : uiToNative(
-            collateralTokenPriceUi *
-            nativeToUi(
-              position.nativeObject.lockedAmount,
-              collateralCustody.tokenInfo.decimals,
-            ),
-            USD_DECIMALS,
-          );
+              collateralTokenPriceUi *
+                nativeToUi(
+                  position.nativeObject.lockedAmount,
+                  collateralCustody.tokenInfo.decimals,
+                ),
+              USD_DECIMALS,
+            );
 
         return {
           profitUsd: nativeToUi(
@@ -4429,9 +4448,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               position.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                  position.stopLossClosePositionPrice,
-                  PRICE_DECIMALS,
-                )
+                    position.stopLossClosePositionPrice,
+                    PRICE_DECIMALS,
+                  )
                 : null,
             stopLossLimitPrice:
               position.stopLossThreadIsSet === 1
@@ -4443,7 +4462,6 @@ export class AdrenaClient {
               : null,
             takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
             pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
-            isOptimistic: false,
             //
             nativeObject: position,
           },
@@ -4519,9 +4537,9 @@ export class AdrenaClient {
             stopLossClosePositionPrice:
               positionAccount.stopLossThreadIsSet === 1
                 ? nativeToUi(
-                  positionAccount.stopLossClosePositionPrice,
-                  PRICE_DECIMALS,
-                )
+                    positionAccount.stopLossClosePositionPrice,
+                    PRICE_DECIMALS,
+                  )
                 : null,
             stopLossLimitPrice:
               positionAccount.stopLossThreadIsSet === 1
@@ -4534,7 +4552,6 @@ export class AdrenaClient {
             takeProfitThreadIsSet: positionAccount.takeProfitThreadIsSet === 1,
             pendingCleanupAndClose:
               positionAccount.pendingCleanupAndClose === 1,
-            isOptimistic: false,
             //
             nativeObject: positionAccount,
           },
@@ -4546,40 +4563,72 @@ export class AdrenaClient {
 
   public async loadAllUserProfiles(): Promise<UserProfileExtended[]> {
     const userProfiles =
-      (await this.readonlyAdrenaProgram.account.userProfile.all()) as (ProgramAccount<UserProfile>)[];
+      (await this.readonlyAdrenaProgram.account.userProfile.all()) as ProgramAccount<UserProfile>[];
 
     return userProfiles.reduce<UserProfileExtended[]>(
-      (acc: UserProfileExtended[], userProfile: ProgramAccount<UserProfile>) => {
+      (
+        acc: UserProfileExtended[],
+        userProfile: ProgramAccount<UserProfile>,
+      ) => {
         if (!userProfile) {
           return acc;
         }
 
-        if (!this.adrenaProgram) return acc;
+        if (!this.readonlyAdrenaProgram) return acc;
 
         if (userProfile.account.createdAt.isZero()) {
           return acc;
         }
 
-        const shortOpeningSizeUsd = userProfile.account.shortStats.openingSizeUsd ? nativeToUi(userProfile.account.shortStats.openingSizeUsd, USD_DECIMALS) : 0;
-        const longOpeningSizeUsd = userProfile.account.longStats.openingSizeUsd ? nativeToUi(userProfile.account.longStats.openingSizeUsd, USD_DECIMALS) : 0;
+        const shortOpeningSizeUsd = userProfile.account.shortStats
+          .openingSizeUsd
+          ? nativeToUi(
+              userProfile.account.shortStats.openingSizeUsd,
+              USD_DECIMALS,
+            )
+          : 0;
+        const longOpeningSizeUsd = userProfile.account.longStats.openingSizeUsd
+          ? nativeToUi(
+              userProfile.account.longStats.openingSizeUsd,
+              USD_DECIMALS,
+            )
+          : 0;
 
-        const shortProfitsUsd = userProfile.account.shortStats.profitsUsd ? nativeToUi(userProfile.account.shortStats.profitsUsd, USD_DECIMALS) : 0;
-        const longProfitsUsd = userProfile.account.longStats.profitsUsd ? nativeToUi(userProfile.account.longStats.profitsUsd, USD_DECIMALS) : 0;
-        const shortLossesUsd = userProfile.account.shortStats.lossesUsd ? nativeToUi(userProfile.account.shortStats.lossesUsd, USD_DECIMALS) : 0;
-        const longLossesUsd = userProfile.account.longStats.lossesUsd ? nativeToUi(userProfile.account.longStats.lossesUsd, USD_DECIMALS) : 0;
+        const shortProfitsUsd = userProfile.account.shortStats.profitsUsd
+          ? nativeToUi(userProfile.account.shortStats.profitsUsd, USD_DECIMALS)
+          : 0;
+        const longProfitsUsd = userProfile.account.longStats.profitsUsd
+          ? nativeToUi(userProfile.account.longStats.profitsUsd, USD_DECIMALS)
+          : 0;
+        const shortLossesUsd = userProfile.account.shortStats.lossesUsd
+          ? nativeToUi(userProfile.account.shortStats.lossesUsd, USD_DECIMALS)
+          : 0;
+        const longLossesUsd = userProfile.account.longStats.lossesUsd
+          ? nativeToUi(userProfile.account.longStats.lossesUsd, USD_DECIMALS)
+          : 0;
 
-        const swapFeePaidUsd = userProfile.account.swapFeePaidUsd ? nativeToUi(userProfile.account.swapFeePaidUsd, USD_DECIMALS) : 0;
-        const longFeePaidUsd = userProfile.account.longStats.feePaidUsd ? nativeToUi(userProfile.account.longStats.feePaidUsd, USD_DECIMALS) : 0;
-        const shortFeePaidUsd = userProfile.account.shortStats.feePaidUsd ? nativeToUi(userProfile.account.shortStats.feePaidUsd, USD_DECIMALS) : 0;
+        const swapFeePaidUsd = userProfile.account.swapFeePaidUsd
+          ? nativeToUi(userProfile.account.swapFeePaidUsd, USD_DECIMALS)
+          : 0;
+        const longFeePaidUsd = userProfile.account.longStats.feePaidUsd
+          ? nativeToUi(userProfile.account.longStats.feePaidUsd, USD_DECIMALS)
+          : 0;
+        const shortFeePaidUsd = userProfile.account.shortStats.feePaidUsd
+          ? nativeToUi(userProfile.account.shortStats.feePaidUsd, USD_DECIMALS)
+          : 0;
 
         const longOpeningAverageLeverage =
-          userProfile.account.longStats.openingAverageLeverage.toNumber() / 10_000;
+          userProfile.account.longStats.openingAverageLeverage.toNumber() /
+          10_000;
         const shortOpeningAverageLeverage =
-          userProfile.account.shortStats.openingAverageLeverage.toNumber() / 10_000;
+          userProfile.account.shortStats.openingAverageLeverage.toNumber() /
+          10_000;
 
         const totalTradeVolumeUsd = longOpeningSizeUsd + shortOpeningSizeUsd;
-        const totalPnlUsd = longProfitsUsd - longLossesUsd + shortProfitsUsd - shortLossesUsd;
-        const totalFeesPaidUsd = swapFeePaidUsd + longFeePaidUsd + shortFeePaidUsd;
+        const totalPnlUsd =
+          longProfitsUsd - longLossesUsd + shortProfitsUsd - shortLossesUsd;
+        const totalFeesPaidUsd =
+          swapFeePaidUsd + longFeePaidUsd + shortFeePaidUsd;
         const openingAverageLeverage =
           (longOpeningAverageLeverage + shortOpeningAverageLeverage) / 2;
         return [
@@ -4594,15 +4643,20 @@ export class AdrenaClient {
             createdAt: userProfile.account.createdAt.toNumber(),
             owner: userProfile.account.owner,
             swapCount: userProfile.account.swapCount.toNumber(),
-            swapVolumeUsd: nativeToUi(userProfile.account.swapVolumeUsd, USD_DECIMALS),
+            swapVolumeUsd: nativeToUi(
+              userProfile.account.swapVolumeUsd,
+              USD_DECIMALS,
+            ),
             swapFeePaidUsd: swapFeePaidUsd,
             totalPnlUsd,
             totalTradeVolumeUsd,
             totalFeesPaidUsd,
             openingAverageLeverage,
             shortStats: {
-              openedPositionCount: userProfile.account.shortStats.openedPositionCount.toNumber(),
-              liquidatedPositionCount: userProfile.account.shortStats.liquidatedPositionCount.toNumber(),
+              openedPositionCount:
+                userProfile.account.shortStats.openedPositionCount.toNumber(),
+              liquidatedPositionCount:
+                userProfile.account.shortStats.liquidatedPositionCount.toNumber(),
               openingAverageLeverage: shortOpeningAverageLeverage,
               openingSizeUsd: shortOpeningSizeUsd,
               profitsUsd: shortProfitsUsd,
@@ -4610,8 +4664,10 @@ export class AdrenaClient {
               feePaidUsd: shortFeePaidUsd,
             },
             longStats: {
-              openedPositionCount: userProfile.account.longStats.openedPositionCount.toNumber(),
-              liquidatedPositionCount: userProfile.account.longStats.liquidatedPositionCount.toNumber(),
+              openedPositionCount:
+                userProfile.account.longStats.openedPositionCount.toNumber(),
+              liquidatedPositionCount:
+                userProfile.account.longStats.liquidatedPositionCount.toNumber(),
               openingAverageLeverage: longOpeningAverageLeverage,
               openingSizeUsd: longOpeningSizeUsd,
               profitsUsd: longProfitsUsd,
@@ -5281,7 +5337,8 @@ export class AdrenaClient {
     notification?.setTxHash(txSignatureBase58);
     notification?.currentStepSucceeded();
     console.log(
-      `tx: https://explorer.solana.com/tx/${txSignatureBase58}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txSignatureBase58}${
+        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 
@@ -5313,7 +5370,8 @@ export class AdrenaClient {
 
         if (!confirmedTx) {
           console.log(
-            `Tx not confirmed after ${TX_RETRY_INTERVAL * txSendAttempts++
+            `Tx not confirmed after ${
+              TX_RETRY_INTERVAL * txSendAttempts++
             }ms, resending (${txSendAttempts} / ${MAX_TX_SEND_ATTEMPTS})`,
           );
 
@@ -5520,7 +5578,8 @@ export class AdrenaClient {
     notification?.currentStepSucceeded();
 
     console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
+      `tx: https://explorer.solana.com/tx/${txHash}${
+        this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     );
 

@@ -3,15 +3,18 @@ import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
 
 import {
+  EntityId,
   IChartingLibraryWidget,
   IChartWidgetApi,
   IPositionLineAdapter,
   ISymbolValueFormatter,
+  PricedPoint,
   ResolutionString,
+  SupportedLineTools,
 } from '../../../../../public/charting_library/charting_library';
 import datafeed from './datafeed';
 
@@ -144,6 +147,23 @@ export default function TradingChart({
   positions: PositionExtended[] | null;
 }) {
   const onLoadScriptRef: MutableRefObject<(() => void) | null> = useRef(null);
+
+  const savedShapes = localStorage.getItem('chart_shapes');
+
+  const [drawings, setDrawings] = useState<
+    Record<
+      TokenSymbol,
+      {
+        id: EntityId;
+        name: Exclude<
+          SupportedLineTools,
+          'cursor' | 'dot' | 'arrow_cursor' | 'eraser' | 'measure' | 'zoom'
+        >;
+        points: PricedPoint[];
+        symbol: TokenSymbol;
+      }[]
+    >
+  >(savedShapes ? JSON.parse(savedShapes) : []);
   const [widget, setWidget] = useState<Widget | null>(null);
   const [widgetReady, setWidgetReady] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -287,6 +307,41 @@ export default function TradingChart({
           setWidgetReady(true);
           setIsLoading(false);
 
+          widget.subscribe('drawing_event', () => {
+            const allShapes = widget.activeChart().getAllShapes();
+            const symbol = widget
+              .activeChart()
+              .symbol()
+              .split('.')[1]
+              .split('/')[0] as TokenSymbol;
+
+            drawings[symbol] = allShapes.map((shape) => {
+              return {
+                id: shape.id,
+                name: shape.name as Exclude<
+                  SupportedLineTools,
+                  | 'cursor'
+                  | 'dot'
+                  | 'arrow_cursor'
+                  | 'eraser'
+                  | 'measure'
+                  | 'zoom'
+                >,
+                points: widget.activeChart().getShapeById(shape.id).getPoints(),
+                symbol,
+              };
+            });
+
+            const copiedDrawings = { ...drawings };
+
+            setDrawings(drawings);
+
+            localStorage.setItem(
+              'chart_shapes',
+              JSON.stringify(copiedDrawings),
+            );
+          });
+
           // Listen for resolution changes
           widget
             .activeChart()
@@ -323,6 +378,26 @@ export default function TradingChart({
     // Only trigger it onces when the chart load
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // add drawings if any
+    if (widget && widgetReady) {
+      const symbol = widget
+        .activeChart()
+        .symbol()
+        .split('.')[1]
+        .split('/')[0] as TokenSymbol;
+
+      const savedDrawings = drawings[symbol];
+      if (savedDrawings && savedDrawings.length > 0) {
+        savedDrawings.forEach(({ name, points }) => {
+          widget.activeChart().createMultipointShape(points, {
+            shape: name,
+          });
+        });
+      }
+    }
+  }, [widgetReady]);
 
   // When the token changes, we need to change the symbol of the widget so we only reload the chart
   useEffect(() => {

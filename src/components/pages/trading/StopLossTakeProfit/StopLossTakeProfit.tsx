@@ -248,9 +248,7 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          Adding new stop loss is currently disabled as we are working on improving their execution.
-          You still can remove existing stop losses.
-          {/* Stop losses are executed with up to 1% slippage. */}
+          SL/TP are currently in beta, testing the new gRPC client, please use with caution. As usual, send feedback on Discord.
         </div>
 
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg mb-2">

@@ -8,7 +8,11 @@ import { twMerge } from 'tailwind-merge';
 
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
-import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
+import {
+  PriorityFeeOption,
+  SolanaExplorerOptions,
+  UserProfileExtended,
+} from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
@@ -189,6 +193,7 @@ export default function BurgerMenu({
             setPriorityFeeOption={setPriorityFeeOption}
             maxPriorityFee={maxPriorityFee}
             setMaxPriorityFee={setMaxPriorityFee}
+            isMobile
           />
 
           <Settings
@@ -202,6 +207,7 @@ export default function BurgerMenu({
             setCustomRpcUrl={setCustomRpcUrl}
             setFavoriteRpc={setFavoriteRpc}
             preferredSolanaExplorer={preferredSolanaExplorer}
+            isMobile
           />
         </div>
       </div>
