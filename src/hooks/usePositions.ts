@@ -53,6 +53,7 @@ export default function usePositions(): {
   useEffect(() => {
     // Reset when loading the hook
     lastCall = 0;
+    lastDealtTrickReload = 0;
   }, []);
 
   const loadPositions = useCallback(async () => {
@@ -62,7 +63,7 @@ export default function usePositions(): {
     }
 
     const loadPosition =
-      lastDealtTrickReload !== trickReload || lastCall < Date.now() - 10000;
+      lastDealtTrickReload !== trickReload || lastCall < Date.now() - 5000;
 
     if (loadPosition) lastCall = Date.now();
 
@@ -70,12 +71,9 @@ export default function usePositions(): {
 
     if (loadPosition) {
       try {
-        const freshPositions =
-          (loadPosition
-            ? await window.adrena.client.loadUserPositions(
-              new PublicKey(wallet.walletAddress),
-            )
-            : positions) ?? [];
+        const freshPositions = await window.adrena.client.loadUserPositions(
+          new PublicKey(wallet.walletAddress),
+        );
 
         freshPositions.forEach((position) => {
           calculatePnLandLiquidationPrice(position, tokenPrices);
@@ -89,14 +87,14 @@ export default function usePositions(): {
       return;
     }
 
-    if (positions === null) {
-      return;
-    }
+    // There are no positions, so we don't need to recalculate info for them
+    if (positions === null) return;
 
     positions.forEach((position) => {
       calculatePnLandLiquidationPrice(position, tokenPrices);
     });
-  }, [wallet, tokenPrices]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallet, tokenPrices, trickReload, window.adrena.client.connection]);
 
   useEffect(() => {
     loadPositions();
@@ -108,7 +106,7 @@ export default function usePositions(): {
     return () => {
       clearInterval(interval);
     };
-  }, [loadPositions, trickReload, window.adrena.client.connection]);
+  }, [loadPositions]);
 
   return {
     positions,

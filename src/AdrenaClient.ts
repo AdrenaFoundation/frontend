@@ -5026,7 +5026,7 @@ export class AdrenaClient {
     this.connection
       .simulateTransaction(args, {
         sigVerify: false,
-        commitment: 'recent',
+        commitment: 'processed',
       })
       .then((result) => {
         if (result.value.err) {
