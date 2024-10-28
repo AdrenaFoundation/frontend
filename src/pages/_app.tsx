@@ -3,6 +3,7 @@ import '@/styles/globals.scss';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Image from 'next/image';
@@ -183,6 +184,8 @@ export default function App(props: AppProps) {
         )}
 
         <Analytics />
+        <SpeedInsights />
+
       </CookiesProvider>
     </Provider>
   );

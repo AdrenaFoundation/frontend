@@ -1,4 +1,3 @@
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Head, Html, Main, NextScript } from 'next/document';
 import Script from 'next/script';
 
@@ -76,8 +75,6 @@ export default function Document() {
           src="charting_library/charting_library.standalone.js"
           strategy="lazyOnload"
         />
-
-        <SpeedInsights />
 
         <NextScript />
       </body>
