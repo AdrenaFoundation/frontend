@@ -23,14 +23,11 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
     const longShortRatio = profile.longStats.openedPositionCount / (profile.longStats.openedPositionCount + profile.shortStats.openedPositionCount) * 100;
 
     return (
-        <div className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden mb-2 ${className}`}>
-            <div className="flex flex-col md:flex-row justify-between items-center p-2 mx-2">
-
-                <div className="h-full border-r border-gray-700 mx-2 hidden md:block"></div>
-
-                <div className="flex flex-1 flex-col items-center md:items-start">
+        <div className={`w-full flex flex-col border rounded-lg bg-[#050D14] overflow-hidden p-3 ${className}`}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-row gap-6 justify-between items-center">
+                <div className="flex flex-1 flex-col items-start ">
                     <div className="flex w-full font-mono text-xxs">
-                        <span className="text-blue cursor-pointer hover:underline mr-1 text-lg">
+                        <span className="text-blue cursor-pointer hover:underline text-base sm:text-lg">
                             {profile.nickname}
                         </span>
                     </div>
@@ -42,8 +39,8 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     />
                 </div>
 
-                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
-                    <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+                <div className="flex flex-1 flex-col">
+                    <div className="flex w-full font-mono text-xxs text-txtfade">
                         Average Leverage
                     </div>
                     <div className="flex">
@@ -57,8 +54,8 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
-                    <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+                <div className="flex flex-1 flex-col">
+                    <div className="flex w-full font-mono text-xxs text-txtfade">
                         Total Fees Paid
                     </div>
                     <div className="flex">
@@ -71,8 +68,8 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
-                    <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+                <div className="flex flex-1 flex-col">
+                    <div className="flex w-full font-mono text-xxs text-txtfade">
                         Total Volume Traded
                     </div>
                     <div className="flex">
@@ -85,8 +82,8 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center mt-2 md:mt-0">
-                    <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+                <div className="flex flex-1 flex-col">
+                    <div className="flex w-full font-mono text-xxs text-txtfade">
                         Long/Short Ratio
                     </div>
                     <div className="flex">
@@ -100,8 +97,8 @@ export default function UserProfileBlock({ profile, className }: UserProfileBloc
                     </div>
                 </div>
 
-                <div className="flex flex-1 flex-col items-center mt-2 sm:mt-0">
-                    <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+                <div className="flex flex-1 flex-col mt-2 sm:mt-0">
+                    <div className="flex w-full font-mono text-xxs text-txtfade">
                         Total PnL
                     </div>
                     <div className="flex">
