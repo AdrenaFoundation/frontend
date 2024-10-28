@@ -88,9 +88,7 @@ export default function usePositions(): {
     }
 
     // There are no positions, so we don't need to recalculate info for them
-    if (positions === null) {
-      return null;
-    }
+    if (positions === null) return;
 
     positions.forEach((position) => {
       calculatePnLandLiquidationPrice(position, tokenPrices);
