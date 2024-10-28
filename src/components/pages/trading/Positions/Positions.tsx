@@ -18,7 +18,6 @@ export default function Positions({
   className,
   positions,
   triggerPositionsReload,
-  removeOptimisticPosition,
   triggerUserProfileReload,
   isBigScreen,
   userProfile,
@@ -29,7 +28,6 @@ export default function Positions({
   className?: string;
   positions: PositionExtended[] | null;
   triggerPositionsReload: () => void;
-  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   userProfile: UserProfileExtended | null | false;
@@ -69,7 +67,6 @@ export default function Positions({
             <ClosePosition
               position={positionToClose}
               triggerPositionsReload={triggerPositionsReload}
-              removeOptimisticPosition={removeOptimisticPosition}
               triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToClose(null);

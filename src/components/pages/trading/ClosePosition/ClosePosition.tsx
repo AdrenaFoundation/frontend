@@ -22,7 +22,6 @@ export default function ClosePosition({
   className,
   position,
   triggerPositionsReload,
-  removeOptimisticPosition,
   triggerUserProfileReload,
   onClose,
   tokenImage,
@@ -30,7 +29,6 @@ export default function ClosePosition({
   className?: string;
   position: PositionExtended;
   triggerPositionsReload: () => void;
-  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   triggerUserProfileReload: () => void;
   onClose: () => void;
   tokenImage: ImageRef;
@@ -105,12 +103,8 @@ export default function ClosePosition({
 
         });
 
-      // Reload positions just after closing the popup
-      setTimeout(() => {
-        triggerPositionsReload();
-        removeOptimisticPosition(position.side, position.custody);
-        triggerUserProfileReload();
-      }, 0);
+      triggerPositionsReload();
+      triggerUserProfileReload();
 
       onClose();
     } catch (error) {

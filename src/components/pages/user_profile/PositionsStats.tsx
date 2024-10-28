@@ -12,7 +12,6 @@ export default function PositionsStats({
   title,
   triggerPositionsReload,
   triggerUserProfileReload,
-  removeOptimisticPosition,
   userProfile,
 
 }: {
@@ -21,7 +20,6 @@ export default function PositionsStats({
   title?: string;
   triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
-  removeOptimisticPosition: (positionSide: 'long' | 'short', positionCustody: PublicKey) => void;
   userProfile: UserProfileExtended | null | false;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
@@ -44,7 +42,6 @@ export default function PositionsStats({
         positions={positions}
         triggerPositionsReload={triggerPositionsReload}
         triggerUserProfileReload={triggerUserProfileReload}
-        removeOptimisticPosition={removeOptimisticPosition}
         isBigScreen={isBigScreen}
         userProfile={userProfile}
       />
