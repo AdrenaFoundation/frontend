@@ -60,8 +60,6 @@ export default function Trade({
   wallet,
   connected,
   triggerPositionsReload,
-  addOptimisticPosition,
-  removeOptimisticPosition,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   userProfile,

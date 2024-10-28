@@ -4443,7 +4443,6 @@ export class AdrenaClient {
               : null,
             takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
             pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
-            isOptimistic: false,
             //
             nativeObject: position,
           },
@@ -4534,7 +4533,6 @@ export class AdrenaClient {
             takeProfitThreadIsSet: positionAccount.takeProfitThreadIsSet === 1,
             pendingCleanupAndClose:
               positionAccount.pendingCleanupAndClose === 1,
-            isOptimistic: false,
             //
             nativeObject: positionAccount,
           },

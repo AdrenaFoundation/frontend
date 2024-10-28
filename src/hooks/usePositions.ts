@@ -73,8 +73,8 @@ export default function usePositions(): {
         const freshPositions =
           (loadPosition
             ? await window.adrena.client.loadUserPositions(
-                new PublicKey(wallet.walletAddress),
-              )
+              new PublicKey(wallet.walletAddress),
+            )
             : positions) ?? [];
 
         freshPositions.forEach((position) => {
@@ -103,7 +103,7 @@ export default function usePositions(): {
 
     const interval = setInterval(async () => {
       await loadPositions();
-    }, 10000);
+    }, 5000); // Every 5 seconds
 
     return () => {
       clearInterval(interval);
