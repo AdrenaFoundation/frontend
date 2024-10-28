@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -27,7 +28,6 @@ export default function PositionBlockReadOnly({
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
     const blockRef = useRef<HTMLDivElement>(null);
-    const [isSmallSize, setIsSmallSize] = useState(false);
 
     const liquidable = (() => {
         const tokenPrice = tokenPrices[getTokenSymbol(position.token.symbol)];
@@ -45,28 +45,11 @@ export default function PositionBlockReadOnly({
         return tokenPrice > position.liquidationPrice;
     })();
 
-    useEffect(() => {
-        const handleResize = () => {
-            if (!blockRef.current) return;
-
-            const width = blockRef.current.clientWidth;
-
-            setIsSmallSize(width <= 700);
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.addEventListener('resize', handleResize);
-        };
-    }, []);
+    const isSmallSize = useBetterMediaQuery('(max-width: 700px)');
 
     const positionName = (
         <div
-            className={twMerge(
-                'flex items-center justify-left h-full  min-w-[12em]',
-                className,
-            )}
+            className="flex items-center justify-left h-full  min-w-[12em]"
         >
             <Image
                 className="w-[2em] h-[2em] mr-2"
@@ -123,8 +106,19 @@ export default function PositionBlockReadOnly({
 
     const pnl = (
         <div className="flex flex-col items-center min-w-[10em] w-[10em]">
-            <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
+            <div className="flex flex-row gap-2 w-full font-mono text-xxs text-txtfade justify-center items-center">
                 PnL
+                <label className="flex items-center cursor-pointer">
+                    <Switch
+                        className="mr-0.5"
+                        checked={showAfterFees}
+                        onChange={() => setShowAfterFees(!showAfterFees)}
+                        size="small"
+                    />
+                    <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
+                        {showAfterFees ? 'w/ fees' : 'w/o fees'}
+                    </span>
+                </label>
             </div>
             {position.pnl ? (
                 <div className="flex items-center">
@@ -154,20 +148,6 @@ export default function PositionBlockReadOnly({
                             : 'redbright'
                             }`}
                     />
-
-                    <label className="flex items-center ml-2 cursor-pointer">
-                        <label className="flex items-center ml-1 cursor-pointer">
-                            <Switch
-                                className="mr-0.5"
-                                checked={showAfterFees}
-                                onChange={() => setShowAfterFees(!showAfterFees)}
-                                size="small"
-                            />
-                            <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-                                {showAfterFees ? 'w/ fees' : 'w/o fees'}
-                            </span>
-                        </label>
-                    </label>
                 </div>
             ) : (
                 '-'
@@ -235,7 +215,7 @@ export default function PositionBlockReadOnly({
         <>
             <div
                 className={twMerge(
-                    'min-w-[250px] w-full flex flex-col border rounded-lg bg-secondary',
+                    'min-w-[250px] w-full flex flex-col border rounded-lg bg-[#050D14]',
                     bodyClassName,
                     borderColor,
                 )}
@@ -243,18 +223,18 @@ export default function PositionBlockReadOnly({
                 ref={blockRef}
             >
                 {isSmallSize ? (
-                    <div className="flex flex-col w-full overflow-hidden items-center">
-                        <div className="border-b py-2 flex-1 flex w-full justify-between px-8">
+                    <div className="flex flex-col w-full items-center">
+                        <div className="border-b flex-1 flex w-full justify-between p-3">
                             {positionName}
                             {ownerInfo}
                         </div>
-                        <div className="border-b py-2 flex-1 flex w-full justify-between px-8">
+                        <div className="border-b flex-1 flex w-full justify-between p-3">
                             {pnl}
                             {netValue}
                         </div>
                     </div>
                 ) : (
-                    <div className="flex border-b pt-2 pl-4 pb-2 pr-4 justify-between items-center overflow-hidden flex-wrap w-full">
+                    <div className="flex border-b p-3 justify-between items-center flex-wrap w-full">
                         {positionName}
                         {ownerInfo}
                         {pnl}
@@ -262,7 +242,7 @@ export default function PositionBlockReadOnly({
                     </div>
                 )}
 
-                <div className="flex flex-row grow justify-evenly flex-wrap gap-y-2 pb-2 pt-2 pr-2 pl-2">
+                <div className="flex flex-row grow justify-evenly flex-wrap gap-3 p-3">
                     <div className="flex flex-col items-center min-w-[5em] w-[5em]">
                         <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
                             Cur. Leverage
