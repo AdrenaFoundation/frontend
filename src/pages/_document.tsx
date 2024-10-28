@@ -100,9 +100,9 @@ export default function Document() {
         ) : null} */}
 
         <NextScript />
-      </body>
 
-      <SpeedInsights />
+        <SpeedInsights />
+      </body>
     </Html>
   );
 }
