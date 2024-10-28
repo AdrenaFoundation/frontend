@@ -53,6 +53,7 @@ export default function usePositions(): {
   useEffect(() => {
     // Reset when loading the hook
     lastCall = 0;
+    lastDealtTrickReload = 0;
   }, []);
 
   const loadPositions = useCallback(async () => {
@@ -62,7 +63,7 @@ export default function usePositions(): {
     }
 
     const loadPosition =
-      lastDealtTrickReload !== trickReload || lastCall < Date.now() - 10000;
+      lastDealtTrickReload !== trickReload || lastCall < Date.now() - 5000;
 
     if (loadPosition) lastCall = Date.now();
 
