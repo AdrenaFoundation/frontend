@@ -10,7 +10,6 @@ export default function PositionsStats({
   connected,
   positions,
   title,
-  triggerPositionsReload,
   triggerUserProfileReload,
   userProfile,
 
@@ -18,7 +17,6 @@ export default function PositionsStats({
   connected: boolean;
   positions: PositionExtended[] | null;
   title?: string;
-  triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   userProfile: UserProfileExtended | null | false;
 }) {
@@ -40,7 +38,6 @@ export default function PositionsStats({
         className="bg-secondary rounded-lg"
         connected={connected}
         positions={positions}
-        triggerPositionsReload={triggerPositionsReload}
         triggerUserProfileReload={triggerUserProfileReload}
         isBigScreen={isBigScreen}
         userProfile={userProfile}

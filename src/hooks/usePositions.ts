@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { AccountInfo, PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { TokenPricesState } from '@/reducers/tokenPricesReducer';
@@ -37,81 +37,93 @@ export const calculatePnLandLiquidationPrice = (
   }
 };
 
-let lastDealtTrickReload = 0;
-let lastCall = 0;
-
-export default function usePositions(): {
-  positions: PositionExtended[] | null;
-  triggerPositionsReload: () => void;
-} {
-  const [trickReload, triggerReload] = useState<number>(0);
+export default function usePositions(): PositionExtended[] | null {
   const wallet = useSelector((s) => s.walletState.wallet);
   const [positions, setPositions] = useState<PositionExtended[] | null>(null);
-
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
+  // Do initial load of positions then start streaming
+  const initialSetup = useCallback(async () => {
+    const connection = window.adrena.client.connection;
+
+    if (!wallet || !connection) return;
+
+    // Load positions
+    try {
+      const freshPositions = await window.adrena.client.loadUserPositions(
+        new PublicKey(wallet.walletAddress),
+      );
+
+      console.log('Loaded positions', freshPositions);
+
+      setPositions(freshPositions);
+    } catch (e) {
+      console.log('Error loading positions', e, String(e));
+      return;
+    }
+
+    // Subscribe to all possible position addresses for the user
+    window.adrena.client
+      .getPossiblePositionAddresses(new PublicKey(wallet.walletAddress))
+      .map((address) =>
+        connection.onAccountChange(
+          address,
+          (accountInfo: AccountInfo<Buffer>) => {
+            console.log(
+              'Position account changed',
+              address.toBase58(),
+              accountInfo,
+            );
+
+            // Position got deleted
+            if (accountInfo.data.length === 0) {
+              setPositions(
+                positions?.filter(
+                  (p) => p.pubkey.toBase58() !== address.toBase58(),
+                ) ?? [],
+              );
+              return;
+            }
+
+            const position = window.adrena.client.extendPosition(
+              window.adrena.client
+                .getReadonlyAdrenaProgram()
+                .coder.accounts.decode('position', accountInfo.data),
+              address,
+            );
+
+            // Error loading position
+            if (!position) {
+              console.error('Error loading position', address.toBase58());
+              return;
+            }
+
+            console.log('Position decoded', position);
+
+            setPositions([
+              ...(positions?.filter(
+                (p) => p.pubkey.toBase58() !== address.toBase58(),
+              ) ?? []),
+              position,
+            ]);
+          },
+        ),
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallet, !!window.adrena.client.connection]);
+
   useEffect(() => {
-    // Reset when loading the hook
-    lastCall = 0;
-    lastDealtTrickReload = 0;
-  }, []);
+    initialSetup();
+  }, [initialSetup]);
 
-  const loadPositions = useCallback(async () => {
-    if (!wallet || !tokenPrices) {
-      setPositions(null);
-      return;
-    }
-
-    const loadPosition =
-      lastDealtTrickReload !== trickReload || lastCall < Date.now() - 5000;
-
-    if (loadPosition) lastCall = Date.now();
-
-    lastDealtTrickReload = trickReload;
-
-    if (loadPosition) {
-      try {
-        const freshPositions = await window.adrena.client.loadUserPositions(
-          new PublicKey(wallet.walletAddress),
-        );
-
-        freshPositions.forEach((position) => {
-          calculatePnLandLiquidationPrice(position, tokenPrices);
-        });
-
-        setPositions(freshPositions);
-      } catch (e) {
-        console.log('Error loading positions', e, String(e));
-      }
-
-      return;
-    }
-
-    // There are no positions, so we don't need to recalculate info for them
-    if (positions === null) return;
+  useEffect(() => {
+    if (!positions || !tokenPrices) return;
 
     positions.forEach((position) => {
       calculatePnLandLiquidationPrice(position, tokenPrices);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, tokenPrices, trickReload, window.adrena.client.connection]);
+  }, [tokenPrices, positions]);
 
-  useEffect(() => {
-    loadPositions();
-
-    const interval = setInterval(async () => {
-      await loadPositions();
-    }, 5000); // Every 5 seconds
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [loadPositions]);
-
-  return {
-    positions,
-    triggerPositionsReload: () => {
-      triggerReload(trickReload + 1);
-    },
-  };
+  return positions;
 }

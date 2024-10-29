@@ -17,7 +17,6 @@ export default function Positions({
   connected,
   className,
   positions,
-  triggerPositionsReload,
   triggerUserProfileReload,
   isBigScreen,
   userProfile,
@@ -27,7 +26,6 @@ export default function Positions({
   connected: boolean;
   className?: string;
   positions: PositionExtended[] | null;
-  triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
   userProfile: UserProfileExtended | null | false;
@@ -66,7 +64,6 @@ export default function Positions({
           >
             <ClosePosition
               position={positionToClose}
-              triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToClose(null);
@@ -92,7 +89,6 @@ export default function Positions({
           >
             <EditPositionCollateral
               position={positionToEdit}
-              triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToEdit(null);
@@ -117,7 +113,6 @@ export default function Positions({
           >
             <StopLossTakeProfit
               position={positionToStopLossTakeProfit}
-              triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               onClose={() => {
                 setPositionToStopLossTakeProfit(null);

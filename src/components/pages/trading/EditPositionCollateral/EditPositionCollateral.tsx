@@ -31,13 +31,11 @@ let loadingCounter = 0;
 export default function EditPositionCollateral({
   className,
   position,
-  triggerPositionsReload,
   triggerUserProfileReload,
   onClose,
 }: {
   className?: string;
   position: PositionExtended;
-  triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   onClose: () => void;
 }) {
@@ -151,8 +149,6 @@ export default function EditPositionCollateral({
           notification,
 
         });
-
-      triggerPositionsReload();
     } catch (error) {
       console.log('error', error);
     }
@@ -177,7 +173,6 @@ export default function EditPositionCollateral({
 
       });
 
-      triggerPositionsReload();
       triggerUserProfileReload();
     } catch (error) {
       console.log('error', error);

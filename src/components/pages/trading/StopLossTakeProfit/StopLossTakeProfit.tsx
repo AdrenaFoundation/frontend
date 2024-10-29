@@ -21,14 +21,12 @@ import StopLossTakeProfitInput from './StopLossTakeProfitInput';
 export default function StopLossTakeProfit({
   className,
   position,
-  triggerPositionsReload,
   triggerUserProfileReload,
   onClose,
   userProfile,
 }: {
   className?: string;
   position: PositionExtended;
-  triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   onClose: () => void;
   userProfile: UserProfileExtended | null | false;
@@ -220,7 +218,6 @@ export default function StopLossTakeProfit({
     try {
       await window.adrena.client.signAndExecuteTxAlternative({ transaction, notification });
 
-      triggerPositionsReload();
       triggerUserProfileReload();
 
       onClose();

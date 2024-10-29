@@ -59,7 +59,6 @@ export default function Trade({
   positions,
   wallet,
   connected,
-  triggerPositionsReload,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   userProfile,
@@ -309,7 +308,6 @@ export default function Trade({
                   <Positions
                     connected={connected}
                     positions={positions}
-                    triggerPositionsReload={triggerPositionsReload}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
@@ -351,7 +349,6 @@ export default function Trade({
                   <Positions
                     connected={connected}
                     positions={positions}
-                    triggerPositionsReload={triggerPositionsReload}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
                     userProfile={userProfile}
@@ -370,7 +367,6 @@ export default function Trade({
                 openedPosition={openedPosition}
                 wallet={wallet}
                 connected={connected}
-                triggerPositionsReload={triggerPositionsReload}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
                 }
@@ -396,7 +392,6 @@ export default function Trade({
             openedPosition={openedPosition}
             wallet={wallet}
             connected={connected}
-            triggerPositionsReload={triggerPositionsReload}
             triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
@@ -465,7 +460,6 @@ export default function Trade({
                     className="p-0 m-0"
                     wallet={wallet}
                     connected={connected}
-                    triggerPositionsReload={triggerPositionsReload}
                     triggerWalletTokenBalancesReload={
                       triggerWalletTokenBalancesReload
                     }

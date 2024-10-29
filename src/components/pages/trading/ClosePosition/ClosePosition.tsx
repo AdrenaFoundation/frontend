@@ -21,14 +21,12 @@ let loadingCounter = 0;
 export default function ClosePosition({
   className,
   position,
-  triggerPositionsReload,
   triggerUserProfileReload,
   onClose,
   tokenImage,
 }: {
   className?: string;
   position: PositionExtended;
-  triggerPositionsReload: () => void;
   triggerUserProfileReload: () => void;
   onClose: () => void;
   tokenImage: ImageRef;
@@ -103,7 +101,6 @@ export default function ClosePosition({
 
         });
 
-      triggerPositionsReload();
       triggerUserProfileReload();
 
       onClose();
