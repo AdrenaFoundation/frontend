@@ -21,7 +21,6 @@ export default function TradeComp({
   setTokenA,
   setTokenB,
   openedPosition,
-  triggerPositionsReload,
   triggerWalletTokenBalancesReload,
   className,
   isBigScreen,
@@ -37,7 +36,6 @@ export default function TradeComp({
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
   openedPosition: PositionExtended | null;
-  triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
   className?: string;
   isBigScreen?: boolean | null;
@@ -87,7 +85,6 @@ export default function TradeComp({
                 setTokenB={setTokenB}
                 wallet={wallet}
                 connected={connected}
-                triggerPositionsReload={triggerPositionsReload}
                 triggerWalletTokenBalancesReload={
                   triggerWalletTokenBalancesReload
                 }

@@ -4375,10 +4375,8 @@ export class AdrenaClient {
     return nativeToUi(entryPrice.add(maxPriceDiffScaled), PRICE_DECIMALS);
   }
 
-  // Positions PDA can be found by deriving each mints supported by the pool for 2 sides
-  // DO NOT LOAD PNL OR LIQUIDATION PRICE
-  public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
-    const possiblePositionAddresses = this.tokens.reduce((acc, token) => {
+  public getPossiblePositionAddresses(user: PublicKey): PublicKey[] {
+    return this.tokens.reduce((acc, token) => {
       if (!token.custody) return acc;
 
       return [
@@ -4387,6 +4385,74 @@ export class AdrenaClient {
         this.findPositionAddress(user, token.custody, 'short'),
       ];
     }, [] as PublicKey[]);
+  }
+
+  public extendPosition(
+    position: Position,
+    pubkey: PublicKey,
+  ): PositionExtended | null {
+    const token =
+      this.tokens.find(
+        (token) => token.custody && token.custody.equals(position.custody),
+      ) ?? null;
+
+    const collateralToken =
+      this.tokens.find(
+        (token) =>
+          token.custody && token.custody.equals(position.collateralCustody),
+      ) ?? null;
+
+    // Ignore position with unknown tokens
+    if (!token || !collateralToken) {
+      console.log('Ignore position with unknown tokens', position);
+      return null;
+    }
+
+    return {
+      custody: position.custody,
+      collateralCustody: position.collateralCustody,
+      owner: position.owner,
+      pubkey,
+      initialLeverage:
+        nativeToUi(position.sizeUsd, USD_DECIMALS) /
+        nativeToUi(position.collateralUsd, USD_DECIMALS),
+      currentLeverage: null,
+      token,
+      collateralToken,
+      side: (position.side === 1 ? 'long' : 'short') as 'long' | 'short',
+      sizeUsd: nativeToUi(position.sizeUsd, USD_DECIMALS),
+      size: nativeToUi(position.lockedAmount, token.decimals),
+      collateralUsd: nativeToUi(position.collateralUsd, USD_DECIMALS),
+      price: nativeToUi(position.price, PRICE_DECIMALS),
+      collateralAmount: nativeToUi(
+        position.collateralAmount,
+        collateralToken.decimals,
+      ),
+      exitFeeUsd: nativeToUi(position.exitFeeUsd, USD_DECIMALS),
+      liquidationFeeUsd: nativeToUi(position.liquidationFeeUsd, USD_DECIMALS),
+      stopLossClosePositionPrice:
+        position.stopLossThreadIsSet === 1
+          ? nativeToUi(position.stopLossClosePositionPrice, PRICE_DECIMALS)
+          : null,
+      stopLossLimitPrice:
+        position.stopLossThreadIsSet === 1
+          ? nativeToUi(position.stopLossLimitPrice, PRICE_DECIMALS)
+          : null,
+      stopLossThreadIsSet: position.stopLossThreadIsSet === 1,
+      takeProfitLimitPrice: position.takeProfitThreadIsSet
+        ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
+        : null,
+      takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
+      pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
+      //
+      nativeObject: position,
+    };
+  }
+
+  // Positions PDA can be found by deriving each mints supported by the pool for 2 sides
+  // DO NOT LOAD PNL OR LIQUIDATION PRICE
+  public async loadUserPositions(user: PublicKey): Promise<PositionExtended[]> {
+    const possiblePositionAddresses = this.getPossiblePositionAddresses(user);
 
     const positions =
       (await this.readonlyAdrenaProgram.account.position.fetchMultiple(
@@ -4401,73 +4467,18 @@ export class AdrenaClient {
           return acc;
         }
 
-        const token =
-          this.tokens.find(
-            (token) => token.custody && token.custody.equals(position.custody),
-          ) ?? null;
+        const positionExtended = this.extendPosition(
+          position,
+          possiblePositionAddresses[index],
+        );
 
-        const collateralToken =
-          this.tokens.find(
-            (token) =>
-              token.custody && token.custody.equals(position.collateralCustody),
-          ) ?? null;
-
-        // Ignore position with unknown tokens
-        if (!token || !collateralToken) {
-          console.log('Ignore position with unknown tokens', position);
+        if (!positionExtended) {
           return acc;
         }
 
-        return [
-          ...acc,
-          {
-            custody: position.custody,
-            collateralCustody: position.collateralCustody,
-            owner: position.owner,
-            pubkey: possiblePositionAddresses[index],
-            initialLeverage:
-              nativeToUi(position.sizeUsd, USD_DECIMALS) /
-              nativeToUi(position.collateralUsd, USD_DECIMALS),
-            currentLeverage: null,
-            token,
-            collateralToken,
-            side: (position.side === 1 ? 'long' : 'short') as 'long' | 'short',
-            sizeUsd: nativeToUi(position.sizeUsd, USD_DECIMALS),
-            size: nativeToUi(position.lockedAmount, token.decimals),
-            collateralUsd: nativeToUi(position.collateralUsd, USD_DECIMALS),
-            price: nativeToUi(position.price, PRICE_DECIMALS),
-            collateralAmount: nativeToUi(
-              position.collateralAmount,
-              collateralToken.decimals,
-            ),
-            exitFeeUsd: nativeToUi(position.exitFeeUsd, USD_DECIMALS),
-            liquidationFeeUsd: nativeToUi(
-              position.liquidationFeeUsd,
-              USD_DECIMALS,
-            ),
-            stopLossClosePositionPrice:
-              position.stopLossThreadIsSet === 1
-                ? nativeToUi(
-                    position.stopLossClosePositionPrice,
-                    PRICE_DECIMALS,
-                  )
-                : null,
-            stopLossLimitPrice:
-              position.stopLossThreadIsSet === 1
-                ? nativeToUi(position.stopLossLimitPrice, PRICE_DECIMALS)
-                : null,
-            stopLossThreadIsSet: position.stopLossThreadIsSet === 1,
-            takeProfitLimitPrice: position.takeProfitThreadIsSet
-              ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
-              : null,
-            takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
-            pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
-            //
-            nativeObject: position,
-          },
-        ];
+        return [...acc, positionExtended];
       },
-      [],
+      [] as PositionExtended[],
     );
   }
 

@@ -72,7 +72,6 @@ export type PageProps = {
   wallet: Wallet | null;
   triggerWalletTokenBalancesReload: () => void;
   positions: PositionExtended[] | null;
-  triggerPositionsReload: () => void;
   connected: boolean;
   activeRpc: {
     name: string;

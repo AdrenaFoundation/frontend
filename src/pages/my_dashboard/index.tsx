@@ -38,7 +38,6 @@ export default function MyDashboard({
   connected,
   positions,
   userProfile,
-  triggerPositionsReload,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   readonly,
@@ -309,7 +308,6 @@ export default function MyDashboard({
             <PositionsStats
               connected={connected}
               positions={positions}
-              triggerPositionsReload={triggerPositionsReload}
               triggerUserProfileReload={triggerUserProfileReload}
               title="Opened Positions"
               userProfile={userProfile}

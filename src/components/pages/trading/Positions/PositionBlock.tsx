@@ -329,6 +329,7 @@ export default function PositionBlock({
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
                 className="text-xs bold"
+                isDecimalDimmed={false}
               />
             </div>
           </div>
@@ -343,6 +344,7 @@ export default function PositionBlock({
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
                 className="text-gray-400 text-xs bold"
+                isDecimalDimmed={false}
               />
             </div>
           </div>
@@ -362,6 +364,7 @@ export default function PositionBlock({
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
                 className="text-xs text-orange"
+                isDecimalDimmed={false}
               />
             </div>
           </div>
@@ -385,6 +388,7 @@ export default function PositionBlock({
                   nb={position.takeProfitLimitPrice}
                   format="currency"
                   className="text-xs text-blue"
+                  isDecimalDimmed={false}
                 />
               ) : (
                 <div className="flex text-xs">-</div>
