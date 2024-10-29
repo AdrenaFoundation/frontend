@@ -17,6 +17,7 @@ import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 
 export default function PositionBlock({
   bodyClassName,
@@ -36,7 +37,6 @@ export default function PositionBlock({
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const blockRef = useRef<HTMLDivElement>(null);
-  const [isSmallSize, setIsSmallSize] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const liquidable = (() => {
@@ -55,22 +55,8 @@ export default function PositionBlock({
     return tokenPrice > position.liquidationPrice;
   })();
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (!blockRef.current) return;
 
-      const width = blockRef.current.clientWidth;
-
-      setIsSmallSize(width <= 400);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.addEventListener('resize', handleResize);
-    };
-  }, []);
-
+  const isSmallSize = useBetterMediaQuery('(max-width: 800px)');
   const positionName = (
     <div className="flex items-center justify-center h-full">
       <Image
@@ -375,9 +361,7 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() =>
-                triggerStopLossTakeProfit(position)
-              }
+              onClick={() => triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
             >
@@ -402,9 +386,7 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() =>
-                triggerStopLossTakeProfit(position)
-              }
+              onClick={() => triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
             >
