@@ -57,7 +57,6 @@ export default function LongShortTradingInputs({
   connected,
   setTokenA,
   setTokenB,
-  triggerPositionsReload,
   triggerWalletTokenBalancesReload,
 }: {
   side: 'short' | 'long';
@@ -71,7 +70,6 @@ export default function LongShortTradingInputs({
   connected: boolean;
   setTokenA: (t: Token | null) => void;
   setTokenB: (t: Token | null) => void;
-  triggerPositionsReload: () => void;
   triggerWalletTokenBalancesReload: () => void;
 }) {
   const dispatch = useDispatch();
@@ -290,7 +288,6 @@ export default function LongShortTradingInputs({
 
         }));
 
-      triggerPositionsReload();
       triggerWalletTokenBalancesReload();
 
       setInputA(null);

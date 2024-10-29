@@ -1,6 +1,6 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -18,12 +18,10 @@ export default function PositionBlockReadOnly({
     bodyClassName,
     borderColor,
     position,
-    className,
 }: {
     bodyClassName?: string;
     borderColor?: string;
     position: PositionExtended;
-    className?: string;
 }) {
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -325,6 +323,7 @@ export default function PositionBlockReadOnly({
                                 format="currency"
                                 precision={position.token.displayPriceDecimalsPrecision}
                                 className="text-xs bold"
+                                isDecimalDimmed={false}
                             />
                         </div>
                     </div>
@@ -339,6 +338,7 @@ export default function PositionBlockReadOnly({
                                 format="currency"
                                 precision={position.token.displayPriceDecimalsPrecision}
                                 className="text-gray-400 text-xs bold"
+                                isDecimalDimmed={false}
                             />
                         </div>
                     </div>
@@ -353,6 +353,7 @@ export default function PositionBlockReadOnly({
                                 format="currency"
                                 precision={position.token.displayPriceDecimalsPrecision}
                                 className="text-xs text-orange"
+                                isDecimalDimmed={false}
                             />
                         </div>
                     </div>
@@ -392,6 +393,7 @@ export default function PositionBlockReadOnly({
                                     minimumFractionDigits={
                                         position.token.displayPriceDecimalsPrecision
                                     }
+                                    isDecimalDimmed={false}
                                 />
                             ) : (
                                 <div className="flex text-xs">-</div>

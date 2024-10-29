@@ -232,7 +232,7 @@ function AppComponent({
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
   const wallet = useWallet();
-  const { positions, triggerPositionsReload } = usePositions();
+  const positions = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
   useWatchTokenPrices();
@@ -407,7 +407,6 @@ function AppComponent({
           wallet={wallet}
           triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           positions={positions}
-          triggerPositionsReload={triggerPositionsReload}
           connected={connected}
           activeRpc={activeRpc}
           rpcInfos={rpcInfos}
