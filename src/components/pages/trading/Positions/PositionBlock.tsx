@@ -9,6 +9,7 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
+import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { getTokenImage, getTokenSymbol } from '@/utils';
@@ -36,7 +37,6 @@ export default function PositionBlock({
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   const blockRef = useRef<HTMLDivElement>(null);
-  const [isSmallSize, setIsSmallSize] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const liquidable = (() => {
@@ -55,22 +55,8 @@ export default function PositionBlock({
     return tokenPrice > position.liquidationPrice;
   })();
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (!blockRef.current) return;
 
-      const width = blockRef.current.clientWidth;
-
-      setIsSmallSize(width <= 400);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.addEventListener('resize', handleResize);
-    };
-  }, []);
-
+  const isSmallSize = useBetterMediaQuery('(max-width: 800px)');
   const positionName = (
     <div className="flex items-center justify-center h-full">
       <Image
@@ -375,9 +361,7 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() =>
-                triggerStopLossTakeProfit(position)
-              }
+              onClick={() => triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
             >
@@ -402,9 +386,7 @@ export default function PositionBlock({
             </div>
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
-              onClick={() =>
-                triggerStopLossTakeProfit(position)
-              }
+              onClick={() => triggerStopLossTakeProfit(position)}
               role="button"
               tabIndex={0}
             >
