@@ -7,9 +7,12 @@ import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
-import Featurebase from '@/components/Featurebase/Featurebase';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
+import {
+  PriorityFeeOption,
+  SolanaExplorerOptions,
+  UserProfileExtended,
+} from '@/types';
 
 import Footer from '../../Footer/Footer';
 import Header from '../../Header/Header';
@@ -134,7 +137,6 @@ export default function RootLayout({
 
       <ToastContainer />
 
-      <Featurebase />
       <Footer className="z-10" />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">

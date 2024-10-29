@@ -254,11 +254,6 @@ input[type='radio']:checked {
   border: 3px solid #16293d; /* creates padding around scroll thumb */
 }
 
-// Hide the feedback button, instead use a proxy in the footer
-.fb-feedback-widget-feedback-button-left {
-  display: none !important;
-}
-
 .Toastify__toast-container--bottom-left {
   bottom: 4em !important;
 }
@@ -277,13 +272,13 @@ img {
 }
 
 .text-gold {
-    color: #FFD700; /* Gold color */
+  color: #ffd700; /* Gold color */
 }
 
 .text-silver {
-    color: #C0C0C0; /* Silver color */
+  color: #c0c0c0; /* Silver color */
 }
 
 .text-bronze {
-    color: #CD7F32; /* Bronze color */
+  color: #cd7f32; /* Bronze color */
 }

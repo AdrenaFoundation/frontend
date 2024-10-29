@@ -38,28 +38,6 @@ export default function Footer({ className }: { className?: string }) {
           />
         </Link>
 
-        <Button
-          onClick={() => {
-            // Open feedback widget
-            const element = document.querySelector<HTMLButtonElement>(
-              '.fb-feedback-widget-feedback-button-left',
-            );
-
-            if (element) {
-              element.click();
-            }
-          }}
-          className="opacity-60 p-0"
-          title={
-            <div className="flex">
-              <span className="mr-4 opacity-30">-</span>
-              <h5>Provide Feedback</h5>
-              <span className="ml-4 opacity-30">-</span>
-            </div>
-          }
-          variant="secondary"
-        />
-
         <Link href="https://twitter.com/AdrenaProtocol" target="_blank">
           <Image
             className="hover:opacity-100 opacity-50 cursor-pointer h-4 w-auto"
