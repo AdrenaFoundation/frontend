@@ -3014,7 +3014,7 @@ export class AdrenaClient {
 
     builder.preInstructions([
       ComputeBudgetProgram.setComputeUnitLimit({
-        units: 1500000, // Use a lot of units to avoid any issues during simulation
+        units: 1400000, // Use a lot of units to avoid any issues during simulation
       }),
     ]);
 
