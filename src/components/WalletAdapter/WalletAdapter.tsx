@@ -126,7 +126,6 @@ export default function WalletAdapter({
                 if (!connected) return;
 
                 dispatch(disconnectWalletAction(wallet.adapterName));
-                dispatch(openCloseConnectionModalAction(false));
               }}
             >
               Disconnect
