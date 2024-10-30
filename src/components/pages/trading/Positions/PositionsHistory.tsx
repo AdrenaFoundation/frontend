@@ -7,7 +7,7 @@ import usePositionsHistory from '@/hooks/usePositionHistory';
 
 import PositionHistoryBlock from './PositionHistoryBlock';
 
-export default function PositionsHistory({
+function PositionsHistory({
   connected,
 }: {
   connected: boolean;
@@ -91,3 +91,18 @@ export default function PositionsHistory({
     </div>
   );
 }
+
+// Memoize this component to avoid unnecessary re-renders caused by
+// a re-render of the parent component.
+// This is not the most expensive component to re-render, but it's sensible
+// because we're avoiding unnecessary work within a critical path of the app,
+// which is subect to a lot of re-renders by nature: a trading view must be reactive.
+// More optimizations are possible within this component, but this is the best low-hanging fruit
+// yielding the most benefits for minimal effort.
+// Note this is a good candidate for memoization because:
+// - the parent component re-renders often (trading view)
+// - this component expects simple "scalar" / "primitive-type" / "referentially-stable" props:
+//   - connected: boolean
+//   - className?: string
+// - https://react.dev/reference/react/memo
+export default React.memo(PositionsHistory);
