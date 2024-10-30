@@ -56,6 +56,11 @@ export default function TradingChartHeader({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [streamingTokenPrices]);
 
+  const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
+  const dailyVolume = stats?.[selected.symbol]?.dailyVolume ?? null;
+  const lastDayHigh = stats?.[selected.symbol]?.lastDayHigh ?? null;
+  const lastDayLow = stats?.[selected.symbol]?.lastDayLow ?? null;
+
   return (
     <>
       <Head>
@@ -120,13 +125,15 @@ export default function TradingChartHeader({
               <span
                 className={twMerge(
                   'font-mono text-xs sm:text-xxs ml-1', // Adjusted to text-xs
-                  stats && stats[selected.symbol].dailyChange > 0
-                    ? 'text-green'
-                    : 'text-red',
+                  dailyChange
+                    ? dailyChange > 0
+                      ? 'text-green'
+                      : 'text-red'
+                    : 'text-white',
                 )}
               >
-                {stats
-                  ? `${stats[selected.symbol].dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
+                {dailyChange
+                  ? `${dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
                   : '-'}
               </span>
             </div>
@@ -137,7 +144,7 @@ export default function TradingChartHeader({
               </span>
               <span className="font-mono text-xs sm:text-xxs ml-1">
                 <FormatNumber
-                  nb={stats?.[selected.symbol].dailyVolume}
+                  nb={dailyVolume}
                   format="currency"
                   isAbbreviate={true}
                   isDecimalDimmed={false}
@@ -152,7 +159,7 @@ export default function TradingChartHeader({
               </span>
               <span className="font-mono text-xs sm:text-xxs ml-1">
                 <FormatNumber
-                  nb={stats?.[selected.symbol].lastDayHigh} // Assuming high is available in stats
+                  nb={lastDayHigh} // Assuming high is available in stats
                   format="currency"
                   className="font-mono text-xxs"
                 />
@@ -165,7 +172,7 @@ export default function TradingChartHeader({
               </span>
               <span className="font-mono text-xxs sm:text-xs ml-1">
                 <FormatNumber
-                  nb={stats?.[selected.symbol].lastDayLow} // Assuming low is available in stats
+                  nb={lastDayLow} // Assuming low is available in stats
                   format="currency"
                   className="font-mono text-xxs"
                 />
