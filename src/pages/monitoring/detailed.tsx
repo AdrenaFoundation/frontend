@@ -109,7 +109,7 @@ export default function DetailedMonitoring({
   // Used to style the text in the data
   const bodyClassName = 'text-4xl sm:text-5xl font-boldy';
   // Used to style the dollar amount in the data (secondary info)
-  const dollarBodyClassName = 'text-3xl font-boldy';
+  const dollarBodyClassName = 'text-xl sm:text-3xl font-boldy';
   const smallBodyClassName = 'text-xl font-boldy';
 
   const handleTabChange = (tab: (typeof tabs)[number]) => {
