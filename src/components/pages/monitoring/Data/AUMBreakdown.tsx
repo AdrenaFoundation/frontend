@@ -46,7 +46,7 @@ export default function AUMBreakdown({
                   height="24"
                 />
 
-                <p className={titleClassName}>{custody.tokenInfo.symbol}</p>
+                <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
               </div>
 
               <NumberInfo
