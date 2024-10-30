@@ -24,14 +24,21 @@ export default function StakingRewardsWaitingToBeClaimed({
     adxStakingAccount.rewardTokenDecimals,
   );
 
-  const alpStakingPendingLmRewards = nativeToUi(
-    alpStakingAccount.resolvedLmRewardTokenAmount,
-    window.adrena.client.adxToken.decimals,
-  );
-  const adxStakingPendingLmRewards = nativeToUi(
-    adxStakingAccount.resolvedLmRewardTokenAmount,
-    window.adrena.client.adxToken.decimals,
-  )
+  // Too much in these account due to burnt tokens
+  // const alpStakingPendingLmRewards = nativeToUi(
+  //   alpStakingAccount.resolvedLmRewardTokenAmount,
+  //   window.adrena.client.adxToken.decimals,
+  // );
+  // const adxStakingPendingLmRewards = nativeToUi(
+  //   adxStakingAccount.resolvedLmRewardTokenAmount,
+  //   window.adrena.client.adxToken.decimals,
+  // )
+
+  // Calculate the real pending claim amount (which is going through the resolved rounds, checking what's been claimed versus what not)
+
+  const alpStakingPendingLmRewards = alpStakingAccount.resolvedStakingRounds.reduce((acc, round) => acc + ((round.totalStake.sub(round.totalClaim), 0).mul(round.rate)).toNumber(), 0);
+  const adxStakingPendingLmRewards = adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => acc + ((round.totalStake.sub(round.totalClaim), 0).mul(round.rate)).toNumber(), 0);
+
   return (
     <StyledContainer
       title="Staking rewards (available, pending claims)"
