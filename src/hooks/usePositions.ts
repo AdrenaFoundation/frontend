@@ -78,9 +78,10 @@ export default function usePositions(): PositionExtended[] | null {
             // Position got deleted
             if (accountInfo.data.length === 0) {
               setPositions(
-                positions?.filter(
-                  (p) => p.pubkey.toBase58() !== address.toBase58(),
-                ) ?? [],
+                (prevPositions) =>
+                  prevPositions?.filter(
+                    (p) => p.pubkey.toBase58() !== address.toBase58(),
+                  ) ?? [],
               );
               return;
             }
@@ -100,8 +101,8 @@ export default function usePositions(): PositionExtended[] | null {
 
             console.log('Position decoded', position);
 
-            setPositions([
-              ...(positions?.filter(
+            setPositions((prevPositions) => [
+              ...(prevPositions?.filter(
                 (p) => p.pubkey.toBase58() !== address.toBase58(),
               ) ?? []),
               position,
