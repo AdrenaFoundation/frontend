@@ -1,4 +1,6 @@
+import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Pagination from '@/components/common/Pagination/Pagination';
@@ -18,9 +20,10 @@ export default function AllPositions() {
 
     const connected = !!wallet;
 
-    const { allPositions, triggerAllPositionsReload } = useAllPositions({
-        connected,
-    });
+    const { allPositions, isLoading, triggerAllPositionsReload } =
+        useAllPositions({
+            connected,
+        });
     const [currentPage, setCurrentPage] = useState(1);
     const [sideFilter, setSideFilter] = useState('all');
     const [mintFilter, setMintFilter] = useState('all');
@@ -132,7 +135,7 @@ export default function AllPositions() {
     };
 
     return (
-        <div className="flex flex-col gap-2 p-2">
+        <div className="flex flex-col gap-2 p-2 min-h-[1000px]">
             <StyledContainer className="p-4">
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-1 lg:grid-cols-3 justify-between gap-5">
@@ -215,7 +218,7 @@ export default function AllPositions() {
 
                 <div className="flex flex-wrap justify-between gap-2">
                     {paginatedPositions.length ? (
-                        <div className="flex flex-col bg-first w-full h-full gap-4">
+                        <div className="flex flex-col w-full gap-4 min-h-[1000px]">
                             {paginatedPositions.map((position) => (
                                 <PositionBlockReadOnly
                                     key={position.pubkey.toBase58()}
@@ -224,7 +227,9 @@ export default function AllPositions() {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center w-full py-4">No matches 📭</div>
+                        <div className="text-center w-full py-4 min-h-[1000px] opacity-50">
+                            No matches 📭
+                        </div>
                     )}
                 </div>
 

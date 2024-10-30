@@ -1,7 +1,10 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
+
 import { PoolExtended } from '@/types';
 import { formatNumber, formatPriceInfo } from '@/utils';
+
+import liveIcon from '../../../../../public/images/Icons/live-icon.svg';
 
 export default function PositionsNow({
   mainPool,
@@ -13,65 +16,44 @@ export default function PositionsNow({
   bodyClassName?: string;
 }) {
   return (
-    <StyledContainer
-      headerClassName="text-center justify-center"
-      title="Positions (LIVE)"
-      className="w-auto grow"
-      titleClassName={titleClassName}
-    >
-      <StyledSubContainer>
-        <div className="flex items-center">
-          <div className={titleClassName}>Positions count</div>
-          <div className="font-boldy text-sm ml-2 text-txtfade">
-            Long / Short
-          </div>
-        </div>
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="flex flex-row gap-2 w-full border-b p-5">
+        <p className={titleClassName}>Positions live</p>
+        <Image
+          src={liveIcon}
+          alt="Live icon"
+          width={12}
+          height={12}
+          className='animate-pulse'
+        />
+      </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
-          <div className={bodyClassName}>
+      <div className="grid grid-cols-2">
+        <div className="p-5">
+          <p className={titleClassName}>Long positions</p>
+          <p className={bodyClassName}>
             {formatNumber(mainPool.nbOpenLongPositions, 0)}
-          </div>
-
-          <>
-            <div className="ml-2 mr-2 text-5xl text-txtfade opacity-20 sm:block hidden">
-              /
-            </div>
-
-            <div className="bg-bcolor w-full h-[1px] sm:hidden" />
-          </>
-
-          <div className={bodyClassName}>
+          </p>
+        </div>
+        <div className="border-l p-5">
+          <p className={titleClassName}>Short positions</p>
+          <p className={bodyClassName}>
             {formatNumber(mainPool.nbOpenShortPositions, 0)}
-          </div>
+          </p>
         </div>
-      </StyledSubContainer>
-
-      <StyledSubContainer>
-        <div className="flex items-center">
-          <div className={titleClassName}>Open Interest</div>
-          <div className="font-boldy text-sm ml-2 text-txtfade">
-            Long / Short
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
-          <div className={bodyClassName}>
+        <div className="border-t p-5">
+          <p className={titleClassName}>Open Interest Long</p>
+          <p className={bodyClassName}>
             {formatPriceInfo(mainPool.longPositions, 0)}
-          </div>
-
-          <>
-            <div className="ml-2 mr-2 text-5xl text-txtfade opacity-20 sm:block hidden">
-              /
-            </div>
-
-            <div className="bg-bcolor w-full h-[1px] sm:hidden" />
-          </>
-
-          <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.shortPositions, 0)}
-          </div>
+          </p>
         </div>
-      </StyledSubContainer>
-    </StyledContainer>
+        <div className="border-t border-l p-5">
+          <p className={titleClassName}>Open Interest Short</p>
+          <p className={bodyClassName}>
+            {formatPriceInfo(mainPool.shortPositions, 0)}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

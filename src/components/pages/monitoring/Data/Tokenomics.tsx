@@ -40,7 +40,7 @@ export default function Tokenomics({
     <StyledContainer
       title="ADX TOKENOMIC"
       headerClassName="ml-auto mr-auto"
-      className="grow max-w-[40em] w-[30em]"
+      className="flex-1 bg-[#050D14]"
       titleClassName={titleClassName}
     >
       <div className="flex gap-6 justify-evenly mb-4">

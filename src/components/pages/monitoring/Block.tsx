@@ -16,13 +16,13 @@ export default function Block({
   rowTitleClassName?: string;
   data: (
     | {
-        rowTitle: ReactNode;
-        values: ReactNode[];
-      }
+      rowTitle: ReactNode;
+      values: ReactNode[];
+    }
     | {
-        rowTitle: ReactNode;
-        value: ReactNode;
-      }
+      rowTitle: ReactNode;
+      value: ReactNode;
+    }
   )[];
 }) {
   return (
@@ -33,7 +33,7 @@ export default function Block({
       )}
     >
       {data.map(({ rowTitle, ...v }, i) => (
-        <div className="bg-third rounded-md p-3" key={i}>
+        <div className={twMerge("bg-third rounded-md p-3")} key={i}>
           <p
             className={twMerge(
               'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',

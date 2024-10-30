@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { formatNumber } from '@/utils';
 
@@ -5,15 +7,17 @@ export default function ADXCirculatingSupply({
   adxTotalSupply,
   titleClassName,
   bodyClassName,
+  className,
 }: {
   adxTotalSupply: number;
   titleClassName?: string;
   bodyClassName?: string;
+  className?: string;
 }) {
   return (
     <StyledContainer
       title="ADX CIRCULATING SUPPLY"
-      className="grow flex items-center min-w-[22em] w-[22em]"
+      className={twMerge("grow flex items-center", className)}
       titleClassName={titleClassName}
       bodyClassName="items-center"
     >
