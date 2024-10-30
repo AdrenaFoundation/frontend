@@ -1,7 +1,9 @@
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import { RATE_DECIMALS } from '@/constant';
 import { Staking } from '@/types';
 import { formatNumber, nativeToUi } from '@/utils';
+import { BN } from '@coral-xyz/anchor';
 
 export default function StakingRewardsWaitingToBeClaimed({
   alpStakingAccount,
@@ -14,24 +16,50 @@ export default function StakingRewardsWaitingToBeClaimed({
   titleClassName?: string;
   bodyClassName?: string;
 }) {
+  const alpStakingPendingRewards = alpStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
+    if (!round.rate) return acc;
 
-  const alpStakingPendingRewards = nativeToUi(
-    alpStakingAccount.resolvedRewardTokenAmount,
-    alpStakingAccount.rewardTokenDecimals,
-  );
-  const adxStakingPendingRewards = nativeToUi(
-    adxStakingAccount.resolvedRewardTokenAmount,
-    adxStakingAccount.rewardTokenDecimals,
-  );
+    const totalToClaim = round.rate.mul(round.totalStake.sub(round.totalClaim)).div(new BN(10 ** RATE_DECIMALS));
 
-  const alpStakingPendingLmRewards = nativeToUi(
-    alpStakingAccount.resolvedLmRewardTokenAmount,
-    window.adrena.client.adxToken.decimals,
-  );
-  const adxStakingPendingLmRewards = nativeToUi(
-    adxStakingAccount.resolvedLmRewardTokenAmount,
-    window.adrena.client.adxToken.decimals,
-  )
+    return acc + nativeToUi(
+      totalToClaim,
+      alpStakingAccount.rewardTokenDecimals,
+    );
+  }, 0);
+
+  const adxStakingPendingRewards = adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
+    if (!round.rate) return acc;
+
+    const totalToClaim = round.rate.mul(round.totalStake.sub(round.totalClaim)).div(new BN(10 ** RATE_DECIMALS));
+
+    return acc + nativeToUi(
+      totalToClaim,
+      adxStakingAccount.rewardTokenDecimals,
+    );
+  }, 0);
+
+  const alpStakingPendingLmRewards = alpStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
+    if (!round.lmRate) return acc;
+
+    const lmTotalToClaim = round.lmRate.mul(round.lmTotalStake.sub(round.lmTotalClaim)).div(new BN(10 ** RATE_DECIMALS));
+
+    return acc + nativeToUi(
+      lmTotalToClaim,
+      window.adrena.client.adxToken.decimals,
+    );
+  }, 0);
+
+  const adxStakingPendingLmRewards = adxStakingAccount.resolvedStakingRounds.reduce((acc, round) => {
+    if (!round.lmRate) return acc;
+
+    const lmTotalToClaim = round.lmRate.mul(round.lmTotalStake.sub(round.lmTotalClaim)).div(new BN(10 ** RATE_DECIMALS));
+
+    return acc + nativeToUi(
+      lmTotalToClaim,
+      window.adrena.client.adxToken.decimals,
+    );
+  }, 0);
+
   return (
     <StyledContainer
       title="Staking rewards (available, pending claims)"
