@@ -24,7 +24,7 @@ export default function VolumeBreakdownPerToken({
         <p className={titleClassName}>Trading Volume Breakdown (per token)</p>
       </div>
 
-      <div className='grid sm:grid-cols-2 lg:grid-cols-4'>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4">
         {...custodies.map((custody, i) => {
           return (
             <div
@@ -49,9 +49,11 @@ export default function VolumeBreakdownPerToken({
               </div>
 
               <div className="flex flex-col gap-1 mt-3">
-
                 {attributes.map((attribute, i) => (
-                  <div className="flex flex-row justify-between items-center">
+                  <div
+                    className="flex flex-row justify-between items-center"
+                    key={i}
+                  >
                     <p className={twMerge('text-txtfade', bodyClassName)}>
                       {
                         [

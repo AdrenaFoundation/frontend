@@ -76,6 +76,7 @@ export default function PoolRatios({
                     i > 1 && 'border-t',
                     i == 1 && 'md:border-t-0',
                   )}
+                  key={i}
                 >
                   <div className="flex flex-row items-center gap-2">
                     <Image
