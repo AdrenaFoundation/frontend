@@ -1,9 +1,10 @@
+import { BN } from '@coral-xyz/anchor';
+
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { RATE_DECIMALS } from '@/constant';
 import { Staking } from '@/types';
 import { formatNumber, nativeToUi } from '@/utils';
-import { BN } from '@coral-xyz/anchor';
 
 export default function StakingRewardsWaitingToBeClaimed({
   alpStakingAccount,
