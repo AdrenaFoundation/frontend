@@ -218,7 +218,7 @@ export default function AllPositions() {
 
                 <div className="flex flex-wrap justify-between gap-2">
                     {paginatedPositions.length ? (
-                        <div className="flex flex-col w-full gap-4 min-h-[1000px]">
+                        <div className="flex flex-col w-full gap-4 min-h-[1000px]">{/* TODO: better fix */}
                             {paginatedPositions.map((position) => (
                                 <PositionBlockReadOnly
                                     key={position.pubkey.toBase58()}
