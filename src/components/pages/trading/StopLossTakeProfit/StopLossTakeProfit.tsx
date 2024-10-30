@@ -245,7 +245,9 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          SL/TP are currently in beta, testing the new gRPC client, please use with caution. As usual, send feedback on Discord.
+          <a href="https://docs.adrena.xyz/technical-documentation/mrsablier-and-mrsablierstaking-open-source-keepers" target="_blank" rel="noopener noreferrer">
+            SL/TP are executed by our open source keeper MrSablier. Learn more
+          </a>
         </div>
 
         <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg mb-2">

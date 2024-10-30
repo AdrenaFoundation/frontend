@@ -11,10 +11,12 @@ export type WalletState = {
   modalIsOpen: boolean;
 };
 
-const initialState: WalletState = {
+// freeze the initial state object to make sure it can be re-used through
+// the app's lifecycle & is nevery mutated.
+const initialState: WalletState = Object.freeze({
   wallet: null,
   modalIsOpen: false,
-};
+});
 
 export default function walletReducer(
   state = initialState,
@@ -26,14 +28,18 @@ export default function walletReducer(
         wallet: action.payload,
         modalIsOpen: state.modalIsOpen,
       };
+    // avoid dispatching multiple Redux actions sequentially
+    // when it makes sense for a single action to carry the changes/
+    // this is the case here: the user disconnecting their wallet
+    // also means we want to close the wallet selection modal
+    // as well as resetting the inner wallet state object.
+    // in other words: for this action being dispatched, we reset the whole
+    // wallet state to its initial value.
     case 'disconnect':
-      return {
-        wallet: null,
-        modalIsOpen: state.modalIsOpen,
-      };
+      return initialState;
     case 'openCloseConnectionModal':
       return {
-        wallet: state.wallet,
+        ...state,
         modalIsOpen: action.payload,
       };
     default:

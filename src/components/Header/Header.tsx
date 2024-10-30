@@ -2,7 +2,6 @@ import { Connection } from '@solana/web3.js';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
@@ -64,15 +63,8 @@ export default function Header({
 }) {
   const pathname = usePathname();
 
-  const [alpPrice, setAlpPrice] = useState<number | null>(null);
-  const [adxPrice, setAdxPrice] = useState<number | null>(null);
-
-  const tokenPrices = useSelector((s) => s.tokenPrices);
-
-  useEffect(() => {
-    setAlpPrice(tokenPrices.ALP);
-    setAdxPrice(tokenPrices.ADX);
-  }, [tokenPrices]);
+  const tokenPriceALP = useSelector((s) => s.tokenPrices.ALP);
+  const tokenPriceADX = useSelector((s) => s.tokenPrices.ADX);
 
   const clusterSwitchEnabled = false;
 
@@ -141,11 +133,11 @@ export default function Header({
         >
           <div className="text-sm mr-2 font-boldy">ALP</div>
 
-          {alpPrice ? (
+          {tokenPriceALP ? (
             <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
               <div className="text-xxs font-mono flex items-center justify-center">
                 {formatPriceInfo(
-                  alpPrice,
+                  tokenPriceALP,
                   window.adrena.client.alpToken.displayPriceDecimalsPrecision,
                   window.adrena.client.alpToken.displayPriceDecimalsPrecision,
                 )}
@@ -165,11 +157,11 @@ export default function Header({
         >
           <div className="text-sm mr-2 font-boldy">ADX</div>
 
-          {adxPrice ? (
+          {tokenPriceADX ? (
             <div className="w-[3em] border bg-third pt-[2px] pb-[2px] pr-1 pl-1 rounded">
               <div className="text-xxs font-mono flex items-center justify-center">
                 {formatPriceInfo(
-                  adxPrice,
+                  tokenPriceADX,
                   window.adrena.client.adxToken.displayPriceDecimalsPrecision,
                   window.adrena.client.adxToken.displayPriceDecimalsPrecision,
                 )}

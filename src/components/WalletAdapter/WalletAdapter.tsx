@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -23,6 +23,13 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import WalletSelectionModal from './WalletSelectionModal';
 
+const WALLET_ICONS = {
+  phantom: phantomLogo,
+  solflare: solflareLogo,
+  backpack: backpackLogo,
+  coinbase: coinbaseLogo,
+} as const satisfies Record<WalletAdapterName, ImageRef>;
+
 export default function WalletAdapter({
   className,
   userProfile,
@@ -36,35 +43,41 @@ export default function WalletAdapter({
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
-  const connected = !!wallet;
+  // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
+  const autoConnectAuthorizedRef = useRef<null | boolean>(null);
+  if (autoConnectAuthorizedRef.current === null) {
+    autoConnectAuthorizedRef.current = !!JSON.parse(
+      localStorage.getItem('autoConnectAuthorized') ?? 'false',
+    );
+  }
 
-  // Load local storage state to auto-connect if needed
-  const autoConnectAuthorized: boolean =
-    JSON.parse(localStorage.getItem('autoConnectAuthorized') ?? 'false') ??
-    true;
+  const connectedWalletAdapterName = wallet?.adapterName;
+  const connected = !!connectedWalletAdapterName;
 
-  // When component gets created, try to auto-connect to wallet
+  // Attempt to auto-connect Phantom Wallet on mount.
   useEffect(() => {
-    if (autoConnectAuthorized) {
+    if (autoConnectAuthorizedRef.current) {
       dispatch(autoConnectWalletAction('phantom'));
       return;
     }
-
-    // Only once when page load
+    // `dispatch` is stable, does not need to be included in the dependencies array.
+    // We also only want to run this effect once, when the component is mounted.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Detect change of account
+  // Detect change of account:
+  // - update the Wallet state on change of connected account for the current provider.
+  // - cleanup & reset listeners on change of wallet provider.
   useEffect(() => {
-    if (!wallet) return;
+    if (!connectedWalletAdapterName) return;
 
-    const adapter = walletAdapters[wallet.adapterName];
+    const adapter = walletAdapters[connectedWalletAdapterName];
 
     adapter.on('connect', (walletPubkey: PublicKey) => {
       dispatch({
         type: 'connect',
         payload: {
-          adapterName: wallet.adapterName,
+          adapterName: connectedWalletAdapterName,
           walletAddress: walletPubkey.toBase58(),
         },
       });
@@ -73,22 +86,7 @@ export default function WalletAdapter({
     return () => {
       adapter.removeAllListeners('connect');
     };
-  }, [dispatch, wallet]);
-
-  const WALLETS: Record<WalletAdapterName, { img: ImageRef }> = {
-    phantom: {
-      img: phantomLogo,
-    },
-    solflare: {
-      img: solflareLogo,
-    },
-    backpack: {
-      img: backpackLogo,
-    },
-    coinbase: {
-      img: coinbaseLogo,
-    },
-  } as const;
+  }, [dispatch, connectedWalletAdapterName]);
 
   return (
     <div className="relative">
@@ -108,7 +106,7 @@ export default function WalletAdapter({
                     : getAbbrevWalletAddress(wallet.walletAddress)
                   : null
               }
-              leftIcon={WALLETS[wallet.adapterName]?.img}
+              leftIcon={WALLET_ICONS[wallet.adapterName]}
               rightIcon={!isIconOnly && walletIcon}
               alt="wallet icon"
               rightIconClassName="w-4 h-4"
@@ -128,7 +126,6 @@ export default function WalletAdapter({
                 if (!connected) return;
 
                 dispatch(disconnectWalletAction(wallet.adapterName));
-                dispatch(openCloseConnectionModalAction(false));
               }}
             >
               Disconnect
