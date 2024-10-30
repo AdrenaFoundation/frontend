@@ -28,14 +28,14 @@ export default function PositionsNow({
         />
       </div>
 
-      <div className="grid grid-cols-2">
+      <div className="grid sm:grid-cols-2">
         <div className="p-5">
           <p className={titleClassName}>Long positions</p>
           <p className={bodyClassName}>
             {formatNumber(mainPool.nbOpenLongPositions, 0)}
           </p>
         </div>
-        <div className="border-l p-5">
+        <div className="border-t sm:border-t-0 sm:border-l p-5">
           <p className={titleClassName}>Short positions</p>
           <p className={bodyClassName}>
             {formatNumber(mainPool.nbOpenShortPositions, 0)}
@@ -47,7 +47,7 @@ export default function PositionsNow({
             {formatPriceInfo(mainPool.longPositions, 0)}
           </p>
         </div>
-        <div className="border-t border-l p-5">
+        <div className="border-t sm:border-l p-5">
           <p className={titleClassName}>Open Interest Short</p>
           <p className={bodyClassName}>
             {formatPriceInfo(mainPool.shortPositions, 0)}

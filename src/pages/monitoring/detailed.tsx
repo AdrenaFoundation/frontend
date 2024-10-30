@@ -1,6 +1,10 @@
+import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Menu from '@/components/common/Menu/Menu';
+import MenuItem from '@/components/common/Menu/MenuItem';
+import MenuItems from '@/components/common/Menu/MenuItems';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import AdrenaAccounts from '@/components/pages/monitoring/Data/AdrenaAccounts';
 import ADXCirculatingSupply from '@/components/pages/monitoring/Data/ADXCirculatingSupply';
@@ -42,7 +46,8 @@ import useVestRegistry from '@/hooks/useVestRegistry';
 import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+
+import arrowDownIcom from '../../../public/images/Icons/arrow-down.svg';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
@@ -102,7 +107,7 @@ export default function DetailedMonitoring({
   //
   const titleClassName = 'text-lg opacity-50 font-boldy';
   // Used to style the text in the data
-  const bodyClassName = 'text-5xl font-boldy';
+  const bodyClassName = 'text-4xl sm:text-5xl font-boldy';
   // Used to style the dollar amount in the data (secondary info)
   const dollarBodyClassName = 'text-3xl font-boldy';
   const smallBodyClassName = 'text-xl font-boldy';
@@ -129,9 +134,9 @@ export default function DetailedMonitoring({
   }));
 
   return (
-    <div className="border bg-secondary rounded-lg overflow-hidden mt-2">
+    <div className="border bg-secondary rounded-lg overflow-hidden m-2">
       <TabSelect
-        wrapperClassName="gap-6 border-b p-3 pb-0 select-none mb-3"
+        wrapperClassName="hidden md:flex gap-6 border-b p-3 pb-0 select-none mb-3"
         titleClassName="whitespace-nowrap text-sm"
         selected={selectedTab}
         initialSelectedIndex={tabsFormatted.findIndex(
@@ -143,17 +148,50 @@ export default function DetailedMonitoring({
         }}
       />
 
+      <Menu
+        trigger={
+          <div className="flex flex-row justify-between bg-secondary border w-full p-3 rounded-lg cursor-pointer text-lg font-boldy select-none">
+            {selectedTab}
+
+            <Image
+              src={arrowDownIcom}
+              height={12}
+              width={12}
+              alt="arrow down"
+            />
+          </div>
+        }
+        className="block md:hidden mx-5 mt-5"
+        openMenuClassName="w-full bg-secondary shadow-lg"
+      >
+        <MenuItems className="">
+          {tabs.map((tab) => (
+            <MenuItem
+              key={tab}
+              onClick={() => handleTabChange(tab)}
+              selected={selectedTab === tab}
+              className="p-2 text-lg"
+            >
+              {tab}
+            </MenuItem>
+          ))}
+        </MenuItems>
+      </Menu>
+
       <div className="flex flex-col gap-5 p-5 pt-3">
         <div
-          className={twMerge('gap-5',
-            selectedTab === 'All' ? 'grid sm:grid-cols-2 lg:grid-cols-4' : 'flex flex-row',
+          className={twMerge(
+            'gap-5',
+            selectedTab === 'All'
+              ? 'grid sm:grid-cols-2 lg:grid-cols-4'
+              : 'flex flex-row',
           )}
         >
           {selectedTab === 'All' || selectedTab === 'Pool' ? (
             <AUM
               titleClassName={titleClassName}
               bodyClassName={bodyClassName}
-              className='bg-[#050D14] shadow-lg'
+              className="bg-[#050D14] shadow-lg"
               connected={connected}
             />
           ) : null}
@@ -161,7 +199,7 @@ export default function DetailedMonitoring({
             <ADXCirculatingSupply
               titleClassName={titleClassName}
               bodyClassName={bodyClassName}
-              className='bg-[#050D14] shadow-lg'
+              className="bg-[#050D14] shadow-lg"
               adxTotalSupply={adxTotalSupply}
             />
           ) : null}
@@ -169,7 +207,7 @@ export default function DetailedMonitoring({
             <LockedStakedADX
               titleClassName={titleClassName}
               bodyClassName={bodyClassName}
-              className='bg-[#050D14] shadow-lg'
+              className="bg-[#050D14] shadow-lg"
               adxStakingAccount={adxStakingAccount}
             />
           ) : null}
@@ -177,7 +215,7 @@ export default function DetailedMonitoring({
             <AllTimeFees
               titleClassName={titleClassName}
               bodyClassName={bodyClassName}
-              className='bg-[#050D14] shadow-lg'
+              className="bg-[#050D14] shadow-lg"
               mainPool={mainPool}
             />
           ) : null}

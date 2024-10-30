@@ -110,7 +110,7 @@ export default function CurrentStakingRoundTime({
         </p>
       </div>
 
-      <div className="flex flex-row">
+      <div className="flex flex-col sm:flex-row">
         <div className='flex-1 p-5'>
           <div className={titleClassName}>ALP Staking</div>
 
@@ -136,7 +136,7 @@ export default function CurrentStakingRoundTime({
           </div>
         </div>
 
-        <div className='flex-1 p-5 border-l'>
+        <div className='flex-1 p-5 border-t sm:border-t-0 sm:border-l'>
           <div className={titleClassName}>ADX Staking</div>
 
           <div className="flex items-center flex-wrap gap-5">

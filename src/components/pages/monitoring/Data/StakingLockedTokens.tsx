@@ -27,7 +27,7 @@ export default function StakingLockedTokens({
         </p>
       </div>
 
-      <div className="flex flex-row">
+      <div className="flex flex-col sm:flex-row">
         <div className='flex-1 p-5'>
           <div className={titleClassName}>Locked ALP</div>
 
@@ -42,7 +42,7 @@ export default function StakingLockedTokens({
           </div>
         </div>
 
-        <div className='flex-1 p-5 border-l'>
+        <div className='flex-1 p-5 border-t sm:border-t-0 sm:border-l'>
           <div className={titleClassName}>Locked ADX</div>
 
           <div className={twMerge('m-auto', bodyClassName)}>
