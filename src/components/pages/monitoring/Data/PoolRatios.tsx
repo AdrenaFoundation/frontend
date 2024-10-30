@@ -120,7 +120,7 @@ export default function PoolRatios({
 
                       <div
                         className={twMerge(
-                          'absolute -top-8 text-[#9f8cae] flex',
+                          'text-base md:text-xl absolute -top-8 text-[#9f8cae] flex',
                           currentRatio >= maxRatio ? 'right-0' : 'left-0',
                           currentRatio < minRatio || currentRatio > maxRatio
                             ? 'bg-red opacity-90 pl-2 pr-2 text-white'

@@ -42,7 +42,7 @@ export default function AUM({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
             exit={{ opacity: 0 }}
-            className="w-[300px] h-[40px] bg-secondary animate-pulse rounded-lg"
+            className="w-[167px] h-[45px] sm:w-[188px] sm:h-[54px] bg-secondary animate-pulse rounded-lg"
           />
         )}
         {!connected ? <div className="text-txtfade">*</div> : null}

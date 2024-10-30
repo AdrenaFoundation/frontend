@@ -77,7 +77,7 @@ export default function StakingRewardVaults({
         </p>
       </div>
 
-      <div className="flex flex-row">
+      <div className="flex flex-col sm:flex-row">
         <div className="p-5 flex-1">
           <div className={titleClassName}>ALP Staking</div>
 
@@ -104,7 +104,7 @@ export default function StakingRewardVaults({
           </div>
         </div>
 
-        <div className="p-5 flex-1 border-l">
+        <div className="p-5 flex-1 border-t sm:border-l">
           <div className={titleClassName}>ADX Staking</div>
 
           <div className={twMerge('flex flex-col', bodyClassName)}>
