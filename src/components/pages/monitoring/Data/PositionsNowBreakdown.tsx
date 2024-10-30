@@ -50,7 +50,7 @@ export default function PositionsNowBreakdown({
                     height="24"
                   />
 
-                  <p className={titleClassName}>{custody.tokenInfo.symbol}</p>
+                  <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
                 </div>
 
                 <div className="flex flex-col">
