@@ -66,7 +66,7 @@ export default function Table({
 
     if (nb === 0) return setNbPages(1);
 
-    const nbPages = Math.round(data.length / nb);
+    const nbPages = Math.ceil(data.length / nb);
 
     setNbPages(nbPages > 0 ? nbPages : 1);
   }, [data.length, isBreakpoint, nbItemPerPage, nbItemPerPageWhenBreakpoint]);
@@ -191,7 +191,7 @@ export default function Table({
         </div>
       ))}
 
-      {nbPages && nbPages > 1 && paginationDiv}
+      {pagination && nbPages && nbPages > 1 && paginationDiv}
     </StyledSubSubContainer>
   ) : (
     <>
@@ -203,7 +203,7 @@ export default function Table({
         className={className}
       />
 
-      {nbPages && nbPages > 1 && paginationDiv}
+      {pagination && nbPages && nbPages > 1 && paginationDiv}
     </>
   );
 }
