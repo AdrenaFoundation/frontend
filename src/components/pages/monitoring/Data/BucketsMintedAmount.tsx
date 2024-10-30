@@ -54,7 +54,7 @@ export default function BucketsMintedAmount({
     <StyledContainer
       title="ADX BUCKETS MINTED AMOUNT"
       headerClassName="ml-auto mr-auto"
-      className="grow max-w-[40em] w-[30em]"
+      className="flex-1 bg-[#050D14]"
       titleClassName={titleClassName}
       bodyClassName="flex items-center justify-center w-full h-full"
     >

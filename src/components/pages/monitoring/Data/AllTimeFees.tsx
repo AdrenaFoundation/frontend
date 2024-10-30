@@ -20,7 +20,7 @@ export default function AllTimeFees({
       headerClassName="text-center justify-center"
       title="ALL TIME FEES"
       className={twMerge(
-        'grow flex items-center min-w-[22em] w-[22em]',
+        'grow flex items-center',
         className,
       )}
       titleClassName={titleClassName}

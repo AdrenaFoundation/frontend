@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { twMerge } from 'tailwind-merge';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -7,10 +8,12 @@ import { formatPriceInfo } from '@/utils';
 export default function AUM({
   titleClassName,
   bodyClassName,
+  className,
   connected,
 }: {
   titleClassName?: string;
   bodyClassName?: string;
+  className?: string;
   connected: boolean;
 }) {
   const aumUsd = useAssetsUnderManagement();
@@ -19,11 +22,29 @@ export default function AUM({
     <StyledContainer
       title="AUM"
       headerClassName="text-center justify-center"
-      className="grow flex items-center min-w-[22em] w-[22em]"
+      className={twMerge("grow flex items-center", className)}
       titleClassName={titleClassName}
     >
-      <div className={twMerge('flex', bodyClassName)}>
-        {aumUsd !== null ? formatPriceInfo(aumUsd, 0) : '-'}
+      <div className={twMerge('flex')}>
+        {aumUsd !== null ? (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className={bodyClassName}
+          >
+            {' '}
+            {formatPriceInfo(aumUsd, 0)}{' '}
+          </motion.p>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0 }}
+            className="w-[300px] h-[40px] bg-secondary animate-pulse rounded-lg"
+          />
+        )}
         {!connected ? <div className="text-txtfade">*</div> : null}
       </div>
 

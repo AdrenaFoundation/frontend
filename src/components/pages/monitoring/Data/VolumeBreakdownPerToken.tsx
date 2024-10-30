@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
 import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -21,34 +19,51 @@ export default function VolumeBreakdownPerToken({
   const attributes = Object.keys(custodies[0].nativeObject.volumeStats);
 
   return (
-    <StyledContainer
-      title="Trading Volume Breakdown (per token)"
-      headerClassName="text-center justify-center"
-      className="w-auto grow"
-      titleClassName={titleClassName}
-    >
-      <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
-        {...custodies.map((custody) => {
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-5">
+        <p className={titleClassName}>Trading Volume Breakdown (per token)</p>
+      </div>
+
+      <div className='grid sm:grid-cols-2 lg:grid-cols-4'>
+        {...custodies.map((custody, i) => {
           return (
-            <StyledSubSubContainer
+            <div
               key={custody.pubkey.toBase58()}
-              className="flex flex-col w-[20em] min-w-[20em] h-[15em] grow items-center justify-center relative overflow-hidden"
+              className={twMerge(
+                'flex-1 p-5',
+                i !== 0 && 'lg:border-l',
+                i % 2 && 'sm:border-l',
+                i > 1 && 'border-t sm:border-t lg:border-t-0',
+                i == 1 && 'border-t sm:border-t-0',
+              )}
             >
-              <div className="absolute top-2 right-4 opacity-10 font-boldy">
-                {custody.tokenInfo.symbol}
+              <div className="flex flex-row items-center gap-2">
+                <Image
+                  src={custody.tokenInfo.image}
+                  alt="token icon"
+                  width="24"
+                  height="24"
+                />
+
+                <p className={titleClassName}>{custody.tokenInfo.symbol}</p>
               </div>
 
-              <Image
-                src={custody.tokenInfo.image}
-                className="absolute left-[-100px] -z-10 grayscale opacity-5"
-                alt="token icon"
-                width="200"
-                height="200"
-              />
+              <div className="flex flex-col gap-1 mt-3">
 
-              <div className="flex w-full">
-                <div className="flex flex-col w-[50%] items-end">
-                  {attributes.map((attribute) => (
+                {attributes.map((attribute, i) => (
+                  <div className="flex flex-row justify-between items-center">
+                    <p className={twMerge('text-txtfade', bodyClassName)}>
+                      {
+                        [
+                          'Swap',
+                          'Add Liq.',
+                          'Remove Liq.',
+                          'Open Pos.',
+                          'Close Pos.',
+                          'Liquidation',
+                        ][i]
+                      }
+                    </p>
                     <div key={attribute} className="flex">
                       <NumberInfo
                         value={nativeToUi(
@@ -60,33 +75,13 @@ export default function VolumeBreakdownPerToken({
                         wholePartClassName={bodyClassName}
                       />
                     </div>
-                  ))}
-                </div>
-
-                <div className="flex flex-col w-[50%] shrink-0">
-                  {attributes.map((_, i) => (
-                    <span
-                      className={twMerge('text-txtfade ml-2', bodyClassName)}
-                      key={i}
-                    >
-                      {
-                        [
-                          'Swap',
-                          'Add Liq.',
-                          'Remove Liq.',
-                          'Open Pos.',
-                          'Close Pos.',
-                          'Liquidation',
-                        ][i]
-                      }
-                    </span>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            </StyledSubSubContainer>
+            </div>
           );
         })}
       </div>
-    </StyledContainer>
+    </div>
   );
 }

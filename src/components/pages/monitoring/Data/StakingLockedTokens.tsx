@@ -17,40 +17,45 @@ export default function StakingLockedTokens({
   bodyClassName?: string;
 }) {
   return (
-    <StyledContainer
-      title="Locked Stakes amounts"
-      subTitle="Tokens locked in the staking program."
-      className="w-auto grow"
-      bodyClassName="flex flex-col sm:flex-row grow items-center justify-center"
-      titleClassName={titleClassName}
-    >
-      <StyledSubContainer>
-        <div className={titleClassName}>Locked ALP</div>
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-5">
+        <p className={titleClassName}>
+          Locked Stakes amounts
+        </p>
+        <p className="text-base opacity-50">
+          Tokens locked in the staking program.
+        </p>
+      </div>
 
-        <div className={twMerge('m-auto', bodyClassName)}>
-          {formatNumber(
-            nativeToUi(
-              alpStakingAccount.nbLockedTokens,
-              alpStakingAccount.stakedTokenDecimals,
-            ),
-            0,
-          )}
+      <div className="flex flex-row">
+        <div className='flex-1 p-5'>
+          <div className={titleClassName}>Locked ALP</div>
+
+          <div className={twMerge('m-auto', bodyClassName)}>
+            {formatNumber(
+              nativeToUi(
+                alpStakingAccount.nbLockedTokens,
+                alpStakingAccount.stakedTokenDecimals,
+              ),
+              0,
+            )}
+          </div>
         </div>
-      </StyledSubContainer>
 
-      <StyledSubContainer>
-        <div className={titleClassName}>Locked ADX</div>
+        <div className='flex-1 p-5 border-l'>
+          <div className={titleClassName}>Locked ADX</div>
 
-        <div className={twMerge('m-auto', bodyClassName)}>
-          {formatNumber(
-            nativeToUi(
-              adxStakingAccount.nbLockedTokens,
-              adxStakingAccount.stakedTokenDecimals,
-            ),
-            0,
-          )}
+          <div className={twMerge('m-auto', bodyClassName)}>
+            {formatNumber(
+              nativeToUi(
+                adxStakingAccount.nbLockedTokens,
+                adxStakingAccount.stakedTokenDecimals,
+              ),
+              0,
+            )}
+          </div>
         </div>
-      </StyledSubContainer>
-    </StyledContainer>
+      </div>
+    </div>
   );
 }

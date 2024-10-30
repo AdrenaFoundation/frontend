@@ -16,16 +16,19 @@ export default function OracleAccounts({
   titleClassName?: string;
 }) {
   return (
-    <StyledContainer
-      title="Oracle Accounts"
-      subTitle="Oracle on-chain accounts (PDAs)."
-      className="w-[37em] grow md:min-w-[37em]"
-      titleClassName={titleClassName}
-    >
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-5">
+        <p className={titleClassName}>Oracle Accounts</p>
+        <p className="text-base opacity-50">
+          Oracle on-chain accounts (PDAs).
+        </p>
+      </div>
+
       <Table
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
+        className='rounded-none bg-transparent border-none'
         data={[
           {
             rowTitle: (
@@ -87,6 +90,6 @@ export default function OracleAccounts({
             .flat(),
         ]}
       />
-    </StyledContainer>
+    </div>
   );
 }

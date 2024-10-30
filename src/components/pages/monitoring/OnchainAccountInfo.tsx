@@ -31,18 +31,18 @@ export default function OnchainAccountInfo({
         <span className="text-xs sm:text-[0.9em]">
           {shorten
             ? `${address.toBase58().slice(0, 4)}..${address
-                .toBase58()
-                .slice(-4)}`
+              .toBase58()
+              .slice(-4)}`
             : address.toBase58()}
         </span>
       )}
 
       <Image
-        className={twMerge('ml-1 w-3 h-3', iconClassName)}
-        src="/images/external-link-logo.png"
+        className={twMerge('ml-1 w-[6px] h-[6px]', iconClassName)}
+        src="/images/Icons/arrow-sm-45.svg"
         alt="external link icon"
-        width="36"
-        height="36"
+        width="6"
+        height="6"
       />
     </Link>
   );
