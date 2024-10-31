@@ -1,26 +1,59 @@
 import { BN } from '@coral-xyz/anchor';
 import { NATIVE_MINT } from '@solana/spl-token';
-import { PublicKey, RpcResponseAndContext, TokenAmount } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setWalletTokenBalancesAction } from '@/actions/walletBalancesActions';
 import { SOL_DECIMALS } from '@/constant';
+import { selectWalletPublicKey } from '@/selectors/wallet';
 import { useDispatch, useSelector } from '@/store/store';
 import { TokenSymbol } from '@/types';
 import { findATAAddressSync, nativeToUi } from '@/utils';
 
+const WALLET_TO_ATAS_CACHE = new WeakMap<
+  PublicKey,
+  WeakMap<PublicKey, PublicKey>
+>();
+function getAtaFromCacheOrSet(
+  walletPublicKey: PublicKey,
+  mint: PublicKey,
+): PublicKey {
+  const maybeAtasCacheForPubKey = WALLET_TO_ATAS_CACHE.get(walletPublicKey);
+  if (!maybeAtasCacheForPubKey) {
+    WALLET_TO_ATAS_CACHE.set(walletPublicKey, new WeakMap());
+    return getAtaFromCacheOrSet(walletPublicKey, mint);
+  }
+
+  const maybeAta = maybeAtasCacheForPubKey.get(mint);
+  if (maybeAta) return maybeAta;
+  const ata = findATAAddressSync(walletPublicKey, mint);
+  maybeAtasCacheForPubKey.set(mint, ata);
+  return ata;
+}
+
 // TODO: Make it responsive to wallet token balance change
-export default function useWatchWalletBalance(): {
-  triggerWalletTokenBalancesReload: () => void;
-} {
+// FIXME: This hook is used in multiple places throughout the app,
+//        and isn't viable as a React (effect-based) hook,
+//        as multiple concurrent fetches will happen, triggerred by
+//        multiple consumers.
+//        As instead, this function should be implemented as
+//        Redux Thunk (async) action, populating a store.
+//        This might a good opportunity to use RTK Query or equivalent, to
+//        track the status of the query.
+// NOTE:  Additionally, ATAs, PublicKeys computation are expensive
+//        & should be cached, done here through:
+//        - `WALLET_TO_ATAS_CACHE`
+//        - `useSelector(selectWalletPublicKey)`
+export default function useWatchWalletBalance() {
   const [trickReload, triggerReload] = useState<number>(0);
   const dispatch = useDispatch();
-  const wallet = useSelector((s) => s.walletState.wallet);
+
+  const walletPublicKey = useSelector(selectWalletPublicKey);
 
   const loadWalletBalances = useCallback(async () => {
     const connection = window.adrena.client.connection;
 
-    if (!wallet || !dispatch || !connection) {
+    if (!walletPublicKey || !connection) {
       dispatch(setWalletTokenBalancesAction(null));
       return;
     }
@@ -36,24 +69,15 @@ export default function useWatchWalletBalance(): {
 
     const balances = await Promise.all(
       tokens.map(async ({ mint }) => {
-        const ata = findATAAddressSync(
-          new PublicKey(wallet.walletAddress),
-          mint,
-        );
+        const ata = getAtaFromCacheOrSet(walletPublicKey, mint);
 
         // in case of SOL, consider both SOL in the wallet + WSOL in ATA
         if (mint.equals(NATIVE_MINT)) {
           try {
             const [wsolBalance, solBalance] = await Promise.all([
               // Ignore ATA error if any, consider there are 0 WSOL
-              new Promise((resolve) => {
-                connection
-                  .getTokenAccountBalance(ata)
-                  .then(resolve)
-                  .catch(() => resolve(null));
-              }) as Promise<RpcResponseAndContext<TokenAmount> | null>,
-
-              connection.getBalance(new PublicKey(wallet.walletAddress)),
+              connection.getTokenAccountBalance(ata).catch(() => null),
+              connection.getBalance(walletPublicKey),
             ]);
 
             return (
@@ -85,16 +109,17 @@ export default function useWatchWalletBalance(): {
         }, {} as Record<TokenSymbol, number | null>),
       ),
     );
+    // extra `trickReload` dependency (temporary hack pending refactoring)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallet, dispatch, trickReload, window.adrena.client.connection]);
+  }, [walletPublicKey, trickReload, dispatch]);
 
   useEffect(() => {
     loadWalletBalances();
   }, [loadWalletBalances]);
 
-  return {
-    triggerWalletTokenBalancesReload: () => {
-      triggerReload(trickReload + 1);
-    },
-  };
+  const triggerWalletTokenBalancesReload = useCallback(() => {
+    triggerReload((prevState) => prevState + 1);
+  }, []);
+
+  return triggerWalletTokenBalancesReload;
 }

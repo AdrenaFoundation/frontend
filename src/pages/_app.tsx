@@ -126,7 +126,6 @@ export default function App(props: AppProps) {
         />
         <Analytics />
         <SpeedInsights />
-
       </CookiesProvider>
     </Provider>
   );
@@ -179,7 +178,7 @@ function AppComponent({
 
   useWatchTokenPrices();
 
-  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
+  const triggerWalletTokenBalancesReload = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies([
     'terms-and-conditions-acceptance',
