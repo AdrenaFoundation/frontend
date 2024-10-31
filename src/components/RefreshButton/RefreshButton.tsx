@@ -8,7 +8,7 @@ import { addNotification } from '@/utils';
 import refreshIcon from '../../../public/images/refresh.png';
 
 export default function RefreshButton({ className }: { className?: string }) {
-  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
+  const triggerWalletTokenBalancesReload = useWatchWalletBalance();
 
   const handleReload = () => {
     triggerWalletTokenBalancesReload();

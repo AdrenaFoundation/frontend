@@ -69,7 +69,7 @@ export default function App(props: AppProps) {
 
   const preferredSolanaExplorer: SolanaExplorerOptions =
     cookies?.solanaExplorer &&
-      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
+    SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
       ? cookies?.solanaExplorer
       : 'Solana Explorer';
 
@@ -185,7 +185,6 @@ export default function App(props: AppProps) {
 
         <Analytics />
         <SpeedInsights />
-
       </CookiesProvider>
     </Provider>
   );
@@ -237,7 +236,7 @@ function AppComponent({
 
   useWatchTokenPrices();
 
-  const { triggerWalletTokenBalancesReload } = useWatchWalletBalance();
+  const triggerWalletTokenBalancesReload = useWatchWalletBalance();
 
   const [cookies, setCookie] = useCookies([
     'terms-and-conditions-acceptance',
