@@ -9,7 +9,7 @@ import {
 } from '@/actions/walletActions';
 import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
-import { ImageRef, UserProfileExtended, WalletAdapterName } from '@/types';
+import { ImageRef, WalletAdapterName } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
 import backpackLogo from '../../../public/images/backpack.png';
@@ -30,13 +30,13 @@ const WALLET_ICONS = {
   coinbase: coinbaseLogo,
 } as const satisfies Record<WalletAdapterName, ImageRef>;
 
-export default function WalletAdapter({
+function WalletAdapter({
   className,
-  userProfile,
+  userProfileNickname,
   isIconOnly,
 }: {
   className?: string;
-  userProfile: UserProfileExtended | null | false;
+  userProfileNickname: null | string;
   isIconOnly?: boolean;
 }) {
   const dispatch = useDispatch();
@@ -101,8 +101,8 @@ export default function WalletAdapter({
               )}
               title={
                 !isIconOnly
-                  ? userProfile
-                    ? getAbbrevNickname(userProfile.nickname)
+                  ? userProfileNickname
+                    ? getAbbrevNickname(userProfileNickname)
                     : getAbbrevWalletAddress(wallet.walletAddress)
                   : null
               }
@@ -156,3 +156,10 @@ export default function WalletAdapter({
     </div>
   );
 }
+
+// Memoize the WalletAdapter component to avoid unnecessary re-renders
+// caused by re-renders of the parent component.
+// This component is a good candidate for memoization as it now only relies
+// on "scalar" / "primitive-type" / "referentially-stable" / "simple" props.
+// - https://react.dev/reference/react/memo
+export default React.memo(WalletAdapter);

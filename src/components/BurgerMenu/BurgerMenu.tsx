@@ -184,7 +184,7 @@ export default function BurgerMenu({
 
           <WalletAdapter
             className="w-full"
-            userProfile={userProfile}
+            userProfileNickname={userProfile ? userProfile.nickname : null}
             isIconOnly
           />
 

@@ -6,7 +6,11 @@ import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
-import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
+import {
+  PriorityFeeOption,
+  SolanaExplorerOptions,
+  UserProfileExtended,
+} from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
@@ -192,7 +196,9 @@ export default function Header({
           preferredSolanaExplorer={preferredSolanaExplorer}
         />
 
-        <WalletAdapter userProfile={userProfile} />
+        <WalletAdapter
+          userProfileNickname={userProfile ? userProfile.nickname : null}
+        />
 
         {clusterSwitchEnabled ? (
           <Menu
