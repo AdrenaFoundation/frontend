@@ -380,7 +380,7 @@ export class AdrenaClient {
   public async loadUserProfile(
     user?: PublicKey,
   ): Promise<UserProfileExtended | null | false> {
-    if (!this.readonlyAdrenaProgram) return null;
+    if (!this.adrenaProgram) return null;
 
     if (!user) {
       if (!this.adrenaProgram) return null;
@@ -392,9 +392,11 @@ export class AdrenaClient {
 
     const userProfilePda = this.getUserProfilePda(user);
 
-    const p = await (
-      this.readonlyAdrenaProgram || this.adrenaProgram
-    ).account.userProfile.fetchNullable(userProfilePda, 'processed');
+    const p =
+      await this.readonlyAdrenaProgram.account.userProfile.fetchNullable(
+        userProfilePda,
+        'processed',
+      );
 
     if (p === null || p.createdAt.isZero()) {
       return false;

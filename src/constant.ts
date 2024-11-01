@@ -33,6 +33,9 @@ export const USD_DECIMALS = 6;
 export const LP_DECIMALS = 6;
 export const SOL_DECIMALS = 9;
 
+// In ms
+export const MINIMUM_POSITION_OPEN_TIME = 10_000;
+
 export const BPS = 10_000;
 
 export const GENESIS_REWARD_ADX_PER_USDC = 5;
