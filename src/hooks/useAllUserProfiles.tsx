@@ -15,7 +15,7 @@ export function useAllUserProfiles(): {
         const loadAllUserProfiles = async () => {
             try {
                 const profiles = await window.adrena.client.loadAllUserProfiles();
-                console.log('profiles', profiles);
+
                 setAllUserProfiles(profiles);
             } catch (e) {
                 console.log('Error loading user profiles', e);

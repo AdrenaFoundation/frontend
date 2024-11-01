@@ -10,10 +10,12 @@ let lastCall = 0;
 
 export function useAllPositions({ connected }: { connected: boolean }): {
     allPositions: PositionExtended[];
+    isLoading: boolean;
     triggerAllPositionsReload: () => void;
 } {
     const [trickReload, triggerReload] = useState<number>(0);
     const [allPositions, setAllPositions] = useState<PositionExtended[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -23,6 +25,8 @@ export function useAllPositions({ connected }: { connected: boolean }): {
     }, []);
 
     const loadAllPositions = useCallback(async () => {
+        setIsLoading(true);
+
         if (!tokenPrices) {
             setAllPositions([]);
             return;
@@ -47,6 +51,7 @@ export function useAllPositions({ connected }: { connected: boolean }): {
                 });
 
                 setAllPositions(freshPositions);
+                setIsLoading(false);
             } catch (e) {
                 console.log('Error loading positions', e, String(e));
 
@@ -74,6 +79,7 @@ export function useAllPositions({ connected }: { connected: boolean }): {
             await loadAllPositions();
         }, 60000);
 
+
         return () => {
             clearInterval(interval);
         };
@@ -82,6 +88,7 @@ export function useAllPositions({ connected }: { connected: boolean }): {
 
     return {
         allPositions,
+        isLoading,
         triggerAllPositionsReload: () => {
             triggerReload(trickReload + 1);
         },

@@ -1,12 +1,11 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import { USD_DECIMALS } from '@/constant';
 import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
+import liveIcon from '../../../../../public/images/Icons/live-icon.svg';
 import NumberInfo from '../NumberInfo';
 
 export default function PositionsNowBreakdown({
@@ -21,35 +20,42 @@ export default function PositionsNowBreakdown({
   dollarWholeNumberClassName?: string;
 }) {
   return (
-    <StyledContainer
-      title="LIVE POSITIONS COUNT OI BREAKDOWN (PER TOKEN AND SIDE)"
-      className="w-auto grow"
-      titleClassName={titleClassName}
-    >
-      <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+
+      <div className="flex flex-row gap-2 w-full border-b p-5">
+        <p className={titleClassName}>LIVE POSITIONS COUNT OI BREAKDOWN (PER TOKEN AND SIDE)</p>
+        <Image
+          src={liveIcon}
+          alt="Live icon"
+          width={12}
+          height={12}
+          className='animate-pulse'
+        />
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-5 p-5 lg:p-0">
         {...custodies
           .filter((c) => !c.isStable)
-          .map((custody) => {
+          .map((custody, i) => {
             return (
-              <StyledSubSubContainer
-                key={custody.pubkey.toBase58()}
-                className="flex flex-col w-[20em] min-w-[20em] h-[15em] grow items-center justify-center relative overflow-hidden"
-              >
-                <div className="absolute top-2 right-4 opacity-10 font-boldy">
-                  {custody.tokenInfo.symbol}
+              <div key={custody.pubkey.toBase58()} className={twMerge('flex-1 border rounded-xl lg:rounded-none lg:border-0 p-3 lg:p-5',
+                i !== 0 ? 'lg:border-l' : '',
+                i !== 2 ? 'lg:pr-0' : ''
+              )}>
+                <div className="flex flex-row items-center gap-2">
+                  <Image
+                    src={custody.tokenInfo.image}
+                    alt="token icon"
+                    width="24"
+                    height="24"
+                  />
+
+                  <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
                 </div>
 
-                <Image
-                  src={custody.tokenInfo.image}
-                  className="absolute left-[-100px] -z-10 grayscale opacity-5"
-                  alt="token icon"
-                  width="200"
-                  height="200"
-                />
-
-                <div className="flex w-full flex-col items-center h-full justify-evenly">
-                  <div className="flex items-center">
-                    <div className={twMerge('mr-4', titleClassName)}>Long</div>
+                <div className="flex flex-col">
+                  <div className="mt-3">
+                    <div className={twMerge(titleClassName, 'mr-4 text-green opacity-75')}>Long</div>
 
                     <div className="flex flex-col">
                       <NumberInfo
@@ -79,10 +85,10 @@ export default function PositionsNowBreakdown({
                     </div>
                   </div>
 
-                  <div className="w-full h-[1px] bg-[#ffffff20]" />
+                  <div className="w-full h-[1px] bg-bcolor my-3" />
 
-                  <div className="flex items-center">
-                    <div className={twMerge('mr-4', titleClassName)}>Short</div>
+                  <div>
+                    <div className={twMerge(titleClassName, 'mr-4 text-red opacity-75')}>Short</div>
 
                     <div className="flex flex-col">
                       <NumberInfo
@@ -99,10 +105,10 @@ export default function PositionsNowBreakdown({
                     </div>
                   </div>
                 </div>
-              </StyledSubSubContainer>
+              </div>
             );
           })}
       </div>
-    </StyledContainer>
+    </div>
   );
 }

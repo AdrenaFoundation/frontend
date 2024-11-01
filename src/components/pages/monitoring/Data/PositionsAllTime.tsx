@@ -1,5 +1,5 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import { twMerge } from 'tailwind-merge';
+
 import { PoolExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
@@ -13,62 +13,37 @@ export default function PositionsAllTime({
   bodyClassName?: string;
 }) {
   return (
-    <StyledContainer
-      headerClassName="text-center justify-center"
-      className="w-auto grow"
-      title="Positions (All Time)"
-      titleClassName={titleClassName}
-    >
-      <StyledSubContainer>
-        <div className="flex items-center">
-          <div className={titleClassName}>Volume</div>
-          <div className="font-boldy text-sm ml-2 text-txtfade">
-            Trading / Liquidation
-          </div>
-        </div>
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-5">
+        <p className={titleClassName}>Positions All time</p>
+      </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
-          <div className={bodyClassName}>
+      <div className="grid sm:grid-cols-2">
+        <div className="p-5">
+          <p className={titleClassName}>Trading Volume</p>
+          <p className={bodyClassName}>
             {formatPriceInfo(mainPool.totalTradingVolume, 0, 0, 0)}
-          </div>
-
-          <>
-            <div className="ml-2 mr-2 text-5xl text-txtfade opacity-20 sm:block hidden">
-              /
-            </div>
-
-            <div className="bg-bcolor w-full h-[1px] sm:hidden" />
-          </>
-
-          <div className={bodyClassName}>
+          </p>
+        </div>
+        <div className="border-t sm:border-t-0 sm:border-l p-5">
+          <p className={titleClassName}>Liquidation Volume</p>
+          <p className={bodyClassName}>
             {formatPriceInfo(mainPool.totalLiquidationVolume, 0, 0, 0)}
-          </div>
+          </p>
         </div>
-      </StyledSubContainer>
-
-      <StyledSubContainer>
-        <div className="flex items-center">
-          <div className={titleClassName}>Profits and Losses</div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
-          <div className={bodyClassName}>
+        <div className="border-t p-5">
+          <p className={titleClassName}>Profits</p>
+          <p className={bodyClassName}>
             {formatPriceInfo(mainPool.profitsUsd, 0, 0, 0)}
-          </div>
-
-          <>
-            <div className="ml-2 mr-2 text-5xl text-txtfade opacity-20 sm:block hidden">
-              /
-            </div>
-
-            <div className="bg-bcolor w-full h-[1px] sm:hidden" />
-          </>
-
-          <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.lossUsd * -1, 0, 0, 0)}
-          </div>
+          </p>
         </div>
-      </StyledSubContainer>
-    </StyledContainer>
+        <div className="border-t sm:border-l p-5">
+          <p className={titleClassName}>Losses</p>
+          <p className={bodyClassName}>
+            {formatPriceInfo(mainPool.lossUsd * -1, 0, 0, 0)}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

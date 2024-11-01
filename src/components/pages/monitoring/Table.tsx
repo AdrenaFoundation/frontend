@@ -1,3 +1,4 @@
+import { Pagination } from '@mui/material';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -86,50 +87,6 @@ export default function Table({
     nbItemPerPageWhenBreakpoint,
   ]);
 
-  const paginationDiv = useMemo(() => {
-    let first = true;
-
-    return (
-      <div className="flex w-full justify-center align-center gap-2 mt-4 max-w-full flex-wrap">
-        {Array.from(Array(nbPages)).map((_, i) => {
-          const hidden =
-            Math.abs(page - i - 1) > 3 && i !== 0 && i + 1 !== nbPages;
-
-          if (!hidden) first = true;
-
-          const shouldDisplay = hidden && first;
-
-          if (shouldDisplay) first = false;
-
-          return (
-            <div key={`pagination-${i}`}>
-              {shouldDisplay ? (
-                <div
-                  key={`pagination-none-${i}`}
-                  className="cursor-pointer text-txtfade"
-                >
-                  ..
-                </div>
-              ) : null}
-
-              <div
-                key={`pagination-${i}`}
-                className={twMerge(
-                  'cursor-pointer',
-                  page === i + 1 ? 'text-primary' : 'text-txtfade',
-                  hidden ? 'hidden' : '',
-                )}
-                onClick={() => setPage(i + 1)}
-              >
-                {i + 1}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }, [nbPages, page]);
-
   return !isBreakpoint ? (
     <StyledSubSubContainer className={twMerge('flex flex-col', className)}>
       <div className="flex pb-2">
@@ -158,7 +115,9 @@ export default function Table({
           key={`page-data-${rowTitle}-${i}`}
           className={twMerge(
             'flex w-full border border-transparent text-base pl-1',
-            rowHovering ? 'hover:bg-secondary hover:border-bcolor' : '',
+            rowHovering
+              ? 'hover:bg-secondary hover:border-bcolor rounded-lg transition duration-300'
+              : '',
           )}
         >
           <div
@@ -191,7 +150,16 @@ export default function Table({
         </div>
       ))}
 
-      {pagination && nbPages && nbPages > 1 && paginationDiv}
+      {pagination && nbPages && (
+        <div className='m-auto pt-3'>
+          <Pagination
+            variant="text"
+            count={nbPages}
+            page={page}
+            onChange={(_, p) => setPage(p)}
+          />
+        </div>
+      )}
     </StyledSubSubContainer>
   ) : (
     <>
@@ -203,7 +171,16 @@ export default function Table({
         className={className}
       />
 
-      {pagination && nbPages && nbPages > 1 && paginationDiv}
+      {pagination && nbPages && (
+        <div className='m-auto py-3'>
+          <Pagination
+            variant="text"
+            count={nbPages}
+            page={page}
+            onChange={(_, p) => setPage(p)}
+          />
+        </div>
+      )}
     </>
   );
 }

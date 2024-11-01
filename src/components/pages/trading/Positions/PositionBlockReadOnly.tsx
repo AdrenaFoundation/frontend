@@ -47,7 +47,7 @@ export default function PositionBlockReadOnly({
 
     const positionName = (
         <div
-            className="flex items-center justify-left h-full  min-w-[12em]"
+            className="flex items-center justify-left h-full min-w-[12em]"
         >
             <Image
                 className="w-[2em] h-[2em] mr-2"

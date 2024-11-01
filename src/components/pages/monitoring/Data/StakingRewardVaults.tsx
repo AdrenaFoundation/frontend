@@ -26,12 +26,10 @@ export default function StakingRewardVaults({
   titleClassName?: string;
   bodyClassName?: string;
 }) {
-
   let nextAlpRoundUsdcRewards = 0;
   let nextAdxRoundUsdcRewards = 0;
   let nextAlpRoundAdxRewards = 0;
   let nextAdxRoundAdxRewards = 0;
-
 
   if (
     alpStakingRewardsAccumulated !== null &&
@@ -69,64 +67,69 @@ export default function StakingRewardVaults({
   }
 
   return (
-    <StyledContainer
-      title="Staking rewards (available next round)"
-      subTitle="Accruing, will be available at the end of the current round."
-      className="grow w-[40em]"
-      titleClassName={titleClassName}
-      bodyClassName="flex flex-col sm:flex-row grow items-center justify-center"
-    >
-      <StyledSubContainer>
-        <div className={titleClassName}>ALP Staking</div>
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-5">
+        <p className={titleClassName}>
+          Staking rewards (available next round)
+        </p>
+        <p className="text-base opacity-50">
+          Accruing, will be available at the end of the current round.
+        </p>
+      </div>
 
-        <div className={twMerge('m-auto flex-col', bodyClassName)}>
-          <div className="flex items-center">
-            <div>
-              {nextAlpRoundUsdcRewards !== 0
-                ? formatNumber(nextAlpRoundUsdcRewards, 0)
-                : '-'}
+      <div className="flex flex-col sm:flex-row">
+        <div className="p-5 flex-1">
+          <div className={titleClassName}>ALP Staking</div>
+
+          <div className={twMerge('flex flex-col', bodyClassName)}>
+            <div className="flex items-center">
+              <div>
+                {nextAlpRoundUsdcRewards !== 0
+                  ? formatNumber(nextAlpRoundUsdcRewards, 0)
+                  : '-'}
+              </div>
+
+              <div className="ml-1 text-base opacity-50">USDC</div>
             </div>
 
-            <div className="ml-1 text-base">USDC</div>
-          </div>
+            <div className="flex items-center">
+              <div>
+                {nextAlpRoundAdxRewards !== 0
+                  ? formatNumber(nextAlpRoundAdxRewards, 2)
+                  : '-'}
+              </div>
 
-          <div className="flex items-center">
-            <div>
-              {nextAlpRoundAdxRewards !== 0
-                ? formatNumber(nextAlpRoundAdxRewards, 2)
-                : '-'}
+              <div className="ml-1 text-base opacity-50">ADX</div>
             </div>
-
-            <div className="ml-1 text-base">ADX</div>
-          </div>
-        </div>
-      </StyledSubContainer>
-
-      <StyledSubContainer>
-        <div className={titleClassName}>ADX Staking</div>
-
-        <div className={twMerge('m-auto flex-col', bodyClassName)}>
-          <div className="flex items-center">
-            <div>
-              {nextAdxRoundUsdcRewards !== 0
-                ? formatNumber(nextAdxRoundUsdcRewards, 0)
-                : '-'}
-            </div>
-
-            <div className="ml-1 text-base">USDC</div>
-          </div>
-
-          <div className="flex items-center">
-            <div>
-              {nextAdxRoundAdxRewards !== 0
-                ? formatNumber(nextAdxRoundAdxRewards, 2)
-                : '-'}
-            </div>
-
-            <div className="ml-1 text-base">ADX</div>
           </div>
         </div>
-      </StyledSubContainer>
-    </StyledContainer>
+
+        <div className="p-5 flex-1 border-t sm:border-l">
+          <div className={titleClassName}>ADX Staking</div>
+
+          <div className={twMerge('flex flex-col', bodyClassName)}>
+            <div className="flex items-center">
+              <div>
+                {nextAdxRoundUsdcRewards !== 0
+                  ? formatNumber(nextAdxRoundUsdcRewards, 0)
+                  : '-'}
+              </div>
+
+              <div className="ml-1 text-base opacity-50">USDC</div>
+            </div>
+
+            <div className="flex items-center">
+              <div>
+                {nextAdxRoundAdxRewards !== 0
+                  ? formatNumber(nextAdxRoundAdxRewards, 2)
+                  : '-'}
+              </div>
+
+              <div className="ml-1 text-base opacity-50">ADX</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
