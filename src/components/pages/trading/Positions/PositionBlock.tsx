@@ -18,6 +18,7 @@ import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
+import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 
 export default function PositionBlock({
   bodyClassName,
@@ -38,6 +39,35 @@ export default function PositionBlock({
 
   const blockRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [closableIn, setClosableIn] = useState<number | null>(null);
+
+  useEffect(() => {
+    const openedTime = position.nativeObject.openTime.toNumber() * 1000;
+    const openedDuration = Date.now() - openedTime;
+    const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
+
+    // If the position has been opened for more than 10 seconds, it can be closed
+    if (diff <= 0) {
+      setClosableIn(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      console.log('interval')
+      const openedDuration = Date.now() - openedTime;
+      const diff = MINIMUM_POSITION_OPEN_TIME - openedDuration;
+
+      if (diff <= 0) {
+        setClosableIn(0);
+        return clearInterval(interval);
+      }
+
+      setClosableIn(diff);
+    }, 100);
+
+    setClosableIn(diff);
+    return () => clearInterval(interval);
+  }, [position.nativeObject.openTime.toNumber()]);
 
   const liquidable = (() => {
     const tokenPrice = tokenPrices[getTokenSymbol(position.token.symbol)];
@@ -124,6 +154,7 @@ export default function PositionBlock({
       <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
         PnL
       </div>
+
       {position.pnl ? (
         <div className="flex items-center">
           <FormatNumber
@@ -161,6 +192,7 @@ export default function PositionBlock({
                 onChange={() => setShowAfterFees(!showAfterFees)}
                 size="small"
               />
+
               <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
                 {showAfterFees ? 'w/ fees' : 'w/o fees'}
               </span>
@@ -218,9 +250,11 @@ export default function PositionBlock({
             <div className="border-b pb-2 pt-2 flex w-full justify-center">
               {positionName}
             </div>
+
             <div className="border-b pb-2 pt-2 flex w-full justify-center">
               {pnl}
             </div>
+
             <div className="border-b pb-2 pt-2 flex w-full justify-center">
               {netValue}
             </div>
@@ -238,6 +272,7 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Cur. Leverage
             </div>
+
             <div className="flex">
               <FormatNumber
                 nb={position.currentLeverage}
@@ -253,6 +288,7 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Size
             </div>
+
             <div className="flex underline-dashed">
               <Tippy
                 content={
@@ -279,6 +315,7 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Collateral
             </div>
+
             <div className="flex underline-dashed">
               <Tippy
                 content={
@@ -309,6 +346,7 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Entry Price
             </div>
+
             <div className="flex">
               <FormatNumber
                 nb={position.price}
@@ -324,6 +362,7 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Market Price
             </div>
+
             <div className="flex">
               <FormatNumber
                 nb={tokenPrices[getTokenSymbol(position.token.symbol)]}
@@ -339,6 +378,7 @@ export default function PositionBlock({
             <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
               Liq. Price
             </div>
+
             <div
               className="flex cursor-pointer hover:bg-gray-100 hover:bg-opacity-10 transition-colors duration-100 p-1 rounded"
               onClick={() => triggerEditPositionCollateral(position)}
@@ -429,16 +469,19 @@ export default function PositionBlock({
               triggerStopLossTakeProfit(position);
             }}
           />
+
           <div className="w-full flex flex-row">
             <Button
               size="xs"
               className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-              title="Close"
+              title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
               rounded={false}
+              disabled={closableIn !== 0}
               onClick={() => {
                 triggerClosePosition(position);
               }}
             />
+
             <Button
               size="xs"
               className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-[90px]"
@@ -457,6 +500,7 @@ export default function PositionBlock({
           </div>
         ) : null}
       </div>
+
       <AnimatePresence>
         {isOpen && (
           <Modal title="Share PnL" close={() => setIsOpen(false)}>
