@@ -48,8 +48,6 @@ export type AdrenaGlobal = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RiveImage = any;
 
-declare module '*.lottie';
-
 declare global {
   interface Window {
     Jupiter: any;
@@ -60,9 +58,9 @@ declare global {
 
 export type WalletAdapterName =
   | 'phantom'
-  | 'backpack'
   | 'coinbase'
-  | 'solflare';
+  | 'solflare'
+  | 'walletconnect';
 
 export type PageProps = {
   mainPool: PoolExtended | null;
