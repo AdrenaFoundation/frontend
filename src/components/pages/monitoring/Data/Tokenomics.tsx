@@ -1,127 +1,105 @@
 import {
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
+  Cell,
+  Label,
   Legend,
-  LinearScale,
-  Title,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
   Tooltip,
-} from 'chart.js';
-import ChartPluginAnnotation from 'chartjs-plugin-annotation';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Pie } from 'react-chartjs-2';
+} from 'recharts';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  ChartDataLabels,
-  ChartPluginAnnotation,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-);
+import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 
 export default function Tokenomics({
   titleClassName,
 }: {
   titleClassName?: string;
 }) {
+  const data = [
+    {
+      label: 'Core Contributors',
+      buckedNames: ['Launch Team', 'Investors'],
+      data: [21.333333333, 14.666666667],
+      color: '#9F8CAE',
+    },
+    {
+      label: 'Foundation',
+      buckedNames: ['Foundation Development', 'CEX/DEX Liquidity'],
+      data: [5, 4],
+      color: '#EB6672',
+    },
+    {
+      label: 'Ecosystem',
+      buckedNames: [
+        'DAO Treasury Reserves',
+        'Community Grants',
+        'Partnerships/Marketing',
+        'Genesis Liquidity Program',
+        'Liquidity Mining - ALP Staking',
+        'Liquidity Mining - ADX Staking',
+      ],
+      data: [7, 8, 10, 5, 15, 10],
+      color: '#7FD7C1',
+    },
+  ] as const;
+
+  const formattedData = data
+    .map((d) =>
+      d.buckedNames
+        .map((name, i) => ({
+          name,
+          label: d.label,
+          value: d.data[i],
+          color: d.color,
+        }))
+        .flat(),
+    )
+    .flat();
+
   const bucketsLabels = ['Core Contrib.', 'Foundation', 'Ecosystem'];
-  const bucketColors = ['#9f8cae', '#eb6672', '#7fd7c1'];
+  const bucketColors = ['#9F8CAE', '#EB6672', '#7FD7C1'];
 
   return (
-    <StyledContainer
-      title="ADX TOKENOMIC"
-      headerClassName="ml-auto mr-auto"
-      className="flex-1 bg-[#050D14]"
-      titleClassName={titleClassName}
-    >
-      <div className="flex gap-6 justify-evenly mb-4">
-        {bucketsLabels.map((name, i) => (
-          <h3 key={name} className="flex flex-col">
-            <div
-              className="h-[3px] w-full"
-              style={{
-                backgroundColor: bucketColors[i],
-              }}
-            ></div>
-            <span className="text-sm">{name}</span>
-          </h3>
-        ))}
+    <div className="bg-[#050D14] border rounded-lg lg:flex-1 shadow-xl h-[400px]">
+      <div className="w-full border-b p-5 mb-6">
+        <p className={titleClassName}>ADX TOKENOMIC</p>
       </div>
 
-      <div className="w-[20em] h-full flex items-center justify-center m-auto">
-        <Pie
-          color="#ffffff"
-          options={{
-            cutout: '30%',
-            responsive: true,
-            plugins: {
-              legend: {
-                display: false,
-                labels: {
-                  color: '#ffffff',
-                  padding: 14,
-                },
-                position: 'bottom',
-              },
-              datalabels: {
-                display: false,
-              },
-            },
-          }}
-          data={{
-            labels: [
-              // Core contributors
-              'Launch Team',
-              'Investors',
-
-              // Foundation
-              'Foundation Development',
-              'CEX/DEX Liquidity',
-
-              // Ecosystem
-              'DAO Treasury Reserves',
-              'Community Grants',
-              'Partnerships/Marketing',
-              'Genesis Liquidity Program',
-              'Liquidity Mining - ALP Staking',
-              'Liquidity Mining - ADX Staking',
-            ],
-            datasets: [
-              {
-                label: '%',
-                data: [21.333333333, 14.666666667, 5, 4, 7, 8, 10, 5, 15, 10],
-                borderWidth: 2,
-                backgroundColor: [
-                  // Core contributors
-                  bucketColors[0],
-                  bucketColors[0],
-
-                  // Foundation
-                  bucketColors[1],
-                  bucketColors[1],
-
-                  // Ecosystem
-                  bucketColors[2],
-                  bucketColors[2],
-                  bucketColors[2],
-                  bucketColors[2],
-                  bucketColors[2],
-                  bucketColors[2],
-                ],
-              },
-            ],
-          }}
-        />
-      </div>
-    </StyledContainer>
+      <ResponsiveContainer width="80%" height="80%" className="m-auto">
+        <PieChart
+        >
+          <Tooltip
+            content={<CustomRechartsToolTip format="percentage" isPieChart />}
+            cursor={false}
+          />
+          <Pie
+            dataKey="value"
+            nameKey="label"
+            data={formattedData}
+            cx="50%"
+            cy="50%"
+            innerRadius={30}
+            labelLine={false}
+          >
+            {formattedData.map(({ color }, index) => (
+              <>
+                <Cell key={index} fill={color} />
+              </>
+            ))}
+          </Pie>
+          <Legend
+            verticalAlign="top"
+            align="center"
+            iconType="circle"
+            iconSize={10}
+            payload={bucketsLabels.map((name, i) => ({
+              value: name,
+              type: 'circle',
+              color: bucketColors[i],
+            }))}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div >
   );
 }

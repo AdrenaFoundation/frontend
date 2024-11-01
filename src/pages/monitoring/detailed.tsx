@@ -20,7 +20,6 @@ import GovernanceAccounts from '@/components/pages/monitoring/Data/GovernanceAcc
 import LockedStakedADX from '@/components/pages/monitoring/Data/LockedStakedADX';
 import MintAccounts from '@/components/pages/monitoring/Data/MintsAccounts';
 import OracleAccounts from '@/components/pages/monitoring/Data/OracleAccounts';
-import PendingUsdcStakingRewards from '@/components/pages/monitoring/Data/PendingUsdcStakingRewards';
 import PoolRatios from '@/components/pages/monitoring/Data/PoolRatios';
 import PositionsAllTime from '@/components/pages/monitoring/Data/PositionsAllTime';
 import PositionsNow from '@/components/pages/monitoring/Data/PositionsNow';
@@ -30,10 +29,7 @@ import StakingResolveRoundThread from '@/components/pages/monitoring/Data/Stakin
 import StakingRewardsWaitingToBeClaimed from '@/components/pages/monitoring/Data/StakingRewardsWaitingToBeClaimed';
 import StakingRewardVaults from '@/components/pages/monitoring/Data/StakingRewardVaults';
 import Tokenomics from '@/components/pages/monitoring/Data/Tokenomics';
-import VestedADX from '@/components/pages/monitoring/Data/VestedADX';
-import VestedTokens from '@/components/pages/monitoring/Data/VestedTokens';
 import VestsBreakdown from '@/components/pages/monitoring/Data/VestsBreakdown';
-import VestsCount from '@/components/pages/monitoring/Data/VestsCount';
 import VolumeBreakdownPerToken from '@/components/pages/monitoring/Data/VolumeBreakdownPerToken';
 import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
@@ -313,7 +309,7 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
-          <div className="flex flex-col xl:flex-row gap-5">
+          <div className="flex flex-col lg:flex-row gap-5">
             <BucketsAllocation
               titleClassName={titleClassName}
               cortex={cortex}

@@ -181,7 +181,7 @@ export default function AllUserProfiles() {
                     </div>
                 </div >
 
-                <div className="flex flex-wrap flex-col gap-2 min-h-[1000px]">
+                <div className="flex flex-wrap flex-col gap-2">
                     {paginatedProfiles.map((profile) => (
                         <UserProfileBlock key={profile.pubkey.toBase58()} profile={profile as UserProfileExtended & { rank: number }} />
                     ))}

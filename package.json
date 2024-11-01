@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.6",
     "@pythnetwork/pyth-solana-receiver": "^0.8.1",
     "@reduxjs/toolkit": "^1.9.3",
     "@rive-app/react-canvas": "^4.14.4",
