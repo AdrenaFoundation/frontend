@@ -27,9 +27,11 @@ export default function useUserProfile(): {
 
   useEffect(() => {
     fetchUserProfile();
+
     const interval = setInterval(() => {
       fetchUserProfile();
-    }, 30000);
+    }, 30_000);
+
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchUserProfile, trickReload, window.adrena.client.connection]);

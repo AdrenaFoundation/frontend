@@ -18,13 +18,15 @@ export default function ProfileCreation({
         </div>
 
         <div className="flex flex-col mt-2">
-          <h5 className="flex flex-col text-base text-sm mb-3 opacity-50">
+          <h5 className="flex flex-col text-sm mb-3 opacity-50">
             The trader profile is optional. It is not mandatory to use the
-            platform. If you choose to create one, it will provide detailled
-            stats about your trading activity: average leverage, PnL, fees, and
+            platform. If you choose to create one, it will provide detailed
+            stats about your trading activity: PnL, fees, and
             more.
           </h5>
+
           <h5 className="flex flex-col text-fade mb-3">Nickname</h5>
+
           <div className="flex">
             <InputString
               value={nickname ?? ''}
