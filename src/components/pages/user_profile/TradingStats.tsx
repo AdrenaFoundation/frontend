@@ -41,7 +41,7 @@ export default function TradingStats({
         />
 
         <NumberDisplay
-          title="Paid Fees"
+          title="Fees Paid"
           nb={
             userProfile.longStats.feePaidUsd +
             userProfile.shortStats.feePaidUsd
