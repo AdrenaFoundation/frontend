@@ -1,12 +1,8 @@
-import Tippy from '@tippyjs/react';
-import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { UserProfileExtended } from '@/types';
-
-import infoIcon from '../../../../public/images/Icons/info.svg';
 
 export default function TradingStats({
   userProfile,
@@ -17,11 +13,11 @@ export default function TradingStats({
 }) {
   // Calculate the total profit/loss (without fees)
   const totalProfitLoss =
-    userProfile.longStats.profitsUsd +
-    userProfile.shortStats.profitsUsd -
-    userProfile.longStats.lossesUsd -
-    userProfile.shortStats.lossesUsd -
-    userProfile.longStats.feePaidUsd -
+    (userProfile.longStats.profitsUsd +
+      userProfile.shortStats.profitsUsd -
+      userProfile.longStats.lossesUsd -
+      userProfile.shortStats.lossesUsd) +
+    userProfile.longStats.feePaidUsd +
     userProfile.shortStats.feePaidUsd;
 
   return (
