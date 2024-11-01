@@ -282,3 +282,34 @@ img {
 .text-bronze {
   color: #cd7f32; /* Bronze color */
 }
+
+.MuiPagination-root {
+  button {
+    color: #fff;
+    opacity: 0.5;
+  }
+
+  // less than 500px
+  @media (max-width: 500px) {
+    button {
+      font-size: 0.8rem;
+      margin: 0px;
+    }
+    .MuiPaginationItem-ellipsis {
+      margin: 0px;
+    }
+  }
+
+  .MuiPagination-ul {
+    justify-content: center;
+  }
+
+  .Mui-selected {
+    opacity: 1;
+  }
+
+  .MuiPaginationItem-ellipsis {
+    color: #fff;
+    opacity: 0.5;
+  }
+}

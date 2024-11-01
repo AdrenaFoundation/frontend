@@ -100,7 +100,7 @@ export default function PoolRatios({
                       </div>
 
                       <div className="absolute right-0 -bottom-8 font-mono text-sm text-gray-500">
-                        {maxRatio}%: Max
+                        Max: {maxRatio}%
                       </div>
 
                       <>

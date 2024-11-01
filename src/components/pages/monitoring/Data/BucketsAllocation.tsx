@@ -1,43 +1,18 @@
 import {
-  ActiveElement,
-  ArcElement,
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  ChartEvent,
+  Cell,
   Legend,
-  LinearScale,
-  Title,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
   Tooltip,
-  TooltipItem,
-} from 'chart.js';
-import ChartPluginAnnotation from 'chartjs-plugin-annotation';
-import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
-import { Bar } from 'react-chartjs-2';
+} from 'recharts';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Cortex } from '@/types';
 import {
-  formatNumber,
-  formatNumberShort,
-  getFontSizeWeight,
   nativeToUi,
 } from '@/utils';
-
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  ChartDataLabels,
-  ChartPluginAnnotation,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-);
 
 export default function BucketsAllocation({
   cortex,
@@ -48,101 +23,54 @@ export default function BucketsAllocation({
 }) {
   const bucketNames = ['coreContributor', 'foundation', 'ecosystem'] as const;
   const bucketsLabels = ['Core Contrib.', 'Foundation', 'Ecosystem'];
-  const isBreakpoint = useBetterMediaQuery('(max-width: 500px)');
+  const bucketColors = ['#9F8CAE', '#EB6672', '#7FD7C1'];
 
   return (
-    <StyledContainer
-      title="ADX BUCKETS ALLOCATION"
-      headerClassName="ml-auto mr-auto"
-      className="flex-1 bg-[#050D14]"
-      titleClassName={titleClassName}
-      bodyClassName="flex items-center justify-center w-full h-full"
-    >
-      <Bar
-        data={{
-          labels: bucketsLabels,
-          datasets: [
-            {
-              label: 'Allocated',
-              data: bucketNames.map((name) =>
-                nativeToUi(
-                  cortex[`${name}BucketAllocation`],
-                  window.adrena.client.adxToken.decimals,
-                ),
+    <div className="bg-[#050D14] border rounded-lg lg:flex-1 shadow-xl h-[400px]">
+      <div className="w-full border-b p-5 mb-6">
+        <p className={titleClassName}>ADX BUCKETS ALLOCATION</p>
+      </div>
+
+      <ResponsiveContainer width="80%" height="80%" className="m-auto">
+        <PieChart>
+          <Tooltip
+            content={
+              <CustomRechartsToolTip
+                isValueOnly={true}
+                format="number"
+                suffix=" ADX"
+              />
+            }
+            cursor={false}
+          />
+          <Pie
+            dataKey="value"
+            nameKey="name"
+            data={bucketNames.map((name, i) => ({
+              name: bucketsLabels[i],
+              value: nativeToUi(
+                cortex[`${name}BucketAllocation`],
+                window.adrena.client.adxToken.decimals,
               ),
-              backgroundColor: '#fffffff0',
-              borderColor: [],
-              borderWidth: 1,
-            },
-          ],
-        }}
-        options={{
-          onHover: (event: ChartEvent, activeElements: ActiveElement[]) => {
-            (event?.native?.target as HTMLElement).style.cursor =
-              activeElements?.length > 0 ? 'pointer' : 'auto';
-          },
-          responsive: true,
-          plugins: {
-            datalabels: {
-              align: 'end',
-              anchor: 'end',
-              color: () => '#ffffff',
-              font: (context: Context) => getFontSizeWeight(context),
-              formatter: (_, context: Context) => [
-                `${context.chart.data.labels?.[context.dataIndex]}`,
-              ],
-            },
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              displayColors: false,
-              callbacks: {
-                label: (context: TooltipItem<'bar'>) =>
-                  (() => {
-                    const name = bucketNames[context.dataIndex];
-
-                    return [
-                      `Allocation: ${formatNumber(
-                        nativeToUi(
-                          cortex[`${name}BucketAllocation`],
-                          window.adrena.client.adxToken.decimals,
-                        ),
-                        window.adrena.client.adxToken.displayAmountDecimalsPrecision,
-                      )} ADX`,
-                    ];
-                  })(),
-
-                // Remove title from tooltip because it is not needed and looks
-                title: () => '',
-              },
-            },
-          },
-          // Needed so the labels don't get hidden if bar is 100%
-          layout: {
-            padding: {
-              top: 20,
-            },
-          },
-          scales: {
-            x: {
-              display: false,
-              offset: true,
-            },
-            y: {
-              ticks: {
-                callback: (value: string | number) =>
-                  formatNumberShort(value) + ' ADX',
-
-                font: {
-                  size: isBreakpoint ? 8 : 12,
-                },
-              },
-              beginAtZero: true,
-            },
-          },
-        }}
-      />
-    </StyledContainer>
+            }))}
+            fill="#8884d8"
+            cx="50%"
+            cy="50%"
+            innerRadius={30}
+            labelLine={false}
+          >
+            {bucketColors.map((color, index) => (
+              <Cell key={index} fill={color} />
+            ))}
+          </Pie>
+          <Legend
+            verticalAlign="top"
+            align="center"
+            iconType="circle"
+            iconSize={10}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

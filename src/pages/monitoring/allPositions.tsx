@@ -135,7 +135,7 @@ export default function AllPositions() {
     };
 
     return (
-        <div className="flex flex-col gap-2 p-2 min-h-[1000px]">
+        <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-1 lg:grid-cols-3 justify-between gap-5">
@@ -218,7 +218,7 @@ export default function AllPositions() {
 
                 <div className="flex flex-wrap justify-between gap-2">
                     {paginatedPositions.length ? (
-                        <div className="flex flex-col w-full gap-4 min-h-[1000px]">{/* TODO: better fix */}
+                        <div className="flex flex-col w-full gap-4">
                             {paginatedPositions.map((position) => (
                                 <PositionBlockReadOnly
                                     key={position.pubkey.toBase58()}
@@ -227,7 +227,7 @@ export default function AllPositions() {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center w-full py-4 min-h-[1000px] opacity-50">
+                        <div className="text-center w-full py-4 opacity-50">
                             No matches 📭
                         </div>
                     )}

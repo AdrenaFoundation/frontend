@@ -28,12 +28,17 @@ export default function Block({
   return (
     <StyledSubSubContainer
       className={twMerge(
-        'flex flex-col gap-6 bg-secondary p-0 border-none',
+        'flex flex-col gap-6 bg-secondary border-none p-3',
         className,
       )}
     >
       {data.map(({ rowTitle, ...v }, i) => (
-        <div className={twMerge("bg-third rounded-md p-3")} key={i}>
+        <div
+          className={
+            'bg-transparent rounded-md border p-3'
+          }
+          key={i}
+        >
           <p
             className={twMerge(
               'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
