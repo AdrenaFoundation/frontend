@@ -9,6 +9,7 @@ import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
@@ -18,7 +19,6 @@ import shareIcon from '../../../../../public/images/Icons/share-fill.svg';
 import OnchainAccountInfo from '../../monitoring/OnchainAccountInfo';
 import NetValueTooltip from '../TradingInputs/NetValueTooltip';
 import SharePositionModal from './SharePositionModal';
-import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 
 export default function PositionBlock({
   bodyClassName,
