@@ -13,7 +13,6 @@ import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
 import StakesStats from '@/components/pages/user_profile/StakesStats';
-import SwapStats from '@/components/pages/user_profile/SwapStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
@@ -288,8 +287,7 @@ export default function MyDashboard({
                     className="flex w-full w-min-[30em]"
                   />
                   <div className="flex flex-1 flex-col md:flex-row gap-4">
-                    <TradingStats userProfile={userProfile} className="flex" />
-                    <SwapStats userProfile={userProfile} className="flex" />
+                    <TradingStats userProfile={userProfile} />
                   </div>
                 </>
               )}
