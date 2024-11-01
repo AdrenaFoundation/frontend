@@ -12,10 +12,10 @@ import { useDispatch, useSelector } from '@/store/store';
 import { ImageRef, UserProfileExtended, WalletAdapterName } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
-import backpackLogo from '../../../public/images/backpack.png';
 import coinbaseLogo from '../../../public/images/coinbase.png';
 import phantomLogo from '../../../public/images/phantom.svg';
 import solflareLogo from '../../../public/images/solflare.png';
+import walletconnectLogo from '../../../public/images/wallet-connect.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -23,10 +23,10 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import WalletSelectionModal from './WalletSelectionModal';
 
-const WALLET_ICONS = {
+export const WALLET_ICONS = {
   phantom: phantomLogo,
   solflare: solflareLogo,
-  backpack: backpackLogo,
+  walletconnect: walletconnectLogo,
   coinbase: coinbaseLogo,
 } as const satisfies Record<WalletAdapterName, ImageRef>;
 
@@ -45,19 +45,31 @@ export default function WalletAdapter({
 
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
+  const lastConnectedWalletRef = useRef<null | WalletAdapterName>(null);
+
   if (autoConnectAuthorizedRef.current === null) {
     autoConnectAuthorizedRef.current = !!JSON.parse(
       localStorage.getItem('autoConnectAuthorized') ?? 'false',
     );
   }
 
+  if (lastConnectedWalletRef.current === null) {
+    const adapterName = localStorage.getItem('lastConnectedWallet');
+
+    if (adapterName && adapterName in walletAdapters) {
+      lastConnectedWalletRef.current = adapterName as WalletAdapterName;
+    } else {
+      lastConnectedWalletRef.current = null;
+    }
+  }
+
   const connectedWalletAdapterName = wallet?.adapterName;
   const connected = !!connectedWalletAdapterName;
 
-  // Attempt to auto-connect Phantom Wallet on mount.
+  // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
-    if (autoConnectAuthorizedRef.current) {
-      dispatch(autoConnectWalletAction('phantom'));
+    if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
+      dispatch(autoConnectWalletAction(lastConnectedWalletRef.current));
       return;
     }
     // `dispatch` is stable, does not need to be included in the dependencies array.

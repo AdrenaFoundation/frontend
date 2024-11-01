@@ -1,8 +1,9 @@
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import {
-  BackpackWalletAdapter,
   CoinbaseWalletAdapter,
   PhantomWalletAdapter,
   SolflareWalletAdapter,
+  WalletConnectWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { Keypair, PublicKey } from '@solana/web3.js';
 
@@ -17,14 +18,26 @@ import {
 export const walletAdapters: Record<
   WalletAdapterName,
   | PhantomWalletAdapter
-  | BackpackWalletAdapter
   | CoinbaseWalletAdapter
   | SolflareWalletAdapter
+  | WalletConnectWalletAdapter
 > = {
   phantom: new PhantomWalletAdapter(),
-  backpack: new BackpackWalletAdapter(),
   coinbase: new CoinbaseWalletAdapter(),
   solflare: new SolflareWalletAdapter(),
+  walletconnect: new WalletConnectWalletAdapter({
+    network: WalletAdapterNetwork.Mainnet,
+    options: {
+      projectId: '549f49d83c4bc0a5c405d8ef6db7972a',
+      relayUrl: 'wss://relay.walletconnect.org',
+      metadata: {
+        name: 'Adrena',
+        description: 'Perpetuals DEX for the Solana community',
+        url: 'https://app.adrena.xyz',
+        icons: ['https://avatars.githubusercontent.com/u/179229932'],
+      },
+    },
+  }),
 };
 
 export const RATE_DECIMALS = 9;

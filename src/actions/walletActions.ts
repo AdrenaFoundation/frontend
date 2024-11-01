@@ -43,6 +43,8 @@ export const autoConnectWalletAction =
   async (dispatch: Dispatch<ConnectWalletAction>) => {
     const adapter = walletAdapters[adapterName];
 
+    console.log('>>>> AUTO CONNECT ADAPTER:', adapterName);
+
     const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
         type: 'connect',
@@ -65,6 +67,8 @@ export const autoConnectWalletAction =
       localStorage.setItem('autoConnectAuthorized', 'true');
 
       adapter.removeListener('connect', connectFn);
+
+      localStorage.setItem('lastConnectedWallet', adapterName);
     } catch (err) {
       localStorage.setItem('autoConnectAuthorized', 'false');
 
@@ -104,6 +108,8 @@ export const connectWalletAction =
     try {
       await adapter.connect();
       localStorage.setItem('autoConnectAuthorized', 'true');
+
+      localStorage.setItem('lastConnectedWallet', adapterName);
     } catch (err: unknown) {
       localStorage.setItem('autoConnectAuthorized', 'false');
 

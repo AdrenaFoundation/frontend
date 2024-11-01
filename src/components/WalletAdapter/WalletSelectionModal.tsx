@@ -11,11 +11,8 @@ import {
 import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 
-import backpackLogo from '../../../public/images/backpack.png';
-import coinbaseLogo from '../../../public/images/coinbase.png';
-import phantomLogo from '../../../public/images/phantom.svg';
-import solflareLogo from '../../../public/images/solflare.png';
 import Modal from '../common/Modal/Modal';
+import { WALLET_ICONS } from './WalletAdapter';
 
 export default function WalletSelectionModal() {
   const dispatch = useDispatch();
@@ -27,14 +24,12 @@ export default function WalletSelectionModal() {
         <Modal
           close={() => dispatch(openCloseConnectionModalAction(false))}
           className="flex flex-col w-full p-5 relative overflow-visible"
+          title="Pick a wallet"
         >
-          <div className="text-3xl opacity-80 font-special text-center mb-6">
-            Pick a wallet
-          </div>
           <div className="flex flex-col justify-center items-center gap-3">
             <WalletBlock
               name="Phantom"
-              logo={phantomLogo}
+              logo={WALLET_ICONS.phantom}
               onClick={() => {
                 dispatch(connectWalletAction('phantom'));
                 dispatch(openCloseConnectionModalAction(false));
@@ -43,18 +38,8 @@ export default function WalletSelectionModal() {
             />
 
             <WalletBlock
-              name="Backpack"
-              logo={backpackLogo}
-              onClick={() => {
-                dispatch(connectWalletAction('backpack'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-              readyState={walletAdapters['backpack'].readyState}
-            />
-
-            <WalletBlock
               name="Coinbase"
-              logo={coinbaseLogo}
+              logo={WALLET_ICONS.coinbase}
               onClick={() => {
                 dispatch(connectWalletAction('coinbase'));
                 dispatch(openCloseConnectionModalAction(false));
@@ -64,12 +49,22 @@ export default function WalletSelectionModal() {
 
             <WalletBlock
               name="Solflare"
-              logo={solflareLogo}
+              logo={WALLET_ICONS.solflare}
               onClick={() => {
                 dispatch(connectWalletAction('solflare'));
                 dispatch(openCloseConnectionModalAction(false));
               }}
               readyState={walletAdapters['solflare'].readyState}
+            />
+
+            <WalletBlock
+              name="WalletConnect"
+              logo={WALLET_ICONS.walletconnect}
+              onClick={() => {
+                dispatch(connectWalletAction('walletconnect'));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+              readyState={WalletReadyState.Installed}
             />
           </div>
         </Modal>
