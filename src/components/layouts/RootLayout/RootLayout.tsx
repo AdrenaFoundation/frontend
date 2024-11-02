@@ -142,7 +142,6 @@ export default function RootLayout({
 
       <Footer className="z-10" />
 
-
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>
       </div>
