@@ -510,16 +510,17 @@ export class AdrenaClient {
     config: IConfiguration,
   ): Promise<AdrenaClient> {
     const poolPda = AdrenaClient.getPoolPda('main-pool');
-    const [cortex, mainPool] = await Promise.all([
-      AdrenaClient.loadCortex(readonlyAdrenaProgram),
-      AdrenaClient.loadMainPool(readonlyAdrenaProgram, poolPda),
-    ]);
-
-    const custodies = await AdrenaClient.loadCustodies(
+    const mainPoolPromise = AdrenaClient.loadMainPool(
       readonlyAdrenaProgram,
-      mainPool,
-      config,
+      poolPda,
     );
+    const [cortex, mainPool, custodies] = await Promise.all([
+      AdrenaClient.loadCortex(readonlyAdrenaProgram),
+      mainPoolPromise,
+      mainPoolPromise.then((_mainPool) =>
+        AdrenaClient.loadCustodies(readonlyAdrenaProgram, _mainPool, config),
+      ),
+    ]);
 
     const custodiesAddresses = mainPool.custodies.filter(
       (custody) => !custody.equals(PublicKey.default),
