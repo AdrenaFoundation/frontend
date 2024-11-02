@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 // All fields are nullable because they're aggregated from multiple
 // independent HTTP calls, which may fail, see below note about rate-limiting.
 type TokenStats = {
-  currentPrice: number | null;
   dailyChange: number | null;
   dailyVolume: number | null;
   lastDayHigh: number | null;
@@ -16,7 +15,6 @@ type DailyStats = {
 
 type CoingeckoPriceData = {
   [coingeckoId: string]: {
-    usd: number;
     usd_24h_vol: number;
     usd_24h_change: number;
   };
@@ -109,7 +107,6 @@ export default function useDailyStats() {
           : null;
 
       const tokenStats: TokenStats = {
-        currentPrice: tokenPriceData?.usd ?? null,
         dailyChange: tokenPriceData?.usd_24h_change ?? null,
         dailyVolume: tokenPriceData?.usd_24h_vol ?? null,
         lastDayHigh: ohlcData && Math.max(...ohlcData.map((ohlc) => ohlc[2])),
