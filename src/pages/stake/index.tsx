@@ -361,18 +361,9 @@ export default function Stake({
 
       const optimisticClaim = {
         claim_id: new BN(Date.now()).toString(),
-        rewards_adx:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingAdxRewards
-            : alpRewards.pendingAdxRewards,
-        rewards_adx_genesis:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingGenesisAdxRewards
-            : alpRewards.pendingGenesisAdxRewards,
-        rewards_usdc:
-          tokenSymbol === 'ADX'
-            ? adxRewards.pendingUsdcRewards
-            : alpRewards.pendingUsdcRewards,
+        rewards_adx: tokenSymbol === 'ADX' ? adxRewards.pendingAdxRewards : alpRewards.pendingAdxRewards,
+        rewards_adx_genesis: tokenSymbol === 'ADX' ? adxRewards.pendingGenesisAdxRewards : alpRewards.pendingGenesisAdxRewards,
+        rewards_usdc: tokenSymbol === 'ADX' ? adxRewards.pendingUsdcRewards : alpRewards.pendingUsdcRewards,
         signature: 'optimistic',
         transaction_date: new Date(),
         created_at: new Date(),
