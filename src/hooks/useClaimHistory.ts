@@ -93,6 +93,6 @@ export default function useClaimHistory(): {
   return {
     claimsHistoryAdx,
     claimsHistoryAlp,
-    triggerClaimsReload: fetchClaimsHistory,
+    triggerClaimsReload: loadClaimsHistory,
   };
 }

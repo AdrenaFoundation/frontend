@@ -98,10 +98,14 @@ export default function StakeOverview({
 
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
+  const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
-  const paginatedClaimsHistory = claimsHistory
-    ? claimsHistory.slice((currentPage - 1) * claimHistoryItemsPerPage, currentPage * claimHistoryItemsPerPage)
-    : [];
+  useEffect(() => {
+    if (!claimsHistory) {
+      return;
+    }
+    setPaginatedClaimsHistory(claimsHistory.slice((currentPage - 1) * claimHistoryItemsPerPage, currentPage * claimHistoryItemsPerPage) ?? []);
+  }, [claimsHistory]);
 
 
   const getEndDate = (timestamp: number) => {
