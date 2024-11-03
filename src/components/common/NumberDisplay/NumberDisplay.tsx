@@ -20,6 +20,7 @@ export default function NumberDisplay({
   headerClassName,
   titleClassName,
   tippyInfo,
+  subtitle,
 }: {
   title?: string;
   nb: number | null;
@@ -32,6 +33,7 @@ export default function NumberDisplay({
   headerClassName?: string;
   titleClassName?: string;
   tippyInfo?: string;
+  subtitle?: string;
 }) {
   return (
     <StyledContainer
@@ -50,9 +52,11 @@ export default function NumberDisplay({
           </div>
         </Tippy> : title
       }
-      className={twMerge("flex items-center flex-1 min-h-[2em]", className)}
+      className={twMerge("flex items-center flex-1 min-h-[2em] bg-transparent", className)}
       headerClassName={twMerge("text-center justify-center", headerClassName)}
       titleClassName={twMerge("text-xs sm:text-sm text-txtfade font-boldy", titleClassName)}
+      subTitle={subtitle}
+      subTitleClassName='text-xs text-txtfade'
     >
       <FormatNumber
         nb={nb}

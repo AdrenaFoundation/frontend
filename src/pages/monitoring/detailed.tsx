@@ -186,6 +186,7 @@ export default function DetailedMonitoring({
               title="ADX CIRCULATING SUPPLY"
               nb={adxTotalSupply}
               precision={2}
+              className='bg-[#050D14]'
             />
           ) : null}
 
@@ -198,6 +199,7 @@ export default function DetailedMonitoring({
               )}
               precision={0}
               suffix=' ADX'
+              className='bg-[#050D14]'
             />
           ) : null}
 
@@ -207,6 +209,7 @@ export default function DetailedMonitoring({
               nb={mainPool.totalFeeCollected}
               format="currency"
               precision={0}
+              className='bg-[#050D14]'
             />
           ) : null}
         </div>
