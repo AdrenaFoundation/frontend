@@ -7,7 +7,6 @@ import { Staking } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
 import RemainingTimeToDate from '../RemainingTimeToDate';
-import { twMerge } from 'tailwind-merge';
 
 export default function CurrentStakingRoundTime({
   alpStakingAccount,
