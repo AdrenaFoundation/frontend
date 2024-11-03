@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useSelector } from '@/store/store';
 
@@ -7,6 +7,7 @@ import crossIcon from '../../../../public/images/Icons/cross.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 
 export default function ViewsWarning() {
+    const [isClosed, setIsClosed] = useState(false);
     const isViewsWarningClosed = localStorage.getItem('viewsWarningClosed');
 
     const wallet = useSelector((state) => state.walletState.wallet);
@@ -15,7 +16,12 @@ export default function ViewsWarning() {
 
     const solBalance = walletTokenBalances?.['SOL'] ?? 0;
 
-    if (solBalance > 0.01 || !connected || isViewsWarningClosed === 'true')
+    if (
+        solBalance > 0.01 ||
+        !connected ||
+        isClosed ||
+        isViewsWarningClosed === 'true'
+    )
         return null;
 
     return (
@@ -34,7 +40,10 @@ export default function ViewsWarning() {
                 alt="close btn"
                 width={16}
                 height={16}
-                onClick={() => localStorage.setItem('viewsWarningClosed', 'true')}
+                onClick={() => {
+                    setIsClosed(true);
+                    localStorage.setItem('viewsWarningClosed', 'true');
+                }}
             />
         </div>
     );
