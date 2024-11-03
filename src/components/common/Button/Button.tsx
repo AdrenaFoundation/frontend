@@ -103,6 +103,7 @@ export default function Button({
         await onClick();
         setOnClickInProgress(false);
       }}
+
       {...rest}
     >
       {icon && !onClickInProgress ? (

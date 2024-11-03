@@ -6,7 +6,7 @@ import {
 } from 'recharts/types/component/DefaultTooltipContent';
 import { twMerge } from 'tailwind-merge';
 
-import { formatNumber,formatPercentage, formatPriceInfo } from '@/utils';
+import { formatNumber, formatPercentage, formatPriceInfo } from '@/utils';
 
 export default function CustomRechartsToolTip({
   active,
@@ -22,7 +22,6 @@ export default function CustomRechartsToolTip({
   suffix?: string;
   isPieChart?: boolean;
 }) {
-  console.log('CustomRechartsToolTip', payload, label, active, isValueOnly);
   if (active && payload && payload.length) {
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
@@ -58,5 +57,6 @@ export default function CustomRechartsToolTip({
       </div>
     );
   }
+
   return null;
 }

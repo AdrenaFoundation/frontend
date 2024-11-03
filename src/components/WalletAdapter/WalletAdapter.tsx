@@ -96,7 +96,7 @@ export default function WalletAdapter({
             <Button
               className={twMerge(
                 className,
-                'gap-2 pl-4 pr-3',
+                'gap-2 pl-4 pr-3 text-xs',
                 isIconOnly && 'p-0 h-7 w-7',
               )}
               title={
@@ -107,9 +107,6 @@ export default function WalletAdapter({
                   : null
               }
               leftIcon={WALLET_ICONS[wallet.adapterName]}
-              rightIcon={!isIconOnly && walletIcon}
-              alt="wallet icon"
-              rightIconClassName="w-4 h-4"
               variant="lightbg"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
