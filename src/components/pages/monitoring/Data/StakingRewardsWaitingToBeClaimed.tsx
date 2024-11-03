@@ -4,7 +4,6 @@ import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { RATE_DECIMALS } from '@/constant';
 import { Staking } from '@/types';
 import { nativeToUi } from '@/utils';
-import { twMerge } from 'tailwind-merge';
 
 export default function StakingRewardsWaitingToBeClaimed({
   alpStakingAccount,

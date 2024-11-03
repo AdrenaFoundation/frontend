@@ -101,11 +101,6 @@ export default function DetailedMonitoring({
   // I know the following is not the best naming convention, but it allow tweaking the styles easily
   //
   const titleClassName = 'text-lg opacity-50 font-boldy';
-  // Used to style the text in the data
-  const bodyClassName = 'text-2xl sm:text-3xl font-boldy';
-  // Used to style the dollar amount in the data (secondary info)
-  const dollarBodyClassName = 'text-xl sm:text-3xl font-boldy';
-  const smallBodyClassName = 'text-xl font-boldy';
 
   const handleTabChange = (tab: (typeof tabs)[number]) => {
     setSelectedTab(tab);

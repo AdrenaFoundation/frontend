@@ -1,7 +1,6 @@
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { Staking } from '@/types';
 import { nativeToUi } from '@/utils';
-import { twMerge } from 'tailwind-merge';
 
 export default function StakingRewardVaults({
   alpStakingAccount,

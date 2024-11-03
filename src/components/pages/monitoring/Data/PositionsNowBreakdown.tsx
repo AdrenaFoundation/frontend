@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { USD_DECIMALS } from '@/constant';
 import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
-import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 
 export default function PositionsNowBreakdown({
   custodies,
