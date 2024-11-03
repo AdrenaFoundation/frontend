@@ -130,6 +130,8 @@ export default function RootLayout({
         />
       )}
 
+      <ViewsWarning />
+
       <div className="w-full grow flex justify-center">
         <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
           {children}
@@ -140,7 +142,6 @@ export default function RootLayout({
 
       <Footer className="z-10" />
 
-      <ViewsWarning />
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>
