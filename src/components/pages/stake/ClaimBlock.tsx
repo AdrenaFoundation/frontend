@@ -9,8 +9,6 @@ import { formatDate, formatNumber, getTxExplorer } from '@/utils';
 import { ClaimHistoryExtended } from '../../../types';
 
 const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
-
-
     interface DateDisplayProps {
         date: string | number | Date;
     }
@@ -21,9 +19,8 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
 
     return (
         <div className="w-full flex flex-col border rounded-lg bg-secondary overflow-hidden mb-2">
-            <div className="flex flex-row justify-between items-center p-2 mx-2">
-
-                <div className="flex flex-1 flex-col ">
+            <div className="grid grid-cols-2 sm:flex sm:flex-row gap-5 justify-between sm:items-center p-3 sm:p-2 mx-2">
+                <div className="flex flex-1 flex-col">
                     <div className="flex w-full font-mono text-xxs ">
                         <Link
                             href={getTxExplorer(claim.signature)}
@@ -45,10 +42,8 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     <DateDisplay date={claim.transaction_date} />
                 </div>
 
-                <div className="flex flex-1 flex-col items-center">
-                    <div className="flex w-full font-mono text-xxs text-txtfade justify-center items-center">
-                        Source
-                    </div>
+                <div className="flex flex-1 flex-col sm:text-center">
+                    <div className="w-full font-mono text-xxs text-txtfade">Source</div>
                     <p
                         className={`text-xs font-mono opacity-50 ${claim.source === 'manual' ? 'text-orange' : 'text-blue'
                             }`}
@@ -57,7 +52,8 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                     </p>
                 </div>
 
-                <div className="flex flex-1 items-center justify-center">
+                <div className="flex-1 sm:text-center">
+                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade">USDC reward</div>
                     <FormatNumber
                         nb={claim.rewards_usdc}
                         format="number"
@@ -66,33 +62,33 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                         prefix="+ "
                         suffix="USDC"
                     />
-                    {/* <Image
-                        src={usdcTokenLogo}
-                        width={14}
-                        height={14}
-                        alt="USDC logo"
-                    /> */}
                 </div>
 
-                <div className="flex flex-1 items-center justify-end">
+                <div className="flex-1 sm:text-end">
+                    <div className="block sm:hidden w-full font-mono text-xxs text-txtfade">ADX reward</div>
+
                     <FormatNumber
                         nb={claim.rewards_adx + claim.rewards_adx_genesis}
                         format="number"
-                        className={`text-gray-400 text-xs mr-1 ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''}`}
+                        wrapperClassName="sm:justify-end"
+                        className={`text-gray-400 text-xs ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''
+                            }`}
                         minimumFractionDigits={2}
                         prefix="+ "
-                        suffix="ADX"
-                        info={claim.rewards_adx_genesis > 0 ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(claim.rewards_adx_genesis, 2, 2)} (Genesis)` : undefined}
+                        suffix=" ADX"
+                        info={
+                            claim.rewards_adx_genesis > 0
+                                ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(
+                                    claim.rewards_adx_genesis,
+                                    2,
+                                    2,
+                                )} (Genesis)`
+                                : undefined
+                        }
                     />
-                    {/* <Image
-                        src={adxTokenLogo}
-                        width={14}
-                        height={14}
-                        alt="ADX logo"
-                    /> */}
                 </div>
             </div>
-        </div >
+        </div>
     );
 };
 

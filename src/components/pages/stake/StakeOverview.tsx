@@ -18,7 +18,11 @@ import {
   DEFAULT_LOCKED_STAKE_LOCK_DURATION,
   LIQUID_STAKE_LOCK_DURATION,
 } from '@/pages/stake';
-import { AlpLockPeriod, ClaimHistoryExtended, LockedStakeExtended } from '@/types';
+import {
+  AlpLockPeriod,
+  ClaimHistoryExtended,
+  LockedStakeExtended,
+} from '@/types';
 import { formatNumber, getNextStakingRoundStartTime } from '@/utils';
 
 import adxLogo from '../../../../public/images/adrena_logo_adx_white.svg';
@@ -98,15 +102,21 @@ export default function StakeOverview({
 
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
-  const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
+  const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<
+    ClaimHistoryExtended[]
+  >([]);
 
   useEffect(() => {
     if (!claimsHistory) {
       return;
     }
-    setPaginatedClaimsHistory(claimsHistory.slice((currentPage - 1) * claimHistoryItemsPerPage, currentPage * claimHistoryItemsPerPage) ?? []);
+    setPaginatedClaimsHistory(
+      claimsHistory.slice(
+        (currentPage - 1) * claimHistoryItemsPerPage,
+        currentPage * claimHistoryItemsPerPage,
+      ) ?? [],
+    );
   }, [claimsHistory]);
-
 
   const getEndDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
@@ -133,7 +143,7 @@ export default function StakeOverview({
 
   const paginatedLockedStakes = sortedLockedStakes.slice(
     (lockedStakesPage - 1) * lockedStakesPerPage,
-    lockedStakesPage * lockedStakesPerPage
+    lockedStakesPage * lockedStakesPerPage,
   );
 
   useEffect(() => {
@@ -191,7 +201,6 @@ export default function StakeOverview({
           ? window.adrena.client.lpTokenMint
           : window.adrena.client.lmTokenMint,
         notification,
-
       });
 
       setTimeout(() => {
@@ -204,16 +213,27 @@ export default function StakeOverview({
 
   const toggleClaimHistory = () => {
     setIsClaimHistoryVisible(!isClaimHistoryVisible);
-    setTimeout(() => {
-      setLockedStakesPerPage(isClaimHistoryVisible ? 6 : 4);
-    }, isClaimHistoryVisible ? 300 : 0); // Delay matches the duration of the CSS transition
+    setTimeout(
+      () => {
+        setLockedStakesPerPage(isClaimHistoryVisible ? 6 : 4);
+      },
+      isClaimHistoryVisible ? 300 : 0,
+    ); // Delay matches the duration of the CSS transition
   };
 
-  const totalStakeAmount = (isALP ? totalLockedStake : Number(totalLockedStake) + Number(totalLiquidStaked)) ?? 0;
+  const totalStakeAmount =
+    (isALP
+      ? totalLockedStake
+      : Number(totalLockedStake) + Number(totalLiquidStaked)) ?? 0;
   const isBigStakeAmount = totalStakeAmount > 1000000;
 
-  const allTimeClaimedUsdc = claimsHistory?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0;
-  const allTimeClaimedAdx = claimsHistory?.reduce((sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis, 0) ?? 0;
+  const allTimeClaimedUsdc =
+    claimsHistory?.reduce((sum, claim) => sum + claim.rewards_usdc, 0) ?? 0;
+  const allTimeClaimedAdx =
+    claimsHistory?.reduce(
+      (sum, claim) => sum + claim.rewards_adx + claim.rewards_adx_genesis,
+      0,
+    ) ?? 0;
   const isMediumUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 1000;
   const isMediumAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1000;
   const isBigUsdcAllTimeClaimAmount = allTimeClaimedUsdc >= 100_000;
@@ -236,11 +256,17 @@ export default function StakeOverview({
                   nb={totalStakeAmount}
                   minimumFractionDigits={totalStakeAmount < 1000 ? 2 : 0}
                   precision={totalStakeAmount < 1000 ? 2 : 0}
-                  precisionIfPriceDecimalsBelow={totalStakeAmount < 1000 ? 2 : 0}
+                  precisionIfPriceDecimalsBelow={
+                    totalStakeAmount < 1000 ? 2 : 0
+                  }
                   isAbbreviate={isBigStakeAmount}
                   suffix={token}
                   className="text-2xl cursor-pointer"
-                  info={isBigStakeAmount ? formatNumber(totalStakeAmount, 2, 2) : undefined}
+                  info={
+                    isBigStakeAmount
+                      ? formatNumber(totalStakeAmount, 2, 2)
+                      : undefined
+                  }
                 />
               </div>
 
@@ -480,7 +506,6 @@ export default function StakeOverview({
               </div>
             </div>
 
-
             {roundPassed ? (
               <Button
                 variant="outline"
@@ -495,30 +520,35 @@ export default function StakeOverview({
         <div className="h-[1px] bg-bcolor w-full my-4" />
 
         <div className="flex flex-col text-sm py-0 px-5 w-full">
-          <button
+          <div
             onClick={toggleClaimHistory}
-            className="w-full text-white rounded-lg transition-colors duration-200 flex items-center"
+            className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200"
           >
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold mr-1">
-                Claim History
-              </h3>
-              <h3 className="text-lg font-semibold text-txtfade">
-                {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
-              </h3>
-            </div>
-            <svg
-              className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
+            <div className='flex flex-row gap-2 items-center cursor-pointer select-none'>
+              <div className="flex items-center justify-between">
+                <h3 className="md:text-lg font-semibold mr-1">Claim History</h3>
+                <h3 className="text-lg font-semibold text-txtfade">
+                  {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
+                </h3>
+              </div>
 
+              <svg
+                className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''
+                  }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </div>
             {/* TOTALs */}
-            <div className="flex-grow"></div> {/* This element will take up all available space */}
             {claimsHistory && (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
                 <div className="flex flex-row items-center">
@@ -528,12 +558,20 @@ export default function StakeOverview({
                   <div className="flex items-center">
                     <FormatNumber
                       nb={allTimeClaimedUsdc}
-                      precisionIfPriceDecimalsBelow={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
-                      minimumFractionDigits={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
+                      precisionIfPriceDecimalsBelow={
+                        isMediumUsdcAllTimeClaimAmount ? 0 : 2
+                      }
+                      minimumFractionDigits={
+                        isMediumUsdcAllTimeClaimAmount ? 0 : 2
+                      }
                       precision={isMediumUsdcAllTimeClaimAmount ? 0 : 2}
                       isAbbreviate={isBigUsdcAllTimeClaimAmount}
-                      info={isBigUsdcAllTimeClaimAmount ? formatNumber(allTimeClaimedUsdc, 2, 2) : undefined}
-                      className='text-txtfade'
+                      info={
+                        isBigUsdcAllTimeClaimAmount
+                          ? formatNumber(allTimeClaimedUsdc, 2, 2)
+                          : undefined
+                      }
+                      className="text-txtfade"
                     />
                     <Image
                       src={usdcTokenLogo}
@@ -544,15 +582,22 @@ export default function StakeOverview({
                     />
                   </div>
                   <div className="flex items-center">
-
                     <FormatNumber
                       nb={allTimeClaimedAdx}
-                      precisionIfPriceDecimalsBelow={isMediumAdxAllTimeClaimAmount ? 0 : 2}
-                      minimumFractionDigits={isMediumAdxAllTimeClaimAmount ? 0 : 2}
+                      precisionIfPriceDecimalsBelow={
+                        isMediumAdxAllTimeClaimAmount ? 0 : 2
+                      }
+                      minimumFractionDigits={
+                        isMediumAdxAllTimeClaimAmount ? 0 : 2
+                      }
                       precision={isMediumAdxAllTimeClaimAmount ? 0 : 2}
                       isAbbreviate={isBigAdxAllTimeClaimAmount}
-                      info={isBigAdxAllTimeClaimAmount ? formatNumber(allTimeClaimedAdx, 2, 2) : undefined}
-                      className='text-txtfade'
+                      info={
+                        isBigAdxAllTimeClaimAmount
+                          ? formatNumber(allTimeClaimedAdx, 2, 2)
+                          : undefined
+                      }
+                      className="text-txtfade"
                     />
                     <Image
                       src={adxTokenLogo}
@@ -565,8 +610,7 @@ export default function StakeOverview({
                 </div>
               </div>
             )}
-
-          </button>
+          </div>
           {/* Claim History Section */}
 
           <CSSTransition
@@ -578,13 +622,9 @@ export default function StakeOverview({
             <div className="mt-4">
               <div mt-2>
                 {paginatedClaimsHistory.length > 0 ? (
-                  paginatedClaimsHistory
-                    .map((claim) => (
-                      <ClaimBlock
-                        key={claim.claim_id}
-                        claim={claim}
-                      />
-                    ))
+                  paginatedClaimsHistory.map((claim) => (
+                    <ClaimBlock key={claim.claim_id} claim={claim} />
+                  ))
                 ) : (
                   <p>No claim history available.</p>
                 )}
@@ -605,9 +645,7 @@ export default function StakeOverview({
         <div className="px-5">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold mr-1">
-                My Locked Stakes
-              </h3>
+              <h3 className="text-lg font-semibold mr-1">My Locked Stakes</h3>
               <h3 className="text-lg font-semibold text-txtfade">
                 {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
               </h3>
@@ -649,21 +687,24 @@ export default function StakeOverview({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             {paginatedLockedStakes.length > 0 ? (
-              paginatedLockedStakes
-                .map((lockedStake, i) => (
-                  <LockedStakedElement
-                    lockedStake={lockedStake}
-                    key={i}
-                    token={
-                      isALP
-                        ? window.adrena.client.alpToken
-                        : window.adrena.client.adxToken
-                    }
-                    handleRedeem={handleLockedStakeRedeem}
-                    handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
-                    handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
-                  />
-                ))
+              paginatedLockedStakes.map((lockedStake, i) => (
+                <LockedStakedElement
+                  lockedStake={lockedStake}
+                  key={i}
+                  token={
+                    isALP
+                      ? window.adrena.client.alpToken
+                      : window.adrena.client.adxToken
+                  }
+                  handleRedeem={handleLockedStakeRedeem}
+                  handleClickOnFinalizeLockedRedeem={
+                    handleClickOnFinalizeLockedRedeem
+                  }
+                  handleClickOnUpdateLockedStake={
+                    handleClickOnUpdateLockedStake
+                  }
+                />
+              ))
             ) : (
               <div className="text-lg mt-4 mb-4 text-txtfade text-left pl-4">
                 No Active Locked Stakes
@@ -736,7 +777,7 @@ export default function StakeOverview({
           {/* New separator below liquid stake section */}
           <div className="h-[1px] bg-bcolor w-full my-5" />
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
