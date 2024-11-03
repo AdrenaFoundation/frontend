@@ -14,12 +14,6 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
-const className =
-  'w-[12em] min-w-[10em] lg:w-[12em] lg:min-w-[10em] xl:w-[17em] xl:min-w-[17em] border-0 p-2 pb-4';
-const titleClassName = 'text-xs lg:text-sm opacity-50 font-boldy';
-const bodyClassName =
-  'text-[1rem] lg:text-[1.3rem] xl:text-[1.5rem] font-bold h-4';
-
 export default function BasicMonitoring({
   mainPool,
 }: // custodies,
@@ -32,48 +26,48 @@ export default function BasicMonitoring({
   return (
     <div className="flex flex-col gap-2 p-2">
       {mainPool && (
-        <StyledContainer className="p-1">
-          <div className="flex flex-wrap justify-between gap-2">
+        <StyledContainer className="p-0">
+          <div className="flex flex-wrap justify-between">
             <NumberDisplay
-              title="All Time Trading Volume"
+              title="TOTAL TRADING VOLUME"
               nb={mainPool.totalTradingVolume}
               format="currency"
               precision={0}
-              className='border-0 min-w-[10em]'
-              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              className='border-0 min-w-[12em]'
+              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
 
             <NumberDisplay
-              title="All Time Liquidations Volume"
+              title="TOTAL LIQUIDATION VOLUME"
               nb={mainPool.totalLiquidationVolume}
               format="currency"
               precision={0}
-              className='border-0 min-w-[10em]'
-              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              className='border-0 min-w-[12em]'
+              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
 
             <NumberDisplay
-              title="All Time Mint/Redeem ALP Volume"
+              title="TOTAL ALP VOLUME"
               nb={mainPool.totalAddRemoveLiquidityVolume}
               format="currency"
               precision={0}
-              className='border-0 min-w-[10em]'
-              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              className='border-0 min-w-[12em]'
+              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
 
             <NumberDisplay
-              title="ALL TIME FEES"
+              title="TOTAL FEES"
               nb={mainPool.totalFeeCollected}
               format="currency"
               precision={0}
-              className='border-0 min-w-[10em]'
-              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              className='border-0 min-w-[12em]'
+              bodyClassName='text-lg sm:text-base md:text-lg lg:text-xl xl:text-2xl'
               headerClassName='pb-2'
               titleClassName='text-[0.7em] sm:text-[0.7em]'
             />

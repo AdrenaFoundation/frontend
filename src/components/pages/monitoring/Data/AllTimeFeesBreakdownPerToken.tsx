@@ -57,7 +57,6 @@ export default function AllTimeFeesBreakdownPerToken({
                           'Swap',
                           'Add Liq.',
                           'Remove Liq.',
-                          'Open Pos.',
                           'Close Pos.',
                           'Liquidation',
                           'Borrow',

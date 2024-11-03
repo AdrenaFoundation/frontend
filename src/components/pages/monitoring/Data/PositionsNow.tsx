@@ -38,7 +38,7 @@ export default function PositionsNow({
           title="Short positions"
           nb={mainPool.nbOpenShortPositions}
           precision={0}
-          className='rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-b-0'
+          className='rounded-none border-t-0 border-l-0 border-r-0 border-b'
         />
 
         <NumberDisplay
@@ -46,7 +46,7 @@ export default function PositionsNow({
           nb={mainPool.longPositions}
           precision={0}
           format='currency'
-          className='rounded-none border-none'
+          className='rounded-none border-t-0 border-l-0 border-r-0 border-b-0 sm:border-r'
         />
 
         <NumberDisplay
@@ -54,7 +54,7 @@ export default function PositionsNow({
           nb={mainPool.shortPositions}
           precision={0}
           format='currency'
-          className='rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-l'
+          className='rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-t-0'
         />
       </div>
     </div>
