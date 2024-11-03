@@ -400,7 +400,7 @@ export default function SwapTradingInputs({
             <div className="ml-auto mt-3 mr-4">
               <FormatNumber
                 nb={custodyTokenB.liquidity}
-                suffix={` ${tokenB.symbol} available`}
+                suffix={`${tokenB.symbol} available`}
                 className="text-txtfade text-sm"
                 isDecimalDimmed={false}
               />

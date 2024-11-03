@@ -1,4 +1,3 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Cortex } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
@@ -15,7 +14,7 @@ export default function GovernanceAccounts({
 }) {
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
-      <div className="w-full border-b p-5">
+      <div className="w-full border-b p-3">
         <p className={titleClassName}>Governance Accounts</p>
         <p className="text-base opacity-50">
           List on-chain accounts related to Governance.

@@ -125,7 +125,7 @@ export default function VestStats({
                 : null
             }
             placeholder="0"
-            suffix=" ADX"
+            suffix="ADX"
             precision={3}
           />
         </div>
@@ -143,7 +143,7 @@ export default function VestStats({
                 : null
             }
             placeholder="0"
-            suffix=" ADX"
+            suffix="ADX"
             precision={3}
           />
         </div>
@@ -156,7 +156,7 @@ export default function VestStats({
           <FormatNumber
             nb={claimableAmount}
             placeholder="0"
-            suffix=" ADX"
+            suffix="ADX"
             precision={3}
           />
         </div>

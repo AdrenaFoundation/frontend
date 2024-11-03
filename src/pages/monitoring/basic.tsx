@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import ALPPriceChart from '@/components/pages/global/ALPPrice/ALPPriceChart';
 import AumChart from '@/components/pages/global/Aum/AumChart';
@@ -9,16 +10,12 @@ import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenIntere
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
-import AllTimeAddRemoveLiquidityVolume from '@/components/pages/monitoring/Data/AllTimeAddRemoveLiquidityVolume';
-import AllTimeFees from '@/components/pages/monitoring/Data/AllTimeFees';
-import AllTimeLiquidationsVolume from '@/components/pages/monitoring/Data/AllTimeLiquidationsVolume';
-import AllTimeTradingVolume from '@/components/pages/monitoring/Data/AllTimeTradingVolume';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
 
 const className =
-  'w-[12em] min-w-[12em] lg:w-[12em] lg:min-w-[12em] xl:w-[17em] xl:min-w-[17em] border-0 p-2 pb-4';
+  'w-[12em] min-w-[10em] lg:w-[12em] lg:min-w-[10em] xl:w-[17em] xl:min-w-[17em] border-0 p-2 pb-4';
 const titleClassName = 'text-xs lg:text-sm opacity-50 font-boldy';
 const bodyClassName =
   'text-[1rem] lg:text-[1.3rem] xl:text-[1.5rem] font-bold h-4';
@@ -37,29 +34,48 @@ export default function BasicMonitoring({
       {mainPool && (
         <StyledContainer className="p-1">
           <div className="flex flex-wrap justify-between gap-2">
-            <AllTimeTradingVolume
-              className={className}
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              mainPool={mainPool}
+            <NumberDisplay
+              title="All Time Trading Volume"
+              nb={mainPool.totalTradingVolume}
+              format="currency"
+              precision={0}
+              className='border-0 min-w-[10em]'
+              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              headerClassName='pb-2'
+              titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
-            <AllTimeLiquidationsVolume
-              className={className}
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              mainPool={mainPool}
+
+            <NumberDisplay
+              title="All Time Liquidations Volume"
+              nb={mainPool.totalLiquidationVolume}
+              format="currency"
+              precision={0}
+              className='border-0 min-w-[10em]'
+              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              headerClassName='pb-2'
+              titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
-            <AllTimeAddRemoveLiquidityVolume
-              className={className}
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              mainPool={mainPool}
+
+            <NumberDisplay
+              title="All Time Mint/Redeem ALP Volume"
+              nb={mainPool.totalAddRemoveLiquidityVolume}
+              format="currency"
+              precision={0}
+              className='border-0 min-w-[10em]'
+              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              headerClassName='pb-2'
+              titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
-            <AllTimeFees
-              className={className}
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              mainPool={mainPool}
+
+            <NumberDisplay
+              title="ALL TIME FEES"
+              nb={mainPool.totalFeeCollected}
+              format="currency"
+              precision={0}
+              className='border-0 min-w-[10em]'
+              bodyClassName='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'
+              headerClassName='pb-2'
+              titleClassName='text-[0.7em] sm:text-[0.7em]'
             />
           </div>
         </StyledContainer>

@@ -124,7 +124,7 @@ export default function StakeTimerAnimation({
               <FormatNumber
                 nb={initial.daysLocked}
                 className="text-sm lg:text-base"
-                suffix=" Days"
+                suffix="Days"
               />
             </div>
           </div>
@@ -140,15 +140,15 @@ export default function StakeTimerAnimation({
             animate={
               cooldown
                 ? {
-                    translateX: x,
-                    translateY: y,
-                    opacity: 1,
-                  }
+                  translateX: x,
+                  translateY: y,
+                  opacity: 1,
+                }
                 : {
-                    translateX: x[1] + 10,
-                    translateY: y[1] - 100,
-                    opacity: 0,
-                  }
+                  translateX: x[1] + 10,
+                  translateY: y[1] - 100,
+                  opacity: 0,
+                }
             }
             transition={{
               duration: 0.5,

@@ -44,7 +44,7 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
         <FormatNumber
           nb={totalStakedAmount}
           precision={2}
-          suffix=" ALP"
+          suffix="ALP"
           isDecimalDimmed={false}
           className="text-base"
         />
@@ -63,9 +63,9 @@ export default function GenesisEndView({ connected }: { connected: boolean }) {
   const twitterText =
     totalStakedAmount !== null && totalStakedAmount > 0 && connected
       ? `I just bought ${formatNumber(
-          totalStakedAmount,
-          2,
-        )} ALP locked and staked for 180 days! @adrenaprotocol`
+        totalStakedAmount,
+        2,
+      )} ALP locked and staked for 180 days! @adrenaprotocol`
       : 'Check out Adrena \nThe new community owned, 100% rev share, perp dex on Solana!';
 
   return (

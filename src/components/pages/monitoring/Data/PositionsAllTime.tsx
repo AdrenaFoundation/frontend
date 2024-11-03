@@ -1,48 +1,48 @@
-import { twMerge } from 'tailwind-merge';
-
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { PoolExtended } from '@/types';
-import { formatPriceInfo } from '@/utils';
 
 export default function PositionsAllTime({
   mainPool,
   titleClassName,
-  bodyClassName,
 }: {
   mainPool: PoolExtended;
   titleClassName?: string;
-  bodyClassName?: string;
 }) {
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
-      <div className="w-full border-b p-5">
-        <p className={titleClassName}>Positions All time</p>
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>Positions All Time</p>
       </div>
 
       <div className="grid sm:grid-cols-2">
-        <div className="p-5">
-          <p className={titleClassName}>Trading Volume</p>
-          <p className={bodyClassName}>
-            {formatPriceInfo(mainPool.totalTradingVolume, 0, 0, 0)}
-          </p>
-        </div>
-        <div className="border-t sm:border-t-0 sm:border-l p-5">
-          <p className={titleClassName}>Liquidation Volume</p>
-          <p className={bodyClassName}>
-            {formatPriceInfo(mainPool.totalLiquidationVolume, 0, 0, 0)}
-          </p>
-        </div>
-        <div className="border-t p-5">
-          <p className={titleClassName}>Profits</p>
-          <p className={bodyClassName}>
-            {formatPriceInfo(mainPool.profitsUsd, 0, 0, 0)}
-          </p>
-        </div>
-        <div className="border-t sm:border-l p-5">
-          <p className={titleClassName}>Losses</p>
-          <p className={bodyClassName}>
-            {formatPriceInfo(mainPool.lossUsd * -1, 0, 0, 0)}
-          </p>
-        </div>
+        <NumberDisplay
+          title="Trading Volume"
+          nb={mainPool.totalTradingVolume}
+          precision={0}
+          className='border-0'
+          format='currency'
+        />
+        <NumberDisplay
+          title="Liquidation Volume"
+          nb={mainPool.totalLiquidationVolume}
+          precision={0}
+          className='border-0'
+          format='currency'
+        />
+        <NumberDisplay
+          title="Profits"
+          nb={mainPool.profitsUsd}
+          precision={0}
+          className='border-0'
+          format='currency'
+        />
+        <NumberDisplay
+          title="Losses"
+          nb={mainPool.lossUsd}
+          precision={0}
+          className='border-0'
+          format='currency'
+        />
       </div>
     </div>
   );

@@ -369,7 +369,7 @@ export default function EditPositionCollateral({
               nb={position.size}
               className="text-gray-400"
               precision={position.collateralToken.displayAmountDecimalsPrecision}
-              suffix={` ${getTokenSymbol(position.collateralToken.symbol)}`}
+              suffix={getTokenSymbol(position.collateralToken.symbol)}
               isDecimalDimmed={true}
             />
           </div>
@@ -620,7 +620,7 @@ export default function EditPositionCollateral({
                     precision={position.collateralToken.displayAmountDecimalsPrecision}
                     className="text-txtfade"
                     isDecimalDimmed={false}
-                    suffix={` ${position.collateralToken.symbol}`}
+                    suffix={position.collateralToken.symbol}
                   />
 
                   <RefreshButton className="ml-1" />

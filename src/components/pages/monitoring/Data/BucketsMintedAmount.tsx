@@ -32,8 +32,8 @@ export default function BucketsMintedAmount({
 
   return (
     <div className="bg-[#050D14] border rounded-lg lg:flex-1 shadow-xl h-[400px]">
-      <div className="w-full border-b p-5 mb-6">
-        <p className={titleClassName}>ADX BUCKETS MINTED AMOUNT</p>
+      <div className="w-full border-b p-3 mb-6">
+        <p className={titleClassName}>ADX Buckets Minted Amount</p>
       </div>
 
       <ResponsiveContainer width="80%" height="80%" className="m-auto">

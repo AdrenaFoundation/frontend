@@ -1,27 +1,24 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { USD_DECIMALS } from '@/constant';
 import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import NumberInfo from '../NumberInfo';
-
 export default function AllTimeFeesBreakdownPerToken({
   custodies,
   titleClassName,
-  bodyClassName,
 }: {
   custodies: CustodyExtended[];
   titleClassName?: string;
-  bodyClassName?: string;
 }) {
   const attributes = Object.keys(custodies[0].nativeObject.collectedFees);
 
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
-      <div className="w-full border-b p-5">
-        <p className={titleClassName}>All time Fees Breakdown (Per Token)</p>
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>All time Fees Breakdown</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4">
@@ -48,13 +45,13 @@ export default function AllTimeFeesBreakdownPerToken({
                 <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
               </div>
 
-              <div className="flex flex-col gap-1 mt-3">
+              <div className="flex flex-col mt-3">
                 {attributes.map((attribute, i) => (
                   <div
                     className="flex flex-row justify-between items-center"
                     key={i}
                   >
-                    <p className={twMerge('text-txtfade', bodyClassName)}>
+                    <p className={twMerge('text-txtfade text-base')}>
                       {
                         [
                           'Swap',
@@ -69,8 +66,8 @@ export default function AllTimeFeesBreakdownPerToken({
                     </p>
 
                     <div key={attribute} className="flex">
-                      <NumberInfo
-                        value={nativeToUi(
+                      <NumberDisplay
+                        nb={nativeToUi(
                           // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           (custody.nativeObject.collectedFees as any)[
                           attribute
@@ -78,7 +75,9 @@ export default function AllTimeFeesBreakdownPerToken({
                           USD_DECIMALS,
                         )}
                         precision={0}
-                        wholePartClassName={bodyClassName}
+                        format='currency'
+                        className='border-0 p-0 min-h-0'
+                        bodyClassName='text-base'
                       />
                     </div>
                   </div>

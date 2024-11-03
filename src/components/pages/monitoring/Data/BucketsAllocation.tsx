@@ -8,7 +8,6 @@ import {
 } from 'recharts';
 
 import CustomRechartsToolTip from '@/components/CustomRechartsToolTip/CustomRechartsToolTip';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { Cortex } from '@/types';
 import {
   nativeToUi,
@@ -27,8 +26,8 @@ export default function BucketsAllocation({
 
   return (
     <div className="bg-[#050D14] border rounded-lg lg:flex-1 shadow-xl h-[400px]">
-      <div className="w-full border-b p-5 mb-6">
-        <p className={titleClassName}>ADX BUCKETS ALLOCATION</p>
+      <div className="w-full border-b p-3 mb-6">
+        <p className={titleClassName}>ADX Buckets Allocation</p>
       </div>
 
       <ResponsiveContainer width="80%" height="80%" className="m-auto">
