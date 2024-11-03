@@ -64,14 +64,14 @@ export default function Stake({
 }: PageProps) {
   const wallet = useSelector((s) => s.walletState.wallet);
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
-  const { claimsHistoryAdx, claimsHistoryAlp, triggerClaimsReload } =
-    useClaimHistory();
-
-  const [optimisticClaimAdx, setOptimisticClaimAdx] =
-    useState<ClaimHistoryExtended[]>([]);
-
-  const [optimisticClaimAlp, setOptimisticClaimAlp] =
-    useState<ClaimHistoryExtended[]>([]);
+  const {
+    claimsHistoryAdx,
+    claimsHistoryAlp,
+    optimisticClaimAdx,
+    optimisticClaimAlp,
+    setOptimisticClaimAlp,
+    setOptimisticClaimAdx,
+  } = useClaimHistory();
 
   const adxPrice: number | null =
     useSelector((s) => s.tokenPrices?.[window.adrena.client.adxToken.symbol]) ??
@@ -361,9 +361,18 @@ export default function Stake({
 
       const optimisticClaim = {
         claim_id: new BN(Date.now()).toString(),
-        rewards_adx: tokenSymbol === 'ADX' ? adxRewards.pendingAdxRewards : alpRewards.pendingAdxRewards,
-        rewards_adx_genesis: tokenSymbol === 'ADX' ? adxRewards.pendingGenesisAdxRewards : alpRewards.pendingGenesisAdxRewards,
-        rewards_usdc: tokenSymbol === 'ADX' ? adxRewards.pendingUsdcRewards : alpRewards.pendingUsdcRewards,
+        rewards_adx:
+          tokenSymbol === 'ADX'
+            ? adxRewards.pendingAdxRewards
+            : alpRewards.pendingAdxRewards,
+        rewards_adx_genesis:
+          tokenSymbol === 'ADX'
+            ? adxRewards.pendingGenesisAdxRewards
+            : alpRewards.pendingGenesisAdxRewards,
+        rewards_usdc:
+          tokenSymbol === 'ADX'
+            ? adxRewards.pendingUsdcRewards
+            : alpRewards.pendingUsdcRewards,
         signature: 'optimistic',
         transaction_date: new Date(),
         created_at: new Date(),
@@ -392,12 +401,6 @@ export default function Stake({
       } else {
         setOptimisticClaimAlp([optimisticClaim]);
       }
-
-      setTimeout(() => {
-        setOptimisticClaimAdx([]);
-        setOptimisticClaimAlp([]);
-        triggerClaimsReload();
-      }, 20000); // wait 20 seconds before reloading claim history
     } catch (error) {
       console.error('error', error);
     }
@@ -705,15 +708,43 @@ export default function Stake({
                 setUpgradeLockedStake(false);
                 setFinalizeLockedStakeRedeem(true);
               }}
-              userPendingUsdcRewards={alpRewards.pendingUsdcRewards}
-              userPendingAdxRewards={alpRewards.pendingAdxRewards}
+              userPendingUsdcRewards={
+                alpRewards.pendingUsdcRewards +
+                optimisticClaimAlp.reduce(
+                  (acc, claim) => acc + claim.rewards_usdc,
+                  0,
+                )
+              }
+              userPendingAdxRewards={
+                alpRewards.pendingAdxRewards +
+                optimisticClaimAlp.reduce(
+                  (acc, claim) => acc + claim.rewards_adx,
+                  0,
+                )
+              }
               roundPendingUsdcRewards={
-                alpStakingCurrentRoundRewards.usdcRewards ?? 0
+                alpStakingCurrentRoundRewards.usdcRewards ??
+                0 +
+                optimisticClaimAlp.reduce(
+                  (acc, claim) => acc + claim.rewards_usdc,
+                  0,
+                )
               }
               roundPendingAdxRewards={
-                alpStakingCurrentRoundRewards.adxRewards ?? 0
+                alpStakingCurrentRoundRewards.adxRewards ??
+                0 +
+                optimisticClaimAlp.reduce(
+                  (acc, claim) => acc + claim.rewards_adx,
+                  0,
+                )
               }
-              pendingGenesisAdxRewards={alpRewards.pendingGenesisAdxRewards}
+              pendingGenesisAdxRewards={
+                alpRewards.pendingGenesisAdxRewards +
+                optimisticClaimAlp.reduce(
+                  (acc, claim) => acc + claim.rewards_adx_genesis,
+                  0,
+                )
+              }
               nextRoundTime={nextStakingRoundTimeAlp ?? 0}
               handleClickOnUpdateLockedStake={(
                 lockedStake: LockedStakeExtended,
@@ -723,7 +754,9 @@ export default function Stake({
                 setFinalizeLockedStakeRedeem(false);
               }}
               claimsHistory={
-                claimsHistoryAlp ? [...optimisticClaimAlp, ...claimsHistoryAlp] : null
+                claimsHistoryAlp
+                  ? [...optimisticClaimAlp, ...claimsHistoryAlp]
+                  : null
               }
             />
           </div>
@@ -749,15 +782,43 @@ export default function Stake({
                 setUpgradeLockedStake(false);
                 setFinalizeLockedStakeRedeem(true);
               }}
-              userPendingUsdcRewards={adxRewards.pendingUsdcRewards}
-              userPendingAdxRewards={adxRewards.pendingAdxRewards}
+              userPendingUsdcRewards={
+                adxRewards.pendingUsdcRewards +
+                optimisticClaimAdx.reduce(
+                  (acc, claim) => acc + claim.rewards_usdc,
+                  0,
+                )
+              }
+              userPendingAdxRewards={
+                adxRewards.pendingAdxRewards +
+                optimisticClaimAdx.reduce(
+                  (acc, claim) => acc + claim.rewards_adx,
+                  0,
+                )
+              }
               roundPendingUsdcRewards={
-                adxStakingCurrentRoundRewards.usdcRewards ?? 0
+                adxStakingCurrentRoundRewards.usdcRewards ??
+                0 +
+                optimisticClaimAdx.reduce(
+                  (acc, claim) => acc + claim.rewards_usdc,
+                  0,
+                )
               }
               roundPendingAdxRewards={
-                adxStakingCurrentRoundRewards.adxRewards ?? 0
+                adxStakingCurrentRoundRewards.adxRewards ??
+                0 +
+                optimisticClaimAdx.reduce(
+                  (acc, claim) => acc + claim.rewards_adx,
+                  0,
+                )
               }
-              pendingGenesisAdxRewards={adxRewards.pendingGenesisAdxRewards}
+              pendingGenesisAdxRewards={
+                adxRewards.pendingGenesisAdxRewards +
+                optimisticClaimAdx.reduce(
+                  (acc, claim) => acc + claim.rewards_adx_genesis,
+                  0,
+                )
+              }
               nextRoundTime={nextStakingRoundTimeAdx ?? 0}
               handleClickOnUpdateLockedStake={(
                 lockedStake: LockedStakeExtended,
@@ -767,7 +828,9 @@ export default function Stake({
                 setFinalizeLockedStakeRedeem(false);
               }}
               claimsHistory={
-                claimsHistoryAdx ? [...optimisticClaimAdx, ...claimsHistoryAdx] : null
+                claimsHistoryAdx
+                  ? [...optimisticClaimAdx, ...claimsHistoryAdx]
+                  : null
               }
             />
           </div>
