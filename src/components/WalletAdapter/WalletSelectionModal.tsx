@@ -163,7 +163,7 @@ const WalletBlock = ({
       >
         <div className="text-lg font-boldy flex items-center pt-1 pb-1 pl-3 pr-3">{name}</div>
 
-        {recommended ? <div className={twMerge('absolute left-2 top-2 flex text-xs font-boldy text-white', isHovered ? 'opacity-100' : 'opacity-80')}>Team's choice ❤️</div> : null}
+        {recommended ? <div className={twMerge('absolute left-2 top-2 flex text-xs font-boldy text-white', isHovered ? 'opacity-100' : 'opacity-80')}>Team&apos;s choice ❤️</div> : null}
         {beta ? <div className={twMerge('absolute left-2 top-2 flex text-xs font-boldy text-white', isHovered ? 'opacity-100' : 'opacity-80')}>Beta Testing</div> : null}
 
         {lastConnected ? <div className={twMerge('absolute bottom-3 flex text-xs italic', isHovered ? 'text-white' : 'text-txtfade')}>Your Last Pick!</div> : null}
