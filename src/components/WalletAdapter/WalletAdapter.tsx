@@ -30,6 +30,13 @@ export const WALLET_ICONS = {
   coinbase: coinbaseLogo,
 } as const satisfies Record<WalletAdapterName, ImageRef>;
 
+export const WALLET_COLORS = {
+  phantom: '#ab9ff2',
+  solflare: '#fda518',
+  walletconnect: '#0798fe',
+  coinbase: '#072b79',
+} as const satisfies Record<WalletAdapterName, string>;
+
 export default function WalletAdapter({
   className,
   userProfile,
@@ -102,13 +109,13 @@ export default function WalletAdapter({
 
   return (
     <div className="relative">
-      {connected ? (
+      {connected && userProfile !== null ? (
         <Menu
           trigger={
             <Button
               className={twMerge(
                 className,
-                'gap-2 pl-4 pr-3 text-xs',
+                'gap-1 pl-2 pr-3 text-xs w-[15em]',
                 isIconOnly && 'p-0 h-7 w-7',
               )}
               title={
@@ -119,6 +126,7 @@ export default function WalletAdapter({
                   : null
               }
               leftIcon={WALLET_ICONS[wallet.adapterName]}
+              leftIconClassName='w-4 h-4'
               variant="lightbg"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
@@ -145,13 +153,13 @@ export default function WalletAdapter({
         <Button
           className={twMerge(
             className,
-            'gap-2 pl-4 pr-3',
+            'gap-1 pl-2 pr-3 text-xs w-[15em]',
             isIconOnly && 'p-0 h-7 w-7',
           )}
           title={!isIconOnly ? 'Connect wallet' : null}
-          rightIcon={walletIcon}
+          leftIcon={walletIcon}
           alt="wallet icon"
-          rightIconClassName="w-4 h-4"
+          leftIconClassName="w-4 h-4"
           variant="lightbg"
           onClick={() => {
             if (!connected) {

@@ -1,7 +1,7 @@
 import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { AnimatePresence } from 'framer-motion';
 import Image, { StaticImageData } from 'next/image';
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -13,23 +13,23 @@ import { useDispatch, useSelector } from '@/store/store';
 import { WalletAdapterName } from '@/types';
 
 import Modal from '../common/Modal/Modal';
-import { WALLET_ICONS } from './WalletAdapter';
+import { WALLET_COLORS, WALLET_ICONS } from './WalletAdapter';
 
 export default function WalletSelectionModal() {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
+  const wallet = useSelector((s) => s.walletState.wallet);
 
-  const lastConnectedWalletRef = useRef<null | WalletAdapterName>(null);
+  const [lastConnectedWallet, setLastConnectedWallet] = useState<null | WalletAdapterName>(null);
 
-  if (lastConnectedWalletRef.current === null) {
+  // Refresh when the wallet change to make sure we handle disconnect->reconnect->disconnect->reconnect
+  useEffect(() => {
     const adapterName = localStorage.getItem('lastConnectedWallet');
 
     if (adapterName && adapterName in walletAdapters) {
-      lastConnectedWalletRef.current = adapterName as WalletAdapterName;
-    } else {
-      lastConnectedWalletRef.current = null;
+      setLastConnectedWallet(adapterName as WalletAdapterName);
     }
-  }
+  }, [wallet]);
 
   return (
     <AnimatePresence>
@@ -39,11 +39,12 @@ export default function WalletSelectionModal() {
           className="flex flex-col w-full relative overflow-visible"
           title="Pick a wallet"
         >
-          <div className="flex flex-col w-[25em]">
+          <div className="flex flex-col min-w-[25em] grow">
             <WalletBlock
               name="Phantom"
-              bgColor="#ab9ff2"
-              lastConnected={lastConnectedWalletRef.current === 'phantom'}
+              bgColor={WALLET_COLORS.phantom}
+              recommended={true}
+              lastConnected={lastConnectedWallet === 'phantom'}
               imgClassName='top-[5.3em] relative'
               logo={WALLET_ICONS.phantom}
               onClick={() => {
@@ -55,9 +56,9 @@ export default function WalletSelectionModal() {
 
             <WalletBlock
               name="Coinbase"
-              bgColor="#072b79"
-              lastConnected={lastConnectedWalletRef.current === 'coinbase'}
-              imgClassName='w-[9em] top-[5.3em] right-[2em] relative'
+              bgColor={WALLET_COLORS.coinbase}
+              lastConnected={lastConnectedWallet === 'coinbase'}
+              imgClassName='w-[9em] top-[5.3em] right-[2em] relative right-16'
               logo={WALLET_ICONS.coinbase}
               onClick={() => {
                 dispatch(connectWalletAction('coinbase'));
@@ -68,8 +69,8 @@ export default function WalletSelectionModal() {
 
             <WalletBlock
               name="Solflare"
-              bgColor="#fda518"
-              lastConnected={lastConnectedWalletRef.current === 'solflare'}
+              bgColor={WALLET_COLORS.solflare}
+              lastConnected={lastConnectedWallet === 'solflare'}
               imgClassName='w-[9em] top-[5.3em] right-[2em] relative'
               logo={WALLET_ICONS.solflare}
               onClick={() => {
@@ -81,8 +82,9 @@ export default function WalletSelectionModal() {
 
             <WalletBlock
               name="WalletConnect"
-              bgColor="#0798fe"
-              lastConnected={lastConnectedWalletRef.current === 'walletconnect'}
+              bgColor={WALLET_COLORS.walletconnect}
+              lastConnected={lastConnectedWallet === 'walletconnect'}
+              beta={true}
               imgClassName='top-[2em] w-[10em] right-[1em] relative'
               logo={WALLET_ICONS.walletconnect}
               onClick={() => {
@@ -102,8 +104,10 @@ const WalletBlock = ({
   name,
   logo,
   lastConnected,
+  recommended,
   onClick,
   imgClassName,
+  beta,
   bgColor,
   readyState,
   className,
@@ -112,6 +116,8 @@ const WalletBlock = ({
   logo: StaticImageData;
   lastConnected: boolean;
   imgClassName?: string;
+  beta?: boolean;
+  recommended?: boolean;
   onClick: () => void;
   bgColor: string;
   readyState: WalletReadyState;
@@ -135,12 +141,16 @@ const WalletBlock = ({
           backgroundColor: bgColor,
         }}
       >
-        <Image src={logo} alt={`${name} icon`} className={twMerge("w-[12em] h-auto", imgClassName)} />
+        <Image src={logo} alt={`${name} icon`} className={twMerge(
+          "w-[12em] h-auto left-16 scale-x-[-1] transition-transform duration-500",
+          isHovered ? 'translate-y-0' : 'translate-y-[18%]',
+          imgClassName,
+        )} />
       </div>
 
       <div
         className={twMerge(
-          'flex p-3 w-full h-full relative items-center',
+          'flex p-3 w-full h-full relative items-center justify-center',
           disabled
             ? 'cursor-not-allowed opacity-40'
             : 'cursor-pointer duration-300',
@@ -151,9 +161,12 @@ const WalletBlock = ({
           onClick();
         }}
       >
-        <div className="text-lg font-boldy flex items-center ml-8 pt-1 pb-1 pl-3 pr-3 bg-main">{name}</div>
+        <div className="text-lg font-boldy flex items-center pt-1 pb-1 pl-3 pr-3">{name}</div>
 
-        {lastConnected ? <div className={twMerge('flex text-sm ml-4 italic', isHovered ? 'text-white' : 'text-txtfade')}>Last Pick!</div> : null}
+        {recommended ? <div className={twMerge('absolute left-2 top-2 flex text-xs font-boldy text-white', isHovered ? 'opacity-100' : 'opacity-80')}>Team's choice ❤️</div> : null}
+        {beta ? <div className={twMerge('absolute left-2 top-2 flex text-xs font-boldy text-white', isHovered ? 'opacity-100' : 'opacity-80')}>Beta Testing</div> : null}
+
+        {lastConnected ? <div className={twMerge('absolute bottom-3 flex text-xs italic', isHovered ? 'text-white' : 'text-txtfade')}>Your Last Pick!</div> : null}
       </div>
     </div>
   );

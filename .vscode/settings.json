@@ -21,9 +21,11 @@
     "rpcs",
     "sablier",
     "Solana",
+    "solflare",
     "Tokenomics",
     "txtfade",
     "unstaked",
+    "walletconnect",
     "WSOL"
   ],
   "[typescriptreact]": {
