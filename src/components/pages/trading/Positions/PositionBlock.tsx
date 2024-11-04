@@ -168,6 +168,10 @@ export default function PositionBlock({
             isDecimalDimmed={false}
           />
 
+          <span className={twMerge((showAfterFees ? position.pnl : position.pnl - fees) > 0
+            ? 'text-green'
+            : 'text-redbright')}>{"("}</span>
+
           <FormatNumber
             nb={
               ((showAfterFees ? position.pnl : position.pnl - fees) /
@@ -175,8 +179,6 @@ export default function PositionBlock({
               100
             }
             format="percentage"
-            prefix="("
-            suffix=")"
             precision={2}
             isDecimalDimmed={false}
             className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
@@ -184,6 +186,10 @@ export default function PositionBlock({
               : 'redbright'
               }`}
           />
+
+          <span className={twMerge((showAfterFees ? position.pnl : position.pnl - fees) > 0
+            ? 'text-green'
+            : 'text-redbright')}>{")"}</span>
 
           <label className="flex items-center ml-2 cursor-pointer">
             <label className="flex items-center ml-1 cursor-pointer">
