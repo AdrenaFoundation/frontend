@@ -14,6 +14,7 @@ export default function NumberDisplay({
   format,
   precision,
   placeholder,
+  isDecimalDimmed,
   suffix,
   className,
   bodyClassName,
@@ -28,6 +29,7 @@ export default function NumberDisplay({
   format?: 'number' | 'currency' | 'percentage';
   precision?: number;
   placeholder?: string;
+  isDecimalDimmed?: boolean;
   suffix?: string;
   className?: string;
   bodyClassName?: string;
@@ -63,6 +65,7 @@ export default function NumberDisplay({
       <FormatNumber
         nb={nb}
         precision={precision}
+        isDecimalDimmed={isDecimalDimmed}
         placeholder={placeholder}
         className={twMerge("text-xl", bodyClassName)}
         format={format}

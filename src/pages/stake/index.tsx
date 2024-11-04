@@ -10,6 +10,7 @@ import Loader from '@/components/Loader/Loader';
 import ADXStakeToken from '@/components/pages/stake/ADXStakeToken';
 import ALPStakeToken from '@/components/pages/stake/ALPStakeToken';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
+import StakeApr from '@/components/pages/stake/StakeApr';
 import StakeLanding from '@/components/pages/stake/StakeLanding';
 import StakeOverview from '@/components/pages/stake/StakeOverview';
 import StakeRedeem from '@/components/pages/stake/StakeRedeem';
@@ -690,6 +691,8 @@ export default function Stake({
       <div className="flex flex-col lg:flex-row gap-4 p-4 justify-center z-10 md:h-full max-w-[1300px] m-auto">
         <>
           <div className="flex-1">
+            <StakeApr token={'ALP'} className='mb-2' />
+
             <StakeOverview
               token={'ALP'}
               totalLockedStake={alpDetails.totalLockedStake}
@@ -762,6 +765,8 @@ export default function Stake({
           </div>
 
           <div className="flex-1">
+            <StakeApr token={'ADX'} className='mb-2' />
+
             <StakeOverview
               token={'ADX'}
               totalLockedStake={adxDetails.totalLockedStake}

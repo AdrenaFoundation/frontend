@@ -74,6 +74,7 @@ export default function BasicMonitoring({
           </div>
         </StyledContainer>
       )}
+
       <StyledContainer className="flex gap-6">
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <AumChart />
