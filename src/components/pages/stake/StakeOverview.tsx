@@ -526,7 +526,10 @@ export default function StakeOverview({
           >
             <div className='flex flex-row gap-2 items-center cursor-pointer select-none'>
               <div className="flex items-center justify-between">
-                <h3 className="md:text-lg font-semibold mr-1">Claim History</h3>
+                <div className='mr-2'>
+                  <h3 className="md:text-lg font-semibold">Claim History</h3>
+                  <p className='text-xs text-txtfade'>Subject to 30s delay</p>
+                </div>
                 <h3 className="text-lg font-semibold text-txtfade">
                   {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
                 </h3>
@@ -645,7 +648,7 @@ export default function StakeOverview({
         <div className="px-5">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold mr-1">My Locked Stakes</h3>
+              <h3 className="text-lg font-semibold mr-2">My Locked Stakes</h3>
               <h3 className="text-lg font-semibold text-txtfade">
                 {lockedStakes?.length ? ` (${lockedStakes.length})` : ''}
               </h3>

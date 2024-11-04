@@ -710,14 +710,14 @@ export default function Stake({
               }}
               userPendingUsdcRewards={
                 alpRewards.pendingUsdcRewards +
-                optimisticClaimAlp.reduce(
+                optimisticClaimAlp?.reduce(
                   (acc, claim) => acc + claim.rewards_usdc,
                   0,
                 )
               }
               userPendingAdxRewards={
                 alpRewards.pendingAdxRewards +
-                optimisticClaimAlp.reduce(
+                optimisticClaimAlp?.reduce(
                   (acc, claim) => acc + claim.rewards_adx,
                   0,
                 )
@@ -725,7 +725,7 @@ export default function Stake({
               roundPendingUsdcRewards={
                 alpStakingCurrentRoundRewards.usdcRewards ??
                 0 +
-                optimisticClaimAlp.reduce(
+                optimisticClaimAlp?.reduce(
                   (acc, claim) => acc + claim.rewards_usdc,
                   0,
                 )
@@ -733,14 +733,14 @@ export default function Stake({
               roundPendingAdxRewards={
                 alpStakingCurrentRoundRewards.adxRewards ??
                 0 +
-                optimisticClaimAlp.reduce(
+                optimisticClaimAlp?.reduce(
                   (acc, claim) => acc + claim.rewards_adx,
                   0,
                 )
               }
               pendingGenesisAdxRewards={
                 alpRewards.pendingGenesisAdxRewards +
-                optimisticClaimAlp.reduce(
+                optimisticClaimAlp?.reduce(
                   (acc, claim) => acc + claim.rewards_adx_genesis,
                   0,
                 )
@@ -755,7 +755,7 @@ export default function Stake({
               }}
               claimsHistory={
                 claimsHistoryAlp
-                  ? [...optimisticClaimAlp, ...claimsHistoryAlp]
+                  ? optimisticClaimAlp?.length > 0 ? [...optimisticClaimAlp, ...claimsHistoryAlp] : claimsHistoryAlp
                   : null
               }
             />
@@ -784,14 +784,14 @@ export default function Stake({
               }}
               userPendingUsdcRewards={
                 adxRewards.pendingUsdcRewards +
-                optimisticClaimAdx.reduce(
+                optimisticClaimAdx?.reduce(
                   (acc, claim) => acc + claim.rewards_usdc,
                   0,
                 )
               }
               userPendingAdxRewards={
                 adxRewards.pendingAdxRewards +
-                optimisticClaimAdx.reduce(
+                optimisticClaimAdx?.reduce(
                   (acc, claim) => acc + claim.rewards_adx,
                   0,
                 )
@@ -799,7 +799,7 @@ export default function Stake({
               roundPendingUsdcRewards={
                 adxStakingCurrentRoundRewards.usdcRewards ??
                 0 +
-                optimisticClaimAdx.reduce(
+                optimisticClaimAdx?.reduce(
                   (acc, claim) => acc + claim.rewards_usdc,
                   0,
                 )
@@ -807,14 +807,14 @@ export default function Stake({
               roundPendingAdxRewards={
                 adxStakingCurrentRoundRewards.adxRewards ??
                 0 +
-                optimisticClaimAdx.reduce(
+                optimisticClaimAdx?.reduce(
                   (acc, claim) => acc + claim.rewards_adx,
                   0,
                 )
               }
               pendingGenesisAdxRewards={
                 adxRewards.pendingGenesisAdxRewards +
-                optimisticClaimAdx.reduce(
+                optimisticClaimAdx?.reduce(
                   (acc, claim) => acc + claim.rewards_adx_genesis,
                   0,
                 )
@@ -829,7 +829,7 @@ export default function Stake({
               }}
               claimsHistory={
                 claimsHistoryAdx
-                  ? [...optimisticClaimAdx, ...claimsHistoryAdx]
+                  ? optimisticClaimAdx?.length > 0 ? [...optimisticClaimAdx, ...claimsHistoryAdx] : claimsHistoryAdx
                   : null
               }
             />
