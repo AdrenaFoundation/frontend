@@ -185,7 +185,7 @@ export default function DetailedMonitoring({
             <NumberDisplay
               title="ADX CIRCULATING SUPPLY"
               nb={adxTotalSupply}
-              precision={2}
+              precision={0}
               className='bg-[#050D14]'
             />
           ) : null}
