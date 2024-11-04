@@ -15,6 +15,7 @@ import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 import coinbaseLogo from '../../../public/images/coinbase.png';
 import phantomLogo from '../../../public/images/phantom.svg';
 import solflareLogo from '../../../public/images/solflare.png';
+import walletconnectLogo from '../../../public/images/wallet-connect.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import walletconnectLogo from '../../../public/images/walletconnect.png';
 import Button from '../common/Button/Button';
