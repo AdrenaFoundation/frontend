@@ -43,6 +43,7 @@ import {
   Token,
   U128Split,
 } from './types';
+import { max } from 'bn.js';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
   const pxSize = 9;
@@ -89,8 +90,8 @@ export function formatNumber(
   minimumFractionDigits = 0,
   precisionIfPriceDecimalsBelow = 6,
 ): string {
-  // If price is below decimals precision, display up to 6 decimals
-  if (nb < 10 ** -precision) precision = precisionIfPriceDecimalsBelow;
+  // If price is below decimals precision, display up to 6 decimals (override by minimumFractionDigits)
+  if (nb < 10 ** -precision) precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
 
   return Number(nb.toFixed(precision)).toLocaleString(undefined, {
     minimumFractionDigits,
