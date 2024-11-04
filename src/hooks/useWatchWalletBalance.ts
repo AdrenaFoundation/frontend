@@ -31,6 +31,7 @@ export default function useWatchWalletBalance(): {
       ...window.adrena.client.tokens,
       window.adrena.client.alpToken,
       window.adrena.client.adxToken,
+      { mint: NATIVE_MINT, symbol: 'SOL' },
     ];
 
     const balances = await Promise.all(

@@ -6,6 +6,7 @@ import Head from 'next/head';
 import { ReactNode, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
+import ViewsWarning from '@/app/components/ViewsWarning/ViewsWarning';
 import BurgerMenu from '@/components/BurgerMenu/BurgerMenu';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import {
@@ -129,6 +130,8 @@ export default function RootLayout({
         />
       )}
 
+      <ViewsWarning />
+
       <div className="w-full grow flex justify-center">
         <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
           {children}
@@ -138,6 +141,7 @@ export default function RootLayout({
       <ToastContainer />
 
       <Footer className="z-10" />
+
 
       <div className="absolute top-0 right-0 overflow-hidden w-full">
         <div id="modal-container"></div>
