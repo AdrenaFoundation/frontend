@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 
 import crossIcon from '../../../../public/images/Icons/cross.svg';
@@ -23,7 +24,11 @@ export default function ViewsWarning() {
                 <Image src={infoIcon} alt="Warning" width={14} height={14} />
 
                 <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
-                    You need at least 0.001 SOL to interact with the app
+                    You need at least <FormatNumber
+                        nb={0.001}
+                        precision={3}
+                        isDecimalDimmed={false}
+                    /> SOL to interact with the app
                 </p>
             </div>
 
