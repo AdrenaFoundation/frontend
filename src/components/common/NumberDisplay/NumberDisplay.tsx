@@ -10,22 +10,30 @@ import StyledContainer from '../StyledContainer/StyledContainer';
 
 export default function NumberDisplay({
   nb,
-  title,
+  title = '',
   format,
   precision,
   placeholder,
   suffix,
   className,
+  bodyClassName,
+  headerClassName,
+  titleClassName,
   tippyInfo,
+  subtitle,
 }: {
-  title: string;
+  title?: string;
   nb: number | null;
   format?: 'number' | 'currency' | 'percentage';
   precision?: number;
   placeholder?: string;
   suffix?: string;
   className?: string;
+  bodyClassName?: string;
+  headerClassName?: string;
+  titleClassName?: string;
   tippyInfo?: string;
+  subtitle?: string;
 }) {
   return (
     <StyledContainer
@@ -44,17 +52,20 @@ export default function NumberDisplay({
           </div>
         </Tippy> : title
       }
-      className="flex items-center flex-1 min-h-[2em]"
-      headerClassName="text-center justify-center"
-      titleClassName="text-xs sm:text-sm opacity-50 font-boldy"
+      className={twMerge("flex items-center flex-1 min-h-[2em] bg-transparent", className)}
+      headerClassName={twMerge("text-center justify-center", headerClassName)}
+      titleClassName={twMerge("text-xs sm:text-sm text-txtfade font-boldy", titleClassName)}
+      subTitle={subtitle}
+      subTitleClassName='text-xs text-txtfade'
     >
       <FormatNumber
         nb={nb}
         precision={precision}
         placeholder={placeholder}
-        className={twMerge("text-xl", className)}
+        className={twMerge("text-xl", bodyClassName)}
         format={format}
         suffix={suffix}
+        suffixClassName='text-sm font-boldy text-txtfade'
       />
     </StyledContainer>
   );

@@ -1,9 +1,6 @@
-import { twMerge } from 'tailwind-merge';
-
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { Staking } from '@/types';
-import { formatNumber, nativeToUi } from '@/utils';
+import { nativeToUi } from '@/utils';
 
 export default function StakingRewardVaults({
   alpStakingAccount,
@@ -11,7 +8,6 @@ export default function StakingRewardVaults({
   alpStakingRewardsAccumulated,
   adxStakingRewardsAccumulated,
   titleClassName,
-  bodyClassName,
 }: {
   alpStakingAccount: Staking;
   adxStakingAccount: Staking;
@@ -24,7 +20,6 @@ export default function StakingRewardVaults({
     adxRewards: number | null;
   } | null;
   titleClassName?: string;
-  bodyClassName?: string;
 }) {
   let nextAlpRoundUsdcRewards = 0;
   let nextAdxRoundUsdcRewards = 0;
@@ -68,66 +63,50 @@ export default function StakingRewardVaults({
 
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
-      <div className="w-full border-b p-5">
+      <div className="w-full border-b p-3">
         <p className={titleClassName}>
-          Staking rewards (available next round)
+          Staking Rewards (available next round)
         </p>
-        <p className="text-base opacity-50">
+
+        <p className="text-xs opacity-50">
           Accruing, will be available at the end of the current round.
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row">
-        <div className="p-5 flex-1">
-          <div className={titleClassName}>ALP Staking</div>
+      <div className="flex flex-col sm:flex-row grow">
+        <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow">
+          <div className='mb-2 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ALP Staking</div>
 
-          <div className={twMerge('flex flex-col', bodyClassName)}>
-            <div className="flex items-center">
-              <div>
-                {nextAlpRoundUsdcRewards !== 0
-                  ? formatNumber(nextAlpRoundUsdcRewards, 0)
-                  : '-'}
-              </div>
+          <NumberDisplay
+            nb={nextAlpRoundUsdcRewards}
+            precision={0}
+            suffix='USDC'
+            className='border-0 p-0 items-start'
+          />
 
-              <div className="ml-1 text-base opacity-50">USDC</div>
-            </div>
-
-            <div className="flex items-center">
-              <div>
-                {nextAlpRoundAdxRewards !== 0
-                  ? formatNumber(nextAlpRoundAdxRewards, 2)
-                  : '-'}
-              </div>
-
-              <div className="ml-1 text-base opacity-50">ADX</div>
-            </div>
-          </div>
+          <NumberDisplay
+            nb={nextAlpRoundAdxRewards}
+            precision={0}
+            suffix='ADX'
+            className='border-0 p-0 items-start'
+          />
         </div>
 
-        <div className="p-5 flex-1 border-t sm:border-l">
-          <div className={titleClassName}>ADX Staking</div>
+        <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow border-t sm:border-l">
+          <div className='mb-2 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ADX Staking</div>
+          <NumberDisplay
+            nb={nextAdxRoundUsdcRewards}
+            precision={0}
+            suffix='USDC'
+            className='border-0 p-0 items-start'
+          />
 
-          <div className={twMerge('flex flex-col', bodyClassName)}>
-            <div className="flex items-center">
-              <div>
-                {nextAdxRoundUsdcRewards !== 0
-                  ? formatNumber(nextAdxRoundUsdcRewards, 0)
-                  : '-'}
-              </div>
-
-              <div className="ml-1 text-base opacity-50">USDC</div>
-            </div>
-
-            <div className="flex items-center">
-              <div>
-                {nextAdxRoundAdxRewards !== 0
-                  ? formatNumber(nextAdxRoundAdxRewards, 2)
-                  : '-'}
-              </div>
-
-              <div className="ml-1 text-base opacity-50">ADX</div>
-            </div>
-          </div>
+          <NumberDisplay
+            nb={nextAdxRoundAdxRewards}
+            precision={0}
+            suffix='ADX'
+            className='border-0 p-0 items-start'
+          />
         </div>
       </div>
     </div>

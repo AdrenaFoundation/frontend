@@ -1,4 +1,3 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { VEST_BUCKETS } from '@/constant';
 import { VestExtended } from '@/types';
 import { nativeToUi } from '@/utils';
@@ -18,11 +17,10 @@ export default function VestsBreakdown({
 }) {
   return vests?.length ? (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl overflow-hidden">
-      <div className="w-full border-b p-5">
-        <p className={titleClassName}>VESTS BREAKDOWN</p>
+      <div className="w-full border-b p-3 flex gap-2">
+        <p className={titleClassName}>Vest Breakdown</p>
         {vests ? <p className='text-base opacity-50 font-mono'>{vests.length} vests</p> : null}
       </div>
-
 
       <Table
         rowHovering={true}

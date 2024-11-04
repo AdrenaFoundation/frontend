@@ -269,7 +269,7 @@ export default function PositionBlockReadOnly({
                                         format="number"
                                         className="text-gray-400 text-xs"
                                         precision={position.token.displayAmountDecimalsPrecision}
-                                        suffix={` ${getTokenSymbol(position.token.symbol)}`}
+                                        suffix={getTokenSymbol(position.token.symbol)}
                                     />
                                 }
                                 placement="auto"
@@ -297,7 +297,7 @@ export default function PositionBlockReadOnly({
                                         precision={
                                             position.collateralToken.displayAmountDecimalsPrecision
                                         }
-                                        suffix={` ${getTokenSymbol(
+                                        suffix={`${getTokenSymbol(
                                             position.collateralToken.symbol,
                                         )} (at init.)`}
                                     />

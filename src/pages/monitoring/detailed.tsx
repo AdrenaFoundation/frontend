@@ -5,10 +5,9 @@ import { twMerge } from 'tailwind-merge';
 import Menu from '@/components/common/Menu/Menu';
 import MenuItem from '@/components/common/Menu/MenuItem';
 import MenuItems from '@/components/common/Menu/MenuItems';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import AdrenaAccounts from '@/components/pages/monitoring/Data/AdrenaAccounts';
-import ADXCirculatingSupply from '@/components/pages/monitoring/Data/ADXCirculatingSupply';
-import AllTimeFees from '@/components/pages/monitoring/Data/AllTimeFees';
 import AllTimeFeesBreakdownPerToken from '@/components/pages/monitoring/Data/AllTimeFeesBreakdownPerToken';
 import AUM from '@/components/pages/monitoring/Data/AUM';
 import AUMBreakdown from '@/components/pages/monitoring/Data/AUMBreakdown';
@@ -17,7 +16,6 @@ import BucketsMintedAmount from '@/components/pages/monitoring/Data/BucketsMinte
 import CurrentStakingRoundTime from '@/components/pages/monitoring/Data/CurrentStakingRoundTime';
 import FinalizeLockedStakedThreads from '@/components/pages/monitoring/Data/FinalizeLockedStakeThreads';
 import GovernanceAccounts from '@/components/pages/monitoring/Data/GovernanceAccounts';
-import LockedStakedADX from '@/components/pages/monitoring/Data/LockedStakedADX';
 import MintAccounts from '@/components/pages/monitoring/Data/MintsAccounts';
 import OracleAccounts from '@/components/pages/monitoring/Data/OracleAccounts';
 import PoolRatios from '@/components/pages/monitoring/Data/PoolRatios';
@@ -42,6 +40,7 @@ import useVestRegistry from '@/hooks/useVestRegistry';
 import useVests from '@/hooks/useVests';
 import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
+import { nativeToUi } from '@/utils';
 
 import arrowDownIcom from '../../../public/images/Icons/arrow-down.svg';
 
@@ -102,11 +101,6 @@ export default function DetailedMonitoring({
   // I know the following is not the best naming convention, but it allow tweaking the styles easily
   //
   const titleClassName = 'text-lg opacity-50 font-boldy';
-  // Used to style the text in the data
-  const bodyClassName = 'text-4xl sm:text-5xl font-boldy';
-  // Used to style the dollar amount in the data (secondary info)
-  const dollarBodyClassName = 'text-xl sm:text-3xl font-boldy';
-  const smallBodyClassName = 'text-xl font-boldy';
 
   const handleTabChange = (tab: (typeof tabs)[number]) => {
     setSelectedTab(tab);
@@ -174,60 +168,61 @@ export default function DetailedMonitoring({
         </MenuItems>
       </Menu>
 
-      <div className="flex flex-col gap-5 p-5 pt-3">
+      <div className="flex flex-col gap-3 p-5 pt-3">
         <div
           className={twMerge(
-            'gap-5',
+            'gap-3',
             selectedTab === 'All'
               ? 'grid sm:grid-cols-2 lg:grid-cols-4'
               : 'flex flex-row',
           )}
         >
           {selectedTab === 'All' || selectedTab === 'Pool' ? (
-            <AUM
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              className="bg-[#050D14] shadow-lg"
-              connected={connected}
-            />
+            <AUM connected={connected} />
           ) : null}
+
           {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
-            <ADXCirculatingSupply
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              className="bg-[#050D14] shadow-lg"
-              adxTotalSupply={adxTotalSupply}
+            <NumberDisplay
+              title="ADX CIRCULATING SUPPLY"
+              nb={adxTotalSupply}
+              precision={2}
+              className='bg-[#050D14]'
             />
           ) : null}
+
           {selectedTab === 'All' || selectedTab === 'Staking' ? (
-            <LockedStakedADX
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              className="bg-[#050D14] shadow-lg"
-              adxStakingAccount={adxStakingAccount}
+            <NumberDisplay
+              title="LOCKED STAKED ADX"
+              nb={nativeToUi(
+                adxStakingAccount.nbLockedTokens,
+                adxStakingAccount.stakedTokenDecimals,
+              )}
+              precision={0}
+              suffix=' ADX'
+              className='bg-[#050D14]'
             />
           ) : null}
+
           {selectedTab === 'All' || selectedTab === 'Fees' ? (
-            <AllTimeFees
-              titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
-              className="bg-[#050D14] shadow-lg"
-              mainPool={mainPool}
+            <NumberDisplay
+              title="ALL TIME FEES"
+              nb={mainPool.totalFeeCollected}
+              format="currency"
+              precision={0}
+              className='bg-[#050D14]'
             />
           ) : null}
         </div>
 
         {selectedTab === 'All' || selectedTab === 'Trading' ? (
-          <div className="flex flex-col lg:flex-row gap-5">
+          <div className="flex flex-col lg:flex-row gap-3">
             <PositionsNow
               titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
               mainPool={mainPool}
             />
 
             <PositionsAllTime
               titleClassName={titleClassName}
-              bodyClassName={bodyClassName}
               mainPool={mainPool}
             />
           </div>
@@ -235,10 +230,9 @@ export default function DetailedMonitoring({
 
         {selectedTab === 'All' || selectedTab === 'Staking' ? (
           <>
-            <div className="flex flex-col lg:flex-row gap-5">
+            <div className="flex flex-col lg:flex-row gap-3">
               <StakingRewardVaults
                 titleClassName={titleClassName}
-                bodyClassName={bodyClassName}
                 alpStakingAccount={alpStakingAccount}
                 adxStakingAccount={adxStakingAccount}
                 alpStakingRewardsAccumulated={alpStakingRewardsAccumulated}
@@ -247,16 +241,14 @@ export default function DetailedMonitoring({
 
               <StakingRewardsWaitingToBeClaimed
                 titleClassName={titleClassName}
-                bodyClassName={bodyClassName}
                 alpStakingAccount={alpStakingAccount}
                 adxStakingAccount={adxStakingAccount}
               />
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-5">
+            <div className="flex flex-col lg:flex-row gap-3">
               <CurrentStakingRoundTime
                 titleClassName={titleClassName}
-                bodyClassName={bodyClassName}
                 alpStakingAccount={alpStakingAccount}
                 adxStakingAccount={adxStakingAccount}
                 triggerAlpStakingAccountReload={triggerAlpStakingAccountReload}
@@ -265,7 +257,6 @@ export default function DetailedMonitoring({
 
               <StakingLockedTokens
                 titleClassName={titleClassName}
-                bodyClassName={bodyClassName}
                 alpStakingAccount={alpStakingAccount}
                 adxStakingAccount={adxStakingAccount}
               />
@@ -277,29 +268,26 @@ export default function DetailedMonitoring({
           <PositionsNowBreakdown
             titleClassName={titleClassName}
             custodies={custodies}
-            mainWholeNumberClassName={bodyClassName}
-            dollarWholeNumberClassName={dollarBodyClassName}
           />
         ) : null}
+
         {selectedTab === 'All' || selectedTab === 'Pool' ? (
           <VolumeBreakdownPerToken
             titleClassName={titleClassName}
-            bodyClassName={smallBodyClassName}
             custodies={custodies}
           />
         ) : null}
+
         {selectedTab === 'All' || selectedTab === 'Fees' ? (
           <AllTimeFeesBreakdownPerToken
             titleClassName={titleClassName}
-            bodyClassName={smallBodyClassName}
             custodies={custodies}
           />
         ) : null}
+
         {selectedTab === 'All' || selectedTab === 'Pool' ? (
           <AUMBreakdown
             titleClassName={titleClassName}
-            mainWholeNumberClassName={bodyClassName}
-            dollarWholeNumberClassName={dollarBodyClassName}
             custodies={custodies}
           />
         ) : null}
@@ -309,15 +297,17 @@ export default function DetailedMonitoring({
         ) : null}
 
         {selectedTab === 'All' || selectedTab === 'ADX tokenomics' ? (
-          <div className="flex flex-col lg:flex-row gap-5">
+          <div className="flex flex-col lg:flex-row gap-3">
             <BucketsAllocation
               titleClassName={titleClassName}
               cortex={cortex}
             />
+
             <BucketsMintedAmount
               titleClassName={titleClassName}
               cortex={cortex}
             />
+
             <Tokenomics titleClassName={titleClassName} />
           </div>
         ) : null}
@@ -326,7 +316,7 @@ export default function DetailedMonitoring({
           <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
         ) : null}
 
-        <div className="flex flex-col lg:flex-row gap-5">
+        <div className="flex flex-col lg:flex-row gap-3">
           {sablierStakingResolveStakingRoundCronThreads &&
             (selectedTab === 'All' ||
               selectedTab === 'Staking' ||
@@ -339,6 +329,7 @@ export default function DetailedMonitoring({
               }
             />
           ) : null}
+
           {sablierStakingResolveStakingRoundCronThreads &&
             (selectedTab === 'All' ||
               selectedTab === 'Staking' ||

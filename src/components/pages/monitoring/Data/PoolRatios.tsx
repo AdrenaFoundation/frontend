@@ -13,7 +13,6 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 
 ChartJS.register(
@@ -39,7 +38,7 @@ export default function PoolRatios({
 }) {
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
-      <div className="w-full border-b p-5">
+      <div className="w-full border-b p-3">
         <p className={titleClassName}>Pool Ratios</p>
       </div>
 

@@ -30,7 +30,7 @@ export default function StyledContainer({
   return (
     <div
       className={twMerge(
-        'flex flex-col bg-secondary w-full border rounded-lg p-4 z-20 relative',
+        'flex flex-col bg-secondary w-full border rounded-lg p-3 z-20 relative',
         className,
       )}
     >
@@ -51,17 +51,17 @@ export default function StyledContainer({
           />
         ) : null}
 
-        <div className="flex flex-col">
-          <h1 className={titleClassName}>{title}</h1>
-          <h5 className={twMerge('opacity-50', subTitleClassName)}>
-            {subTitle}
-          </h5>
-        </div>
+
+        <h1 className={titleClassName}>{title}</h1>
+
       </div>
 
       <div className={twMerge('gap-4 flex flex-col', bodyClassName)}>
         {children}
       </div>
+      <h5 className={twMerge('opacity-50', subTitleClassName)}>
+        {subTitle}
+      </h5>
     </div>
   );
 }

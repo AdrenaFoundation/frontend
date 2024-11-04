@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { Staking } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -14,14 +12,12 @@ export default function CurrentStakingRoundTime({
   alpStakingAccount,
   adxStakingAccount,
   titleClassName,
-  bodyClassName,
   triggerAlpStakingAccountReload,
   triggerAdxStakingAccountReload,
 }: {
   alpStakingAccount: Staking;
   adxStakingAccount: Staking;
   titleClassName?: string;
-  bodyClassName?: string;
   triggerAlpStakingAccountReload: () => void;
   triggerAdxStakingAccountReload: () => void;
 }) {
@@ -100,19 +96,20 @@ export default function CurrentStakingRoundTime({
   };
 
   return (
-    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
-      <div className="w-full border-b p-5">
+    <div className="bg-[#050D14] border rounded-lg flex-1 flex grow flex-col shadow-xl">
+      <div className="w-full border-b p-3">
         <p className={titleClassName}>
-          Staking rounds time
+          Staking Rounds Time
         </p>
-        <p className="text-base opacity-50">
+
+        <p className="text-xs opacity-50">
           Next staking rounds starting in
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row">
-        <div className='flex-1 p-5'>
-          <div className={titleClassName}>ALP Staking</div>
+      <div className="flex flex-col sm:flex-row grow">
+        <div className='flex-1 p-3 flex items-center justify-center flex-col'>
+          <div className='mb-3 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ALP Staking</div>
 
           <div className='flex flex-row items-center flex-wrap gap-5'>
             <RemainingTimeToDate
@@ -121,8 +118,7 @@ export default function CurrentStakingRoundTime({
                   alpStakingAccount.currentStakingRound.startTime,
                 ).getTime() / 1000
               }
-              className="items-center"
-              classNameTime={bodyClassName}
+              className="items-center text-xl"
               tippyText="The call is overdue, please check the thread."
             />
 
@@ -136,8 +132,8 @@ export default function CurrentStakingRoundTime({
           </div>
         </div>
 
-        <div className='flex-1 p-5 border-t sm:border-t-0 sm:border-l'>
-          <div className={titleClassName}>ADX Staking</div>
+        <div className='flex-1 p-3 border-t sm:border-t-0 sm:border-l flex items-center justify-center flex-col'>
+          <div className='mb-3 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ADX Staking</div>
 
           <div className="flex items-center flex-wrap gap-5">
             <RemainingTimeToDate
@@ -146,8 +142,7 @@ export default function CurrentStakingRoundTime({
                   adxStakingAccount.currentStakingRound.startTime,
                 ).getTime() / 1000
               }
-              className="items-center"
-              classNameTime={bodyClassName}
+              className="items-center text-xl"
               tippyText="The call is overdue, please check the thread."
             />
 

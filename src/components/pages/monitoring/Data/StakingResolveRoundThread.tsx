@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { SablierThreadExtended } from '@/types';
 
@@ -27,7 +25,7 @@ export default function StakingResolveRoundThread({
 
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl h-full">
-      <div className="w-full border-b p-5">
+      <div className="w-full border-b p-3">
         <p className={twMerge('flex flex-row items-center', titleClassName)}>
           {title}
           <InfoAnnotation

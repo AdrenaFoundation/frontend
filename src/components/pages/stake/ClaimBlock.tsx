@@ -64,7 +64,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                         className="text-gray-400 text-xs mr-1"
                         minimumFractionDigits={2}
                         prefix="+ "
-                        suffix=" USDC"
+                        suffix="USDC"
                     />
                     {/* <Image
                         src={usdcTokenLogo}
@@ -81,7 +81,7 @@ const ClaimBlock: React.FC<{ claim: ClaimHistoryExtended }> = ({ claim }) => {
                         className={`text-gray-400 text-xs mr-1 ${claim.rewards_adx_genesis > 0 ? 'underline-dashed' : ''}`}
                         minimumFractionDigits={2}
                         prefix="+ "
-                        suffix=" ADX"
+                        suffix="ADX"
                         info={claim.rewards_adx_genesis > 0 ? `${formatNumber(claim.rewards_adx, 2, 2)} + ${formatNumber(claim.rewards_adx_genesis, 2, 2)} (Genesis)` : undefined}
                     />
                     {/* <Image

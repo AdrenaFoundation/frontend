@@ -234,7 +234,7 @@ export default function StakeOverview({
                   precision={totalStakeAmount < 1000 ? 2 : 0}
                   precisionIfPriceDecimalsBelow={totalStakeAmount < 1000 ? 2 : 0}
                   isAbbreviate={isBigStakeAmount}
-                  suffix={` ${token}`}
+                  suffix={token}
                   className="text-2xl cursor-pointer"
                   info={isBigStakeAmount ? formatNumber(totalStakeAmount, 2, 2) : undefined}
                 />

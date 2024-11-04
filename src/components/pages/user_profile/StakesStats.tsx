@@ -32,9 +32,9 @@ export default function StakesStats({
 
   const paginatedLockedStakes = lockedStakes
     ? lockedStakes.slice(
-        (currentPage - 1) * lockedStakesPerPage,
-        currentPage * lockedStakesPerPage
-      )
+      (currentPage - 1) * lockedStakesPerPage,
+      currentPage * lockedStakesPerPage
+    )
     : [];
 
   return (
@@ -45,7 +45,7 @@ export default function StakesStats({
           nb={liquidStakedADX}
           precision={2}
           placeholder="0 ADX"
-          suffix=" ADX"
+          suffix="ADX"
         />
 
         <NumberDisplay
@@ -53,7 +53,7 @@ export default function StakesStats({
           nb={lockedStakedADX}
           precision={2}
           placeholder="0 ADX"
-          suffix=" ADX"
+          suffix="ADX"
         />
 
         <NumberDisplay
@@ -61,7 +61,7 @@ export default function StakesStats({
           nb={lockedStakedALP}
           precision={2}
           placeholder="0 ALP"
-          suffix=" ALP"
+          suffix="ALP"
         />
       </div>
 
