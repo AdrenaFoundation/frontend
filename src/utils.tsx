@@ -43,7 +43,6 @@ import {
   Token,
   U128Split,
 } from './types';
-import { max } from 'bn.js';
 
 export function getArrowElement(side: 'up' | 'down', className?: string) {
   const pxSize = 9;
