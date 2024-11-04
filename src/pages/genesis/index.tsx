@@ -496,10 +496,10 @@ export default function Genesis({
                               genesis.publicAmountClaimed,
                               usdc.decimals,
                             ) /
-                                nativeToUi(
-                                  genesis.publicAmount,
-                                  usdc.decimals,
-                                )) *
+                              nativeToUi(
+                                genesis.publicAmount,
+                                usdc.decimals,
+                              )) *
                               100
                               }%`,
                           }}
@@ -548,7 +548,7 @@ export default function Genesis({
                               reservedGrantOwnerLeftAmount,
                               usdc.decimals,
                             )}
-                            suffix=" USDC"
+                            suffix="USDC"
                             className="inline-block"
                           />
                         </p>
@@ -564,10 +564,10 @@ export default function Genesis({
                                   genesis.reservedAmountClaimed,
                                   usdc.decimals,
                                 ) /
-                                    nativeToUi(
-                                      genesis.reservedAmount,
-                                      usdc.decimals,
-                                    )) *
+                                  nativeToUi(
+                                    genesis.reservedAmount,
+                                    usdc.decimals,
+                                  )) *
                                   100
                                   }%`,
                               }}
@@ -675,7 +675,7 @@ export default function Genesis({
                             />
                             <FormatNumber
                               nb={feeAndAmount?.amount}
-                              suffix=" ALP"
+                              suffix="ALP"
                               placeholder="0.00 ALP"
                               placeholderClassName="opacity-50"
                               className="text-lg"
@@ -765,7 +765,7 @@ export default function Genesis({
                                 : null
                             }
                             className="font-medium font-mono text-sm sm:text-lg"
-                            suffix=" ADX"
+                            suffix="ADX"
                           />
                         </li>
                       </ul>
@@ -778,7 +778,7 @@ export default function Genesis({
                 <FormatNumber
                   nb={totalStakedAmount}
                   precision={4}
-                  suffix=" ALP"
+                  suffix="ALP"
                 />
               </div>
             </div>
@@ -810,7 +810,7 @@ export default function Genesis({
                 <FormatNumber
                   nb={totalStakedAmount}
                   precision={4}
-                  suffix=" ALP"
+                  suffix="ALP"
                   isDecimalDimmed={false}
                 />
                 ,{' '}

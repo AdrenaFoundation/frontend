@@ -89,8 +89,8 @@ export function formatNumber(
   minimumFractionDigits = 0,
   precisionIfPriceDecimalsBelow = 6,
 ): string {
-  // If price is below decimals precision, display up to 6 decimals
-  if (nb < 10 ** -precision) precision = precisionIfPriceDecimalsBelow;
+  // If price is below decimals precision, display up to 6 decimals (override by minimumFractionDigits)
+  if (nb < 10 ** -precision) precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
 
   return Number(nb.toFixed(precision)).toLocaleString(undefined, {
     minimumFractionDigits,
@@ -538,9 +538,9 @@ export function createCloseWSOLAccountInstruction({
 }
 
 export function getAbbrevNickname(nickname: string) {
-  if (nickname.length < 20) return nickname;
+  if (nickname.length <= 16) return nickname;
 
-  return `${nickname.slice(0, 17)}...`;
+  return `${nickname.slice(0, 14)}..`;
 }
 
 export function getAbbrevWalletAddress(address: string) {

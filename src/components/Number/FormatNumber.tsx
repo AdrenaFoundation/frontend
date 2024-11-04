@@ -12,6 +12,7 @@ interface FormatNumberProps {
   suffix?: string;
   placeholder?: string;
   className?: string;
+  suffixClassName?: string;
   placeholderClassName?: string;
   isDecimalDimmed?: boolean;
   minimumFractionDigits?: number;
@@ -31,6 +32,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       suffix = '',
       placeholder = '-',
       className,
+      suffixClassName = '',
       placeholderClassName,
       isDecimalDimmed = true,
       minimumFractionDigits = 0,
@@ -113,7 +115,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
           </span>
         )}
         {format === 'percentage' && '%'}
-        {suffix}
+        {suffix ? <span className={twMerge('ml-1', suffixClassName)}>{suffix}</span> : null}
       </p>
     );
 

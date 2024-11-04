@@ -1,75 +1,69 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { useSelector } from '@/store/store';
 import { CustodyExtended } from '@/types';
-
-import NumberInfo from '../NumberInfo';
 
 export default function AUMBreakdown({
   custodies,
   titleClassName,
-  mainWholeNumberClassName,
-  dollarWholeNumberClassName,
 }: {
   custodies: CustodyExtended[];
   titleClassName?: string;
-  mainWholeNumberClassName?: string;
-  dollarWholeNumberClassName?: string;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
   return (
-    <StyledContainer
-      title="AUM Breakdown"
-      headerClassName="text-center justify-center"
-      className="w-auto grow"
-      titleClassName={titleClassName}
-    >
-      <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-x-2 gap-y-4">
-        {...custodies.map((custody) => {
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>AUM Breakdown</p>
+      </div>
+
+      <div className='grid md:grid-cols-4'>
+        {...custodies.map((custody, i) => {
           return (
-            <StyledSubSubContainer
+            <div
               key={custody.pubkey.toBase58()}
-              className="flex flex-col w-full sm:w-[48%] min-w-[10em] h-[8em] items-center justify-center p-0 relative overflow-hidden"
+              className={twMerge(
+                'flex-1 p-4',
+                i !== 0 && 'xl:border-l',
+                i % 2 && 'sm:border-l',
+                i > 1 && 'border-t sm:border-t xl:border-t-0',
+                i == 1 && 'border-t sm:border-t-0',
+              )}
             >
-              <Image
-                src={custody.tokenInfo.image}
-                className="absolute top-0 left-[-40px] -z-10 grayscale opacity-5"
-                alt="token icon"
-                width="200"
-                height="200"
-              />
-
-              <NumberInfo
-                value={custody.owned}
-                className="items-center"
-                precision={custody.tokenInfo.symbol === 'BTC' ? 2 : 0}
-                denomination={custody.tokenInfo.symbol}
-                wholePartClassName={mainWholeNumberClassName}
-                denominationClassName="text-base ml-2"
-              />
-
-              {tokenPrices[custody.tokenInfo.symbol] ? (
-                <NumberInfo
-                  value={
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    custody.owned * tokenPrices[custody.tokenInfo.symbol]!
-                  }
-                  precision={0}
-                  denominationClassName={dollarWholeNumberClassName}
-                  wholePartClassName={twMerge(
-                    'text-txtfade',
-                    dollarWholeNumberClassName,
-                  )}
+              <div className="flex flex-row items-center gap-2 mb-3">
+                <Image
+                  src={custody.tokenInfo.image}
+                  alt="token icon"
+                  width="24"
+                  height="24"
                 />
-              ) : null}
-            </StyledSubSubContainer>
+
+                <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
+              </div>
+
+              <NumberDisplay
+                nb={custody.owned}
+                precision={custody.tokenInfo.displayAmountDecimalsPrecision}
+                className='border-0 p-0 items-start'
+              />
+
+              {tokenPrices[custody.tokenInfo.symbol] ? (<NumberDisplay
+                nb={
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  custody.owned * tokenPrices[custody.tokenInfo.symbol]!
+                }
+                precision={0}
+                className='border-0 p-0 items-start'
+                bodyClassName='text-txtfade text-sm'
+                format='currency'
+              />) : null}
+            </div>
           );
         })}
       </div>
-    </StyledContainer>
+    </div>
   );
 }

@@ -40,9 +40,9 @@ export default function RemainingTimeToDate({
         </Tippy>
       ) : null}
 
-      <span className={twMerge('text-mono', classNameTime)}>
+      <div className={twMerge('font-mono', classNameTime)}>
         {remaining !== null ? formatMilliseconds(remaining) : '-'}
-      </span>
+      </div>
     </div>
   );
 }

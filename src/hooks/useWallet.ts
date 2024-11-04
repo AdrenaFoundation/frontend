@@ -1,25 +1,14 @@
 import { Wallet } from '@coral-xyz/anchor';
-import { useEffect, useState } from 'react';
 
 import { walletAdapters } from '@/constant';
 import { useSelector } from '@/store/store';
 
 export default function useWallet() {
   const walletState = useSelector((s) => s.walletState.wallet);
+  // Cast to wallet because Adapters contains necessary Wallet functions
+  const adapter = walletState
+    ? (walletAdapters[walletState.adapterName] as unknown as Wallet)
+    : null;
 
-  const [wallet, setWallet] = useState<Wallet | null>(null);
-
-  useEffect(() => {
-    if (!walletState) {
-      setWallet(null);
-      return;
-    }
-
-    const adapter = walletAdapters[walletState.adapterName];
-
-    // Cast to wallet because Adapters contains necessary Wallet functions
-    setWallet(adapter as unknown as Wallet);
-  }, [walletState]);
-
-  return wallet;
+  return adapter;
 }

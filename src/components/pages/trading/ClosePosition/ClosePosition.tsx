@@ -202,7 +202,7 @@ export default function ClosePosition({
             nb={position.size}
             className="text-gray-400"
             precision={position.collateralToken.displayAmountDecimalsPrecision}
-            suffix={` ${getTokenSymbol(position.collateralToken.symbol)}`}
+            suffix={getTokenSymbol(position.collateralToken.symbol)}
             isDecimalDimmed={true}
           />
         </div>

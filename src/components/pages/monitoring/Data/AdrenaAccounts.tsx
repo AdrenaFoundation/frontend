@@ -39,16 +39,19 @@ export default function AdrenaAccounts({
     window.adrena.client.getStakingLmRewardTokenVaultPda(lpStakingPda);
 
   return (
-    <StyledContainer
-      title="Adrena Accounts"
-      subTitle="Adrena Program on-chain accounts (PDAs)."
-      className="w-[46em] grow md:min-w-[46em]"
-      titleClassName={titleClassName}
-    >
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>Adrena Accounts</p>
+        <p className="text-base opacity-50">
+          Adrena Program on-chain accounts (PDAs).
+        </p>
+      </div>
+
       <Table
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="50%"
+        className='rounded-none bg-transparent border-none'
         data={[
           {
             rowTitle: (
@@ -263,6 +266,6 @@ export default function AdrenaAccounts({
           },
         ]}
       />
-    </StyledContainer>
+    </div>
   );
 }

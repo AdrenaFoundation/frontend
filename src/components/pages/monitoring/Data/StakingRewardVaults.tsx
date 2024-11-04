@@ -1,9 +1,6 @@
-import { twMerge } from 'tailwind-merge';
-
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { Staking } from '@/types';
-import { formatNumber, nativeToUi } from '@/utils';
+import { nativeToUi } from '@/utils';
 
 export default function StakingRewardVaults({
   alpStakingAccount,
@@ -11,7 +8,6 @@ export default function StakingRewardVaults({
   alpStakingRewardsAccumulated,
   adxStakingRewardsAccumulated,
   titleClassName,
-  bodyClassName,
 }: {
   alpStakingAccount: Staking;
   adxStakingAccount: Staking;
@@ -24,14 +20,11 @@ export default function StakingRewardVaults({
     adxRewards: number | null;
   } | null;
   titleClassName?: string;
-  bodyClassName?: string;
 }) {
-
   let nextAlpRoundUsdcRewards = 0;
   let nextAdxRoundUsdcRewards = 0;
   let nextAlpRoundAdxRewards = 0;
   let nextAdxRoundAdxRewards = 0;
-
 
   if (
     alpStakingRewardsAccumulated !== null &&
@@ -69,64 +62,53 @@ export default function StakingRewardVaults({
   }
 
   return (
-    <StyledContainer
-      title="Staking rewards (available next round)"
-      subTitle="Accruing, will be available at the end of the current round."
-      className="grow w-[40em]"
-      titleClassName={titleClassName}
-      bodyClassName="flex flex-col sm:flex-row grow items-center justify-center"
-    >
-      <StyledSubContainer>
-        <div className={titleClassName}>ALP Staking</div>
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>
+          Staking Rewards (available next round)
+        </p>
 
-        <div className={twMerge('m-auto flex-col', bodyClassName)}>
-          <div className="flex items-center">
-            <div>
-              {nextAlpRoundUsdcRewards !== 0
-                ? formatNumber(nextAlpRoundUsdcRewards, 0)
-                : '-'}
-            </div>
+        <p className="text-xs opacity-50">
+          Accruing, will be available at the end of the current round.
+        </p>
+      </div>
 
-            <div className="ml-1 text-base">USDC</div>
-          </div>
+      <div className="flex flex-col sm:flex-row grow">
+        <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow">
+          <div className='mb-2 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ALP Staking</div>
 
-          <div className="flex items-center">
-            <div>
-              {nextAlpRoundAdxRewards !== 0
-                ? formatNumber(nextAlpRoundAdxRewards, 2)
-                : '-'}
-            </div>
+          <NumberDisplay
+            nb={nextAlpRoundUsdcRewards}
+            precision={0}
+            suffix='USDC'
+            className='border-0 p-0 items-start'
+          />
 
-            <div className="ml-1 text-base">ADX</div>
-          </div>
+          <NumberDisplay
+            nb={nextAlpRoundAdxRewards}
+            precision={0}
+            suffix='ADX'
+            className='border-0 p-0 items-start'
+          />
         </div>
-      </StyledSubContainer>
 
-      <StyledSubContainer>
-        <div className={titleClassName}>ADX Staking</div>
+        <div className="flex pl-5 pt-3 pb-1 pr-3 flex-col grow border-t sm:border-l">
+          <div className='mb-2 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ADX Staking</div>
+          <NumberDisplay
+            nb={nextAdxRoundUsdcRewards}
+            precision={0}
+            suffix='USDC'
+            className='border-0 p-0 items-start'
+          />
 
-        <div className={twMerge('m-auto flex-col', bodyClassName)}>
-          <div className="flex items-center">
-            <div>
-              {nextAdxRoundUsdcRewards !== 0
-                ? formatNumber(nextAdxRoundUsdcRewards, 0)
-                : '-'}
-            </div>
-
-            <div className="ml-1 text-base">USDC</div>
-          </div>
-
-          <div className="flex items-center">
-            <div>
-              {nextAdxRoundAdxRewards !== 0
-                ? formatNumber(nextAdxRoundAdxRewards, 2)
-                : '-'}
-            </div>
-
-            <div className="ml-1 text-base">ADX</div>
-          </div>
+          <NumberDisplay
+            nb={nextAdxRoundAdxRewards}
+            precision={0}
+            suffix='ADX'
+            className='border-0 p-0 items-start'
+          />
         </div>
-      </StyledSubContainer>
-    </StyledContainer>
+      </div>
+    </div>
   );
 }

@@ -1,77 +1,62 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
+import Image from 'next/image';
+
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { PoolExtended } from '@/types';
-import { formatNumber, formatPriceInfo } from '@/utils';
+
+import liveIcon from '../../../../../public/images/Icons/live-icon.svg';
 
 export default function PositionsNow({
   mainPool,
   titleClassName,
-  bodyClassName,
 }: {
   mainPool: PoolExtended;
   titleClassName?: string;
-  bodyClassName?: string;
 }) {
   return (
-    <StyledContainer
-      headerClassName="text-center justify-center"
-      title="Positions (LIVE)"
-      className="w-auto grow"
-      titleClassName={titleClassName}
-    >
-      <StyledSubContainer>
-        <div className="flex items-center">
-          <div className={titleClassName}>Positions count</div>
-          <div className="font-boldy text-sm ml-2 text-txtfade">
-            Long / Short
-          </div>
-        </div>
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="flex flex-row gap-2 w-full border-b p-3">
+        <p className={titleClassName}>Positions Live</p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
-          <div className={bodyClassName}>
-            {formatNumber(mainPool.nbOpenLongPositions, 0)}
-          </div>
+        <Image
+          src={liveIcon}
+          alt="Live icon"
+          width={12}
+          height={12}
+          className='animate-pulse'
+        />
+      </div>
 
-          <>
-            <div className="ml-2 mr-2 text-5xl text-txtfade opacity-20 sm:block hidden">
-              /
-            </div>
+      <div className="grid sm:grid-cols-2">
+        <NumberDisplay
+          title="Long positions"
+          nb={mainPool.nbOpenLongPositions}
+          precision={0}
+          className='rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r'
+        />
 
-            <div className="bg-bcolor w-full h-[1px] sm:hidden" />
-          </>
+        <NumberDisplay
+          title="Short positions"
+          nb={mainPool.nbOpenShortPositions}
+          precision={0}
+          className='rounded-none border-t-0 border-l-0 border-r-0 border-b'
+        />
 
-          <div className={bodyClassName}>
-            {formatNumber(mainPool.nbOpenShortPositions, 0)}
-          </div>
-        </div>
-      </StyledSubContainer>
+        <NumberDisplay
+          title="Open Interest Long"
+          nb={mainPool.longPositions}
+          precision={0}
+          format='currency'
+          className='rounded-none border-t-0 border-l-0 border-r-0 border-b-0 sm:border-r'
+        />
 
-      <StyledSubContainer>
-        <div className="flex items-center">
-          <div className={titleClassName}>Open Interest</div>
-          <div className="font-boldy text-sm ml-2 text-txtfade">
-            Long / Short
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center pt-2 pb-2 sm:pt-0 sm:pb-0">
-          <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.longPositions, 0)}
-          </div>
-
-          <>
-            <div className="ml-2 mr-2 text-5xl text-txtfade opacity-20 sm:block hidden">
-              /
-            </div>
-
-            <div className="bg-bcolor w-full h-[1px] sm:hidden" />
-          </>
-
-          <div className={bodyClassName}>
-            {formatPriceInfo(mainPool.shortPositions, 0)}
-          </div>
-        </div>
-      </StyledSubContainer>
-    </StyledContainer>
+        <NumberDisplay
+          title="Open Interest Short"
+          nb={mainPool.shortPositions}
+          precision={0}
+          format='currency'
+          className='rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-t-0'
+        />
+      </div>
+    </div>
   );
 }

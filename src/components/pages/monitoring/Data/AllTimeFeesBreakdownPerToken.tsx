@@ -1,95 +1,91 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import { USD_DECIMALS } from '@/constant';
 import { CustodyExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import NumberInfo from '../NumberInfo';
-
 export default function AllTimeFeesBreakdownPerToken({
   custodies,
   titleClassName,
-  bodyClassName,
 }: {
   custodies: CustodyExtended[];
   titleClassName?: string;
-  bodyClassName?: string;
 }) {
   const attributes = Object.keys(custodies[0].nativeObject.collectedFees);
 
   return (
-    <StyledContainer
-      title="All time Fees Breakdown (Per Token)"
-      headerClassName="text-center justify-center"
-      className="w-auto grow"
-      titleClassName={titleClassName}
-    >
-      <div className="flex flex-row flex-wrap justify-evenly grow h-full w-full gap-4">
-        {...custodies.map((custody) => {
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>All time Fees Breakdown</p>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4">
+        {...custodies.map((custody, i) => {
           return (
-            <StyledSubSubContainer
+            <div
               key={custody.pubkey.toBase58()}
-              className="flex flex-col w-[20em] min-w-[20em] h-[15em] grow items-center justify-center relative overflow-hidden"
+              className={twMerge(
+                'flex-1 p-5',
+                i !== 0 && 'lg:border-l',
+                i % 2 && 'sm:border-l',
+                i > 1 && 'border-t sm:border-t lg:border-t-0',
+                i == 1 && 'border-t sm:border-t-0',
+              )}
             >
-              <div className="absolute top-2 right-4 opacity-10 font-boldy">
-                {custody.tokenInfo.symbol}
+              <div className="flex flex-row items-center gap-2">
+                <Image
+                  src={custody.tokenInfo.image}
+                  alt="token icon"
+                  width="24"
+                  height="24"
+                />
+
+                <p className={twMerge(titleClassName, 'opacity-100')}>{custody.tokenInfo.symbol}</p>
               </div>
 
-              <Image
-                src={custody.tokenInfo.image}
-                className="absolute left-[-100px] -z-10 grayscale opacity-5"
-                alt="token icon"
-                width="200"
-                height="200"
-              />
-
-              <div className="flex w-full">
-                <div className="flex flex-col w-[50%] items-end">
-                  {attributes.map((attribute) => (
-                    <div key={attribute} className="flex">
-                      <NumberInfo
-                        value={nativeToUi(
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          (custody.nativeObject.collectedFees as any)[
-                            attribute
-                          ],
-                          USD_DECIMALS,
-                        )}
-                        precision={0}
-                        wholePartClassName={bodyClassName}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex flex-col w-[50%] shrink-0">
-                  {attributes.map((_, i) => (
-                    <span
-                      className={twMerge('text-txtfade ml-2', bodyClassName)}
-                      key={i}
-                    >
+              <div className="flex flex-col mt-3">
+                {attributes.map((attribute, i) => (
+                  <div
+                    className="flex flex-row justify-between items-center"
+                    key={i}
+                  >
+                    <p className={twMerge('text-txtfade text-base')}>
                       {
                         [
                           'Swap',
                           'Add Liq.',
                           'Remove Liq.',
-                          'Open Pos.',
                           'Close Pos.',
                           'Liquidation',
                           'Borrow',
                         ][i]
                       }
-                    </span>
-                  ))}
-                </div>
+                    </p>
+
+                    <div key={attribute} className="flex">
+                      <NumberDisplay
+                        nb={nativeToUi(
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          (custody.nativeObject.collectedFees as any)[
+                          attribute
+                          ],
+                          USD_DECIMALS,
+                        )}
+                        precision={0}
+                        format='currency'
+                        className='border-0 p-0 min-h-0'
+                        bodyClassName='text-base'
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            </StyledSubSubContainer>
+            </div>
           );
         })}
       </div>
-    </StyledContainer>
+    </div>
   );
 }

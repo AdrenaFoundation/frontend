@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import { twMerge } from 'tailwind-merge';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { SablierThreadExtended } from '@/types';
 
@@ -26,21 +24,17 @@ export default function StakingResolveRoundThread({
   const isBreakpoint = useBetterMediaQuery('(min-width: 800px)');
 
   return (
-    <StyledContainer
-      className="w-auto grow"
-      titleClassName={twMerge('flex', titleClassName)}
-      title={
-        <>
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl h-full">
+      <div className="w-full border-b p-3">
+        <p className={twMerge('flex flex-row items-center', titleClassName)}>
           {title}
-
           <InfoAnnotation
             text="This is a cron configured on Sablier protocol which is is responsible for resolving staking rounds automatically, so users can get theirs staking rewards."
             className="mr-1 w-4 h-4"
           />
-        </>
-      }
-    >
-      <StyledSubSubContainer
+        </p>
+      </div>
+      <div
         className={twMerge(
           'items-center justify-center w-full',
           !isBreakpoint && 'bg-transparent',
@@ -49,6 +43,7 @@ export default function StakingResolveRoundThread({
         <Table
           rowHovering={true}
           rowTitleWidth="30%"
+          className="bg-transparent border-none rounded-none"
           data={[
             {
               rowTitle: (
@@ -79,7 +74,8 @@ export default function StakingResolveRoundThread({
               ),
               value: (
                 <div className="md:ml-auto flex">
-                  {stakingResolveRoundCron.funding !== null && typeof stakingResolveRoundCron.funding !== 'undefined' &&
+                  {stakingResolveRoundCron.funding !== null &&
+                    typeof stakingResolveRoundCron.funding !== 'undefined' &&
                     stakingResolveRoundCron.funding < 1 ? (
                     <Image
                       className="w-auto h-[1.5em] mr-1"
@@ -88,10 +84,13 @@ export default function StakingResolveRoundThread({
                     />
                   ) : null}
 
-                  {stakingResolveRoundCron.funding !== null && typeof stakingResolveRoundCron.funding !== 'undefined' ? <NumberInfo
-                    denomination="SOL"
-                    value={stakingResolveRoundCron.funding}
-                  /> : null}
+                  {stakingResolveRoundCron.funding !== null &&
+                    typeof stakingResolveRoundCron.funding !== 'undefined' ? (
+                    <NumberInfo
+                      denomination="SOL"
+                      value={stakingResolveRoundCron.funding}
+                    />
+                  ) : null}
                 </div>
               ),
             },
@@ -172,7 +171,7 @@ export default function StakingResolveRoundThread({
             },
           ]}
         />
-      </StyledSubSubContainer>
-    </StyledContainer>
+      </div>
+    </div>
   );
 }

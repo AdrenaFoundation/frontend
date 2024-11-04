@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import StyledSubContainer from '@/components/common/StyledSubContainer/StyledSubContainer';
 import { Staking } from '@/types';
 import { getNextStakingRoundStartTime } from '@/utils';
 
@@ -14,14 +12,12 @@ export default function CurrentStakingRoundTime({
   alpStakingAccount,
   adxStakingAccount,
   titleClassName,
-  bodyClassName,
   triggerAlpStakingAccountReload,
   triggerAdxStakingAccountReload,
 }: {
   alpStakingAccount: Staking;
   adxStakingAccount: Staking;
   titleClassName?: string;
-  bodyClassName?: string;
   triggerAlpStakingAccountReload: () => void;
   triggerAdxStakingAccountReload: () => void;
 }) {
@@ -38,7 +34,7 @@ export default function CurrentStakingRoundTime({
         alpStakingAccount.currentStakingRound.startTime,
       ).getTime();
 
-      if ((nextRound - Date.now()) < 0) {
+      if (nextRound - Date.now() < 0) {
         setAlpRoundPassed(true);
       } else if (alpRoundPassed) {
         setAlpRoundPassed(false);
@@ -60,7 +56,7 @@ export default function CurrentStakingRoundTime({
         adxStakingAccount.currentStakingRound.startTime,
       ).getTime();
 
-      if ((nextRound - Date.now()) < 0) {
+      if (nextRound - Date.now() < 0) {
         setAdxRoundPassed(true);
       } else if (adxRoundPassed) {
         setAdxRoundPassed(false);
@@ -85,7 +81,6 @@ export default function CurrentStakingRoundTime({
       await window.adrena.client.resolveStakingRound({
         stakedTokenMint,
         notification,
-
       });
 
       setTimeout(() => {
@@ -101,57 +96,66 @@ export default function CurrentStakingRoundTime({
   };
 
   return (
-    <StyledContainer
-      title="Next staking rounds starting in"
-      className="grow w-[30em]"
-      bodyClassName="flex grow"
-      titleClassName={titleClassName}
-    >
-      <StyledSubContainer>
-        <div className={titleClassName}>ALP Staking</div>
+    <div className="bg-[#050D14] border rounded-lg flex-1 flex grow flex-col shadow-xl">
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>
+          Staking Rounds Time
+        </p>
 
-        <div className="m-auto">
-          <RemainingTimeToDate
-            timestamp={getNextStakingRoundStartTime(
-              alpStakingAccount.currentStakingRound.startTime,
-            ).getTime() / 1000}
-            className="items-center"
-            classNameTime={bodyClassName}
-            tippyText="The call is overdue, please check the thread."
-          />
+        <p className="text-xs opacity-50">
+          Next staking rounds starting in
+        </p>
+      </div>
 
-          {alpRoundPassed ? (
-            <Button
-              className="text-xs"
-              title="Trigger manually"
-              onClick={() => triggerManually(window.adrena.client.lpTokenMint)}
+      <div className="flex flex-col sm:flex-row grow">
+        <div className='flex-1 p-3 flex items-center justify-center flex-col'>
+          <div className='mb-3 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ALP Staking</div>
+
+          <div className='flex flex-row items-center flex-wrap gap-5'>
+            <RemainingTimeToDate
+              timestamp={
+                getNextStakingRoundStartTime(
+                  alpStakingAccount.currentStakingRound.startTime,
+                ).getTime() / 1000
+              }
+              className="items-center text-xl"
+              tippyText="The call is overdue, please check the thread."
             />
-          ) : null}
+
+            {alpRoundPassed ? (
+              <Button
+                className="text-xs"
+                title="Trigger manually"
+                onClick={() => triggerManually(window.adrena.client.lpTokenMint)}
+              />
+            ) : null}
+          </div>
         </div>
-      </StyledSubContainer>
 
-      <StyledSubContainer>
-        <div className={titleClassName}>ADX Staking</div>
+        <div className='flex-1 p-3 border-t sm:border-t-0 sm:border-l flex items-center justify-center flex-col'>
+          <div className='mb-3 text-xs sm:text-sm text-txtfade font-boldy uppercase'>ADX Staking</div>
 
-        <div className="m-auto flex items-center justify-center gap-4">
-          <RemainingTimeToDate
-            timestamp={getNextStakingRoundStartTime(
-              adxStakingAccount.currentStakingRound.startTime,
-            ).getTime() / 1000}
-            className="items-center"
-            classNameTime={bodyClassName}
-            tippyText="The call is overdue, please check the thread."
-          />
-
-          {adxRoundPassed ? (
-            <Button
-              className="text-xs"
-              title="Trigger manually"
-              onClick={() => triggerManually(window.adrena.client.lmTokenMint)}
+          <div className="flex items-center flex-wrap gap-5">
+            <RemainingTimeToDate
+              timestamp={
+                getNextStakingRoundStartTime(
+                  adxStakingAccount.currentStakingRound.startTime,
+                ).getTime() / 1000
+              }
+              className="items-center text-xl"
+              tippyText="The call is overdue, please check the thread."
             />
-          ) : null}
+
+            {adxRoundPassed ? (
+              <Button
+                className="text-xs"
+                title="Trigger manually"
+                onClick={() => triggerManually(window.adrena.client.lmTokenMint)}
+              />
+            ) : null}
+          </div>
         </div>
-      </StyledSubContainer>
-    </StyledContainer>
+      </div>
+    </div>
   );
 }

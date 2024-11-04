@@ -47,7 +47,7 @@ export default function PositionBlockReadOnly({
 
     const positionName = (
         <div
-            className="flex items-center justify-left h-full  min-w-[12em]"
+            className="flex items-center justify-left h-full min-w-[12em]"
         >
             <Image
                 className="w-[2em] h-[2em] mr-2"
@@ -269,7 +269,7 @@ export default function PositionBlockReadOnly({
                                         format="number"
                                         className="text-gray-400 text-xs"
                                         precision={position.token.displayAmountDecimalsPrecision}
-                                        suffix={` ${getTokenSymbol(position.token.symbol)}`}
+                                        suffix={getTokenSymbol(position.token.symbol)}
                                     />
                                 }
                                 placement="auto"
@@ -297,7 +297,7 @@ export default function PositionBlockReadOnly({
                                         precision={
                                             position.collateralToken.displayAmountDecimalsPrecision
                                         }
-                                        suffix={` ${getTokenSymbol(
+                                        suffix={`${getTokenSymbol(
                                             position.collateralToken.symbol,
                                         )} (at init.)`}
                                     />

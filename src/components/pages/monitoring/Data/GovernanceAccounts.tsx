@@ -1,4 +1,3 @@
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Cortex } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';
@@ -14,16 +13,19 @@ export default function GovernanceAccounts({
   titleClassName?: string;
 }) {
   return (
-    <StyledContainer
-      title="Governance Accounts"
-      subTitle="List on-chain accounts related to Governance."
-      className="w-[37em] grow md:min-w-[37em]"
-      titleClassName={titleClassName}
-    >
+    <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
+      <div className="w-full border-b p-3">
+        <p className={titleClassName}>Governance Accounts</p>
+        <p className="text-base opacity-50">
+          List on-chain accounts related to Governance.
+        </p>
+      </div>
+
       <Table
         rowHovering={true}
         breakpoint="767px"
         rowTitleWidth="30%"
+        className='rounded-none bg-transparent border-none'
         data={[
           {
             rowTitle: (
@@ -61,6 +63,6 @@ export default function GovernanceAccounts({
           },
         ]}
       />
-    </StyledContainer>
+    </div>
   );
 }

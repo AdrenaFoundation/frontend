@@ -1,8 +1,8 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import TabSelect from '@/components/common/TabSelect/TabSelect';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import usePoolInfo from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
@@ -17,51 +17,47 @@ import DetailedMonitoring from './detailed';
 export default function Monitoring(pageProps: PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
-  const [view, setView] = useState<'lite' | 'full' | 'livePositions' | 'userProfiles'>('lite');
+  const [view, setView] = useState<
+    'lite' | 'full' | 'livePositions' | 'userProfiles'
+  >('lite');
+  const [previousView, setPreviousView] = useState<
+    'lite' | 'full' | 'livePositions' | 'userProfiles'
+  >('lite');
 
-  const [detailedDisplaySelectedTab, setDetailedDisplaySelectedTab] =
-    useState<(typeof tabs)[number]>('All');
+
 
   const searchParams = new URLSearchParams(window.location.search);
-
 
   useEffect(() => {
     if (searchParams.has('view')) {
       const searchParamsView = searchParams.get('view');
 
-      if (!['lite', 'full', 'livePositions', 'userProfiles'].includes(searchParamsView as string)) {
+      if (
+        !['lite', 'full', 'livePositions', 'userProfiles'].includes(
+          searchParamsView as string,
+        )
+      ) {
         return;
       }
 
-      setView(searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles');
+      setView(
+        searchParamsView as 'lite' | 'full' | 'livePositions' | 'userProfiles',
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleTabChange = (tab: (typeof tabs)[number]) => {
-    setDetailedDisplaySelectedTab(tab);
-  };
+  useEffect(() => {
+    setPreviousView(view);
+  }, [view]);
 
-  const tabs = [
-    'All',
-    'ADX tokenomics',
-    'Automation',
-    'Pool',
-    'Fees',
-    'Staking',
-    'Trading',
-    'Vesting',
-    'Accounts',
-  ] as const;
 
-  const tabsFormatted = tabs.map((x) => ({
-    title: x,
-    activeColor: 'border-white',
-  }));
+
+
 
   return (
     <>
-      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-50 -z-0 mx-5">
+      <div className="fixed w-[100vw] h-[100vh] left-0 top-0 opacity-10 -z-0 mx-5">
         <RiveAnimation
           animation="btm-monster"
           layout={
@@ -70,7 +66,6 @@ export default function Monitoring(pageProps: PageProps) {
               alignment: Alignment.TopLeft,
             })
           }
-
           imageClassName="absolute w-full max-w-[1200px] bottom-0 left-[-10vh] scale-x-[-1] -z-10"
         />
 
@@ -86,12 +81,10 @@ export default function Monitoring(pageProps: PageProps) {
         />
       </div>
 
-      <div className="ml-auto mr-auto mt-2 flex flex-col bg-main border rounded-2xl z-10">
+      <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className={twMerge(
-            'flex items-center justify-evenly w-[20em] ml-auto mr-auto',
-            view === 'full' ? 'pt-2 pb-2' : '',
-          )}
+          className='flex items-center justify-evenly w-[20em] ml-auto mr-auto'
+
         >
           <span
             className={twMerge(
@@ -172,7 +165,7 @@ export default function Monitoring(pageProps: PageProps) {
           </span>
         </div>
 
-        {view === "full" ? (
+        {/* {view === 'full' ? (
           <>
             <TabSelect
               wrapperClassName="w-full p-4 sm:py-0 bg-secondary flex-col md:flex-row gap-6"
@@ -187,20 +180,67 @@ export default function Monitoring(pageProps: PageProps) {
               }}
             />
           </>
-        ) : null}
+        ) : null} */}
       </div>
 
-      {view === "livePositions" ? <AllPositions /> : null}
+      {view === 'livePositions' ? (
+        <motion.div
+          initial={{
+            opacity: 0,
+            translateX: previousView === 'userProfiles' ? 20 : -20,
+          }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ duration: 0.3 }}
+          className='min-h-[80vh]'
+        >
+          <AllPositions />
+        </motion.div>
+      ) : null}
 
-      {view === "full" ? <DetailedMonitoring
-        {...pageProps}
-        selectedTab={detailedDisplaySelectedTab}
-        poolInfo={poolInfo}
-      /> : null}
+      {view === 'full' ? (
+        <motion.div
+          initial={{
+            opacity: 0,
+            translateX: previousView === 'livePositions' ? 20 : -20,
+          }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ duration: 0.3 }}
+          className='min-h-[80vh] z-10'
+        >
+          <DetailedMonitoring
+            {...pageProps}
+            poolInfo={poolInfo}
+          />
+        </motion.div>
+      ) : null}
 
-      {view === 'lite' ? <BasicMonitoring {...pageProps} poolInfo={poolInfo} /> : null}
+      {view === 'lite' ? (
+        <motion.div
+          initial={{
+            opacity: 0,
+            translateX: previousView !== 'lite' ? 20 : -20,
+          }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ duration: 0.3 }}
+          className='min-h-[80vh]'
+        >
+          <BasicMonitoring {...pageProps} poolInfo={poolInfo} />
+        </motion.div>
+      ) : null}
 
-      {view === 'userProfiles' ? <AllUserProfiles /> : null}
+      {view === 'userProfiles' ? (
+        <motion.div
+          initial={{
+            opacity: 0,
+            translateX: -20,
+          }}
+          animate={{ opacity: 1, translateX: 0 }}
+          transition={{ duration: 0.3 }}
+          className='min-h-[80vh]'
+        >
+          <AllUserProfiles />{' '}
+        </motion.div>
+      ) : null}
     </>
   );
 }
