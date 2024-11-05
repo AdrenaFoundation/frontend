@@ -70,7 +70,8 @@ export default function PoolRatios({
 
               return (
                 <div
-                  className={twMerge('p-5',
+                  className={twMerge(
+                    'p-5',
                     i % 2 && 'border-t md:border-l',
                     i > 1 && 'border-t',
                     i == 1 && 'md:border-t-0',
@@ -104,16 +105,19 @@ export default function PoolRatios({
 
                       <>
                         <div
-                          className="absolute -top-14 whitespace-nowrap font-mono text-sm text-gray-500"
+                          className="absolute -bottom-14 whitespace-nowrap font-mono text-sm text-gray-500"
                           style={{
-                            left: `${targetRatioPercentage + 2}%`,
+                            left: `${targetRatioPercentage + 5}%`,
                           }}
                         >
                           Target: {targetRatio}%
                         </div>
 
-                        <div className="relative flex items-center justify-center bg-bcolor h-[60px] w-[4px] z-1 -top-14 mx-auto">
-                          <div className="absolute top-0 w-2 h-2 rounded-full bg-bcolor" />
+                        <div
+                          className="absolute flex items-center justify-center bg-bcolor h-[60px] w-[4px] z-1 -bottom-14 mx-auto"
+                          style={{ left: `${targetRatioPercentage + 2}%` }}
+                        >
+                          <div className="absolute bottom-0 w-2 h-2 rounded-full bg-bcolor" />
                         </div>
                       </>
 
@@ -129,7 +133,6 @@ export default function PoolRatios({
                         {currentRatio < minRatio ? (
                           <div className="mr-1 font-boldy">{'<<<'}</div>
                         ) : null}
-
                         Current Ratio: {currentRatio}%
                         {currentRatio > maxRatio ? (
                           <div className="ml-1 font-boldy">{'>>>'}</div>
