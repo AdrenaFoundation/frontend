@@ -138,7 +138,7 @@ export default function AllPositions() {
         <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
                 <div className="flex flex-col gap-3">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 justify-between gap-5">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 justify-between gap-3">
                         <Filter
                             options={[{ name: 'all' }, { name: 'long' }, { name: 'short' }]}
                             activeFilter={sideFilter}
@@ -218,7 +218,7 @@ export default function AllPositions() {
 
                 <div className="flex flex-wrap justify-between gap-2">
                     {paginatedPositions.length ? (
-                        <div className="flex flex-col w-full gap-4">
+                        <div className="flex flex-col w-full gap-2">
                             {paginatedPositions.map((position) => (
                                 <PositionBlockReadOnly
                                     key={position.pubkey.toBase58()}

@@ -6,6 +6,10 @@ import { ClaimHistoryApi, ClaimHistoryExtended } from '@/types';
 export default function useClaimHistory(): {
   claimsHistoryAdx: ClaimHistoryExtended[] | null;
   claimsHistoryAlp: ClaimHistoryExtended[] | null;
+  optimisticClaimAdx: ClaimHistoryExtended[];
+  optimisticClaimAlp: ClaimHistoryExtended[];
+  setOptimisticClaimAdx: (claims: ClaimHistoryExtended[]) => void;
+  setOptimisticClaimAlp: (claims: ClaimHistoryExtended[]) => void;
   triggerClaimsReload: () => void;
 } {
   const wallet = useSelector((s) => s.walletState.wallet);
@@ -15,6 +19,13 @@ export default function useClaimHistory(): {
   const [claimsHistoryAlp, setClaimsHistoryAlp] = useState<
     ClaimHistoryExtended[] | null
   >(null);
+
+  const [optimisticClaimAdx, setOptimisticClaimAdx] = useState<
+    ClaimHistoryExtended[]
+  >([]);
+  const [optimisticClaimAlp, setOptimisticClaimAlp] = useState<
+    ClaimHistoryExtended[]
+  >([]);
 
   async function fetchClaimsHistory(): Promise<ClaimHistoryExtended[] | null> {
     if (!wallet) return null;
@@ -80,6 +91,9 @@ export default function useClaimHistory(): {
 
       setClaimsHistoryAdx(claimsHistory.filter((c) => c.symbol === 'ADX'));
       setClaimsHistoryAlp(claimsHistory.filter((c) => c.symbol === 'ALP'));
+
+      setOptimisticClaimAdx([]);
+      setOptimisticClaimAlp([]);
     } catch (e) {
       console.log('Error loading claims history', e, String(e));
       throw e;
@@ -88,11 +102,19 @@ export default function useClaimHistory(): {
 
   useEffect(() => {
     loadClaimsHistory();
+
+    const interval = setInterval(loadClaimsHistory, 30000);
+
+    return () => clearInterval(interval);
   }, [loadClaimsHistory]);
 
   return {
     claimsHistoryAdx,
     claimsHistoryAlp,
-    triggerClaimsReload: fetchClaimsHistory,
+    optimisticClaimAdx,
+    optimisticClaimAlp,
+    setOptimisticClaimAlp,
+    setOptimisticClaimAdx,
+    triggerClaimsReload: loadClaimsHistory,
   };
 }

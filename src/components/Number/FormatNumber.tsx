@@ -13,6 +13,7 @@ interface FormatNumberProps {
   placeholder?: string;
   className?: string;
   suffixClassName?: string;
+  wrapperClassName?: string;
   placeholderClassName?: string;
   isDecimalDimmed?: boolean;
   minimumFractionDigits?: number;
@@ -33,6 +34,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       placeholder = '-',
       className,
       suffixClassName = '',
+      wrapperClassName,
       placeholderClassName,
       isDecimalDimmed = true,
       minimumFractionDigits = 0,
@@ -124,7 +126,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
     }
 
     return (
-      <div className={twMerge(info && 'flex flex-row gap-1 items-center')}>
+      <div className={twMerge(info && 'flex flex-row gap-1 items-center', wrapperClassName)}>
         <Tippy
           content={
             <div className="text-sm w-60 flex flex-col justify-around items-center">
