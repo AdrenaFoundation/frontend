@@ -382,7 +382,7 @@ export default function Trade({
       <>
         {isBigScreen ? (
           <TradeComp
-            className="lg:max-h-[50em] hidden sm:flex lg:ml-4 lg:min-w-[25%]"
+            className="hidden sm:flex lg:ml-4 lg:min-w-[25%]"
             selectedAction={selectedAction}
             setSelectedAction={setSelectedAction}
             tokenA={tokenA}
