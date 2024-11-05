@@ -77,7 +77,6 @@ import {
   u128SplitToBN,
   uiToNative,
 } from './utils';
-import { Wallet } from '@solana/wallet-adapter-react';
 
 export class AdrenaClient {
   public static programId = new PublicKey(
