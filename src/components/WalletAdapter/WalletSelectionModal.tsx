@@ -161,10 +161,13 @@ const WalletBlock = ({
           onClick();
         }}
       >
-        <div className="text-lg font-boldy flex items-center pt-1 pb-1 pl-3 pr-3">{name}</div>
+        <div className='flex relative'>
+          <Image src={logo} alt={`${name} icon`} className={"w-4 h-auto"} />
 
-        {recommended ? <div className={twMerge('absolute left-2 top-2 flex text-xs font-boldy text-white', isHovered ? 'opacity-100' : 'opacity-80')}>Team&apos;s choice ❤️</div> : null}
-        {beta ? <div className={twMerge('absolute left-2 top-2 flex text-xs font-boldy text-white', isHovered ? 'opacity-100' : 'opacity-80')}>Beta Testing</div> : null}
+          <div className="text-lg font-boldy flex items-center pt-1 pb-1 pl-3 pr-3">{name}</div>
+
+          {beta ? <div className={twMerge('absolute -right-4 top-0 flex text-xs font-boldy text-yellow-300', isHovered ? 'opacity-100' : 'opacity-80')}>Beta</div> : null}
+        </div>
 
         {lastConnected ? <div className={twMerge('absolute bottom-3 flex text-xs italic', isHovered ? 'text-white' : 'text-txtfade')}>Your Last Pick!</div> : null}
       </div>
