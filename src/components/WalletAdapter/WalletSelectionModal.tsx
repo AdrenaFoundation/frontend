@@ -1,4 +1,3 @@
-import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { AnimatePresence } from 'framer-motion';
 import Image, { StaticImageData } from 'next/image';
 import React from 'react';

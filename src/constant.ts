@@ -1,10 +1,5 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import {
-  CoinbaseWalletAdapter,
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-  WalletConnectWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
+
 import { Keypair, PublicKey } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
@@ -14,6 +9,10 @@ import {
   SupportedCluster,
   WalletAdapterName,
 } from './types';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+import { CoinbaseWalletAdapter } from '@solana/wallet-adapter-coinbase';
+import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
+import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
 
 export const walletAdapters: Record<
   WalletAdapterName,
