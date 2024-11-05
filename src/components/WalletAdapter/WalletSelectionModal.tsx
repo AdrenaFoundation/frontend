@@ -8,7 +8,6 @@ import {
   connectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
-import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
 
 import Modal from '../common/Modal/Modal';
@@ -40,7 +39,6 @@ export default function WalletSelectionModal() {
                 dispatch(connectWalletAction('phantom'));
                 dispatch(openCloseConnectionModalAction(false));
               }}
-              readyState={walletAdapters['phantom'].readyState}
             />
 
             <WalletBlock
@@ -53,7 +51,6 @@ export default function WalletSelectionModal() {
                 dispatch(connectWalletAction('coinbase'));
                 dispatch(openCloseConnectionModalAction(false));
               }}
-              readyState={walletAdapters['coinbase'].readyState}
             />
 
             <WalletBlock
@@ -66,7 +63,6 @@ export default function WalletSelectionModal() {
                 dispatch(connectWalletAction('solflare'));
                 dispatch(openCloseConnectionModalAction(false));
               }}
-              readyState={walletAdapters['solflare'].readyState}
             />
 
             <WalletBlock
@@ -80,7 +76,6 @@ export default function WalletSelectionModal() {
                 dispatch(connectWalletAction('walletconnect'));
                 dispatch(openCloseConnectionModalAction(false));
               }}
-              readyState={WalletReadyState.Installed}
             />
           </div>
         </Modal>
@@ -98,8 +93,8 @@ const WalletBlock = ({
   imgClassName,
   beta,
   bgColor,
-  readyState,
   className,
+  disabled,
 }: {
   name: string;
   isMobile: boolean | null;
@@ -109,11 +104,9 @@ const WalletBlock = ({
   recommended?: boolean;
   onClick: () => void;
   bgColor: string;
-  readyState: WalletReadyState;
   className?: string;
+  disabled?: boolean;
 }) => {
-  const disabled = readyState !== WalletReadyState.Installed;
-
   const [isHovered, setIsHovered] = React.useState(false);
 
   const walletBlock = (
@@ -173,8 +166,6 @@ const WalletBlock = ({
       </div>
     </div>
   );
-
-  console.log(name, readyState);
 
   return walletBlock;
 };
