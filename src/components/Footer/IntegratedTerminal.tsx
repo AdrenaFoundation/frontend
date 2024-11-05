@@ -2,14 +2,14 @@ import { WalletProvider } from '@solana/wallet-adapter-react';
 import { Connection } from '@solana/web3.js';
 import React from 'react';
 
-import { walletAdapters } from '@/constant';
-
 import IntegratedTerminalChild from './IntegratedTerminalChild';
+import { WalletAdapterExtended } from '@/types';
 
 export default function IntegratedTerminal({
   connected,
   className,
   activeRpc,
+  adapters,
   id = 'Integrated-terminal',
 }: {
   connected: boolean;
@@ -19,10 +19,11 @@ export default function IntegratedTerminal({
     connection: Connection;
   };
   id?: string;
+  adapters: WalletAdapterExtended[];
 }) {
-  const adapter = walletAdapters['phantom'];
+  const adapter = adapters.find(x => x.name === 'Phantom');
 
-  return (
+  return (adapter ?
     <WalletProvider wallets={[adapter]} autoConnect>
       <IntegratedTerminalChild
         connected={connected}
@@ -30,6 +31,6 @@ export default function IntegratedTerminal({
         activeRpc={activeRpc}
         id={id}
       />
-    </WalletProvider>
+    </WalletProvider> : null
   );
 }

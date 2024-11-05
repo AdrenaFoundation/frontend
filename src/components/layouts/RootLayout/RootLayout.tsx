@@ -12,6 +12,7 @@ import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  WalletAdapterExtended,
 } from '@/types';
 
 import Footer from '../../Footer/Footer';
@@ -34,6 +35,7 @@ export default function RootLayout({
   maxPriorityFee,
   setMaxPriorityFee,
   preferredSolanaExplorer,
+  adapters,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
@@ -57,6 +59,7 @@ export default function RootLayout({
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
   const [pages, setPages] = useState<
@@ -107,6 +110,7 @@ export default function RootLayout({
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
           preferredSolanaExplorer={preferredSolanaExplorer}
+          adapters={adapters}
         />
       ) : (
         <BurgerMenu
@@ -126,6 +130,7 @@ export default function RootLayout({
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
           preferredSolanaExplorer={preferredSolanaExplorer}
+          adapters={adapters}
         />
       )}
 

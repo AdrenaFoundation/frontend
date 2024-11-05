@@ -1,10 +1,9 @@
 import { Dispatch } from '@reduxjs/toolkit';
-import { WalletConnectionError } from '@solana/wallet-adapter-base';
+import { Adapter, WalletConnectionError } from '@solana/wallet-adapter-base';
 import { PublicKey } from '@solana/web3.js';
 
-import { walletAdapters } from '@/constant';
-import { WalletAdapterName } from '@/types';
 import { addNotification } from '@/utils';
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 
 export type ConnectWalletAction = {
   type: 'connect';
@@ -39,17 +38,14 @@ export const openCloseConnectionModalAction =
   };
 
 export const autoConnectWalletAction =
-  (adapterName: WalletAdapterName) =>
-  async (dispatch: Dispatch<ConnectWalletAction>) => {
-    const adapter = walletAdapters[adapterName];
-
-    console.log('>>>> AUTO CONNECT ADAPTER:', adapterName);
+  (adapter: Adapter) => async (dispatch: Dispatch<ConnectWalletAction>) => {
+    console.log('>>>> AUTO CONNECT ADAPTER:', adapter.name);
 
     const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
         type: 'connect',
         payload: {
-          adapterName,
+          adapterName: adapter.name as WalletAdapterName,
           walletAddress: walletPubkey.toBase58(),
         },
       });
@@ -68,12 +64,12 @@ export const autoConnectWalletAction =
 
       adapter.removeListener('connect', connectFn);
 
-      localStorage.setItem('lastConnectedWallet', adapterName);
+      localStorage.setItem('lastConnectedWallet', adapter.name);
     } catch (err) {
       localStorage.setItem('autoConnectAuthorized', 'false');
 
       console.log(
-        new Error(`unable to auto-connect to wallet ${adapterName}`),
+        new Error(`unable to auto-connect to wallet ${adapter.name}`),
         {
           err,
         },
@@ -84,15 +80,12 @@ export const autoConnectWalletAction =
   };
 
 export const connectWalletAction =
-  (adapterName: WalletAdapterName) =>
-  async (dispatch: Dispatch<ConnectWalletAction>) => {
-    const adapter = walletAdapters[adapterName];
-
+  (adapter: Adapter) => async (dispatch: Dispatch<ConnectWalletAction>) => {
     const connectFn = (walletPubkey: PublicKey) => {
       dispatch({
         type: 'connect',
         payload: {
-          adapterName,
+          adapterName: adapter.name as WalletAdapterName,
           walletAddress: walletPubkey.toBase58(),
         },
       });
@@ -109,17 +102,17 @@ export const connectWalletAction =
       await adapter.connect();
       localStorage.setItem('autoConnectAuthorized', 'true');
 
-      localStorage.setItem('lastConnectedWallet', adapterName);
+      localStorage.setItem('lastConnectedWallet', adapter.name);
     } catch (err: unknown) {
       localStorage.setItem('autoConnectAuthorized', 'false');
 
-      console.log(new Error(`unable to connect to wallet ${adapterName}`), {
+      console.log(new Error(`unable to connect to wallet ${adapter.name}`), {
         err,
       });
 
       addNotification({
         type: 'error',
-        title: `${adapterName} connection error`,
+        title: `${adapter.name} connection error`,
         message:
           err instanceof WalletConnectionError ? err.message : 'Unknown error',
         duration: 'long',
@@ -130,10 +123,7 @@ export const connectWalletAction =
   };
 
 export const disconnectWalletAction =
-  (adapterName: WalletAdapterName) =>
-  async (dispatch: Dispatch<DisconnectWalletAction>) => {
-    const adapter = walletAdapters[adapterName];
-
+  (adapter: Adapter) => async (dispatch: Dispatch<DisconnectWalletAction>) => {
     adapter.once('disconnect', () => {
       dispatch({
         type: 'disconnect',
@@ -151,7 +141,7 @@ export const disconnectWalletAction =
     } catch (err) {
       localStorage.setItem('autoConnectAuthorized', 'true');
       console.log(
-        new Error(`unable to disconnect from wallet ${adapterName}`),
+        new Error(`unable to disconnect from wallet ${adapter.name}`),
         {
           err,
         },

@@ -2,6 +2,7 @@ import { AnimatePresence } from 'framer-motion';
 import Image, { StaticImageData } from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
+import { getWallets } from '@wallet-standard/app';
 
 import {
   connectWalletAction,
@@ -10,10 +11,15 @@ import {
 import { useDispatch, useSelector } from '@/store/store';
 
 import Modal from '../common/Modal/Modal';
-import { WALLET_COLORS, WALLET_ICONS } from './WalletAdapter';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
+import { ImageRef, WalletAdapterExtended } from '@/types';
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 
-export default function WalletSelectionModal() {
+export default function WalletSelectionModal({
+  adapters,
+}: {
+  adapters: WalletAdapterExtended[];
+}) {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
@@ -26,56 +32,30 @@ export default function WalletSelectionModal() {
           className="flex flex-col w-full items-center relative overflow-visible"
           title="Pick a wallet"
         >
-          <div className={twMerge("flex flex-col min-w-[25em] grow items-center", isMobile ? 'gap-4 pb-4' : '')}>
-            <WalletBlock
-              isMobile={isMobile}
-              name="Phantom"
-              bgColor={WALLET_COLORS.phantom}
-              recommended={true}
-              imgClassName='top-[5.3em] relative'
-              logo={WALLET_ICONS.phantom}
-              onClick={() => {
-                dispatch(connectWalletAction('phantom'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-            />
-
-            <WalletBlock
-              isMobile={isMobile}
-              name="Coinbase"
-              bgColor={WALLET_COLORS.coinbase}
-              imgClassName='w-[9em] top-[5.3em] right-[2em] relative right-16'
-              logo={WALLET_ICONS.coinbase}
-              onClick={() => {
-                dispatch(connectWalletAction('coinbase'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-            />
-
-            <WalletBlock
-              isMobile={isMobile}
-              name="Solflare"
-              bgColor={WALLET_COLORS.solflare}
-              imgClassName='w-[9em] top-[5.3em] right-[2em] relative'
-              logo={WALLET_ICONS.solflare}
-              onClick={() => {
-                dispatch(connectWalletAction('solflare'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-            />
-
-            <WalletBlock
-              isMobile={isMobile}
-              name="WalletConnect"
-              bgColor={WALLET_COLORS.walletconnect}
-              beta={true}
-              imgClassName='top-[2em] w-[10em] right-[1em] relative'
-              logo={WALLET_ICONS.walletconnect}
-              onClick={() => {
-                dispatch(connectWalletAction('walletconnect'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-            />
+          <div className={twMerge("flex flex-col min-w-[25em] grow items-center gap-4 pb-4 pt-4")}>
+            {adapters.map((adapter) => {
+              return <WalletBlock
+                key={adapter.name}
+                isMobile={isMobile}
+                name={adapter.name}
+                bgColor={adapter.color}
+                beta={adapter.beta}
+                recommended={adapter.recommended}
+                logo={adapter.iconOverride ?? adapter.icon}
+                imgClassName={({
+                  // Add custom classes here for each wallet if needed
+                  'Phantom': 'w-[10em] left-14',
+                  'Coinbase Wallet': 'w-[6em] left-6 top-6',
+                  Solflare: 'w-[8em] left-8 top-10',
+                  'Backpack': 'w-[5em] left-2 top-6',
+                  'WalletConnect': 'w-[7em] left-8 top-2'
+                } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
+                onClick={() => {
+                  dispatch(connectWalletAction(adapter));
+                  dispatch(openCloseConnectionModalAction(false));
+                }}
+              />
+            })}
           </div>
         </Modal>
       )}
@@ -97,7 +77,7 @@ const WalletBlock = ({
 }: {
   name: string;
   isMobile: boolean | null;
-  logo: StaticImageData;
+  logo?: string | ImageRef;
   imgClassName?: string;
   beta?: boolean;
   recommended?: boolean;
@@ -110,24 +90,23 @@ const WalletBlock = ({
 
   const walletBlock = (
     <div className={twMerge(
-      'flex relative overflow-hidden',
-      isMobile ? 'border-bcolor rounded-full border w-[80%] h-[3.7em]' : 'flex-row w-full h-[5em]',
+      'flex relative overflow-hidden border-bcolor rounded-full border w-[80%] h-[3.7em]',
       className,
     )}
+      key={name}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={twMerge('absolute top-0 left-0 w-full h-full flex items-end justify-end', isHovered || isMobile ? 'opacity-80 grayscale-0' : 'opacity-10 grayscale')}
+        className={twMerge('absolute top-0 left-0 w-full h-full flex items-end justify-end opacity-80 grayscale-0')}
         style={{
           backgroundColor: bgColor,
         }}
       >
-        <Image src={logo} alt={`${name} icon`} className={twMerge(
-          "w-[12em] h-auto left-16 scale-x-[-1] transition-transform duration-500",
-          isHovered || isMobile ? 'translate-y-0' : 'translate-y-[18%]',
+        {logo ? <Image src={logo} alt={`${name} icon`} width="150" height="150" className={twMerge(
+          "w-[9em] h-auto relative left-8 top-16 scale-x-[-1]",
           imgClassName,
-        )} />
+        )} /> : null}
       </div>
 
       <div
@@ -144,20 +123,18 @@ const WalletBlock = ({
         }}
       >
         <div className='flex relative flex-col items-center justify-center'>
-          <div className="text-lg font-boldy flex items-center justify-center pt-1 pb-1 pl-3 pr-3">{name}</div>
+          <div className="text-lg font-boldy flex items-center justify-center pt-1 pl-3 pr-3">{name}</div>
 
           {recommended ?
             <div className={twMerge(
-              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200',
-              isHovered ? 'opacity-100' : 'opacity-80',
+              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
             )}>
               Recommended
             </div> : null}
 
           {beta ?
             <div className={twMerge(
-              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200',
-              isHovered ? 'opacity-100' : 'opacity-80',
+              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
             )}>
               Beta
             </div> : null}

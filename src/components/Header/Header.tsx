@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
-import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
+import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended, WalletAdapterExtended } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
@@ -19,6 +19,7 @@ import MenuSeparator from '../common/Menu/MenuSeparator';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
+import { Adapter } from '@solana/wallet-adapter-base';
 
 export default function Header({
   userProfile,
@@ -37,6 +38,7 @@ export default function Header({
   maxPriorityFee,
   setMaxPriorityFee,
   preferredSolanaExplorer,
+  adapters,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
@@ -60,6 +62,7 @@ export default function Header({
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const pathname = usePathname();
 
@@ -192,7 +195,7 @@ export default function Header({
           preferredSolanaExplorer={preferredSolanaExplorer}
         />
 
-        <WalletAdapter userProfile={userProfile} />
+        <WalletAdapter userProfile={userProfile} adapters={adapters} />
 
         {clusterSwitchEnabled ? (
           <Menu

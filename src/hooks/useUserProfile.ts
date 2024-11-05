@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
+import { PublicKey } from '@solana/web3.js';
 
 export default function useUserProfile(): {
   userProfile: UserProfileExtended | false | null;
@@ -18,14 +19,20 @@ export default function useUserProfile(): {
 
   const fetchUserProfile = useCallback(async () => {
     if (!wallet) {
+      console.log('USER PROFILE NULL');
       setUserProfile(null);
       return;
     }
 
-    setUserProfile(await window.adrena.client.loadUserProfile());
+    setUserProfile(
+      await window.adrena.client.loadUserProfile(
+        new PublicKey(wallet.walletAddress),
+      ),
+    );
   }, [wallet]);
 
   useEffect(() => {
+    console.log('Fetch user profile for wallet', wallet);
     fetchUserProfile();
 
     const interval = setInterval(() => {
@@ -34,7 +41,12 @@ export default function useUserProfile(): {
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchUserProfile, trickReload, window.adrena.client.connection]);
+  }, [
+    fetchUserProfile,
+    trickReload,
+    window.adrena.client.connection,
+    wallet?.adapterName,
+  ]);
 
   return {
     userProfile,

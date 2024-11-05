@@ -1,14 +1,17 @@
 import { Wallet } from '@coral-xyz/anchor';
 
-import { walletAdapters } from '@/constant';
 import { useSelector } from '@/store/store';
+import { WalletAdapterExtended } from '@/types';
 
-export default function useWallet() {
+export default function useWallet(adapters: WalletAdapterExtended[]) {
   const walletState = useSelector((s) => s.walletState.wallet);
-  // Cast to wallet because Adapters contains necessary Wallet functions
-  const adapter = walletState
-    ? (walletAdapters[walletState.adapterName] as unknown as Wallet)
-    : null;
 
-  return adapter;
+  if (walletState) {
+    const adapter = adapters.find((x) => x.name === walletState.adapterName);
+
+    // Cast to wallet because Adapters contains necessary Wallet functions
+    return (adapter as unknown as Wallet) ?? null;
+  }
+
+  return null;
 }

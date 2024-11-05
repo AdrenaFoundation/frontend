@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -7,48 +7,34 @@ import {
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
-import { walletAdapters } from '@/constant';
 import { useDispatch, useSelector } from '@/store/store';
-import { ImageRef, UserProfileExtended, WalletAdapterName } from '@/types';
+import { UserProfileExtended, WalletAdapterExtended } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
-import coinbaseLogo from '../../../public/images/coinbase.png';
-import phantomLogo from '../../../public/images/phantom.svg';
-import solflareLogo from '../../../public/images/solflare.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
-import walletconnectLogo from '../../../public/images/walletconnect.png';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import WalletSelectionModal from './WalletSelectionModal';
-
-export const WALLET_ICONS = {
-  phantom: phantomLogo,
-  solflare: solflareLogo,
-  walletconnect: walletconnectLogo,
-  coinbase: coinbaseLogo,
-} as const satisfies Record<WalletAdapterName, ImageRef>;
-
-export const WALLET_COLORS = {
-  phantom: '#ab9ff2',
-  solflare: '#fda518',
-  walletconnect: '#0798fe',
-  coinbase: '#072b79',
-} as const satisfies Record<WalletAdapterName, string>;
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 
 export default function WalletAdapter({
   className,
   userProfile,
   isIconOnly,
+  adapters,
 }: {
   className?: string;
   userProfile: UserProfileExtended | null | false;
   isIconOnly?: boolean;
+  adapters: WalletAdapterExtended[];
 }) {
   const dispatch = useDispatch();
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+
+  const connectedAdapter = useMemo(() => wallet && adapters.find(x => x.name === wallet.adapterName), [wallet]);
 
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
@@ -63,7 +49,7 @@ export default function WalletAdapter({
   if (lastConnectedWalletRef.current === null) {
     const adapterName = localStorage.getItem('lastConnectedWallet');
 
-    if (adapterName && adapterName in walletAdapters) {
+    if (adapterName && adapters.find(x => x.name === adapterName)) {
       lastConnectedWalletRef.current = adapterName as WalletAdapterName;
     } else {
       lastConnectedWalletRef.current = null;
@@ -76,7 +62,10 @@ export default function WalletAdapter({
   // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
     if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
-      dispatch(autoConnectWalletAction(lastConnectedWalletRef.current));
+      const adapter = adapters.find(x => x.name === lastConnectedWalletRef.current);
+      if (!adapter) return;
+
+      dispatch(autoConnectWalletAction(adapter));
       return;
     }
     // `dispatch` is stable, does not need to be included in the dependencies array.
@@ -90,7 +79,9 @@ export default function WalletAdapter({
   useEffect(() => {
     if (!connectedWalletAdapterName) return;
 
-    const adapter = walletAdapters[connectedWalletAdapterName];
+    const adapter = adapters.find(x => x.name === connectedWalletAdapterName);
+
+    if (!adapter) return;
 
     adapter.on('connect', (walletPubkey: PublicKey) => {
       dispatch({
@@ -115,7 +106,7 @@ export default function WalletAdapter({
             <Button
               className={twMerge(
                 className,
-                'gap-1 pl-2 pr-3 text-xs w-[15em]',
+                'gap-2 pl-2 pr-3 text-xs w-[15em]',
                 isIconOnly && 'p-0 h-7 w-7',
               )}
               title={
@@ -125,8 +116,8 @@ export default function WalletAdapter({
                     : getAbbrevWalletAddress(wallet.walletAddress)
                   : null
               }
-              leftIcon={WALLET_ICONS[wallet.adapterName]}
-              leftIconClassName='w-4 h-4'
+              leftIcon={connectedAdapter?.iconOverride ?? connectedAdapter?.icon}
+              leftIconClassName='w-3 h-3'
               variant="lightbg"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
@@ -140,9 +131,9 @@ export default function WalletAdapter({
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
 
-                if (!connected) return;
+                if (!connected || !connectedAdapter) return;
 
-                dispatch(disconnectWalletAction(wallet.adapterName));
+                dispatch(disconnectWalletAction(connectedAdapter));
               }}
             >
               Disconnect
@@ -169,7 +160,7 @@ export default function WalletAdapter({
         />
       )}
 
-      <WalletSelectionModal />
+      <WalletSelectionModal adapters={adapters} />
     </div>
   );
 }

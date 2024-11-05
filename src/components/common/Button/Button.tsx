@@ -32,8 +32,8 @@ export default function Button({
   ...rest
 }: {
   title?: ReactNode;
-  rightIcon?: ImageRef;
-  leftIcon?: ImageRef;
+  rightIcon?: string | ImageRef;
+  leftIcon?: string | ImageRef;
   style?: CSSProperties;
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger' | 'lightbg';

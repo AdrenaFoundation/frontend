@@ -39,6 +39,7 @@ import {
 
 import logo from '../../public/images/logo.svg';
 import store from '../store/store';
+import useWalletAdapters from '@/hooks/useWalletAdapters';
 
 function Loader(): JSX.Element {
   return (
@@ -172,7 +173,8 @@ function AppComponent({
   const router = useRouter();
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
-  const wallet = useWallet();
+  const adapters = useWalletAdapters();
+  const wallet = useWallet(adapters);
   const positions = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
@@ -316,6 +318,7 @@ function AppComponent({
         setCustomRpcUrl={setCustomRpcUrl}
         setFavoriteRpc={setFavoriteRpc}
         preferredSolanaExplorer={preferredSolanaExplorer}
+        adapters={adapters}
       >
         {
           <TermsAndConditionsModal

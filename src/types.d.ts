@@ -12,6 +12,7 @@ import { ThreadProgram as SablierThreadProgram } from '@/target/thread_program';
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
 import SablierClient from './SablierClient';
+import { Adapter } from '@solana/wallet-adapter-base';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -56,11 +57,12 @@ declare global {
   }
 }
 
-export type WalletAdapterName =
-  | 'phantom'
-  | 'coinbase'
-  | 'solflare'
-  | 'walletconnect';
+export type WalletAdapterExtended = Adapter & {
+  color: string;
+  beta: boolean;
+  recommended: boolean;
+  iconOverride?: ImageRef;
+};
 
 export type PageProps = {
   mainPool: PoolExtended | null;
