@@ -33,10 +33,11 @@ export default function TradingStats({
           nb={totalProfitLoss}
           format="currency"
           precision={2}
-          className={twMerge(
+          bodyClassName={twMerge(
             totalProfitLoss > 0 ? 'text-green' : '',
             totalProfitLoss < 0 ? 'text-red' : '',
           )}
+          isDecimalDimmed={false}
           tippyInfo='This is the sum of all your profits and losses over all trades. Does not include fees.'
         />
 
@@ -48,10 +49,11 @@ export default function TradingStats({
           }
           format="currency"
           precision={2}
-          className={twMerge(
+          bodyClassName={twMerge(
             (userProfile.longStats.feePaidUsd +
               userProfile.shortStats.feePaidUsd) > 0 ? 'text-red' : '',
           )}
+          isDecimalDimmed={false}
           tippyInfo='This include the Open/Close fees (0 bps open, 16bps close) and the Borrow fees.'
         />
       </div>
