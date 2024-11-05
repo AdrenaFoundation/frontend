@@ -139,6 +139,10 @@ export default function PositionBlockReadOnly({
                         format="percentage"
                         prefix="("
                         suffix=")"
+                        suffixClassName={`ml-0 text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
+                            ? 'green'
+                            : 'redbright'
+                            }`}
                         precision={2}
                         isDecimalDimmed={false}
                         className={`text-xs text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
