@@ -269,6 +269,12 @@ export default function PositionHistoryBlock({
             suffix=")"
             precision={2}
             isDecimalDimmed={false}
+            suffixClassName={`ml-0 text-${(showAfterFees
+              ? positionHistory.pnl + positionHistory.fees
+              : positionHistory.pnl) > 0
+              ? 'green'
+              : 'redbright'
+              }`}
             className={`text-xxs opacity-90 text-${(showAfterFees
               ? positionHistory.pnl + positionHistory.fees
               : positionHistory.pnl) > 0
@@ -298,6 +304,7 @@ export default function PositionHistoryBlock({
         format="percentage"
         prefix="("
         suffix=")"
+        suffixClassName='ml-0 text-txtfade'
         precision={2}
         isDecimalDimmed={false}
         className={`text-xxs opacity-90 text-${pnlValue > 0 ? 'green' : 'redbright'

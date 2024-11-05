@@ -191,6 +191,7 @@ export default function StopLossTakeProfitInput({
               format="percentage"
               prefix="("
               suffix=")"
+              suffixClassName={twMerge(displayColor, 'ml-0)')}
               precision={2}
               isDecimalDimmed={false}
               className={twMerge(displayColor + ` text-xs`)}
