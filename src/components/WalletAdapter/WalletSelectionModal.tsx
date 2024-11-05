@@ -16,6 +16,7 @@ import coinbaseLogo from '../../../public/images/coinbase.png';
 import phantomLogo from '../../../public/images/phantom.svg';
 import solflareLogo from '../../../public/images/solflare.png';
 import Modal from '../common/Modal/Modal';
+import DisplayInfo from '../DisplayInfo/DisplayInfo';
 
 export default function WalletSelectionModal() {
   const dispatch = useDispatch();
@@ -43,16 +44,6 @@ export default function WalletSelectionModal() {
             />
 
             <WalletBlock
-              name="Backpack"
-              logo={backpackLogo}
-              onClick={() => {
-                dispatch(connectWalletAction('backpack'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-              readyState={walletAdapters['backpack'].readyState}
-            />
-
-            <WalletBlock
               name="Coinbase"
               logo={coinbaseLogo}
               onClick={() => {
@@ -71,6 +62,18 @@ export default function WalletSelectionModal() {
               }}
               readyState={walletAdapters['solflare'].readyState}
             />
+
+            <DisplayInfo body={"Backpack wallet is deprecated and will be removed from the app the 8th of november."} className='items-center justify-center max-w-[25em] bg-orange/30 border-orange' />
+
+            <WalletBlock
+              name="Backpack"
+              logo={backpackLogo}
+              onClick={() => {
+                dispatch(connectWalletAction('backpack'));
+                dispatch(openCloseConnectionModalAction(false));
+              }}
+              readyState={walletAdapters['backpack'].readyState}
+            />
           </div>
         </Modal>
       )}
@@ -82,14 +85,12 @@ const WalletBlock = ({
   name,
   logo,
   onClick,
-
   readyState,
   className,
 }: {
   name: string;
   logo: StaticImageData;
   onClick: () => void;
-
   readyState: WalletReadyState;
   className?: string;
 }) => {
