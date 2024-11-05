@@ -451,6 +451,14 @@ export default function LongShortTradingInputs({
     newPositionInfo,
   ]);
 
+  const usdcMint =
+    window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
+  const usdcCustody =
+    usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
+  const usdcPrice = tokenPrices['USDC'];
+
+  const availableLiquidityShort = (custody && (custody.maxCumulativeShortPositionSizeUsd - (custody.oiShortUsd ?? 0))) ?? 0;
+
   useEffect(() => {
     if (!inputA || !connected) {
       setErrorMessage(null);
@@ -480,17 +488,30 @@ export default function LongShortTradingInputs({
 
     const tokenPriceBTrade = tokenPrices[getTokenSymbol(tokenB.symbol)];
 
-    if (tokenPriceBTrade !== null) {
-      if (inputB * tokenPriceBTrade > custody.maxPositionLockedUsd)
+    if (!tokenPriceBTrade) {
+      return setErrorMessage(`Missing ${getTokenSymbol(tokenB.symbol)} price`);
+    }
+
+    const projectedSizeUsd = inputB * tokenPriceBTrade;
+
+    if (projectedSizeUsd > custody.maxPositionLockedUsd)
+      return setErrorMessage(`Position Exceeds Max Size`);
+
+    // If custody doesn't have enough liquidity, tell user
+    if (side === 'long' && inputB > custody.liquidity)
+      return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
+
+    if (side === 'short' && usdcCustody) {
+      if (projectedSizeUsd > usdcCustody.liquidity)
+        return setErrorMessage(`Insufficient USDC liquidity`);
+
+      if (projectedSizeUsd > availableLiquidityShort)
         return setErrorMessage(`Position Exceeds Max Size`);
     }
 
-    // If user wallet balance doesn't have enough tokens, tell user
-    if (inputB > custody.liquidity)
-      return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
-
     return setErrorMessage(null);
   }, [
+    usdcCustody,
     inputA,
     inputB,
     tokenA.symbol,
@@ -516,14 +537,6 @@ export default function LongShortTradingInputs({
     const userWalletAmount = walletTokenBalances[tokenA.symbol] ?? 0;
     handleInputAChange(userWalletAmount);
   };
-
-  const usdcMint =
-    window.adrena.client.tokens.find((t) => t.symbol === 'USDC')?.mint ?? null;
-  const usdcCustody =
-    usdcMint && window.adrena.client.getCustodyByMint(usdcMint);
-  const usdcPrice = tokenPrices['USDC'];
-
-  const availableLiquidityShort = (custody && (custody.maxCumulativeShortPositionSizeUsd - (custody.oiShortUsd ?? 0))) ?? 0;
 
   return (
     <div
