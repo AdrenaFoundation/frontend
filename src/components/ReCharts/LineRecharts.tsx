@@ -82,6 +82,7 @@ export default function LineRechart({
               format="currency"
               prefix="("
               suffix=")"
+              suffixClassName='ml-0 text-txtfade'
               precision={0}
             />
           )}

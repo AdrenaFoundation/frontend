@@ -73,6 +73,7 @@ export default function AreaRechart({
             format="currency"
             prefix="("
             suffix=")"
+            suffixClassName='ml-0 text-txtfade'
             isDecimalDimmed={false}
             precision={title === 'ALP Price' ? 4 : 0}
           />
