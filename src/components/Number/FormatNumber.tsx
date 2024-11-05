@@ -21,6 +21,7 @@ interface FormatNumberProps {
   isLoading?: boolean;
   isAbbreviate?: boolean;
   info?: number | string | null;
+  showSignBeforePrefix?: boolean;
 }
 
 const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
@@ -42,6 +43,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       isLoading = false,
       isAbbreviate = false,
       info = null,
+      showSignBeforePrefix = false,
     },
     ref,
   ) => {
@@ -67,6 +69,11 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       );
     }
 
+    const sign = nb && nb < 0 ? '-' : '';
+
+    if (nb && showSignBeforePrefix) {
+      nb = Math.abs(nb);
+    }
     let num = formatNumber(
       nb,
       precision,
@@ -100,9 +107,11 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
     const integer = num.split('.')[0];
     const decimal = num.split('.')[1];
 
+
     const nbDiv = (
       <p ref={ref} className={twMerge('font-mono inline-block', className)}>
         {isAbbreviate && '≈ '}
+        {showSignBeforePrefix && sign}
         {prefix}
         {integer}
         {decimal && (
