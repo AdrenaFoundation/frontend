@@ -1,6 +1,5 @@
-import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-
 import { Keypair, PublicKey } from '@solana/web3.js';
+
 import { ResolutionString } from '../public/charting_library/charting_library';
 import { AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
 

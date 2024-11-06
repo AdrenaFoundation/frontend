@@ -3,6 +3,7 @@ import {
   AllInstructionsMap,
   IdlTypes,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
+import { Adapter } from '@solana/wallet-adapter-base';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
@@ -12,7 +13,6 @@ import { ThreadProgram as SablierThreadProgram } from '@/target/thread_program';
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
 import SablierClient from './SablierClient';
-import { Adapter } from '@solana/wallet-adapter-base';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;

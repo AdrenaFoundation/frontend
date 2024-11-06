@@ -7,7 +7,6 @@ import { useSelector } from '@/store/store';
 import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
 
 import StyledSubContainer from '../common/StyledSubContainer/StyledSubContainer';
-import useWalletAdapters from '@/hooks/useWalletAdapters';
 
 export default function IntegratedTerminalChild({
   connected,

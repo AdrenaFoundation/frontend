@@ -23,6 +23,7 @@ import usePositions from '@/hooks/usePositions';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
+import useWalletAdapters from '@/hooks/useWalletAdapters';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp, {
@@ -39,7 +40,6 @@ import {
 
 import logo from '../../public/images/logo.svg';
 import store from '../store/store';
-import useWalletAdapters from '@/hooks/useWalletAdapters';
 
 function Loader(): JSX.Element {
   return (

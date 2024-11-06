@@ -19,7 +19,6 @@ import MenuSeparator from '../common/Menu/MenuSeparator';
 import PriorityFeeSetting from '../PriorityFeeSetting/PriorityFeeSetting';
 import Settings from '../Settings/Settings';
 import WalletAdapter from '../WalletAdapter/WalletAdapter';
-import { Adapter } from '@solana/wallet-adapter-base';
 
 export default function Header({
   userProfile,
