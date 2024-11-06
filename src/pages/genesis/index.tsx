@@ -24,7 +24,7 @@ import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { GenesisLock, PageProps, SolanaExplorerOptions } from '@/types';
+import { GenesisLock, PageProps, SolanaExplorerOptions, WalletAdapterExtended } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
@@ -50,6 +50,7 @@ export default function Genesis({
   setCustomRpcUrl,
   setFavoriteRpc,
   preferredSolanaExplorer,
+  adapters,
 }: PageProps & {
   activeRpc: {
     name: string;
@@ -67,6 +68,7 @@ export default function Genesis({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -619,7 +621,7 @@ export default function Genesis({
                     isIcon
                     isGenesis
                   />
-                  <WalletAdapter userProfile={userProfile} />
+                  <WalletAdapter userProfile={userProfile} adapters={adapters} />
                 </div>
 
                 {hasCampaignEnded ? (
