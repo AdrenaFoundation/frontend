@@ -18,30 +18,33 @@ export default function ViewsWarning() {
 
     if (solBalance > 0.001 || !connected || isClosed) return null;
 
-    return (
-        <div className="flex flex-row items-center justify-center gap-3 p-1 bg-amber-700 w-full z-20">
-            <div className="flex flex-row items-center gap-2">
-                <Image src={infoIcon} alt="Warning" width={14} height={14} />
+    // Disabled for now
+    return null;
 
-                <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
-                    You need at least <FormatNumber
-                        nb={0.001}
-                        precision={3}
-                        isDecimalDimmed={false}
-                    /> SOL to interact with the app
-                </p>
-            </div>
+    // return (
+    //     <div className="flex flex-row items-center justify-center gap-3 p-1 bg-amber-700 w-full z-30">
+    //         <div className="flex flex-row items-center gap-2">
+    //             <Image src={infoIcon} alt="Warning" width={14} height={14} />
 
-            <Image
-                src={crossIcon}
-                className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-300"
-                alt="close btn"
-                width={14}
-                height={14}
-                onClick={() => {
-                    setIsClosed(true);
-                }}
-            />
-        </div>
-    );
+    //             <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
+    //                 You need at least <FormatNumber
+    //                     nb={0.001}
+    //                     precision={3}
+    //                     isDecimalDimmed={false}
+    //                 /> SOL to interact with the app
+    //             </p>
+    //         </div>
+
+    //         <Image
+    //             src={crossIcon}
+    //             className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-300"
+    //             alt="close btn"
+    //             width={14}
+    //             height={14}
+    //             onClick={() => {
+    //                 setIsClosed(true);
+    //             }}
+    //         />
+    //     </div>
+    // );
 }
