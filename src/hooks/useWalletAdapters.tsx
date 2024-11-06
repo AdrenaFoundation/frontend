@@ -1,17 +1,17 @@
-import { useStandardWalletAdapters } from "@solana/wallet-standard-wallet-adapter-react";
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { CoinbaseWalletAdapter } from '@solana/wallet-adapter-coinbase';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { useStandardWalletAdapters } from "@solana/wallet-standard-wallet-adapter-react";
 import { useMemo } from "react";
+
 import { ImageRef, WalletAdapterExtended } from "@/types";
 
+import backpackLogo from '../../public/images/backpack.png';
 import coinbaseLogo from '../../public/images/coinbase.png';
 import phantomLogo from '../../public/images/phantom.svg';
-import backpackLogo from '../../public/images/backpack.png';
 import solflareLogo from '../../public/images/solflare.png';
-import walletIcon from '../../public/images/wallet-icon.svg';
 import walletconnectLogo from '../../public/images/walletconnect.png';
 
 export const WALLET_ICONS = {

@@ -7,6 +7,7 @@ import {
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
 import { UserProfileExtended, WalletAdapterExtended } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
@@ -17,7 +18,6 @@ import Menu from '../common/Menu/Menu';
 import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import WalletSelectionModal from './WalletSelectionModal';
-import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 
 export default function WalletAdapter({
   className,

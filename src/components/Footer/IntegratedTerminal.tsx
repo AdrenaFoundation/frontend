@@ -2,8 +2,9 @@ import { WalletProvider } from '@solana/wallet-adapter-react';
 import { Connection } from '@solana/web3.js';
 import React from 'react';
 
-import IntegratedTerminalChild from './IntegratedTerminalChild';
 import { WalletAdapterExtended } from '@/types';
+
+import IntegratedTerminalChild from './IntegratedTerminalChild';
 
 export default function IntegratedTerminal({
   connected,
