@@ -1,19 +1,17 @@
 import { AnimatePresence } from 'framer-motion';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import { getWallets } from '@wallet-standard/app';
 
 import {
   connectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
+import { ImageRef, WalletAdapterExtended } from '@/types';
 
 import Modal from '../common/Modal/Modal';
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { ImageRef, WalletAdapterExtended } from '@/types';
-import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 
 export default function WalletSelectionModal({
   adapters,
@@ -22,7 +20,6 @@ export default function WalletSelectionModal({
 }) {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
-  const isMobile = useBetterMediaQuery('(max-width: 640px)');
 
   return (
     <AnimatePresence>
@@ -36,7 +33,6 @@ export default function WalletSelectionModal({
             {adapters.map((adapter) => {
               return <WalletBlock
                 key={adapter.name}
-                isMobile={isMobile}
                 name={adapter.name}
                 bgColor={adapter.color}
                 beta={adapter.beta}
@@ -65,7 +61,6 @@ export default function WalletSelectionModal({
 
 const WalletBlock = ({
   name,
-  isMobile,
   logo,
   recommended,
   onClick,
@@ -76,7 +71,6 @@ const WalletBlock = ({
   disabled,
 }: {
   name: string;
-  isMobile: boolean | null;
   logo?: string | ImageRef;
   imgClassName?: string;
   beta?: boolean;
@@ -86,16 +80,12 @@ const WalletBlock = ({
   className?: string;
   disabled?: boolean;
 }) => {
-  const [isHovered, setIsHovered] = React.useState(false);
-
   const walletBlock = (
     <div className={twMerge(
       'flex relative overflow-hidden border-bcolor rounded-full border w-[80%] h-[3.7em]',
       className,
     )}
       key={name}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div
         className={twMerge('absolute top-0 left-0 w-full h-full flex items-end justify-end opacity-80 grayscale-0')}
