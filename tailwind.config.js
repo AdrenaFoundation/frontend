@@ -37,7 +37,7 @@ module.exports = {
       },
     },
     font: {
-      mono: ['Roboto Mono', 'sans-serif'],
+      mono: ['Roboto Mono', 'monospace'],
       regular: ['regular', 'sans-serif'],
       boldy: ['boldy', 'sans-serif'],
       special: ['special', 'sans-serif'],
