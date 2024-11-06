@@ -77,6 +77,7 @@ export type PageProps = {
     name: string;
     connection: Connection;
   };
+  adapters: WalletAdapterExtended[];
 };
 
 export type CustodyExtended = {

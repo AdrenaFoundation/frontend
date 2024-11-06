@@ -63,7 +63,7 @@ export default function Trade({
   triggerWalletTokenBalancesReload,
   userProfile,
   activeRpc,
-
+  adapters,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -373,6 +373,7 @@ export default function Trade({
                 isBigScreen={isBigScreen}
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
+                adapters={adapters}
               />
             </div>
           </div>
@@ -396,6 +397,7 @@ export default function Trade({
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
+            adapters={adapters}
           />
         ) : null}
 
@@ -465,6 +467,7 @@ export default function Trade({
                     }
                     activeRpc={activeRpc}
                     terminalId="integrated-terminal-3"
+                    adapters={adapters}
                   />
                 </div>
               </Modal>
