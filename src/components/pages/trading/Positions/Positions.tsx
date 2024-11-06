@@ -143,7 +143,19 @@ export default function Positions({
         {shareClosePosition && (
           <Modal title="Share PnL" close={() => setShareClosePosition(null)}>
             <div className="absolute top-0 w-[300px]">
-              <Congrats />
+              {(() => {
+                const fees = -(
+                  (shareClosePosition.exitFeeUsd ?? 0) +
+                  (shareClosePosition.borrowFeeUsd ?? 0)
+                );
+                const pnlUsd = shareClosePosition.pnl
+                  ? shareClosePosition.pnl - fees
+                  : null;
+
+                if (!pnlUsd || pnlUsd < 0) return;
+
+                return <Congrats />;
+              })()}
             </div>
             <SharePositionModal position={shareClosePosition} />
           </Modal>
