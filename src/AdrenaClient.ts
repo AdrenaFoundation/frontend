@@ -1578,12 +1578,10 @@ export class AdrenaClient {
   public async cleanupPosition({
     owner,
     notification,
-    position,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
     notification: MultiStepNotification;
-    position: PositionExtended;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1607,24 +1605,6 @@ export class AdrenaClient {
     }
 
     const instructions: TransactionInstruction[] = [];
-
-    // Cleanup existing position in case Sablier did not work as expected
-    if (position && position.pendingCleanupAndClose == true) {
-      if (position.stopLossThreadIsSet) {
-        instructions.push(
-          await this.buildCleanupPositionStopLoss({
-            position: position,
-          }),
-        );
-      }
-      if (position.takeProfitThreadIsSet) {
-        instructions.push(
-          await this.buildCleanupPositionTakeProfit({
-            position: position,
-          }),
-        );
-      }
-    }
 
     const transaction = new Transaction();
     transaction.add(...preInstructions, ...instructions, ...postInstructions);
@@ -1650,7 +1630,6 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
-    existingPosition,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1659,7 +1638,6 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
-    existingPosition?: PositionExtended | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -1695,23 +1673,6 @@ export class AdrenaClient {
         userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction();
 
-    // Cleanup existing position in case Sablier did not work as expected
-    if (existingPosition && existingPosition.pendingCleanupAndClose == true) {
-      if (existingPosition.stopLossThreadIsSet) {
-        preInstructions.push(
-          await this.buildCleanupPositionStopLoss({
-            position: existingPosition,
-          }),
-        );
-      }
-      if (existingPosition.takeProfitThreadIsSet) {
-        preInstructions.push(
-          await this.buildCleanupPositionTakeProfit({
-            position: existingPosition,
-          }),
-        );
-      }
-    }
     const transaction = new Transaction();
     transaction.add(
       ...preInstructions,
@@ -1848,7 +1809,6 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     notification,
-    existingPosition,
   }: {
     owner: PublicKey;
     collateralMint: PublicKey;
@@ -1857,7 +1817,6 @@ export class AdrenaClient {
     collateralAmount: BN;
     leverage: number;
     notification: MultiStepNotification;
-    existingPosition?: PositionExtended | null;
   }) {
     if (!this.connection) {
       throw new Error('no connection');
@@ -3056,12 +3015,10 @@ export class AdrenaClient {
   public async initUserStaking({
     owner,
     stakedTokenMint,
-    threadId,
     notification,
   }: {
     owner: PublicKey;
     stakedTokenMint: PublicKey;
-    threadId: BN;
     notification: MultiStepNotification;
   }) {
     if (!this.adrenaProgram || !this.connection) {
@@ -3471,14 +3428,12 @@ export class AdrenaClient {
     collateralAmount,
     leverage,
     side,
-    position,
   }: {
     mint: PublicKey;
     collateralMint: PublicKey;
     collateralAmount: BN;
     leverage: number;
     side: 'long' | 'short';
-    position?: PositionExtended | null;
   }): Promise<OpenPositionWithSwapAmountAndFees | null> {
     if (this.adrenaProgram === null) {
       return null;
@@ -3524,22 +3479,6 @@ export class AdrenaClient {
       .instruction();
 
     const preInstructions: TransactionInstruction[] = [];
-    if (position && position.pendingCleanupAndClose == true) {
-      if (position.stopLossThreadIsSet) {
-        preInstructions.push(
-          await this.buildCleanupPositionStopLoss({
-            position,
-          }),
-        );
-      }
-      if (position.takeProfitThreadIsSet) {
-        preInstructions.push(
-          await this.buildCleanupPositionTakeProfit({
-            position,
-          }),
-        );
-      }
-    }
 
     return this.simulateInstructions<OpenPositionWithSwapAmountAndFees>(
       [...preInstructions, instruction],
