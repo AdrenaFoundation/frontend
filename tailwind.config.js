@@ -36,17 +36,29 @@ module.exports = {
         '6xl': '2.625rem', // 6 Extra Large
       },
     },
+    keyframes: {
+      'text-shimmer': {
+        from: { backgroundPosition: '0 0' },
+        to: { backgroundPosition: '-200% 0' },
+      },
+    },
+
+    animation: {
+      'text-shimmer': 'text-shimmer 4s ease-out infinite alternate',
+    },
     font: {
       mono: ['Roboto Mono', 'monospace'],
       regular: ['regular', 'sans-serif'],
       boldy: ['boldy', 'sans-serif'],
       special: ['special', 'sans-serif'],
+      archivo: ['Archivo Black', 'sans-serif'],
     },
     fontFamily: {
       regular: ['regular'],
       special: ['special'],
       boldy: ['boldy'],
       mono: 'Roboto Mono',
+      archivo: 'Archivo Black',
     },
   },
   plugins: [],
