@@ -12,6 +12,7 @@ import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  WalletAdapterExtended,
 } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
@@ -47,6 +48,7 @@ export default function BurgerMenu({
   maxPriorityFee,
   setMaxPriorityFee,
   preferredSolanaExplorer,
+  adapters,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
@@ -70,6 +72,7 @@ export default function BurgerMenu({
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
@@ -186,6 +189,7 @@ export default function BurgerMenu({
             className="w-full"
             userProfile={userProfile}
             isIconOnly
+            adapters={adapters}
           />
 
           <PriorityFeeSetting

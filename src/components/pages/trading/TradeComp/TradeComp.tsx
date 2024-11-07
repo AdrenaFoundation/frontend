@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
 import { Action } from '@/pages/trade';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, Token, WalletAdapterExtended } from '@/types';
 
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
@@ -26,6 +26,7 @@ export default function TradeComp({
   isBigScreen,
   activeRpc,
   terminalId,
+  adapters,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -44,6 +45,7 @@ export default function TradeComp({
     connection: Connection;
   };
   terminalId: string;
+  adapters: WalletAdapterExtended[];
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
 
@@ -97,6 +99,7 @@ export default function TradeComp({
                     activeRpc={activeRpc}
                     id={terminalId}
                     className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
+                    adapters={adapters}
                   />
                 ) : (
                   <SwapTradingInputs

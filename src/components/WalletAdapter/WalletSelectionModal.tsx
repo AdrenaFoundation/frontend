@@ -1,6 +1,5 @@
-import { WalletReadyState } from '@solana/wallet-adapter-base';
 import { AnimatePresence } from 'framer-motion';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
@@ -8,16 +7,17 @@ import {
   connectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
-import { walletAdapters } from '@/constant';
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
+import { ImageRef, WalletAdapterExtended } from '@/types';
 
-import backpackLogo from '../../../public/images/backpack.png';
-import coinbaseLogo from '../../../public/images/coinbase.png';
-import phantomLogo from '../../../public/images/phantom.svg';
-import solflareLogo from '../../../public/images/solflare.png';
 import Modal from '../common/Modal/Modal';
 
-export default function WalletSelectionModal() {
+export default function WalletSelectionModal({
+  adapters,
+}: {
+  adapters: WalletAdapterExtended[];
+}) {
   const dispatch = useDispatch();
   const { modalIsOpen } = useSelector((s) => s.walletState);
 
@@ -26,51 +26,32 @@ export default function WalletSelectionModal() {
       {modalIsOpen && (
         <Modal
           close={() => dispatch(openCloseConnectionModalAction(false))}
-          className="flex flex-col w-full p-5 relative overflow-visible"
+          className="flex flex-col w-full items-center relative overflow-visible"
+          title="Pick a wallet"
         >
-          <div className="text-3xl opacity-80 font-special text-center mb-6">
-            Pick a wallet
-          </div>
-          <div className="flex flex-col justify-center items-center gap-3">
-            <WalletBlock
-              name="Phantom"
-              logo={phantomLogo}
-              onClick={() => {
-                dispatch(connectWalletAction('phantom'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-              readyState={walletAdapters['phantom'].readyState}
-            />
-
-            <WalletBlock
-              name="Backpack"
-              logo={backpackLogo}
-              onClick={() => {
-                dispatch(connectWalletAction('backpack'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-              readyState={walletAdapters['backpack'].readyState}
-            />
-
-            <WalletBlock
-              name="Coinbase"
-              logo={coinbaseLogo}
-              onClick={() => {
-                dispatch(connectWalletAction('coinbase'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-              readyState={walletAdapters['coinbase'].readyState}
-            />
-
-            <WalletBlock
-              name="Solflare"
-              logo={solflareLogo}
-              onClick={() => {
-                dispatch(connectWalletAction('solflare'));
-                dispatch(openCloseConnectionModalAction(false));
-              }}
-              readyState={walletAdapters['solflare'].readyState}
-            />
+          <div className={twMerge("flex flex-col min-w-[25em] grow items-center gap-4 pb-4 pt-4")}>
+            {adapters.map((adapter) => {
+              return <WalletBlock
+                key={adapter.name}
+                name={adapter.name}
+                bgColor={adapter.color}
+                beta={adapter.beta}
+                recommended={adapter.recommended}
+                logo={adapter.iconOverride ?? adapter.icon}
+                imgClassName={({
+                  // Add custom classes here for each wallet if needed
+                  'Phantom': 'w-[10em] left-14',
+                  'Coinbase Wallet': 'w-[6em] left-6 top-6',
+                  Solflare: 'w-[8em] left-8 top-10',
+                  'Backpack': 'w-[5em] left-2 top-6',
+                  'WalletConnect': 'w-[7em] left-8 top-2'
+                } as Record<WalletAdapterName, Partial<string>>)[adapter.name as WalletAdapterName] ?? ''}
+                onClick={() => {
+                  dispatch(connectWalletAction(adapter));
+                  dispatch(openCloseConnectionModalAction(false));
+                }}
+              />
+            })}
           </div>
         </Modal>
       )}
@@ -81,74 +62,76 @@ export default function WalletSelectionModal() {
 const WalletBlock = ({
   name,
   logo,
+  recommended,
   onClick,
-
-  readyState,
+  imgClassName,
+  beta,
+  bgColor,
   className,
+  disabled,
 }: {
   name: string;
-  logo: StaticImageData;
+  logo?: string | ImageRef;
+  imgClassName?: string;
+  beta?: boolean;
+  recommended?: boolean;
   onClick: () => void;
-
-  readyState: WalletReadyState;
+  bgColor: string;
   className?: string;
+  disabled?: boolean;
 }) => {
-  const disabled = readyState !== WalletReadyState.Installed;
-
   const walletBlock = (
-    <div
-      className={twMerge(
-        'flex flex-row gap-3 items-center justify-between p-3 border rounded-lg w-[300px] h-[50px]',
-        disabled
-          ? 'cursor-not-allowed opacity-40'
-          : 'cursor-pointer hover:bg-bcolor duration-300',
-        className,
-      )}
-      onClick={() => {
-        if (disabled) return;
-
-        onClick();
-      }}
+    <div className={twMerge(
+      'flex relative overflow-hidden border-bcolor rounded-full border w-[80%] h-[3.7em]',
+      className,
+    )}
+      key={name}
     >
-      <div className="flex flex-row items-center gap-3">
-        <Image src={logo} alt={`${name} icon`} className="w-[30px]" />
-        <p className="text-base font-semibold">{name}</p>
+      <div
+        className={twMerge('absolute top-0 left-0 w-full h-full flex items-end justify-end opacity-80 grayscale-0')}
+        style={{
+          backgroundColor: bgColor,
+        }}
+      >
+        {logo ? <Image src={logo} alt={`${name} icon`} width="150" height="150" className={twMerge(
+          "w-[9em] h-auto relative left-8 top-16 scale-x-[-1]",
+          imgClassName,
+        )} /> : null}
       </div>
 
       <div
         className={twMerge(
-          'px-2 py-1 rounded-md',
-          readyState === WalletReadyState.Installed && 'bg-green/10',
-          readyState === WalletReadyState.NotDetected && 'bg-orange/10',
-          readyState === WalletReadyState.Unsupported && 'bg-red/10',
-          readyState === WalletReadyState.Loadable && 'bg-blue-400/10',
+          'flex p-3 w-full h-full relative items-center justify-center',
+          disabled
+            ? 'cursor-not-allowed opacity-40'
+            : 'cursor-pointer duration-300',
         )}
+        onClick={() => {
+          if (disabled) return;
+
+          onClick();
+        }}
       >
-        <p
-          className={twMerge(
-            'text-xs font-semibold font-mono',
-            readyState === WalletReadyState.Installed && 'text-green',
-            readyState === WalletReadyState.NotDetected && 'text-orange',
-            readyState === WalletReadyState.Unsupported && 'text-red',
-            readyState === WalletReadyState.Loadable && 'text-blue-400',
-          )}
-        >
-          {(() => {
-            return (
-              {
-                [WalletReadyState.NotDetected]: 'Not installed',
-                [WalletReadyState.Loadable]: 'Not loaded yet',
-                [WalletReadyState.Unsupported]: 'Not supported',
-                [WalletReadyState.Installed]: 'Installed',
-              }[readyState.toString()] ?? 'Cannot connect'
-            );
-          })()}
-        </p>
+        <div className='flex relative flex-col items-center justify-center'>
+          <div className="text-lg font-boldy flex items-center justify-center pt-1 pl-3 pr-3">{name}</div>
+
+          {recommended ?
+            <div className={twMerge(
+              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
+            )}>
+              Recommended
+            </div> : null}
+
+          {beta ?
+            <div className={twMerge(
+              'flex text-[0.6em] font-boldy rounded-full bg-black text-yellow-200 border-2 pt-0 pl-3 pr-3 pb-0 border-yellow-200 opacity-80',
+            )}>
+              Beta
+            </div> : null}
+        </div>
       </div>
     </div>
   );
-
-  console.log(name, readyState);
 
   return walletBlock;
 };
