@@ -82,38 +82,8 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         return acc;
       }, [] as { lockedPeriod: string; values: number[] }[]);
 
-      const usdcAprInfo = [90, 180, 360, 540].reduce((acc, c) => {
-        acc.push({
-          lockedPeriod: `${c}D USDC`,
-          values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.locked_usdc_apr ?? [],
-        });
-
-        return acc;
-      }, [] as { lockedPeriod: string; values: number[] }[]);
-
-      const adxAprInfo = [90, 180, 360, 540].reduce((acc, c) => {
-        acc.push({
-          lockedPeriod: `${c}D ADX`,
-          values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.locked_adx_apr ?? [],
-        });
-
-        return acc;
-      }, [] as { lockedPeriod: string; values: number[] }[]);
-
       const formatted = timeStamp.map((time: string, i: number) => ({
         time,
-
-        ...usdcAprInfo.reduce((acc, { lockedPeriod, values }) => {
-          acc[lockedPeriod] = values[i];
-
-          return acc;
-        }, {} as { [key: string]: number }),
-
-        ...adxAprInfo.reduce((acc, { lockedPeriod, values }) => {
-          acc[lockedPeriod] = values[i];
-
-          return acc;
-        }, {} as { [key: string]: number }),
 
         ...totalAprInfo.reduce((acc, { lockedPeriod, values }) => {
           acc[lockedPeriod] = values[i];
@@ -158,11 +128,11 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
           .map((x) => ({
             name: x,
             color: (() => {
-              if (x.includes('90')) return '#ff9999'; // Light red
-              if (x.includes('180')) return '#99cc99'; // Light green
-              if (x.includes('360')) return '#ffcc66'; // Light orange
-              if (x.includes('540')) return '#66b3ff'; // Light blue
-              if (x.includes('0')) return '#ffd966'; // Light yellow
+              if (x.includes('90')) return '#99cc99'; // Light green 
+              if (x.includes('180')) return '#ffd966'; // Light yellow
+              if (x.includes('360')) return '#ff9999'; // Light red
+              if (x.includes('540')) return '#ccccff'; // Light purple
+              if (x.includes('0')) return '#66b3ff'; // Light blue
 
               return '#ccccff'; // Light purple as a fallback
             })(),
@@ -173,7 +143,6 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
-      precision={2}
     />
   );
 }

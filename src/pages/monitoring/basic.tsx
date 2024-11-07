@@ -145,12 +145,6 @@ export default function BasicMonitoring({
         </div>
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <AprLmChart isSmallScreen={isSmallScreen} />
-          <AprLpChart isSmallScreen={isSmallScreen} />
-        </div>
-
-
-        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <CompositionChart />
           <OpenInterestChart isSmallScreen={isSmallScreen} />
         </div>
@@ -165,6 +159,10 @@ export default function BasicMonitoring({
           <ALPPriceChart />
         </div>
 
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <AprLpChart isSmallScreen={isSmallScreen} />
+          <AprLmChart isSmallScreen={isSmallScreen} />
+        </div>
 
       </StyledContainer>
     </div>
