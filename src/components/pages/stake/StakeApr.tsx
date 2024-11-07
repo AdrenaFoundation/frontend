@@ -31,8 +31,6 @@ function NumberDisplayBoilerplate({
   />
 }
 
-const periods = [90, 180, 360, 540] as const;
-
 const titleClassName = 'text-xxs sm:text-sm w-[6em] sm:w-[10em] shrink-0 flex items-center justify-center text-txtfade text-center whitespace-nowrap';
 
 export default function StakeApr({
@@ -57,6 +55,8 @@ export default function StakeApr({
 
     return () => clearInterval(interval);
   }, [loadData]);
+
+  const periods = token === 'ADX' ? [0, 90, 180, 360, 540] as const : [90, 180, 360, 540] as const;
 
   return (
     <div className={twMerge("flex flex-col bg-main rounded-2xl border h-18", className)}>
@@ -97,7 +97,7 @@ export default function StakeApr({
           <div className='flex w-full border-b pb-2'>
             <div className={titleClassName}>YIELD</div>
 
-            <div className='grid grid-cols-4 grow'>
+            <div className={`grid grid-cols-${periods.length} grow`}>
               {periods.map((lockPeriod) => <div key={lockPeriod} className='text-txtfade text-xs sm:text-sm items-center justify-center flex'>{`${lockPeriod}D APR`}</div>)}
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function StakeApr({
           <div className='flex w-full'>
             <div className={titleClassName}>FEES (USDC)</div>
 
-            <div className='grid grid-cols-4 grow'>
+            <div className={`grid grid-cols-${periods.length} grow`}>
               {periods.map((lockPeriod) => {
                 const a = apr !== null ? apr.aprs.find(({
                   lock_period,
@@ -121,7 +121,7 @@ export default function StakeApr({
           <div className='flex w-full'>
             <div className={titleClassName}>LM (ADX)</div>
 
-            <div className='grid grid-cols-4 grow'>
+            <div className={`grid grid-cols-${periods.length} grow`}>
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
@@ -138,7 +138,7 @@ export default function StakeApr({
           <div className='flex w-full'>
             <div className={titleClassName}>TOTAL</div>
 
-            <div className='grid grid-cols-4 grow'>
+            <div className={`grid grid-cols-${periods.length} grow`}>
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
@@ -166,6 +166,6 @@ export default function StakeApr({
           alt="Chevron down"
         />
       </div>
-    </div>
+    </div >
   );
 }
