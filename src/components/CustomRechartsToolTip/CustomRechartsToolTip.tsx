@@ -16,11 +16,13 @@ export default function CustomRechartsToolTip({
   format = 'currency',
   suffix = '',
   isPieChart,
+  precision = 2,
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
   suffix?: string;
   isPieChart?: boolean;
+  precision?: number;
 }) {
   if (active && payload && payload.length) {
     return (
@@ -45,10 +47,10 @@ export default function CustomRechartsToolTip({
               style={{ color: item.color }}
             >
               {format === 'currency'
-                ? formatPriceInfo(Number(item.value), 2, 2)
+                ? formatPriceInfo(Number(item.value), precision, precision)
                 : format === 'percentage'
-                  ? formatPercentage(Number(item.value), 0)
-                  : formatNumber(Number(item.value), 2)}
+                  ? formatPercentage(Number(item.value), precision)
+                  : formatNumber(Number(item.value), precision)}
 
               {suffix}
             </span>
