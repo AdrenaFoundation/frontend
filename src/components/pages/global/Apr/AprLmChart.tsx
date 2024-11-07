@@ -73,7 +73,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
         });
       });
 
-      const totalAprInfo = [90, 180, 360, 540].reduce((acc, c) => {
+      const totalAprInfo = [0, 90, 180, 360, 540].reduce((acc, c) => {
         acc.push({
           lockedPeriod: `${c}D TOTAL`,
           values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.total_apr ?? [],
