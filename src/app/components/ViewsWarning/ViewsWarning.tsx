@@ -1,13 +1,14 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 
+import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 
 import crossIcon from '../../../../public/images/Icons/cross.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 
 export default function ViewsWarning() {
-    const isViewsWarningClosed = localStorage.getItem('viewsWarningClosed');
+    const [isClosed, setIsClosed] = useState(false);
 
     const wallet = useSelector((state) => state.walletState.wallet);
     const walletTokenBalances = useSelector((state) => state.walletTokenBalances);
@@ -25,8 +26,12 @@ export default function ViewsWarning() {
             <div className="flex flex-row items-center gap-2">
                 <Image src={infoIcon} alt="Warning" width={14} height={14} />
 
-                <p className="font-mono font-bold max-w-[300px] sm:max-w-max">
-                    You need at least 0.01 SOL to interact with the app
+                <p className="text-sm font-boldy max-w-[300px] sm:max-w-max text-center">
+                    You need at least <FormatNumber
+                        nb={0.001}
+                        precision={3}
+                        isDecimalDimmed={false}
+                    /> SOL to interact with the app
                 </p>
             </div>
 
@@ -34,9 +39,11 @@ export default function ViewsWarning() {
                 src={crossIcon}
                 className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-300"
                 alt="close btn"
-                width={16}
-                height={16}
-                onClick={() => localStorage.setItem('viewsWarningClosed', 'true')}
+                width={14}
+                height={14}
+                onClick={() => {
+                    setIsClosed(true);
+                }}
             />
         </div>
     );
