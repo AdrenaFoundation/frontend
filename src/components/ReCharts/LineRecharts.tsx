@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { AxisDomain, DataKey, TickItem } from 'recharts/types/util/types';
+import { AxisDomain, DataKey } from 'recharts/types/util/types';
 import { twMerge } from 'tailwind-merge';
 
 import { RechartsData } from '@/types';
@@ -171,6 +171,7 @@ export default function LineRechart({
             }}
             wrapperStyle={{ cursor: 'pointer', userSelect: 'none' }}
           />
+
           {labels.map(({ name, color }) => {
             return (
               <Line

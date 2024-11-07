@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import ALPPriceChart from '@/components/pages/global/ALPPrice/ALPPriceChart';
+import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
+import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
 import FeesChart from '@/components/pages/global/Fees/FeesChart';
@@ -10,12 +12,10 @@ import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenIntere
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
 import { UnrealizedPnlChart } from '@/components/pages/global/UnrealizedPnl/UnrealizedPnlChart';
 import UtilizationChart from '@/components/pages/global/UtilizationChart/UtilizationChart';
+import DataApiClient from '@/DataApiClient';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PoolInfo } from '@/hooks/usePoolInfo';
 import { PageProps } from '@/types';
-import DataApiClient from '@/DataApiClient';
-import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
-import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 
 export default function BasicMonitoring({
   mainPool,
