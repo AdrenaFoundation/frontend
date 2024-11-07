@@ -524,33 +524,38 @@ export default function StakeOverview({
             onClick={toggleClaimHistory}
             className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200"
           >
-            <div className='flex flex-row gap-2 items-center cursor-pointer select-none'>
-              <div className="flex items-center justify-between">
-                <div className='mr-2'>
-                  <h3 className="md:text-lg font-semibold">Claim History</h3>
-                  <p className='text-xs text-txtfade'>Subject to 30s delay</p>
+            <div className='flex flex-col'>
+              <div className='flex flex-row gap-2 items-center cursor-pointer select-none'>
+                <div className="flex items-center justify-between">
+                  <div className='mr-2'>
+                    <h3 className="md:text-lg font-semibold">Claim History</h3>
+                  </div>
+
+                  <h3 className="text-lg font-semibold text-txtfade">
+                    {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
+                  </h3>
                 </div>
-                <h3 className="text-lg font-semibold text-txtfade">
-                  {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
-                </h3>
+
+                <svg
+                  className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
               </div>
 
-              <svg
-                className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''
-                  }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
+              <p className='text-xs text-txtfade'>Subject to 30s delay</p>
             </div>
+
+
             {/* TOTALs */}
             {claimsHistory && (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
