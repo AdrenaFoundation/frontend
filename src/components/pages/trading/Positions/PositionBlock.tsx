@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
+import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -511,6 +512,18 @@ export default function PositionBlock({
       <AnimatePresence>
         {isOpen && (
           <Modal title="Share PnL" close={() => setIsOpen(false)}>
+            <div className="absolute top-0 w-[300px]">
+              {(() => {
+                const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
+                const pnlUsd = position.pnl
+                  ? position.pnl - fees
+                  : null;
+
+                if (!pnlUsd || pnlUsd < 0) return;
+
+                return <Congrats />;
+              })()}
+            </div>
             <SharePositionModal position={position} />
           </Modal>
         )}

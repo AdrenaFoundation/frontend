@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
+import { Congrats } from '@/components/Congrats/Congrats';
 import { PositionExtended, UserProfileExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
@@ -10,6 +11,7 @@ import ClosePosition from '../ClosePosition/ClosePosition';
 import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollateral';
 import StopLossTakeProfit from '../StopLossTakeProfit/StopLossTakeProfit';
 import PositionsBlocks from './PositionsBlocks';
+import SharePositionModal from './SharePositionModal';
 
 export default function Positions({
   bodyClassName,
@@ -33,6 +35,9 @@ export default function Positions({
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
 
+  const [shareClosePosition, setShareClosePosition] =
+    useState<PositionExtended | null>(null);
+
   const [positionToEdit, setPositionToEdit] = useState<PositionExtended | null>(
     null,
   );
@@ -41,9 +46,8 @@ export default function Positions({
 
   if (isBigScreen === null) return null;
 
-  const nonPendingCleanupAndClosePositions = positions?.filter(
-    position => !position.pendingCleanupAndClose
-  ) || null;
+  const nonPendingCleanupAndClosePositions =
+    positions?.filter((position) => !position.pendingCleanupAndClose) || null;
 
   return (
     <>
@@ -53,7 +57,10 @@ export default function Positions({
             title={
               <>
                 Close
-                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToClose.side === 'long' ? 'text-green' : 'text-red'}  ml-1 mr-1`}>
+                <span
+                  className={`text-[1em] uppercase font-special opacity-80 ${positionToClose.side === 'long' ? 'text-green' : 'text-red'
+                    }  ml-1 mr-1`}
+                >
                   {positionToClose.side}
                 </span>
                 {getTokenSymbol(positionToClose.token.symbol)}
@@ -69,6 +76,7 @@ export default function Positions({
                 setPositionToClose(null);
               }}
               tokenImage={positionToClose.token.image}
+              setShareClosePosition={setShareClosePosition}
             />
           </Modal>
         )}
@@ -78,7 +86,10 @@ export default function Positions({
             title={
               <>
                 Edit
-                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToEdit.side === 'long' ? 'text-green' : 'text-red'} ml-1 mr-1`}>
+                <span
+                  className={`text-[1em] uppercase font-special opacity-80 ${positionToEdit.side === 'long' ? 'text-green' : 'text-red'
+                    } ml-1 mr-1`}
+                >
                   {positionToEdit.side}
                 </span>
                 {getTokenSymbol(positionToEdit.token.symbol)}
@@ -102,7 +113,12 @@ export default function Positions({
             title={
               <>
                 TP/SL
-                <span className={`text-[1em] uppercase font-special opacity-80 ${positionToStopLossTakeProfit.side === 'long' ? 'text-green' : 'text-red'} ml-1 mr-1`}>
+                <span
+                  className={`text-[1em] uppercase font-special opacity-80 ${positionToStopLossTakeProfit.side === 'long'
+                    ? 'text-green'
+                    : 'text-red'
+                    } ml-1 mr-1`}
+                >
                   {positionToStopLossTakeProfit.side}
                 </span>
                 {getTokenSymbol(positionToStopLossTakeProfit.token.symbol)}
@@ -119,6 +135,29 @@ export default function Positions({
               }}
               userProfile={userProfile}
             />
+          </Modal>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {shareClosePosition && (
+          <Modal title="Share PnL" close={() => setShareClosePosition(null)}>
+            <div className="absolute top-0 w-[300px]">
+              {(() => {
+                const fees = -(
+                  (shareClosePosition.exitFeeUsd ?? 0) +
+                  (shareClosePosition.borrowFeeUsd ?? 0)
+                );
+                const pnlUsd = shareClosePosition.pnl
+                  ? shareClosePosition.pnl - fees
+                  : null;
+
+                if (!pnlUsd || pnlUsd < 0) return;
+
+                return <Congrats />;
+              })()}
+            </div>
+            <SharePositionModal position={shareClosePosition} />
           </Modal>
         )}
       </AnimatePresence>
