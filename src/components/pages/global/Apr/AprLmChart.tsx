@@ -120,7 +120,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
 
   return (
     <LineRechart
-      title="ADX DETAILED APR"
+      title="STAKED ADX APR"
       data={infos.formattedData}
       labels={[
         ...Object.keys(infos.formattedData[0])
