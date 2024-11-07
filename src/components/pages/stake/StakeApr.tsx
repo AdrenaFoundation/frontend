@@ -84,52 +84,45 @@ export default function StakeApr({
 
       <div className={twMerge('flex flex-col w-full gap-4 border-t border-bcolor overflow-hidden transition-all duration-3000 ease-in-out', moreInfo ? 'max-h-[100em]' : 'max-h-0')}>
         <div className='flex flex-col ml-8 mr-8 mt-4'>
-          <p className='opacity-75 text-base bg-third p-3 w-full text-justify border border-bcolor rounded'>
-            APR (Annualized Percentage Rate) represents the a full year of rewards expressed in US DOLLAR value. This rate is projected from the most recent round of rewards and includes: {token === 'ALP' ? 'the liquid USDC rewards, ' : null}the staked USDC rewards and the staked ADX rewards.
-            To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
-            {token === 'ALP' ? ' The APR does not include Genesis ADX rewards.' : null}
+          <p className='opacity-75 text-base bg-third p-4 w-full text-justify border border-bcolor rounded flex flex-col gap-2 min-h-[8em]'>
+            {token === "ALP" ? <span className='text-sm'>
+              The displayed APR are projected values based on the last 7 days rolling. The liquid USDC rewards is given to each ALP, staked or not.
+              To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
+              The APR does not include Genesis ADX rewards.
+            </span> : <span className='text-sm'>
+              The displayed APR are projected values based on the last 7 days rolling.
+              To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
+            </span>}
           </p>
         </div>
 
         <div className='flex flex-col w-full sm:w-[90%] ml-auto mr-auto mb-4 border pt-2 pl-2 pr-2'>
           <div className='flex w-full border-b pb-2'>
-            <div className={titleClassName}>Yield</div>
+            <div className={titleClassName}>YIELD</div>
 
             <div className='grid grid-cols-4 grow'>
               {periods.map((lockPeriod) => <div key={lockPeriod} className='text-txtfade text-xs sm:text-sm items-center justify-center flex'>{`${lockPeriod}D APR`}</div>)}
             </div>
           </div>
 
-          {token === 'ALP' ? <div className='flex w-full'>
-            <div className={titleClassName}>LIQUID USDC</div>
-
-            <div className='grid grid-cols-4 grow'>
-              {periods.map((lockPeriod) => (
-                <NumberDisplayBoilerplate
-                  key={lockPeriod}
-                  nb={apr !== null ? apr.aprs[0].liquid_apr ?? null : null}
-                />
-              ))}
-            </div>
-          </div> : null}
-
           <div className='flex w-full'>
-            <div className={titleClassName}>STAKED USDC</div>
+            <div className={titleClassName}>FEES (USDC)</div>
 
             <div className='grid grid-cols-4 grow'>
-              {periods.map((lockPeriod) => (
-                <NumberDisplayBoilerplate
+              {periods.map((lockPeriod) => {
+                const a = apr !== null ? apr.aprs.find(({
+                  lock_period,
+                }) => lock_period === lockPeriod) ?? null : null;
+
+                return <NumberDisplayBoilerplate
                   key={lockPeriod}
-                  nb={apr !== null ? apr.aprs.find(({
-                    lock_period,
-                  }) => lock_period === lockPeriod)?.locked_usdc_apr ?? null : null}
-                />
-              ))}
+                  nb={a !== null ? a.locked_usdc_apr + a.liquid_apr : null} />
+              })}
             </div>
           </div>
 
           <div className='flex w-full'>
-            <div className={titleClassName}>ADX</div>
+            <div className={titleClassName}>LM (ADX)</div>
 
             <div className='grid grid-cols-4 grow'>
               {periods.map((lockPeriod) => (
@@ -146,7 +139,7 @@ export default function StakeApr({
           <div className='w-full border-b'></div>
 
           <div className='flex w-full'>
-            <div className={titleClassName}>Total</div>
+            <div className={titleClassName}>TOTAL</div>
 
             <div className='grid grid-cols-4 grow'>
               {periods.map((lockPeriod) => (

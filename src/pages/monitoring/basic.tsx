@@ -112,7 +112,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="ALP FEES OVERALL APR"
+              title="ALP Rolling 7D fees APR"
               nb={aprs?.lp ?? null}
               format="percentage"
               precision={2}
@@ -124,7 +124,7 @@ export default function BasicMonitoring({
             />
 
             <NumberDisplay
-              title="ADX FEES OVERALL APR"
+              title="ADX Rolling 7D fees APR"
               nb={aprs?.lm ?? null}
               format="percentage"
               precision={2}
