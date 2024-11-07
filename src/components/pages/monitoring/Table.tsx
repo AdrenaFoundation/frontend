@@ -20,6 +20,7 @@ export default function Table({
   nbItemPerPage = 10,
   nbItemPerPageWhenBreakpoint = 2,
   rowHovering = false,
+  rowClassName,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -42,6 +43,7 @@ export default function Table({
   nbItemPerPage?: number;
   nbItemPerPageWhenBreakpoint?: number;
   rowHovering?: boolean;
+  rowClassName?: string;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
@@ -118,6 +120,7 @@ export default function Table({
             rowHovering
               ? 'hover:bg-secondary hover:border-bcolor rounded-lg transition duration-300'
               : '',
+            rowClassName,
           )}
         >
           <div
