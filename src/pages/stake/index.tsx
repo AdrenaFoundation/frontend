@@ -317,7 +317,7 @@ export default function Stake({
       await window.adrena.client.removeLockedStake({
         owner,
         resolved: !!lockedStake.resolved,
-        threadId: lockedStake.stakeResolutionThreadId,
+        id: lockedStake.id,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
         earlyExit,

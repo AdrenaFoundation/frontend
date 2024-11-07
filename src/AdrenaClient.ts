@@ -187,17 +187,6 @@ export class AdrenaClient {
     return pda;
   };
 
-  public getThreadAddressPda = (threadId: BN) => {
-    return PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('thread'),
-        AdrenaClient.transferAuthorityAddress.toBuffer(),
-        threadId.toArrayLike(Buffer, 'le', 8),
-      ],
-      this.config.sablierThreadProgram,
-    )[0];
-  };
-
   public getGenesisLockPda = () => {
     return PublicKey.findProgramAddressSync(
       [Buffer.from('genesis_lock'), this.mainPool.pubkey.toBuffer()],
@@ -278,34 +267,6 @@ export class AdrenaClient {
     [Buffer.from('vest_registry')],
     AdrenaClient.programId,
   )[0];
-
-  public getTakeProfitOrStopLossThreadAddress({
-    authority,
-    threadId,
-    user,
-  }: {
-    authority: PublicKey;
-    threadId: BN;
-    user: PublicKey;
-  }): {
-    publicKey: PublicKey;
-    bump: number;
-  } {
-    const [publicKey, bump] = PublicKey.findProgramAddressSync(
-      [
-        Buffer.from('thread'),
-        authority.toBuffer(),
-        threadId.toArrayLike(Buffer, 'le', 8),
-        user.toBuffer(),
-      ],
-      this.config.sablierThreadProgram,
-    );
-
-    return {
-      publicKey,
-      bump,
-    };
-  }
 
   protected adrenaProgram: Program<Adrena> | null = null;
 
@@ -1476,17 +1437,6 @@ export class AdrenaClient {
           adrenaProgram: this.adrenaProgram.programId,
           userProfile: userProfile ? userProfile.pubkey : null,
           caller: position.owner,
-          sablierProgram: this.config.sablierThreadProgram,
-          takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-            authority: AdrenaClient.transferAuthorityAddress,
-            threadId: position.nativeObject.takeProfitThreadId,
-            user: position.owner,
-          }).publicKey,
-          stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-            authority: AdrenaClient.transferAuthorityAddress,
-            threadId: position.nativeObject.stopLossThreadId,
-            user: position.owner,
-          }).publicKey,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -1601,17 +1551,6 @@ export class AdrenaClient {
           collateralCustodyTokenAccount,
           userProfile: userProfile ? userProfile.pubkey : null,
           caller: position.owner,
-          sablierProgram: this.config.sablierThreadProgram,
-          takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-            authority: AdrenaClient.transferAuthorityAddress,
-            threadId: position.nativeObject.takeProfitThreadId,
-            user: position.owner,
-          }).publicKey,
-          stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-            authority: AdrenaClient.transferAuthorityAddress,
-            threadId: position.nativeObject.stopLossThreadId,
-            user: position.owner,
-          }).publicKey,
         })
         .preInstructions(preInstructions)
         .postInstructions(postInstructions)
@@ -1951,24 +1890,6 @@ export class AdrenaClient {
         leverage,
         userProfile: userProfile ? userProfile.pubkey : undefined,
       }).instruction();
-
-    // Cleanup existing position in case Sablier did not work as expected
-    if (existingPosition && existingPosition.pendingCleanupAndClose == true) {
-      if (existingPosition.stopLossThreadIsSet) {
-        preInstructions.push(
-          await this.buildCleanupPositionStopLoss({
-            position: existingPosition,
-          }),
-        );
-      }
-      if (existingPosition.takeProfitThreadIsSet) {
-        preInstructions.push(
-          await this.buildCleanupPositionTakeProfit({
-            position: existingPosition,
-          }),
-        );
-      }
-    }
 
     const transaction = new Transaction();
     transaction.add(
@@ -2506,8 +2427,6 @@ export class AdrenaClient {
     const stakingLmRewardTokenVault =
       this.getStakingLmRewardTokenVaultPda(staking);
 
-    const threadId = new BN(Date.now());
-
     const userStakingAccount =
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
@@ -2535,17 +2454,6 @@ export class AdrenaClient {
       }
     }
 
-    const stakesClaimCronThread = this.getThreadAddressPda(
-      userStakingAccount
-        ? userStakingAccount.stakesClaimCronThreadId
-        : threadId,
-    );
-
-    console.log(
-      'stakesClaimCronThread debug in AdrenaClient',
-      stakesClaimCronThread.toBase58(),
-    );
-
     const transaction = await this.adrenaProgram.methods
       .addLiquidStake({
         amount: uiToNative(amount, this.adxToken.decimals),
@@ -2561,7 +2469,6 @@ export class AdrenaClient {
         transferAuthority: AdrenaClient.transferAuthorityAddress,
         userStaking,
         staking,
-        stakesClaimCronThread,
         cortex: AdrenaClient.cortexPda,
         lmTokenMint: this.lmTokenMint,
         governanceTokenMint: this.governanceTokenMint,
@@ -2570,7 +2477,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecordPda(owner),
-        sablierProgram: this.config.sablierThreadProgram,
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -2626,8 +2532,6 @@ export class AdrenaClient {
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
     const stakingRewardTokenVault = this.getStakingRewardTokenVaultPda(staking);
 
-    const threadId = new BN(Date.now());
-
     const userStakingAccount =
       await this.adrenaProgram.account.userStaking.fetchNullable(userStaking);
 
@@ -2657,21 +2561,8 @@ export class AdrenaClient {
       }
     }
 
-    const stakeResolutionThreadId = new BN(Date.now());
-
-    const stakeResolutionThread = this.getThreadAddressPda(
-      stakeResolutionThreadId,
-    );
-
-    const stakesClaimCronThread = this.getThreadAddressPda(
-      userStakingAccount
-        ? userStakingAccount.stakesClaimCronThreadId
-        : threadId,
-    );
-
     const transaction = await this.adrenaProgram.methods
       .addLockedStake({
-        stakeResolutionThreadId,
         amount: uiToNative(
           amount,
           stakedTokenMint === this.lmTokenMint
@@ -2697,9 +2588,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecordPda(owner),
-        stakeResolutionThread,
-        stakesClaimCronThread,
-        sablierProgram: this.config.sablierThreadProgram,
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -2742,10 +2630,6 @@ export class AdrenaClient {
     const stakingStakedTokenVault = this.getStakingStakedTokenVaultPda(staking);
 
     const fundingAccount = findATAAddressSync(owner, stakedTokenMint);
-
-    const stakeResolutionThread = this.getThreadAddressPda(
-      lockedStake.stakeResolutionThreadId,
-    );
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
     const stakingLmRewardTokenVault =
@@ -2758,7 +2642,7 @@ export class AdrenaClient {
 
     const transaction = await this.adrenaProgram.methods
       .upgradeLockedStake({
-        stakeResolutionThreadId: lockedStake.stakeResolutionThreadId,
+        lockedStakeId: lockedStake.id,
         amount: additionalAmount
           ? uiToNative(
               additionalAmount,
@@ -2778,7 +2662,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecordPda(owner),
-        sablierProgram: this.config.sablierThreadProgram,
         governanceProgram: this.config.governanceProgram,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -2789,7 +2672,6 @@ export class AdrenaClient {
         userStaking,
         staking,
         stakingStakedTokenVault,
-        stakeResolutionThread,
         lmTokenMint: this.lmTokenMint,
         adrenaProgram: this.adrenaProgram.programId,
         pool: this.mainPool.pubkey,
@@ -2847,10 +2729,6 @@ export class AdrenaClient {
     );
     const lmTokenAccount = findATAAddressSync(owner, this.lmTokenMint);
 
-    const stakesClaimCronThread = this.getThreadAddressPda(
-      userStakingAccount.stakesClaimCronThreadId,
-    );
-
     const transaction = await this.adrenaProgram.methods
       .removeLiquidStake({
         amount: uiToNative(
@@ -2864,7 +2742,6 @@ export class AdrenaClient {
         owner,
         lmTokenAccount,
         rewardTokenAccount,
-        stakesClaimCronThread,
         stakingStakedTokenVault,
         stakingRewardTokenVault,
         stakingLmRewardTokenVault,
@@ -2879,7 +2756,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecordPda(owner),
-        sablierProgram: this.config.sablierThreadProgram,
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -2900,12 +2776,12 @@ export class AdrenaClient {
 
   public async buildFinalizeLockedStakeTx({
     owner,
-    threadId,
+    id,
     stakedTokenMint,
     earlyExit,
   }: {
     owner: PublicKey;
-    threadId: BN;
+    id: BN;
     stakedTokenMint: PublicKey;
     earlyExit: boolean;
   }) {
@@ -2930,11 +2806,9 @@ export class AdrenaClient {
       throw new Error('user staking account not found');
     }
 
-    const stakeResolutionThread = this.getThreadAddressPda(threadId);
-
     return this.adrenaProgram.methods
       .finalizeLockedStake({
-        threadId,
+        lockedStakeId: id,
         earlyExit,
       })
       .accountsStrict({
@@ -2955,8 +2829,6 @@ export class AdrenaClient {
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-        sablierProgram: this.config.sablierThreadProgram,
-        stakeResolutionThread,
       })
       .instruction();
   }
@@ -3081,7 +2953,7 @@ export class AdrenaClient {
   public async removeLockedStake({
     owner,
     resolved,
-    threadId,
+    id,
     lockedStakeIndex,
     stakedTokenMint,
     earlyExit = false,
@@ -3089,7 +2961,7 @@ export class AdrenaClient {
   }: {
     owner: PublicKey;
     resolved: boolean;
-    threadId: BN;
+    id: BN;
     lockedStakeIndex: BN;
     stakedTokenMint: PublicKey;
     earlyExit?: boolean;
@@ -3109,7 +2981,7 @@ export class AdrenaClient {
     if (!resolved) {
       const instruction = await this.buildFinalizeLockedStakeTx({
         owner,
-        threadId,
+        id,
         stakedTokenMint,
         earlyExit,
       });
@@ -3138,10 +3010,6 @@ export class AdrenaClient {
       throw new Error('user staking account not found');
     }
 
-    const stakesClaimCronThread = this.getThreadAddressPda(
-      userStakingAccount.stakesClaimCronThreadId,
-    );
-
     const stakedTokenAccount = findATAAddressSync(owner, stakedTokenMint);
 
     const transaction = await this.adrenaProgram.methods
@@ -3152,7 +3020,6 @@ export class AdrenaClient {
         owner,
         lmTokenAccount,
         rewardTokenAccount,
-        stakesClaimCronThread,
         stakingStakedTokenVault,
         stakingRewardTokenVault,
         stakingLmRewardTokenVault,
@@ -3167,7 +3034,6 @@ export class AdrenaClient {
         governanceGoverningTokenHolding: this.governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord:
           this.getGovernanceGoverningTokenOwnerRecordPda(owner),
-        sablierProgram: this.config.sablierThreadProgram,
         governanceProgram: this.config.governanceProgram,
         adrenaProgram: this.adrenaProgram.programId,
         systemProgram: SystemProgram.programId,
@@ -3259,12 +3125,8 @@ export class AdrenaClient {
       );
     }
 
-    const stakesClaimCronThread = this.getThreadAddressPda(threadId);
-
     const transaction = await this.adrenaProgram.methods
-      .initUserStaking({
-        stakesClaimCronThreadId: threadId,
-      })
+      .initUserStaking()
       .accountsStrict({
         owner,
         rewardTokenAccount,
@@ -3273,18 +3135,15 @@ export class AdrenaClient {
         userStaking,
         stakingRewardTokenVault,
         stakingLmRewardTokenVault,
-        stakesClaimCronThread,
         transferAuthority: AdrenaClient.transferAuthorityAddress,
-        stakesClaimPayer: this.config.stakesClaimPayer,
         lmTokenMint: this.lmTokenMint,
         cortex: AdrenaClient.cortexPda,
         adrenaProgram: this.adrenaProgram.programId,
-        sablierProgram: this.config.sablierThreadProgram,
-        systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         feeRedistributionMint: this.cortex.feeRedistributionMint,
         pool: this.mainPool.pubkey,
         genesisLock: this.genesisLockPda,
+        systemProgram: SystemProgram.programId,
       })
       .preInstructions(preInstructions)
       .transaction();
@@ -3345,10 +3204,8 @@ export class AdrenaClient {
     const governanceRealmConfig = this.governanceRealmConfig;
     const governanceGoverningTokenHolding =
       this.governanceGoverningTokenHolding;
-    const threadId = new BN(Date.now());
     const governanceGoverningTokenOwnerRecord =
       this.getGovernanceGoverningTokenOwnerRecordPda(owner);
-    const lpStakeResolutionThread = this.getThreadAddressPda(threadId);
     const userStakingAccount =
       await this.adrenaProgram.account.userStaking.fetchNullable(lpUserStaking);
 
@@ -3356,13 +3213,6 @@ export class AdrenaClient {
       throw new Error('user staking account not found');
     }
 
-    const stakesClaimCronThread = this.getThreadAddressPda(
-      userStakingAccount
-        ? userStakingAccount.stakesClaimCronThreadId
-        : threadId,
-    );
-
-    const sablierProgram = this.config.sablierThreadProgram;
     const governanceProgram = this.config.governanceProgram;
     const systemProgram = SystemProgram.programId;
     const tokenProgram = TOKEN_PROGRAM_ID;
@@ -3373,7 +3223,6 @@ export class AdrenaClient {
     const transaction = await this.adrenaProgram.methods
       .addGenesisLiquidity({
         minLpAmountOut,
-        lpStakeResolutionThreadId: threadId,
         amountIn: uiToNative(amountIn, this.alpToken.decimals),
       })
       .accountsStrict({
@@ -3395,9 +3244,6 @@ export class AdrenaClient {
         governanceRealmConfig,
         governanceGoverningTokenHolding,
         governanceGoverningTokenOwnerRecord,
-        lpStakeResolutionThread,
-        stakesClaimCronThread,
-        sablierProgram,
         governanceProgram,
         systemProgram,
         tokenProgram,
@@ -3426,18 +3272,10 @@ export class AdrenaClient {
       .cancelStopLoss()
       .accountsStrict({
         position: position.pubkey,
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        systemProgram: SystemProgram.programId,
         owner: position.owner,
         pool: this.mainPool.pubkey,
-        sablierProgram: this.config.sablierThreadProgram,
         custody: position.custody,
-        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.stopLossThreadId,
-          user: position.owner,
-        }).publicKey,
       })
       .instruction();
   }
@@ -3455,18 +3293,10 @@ export class AdrenaClient {
       .cancelTakeProfit()
       .accountsStrict({
         position: position.pubkey,
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        systemProgram: SystemProgram.programId,
         owner: position.owner,
         pool: this.mainPool.pubkey,
-        sablierProgram: this.config.sablierThreadProgram,
         custody: position.custody,
-        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.takeProfitThreadId,
-          user: position.owner,
-        }).publicKey,
       })
       .instruction();
   }
@@ -3475,12 +3305,10 @@ export class AdrenaClient {
     position,
     stopLossLimitPrice,
     closePositionPrice,
-    userProfile,
   }: {
     position: PositionExtended;
     stopLossLimitPrice: BN;
     closePositionPrice: BN | null;
-    userProfile?: PublicKey;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3489,67 +3317,17 @@ export class AdrenaClient {
     const custody = this.getCustodyByPubkey(position.custody);
     if (!custody) throw new Error('Cannot find custody');
 
-    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
-
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
-
     return this.adrenaProgram.methods
       .setStopLossLong({
         stopLossLimitPrice,
         closePositionPrice,
       })
       .accountsStrict({
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
         owner: position.owner,
-        receivingAccount,
-        adrenaProgram: this.adrenaProgram.programId,
         pool: this.mainPool.pubkey,
-        lpTokenMint: this.lpTokenMint,
-        sablierProgram: this.config.sablierThreadProgram,
         custody: position.custody,
-        custodyTokenAccount,
-        custodyOracle: custody.nativeObject.oracle,
-        custodyTradeOracle: custody.nativeObject.tradeOracle,
         position: position.pubkey,
-        lmStaking,
-        lpStaking,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        userProfile: userProfile ?? null,
-        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.takeProfitThreadId,
-          user: position.owner,
-        }).publicKey,
-        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.stopLossThreadId,
-          user: position.owner,
-        }).publicKey,
       })
       .instruction();
   }
@@ -3558,12 +3336,10 @@ export class AdrenaClient {
     position,
     stopLossLimitPrice,
     closePositionPrice,
-    userProfile,
   }: {
     position: PositionExtended;
     stopLossLimitPrice: BN;
     closePositionPrice: BN | null;
-    userProfile?: PublicKey;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3571,34 +3347,6 @@ export class AdrenaClient {
 
     const custody = this.getCustodyByPubkey(position.custody);
     if (!custody) throw new Error('Cannot find custody');
-
-    const collateralCustody = this.getCustodyByPubkey(
-      position.collateralCustody,
-    );
-    if (!collateralCustody) throw new Error('Cannot find collateral custody');
-
-    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      collateralCustody.mint,
-    );
-
-    const receivingAccount = findATAAddressSync(
-      position.owner,
-      collateralCustody.mint,
-    );
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
 
     return this.adrenaProgram.methods
       .setStopLossShort({
@@ -3606,42 +3354,11 @@ export class AdrenaClient {
         closePositionPrice,
       })
       .accountsStrict({
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
         owner: position.owner,
-        receivingAccount,
-        adrenaProgram: this.adrenaProgram.programId,
         pool: this.mainPool.pubkey,
-        lpTokenMint: this.lpTokenMint,
-        sablierProgram: this.config.sablierThreadProgram,
         custody: position.custody,
-        custodyTradeOracle: custody.nativeObject.tradeOracle,
         position: position.pubkey,
-        lmStaking,
-        lpStaking,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        userProfile: userProfile ?? null,
-        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.takeProfitThreadId,
-          user: position.owner,
-        }).publicKey,
-        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.stopLossThreadId,
-          user: position.owner,
-        }).publicKey,
-        collateralCustody: position.collateralCustody,
-        collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-        collateralCustodyTokenAccount,
       })
       .instruction();
   }
@@ -3649,11 +3366,9 @@ export class AdrenaClient {
   public buildSetTakeProfitLongIx({
     position,
     takeProfitLimitPrice,
-    userProfile,
   }: {
     position: PositionExtended;
     takeProfitLimitPrice: BN;
-    userProfile?: PublicKey;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3662,66 +3377,16 @@ export class AdrenaClient {
     const custody = this.getCustodyByPubkey(position.custody);
     if (!custody) throw new Error('Cannot find custody');
 
-    const receivingAccount = findATAAddressSync(position.owner, custody.mint);
-
-    const custodyTokenAccount = this.findCustodyTokenAccountAddress(
-      custody.mint,
-    );
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
-
     return this.adrenaProgram.methods
       .setTakeProfitLong({
         takeProfitLimitPrice,
       })
       .accountsStrict({
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
         owner: position.owner,
-        receivingAccount,
-        adrenaProgram: this.adrenaProgram.programId,
         pool: this.mainPool.pubkey,
-        lpTokenMint: this.lpTokenMint,
-        sablierProgram: this.config.sablierThreadProgram,
         custody: position.custody,
-        custodyTokenAccount,
-        custodyOracle: custody.nativeObject.oracle,
-        custodyTradeOracle: custody.nativeObject.tradeOracle,
         position: position.pubkey,
-        lmStaking,
-        lpStaking,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        userProfile: userProfile ?? null,
-        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.takeProfitThreadId,
-          user: position.owner,
-        }).publicKey,
-        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.stopLossThreadId,
-          user: position.owner,
-        }).publicKey,
       })
       .instruction();
   }
@@ -3729,11 +3394,9 @@ export class AdrenaClient {
   public buildSetTakeProfitShortIx({
     position,
     takeProfitLimitPrice,
-    userProfile,
   }: {
     position: PositionExtended;
     takeProfitLimitPrice: BN;
-    userProfile?: PublicKey;
   }): Promise<TransactionInstruction> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -3742,75 +3405,16 @@ export class AdrenaClient {
     const custody = this.getCustodyByPubkey(position.custody);
     if (!custody) throw new Error('Cannot find custody');
 
-    const collateralCustody = this.getCustodyByPubkey(
-      position.collateralCustody,
-    );
-    if (!collateralCustody) throw new Error('Cannot find collateralCustody');
-
-    const collateralCustodyTokenAccount = this.findCustodyTokenAccountAddress(
-      collateralCustody.mint,
-    );
-
-    const receivingAccount = findATAAddressSync(
-      position.owner,
-      collateralCustody.mint,
-    );
-
-    const stakingRewardTokenMint = this.getStakingRewardTokenMint();
-    const stakingRewardTokenCustodyAccount = this.getCustodyByMint(
-      stakingRewardTokenMint,
-    );
-    const stakingRewardTokenCustodyTokenAccount =
-      this.findCustodyTokenAccountAddress(stakingRewardTokenMint);
-
-    const lmStaking = this.getStakingPda(this.lmTokenMint);
-    const lpStaking = this.getStakingPda(this.lpTokenMint);
-    const lmStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lmStaking);
-    const lpStakingRewardTokenVault =
-      this.getStakingRewardTokenVaultPda(lpStaking);
-
     return this.adrenaProgram.methods
       .setTakeProfitShort({
         takeProfitLimitPrice,
       })
       .accountsStrict({
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
         cortex: AdrenaClient.cortexPda,
-        protocolFeeRecipient: this.cortex.protocolFeeRecipient,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
         owner: position.owner,
-        receivingAccount,
-        adrenaProgram: this.adrenaProgram.programId,
         pool: this.mainPool.pubkey,
-        lpTokenMint: this.lpTokenMint,
-        sablierProgram: this.config.sablierThreadProgram,
         custody: position.custody,
-        custodyTradeOracle: custody.nativeObject.tradeOracle,
         position: position.pubkey,
-        lmStaking,
-        lpStaking,
-        stakingRewardTokenCustody: stakingRewardTokenCustodyAccount.pubkey,
-        stakingRewardTokenCustodyOracle:
-          stakingRewardTokenCustodyAccount.nativeObject.oracle,
-        stakingRewardTokenCustodyTokenAccount,
-        lmStakingRewardTokenVault,
-        lpStakingRewardTokenVault,
-        userProfile: userProfile ?? null,
-        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.takeProfitThreadId,
-          user: position.owner,
-        }).publicKey,
-        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.stopLossThreadId,
-          user: position.owner,
-        }).publicKey,
-        collateralCustody: position.collateralCustody,
-        collateralCustodyOracle: collateralCustody.nativeObject.oracle,
-        collateralCustodyTokenAccount,
       })
       .instruction();
   }
@@ -4426,19 +4030,19 @@ export class AdrenaClient {
       exitFeeUsd: nativeToUi(position.exitFeeUsd, USD_DECIMALS),
       liquidationFeeUsd: nativeToUi(position.liquidationFeeUsd, USD_DECIMALS),
       stopLossClosePositionPrice:
-        position.stopLossThreadIsSet === 1
+        position.stopLossIsSet === 1
           ? nativeToUi(position.stopLossClosePositionPrice, PRICE_DECIMALS)
           : null,
       stopLossLimitPrice:
-        position.stopLossThreadIsSet === 1
+        position.stopLossIsSet === 1
           ? nativeToUi(position.stopLossLimitPrice, PRICE_DECIMALS)
           : null,
-      stopLossThreadIsSet: position.stopLossThreadIsSet === 1,
-      takeProfitLimitPrice: position.takeProfitThreadIsSet
+      stopLossThreadIsSet: position.stopLossIsSet === 1,
+      takeProfitLimitPrice: position.takeProfitIsSet
         ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
         : null,
-      takeProfitThreadIsSet: position.takeProfitThreadIsSet === 1,
-      pendingCleanupAndClose: position.pendingCleanupAndClose === 1,
+      takeProfitThreadIsSet: position.takeProfitIsSet === 1,
+      pendingCleanupAndClose: false,
       //
       nativeObject: position,
     };
@@ -4541,23 +4145,22 @@ export class AdrenaClient {
               USD_DECIMALS,
             ),
             stopLossClosePositionPrice:
-              positionAccount.stopLossThreadIsSet === 1
+              positionAccount.stopLossIsSet === 1
                 ? nativeToUi(
                     positionAccount.stopLossClosePositionPrice,
                     PRICE_DECIMALS,
                   )
                 : null,
             stopLossLimitPrice:
-              positionAccount.stopLossThreadIsSet === 1
+              positionAccount.stopLossIsSet === 1
                 ? nativeToUi(positionAccount.stopLossLimitPrice, PRICE_DECIMALS)
                 : null,
-            stopLossThreadIsSet: positionAccount.stopLossThreadIsSet === 1,
-            takeProfitLimitPrice: positionAccount.takeProfitThreadIsSet
+            stopLossThreadIsSet: positionAccount.stopLossIsSet === 1,
+            takeProfitLimitPrice: positionAccount.takeProfitIsSet
               ? nativeToUi(positionAccount.takeProfitLimitPrice, PRICE_DECIMALS)
               : null,
-            takeProfitThreadIsSet: positionAccount.takeProfitThreadIsSet === 1,
-            pendingCleanupAndClose:
-              positionAccount.pendingCleanupAndClose === 1,
+            takeProfitThreadIsSet: positionAccount.takeProfitIsSet === 1,
+            pendingCleanupAndClose: false,
             //
             nativeObject: positionAccount,
           },
@@ -4848,80 +4451,6 @@ export class AdrenaClient {
       transaction,
       notification,
     });
-  }
-
-  public buildCleanupPositionStopLoss({
-    position,
-  }: {
-    position: PositionExtended;
-  }): Promise<TransactionInstruction> {
-    if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
-    }
-
-    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
-      .publicKey;
-
-    return this.adrenaProgram.methods
-      .cleanupPositionStopLoss()
-      .accountsStrict({
-        position: position.pubkey,
-        owner: position.owner,
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
-        caller: caller,
-        custody: position.custody,
-        cortex: AdrenaClient.cortexPda,
-        pool: this.mainPool.pubkey,
-        sablierProgram: this.config.sablierThreadProgram,
-        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.takeProfitThreadId,
-          user: position.owner,
-        }).publicKey,
-        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.stopLossThreadId,
-          user: position.owner,
-        }).publicKey,
-      })
-      .instruction();
-  }
-
-  public buildCleanupPositionTakeProfit({
-    position,
-  }: {
-    position: PositionExtended;
-  }): Promise<TransactionInstruction> {
-    if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
-    }
-
-    const caller = (this.adrenaProgram.provider as AnchorProvider).wallet
-      .publicKey;
-
-    return this.adrenaProgram.methods
-      .cleanupPositionTakeProfit()
-      .accountsStrict({
-        position: position.pubkey,
-        owner: position.owner,
-        transferAuthority: AdrenaClient.transferAuthorityAddress,
-        caller: caller,
-        custody: position.custody,
-        cortex: AdrenaClient.cortexPda,
-        pool: this.mainPool.pubkey,
-        sablierProgram: this.config.sablierThreadProgram,
-        takeProfitThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.takeProfitThreadId,
-          user: position.owner,
-        }).publicKey,
-        stopLossThread: this.getTakeProfitOrStopLossThreadAddress({
-          authority: AdrenaClient.transferAuthorityAddress,
-          threadId: position.nativeObject.stopLossThreadId,
-          user: position.owner,
-        }).publicKey,
-      })
-      .instruction();
   }
 
   /*
