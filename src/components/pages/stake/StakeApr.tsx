@@ -97,7 +97,7 @@ export default function StakeApr({
           <div className='flex w-full border-b pb-2'>
             <div className={titleClassName}>YIELD</div>
 
-            <div className={`grid grid-cols-${periods.length} grow`}>
+            <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => <div key={lockPeriod} className='text-txtfade text-xs sm:text-sm items-center justify-center flex'>{`${lockPeriod}D APR`}</div>)}
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function StakeApr({
           <div className='flex w-full'>
             <div className={titleClassName}>FEES (USDC)</div>
 
-            <div className={`grid grid-cols-${periods.length} grow`}>
+            <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => {
                 const a = apr !== null ? apr.aprs.find(({
                   lock_period,
@@ -121,7 +121,7 @@ export default function StakeApr({
           <div className='flex w-full'>
             <div className={titleClassName}>LM (ADX)</div>
 
-            <div className={`grid grid-cols-${periods.length} grow`}>
+            <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
@@ -138,7 +138,7 @@ export default function StakeApr({
           <div className='flex w-full'>
             <div className={titleClassName}>TOTAL</div>
 
-            <div className={`grid grid-cols-${periods.length} grow`}>
+            <div className={twMerge('grid grid-cols-4 grow', token === 'ADX' && 'grid-cols-5')}>
               {periods.map((lockPeriod) => (
                 <NumberDisplayBoilerplate
                   key={lockPeriod}
