@@ -122,7 +122,7 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
 
   return (
     <LineRechart
-      title="ALP DETAILED APR"
+      title="STAKED ALP APR"
       data={infos.formattedData}
       labels={[
         ...Object.keys(infos.formattedData[0])
