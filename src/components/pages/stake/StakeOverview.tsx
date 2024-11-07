@@ -728,7 +728,7 @@ export default function StakeOverview({
         </div>
 
         {/* Liquid stake section */}
-        <div className="">
+        <div className="pb-8">
           {!isALP && (
             <>
               <div className="h-[1px] bg-bcolor w-full my-5" />
@@ -781,9 +781,6 @@ export default function StakeOverview({
               </div>
             </>
           )}
-
-          {/* New separator below liquid stake section */}
-          <div className="h-[1px] bg-bcolor w-full my-5" />
         </div>
       </div>
     </div>
