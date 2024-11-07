@@ -1,8 +1,41 @@
 
+import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
+import DataApiClient from '@/DataApiClient';
+
+import chevronDown from '../../../../public/images/chevron-down.svg';
+
+function NumberDisplayBoilerplate({
+  key,
+  title,
+  nb,
+  precision = 2,
+}: {
+  key?: string | number;
+  title?: string;
+  nb: number | null;
+  precision?: number;
+}) {
+  return <NumberDisplay
+    key={key}
+    title={title}
+    nb={nb}
+    format="percentage"
+    precision={precision}
+    className="border-0 p-1 justify-center items-center"
+    isDecimalDimmed={false}
+    bodyClassName="text-xs sm:text-sm"
+    headerClassName="pb-0"
+    titleClassName="text-xs sm:text-xs"
+  />
+}
+
+const periods = [90, 180, 360, 540] as const;
+
+const titleClassName = 'text-xxs sm:text-sm w-[6em] sm:w-[10em] shrink-0 flex items-center justify-center text-txtfade text-center whitespace-nowrap';
 
 export default function StakeApr({
   token,
@@ -11,20 +44,13 @@ export default function StakeApr({
   token: 'ADX' | 'ALP';
   className?: string;
 }) {
-  const [aprRolling7D, setAprRolling7D] = useState<number | null>(null);
+  const [apr, setApr] = useState<Awaited<ReturnType<typeof DataApiClient.getRolling7dAprsInfo> | null>>(null);
+
+  const [moreInfo, setMoreInfo] = useState(false);
 
   const loadData = useCallback(async () => {
-    // const res = await fetch(
-    //   `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_profit_usd=true&cumulative_loss_usd=true&start_date=${(() => {
-    //     const startDate = new Date();
-    //     startDate.setDate(startDate.getDate() - 7);
-
-    //     return startDate.toISOString();
-    //   })()}&end_date=${new Date().toISOString()}`,
-    // );
-
-    setAprRolling7D(19);
-  }, []);
+    setApr(await DataApiClient.getRolling7dAprsInfo(token === 'ALP' ? 'lp' : 'lm'));
+  }, [token]);
 
   useEffect(() => {
     loadData();
@@ -35,68 +61,121 @@ export default function StakeApr({
   }, [loadData]);
 
   return (
-    <div className={twMerge("flex flex-wrap bg-main rounded-2xl border h-18", className)}>
-      <NumberDisplay
-        title="Overall APR"
-        nb={aprRolling7D}
-        format="percentage"
-        precision={2}
-        className="border-0"
-        isDecimalDimmed={false}
-        bodyClassName="text-sm"
-        headerClassName="pb-0"
-        titleClassName="text-xs sm:text-xs"
-      />
+    <div className={twMerge("flex flex-col bg-main rounded-2xl border h-18", className)}>
+      <div className={twMerge("flex flex-wrap p-2")}>
+        {token === 'ALP' ? <NumberDisplayBoilerplate
+          title="LIQUID APR"
+          nb={apr !== null ? apr.aprs[0].liquid_apr : null}
+          precision={4}
+        /> : null}
 
-      <div className='flex grow border-l'>
-        <NumberDisplay
-          title="90d APR"
-          nb={aprRolling7D}
-          format="percentage"
-          precision={2}
-          className="border-0"
-          isDecimalDimmed={false}
-          bodyClassName="text-sm"
-          headerClassName="pb-0"
-          titleClassName="text-xs sm:text-xs"
-        />
+        {
+          periods.map((lockPeriod) => (
+            <NumberDisplayBoilerplate
+              key={lockPeriod}
+              title={`${lockPeriod}d APR`}
+              nb={apr !== null ? apr.aprs.find(({
+                lock_period,
+              }) => lock_period === lockPeriod)?.locked_apr ?? null : null}
+            />
+          ))
+        }
+      </div>
 
-        <NumberDisplay
-          title="180d APR"
-          nb={aprRolling7D}
-          format="percentage"
-          precision={2}
-          className="border-0"
-          isDecimalDimmed={false}
-          bodyClassName="text-sm"
-          headerClassName="pb-0"
-          titleClassName="text-xs sm:text-xs"
-        />
+      <div className={twMerge('flex flex-col w-full gap-4 border-t border-bcolor overflow-hidden transition-all duration-3000 ease-in-out', moreInfo ? 'max-h-[100em]' : 'max-h-0')}>
+        <div className='flex flex-col ml-8 mr-8 mt-4'>
+          <p className='opacity-75 text-base bg-third p-3 w-full text-justify border border-bcolor rounded'>
+            APR (Annualized Percentage Rate) represents the a full year of rewards expressed in US DOLLAR value. This rate is projected from the most recent round of rewards and includes: {token === 'ALP' ? 'the liquid USDC rewards, ' : null}the staked USDC rewards and the staked ADX rewards.
+            To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
+            {token === 'ALP' ? ' The APR does not include Genesis ADX rewards.' : null}
+          </p>
+        </div>
 
-        <NumberDisplay
-          title="360d APR"
-          nb={aprRolling7D}
-          format="percentage"
-          precision={2}
-          className="border-0"
-          isDecimalDimmed={false}
-          bodyClassName="text-sm"
-          headerClassName="pb-0"
-          titleClassName="text-xs sm:text-xs"
-        />
+        <div className='flex flex-col w-full sm:w-[90%] ml-auto mr-auto mb-4 border pt-2 pl-2 pr-2'>
+          <div className='flex w-full border-b pb-2'>
+            <div className={titleClassName}>Yield</div>
 
-        <NumberDisplay
-          title="540d APR"
-          nb={aprRolling7D}
-          format="percentage"
-          precision={2}
-          className="border-0"
-          isDecimalDimmed={false}
-          bodyClassName="text-sm"
-          headerClassName="pb-0"
-          titleClassName="text-xs sm:text-xs"
+            <div className='grid grid-cols-4 grow'>
+              {periods.map((lockPeriod) => <div key={lockPeriod} className='text-txtfade text-xs sm:text-sm items-center justify-center flex'>{`${lockPeriod}D APR`}</div>)}
+            </div>
+          </div>
+
+          {token === 'ALP' ? <div className='flex w-full'>
+            <div className={titleClassName}>LIQUID USDC</div>
+
+            <div className='grid grid-cols-4 grow'>
+              {periods.map((lockPeriod) => (
+                <NumberDisplayBoilerplate
+                  key={lockPeriod}
+                  nb={apr !== null ? apr.aprs[0].liquid_apr ?? null : null}
+                />
+              ))}
+            </div>
+          </div> : null}
+
+          <div className='flex w-full'>
+            <div className={titleClassName}>STAKED USDC</div>
+
+            <div className='grid grid-cols-4 grow'>
+              {periods.map((lockPeriod) => (
+                <NumberDisplayBoilerplate
+                  key={lockPeriod}
+                  nb={apr !== null ? apr.aprs.find(({
+                    lock_period,
+                  }) => lock_period === lockPeriod)?.locked_usdc_apr ?? null : null}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className='flex w-full'>
+            <div className={titleClassName}>ADX</div>
+
+            <div className='grid grid-cols-4 grow'>
+              {periods.map((lockPeriod) => (
+                <NumberDisplayBoilerplate
+                  key={lockPeriod}
+                  nb={apr !== null ? apr.aprs.find(({
+                    lock_period,
+                  }) => lock_period === lockPeriod)?.locked_adx_apr ?? null : null}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className='w-full border-b'></div>
+
+          <div className='flex w-full'>
+            <div className={titleClassName}>Total</div>
+
+            <div className='grid grid-cols-4 grow'>
+              {periods.map((lockPeriod) => (
+                <NumberDisplayBoilerplate
+                  key={lockPeriod}
+                  nb={apr !== null ? apr.aprs.find(({
+                    lock_period,
+                  }) => lock_period === lockPeriod)?.total_apr ?? null : null}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className='w-full flex items-center justify-center h-6 border-t border-bcolor hover:opacity-100 opacity-80 cursor-pointer' onClick={() => {
+        setMoreInfo(!moreInfo);
+      }}>
+        <Image
+          className={twMerge(
+            `h-6 w-6`,
+            moreInfo ? 'transform rotate-180 transition-all duration-1000 ease-in-out' : '',
+          )}
+          src={chevronDown}
+          height={60}
+          width={60}
+          alt="Chevron down"
         />
       </div>
-    </div >
+    </div>
   );
 }

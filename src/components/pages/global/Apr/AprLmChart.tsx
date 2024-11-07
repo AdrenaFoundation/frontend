@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import DataApiClient from '@/DataApiClient';
 
 interface AprChartProps {
   isSmallScreen: boolean;
 }
 
-export function AprChart({ isSmallScreen }: AprChartProps) {
+export function AprLmChart({ isSmallScreen }: AprChartProps) {
   const [infos, setInfos] = useState<{
     formattedData: (
       | {
@@ -16,33 +17,18 @@ export function AprChart({ isSmallScreen }: AprChartProps) {
       | { [key: string]: number }
     )[];
 
-    custodiesColors: string[];
+    // custodiesColors: string[];
   } | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
-  const [totalRealizedPnl, setTotalRealizedPnl] = useState<number>(0);
-
   useEffect(() => {
     periodRef.current = period;
-    getCustodyInfo();
+    getInfo();
   }, [period]);
 
-  const getCustodyInfo = async () => {
+  const getInfo = async () => {
     try {
-      const dataEndpoint = (() => {
-        switch (periodRef.current) {
-          case '1d':
-            return 'custodyinfo';
-          case '7d':
-            return 'custodyinfohourly';
-          case '1M':
-            return 'custodyinfodaily';
-          default:
-            return 'custodyinfo';
-        }
-      })();
-
       const dataPeriod = (() => {
         switch (periodRef.current) {
           case '1d':
@@ -56,28 +42,9 @@ export function AprChart({ isSmallScreen }: AprChartProps) {
         }
       })();
 
-      const res = await fetch(
-        `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_profit_usd=true&cumulative_loss_usd=true&start_date=${(() => {
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - dataPeriod);
+      const data = await DataApiClient.getChartAprsInfo(dataPeriod);
 
-          return startDate.toISOString();
-        })()}&end_date=${new Date().toISOString()}`,
-      );
-
-      const { data } = await res.json();
-
-      const {
-        cumulative_profit_usd: cumulativeProfitUsd,
-        cumulative_loss_usd: cumulativeLossUsd,
-        snapshot_timestamp,
-      } = data as {
-        cumulative_profit_usd: { [key: string]: string[] };
-        cumulative_loss_usd: { [key: string]: string[] };
-        snapshot_timestamp: string[];
-      };
-
-      const timeStamp = snapshot_timestamp.map((time: string) => {
+      const timeStamp = data.aprs[0].end_date.map((time: string) => {
         if (periodRef.current === '1d') {
           return new Date(time).toLocaleTimeString('en-US', {
             hour: 'numeric',
@@ -106,32 +73,57 @@ export function AprChart({ isSmallScreen }: AprChartProps) {
         });
       });
 
-      const infos = window.adrena.client.custodies.map((c) => ({
-        custody: c,
-        values: [] as number[],
-      }));
+      const totalAprInfo = [90, 180, 360, 540].reduce((acc, c) => {
+        acc.push({
+          lockedPeriod: `${c}D TOTAL`,
+          values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.total_apr ?? [],
+        });
+
+        return acc;
+      }, [] as { lockedPeriod: string; values: number[] }[]);
+
+      const usdcAprInfo = [90, 180, 360, 540].reduce((acc, c) => {
+        acc.push({
+          lockedPeriod: `${c}D USDC`,
+          values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.locked_usdc_apr ?? [],
+        });
+
+        return acc;
+      }, [] as { lockedPeriod: string; values: number[] }[]);
+
+      const adxAprInfo = [90, 180, 360, 540].reduce((acc, c) => {
+        acc.push({
+          lockedPeriod: `${c}D ADX`,
+          values: data.aprs.find((x) => x.staking_type === 'lm' && x.lock_period === c)?.locked_adx_apr ?? [],
+        });
+
+        return acc;
+      }, [] as { lockedPeriod: string; values: number[] }[]);
 
       const formatted = timeStamp.map((time: string, i: number) => ({
         time,
 
-        ...infos.reduce((acc, { custody, values }) => {
-          if (custody.tokenInfo.symbol !== 'USDC') {
-            acc[custody.tokenInfo.symbol] = values[i];
-          }
+        ...usdcAprInfo.reduce((acc, { lockedPeriod, values }) => {
+          acc[lockedPeriod] = values[i];
+
+          return acc;
+        }, {} as { [key: string]: number }),
+
+        ...adxAprInfo.reduce((acc, { lockedPeriod, values }) => {
+          acc[lockedPeriod] = values[i];
+
+          return acc;
+        }, {} as { [key: string]: number }),
+
+        ...totalAprInfo.reduce((acc, { lockedPeriod, values }) => {
+          acc[lockedPeriod] = values[i];
 
           return acc;
         }, {} as { [key: string]: number }),
       }));
 
-      const lastDataPoint = formatted[formatted.length - 1];
-      const calculatedTotalRealizedPnl = Object.entries(lastDataPoint)
-        .filter(([key]) => key !== 'time' && key !== 'Total')
-        .reduce((sum, [_, value]) => sum + (value as number), 0);
-
-      setTotalRealizedPnl(calculatedTotalRealizedPnl);
       setInfos({
         formattedData: formatted,
-        custodiesColors: infos.map(({ custody }) => custody.tokenInfo.color),
       });
     } catch (e) {
       console.error(e);
@@ -139,10 +131,10 @@ export function AprChart({ isSmallScreen }: AprChartProps) {
   };
 
   useEffect(() => {
-    getCustodyInfo();
+    getInfo();
 
     const interval = setInterval(() => {
-      getCustodyInfo();
+      getInfo();
     }, 30000);
 
     return () => clearInterval(interval);
@@ -158,25 +150,30 @@ export function AprChart({ isSmallScreen }: AprChartProps) {
 
   return (
     <LineRechart
-      title="APR"
-      subValue={totalRealizedPnl}
+      title="ADX DETAILED APR"
       data={infos.formattedData}
       labels={[
         ...Object.keys(infos.formattedData[0])
           .filter((key) => key !== 'time')
           .map((x, i) => ({
             name: x,
-            color: infos.custodiesColors.filter(
-              (_, index) =>
-                window.adrena.client.custodies[index].tokenInfo.symbol !==
-                'USDC',
-            )[i],
+            color: (() => {
+              if (x.includes('90')) return '#ff9999'; // Light red
+              if (x.includes('180')) return '#99cc99'; // Light green
+              if (x.includes('360')) return '#ffcc66'; // Light orange
+              if (x.includes('540')) return '#66b3ff'; // Light blue
+              if (x.includes('0')) return '#ffd966'; // Light yellow
+
+              return '#ccccff'; // Light purple as a fallback
+            })(),
           })),
       ]}
       domain={[0]}
       period={period}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
+      formatY='percentage'
+      precision={2}
     />
   );
 }

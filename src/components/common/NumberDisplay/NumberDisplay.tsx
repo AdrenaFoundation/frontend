@@ -20,7 +20,6 @@ export default function NumberDisplay({
   bodyClassName,
   headerClassName,
   titleClassName,
-  isDecimalDimmed,
   tippyInfo,
   subtitle,
 }: {
@@ -35,7 +34,6 @@ export default function NumberDisplay({
   bodyClassName?: string;
   headerClassName?: string;
   titleClassName?: string;
-  isDecimalDimmed?: boolean;
   tippyInfo?: string;
   subtitle?: string;
 }) {
@@ -70,7 +68,6 @@ export default function NumberDisplay({
         className={twMerge("text-xl", bodyClassName)}
         format={format}
         suffix={suffix}
-        isDecimalDimmed={isDecimalDimmed}
         suffixClassName='text-sm font-boldy text-txtfade'
       />
     </StyledContainer>

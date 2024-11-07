@@ -32,6 +32,7 @@ export default function LineRechart({
   subValue,
   isReferenceLine,
   formatY = 'currency',
+  precision = 0,
 }: {
   title: string;
   data: RechartsData[];
@@ -47,6 +48,7 @@ export default function LineRechart({
   subValue?: number;
   isReferenceLine?: boolean;
   formatY?: 'percentage' | 'currency' | 'number';
+  precision?: number;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -54,11 +56,11 @@ export default function LineRechart({
 
   const formatYAxis = (tickItem: number) => {
     if (formatY === 'percentage') {
-      return formatPercentage(tickItem, 0);
+      return formatPercentage(tickItem, precision);
     }
 
     if (formatY === 'currency') {
-      return formatPriceInfo(tickItem, 0);
+      return formatPriceInfo(tickItem, precision);
     }
     return formatNumberShort(tickItem);
   };
@@ -75,7 +77,7 @@ export default function LineRechart({
             </Tippy>
           )}
 
-          {!isSmallScreen && (
+          {!isSmallScreen && typeof subValue !== 'undefined' && (
             <FormatNumber
               nb={subValue}
               className="text-sm text-txtfade sm:text-xs"
@@ -143,6 +145,7 @@ export default function LineRechart({
               <CustomRechartsToolTip
                 isValueOnly={labels.length === 1}
                 format={formatY}
+                precision={precision}
               />
             }
             cursor={false}
