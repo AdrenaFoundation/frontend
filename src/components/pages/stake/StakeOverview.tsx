@@ -240,7 +240,7 @@ export default function StakeOverview({
   const isBigAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1_000_000;
 
   return (
-    <div className="flex flex-col bg-main rounded-2xl border h-full">
+    <div className="flex flex-col bg-main rounded-2xl border">
       <div className="p-5 pb-0">
         <div className="flex flex-col sm:flex-row items-center h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
           <div
@@ -728,7 +728,7 @@ export default function StakeOverview({
         </div>
 
         {/* Liquid stake section */}
-        <div className="mt-auto">
+        <div className="">
           {!isALP && (
             <>
               <div className="h-[1px] bg-bcolor w-full my-5" />
