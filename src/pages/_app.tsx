@@ -23,6 +23,7 @@ import usePositions from '@/hooks/usePositions';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
+import useWalletAdapters from '@/hooks/useWalletAdapters';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp, {
@@ -172,7 +173,8 @@ function AppComponent({
   const router = useRouter();
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
-  const wallet = useWallet();
+  const adapters = useWalletAdapters();
+  const wallet = useWallet(adapters);
   const positions = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
@@ -316,6 +318,7 @@ function AppComponent({
         setCustomRpcUrl={setCustomRpcUrl}
         setFavoriteRpc={setFavoriteRpc}
         preferredSolanaExplorer={preferredSolanaExplorer}
+        adapters={adapters}
       >
         {
           <TermsAndConditionsModal
@@ -359,6 +362,7 @@ function AppComponent({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           preferredSolanaExplorer={preferredSolanaExplorer}
+          adapters={adapters}
         />
       </RootLayout>
     </>

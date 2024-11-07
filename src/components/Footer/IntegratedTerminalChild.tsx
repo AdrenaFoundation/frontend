@@ -3,7 +3,6 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { Connection, TransactionError } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 
-import { walletAdapters } from '@/constant';
 import { useSelector } from '@/store/store';
 import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
 
@@ -29,9 +28,7 @@ export default function IntegratedTerminalChild({
 
   useEffect(() => {
     if (connected && walletState?.adapterName) {
-      const adapter = walletAdapters[walletState.adapterName];
-
-      passthroughWalletContextState.select(adapter.name as WalletName);
+      passthroughWalletContextState.select(walletState.adapterName as WalletName);
     }
   }, [connected, walletState]);
 

@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import {
@@ -7,15 +7,11 @@ import {
   disconnectWalletAction,
   openCloseConnectionModalAction,
 } from '@/actions/walletActions';
-import { walletAdapters } from '@/constant';
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 import { useDispatch, useSelector } from '@/store/store';
-import { ImageRef, UserProfileExtended, WalletAdapterName } from '@/types';
+import { UserProfileExtended, WalletAdapterExtended } from '@/types';
 import { getAbbrevNickname, getAbbrevWalletAddress } from '@/utils';
 
-import backpackLogo from '../../../public/images/backpack.png';
-import coinbaseLogo from '../../../public/images/coinbase.png';
-import phantomLogo from '../../../public/images/phantom.svg';
-import solflareLogo from '../../../public/images/solflare.png';
 import walletIcon from '../../../public/images/wallet-icon.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -23,41 +19,53 @@ import MenuItem from '../common/Menu/MenuItem';
 import MenuItems from '../common/Menu/MenuItems';
 import WalletSelectionModal from './WalletSelectionModal';
 
-const WALLET_ICONS = {
-  phantom: phantomLogo,
-  solflare: solflareLogo,
-  backpack: backpackLogo,
-  coinbase: coinbaseLogo,
-} as const satisfies Record<WalletAdapterName, ImageRef>;
-
 export default function WalletAdapter({
   className,
   userProfile,
   isIconOnly,
+  adapters,
 }: {
   className?: string;
   userProfile: UserProfileExtended | null | false;
   isIconOnly?: boolean;
+  adapters: WalletAdapterExtended[];
 }) {
   const dispatch = useDispatch();
   const { wallet } = useSelector((s) => s.walletState);
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
+  const connectedAdapter = useMemo(() => wallet && adapters.find(x => x.name === wallet.adapterName), [wallet]);
+
   // We use a ref in order to avoid getting item from local storage unnecessarily on every render.
   const autoConnectAuthorizedRef = useRef<null | boolean>(null);
+  const lastConnectedWalletRef = useRef<null | WalletAdapterName>(null);
+
   if (autoConnectAuthorizedRef.current === null) {
     autoConnectAuthorizedRef.current = !!JSON.parse(
       localStorage.getItem('autoConnectAuthorized') ?? 'false',
     );
   }
 
+  if (lastConnectedWalletRef.current === null) {
+    const adapterName = localStorage.getItem('lastConnectedWallet');
+
+    if (adapterName && adapters.find(x => x.name === adapterName)) {
+      lastConnectedWalletRef.current = adapterName as WalletAdapterName;
+    } else {
+      lastConnectedWalletRef.current = null;
+    }
+  }
+
   const connectedWalletAdapterName = wallet?.adapterName;
   const connected = !!connectedWalletAdapterName;
 
-  // Attempt to auto-connect Phantom Wallet on mount.
+  // Attempt to auto-connect Wallet on mount.
   useEffect(() => {
-    if (autoConnectAuthorizedRef.current) {
-      dispatch(autoConnectWalletAction('phantom'));
+    if (autoConnectAuthorizedRef.current && lastConnectedWalletRef.current) {
+      const adapter = adapters.find(x => x.name === lastConnectedWalletRef.current);
+      if (!adapter) return;
+
+      dispatch(autoConnectWalletAction(adapter));
       return;
     }
     // `dispatch` is stable, does not need to be included in the dependencies array.
@@ -71,7 +79,9 @@ export default function WalletAdapter({
   useEffect(() => {
     if (!connectedWalletAdapterName) return;
 
-    const adapter = walletAdapters[connectedWalletAdapterName];
+    const adapter = adapters.find(x => x.name === connectedWalletAdapterName);
+
+    if (!adapter) return;
 
     adapter.on('connect', (walletPubkey: PublicKey) => {
       dispatch({
@@ -90,13 +100,13 @@ export default function WalletAdapter({
 
   return (
     <div className="relative">
-      {connected ? (
+      {connected && userProfile !== null ? (
         <Menu
           trigger={
             <Button
               className={twMerge(
                 className,
-                'gap-2 pl-4 pr-3 text-xs',
+                'gap-2 pl-2 pr-3 text-xs w-[15em]',
                 isIconOnly && 'p-0 h-7 w-7',
               )}
               title={
@@ -106,7 +116,8 @@ export default function WalletAdapter({
                     : getAbbrevWalletAddress(wallet.walletAddress)
                   : null
               }
-              leftIcon={WALLET_ICONS[wallet.adapterName]}
+              leftIcon={connectedAdapter?.iconOverride ?? connectedAdapter?.icon}
+              leftIconClassName='w-3 h-3'
               variant="lightbg"
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
@@ -120,9 +131,9 @@ export default function WalletAdapter({
               onClick={() => {
                 setMenuIsOpen(!menuIsOpen);
 
-                if (!connected) return;
+                if (!connected || !connectedAdapter) return;
 
-                dispatch(disconnectWalletAction(wallet.adapterName));
+                dispatch(disconnectWalletAction(connectedAdapter));
               }}
             >
               Disconnect
@@ -133,13 +144,13 @@ export default function WalletAdapter({
         <Button
           className={twMerge(
             className,
-            'gap-2 pl-4 pr-3',
+            'gap-1 pl-2 pr-3 text-xs w-[15em]',
             isIconOnly && 'p-0 h-7 w-7',
           )}
           title={!isIconOnly ? 'Connect wallet' : null}
-          rightIcon={walletIcon}
+          leftIcon={walletIcon}
           alt="wallet icon"
-          rightIconClassName="w-4 h-4"
+          leftIconClassName="w-4 h-4"
           variant="lightbg"
           onClick={() => {
             if (!connected) {
@@ -149,7 +160,7 @@ export default function WalletAdapter({
         />
       )}
 
-      <WalletSelectionModal />
+      <WalletSelectionModal adapters={adapters} />
     </div>
   );
 }

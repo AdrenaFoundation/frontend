@@ -1,7 +1,7 @@
 import { Url } from 'next/dist/shared/lib/router/router';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ReactNode, useState } from 'react';
+import { CSSProperties, ReactNode, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
@@ -19,6 +19,7 @@ export default function Button({
   loaderClassName,
   rightIconClassName,
   leftIconClassName,
+  style,
   onClick,
   href,
   disabled,
@@ -31,8 +32,9 @@ export default function Button({
   ...rest
 }: {
   title?: ReactNode;
-  rightIcon?: ImageRef;
-  leftIcon?: ImageRef;
+  rightIcon?: string | ImageRef;
+  leftIcon?: string | ImageRef;
+  style?: CSSProperties;
   alt?: string;
   variant?: 'primary' | 'secondary' | 'text' | 'outline' | 'danger' | 'lightbg';
   className?: string;
@@ -81,8 +83,9 @@ export default function Button({
 
   const styledButton = (
     <button
+      style={style}
       className={twMerge(
-        'flex flex-row items-center justify-center gap-3 font-mono h-[2.5em]',
+        'flex flex-row items-center justify-center gap-3 font-mono h-[2.5em] overflow-hidden relative',
         sizes[size],
         variants[variant],
         rounded ? 'rounded-full' : '',

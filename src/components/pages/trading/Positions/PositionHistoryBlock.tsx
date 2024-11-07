@@ -1,16 +1,21 @@
 import 'tippy.js/dist/tippy.css'; // Import Tippy's CSS
 
 import Tippy from '@tippyjs/react';
+import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
+import shareIcon from '@/../public/images/Icons/share-fill.svg'
 import solLogo from '@/../public/images/sol.svg';
+import Button from '@/components/common/Button/Button';
+import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
+import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { ImageRef, PositionHistoryExtended, Token } from '@/types';
+import { ImageRef, PositionExtended, PositionHistoryExtended, Token } from '@/types';
 import {
   formatDate,
   getTokenImage,
@@ -19,6 +24,7 @@ import {
 } from '@/utils';
 
 import FeesPaidTooltip from './FeesPaidTooltip';
+import SharePositionModal from './SharePositionModal';
 
 interface TokenImageProps {
   symbol: string;
@@ -123,6 +129,8 @@ export default function PositionHistoryBlock({
 }) {
   // const blockRef = useRef<HTMLDivElement>(null);
   // const isSmallSize = useResizeObserver(blockRef);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
   const symbol = getTokenSymbol(positionHistory.token.symbol);
   const img = getTokenImage(positionHistory.token);
 
@@ -159,7 +167,7 @@ export default function PositionHistoryBlock({
   );
 
   const renderPriceDisplay = (price: number | null, title: string) => (
-    <div className="flex flex-col items-center w-24">
+    <div className="flex flex-col items-center">
       <PriceDisplay price={price} token={positionHistory.token} title={title} />
     </div>
   );
@@ -167,7 +175,7 @@ export default function PositionHistoryBlock({
   const renderPnl = () => pnl;
 
   const renderExitDate = () => (
-    <div className="flex flex-col items-center w-24">
+    <div className="flex flex-col items-center">
       <div className="flex w-full font-mono text-xxs justify-center items-center">
         {positionHistory.status === 'close' ? (
           <Link
@@ -220,7 +228,7 @@ export default function PositionHistoryBlock({
   const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
 
   const pnl = (
-    <div className="flex flex-col items-center min-w-[8em] w-[8em]">
+    <div className="flex flex-col items-center">
       <div className="flex w-full font-mono text-xxs text-txtfade opacity-90 justify-center items-center">
         PnL
         <label className="flex items-center ml-1 cursor-pointer">
@@ -237,7 +245,7 @@ export default function PositionHistoryBlock({
       </div>
 
       {positionHistory.pnl ? (
-        <div className="flex items-center justify-center w-full">
+        <div className="flex text-center w-full">
           <FormatNumber
             nb={
               showAfterFees
@@ -368,29 +376,84 @@ export default function PositionHistoryBlock({
   };
 
   return (
-    <div
-      className={twMerge(
-        'min-w-[300px] w-full border rounded-lg border-dashed border-bcolor overflow-hidden',
-        bodyClassName,
-        borderColor,
-      )}
-      key={positionHistory.position_id}
-    >
-      <div className="md:hidden border-b px-5 py-3 flex flex-row items-center justify-between">
-        <div className="w-[7em] flex grow items-center justify-center">{renderPositionName()}</div> <div className="w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
-      </div>
-      <div className="flex flex-row justify-between flex-wrap gap-6 px-3 py-5 sm:py-2 opacity-90">
-        <div className="md:flex w-[7em] flex grow items-center justify-center">{renderPositionName()}</div>
-        <div className="w-[5em] flex grow items-center justify-center">
-          {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
+    <>
+      <div
+        className={twMerge(
+          'min-w-[300px] w-full border rounded-lg border-dashed border-bcolor overflow-hidden',
+          bodyClassName,
+          borderColor,
+        )}
+        key={positionHistory.position_id}
+      >
+        <div className="md:hidden px-5 py-3 flex flex-row items-center justify-between border-b border-dashed">
+          <div className="flex items-center text-leftr">{renderPositionName()}</div> <div className="flex text-center">{renderPnl()}</div>
         </div>
-        <div className="w-[5em] flex grow items-center justify-center">
-          {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-row justify-between items-center p-0">
+          <div className="flex-1 hidden md:flex items-center justify-center text-left p-2 border-b lg:border-b-0 border-dashed">{renderPositionName()}</div>
+          <div className="flex-1 flex justify-center md:border-x xl:border-0 border-dashed p-2">
+            {renderPriceDisplay(positionHistory.entry_price, 'Entry Price')}
+          </div>
+          <div className="flex-1 flex justify-center p-2 border-l md:border-l-0 md:border-r lg:border-r-0 border-dashed">
+            {renderPriceDisplay(positionHistory.exit_price, 'Exit Price')}
+          </div>
+          <div className="flex-1 hidden md:flex justify-center text-center border-t xl:border-0 border-dashed p-2">{renderPnl()}</div>
+          <div className="flex-1 flex justify-center border-t border-r lg:border-l border-b-0 xl:border-0 border-dashed p-2">{renderExitDate()}</div>
+          <div className="flex-1 flex justify-center border-t xl:border-0 border-dashed p-2">{renderFeesPaid()}</div>
+          <Button
+            leftIcon={shareIcon}
+            variant='secondary'
+            className='hidden xl:block opacity-50 hover:opacity-100'
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          />
         </div>
-        <div className="md:flex w-[10em] flex grow items-center justify-center">{renderPnl()}</div>
-        <div className="w-[7em] flex grow items-center justify-center">{renderExitDate()}</div>
-        <div className="w-[7em] flex grow items-center justify-center">{renderFeesPaid()}</div>
+        <div className="xl:hidden justify-center items-center w-full border-t border-dashed">
+          <Button
+            size="xs"
+            className="text-txtfade border-bcolor border-b-0 bg-[#a8a8a810] hover:bg-bcolor w-full"
+            title="Share"
+            rounded={false}
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          />
+        </div>
       </div>
-    </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <Modal title="Share PnL" close={() => setIsOpen(false)}>
+            <div className="absolute top-0 w-[300px]">
+              {(() => {
+                const fees = -(
+                  (positionHistory.exit_fees ?? 0) +
+                  (positionHistory.borrow_fees ?? 0)
+                );
+                const pnlUsd = positionHistory.pnl
+                  ? positionHistory.pnl - fees
+                  : null;
+
+                if (!pnlUsd || pnlUsd < 0) return;
+
+                return <Congrats />;
+              })()}
+            </div>
+            <SharePositionModal position={{
+              pnl: pnlValue,
+              token: positionHistory.token,
+              side: positionHistory.side,
+              price: positionHistory.entry_price,
+              fees: positionHistory.exit_fees + positionHistory.borrow_fees,
+              collateralUsd: positionHistory.entry_collateral_amount,
+              sizeUsd: positionHistory.entry_collateral_amount * positionHistory.entry_leverage,
+              nativeObject: {
+                openTime: new Date(positionHistory.entry_date).getTime() / 1000,
+              }
+            } as unknown as PositionExtended} />
+          </Modal>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

@@ -378,17 +378,9 @@ export class AdrenaClient {
   // null = not ready
   // false = profile not initialized
   public async loadUserProfile(
-    user?: PublicKey,
+    user: PublicKey,
   ): Promise<UserProfileExtended | null | false> {
-    if (!this.adrenaProgram) return null;
-
-    if (!user) {
-      if (!this.adrenaProgram) return null;
-
-      user = (this.adrenaProgram.provider as AnchorProvider).wallet.publicKey;
-
-      if (!user) return null;
-    }
+    if (!this.readonlyAdrenaProgram) return null;
 
     const userProfilePda = this.getUserProfilePda(user);
 
@@ -1366,7 +1358,7 @@ export class AdrenaClient {
       );
     }
 
-    const userProfile = await this.loadUserProfile();
+    const userProfile = await this.loadUserProfile(owner);
 
     const transaction = await this.buildSwapTx({
       owner,
@@ -1447,7 +1439,7 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = await this.loadUserProfile();
+    const userProfile = await this.loadUserProfile(position.owner);
 
     console.log('Close long position:', {
       position: position.pubkey.toBase58(),
@@ -1576,7 +1568,7 @@ export class AdrenaClient {
     const lpStakingRewardTokenVault =
       this.getStakingRewardTokenVaultPda(lpStaking);
 
-    const userProfile = await this.loadUserProfile();
+    const userProfile = await this.loadUserProfile(position.owner);
 
     return this.signAndExecuteTxAlternative({
       transaction: await this.adrenaProgram.methods
@@ -1751,7 +1743,7 @@ export class AdrenaClient {
       );
     }
 
-    const userProfile = await this.loadUserProfile();
+    const userProfile = await this.loadUserProfile(owner);
 
     const openPositionWithSwapIx =
       await this.buildOpenOrIncreasePositionWithSwapShort({
@@ -1947,7 +1939,7 @@ export class AdrenaClient {
       );
     }
 
-    const userProfile = await this.loadUserProfile();
+    const userProfile = await this.loadUserProfile(owner);
 
     const openPositionWithSwapIx =
       await this.buildOpenOrIncreasePositionWithSwapLong({

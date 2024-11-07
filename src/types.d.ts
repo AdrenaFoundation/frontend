@@ -3,6 +3,7 @@ import {
   AllInstructionsMap,
   IdlTypes,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
+import { Adapter } from '@solana/wallet-adapter-base';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
@@ -48,8 +49,6 @@ export type AdrenaGlobal = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RiveImage = any;
 
-declare module '*.lottie';
-
 declare global {
   interface Window {
     Jupiter: any;
@@ -58,11 +57,12 @@ declare global {
   }
 }
 
-export type WalletAdapterName =
-  | 'phantom'
-  | 'backpack'
-  | 'coinbase'
-  | 'solflare';
+export type WalletAdapterExtended = Adapter & {
+  color: string;
+  beta: boolean;
+  recommended: boolean;
+  iconOverride?: ImageRef;
+};
 
 export type PageProps = {
   mainPool: PoolExtended | null;
@@ -77,6 +77,7 @@ export type PageProps = {
     name: string;
     connection: Connection;
   };
+  adapters: WalletAdapterExtended[];
 };
 
 export type CustodyExtended = {
