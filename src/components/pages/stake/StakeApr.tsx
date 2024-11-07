@@ -12,19 +12,17 @@ function NumberDisplayBoilerplate({
   key,
   title,
   nb,
-  precision = 2,
 }: {
   key?: string | number;
   title?: string;
   nb: number | null;
-  precision?: number;
 }) {
   return <NumberDisplay
     key={key}
     title={title}
     nb={nb}
     format="percentage"
-    precision={precision}
+    precision={2}
     className="border-0 p-1 justify-center items-center"
     isDecimalDimmed={false}
     bodyClassName="text-xs sm:text-sm"
@@ -66,7 +64,6 @@ export default function StakeApr({
         {token === 'ALP' ? <NumberDisplayBoilerplate
           title="LIQUID APR"
           nb={apr !== null ? apr.aprs[0].liquid_apr : null}
-          precision={4}
         /> : null}
 
         {
