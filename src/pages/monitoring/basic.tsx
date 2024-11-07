@@ -151,7 +151,7 @@ export default function BasicMonitoring({
 
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
-          <ALPPriceChart />
+          <CompositionChart />
           <OpenInterestChart isSmallScreen={isSmallScreen} />
         </div>
 
@@ -162,7 +162,7 @@ export default function BasicMonitoring({
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <FeesChart isSmallScreen={isSmallScreen} />
-          <CompositionChart />
+          <ALPPriceChart />
         </div>
 
 

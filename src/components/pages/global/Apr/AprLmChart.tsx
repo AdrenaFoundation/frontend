@@ -155,7 +155,7 @@ export function AprLmChart({ isSmallScreen }: AprChartProps) {
       labels={[
         ...Object.keys(infos.formattedData[0])
           .filter((key) => key !== 'time')
-          .map((x, i) => ({
+          .map((x) => ({
             name: x,
             color: (() => {
               if (x.includes('90')) return '#ff9999'; // Light red
