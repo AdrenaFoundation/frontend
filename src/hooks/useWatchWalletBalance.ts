@@ -1,6 +1,5 @@
 import { BN } from '@coral-xyz/anchor';
 import { NATIVE_MINT } from '@solana/spl-token';
-import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setWalletTokenBalancesAction } from '@/actions/walletBalancesActions';
@@ -9,27 +8,6 @@ import { selectWalletPublicKey } from '@/selectors/wallet';
 import { useDispatch, useSelector } from '@/store/store';
 import { TokenSymbol } from '@/types';
 import { findATAAddressSync, nativeToUi } from '@/utils';
-
-const WALLET_TO_ATAS_CACHE = new WeakMap<
-  PublicKey,
-  WeakMap<PublicKey, PublicKey>
->();
-function getAtaFromCacheOrSet(
-  walletPublicKey: PublicKey,
-  mint: PublicKey,
-): PublicKey {
-  const maybeAtasCacheForPubKey = WALLET_TO_ATAS_CACHE.get(walletPublicKey);
-  if (!maybeAtasCacheForPubKey) {
-    WALLET_TO_ATAS_CACHE.set(walletPublicKey, new WeakMap());
-    return getAtaFromCacheOrSet(walletPublicKey, mint);
-  }
-
-  const maybeAta = maybeAtasCacheForPubKey.get(mint);
-  if (maybeAta) return maybeAta;
-  const ata = findATAAddressSync(walletPublicKey, mint);
-  maybeAtasCacheForPubKey.set(mint, ata);
-  return ata;
-}
 
 // TODO: Make it responsive to wallet token balance change
 // FIXME: This hook is used in multiple places throughout the app,
@@ -40,10 +18,6 @@ function getAtaFromCacheOrSet(
 //        Redux Thunk (async) action, populating a store.
 //        This might a good opportunity to use RTK Query or equivalent, to
 //        track the status of the query.
-// NOTE:  Additionally, ATAs, PublicKeys computation are expensive
-//        & should be cached, done here through:
-//        - `WALLET_TO_ATAS_CACHE`
-//        - `useSelector(selectWalletPublicKey)`
 export default function useWatchWalletBalance() {
   const [trickReload, triggerReload] = useState<number>(0);
   const dispatch = useDispatch();
@@ -69,7 +43,7 @@ export default function useWatchWalletBalance() {
 
     const balances = await Promise.all(
       tokens.map(async ({ mint }) => {
-        const ata = getAtaFromCacheOrSet(walletPublicKey, mint);
+        const ata = findATAAddressSync(walletPublicKey, mint);
 
         // in case of SOL, consider both SOL in the wallet + WSOL in ATA
         if (mint.equals(NATIVE_MINT)) {
