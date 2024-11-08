@@ -118,25 +118,23 @@ export default function StakeOverview({
     );
   }, [claimsHistory]);
 
-  const getEndDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  };
-
   const sortedLockedStakes = lockedStakes
     ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
       const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
       const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
+
       const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
-      const durationDiff =
-        (getEndDate(Number(a.endTime)).getTime() -
-          getEndDate(Number(b.endTime)).getTime()) *
-        durationModifier;
+      const durationDiff = ((Number(a.endTime) * 1000) - (Number(b.endTime) * 1000)) * durationModifier;
 
       if (sortConfig.lastClicked === 'size') {
-        return sizeDiff || durationDiff;
+        return sizeDiff !== 0 ? sizeDiff : durationDiff; // If sizeDiff is zero, fall back to durationDiff.
       }
 
+      if (sortConfig.lastClicked === 'duration') {
+        return durationDiff !== 0 ? durationDiff : sizeDiff; // If durationDiff is zero, fall back to sizeDiff.
+      }
+
+      // Fallback sorting by duration or size if none was clicked
       return durationDiff || sizeDiff;
     })
     : [];
