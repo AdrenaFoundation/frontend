@@ -3976,11 +3976,11 @@ export class AdrenaClient {
         position.stopLossIsSet === 1
           ? nativeToUi(position.stopLossLimitPrice, PRICE_DECIMALS)
           : null,
-      stopLossThreadIsSet: position.stopLossIsSet === 1,
+      stopLossIsSet: position.stopLossIsSet === 1,
       takeProfitLimitPrice: position.takeProfitIsSet
         ? nativeToUi(position.takeProfitLimitPrice, PRICE_DECIMALS)
         : null,
-      takeProfitThreadIsSet: position.takeProfitIsSet === 1,
+      takeProfitIsSet: position.takeProfitIsSet === 1,
       pendingCleanupAndClose: false,
       //
       nativeObject: position,
@@ -4094,11 +4094,11 @@ export class AdrenaClient {
               positionAccount.stopLossIsSet === 1
                 ? nativeToUi(positionAccount.stopLossLimitPrice, PRICE_DECIMALS)
                 : null,
-            stopLossThreadIsSet: positionAccount.stopLossIsSet === 1,
+            stopLossIsSet: positionAccount.stopLossIsSet === 1,
             takeProfitLimitPrice: positionAccount.takeProfitIsSet
               ? nativeToUi(positionAccount.takeProfitLimitPrice, PRICE_DECIMALS)
               : null,
-            takeProfitThreadIsSet: positionAccount.takeProfitIsSet === 1,
+            takeProfitIsSet: positionAccount.takeProfitIsSet === 1,
             pendingCleanupAndClose: false,
             //
             nativeObject: positionAccount,

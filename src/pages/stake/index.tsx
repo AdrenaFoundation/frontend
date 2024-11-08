@@ -181,7 +181,6 @@ export default function Stake({
         await window.adrena.client.initUserStaking({
           owner: owner,
           stakedTokenMint,
-          threadId: new BN(Date.now()),
           notification,
         });
       } catch (error) {

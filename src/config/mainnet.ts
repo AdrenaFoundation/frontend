@@ -115,10 +115,6 @@ export default class MainnetConfiguration implements IConfiguration {
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   );
 
-  public readonly sablierThreadProgram: PublicKey = new PublicKey(
-    'sabGLGXfBiUCkwtprPMtatG6tCNxhcWWs1hjQAvDqEE',
-  );
-
   public readonly stakesClaimPayer: PublicKey = new PublicKey(
     'Sab1ierPayer1111111111111111111111111111111',
   );

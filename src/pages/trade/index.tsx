@@ -61,7 +61,6 @@ export default function Trade({
   connected,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
-  userProfile,
   activeRpc,
   adapters,
 }: PageProps) {
@@ -310,7 +309,6 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
-                    userProfile={userProfile}
                   />
                 </div>
               )}
@@ -351,7 +349,6 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
-                    userProfile={userProfile}
                   />
                 </div>
               )}

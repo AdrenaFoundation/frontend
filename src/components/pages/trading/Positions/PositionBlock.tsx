@@ -413,7 +413,7 @@ export default function PositionBlock({
               role="button"
               tabIndex={0}
             >
-              {position.takeProfitThreadIsSet &&
+              {position.takeProfitIsSet &&
                 position.takeProfitLimitPrice &&
                 position.takeProfitLimitPrice > 0 ? (
                 <FormatNumber
@@ -438,7 +438,7 @@ export default function PositionBlock({
               role="button"
               tabIndex={0}
             >
-              {position.stopLossThreadIsSet &&
+              {position.stopLossIsSet &&
                 position.stopLossLimitPrice &&
                 position.stopLossLimitPrice > 0 ? (
                 <FormatNumber

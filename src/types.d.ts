@@ -8,11 +8,9 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
 import { Adrena } from '@/target/adrena';
-import { ThreadProgram as SablierThreadProgram } from '@/target/thread_program';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
-import SablierClient from './SablierClient';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -38,7 +36,6 @@ export type Settings = {
 export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
-  sablierClient: SablierClient;
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
@@ -146,10 +143,10 @@ export type PositionExtended = {
   liquidationFeeUsd: number;
   stopLossClosePositionPrice?: number | null;
   stopLossLimitPrice?: number | null;
-  stopLossThreadIsSet: boolean;
+  stopLossIsSet: boolean;
   takeProfitLimitPrice?: number | null;
-  takeProfitThreadIsSet: boolean;
-  // The position is closed and still alive due to a pending cleanup and close from Sablier
+  takeProfitIsSet: boolean;
+  // The position is closed and still alive due to a pending cleanup and close from MrSablier
   pendingCleanupAndClose: boolean;
 
   // Onchain data
@@ -270,18 +267,6 @@ export type LessThanOrEqual = 'lte';
 export type Equality = {
   GreaterThanOrEqual;
   LessThanOrEqual;
-};
-
-export type SablierAccounts = IdlAccounts<SablierThreadProgram>;
-export type SablierThread = AccountsThreadProgram['thread'];
-
-export type SablierThreadExtended = {
-  lastExecutionDate: number | null;
-  nextTheoreticalExecutionDate: number | null;
-  paused: boolean;
-  pubkey: PublicKey;
-  funding?: number;
-  nativeObject: SablierThread;
 };
 
 // The UI options for priority fees - Stored in cookies

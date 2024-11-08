@@ -28,7 +28,6 @@ export default interface IConfiguration {
   };
 
   readonly governanceProgram: PublicKey;
-  readonly sablierThreadProgram: PublicKey;
   readonly stakesClaimPayer: PublicKey;
   readonly pythProgram: PublicKey;
 
