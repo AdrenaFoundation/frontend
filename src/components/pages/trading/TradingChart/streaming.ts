@@ -1,4 +1,4 @@
-import { setStreamingTokenPriceAction } from '@/actions/streamingTokenPricesActions';
+import { setStreamingTokenPrice } from '@/actions/streamingTokenPrices';
 import store from '@/store/store';
 
 import {
@@ -71,7 +71,7 @@ function handleStreamingData(data: PythStreamingData) {
   }
 
   store.dispatch(
-    setStreamingTokenPriceAction(
+    setStreamingTokenPrice(
       getTokenSymbolFromPythStreamingFormat(channelString),
       tradePrice,
     ),

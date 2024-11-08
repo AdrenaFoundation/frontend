@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Select from '@/components/common/Select/Select';
@@ -24,45 +24,49 @@ export default function TradingChartHeader({
   selected: Token;
   onChange: (t: Token) => void;
 }) {
-  const streamingTokenPrices = useSelector((s) => s.streamingTokenPrices);
+  const selectedTokenPrice = useSelector(
+    (s) => s.streamingTokenPrices[getTokenSymbol(selected.symbol)] ?? null,
+  );
   const stats = useDailyStats();
-  const [previousTokenPrice, setPreviousTokenPrice] = useState<number>(0);
-  const [tokenColor, setTokenColor] = useState<string>('text-white');
+  const [previousTokenPrice, setPreviousTokenPrice] = useState<number | null>(
+    null,
+  );
+  const [tokenColor, setTokenColor] = useState<
+    'text-white' | 'text-green' | 'text-red'
+  >('text-white');
 
-  useEffect(() => {
-    // if streamingTokenPrices is larger than previous value, set color to green
-    // if streamingTokenPrices is smaller than previous value, set color to red
-    if (!streamingTokenPrices) return;
-
-    const price = streamingTokenPrices[getTokenSymbol(selected.symbol)];
-
-    if (typeof price === 'undefined' || price === null) {
-      return;
+  if (selectedTokenPrice !== null) {
+    if (previousTokenPrice !== null) {
+      // if streamingTokenPrices is higher than previous value, set color to green
+      // if streamingTokenPrices is smaller than previous value, set color to red
+      const newTokenColor =
+        selectedTokenPrice > previousTokenPrice
+          ? 'text-green'
+          : selectedTokenPrice < previousTokenPrice
+          ? 'text-red'
+          : tokenColor;
+      // make sure we're only updating the local state if the new color is different.
+      if (newTokenColor !== tokenColor) {
+        setTokenColor(newTokenColor);
+      }
     }
 
-    if (price > previousTokenPrice) {
-      setTokenColor('text-green');
-    } else if (price < previousTokenPrice) {
-      setTokenColor('text-red');
+    if (selectedTokenPrice !== previousTokenPrice) {
+      setPreviousTokenPrice(selectedTokenPrice);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streamingTokenPrices]);
+  }
 
-  useEffect(() => {
-    setPreviousTokenPrice(
-      streamingTokenPrices[getTokenSymbol(selected.symbol)] || 0,
-    );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streamingTokenPrices]);
+  const dailyChange = stats?.[selected.symbol]?.dailyChange ?? null;
+  const dailyVolume = stats?.[selected.symbol]?.dailyVolume ?? null;
+  const lastDayHigh = stats?.[selected.symbol]?.lastDayHigh ?? null;
+  const lastDayLow = stats?.[selected.symbol]?.lastDayLow ?? null;
 
   return (
     <>
       <Head>
         <title>
-          {streamingTokenPrices[getTokenSymbol(selected.symbol)]?.toFixed(
-            selected.symbol === 'BONK' ? 8 : 2,
-          ) || 0}{' '}
+          {selectedTokenPrice?.toFixed(selected.symbol === 'BONK' ? 8 : 2) ??
+            '-'}{' '}
           – {getTokenSymbol(selected.symbol)} / USD
         </title>
       </Head>
@@ -101,7 +105,7 @@ export default function TradingChartHeader({
 
         <div className="flex w-full p-1 sm:p-0 flex-row gap-2 justify-between sm:justify-end sm:gap-6 items-center sm:pr-5">
           <FormatNumber
-            nb={streamingTokenPrices[getTokenSymbol(selected.symbol)]}
+            nb={selectedTokenPrice}
             format="currency"
             minimumFractionDigits={2}
             precision={selected.displayPriceDecimalsPrecision}
@@ -120,13 +124,15 @@ export default function TradingChartHeader({
               <span
                 className={twMerge(
                   'font-mono text-xs sm:text-xxs ml-1', // Adjusted to text-xs
-                  stats && stats[selected.symbol].dailyChange > 0
-                    ? 'text-green'
-                    : 'text-red',
+                  dailyChange
+                    ? dailyChange > 0
+                      ? 'text-green'
+                      : 'text-red'
+                    : 'text-white',
                 )}
               >
-                {stats
-                  ? `${stats[selected.symbol].dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
+                {dailyChange
+                  ? `${dailyChange.toFixed(2)}%` // Manually format to 2 decimal places
                   : '-'}
               </span>
             </div>
@@ -137,7 +143,7 @@ export default function TradingChartHeader({
               </span>
               <span className="font-mono text-xs sm:text-xxs ml-1">
                 <FormatNumber
-                  nb={stats?.[selected.symbol].dailyVolume}
+                  nb={dailyVolume}
                   format="currency"
                   isAbbreviate={true}
                   isDecimalDimmed={false}
@@ -152,7 +158,7 @@ export default function TradingChartHeader({
               </span>
               <span className="font-mono text-xs sm:text-xxs ml-1">
                 <FormatNumber
-                  nb={stats?.[selected.symbol].lastDayHigh} // Assuming high is available in stats
+                  nb={lastDayHigh} // Assuming high is available in stats
                   format="currency"
                   className="font-mono text-xxs"
                 />
@@ -165,7 +171,7 @@ export default function TradingChartHeader({
               </span>
               <span className="font-mono text-xxs sm:text-xs ml-1">
                 <FormatNumber
-                  nb={stats?.[selected.symbol].lastDayLow} // Assuming low is available in stats
+                  nb={lastDayLow} // Assuming low is available in stats
                   format="currency"
                   className="font-mono text-xxs"
                 />
