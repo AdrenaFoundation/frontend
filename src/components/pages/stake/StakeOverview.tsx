@@ -30,7 +30,6 @@ import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxTokenLogo from '../../../../public/images/adx.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
-import InfoAnnotation from '../monitoring/InfoAnnotation';
 import ClaimBlock from './ClaimBlock';
 
 interface SortConfig {

@@ -72,8 +72,8 @@ export default function StopLossTakeProfitInput({
         max = tmp;
       } else {
         max = markPrice;
-        // Find the asset price at which the position will be in 100% profit, so when the `price moved x%` times `position.initialLeverage` is equal to 100, and get that price as the min value
-        min = position.price * (1 - 1 / position.initialLeverage);
+        // Calculate the price at which the PnL equals the position size in USD
+        min = Math.max(position.price - ((position.sizeUsd * markPrice) / position.sizeUsd), 0);
       }
     }
 
@@ -143,8 +143,7 @@ export default function StopLossTakeProfitInput({
   // Adjust getAdjustedPrice to apply precision
   const getAdjustedPrice = (currentPrice: number, isMin: boolean): number => {
     const precision = determinePrecision(currentPrice);
-    const adjustment = Math.pow(10, -precision); // Dynamic adjustment based on precision
-    // const isLong = position.side === 'long';
+    const adjustment = Math.pow(10, -precision);
 
     let adjustedPrice = currentPrice;
     if (type === 'Stop Loss') {
