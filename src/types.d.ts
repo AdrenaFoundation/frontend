@@ -67,7 +67,6 @@ export type PageProps = {
   triggerUserProfileReload: () => void;
   custodies: CustodyExtended[] | null;
   wallet: Wallet | null;
-  triggerWalletTokenBalancesReload: () => void;
   positions: PositionExtended[] | null;
   connected: boolean;
   activeRpc: {

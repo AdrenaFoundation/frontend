@@ -1,6 +1,6 @@
 import { TokenSymbol } from '@/types';
 
-import { WalletBalancesAction } from '../actions/walletBalancesActions';
+import type { WalletBalancesActions } from '../actions/walletBalances';
 
 export type WalletBalancesState = Record<TokenSymbol, number | null> | null;
 
@@ -8,7 +8,7 @@ const initialState: WalletBalancesState = null;
 
 export default function walletReducer(
   state = initialState,
-  action: WalletBalancesAction,
+  action: WalletBalancesActions,
 ) {
   switch (action.type) {
     case 'setTokenBalances':

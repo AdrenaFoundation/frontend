@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { CookiesProvider, useCookies } from 'react-cookie';
 import { Provider } from 'react-redux';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import { AdrenaClient } from '@/AdrenaClient';
 import RootLayout from '@/components/layouts/RootLayout/RootLayout';
 import TermsAndConditionsModal from '@/components/TermsAndConditionsModal/TermsAndConditionsModal';
@@ -25,7 +26,6 @@ import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
 import useWalletAdapters from '@/hooks/useWalletAdapters';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
-import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp, {
   createReadOnlyAdrenaProgram,
 } from '@/initializeApp';
@@ -38,7 +38,7 @@ import {
 } from '@/utils';
 
 import logo from '../../public/images/logo.svg';
-import store from '../store/store';
+import store, { useDispatch } from '../store/store';
 
 function Loader(): JSX.Element {
   return (
@@ -85,7 +85,7 @@ export default function App(props: AppProps) {
 
   const preferredSolanaExplorer: SolanaExplorerOptions =
     cookies?.solanaExplorer &&
-      SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
+    SOLANA_EXPLORERS_OPTIONS.hasOwnProperty(cookies.solanaExplorer)
       ? cookies?.solanaExplorer
       : 'Solana Explorer';
 
@@ -100,7 +100,12 @@ export default function App(props: AppProps) {
     activeRpc !== null
   ) {
     setInitStatus('starting');
-    initializeApp(preferredSolanaExplorer, CONFIG, activeRpc.connection, PYTH_CONNECTION).then(() => {
+    initializeApp(
+      preferredSolanaExplorer,
+      CONFIG,
+      activeRpc.connection,
+      PYTH_CONNECTION,
+    ).then(() => {
       setInitStatus('done');
     });
   }
@@ -168,6 +173,7 @@ function AppComponent({
   setFavoriteRpc: (favoriteRpc: string) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
 }) {
+  const dispatch = useDispatch();
   const router = useRouter();
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
@@ -178,7 +184,12 @@ function AppComponent({
 
   useWatchTokenPrices();
 
-  const triggerWalletTokenBalancesReload = useWatchWalletBalance();
+  // Fetch token balances for the connected wallet, on initial mount of the app.
+  useEffect(() => {
+    dispatch(fetchWalletTokenBalances());
+    // dispatch is stable, never changes, doesn't need to be included in hook dependencies.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [cookies, setCookie] = useCookies([
     'terms-and-conditions-acceptance',
@@ -354,7 +365,6 @@ function AppComponent({
           mainPool={mainPool}
           custodies={custodies}
           wallet={wallet}
-          triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
           positions={positions}
           connected={connected}
           activeRpc={activeRpc}

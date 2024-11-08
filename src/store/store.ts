@@ -24,7 +24,6 @@ const store = configureStore({
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof rootReducer>;
-
 export type Dispatch = typeof store.dispatch;
 
 export const useSelector: TypedUseSelectorHook<RootState> = defaultUseSelector;

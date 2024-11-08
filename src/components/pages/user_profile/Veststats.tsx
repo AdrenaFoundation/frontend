@@ -7,8 +7,10 @@ import {
 } from 'date-fns';
 import { Doughnut } from 'react-chartjs-2';
 
+import { fetchWalletTokenBalances } from '@/actions/thunks';
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
+import { useDispatch } from '@/store/store';
 import { Vest } from '@/types';
 import {
   addFailedTxNotification,
@@ -21,12 +23,11 @@ ChartJS.register(annotationPlugin, ArcElement, Tooltip, Legend);
 export default function VestStats({
   vest,
   getUserVesting,
-  triggerWalletTokenBalancesReload,
 }: {
   vest: Vest;
   getUserVesting: () => void;
-  triggerWalletTokenBalancesReload: () => void;
 }) {
+  const dispatch = useDispatch();
   const amount = nativeToUi(
     vest.amount,
     window.adrena.client.adxToken.decimals,
@@ -76,7 +77,7 @@ export default function VestStats({
       const txHash = await window.adrena.client.claimUserVest();
 
       getUserVesting();
-      triggerWalletTokenBalancesReload();
+      dispatch(fetchWalletTokenBalances());
 
       return addSuccessTxNotification({
         title: 'Successfully Claimed ADX',

@@ -60,7 +60,6 @@ export default function Trade({
   wallet,
   connected,
   triggerUserProfileReload,
-  triggerWalletTokenBalancesReload,
   activeRpc,
   adapters,
   showFeesInPnl,
@@ -376,9 +375,6 @@ export default function Trade({
                 openedPosition={openedPosition}
                 wallet={wallet}
                 connected={connected}
-                triggerWalletTokenBalancesReload={
-                  triggerWalletTokenBalancesReload
-                }
                 isBigScreen={isBigScreen}
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
@@ -402,7 +398,6 @@ export default function Trade({
             openedPosition={openedPosition}
             wallet={wallet}
             connected={connected}
-            triggerWalletTokenBalancesReload={triggerWalletTokenBalancesReload}
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
@@ -471,9 +466,6 @@ export default function Trade({
                     className="p-0 m-0"
                     wallet={wallet}
                     connected={connected}
-                    triggerWalletTokenBalancesReload={
-                      triggerWalletTokenBalancesReload
-                    }
                     activeRpc={activeRpc}
                     terminalId="integrated-terminal-3"
                     adapters={adapters}
