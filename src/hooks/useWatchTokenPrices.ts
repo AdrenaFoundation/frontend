@@ -8,7 +8,7 @@ import {
 import Big from 'big.js';
 import { useCallback, useEffect, useState } from 'react';
 
-import { setTokenPriceAction } from '@/actions/tokenPricesActions';
+import { setTokenPrice } from '@/actions/tokenPrices';
 import { PRICE_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { Token } from '@/types';
@@ -77,7 +77,7 @@ export default function useWatchTokenPrices() {
       }
 
       dispatch(
-        setTokenPriceAction(
+        setTokenPrice(
           tokens[index].symbol,
           nativeToUi(
             priceUpdateV2Account.priceMessage.price,
@@ -120,7 +120,7 @@ export default function useWatchTokenPrices() {
       const price = await window.adrena.client.getLpTokenPrice();
 
       dispatch(
-        setTokenPriceAction(
+        setTokenPrice(
           window.adrena.client.alpToken.symbol,
           price ? nativeToUi(price, PRICE_DECIMALS) : null,
         ),
@@ -151,9 +151,7 @@ export default function useWatchTokenPrices() {
 
       const price = parseFloat(result.toString());
 
-      dispatch(
-        setTokenPriceAction(window.adrena.client.adxToken.symbol, price),
-      );
+      dispatch(setTokenPrice(window.adrena.client.adxToken.symbol, price));
     } catch (e) {
       console.log('error happened loading lp token price', e);
     }
