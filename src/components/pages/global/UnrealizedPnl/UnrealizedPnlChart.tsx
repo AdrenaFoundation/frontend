@@ -140,7 +140,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       const lastDataPoint = formatted[formatted.length - 1];
       const calculatedTotalUnrealizedPnl = Object.entries(lastDataPoint)
         .filter(([key]) => key !== 'time' && key !== 'Total')
-        .reduce((sum, [_, value]) => sum + (value as number), 0);
+        .reduce((sum, [, value]) => sum + (value as number), 0);
 
       setTotalUnrealizedPnl(calculatedTotalUnrealizedPnl);
 

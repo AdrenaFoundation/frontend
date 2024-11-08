@@ -1,5 +1,5 @@
 import { Pagination } from '@mui/material';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';

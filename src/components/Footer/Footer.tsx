@@ -6,7 +6,6 @@ import discordLogo from '../../../public/images/discord.png';
 // import discourseLogo from '../../../public/images/discourse.svg';
 import githubLogo from '../../../public/images/github.svg';
 import twitterLogo from '../../../public/images/x.svg';
-import Button from '../common/Button/Button';
 
 export default function Footer({ className }: { className?: string }) {
   return (

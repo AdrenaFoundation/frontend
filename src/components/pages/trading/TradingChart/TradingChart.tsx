@@ -397,6 +397,7 @@ export default function TradingChart({
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [widgetReady]);
 
   // When the token changes, we need to change the symbol of the widget so we only reload the chart

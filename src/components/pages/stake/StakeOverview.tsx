@@ -97,7 +97,7 @@ export default function StakeOverview({
   const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [claimHistoryItemsPerPage, setClaimHistoryItemsPerPage] = useState(3);
+  const [claimHistoryItemsPerPage,] = useState(3);
 
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
@@ -115,6 +115,7 @@ export default function StakeOverview({
         currentPage * claimHistoryItemsPerPage,
       ) ?? [],
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claimsHistory]);
 
   const getEndDate = (timestamp: number) => {

@@ -3,16 +3,10 @@ import Image from 'next/image';
 import React, { useMemo, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import useResize from '@/hooks/useResize';
-
 export default function RiveAnimation({
   animation,
-  layout,
   className,
   imageClassName,
-  automaticallyHandleEvents = false,
-  stateMachines,
 }: {
   animation:
   | 'fred-bg'
@@ -138,6 +132,7 @@ export default function RiveAnimation({
         onLoad={() => setIsImageLoaded(true)}
       />
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [className, isImageLoaded]);
 
   return Comp;

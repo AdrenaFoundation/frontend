@@ -3,7 +3,6 @@ import { twMerge } from 'tailwind-merge';
 
 import { Token } from '@/types';
 
-import Button from '../../../common/Button/Button';
 import InputNumber from '../../../common/InputNumber/InputNumber';
 import Select from '../../../common/Select/Select';
 

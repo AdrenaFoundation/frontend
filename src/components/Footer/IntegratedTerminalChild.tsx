@@ -30,6 +30,7 @@ export default function IntegratedTerminalChild({
     if (connected && walletState?.adapterName) {
       passthroughWalletContextState.select(walletState.adapterName as WalletName);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected, walletState]);
 
   useEffect(() => {
@@ -56,11 +57,13 @@ export default function IntegratedTerminalChild({
         });
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRpc.name]);
 
   useEffect(() => {
     if (!window.Jupiter.syncProps) return;
     window.Jupiter.syncProps({ passthroughWalletContextState });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passthroughWalletContextState.connected, connected]);
 
   return (
