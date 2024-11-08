@@ -73,108 +73,106 @@ export default function Flow({
               />
               {symbol}
             </h3>
-            {symbolStats.map((stat, index) => (
+            {symbolStats.map((stat, _index) => (
               <div key={stat.side} className={'mt-2'}>
-                <StyledContainer className="rounded-lg overflow-hidden ">
-                  <h4 className={`font-semibold ${stat.side === 'long' ? 'text-green' : 'text-red'}`}>{stat.side}</h4>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Positions count:</span>
-                    <FormatNumber
-                      nb={stat.count_positions}
-                      precision={0}
-                      minimumFractionDigits={0}
-                    />
-                  </div>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Total PnL over the period:</span>
-                    <FormatNumber
-                      nb={stat.total_pnl}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                      className={stat.total_pnl < 0 ? 'text-red' : 'text-green'}
-                      isDecimalDimmed={false}
-                    />
-                  </div>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Average PnL:</span>
-                    <FormatNumber
-                      nb={stat.average_pnl}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                      className={stat.average_pnl < 0 ? 'text-red' : 'text-green'}
-                      isDecimalDimmed={false}
-                    />
-                  </div>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Worst PnL:</span>
-                    <FormatNumber
-                      nb={stat.min_pnl}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                      className={stat.min_pnl < 0 ? 'text-red' : 'text-green'}
-                      isDecimalDimmed={false}
-                    />
-                  </div>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Best PnL:</span>
-                    <FormatNumber
-                      nb={stat.max_pnl}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                      className={stat.max_pnl < 0 ? 'text-red' : 'text-green'}
-                      isDecimalDimmed={false}
-                    />
-                  </div>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Total Trade Volume:</span>
-                    <FormatNumber
-                      nb={stat.total_volume}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                    />
-                  </div>
-                  <div className="h-[1px] bg-third my-2" />
-                  <div className="flex justify-between text-txtfade">
-                    <span>Smallest Trade Size:</span>
-                    <FormatNumber
-                      nb={stat.min_volume}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                    />
-                  </div>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Biggest Trade Size:</span>
-                    <FormatNumber
-                      nb={stat.max_volume}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                    />
-                  </div>
-                  <div className="flex justify-between text-txtfade">
-                    <span>Average Trade Size:</span>
-                    <FormatNumber
-                      nb={stat.average_volume}
-                      precision={2}
-                      minimumFractionDigits={2}
-                      prefix='$'
-                      showSignBeforePrefix={true}
-                    />
-                  </div>
-                </StyledContainer>
+                <h4 className={`font-semibold ${stat.side === 'long' ? 'text-green' : 'text-red'}`}>{stat.side}</h4>
+                <div className="flex justify-between text-txtfade">
+                  <span>Positions count:</span>
+                  <FormatNumber
+                    nb={stat.count_positions}
+                    precision={0}
+                    minimumFractionDigits={0}
+                  />
+                </div>
+                <div className="flex justify-between text-txtfade">
+                  <span>Total PnL over the period:</span>
+                  <FormatNumber
+                    nb={stat.total_pnl}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                    className={stat.total_pnl < 0 ? 'text-red' : 'text-green'}
+                    isDecimalDimmed={false}
+                  />
+                </div>
+                <div className="flex justify-between text-txtfade">
+                  <span>Average PnL:</span>
+                  <FormatNumber
+                    nb={stat.average_pnl}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                    className={stat.average_pnl < 0 ? 'text-red' : 'text-green'}
+                    isDecimalDimmed={false}
+                  />
+                </div>
+                <div className="flex justify-between text-txtfade">
+                  <span>Worst PnL:</span>
+                  <FormatNumber
+                    nb={stat.min_pnl}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                    className={stat.min_pnl < 0 ? 'text-red' : 'text-green'}
+                    isDecimalDimmed={false}
+                  />
+                </div>
+                <div className="flex justify-between text-txtfade">
+                  <span>Best PnL:</span>
+                  <FormatNumber
+                    nb={stat.max_pnl}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                    className={stat.max_pnl < 0 ? 'text-red' : 'text-green'}
+                    isDecimalDimmed={false}
+                  />
+                </div>
+                <div className="flex justify-between text-txtfade">
+                  <span>Total Trade Volume:</span>
+                  <FormatNumber
+                    nb={stat.total_volume}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                  />
+                </div>
+                <div className="h-[1px] bg-third my-2" />
+                <div className="flex justify-between text-txtfade">
+                  <span>Smallest Trade Size:</span>
+                  <FormatNumber
+                    nb={stat.min_volume}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                  />
+                </div>
+                <div className="flex justify-between text-txtfade">
+                  <span>Biggest Trade Size:</span>
+                  <FormatNumber
+                    nb={stat.max_volume}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                  />
+                </div>
+                <div className="flex justify-between text-txtfade">
+                  <span>Average Trade Size:</span>
+                  <FormatNumber
+                    nb={stat.average_volume}
+                    precision={2}
+                    minimumFractionDigits={2}
+                    prefix='$'
+                    showSignBeforePrefix={true}
+                  />
+                </div>
               </div>
             ))}
           </div>
