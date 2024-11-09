@@ -1,12 +1,13 @@
-import React, { Dispatch, PureComponent, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { ResponsiveContainer, Treemap } from 'recharts';
+import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
 import { PositionExtended } from '@/types';
-import { ResponsiveContainer, Treemap } from 'recharts';
-import { twMerge } from 'tailwind-merge';
 import { formatPercentage, formatPriceInfo } from '@/utils';
+
 import PositionBlockReadOnly from '../../trading/Positions/PositionBlockReadOnly';
-import { PublicKey } from '@solana/web3.js';
 
 interface CustomizedContentProps {
   root: any;
@@ -227,8 +228,7 @@ export default function AllPositionsChart({
           data={data}
           dataKey="size"
           isAnimationActive={false}
-          // @ts-ignore - recharts adds attributes automatically
-          content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} />}>
+          content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} pnl={null} pnlPercentage={null} blocTitle={null} />}>
         </Treemap>
       </ResponsiveContainer>
 
