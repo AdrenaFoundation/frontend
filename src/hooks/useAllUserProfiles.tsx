@@ -27,6 +27,7 @@ export function useAllUserProfiles(): {
         const interval = setInterval(loadAllUserProfiles, 60000);
 
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trickReload, window.adrena.client.readonlyConnection]);
 
     return {

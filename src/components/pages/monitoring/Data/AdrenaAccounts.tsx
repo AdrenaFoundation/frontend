@@ -1,5 +1,4 @@
 import { AdrenaClient } from '@/AdrenaClient';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { Cortex, CustodyExtended, PoolExtended } from '@/types';
 
 import InfoAnnotation from '../InfoAnnotation';

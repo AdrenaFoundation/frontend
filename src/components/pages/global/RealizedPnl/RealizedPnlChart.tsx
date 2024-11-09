@@ -156,7 +156,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       const lastDataPoint = formatted[formatted.length - 1];
       const calculatedTotalRealizedPnl = Object.entries(lastDataPoint)
         .filter(([key]) => key !== 'time' && key !== 'Total')
-        .reduce((sum, [_, value]) => sum + (value as number), 0);
+        .reduce((sum, [, value]) => sum + (value as number), 0);
 
       setTotalRealizedPnl(calculatedTotalRealizedPnl);
       setInfos({

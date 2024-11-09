@@ -1,10 +1,9 @@
-import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
 import { Congrats } from '@/components/Congrats/Congrats';
-import { PositionExtended, UserProfileExtended } from '@/types';
+import { PositionExtended } from '@/types';
 import { getTokenSymbol } from '@/utils';
 
 import ClosePosition from '../ClosePosition/ClosePosition';
@@ -21,7 +20,6 @@ export default function Positions({
   positions,
   triggerUserProfileReload,
   isBigScreen,
-  userProfile,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -30,7 +28,6 @@ export default function Positions({
   positions: PositionExtended[] | null;
   triggerUserProfileReload: () => void;
   isBigScreen: boolean | null;
-  userProfile: UserProfileExtended | null | false;
 }) {
   const [positionToClose, setPositionToClose] =
     useState<PositionExtended | null>(null);
@@ -133,7 +130,6 @@ export default function Positions({
               onClose={() => {
                 setPositionToStopLossTakeProfit(null);
               }}
-              userProfile={userProfile}
             />
           </Modal>
         )}

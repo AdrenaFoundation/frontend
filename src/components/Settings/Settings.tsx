@@ -1,6 +1,6 @@
 import { Connection } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { twMerge } from 'tailwind-merge';
 
@@ -66,6 +66,7 @@ export default function Settings({
     window.adrena.settings.solanaExplorer = activeSolanaExplorer;
 
     setCookies('solanaExplorer', activeSolanaExplorer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSolanaExplorer]);
 
   const EXPLORERS = {

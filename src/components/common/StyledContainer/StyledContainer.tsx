@@ -36,21 +36,24 @@ export default function StyledContainer({
     >
       <div
         className={twMerge(
-          'flex items-center',
+          'flex flex-col justify-center',
           title || subTitle || icon ? 'pb-4' : '',
           headerClassName,
         )}
       >
-        {icon ? (
-          <Image
-            className={twMerge('h-12 w-12 mr-3', iconClassName)}
-            src={icon}
-            alt="icon"
-            width={60}
-            height={60}
-          />
-        ) : null}
+        <div className='flex'>
+          {icon ? (
+            <Image
+              className={twMerge('h-12 w-12 mr-3', iconClassName)}
+              src={icon}
+              alt="icon"
+              width={60}
+              height={60}
+            />
+          ) : null}
 
+          <h1 className={titleClassName}>{title}</h1>
+        </div>
 
         <div className='flex flex-col'>
           <h1 className={titleClassName}>{title}</h1>
@@ -60,6 +63,8 @@ export default function StyledContainer({
           </h5>
         </div>
       </div>
+
+
 
       <div className={twMerge('gap-4 flex flex-col', bodyClassName)}>
         {children}

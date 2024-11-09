@@ -211,7 +211,7 @@ export default function TradingChart({
     }
 
     // Handle Take Profit
-    if (!position.takeProfitThreadIsSet || !position.takeProfitLimitPrice) {
+    if (!position.takeProfitIsSet || !position.takeProfitLimitPrice) {
       if (positionLine.takeProfit) {
         positionLine.takeProfit.remove();
         positionLine.takeProfit = undefined;
@@ -225,7 +225,7 @@ export default function TradingChart({
     }
 
     // Handle Stop Loss
-    if (!position.stopLossThreadIsSet || !position.stopLossLimitPrice) {
+    if (!position.stopLossIsSet || !position.stopLossLimitPrice) {
       if (positionLine.stopLoss) {
         positionLine.stopLoss.remove();
         positionLine.stopLoss = undefined;
@@ -397,6 +397,7 @@ export default function TradingChart({
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [widgetReady]);
 
   // When the token changes, we need to change the symbol of the widget so we only reload the chart
@@ -463,13 +464,13 @@ export default function TradingChart({
                 : undefined,
               position: longPosition.pubkey,
               takeProfit:
-                longPosition.takeProfitThreadIsSet &&
+                longPosition.takeProfitIsSet &&
                   longPosition.takeProfitLimitPrice &&
                   longPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, longPosition)
                   : undefined,
               stopLoss:
-                longPosition.stopLossThreadIsSet &&
+                longPosition.stopLossIsSet &&
                   longPosition.stopLossLimitPrice &&
                   longPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, longPosition)
@@ -501,13 +502,13 @@ export default function TradingChart({
                 : undefined,
               position: shortPosition.pubkey,
               takeProfit:
-                shortPosition.takeProfitThreadIsSet &&
+                shortPosition.takeProfitIsSet &&
                   shortPosition.takeProfitLimitPrice &&
                   shortPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, shortPosition)
                   : undefined,
               stopLoss:
-                shortPosition.stopLossThreadIsSet &&
+                shortPosition.stopLossIsSet &&
                   shortPosition.stopLossLimitPrice &&
                   shortPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, shortPosition)

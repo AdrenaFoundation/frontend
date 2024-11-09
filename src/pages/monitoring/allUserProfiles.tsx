@@ -6,7 +6,6 @@ import StyledContainer from '@/components/common/StyledContainer/StyledContainer
 import Switch from '@/components/common/Switch/Switch';
 import Filter from '@/components/Filter/Filter';
 import UserProfileBlock from '@/components/pages/monitoring/UserProfileBlock';
-import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { UserProfileExtended } from '@/types';
 
@@ -74,6 +73,7 @@ export default function AllUserProfiles() {
         });
 
         setSortedProfiles(sorted);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allUserProfiles, sortConfigs, sortOrder, pnlFilter, hideZeroTradeVolume, ownerFilter]);
 
     useEffect(() => {

@@ -10,7 +10,6 @@ import closeIcon from '../../../../public/images/Icons/cross.svg';
 import doneIcon from '../../../../public/images/Icons/done.png';
 import errorIcon from '../../../../public/images/Icons/error-full.png';
 import loaderIcon from '../../../../public/images/Icons/loader.svg';
-import AutoScalableDiv from '../AutoScalableDiv/AutoScalableDiv';
 
 export enum NotificationStepState {
   waiting,

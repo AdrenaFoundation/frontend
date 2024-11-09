@@ -108,6 +108,7 @@ export default function Genesis({
 
   useEffect(() => {
     getAlpAmount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fundsAmountDebounced]);
 
   useEffect(() => {
@@ -138,6 +139,7 @@ export default function Genesis({
 
   useEffect(() => {
     getTotalLockedStake();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingAccounts, connected]);
 
   const getTotalLockedStake = () => {
@@ -235,7 +237,6 @@ export default function Genesis({
         await window.adrena.client.initUserStaking({
           owner: new PublicKey(wallet.walletAddress),
           stakedTokenMint: window.adrena.client.alpToken.mint,
-          threadId: new BN(Date.now()),
           notification,
         });
       } catch (error) {
@@ -296,12 +297,6 @@ export default function Genesis({
   const url = 'https://app.adrena.xyz/genesis';
 
   const MAX_USDC_AMOUNT = 250_000;
-
-  const maxAmount = walletTokenABalance
-    ? walletTokenABalance >= MAX_USDC_AMOUNT
-      ? MAX_USDC_AMOUNT
-      : walletTokenABalance
-    : null;
 
   const reservedGrantOwnerLeftAmount = reservedGrantOwners?.find(
     (owner) => owner.walletAddress === wallet?.walletAddress,

@@ -87,12 +87,11 @@ export default function AumChart() {
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [periodRef]);
 
   useEffect(() => {
     periodRef.current = period;
-    getPoolInfo();
-  }, [getPoolInfo, period]);
+  }, [period]);
 
   useEffect(() => {
     getPoolInfo();
@@ -102,7 +101,7 @@ export default function AumChart() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [getPoolInfo]);
 
   if (!AUM) {
     return (

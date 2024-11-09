@@ -11,7 +11,7 @@ import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/Sty
 import FormatNumber from '@/components/Number/FormatNumber';
 import { PRICE_DECIMALS } from '@/constant';
 import { useSelector } from '@/store/store';
-import { PositionExtended, UserProfileExtended } from '@/types';
+import { PositionExtended } from '@/types';
 import { addNotification, getTokenImage, getTokenSymbol } from '@/utils';
 
 import infoIcon from '../../../../../public/images/Icons/info.svg';
@@ -23,23 +23,21 @@ export default function StopLossTakeProfit({
   position,
   triggerUserProfileReload,
   onClose,
-  userProfile,
 }: {
   className?: string;
   position: PositionExtended;
   triggerUserProfileReload: () => void;
   onClose: () => void;
-  userProfile: UserProfileExtended | null | false;
 }) {
   const [stopLossInput, setStopLossInput] = useState<number | null>(
-    position.stopLossThreadIsSet &&
+    position.stopLossIsSet &&
       position.stopLossLimitPrice &&
       position.stopLossLimitPrice > 0
       ? position.stopLossLimitPrice ?? null
       : null,
   );
   const [takeProfitInput, setTakeProfitInput] = useState<number | null>(
-    position.takeProfitThreadIsSet &&
+    position.takeProfitIsSet &&
       position.takeProfitLimitPrice &&
       position.takeProfitLimitPrice > 0
       ? position.takeProfitLimitPrice ?? null
@@ -120,7 +118,7 @@ export default function StopLossTakeProfit({
     // Handle Take Profit
     {
       const takeProfitSet =
-        position.takeProfitThreadIsSet &&
+        position.takeProfitIsSet &&
         position.takeProfitLimitPrice &&
         position.takeProfitLimitPrice > 0;
 
@@ -142,7 +140,6 @@ export default function StopLossTakeProfit({
               takeProfitLimitPrice: new BN(
                 takeProfitInput * 10 ** PRICE_DECIMALS,
               ),
-              userProfile: userProfile ? userProfile.pubkey : undefined,
             }),
         );
       }
@@ -160,7 +157,7 @@ export default function StopLossTakeProfit({
     // Handle Stop Loss
     {
       const stopLossSet =
-        position.stopLossThreadIsSet &&
+        position.stopLossIsSet &&
         position.stopLossLimitPrice &&
         position.stopLossLimitPrice > 0;
 
@@ -186,7 +183,6 @@ export default function StopLossTakeProfit({
               position,
               stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
               closePositionPrice: new BN((adjustedStopLossPrice ? adjustedStopLossPrice : stopLossInput) * 10 ** PRICE_DECIMALS),
-              userProfile: userProfile ? userProfile.pubkey : undefined,
             }),
         );
       }

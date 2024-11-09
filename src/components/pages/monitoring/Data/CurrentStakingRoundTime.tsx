@@ -119,7 +119,7 @@ export default function CurrentStakingRoundTime({
                 ).getTime() / 1000
               }
               className="items-center text-xl"
-              tippyText="The call is overdue, please check the thread."
+              tippyText="The call is overdue."
             />
 
             {alpRoundPassed ? (
@@ -143,7 +143,7 @@ export default function CurrentStakingRoundTime({
                 ).getTime() / 1000
               }
               className="items-center text-xl"
-              tippyText="The call is overdue, please check the thread."
+              tippyText="The call is overdue."
             />
 
             {adxRoundPassed ? (

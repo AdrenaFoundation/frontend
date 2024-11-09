@@ -28,7 +28,6 @@ import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp, {
   createReadOnlyAdrenaProgram,
-  createReadOnlySablierThreadProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { PriorityFeeOption, SolanaExplorerOptions } from '@/types';
@@ -259,10 +258,6 @@ function AppComponent({
 
     window.adrena.client.setReadonlyAdrenaProgram(
       createReadOnlyAdrenaProgram(activeRpc.connection),
-    );
-
-    window.adrena.sablierClient.setReadonlySablierProgram(
-      createReadOnlySablierThreadProgram(activeRpc.connection),
     );
 
     if (wallet) {
