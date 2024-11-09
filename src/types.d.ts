@@ -483,3 +483,24 @@ export type ClaimHistoryExtended = {
   symbol: string;
   transaction_date: Date;
 };
+
+type AchievementsBase = {
+  week_starts: string[];
+  week_ends: string[];
+  addresses: (string | null)[];
+};
+
+export type TradingCompetitionAchievementsAPI = {
+  biggest_liquidation: AchievementsBase & {
+    liquidation_amounts: (number | null)[];
+  };
+  top_percentage_position: AchievementsBase & {
+    pnl_percentages: (number | null)[];
+  };
+  top_degen: AchievementsBase & {
+    pnl_amounts: (number | null)[];
+  };
+  biggest_jito_sol_pnl: AchievementsBase & {
+    pnl_amounts: (number | null)[];
+  };
+};
