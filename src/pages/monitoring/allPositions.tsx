@@ -181,7 +181,7 @@ export default function AllPositions() {
                         </div>
                     </div>
 
-                    {view === 'chart' ? <div className='flex w-full h-[34em] max-h-full mt-4'>
+                    {view === 'chart' ? <div className='flex w-full h-[34em] max-h-full'>
                         <AllPositionsChart allPositions={sortedPositions} />
                     </div> : null}
 

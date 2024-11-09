@@ -24,6 +24,7 @@ interface CustomizedContentProps {
   pnlPercentage: string | null;
   blocTitle: string | null;
   setSelectedPosition: Dispatch<SetStateAction<PublicKey | null>>;
+  selectedPosition: PublicKey | null;
 }
 
 const CustomizedContent: React.FC<CustomizedContentProps> = ({
@@ -39,6 +40,7 @@ const CustomizedContent: React.FC<CustomizedContentProps> = ({
   pnlPercentage,
   blocTitle,
   setSelectedPosition,
+  selectedPosition,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -70,6 +72,10 @@ const CustomizedContent: React.FC<CustomizedContentProps> = ({
           opacity: isHovered ? 1 : 0.9,
         }}
       />
+
+      <pattern id={`stripes-${index}`} patternUnits="userSpaceOnUse" width={width} height={height}>
+        <line x1={x} y1={y} x2={x + width} y2={y + width} stroke="#fff" strokeWidth="2" />
+      </pattern>
 
       {depth === 2 && width > 100 && pnlPercentage !== null ? (
         <text
@@ -207,8 +213,8 @@ export default function AllPositionsChart({
   }
 
   return (
-    <div className='flex flex-col w-full h-full'>
-      <div className='min-h-[9em] h-auto w-full shrink-0 flex items-center justify-center'>
+    <div className='flex flex-col w-full h-full items-center'>
+      <div className='min-h-[9em] h-auto w-full max-w-[60em] shrink-0 flex items-center justify-center pb-2'>
         {selectedPositionObject !== null ?
           <PositionBlockReadOnly position={selectedPositionObject} /> :
           <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}
@@ -222,7 +228,7 @@ export default function AllPositionsChart({
           dataKey="size"
           isAnimationActive={false}
           // @ts-ignore - recharts adds attributes automatically
-          content={<CustomizedContent setSelectedPosition={setSelectedPosition} />}>
+          content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} />}>
         </Treemap>
       </ResponsiveContainer>
 
