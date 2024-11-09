@@ -1,14 +1,16 @@
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import demonImage from '@/../public/images/demon.png';
-import firstImage from '@/../public/images/first-place.png';
+import firstImage from '@/../public/images/first-place.svg';
+import fourthImage from '@/../public/images/fourth-place.svg';
 import goblinImage from '@/../public/images/goblin.png';
 import golemImage from '@/../public/images/golem.png';
 import overlordImage from '@/../public/images/overlord.png';
-import secondImage from '@/../public/images/second-place.png';
-import thirdImage from '@/../public/images/third-place.png';
+import secondImage from '@/../public/images/second-place.svg';
+import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { getAbbrevWalletAddress } from '@/utils';
 
@@ -28,29 +30,30 @@ export default function LeaderboardTable({
     }[];
 }) {
     const DIVISONS = {
-        Spawn: {
-            img: goblinImage,
-            title: 'Spwan Division',
-            topTradersPercentage: 80,
-            color: 'bg-[#157D57]',
-        },
-        Chimera: {
-            img: demonImage,
-            title: 'Chimera Division',
-            topTradersPercentage: 60,
-            color: 'bg-[#7D1618]',
-        },
         Morph: {
             img: golemImage,
-            title: 'Morph Division',
+            title: 'Leviathan Division',
             topTradersPercentage: 10,
-            color: 'bg-[#6C167D]',
+            color: 'bg-[#A855F7]',
         },
         Abomination: {
             img: overlordImage,
             title: 'Abomination Division',
             topTradersPercentage: 40,
-            color: 'bg-[#163C7D]',
+            color: 'bg-[#C4B373]',
+        },
+
+        Chimera: {
+            img: demonImage,
+            title: 'Mutant Division',
+            topTradersPercentage: 60,
+            color: 'bg-[#3C82F6]',
+        },
+        Spawn: {
+            img: goblinImage,
+            title: 'Spwan Division',
+            topTradersPercentage: 80,
+            color: 'bg-[#22C55D]',
         },
         'No Division': {
             img: overlordImage,
@@ -59,6 +62,15 @@ export default function LeaderboardTable({
             color: 'bg-[#163C7D]',
         },
     } as const;
+
+    const isValidPublicKey = (key: string) => {
+        try {
+            new PublicKey(key);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    };
 
     return (
         <div>
@@ -96,11 +108,12 @@ export default function LeaderboardTable({
                     nbItemPerPageWhenBreakpoint={3}
                     rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-2 items-center"
                     rowTitleWidth="20px"
+                    isFirstColumnId
                     data={data.map((d, i) => {
                         return {
                             rowTitle: '',
                             values: [
-                                d.rank < 4 ? (
+                                d.rank < 5 ? (
                                     <Image
                                         src={
                                             d.rank === 1
@@ -109,7 +122,9 @@ export default function LeaderboardTable({
                                                     ? secondImage
                                                     : d.rank === 3
                                                         ? thirdImage
-                                                        : thirdImage
+                                                        : d.rank === 4
+                                                            ? fourthImage
+                                                            : ''
                                         }
                                         width={40}
                                         height={40}
@@ -122,7 +137,11 @@ export default function LeaderboardTable({
                                     </p>
                                 ),
                                 <p key={`trader-${i}`}>
-                                    {d.username ? getAbbrevWalletAddress(d.username) : 'Unknown'}
+                                    {d.username
+                                        ? isValidPublicKey(d.username)
+                                            ? getAbbrevWalletAddress(d.username)
+                                            : d.username
+                                        : 'Unknown'}
                                 </p>,
                                 <FormatNumber
                                     nb={d.pnl}
@@ -134,6 +153,7 @@ export default function LeaderboardTable({
                                 <FormatNumber
                                     nb={d.volume}
                                     isDecimalDimmed={false}
+                                    format="currency"
                                     key={`volume-${i}`}
                                 />,
                                 <FormatNumber

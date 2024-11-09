@@ -21,6 +21,7 @@ export default function Table({
   nbItemPerPageWhenBreakpoint = 2,
   rowHovering = false,
   rowClassName,
+  isFirstColumnId = false,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -44,6 +45,7 @@ export default function Table({
   nbItemPerPageWhenBreakpoint?: number;
   rowHovering?: boolean;
   rowClassName?: string;
+  isFirstColumnId?: boolean;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
@@ -106,6 +108,9 @@ export default function Table({
               'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
               columnTitlesClassName,
             )}
+            style={{
+              maxWidth: (isFirstColumnId && i == 0) ? '75px' : 'auto'
+            }}
           >
             {title}
           </div>
@@ -143,7 +148,7 @@ export default function Table({
                 className="p-[0.3em] flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well
-                  maxWidth: `calc(100% - ${rowTitleWidth ?? '150px'})`,
+                  maxWidth: (isFirstColumnId && j == 0) ? '75px' : `calc(100% - ${rowTitleWidth ?? '150px'})`,
                 }}
               >
                 {value}
@@ -154,7 +159,7 @@ export default function Table({
       ))}
 
       {pagination && nbPages && (
-        <div className='m-auto pt-3'>
+        <div className='mt-auto pt-3'>
           <Pagination
             variant="text"
             count={nbPages}
