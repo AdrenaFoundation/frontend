@@ -136,7 +136,7 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
               if (x.includes('540')) return '#ccccff'; // Light purple
               if (x.includes('0')) return '#66b3ff'; // Light blue
 
-              return '#ccccff'; // Light purple as a fallback
+              return '#66b3ff'; // Light blue as a fallback
             })(),
           })),
       ]}
