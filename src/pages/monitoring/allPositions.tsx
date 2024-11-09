@@ -12,6 +12,7 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
+import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
 
 export default function AllPositions() {
     const wallet = useSelector((state) => state.walletState.wallet);
@@ -163,80 +164,87 @@ export default function AllPositions() {
                         />
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-                        <input
-                            type="pubkey"
-                            placeholder="Filter by owner (pubkey)"
-                            value={ownerFilter}
-                            onChange={(e) => setOwnerFilter(e.target.value)}
-                            className="bg-gray-800 text-white border border-gray-700 rounded p-1 px-2 w-full sm:max-w-[20em] text-sm"
-                        />
+                    <div className='flex w-full h-[20em]'>
+                        <AllPositionsChart allPositions={allPositions} />
+                    </div>
 
-                        <div className="flex flex-row gap-3 items-center justify-between w-full sm:w-auto">
-                            <div
-                                className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-0.5 px-4 border border-bcolor`}
-                            >
-                                {['pnl', 'size', 'leverage'].map((criteria) => (
-                                    <React.Fragment key={criteria}>
-                                        <button
-                                            className="px-2 py-1 rounded-full transition-colors flex items-center"
-                                            onClick={() => toggleSortOrder(criteria)}
-                                        >
-                                            {criteria.charAt(0).toUpperCase() + criteria.slice(1)}
-                                            <span className="ml-1 text-txtfade text-[14px]">
-                                                {sortConfigs[criteria] === 'asc' ? '↑' : '↓'}
-                                            </span>
-                                        </button>
-                                        {criteria !== 'leverage' && (
-                                            <div className="w-px h-4 bg-bcolor mx-[1px]"></div>
-                                        )}
-                                    </React.Fragment>
-                                ))}
-                            </div>
+                    {false ? <><div className='flex flex-col'>
+                        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                            <input
+                                type="pubkey"
+                                placeholder="Filter by owner (pubkey)"
+                                value={ownerFilter}
+                                onChange={(e) => setOwnerFilter(e.target.value)}
+                                className="bg-gray-800 text-white border border-gray-700 rounded p-1 px-2 w-full sm:max-w-[20em] text-sm"
+                            />
 
-                            <div className="flex items-center justify-center gap-2">
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        onClick={resetFilters}
-                                        variant="outline"
-                                        className="w-[30px] h-[30px] p-0 border border-bcolor"
-                                        icon={resetIcon}
-                                    />
-                                    <Button
-                                        onClick={refreshPositions}
-                                        variant="outline"
-                                        className="w-[30px] h-[30px] p-0 border border-bcolor"
-                                        icon={reloadIcon}
-                                    ></Button>
+                            <div className="flex flex-row gap-3 items-center justify-between w-full sm:w-auto">
+                                <div
+                                    className={`flex flex-wrap justify-center items-center text-sm bg-secondary rounded-full p-0.5 px-4 border border-bcolor`}
+                                >
+                                    {['pnl', 'size', 'leverage'].map((criteria) => (
+                                        <React.Fragment key={criteria}>
+                                            <button
+                                                className="px-2 py-1 rounded-full transition-colors flex items-center"
+                                                onClick={() => toggleSortOrder(criteria)}
+                                            >
+                                                {criteria.charAt(0).toUpperCase() + criteria.slice(1)}
+                                                <span className="ml-1 text-txtfade text-[14px]">
+                                                    {sortConfigs[criteria] === 'asc' ? '↑' : '↓'}
+                                                </span>
+                                            </button>
+                                            {criteria !== 'leverage' && (
+                                                <div className="w-px h-4 bg-bcolor mx-[1px]"></div>
+                                            )}
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            onClick={resetFilters}
+                                            variant="outline"
+                                            className="w-[30px] h-[30px] p-0 border border-bcolor"
+                                            icon={resetIcon}
+                                        />
+                                        <Button
+                                            onClick={refreshPositions}
+                                            variant="outline"
+                                            className="w-[30px] h-[30px] p-0 border border-bcolor"
+                                            icon={reloadIcon}
+                                        ></Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="flex flex-wrap justify-between gap-2">
-                    {paginatedPositions.length ? (
-                        <div className="flex flex-col w-full gap-2">
-                            {paginatedPositions.map((position) => (
-                                <PositionBlockReadOnly
-                                    key={position.pubkey.toBase58()}
-                                    position={position}
-                                />
-                            ))}
+                        <div className="flex flex-wrap justify-between gap-2">
+                            {paginatedPositions.length ? (
+                                <div className="flex flex-col w-full gap-2">
+                                    {paginatedPositions.map((position) => (
+                                        <PositionBlockReadOnly
+                                            key={position.pubkey.toBase58()}
+                                            position={position}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center w-full py-4 opacity-50">
+                                    No matches 📭
+                                </div>
+                            )}
                         </div>
-                    ) : (
-                        <div className="text-center w-full py-4 opacity-50">
-                            No matches 📭
-                        </div>
-                    )}
-                </div>
 
-                <Pagination
-                    currentPage={currentPage}
-                    totalItems={sortedPositions.length}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={setCurrentPage}
-                />
+                        <Pagination
+                            currentPage={currentPage}
+                            totalItems={sortedPositions.length}
+                            itemsPerPage={itemsPerPage}
+                            onPageChange={setCurrentPage}
+                        />
+                    </> : null}
+                </div>
             </StyledContainer>
         </div>
     );
