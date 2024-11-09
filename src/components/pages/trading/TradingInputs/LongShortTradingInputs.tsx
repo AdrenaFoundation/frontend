@@ -623,7 +623,7 @@ export default function LongShortTradingInputs({
 
           <LeverageSlider
             value={leverage}
-            className="w-full font-mono border-t"
+            className="w-full font-mono border-t select-none"
             onChange={(v: number) => setLeverage(v)}
           />
         </div>
