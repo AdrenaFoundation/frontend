@@ -1,5 +1,5 @@
 export type Adrena = {
-  "version": "1.0.12",
+  "version": "1.1.0",
   "name": "adrena",
   "instructions": [
     {
@@ -11315,6 +11315,11 @@ export type Adrena = {
           "name": "leverage",
           "type": "u32",
           "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
         }
       ]
     },
@@ -11359,6 +11364,11 @@ export type Adrena = {
         {
           "name": "leverage",
           "type": "u32",
+          "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
           "index": false
         }
       ]
@@ -11420,6 +11430,11 @@ export type Adrena = {
           "name": "exitFeeUsd",
           "type": "u64",
           "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
         }
       ]
     },
@@ -11460,6 +11475,11 @@ export type Adrena = {
           "name": "leverage",
           "type": "u32",
           "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
         }
       ]
     },
@@ -11499,6 +11519,11 @@ export type Adrena = {
         {
           "name": "leverage",
           "type": "u32",
+          "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
           "index": false
         }
       ]
@@ -11554,6 +11579,197 @@ export type Adrena = {
         {
           "name": "exitFeeUsd",
           "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "AddLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "lockedDays",
+          "type": "u32",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "UpgradeLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": {
+            "option": "u64"
+          },
+          "index": false
+        },
+        {
+          "name": "lockedDays",
+          "type": {
+            "option": "u32"
+          },
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "FinalizeLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "earlyExit",
+          "type": "bool",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RemoveLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SetStopLossEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "stopLossLimitPrice",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "closePositionPrice",
+          "type": {
+            "option": "u64"
+          },
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SetTakeProfitEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "takeProfitLimitPrice",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CancelStopLossEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CancelTakeProfitEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
           "index": false
         }
       ]
@@ -11919,7 +12135,7 @@ export type Adrena = {
 };
 
 export const IDL: Adrena = {
-  "version": "1.0.12",
+  "version": "1.1.0",
   "name": "adrena",
   "instructions": [
     {
@@ -23235,6 +23451,11 @@ export const IDL: Adrena = {
           "name": "leverage",
           "type": "u32",
           "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
         }
       ]
     },
@@ -23279,6 +23500,11 @@ export const IDL: Adrena = {
         {
           "name": "leverage",
           "type": "u32",
+          "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
           "index": false
         }
       ]
@@ -23340,6 +23566,11 @@ export const IDL: Adrena = {
           "name": "exitFeeUsd",
           "type": "u64",
           "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
         }
       ]
     },
@@ -23380,6 +23611,11 @@ export const IDL: Adrena = {
           "name": "leverage",
           "type": "u32",
           "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
         }
       ]
     },
@@ -23419,6 +23655,11 @@ export const IDL: Adrena = {
         {
           "name": "leverage",
           "type": "u32",
+          "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
           "index": false
         }
       ]
@@ -23474,6 +23715,197 @@ export const IDL: Adrena = {
         {
           "name": "exitFeeUsd",
           "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "AddLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "lockedDays",
+          "type": "u32",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "UpgradeLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "amount",
+          "type": {
+            "option": "u64"
+          },
+          "index": false
+        },
+        {
+          "name": "lockedDays",
+          "type": {
+            "option": "u32"
+          },
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "FinalizeLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "earlyExit",
+          "type": "bool",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "RemoveLockedStakeEvent",
+      "fields": [
+        {
+          "name": "owner",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "staking",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "lockedStakeId",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SetStopLossEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "stopLossLimitPrice",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "closePositionPrice",
+          "type": {
+            "option": "u64"
+          },
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SetTakeProfitEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "takeProfitLimitPrice",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CancelStopLossEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CancelTakeProfitEvent",
+      "fields": [
+        {
+          "name": "positionId",
+          "type": "u64",
+          "index": false
+        },
+        {
+          "name": "positionSide",
+          "type": "u8",
           "index": false
         }
       ]
