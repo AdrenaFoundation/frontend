@@ -145,7 +145,6 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
-      precision={2}
     />
   );
 }
