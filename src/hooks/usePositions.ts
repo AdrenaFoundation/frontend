@@ -15,7 +15,9 @@ export const calculatePnLandLiquidationPrice = (
     tokenPrices,
   });
 
-  if (pnl === null) return null;
+  if (pnl === null) {
+    return null;
+  }
 
   const { profitUsd, lossUsd, borrowFeeUsd } = pnl;
 

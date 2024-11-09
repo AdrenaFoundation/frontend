@@ -13,6 +13,7 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
 import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
+import { twMerge } from 'tailwind-merge';
 
 export default function AllPositions() {
     const wallet = useSelector((state) => state.walletState.wallet);
@@ -44,6 +45,8 @@ export default function AllPositions() {
     const [paginatedPositions, setPaginatedPositions] = useState<
         PositionExtended[]
     >([]);
+
+    const [view, setView] = useState<'list' | 'chart'>('list');
 
     useEffect(() => {
         const filteredPositions = allPositions.filter((position) => {
@@ -137,38 +140,52 @@ export default function AllPositions() {
         <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
                 <div className="flex flex-col gap-3">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 justify-between gap-3">
-                        <Filter
-                            options={[{ name: 'all' }, { name: 'long' }, { name: 'short' }]}
-                            activeFilter={sideFilter}
-                            setFilter={setSideFilter}
-                        />
+                    <div className='flex gap-3'>
+                        <div className='flex text-base cursor-pointer items-center w-[10em] justify-evenly border'>
+                            <div className={twMerge('hover:opacity-100', view === 'list' ? 'opacity-100 underline' : 'opacity-50')}
+                                onClick={() => setView('list')}>
+                                List
+                            </div>
 
-                        <Filter
-                            options={[{ name: 'all' }].concat(
-                                window.adrena.client.tokens
-                                    .filter((token) => token.symbol !== 'USDC')
-                                    .map((token) => ({
-                                        name: getTokenSymbol(token.symbol),
-                                        icon: getTokenImage(token),
-                                    })),
-                            )}
-                            activeFilter={mintFilter}
-                            setFilter={setMintFilter}
-                        />
+                            <div className={twMerge('hover:opacity-100', view === 'chart' ? 'opacity-100 underline' : 'opacity-50')}
+                                onClick={() => setView('chart')}>
+                                Chart
+                            </div>
+                        </div>
 
-                        <Filter
-                            options={[{ name: 'all' }, { name: 'profit' }, { name: 'loss' }]}
-                            activeFilter={pnlFilter}
-                            setFilter={setPnlFilter}
-                        />
+                        <div className="grid grid-cols-1 lg:grid-cols-3 justify-between gap-3 grow">
+                            <Filter
+                                options={[{ name: 'all' }, { name: 'long' }, { name: 'short' }]}
+                                activeFilter={sideFilter}
+                                setFilter={setSideFilter}
+                            />
+
+                            <Filter
+                                options={[{ name: 'all' }].concat(
+                                    window.adrena.client.tokens
+                                        .filter((token) => token.symbol !== 'USDC')
+                                        .map((token) => ({
+                                            name: getTokenSymbol(token.symbol),
+                                            icon: getTokenImage(token),
+                                        })),
+                                )}
+                                activeFilter={mintFilter}
+                                setFilter={setMintFilter}
+                            />
+
+                            <Filter
+                                options={[{ name: 'all' }, { name: 'profit' }, { name: 'loss' }]}
+                                activeFilter={pnlFilter}
+                                setFilter={setPnlFilter}
+                            />
+                        </div>
                     </div>
 
-                    <div className='flex w-full h-[20em]'>
-                        <AllPositionsChart allPositions={allPositions} />
-                    </div>
+                    {view === 'chart' ? <div className='flex w-full h-[34em] max-h-full mt-4'>
+                        <AllPositionsChart allPositions={sortedPositions} />
+                    </div> : null}
 
-                    {false ? <><div className='flex flex-col'>
+                    {view === 'list' ? <><div className='flex flex-col'>
                         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
                             <input
                                 type="pubkey"
