@@ -119,17 +119,17 @@ export default function Competition() {
 
     const hasCampaignEnded = new Date().getTime() >= 1671868800000;
     const days = Math.floor(
-        (1734804623141 - new Date().getTime()) / (1000 * 60 * 60 * 24),
+        (1732359600000 - new Date().getTime()) / (1000 * 60 * 60 * 24),
     );
     const hours = Math.floor(
-        ((1734804623141 - new Date().getTime()) % (1000 * 60 * 60 * 24)) /
+        ((1732359600000 - new Date().getTime()) % (1000 * 60 * 60 * 24)) /
         (1000 * 60 * 60),
     );
     const minutes = Math.floor(
-        ((1734804623141 - new Date().getTime()) % (1000 * 60 * 60)) / (1000 * 60),
+        ((1732359600000 - new Date().getTime()) % (1000 * 60 * 60)) / (1000 * 60),
     );
     const seconds = Math.floor(
-        ((1734804623141 - new Date().getTime()) % (1000 * 60)) / 1000,
+        ((1732359600000 - new Date().getTime()) % (1000 * 60)) / 1000,
     );
 
     return (
