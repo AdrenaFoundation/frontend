@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import Filter from '@/components/Filter/Filter';
+import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
 import PositionBlockReadOnly from '@/components/pages/trading/Positions/PositionBlockReadOnly';
 import { useAllPositions } from '@/hooks/useAllPositions';
 import { useSelector } from '@/store/store';
@@ -12,8 +14,6 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
-import AllPositionsChart from '@/components/pages/global/AllPositionsChart/AllPositionsChart';
-import { twMerge } from 'tailwind-merge';
 
 export default function AllPositions() {
     const wallet = useSelector((state) => state.walletState.wallet);
