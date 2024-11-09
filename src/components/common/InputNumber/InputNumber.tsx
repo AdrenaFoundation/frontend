@@ -51,6 +51,8 @@ export default function InputNumber({
       style={{
         fontSize: inputFontSize ?? '1.4em',
       }}
+      min={min}
+      max={max}
       onBlur={onBlur} // Pass onBlur to the input element
       step={stepValue}
     />

@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import Switch from '@/components/common/Switch/Switch';
 import FormatNumber from '@/components/Number/FormatNumber';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -200,19 +199,6 @@ export default function PositionBlockReadOnly({
         </div>
     );
 
-    const handleCleanupAndClose = async () => {
-        const notification = MultiStepNotification.newForRegularTransaction(
-            position.side + ' Position Cleanup',
-        ).fire();
-        await window.adrena.client.cleanupPosition({
-            owner: position.owner,
-            collateralMint: position.collateralToken.mint,
-            notification,
-            position: position,
-        });
-        console.log('Cleanup and close position');
-    };
-
     return (
         <>
             <div
@@ -367,7 +353,7 @@ export default function PositionBlockReadOnly({
                             Take Profit
                         </div>
                         <div className="flex p-1 rounded" role="button" tabIndex={0}>
-                            {position.takeProfitThreadIsSet &&
+                            {position.takeProfitIsSet &&
                                 position.takeProfitLimitPrice &&
                                 position.takeProfitLimitPrice > 0 ? (
                                 <FormatNumber
@@ -386,7 +372,7 @@ export default function PositionBlockReadOnly({
                             Stop Loss
                         </div>
                         <div className="flex p-1 rounded" role="button" tabIndex={0}>
-                            {position.stopLossThreadIsSet &&
+                            {position.stopLossIsSet &&
                                 position.stopLossLimitPrice &&
                                 position.stopLossLimitPrice > 0 ? (
                                 <FormatNumber
@@ -410,14 +396,6 @@ export default function PositionBlockReadOnly({
                     <div className="flex items-center justify-center pt-2 pb-2 border-t gap-4">
                         {liquidable && !position.pendingCleanupAndClose && (
                             <h2 className="text-red text-xs">Liquidable</h2>
-                        )}
-                        {position.pendingCleanupAndClose && (
-                            <button
-                                onClick={handleCleanupAndClose}
-                                className="text-txtfade border-bcolor border-t bg-[#a8a8a810] hover:bg-bcolor h-8 w-full rounded-none"
-                            >
-                                Cleanup SL/TP dangling threads
-                            </button>
                         )}
                     </div>
                 )}

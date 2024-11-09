@@ -14,7 +14,6 @@ import AUMBreakdown from '@/components/pages/monitoring/Data/AUMBreakdown';
 import BucketsAllocation from '@/components/pages/monitoring/Data/BucketsAllocation';
 import BucketsMintedAmount from '@/components/pages/monitoring/Data/BucketsMintedAmount';
 import CurrentStakingRoundTime from '@/components/pages/monitoring/Data/CurrentStakingRoundTime';
-import FinalizeLockedStakedThreads from '@/components/pages/monitoring/Data/FinalizeLockedStakeThreads';
 import GovernanceAccounts from '@/components/pages/monitoring/Data/GovernanceAccounts';
 import MintAccounts from '@/components/pages/monitoring/Data/MintsAccounts';
 import OracleAccounts from '@/components/pages/monitoring/Data/OracleAccounts';
@@ -23,7 +22,6 @@ import PositionsAllTime from '@/components/pages/monitoring/Data/PositionsAllTim
 import PositionsNow from '@/components/pages/monitoring/Data/PositionsNow';
 import PositionsNowBreakdown from '@/components/pages/monitoring/Data/PositionsNowBreakdown';
 import StakingLockedTokens from '@/components/pages/monitoring/Data/StakingLockedTokens';
-import StakingResolveRoundThread from '@/components/pages/monitoring/Data/StakingResolveRoundThread';
 import StakingRewardsWaitingToBeClaimed from '@/components/pages/monitoring/Data/StakingRewardsWaitingToBeClaimed';
 import StakingRewardVaults from '@/components/pages/monitoring/Data/StakingRewardVaults';
 import Tokenomics from '@/components/pages/monitoring/Data/Tokenomics';
@@ -33,7 +31,6 @@ import useADXTotalSupply from '@/hooks/useADXTotalSupply';
 import useALPTotalSupply from '@/hooks/useALPTotalSupply';
 import useCortex from '@/hooks/useCortex';
 import { PoolInfo } from '@/hooks/usePoolInfo';
-import useSablierStakingResolveStakingRoundCronThreads from '@/hooks/useSablierStakingResolveStakingRoundCronThreads';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import useStakingAccountRewardsAccumulated from '@/hooks/useStakingAccountRewardsAccumulated';
 import useVestRegistry from '@/hooks/useVestRegistry';
@@ -78,11 +75,6 @@ export default function DetailedMonitoring({
   const adxTotalSupply = useADXTotalSupply();
   const alpTotalSupply = useALPTotalSupply();
   const vests = useVests();
-  const sablierStakingResolveStakingRoundCronThreads =
-    useSablierStakingResolveStakingRoundCronThreads({
-      lmStaking: adxStakingAccount,
-      lpStaking: alpStakingAccount,
-    });
 
   if (
     !mainPool ||
@@ -316,34 +308,6 @@ export default function DetailedMonitoring({
           <PoolRatios titleClassName={titleClassName} poolInfo={poolInfo} />
         ) : null}
 
-        <div className="flex flex-col lg:flex-row gap-3">
-          {sablierStakingResolveStakingRoundCronThreads &&
-            (selectedTab === 'All' ||
-              selectedTab === 'Staking' ||
-              selectedTab === 'Automation') ? (
-            <StakingResolveRoundThread
-              titleClassName={titleClassName}
-              title="LM Staking Resolve Round Thread"
-              stakingResolveRoundCron={
-                sablierStakingResolveStakingRoundCronThreads.lmStakingResolveRoundCron
-              }
-            />
-          ) : null}
-
-          {sablierStakingResolveStakingRoundCronThreads &&
-            (selectedTab === 'All' ||
-              selectedTab === 'Staking' ||
-              selectedTab === 'Automation') ? (
-            <StakingResolveRoundThread
-              titleClassName={titleClassName}
-              title="LP Staking Resolve Round Thread"
-              stakingResolveRoundCron={
-                sablierStakingResolveStakingRoundCronThreads.lpStakingResolveRoundCron
-              }
-            />
-          ) : null}
-        </div>
-
         {selectedTab === 'All' || selectedTab === 'Accounts' ? (
           <AdrenaAccounts
             titleClassName={titleClassName}
@@ -366,10 +330,6 @@ export default function DetailedMonitoring({
 
         {selectedTab === 'All' || selectedTab === 'Accounts' ? (
           <GovernanceAccounts titleClassName={titleClassName} cortex={cortex} />
-        ) : null}
-
-        {selectedTab === 'All' || selectedTab === 'Staking' ? (
-          <FinalizeLockedStakedThreads titleClassName={titleClassName} />
         ) : null}
       </div>
     </div>

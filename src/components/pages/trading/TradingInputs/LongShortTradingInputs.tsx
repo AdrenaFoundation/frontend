@@ -18,7 +18,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
-import usePriorityFee from '@/hooks/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
@@ -273,8 +272,6 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          existingPosition: maybeZombiePosition,
-
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -284,8 +281,6 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          existingPosition: maybeZombiePosition,
-
         }));
 
       triggerWalletTokenBalancesReload();
@@ -510,17 +505,7 @@ export default function LongShortTradingInputs({
     }
 
     return setErrorMessage(null);
-  }, [
-    usdcCustody,
-    inputA,
-    inputB,
-    tokenA.symbol,
-    tokenB,
-    tokenPriceBTrade,
-    tokenPrices,
-    walletTokenBalances,
-    connected,
-  ]);
+  }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);

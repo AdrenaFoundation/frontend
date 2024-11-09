@@ -181,7 +181,6 @@ export default function Stake({
         await window.adrena.client.initUserStaking({
           owner: owner,
           stakedTokenMint,
-          threadId: new BN(Date.now()),
           notification,
         });
       } catch (error) {
@@ -317,7 +316,7 @@ export default function Stake({
       await window.adrena.client.removeLockedStake({
         owner,
         resolved: !!lockedStake.resolved,
-        threadId: lockedStake.stakeResolutionThreadId,
+        id: lockedStake.id,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
         earlyExit,

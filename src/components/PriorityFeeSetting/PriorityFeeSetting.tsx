@@ -2,7 +2,6 @@ import { AnimatePresence } from 'framer-motion';
 import React, { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import { SOL_DECIMALS } from '@/constant';
 import usePriorityFee from '@/hooks/usePriorityFees';
 import { PriorityFeeOption } from '@/types';

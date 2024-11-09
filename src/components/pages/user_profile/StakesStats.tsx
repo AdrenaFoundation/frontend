@@ -28,7 +28,7 @@ export default function StakesStats({
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [lockedStakesPerPage, setLockedStakesPerPage] = useState(4);
+  const [lockedStakesPerPage,] = useState(4);
 
   const paginatedLockedStakes = lockedStakes
     ? lockedStakes.slice(

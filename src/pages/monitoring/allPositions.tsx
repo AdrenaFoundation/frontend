@@ -1,6 +1,4 @@
-import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import Pagination from '@/components/common/Pagination/Pagination';
@@ -20,7 +18,7 @@ export default function AllPositions() {
 
     const connected = !!wallet;
 
-    const { allPositions, isLoading, triggerAllPositionsReload } =
+    const { allPositions, triggerAllPositionsReload } =
         useAllPositions({
             connected,
         });

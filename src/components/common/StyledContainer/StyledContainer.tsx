@@ -36,7 +36,7 @@ export default function StyledContainer({
     >
       <div
         className={twMerge(
-          'flex items-center',
+          'flex flex-col justify-center',
           title || subTitle || icon ? 'pb-4' : '',
           headerClassName,
         )}
@@ -50,7 +50,6 @@ export default function StyledContainer({
             height={60}
           />
         ) : null}
-
 
         <div className='flex flex-col'>
           <h1 className={titleClassName}>{title}</h1>

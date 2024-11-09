@@ -27,7 +27,6 @@ export default function AreaRechart({
   domain,
   tippyContent,
   subValue,
-  isReferenceLine,
   formatY = 'currency',
 }: {
   title: string;
@@ -41,7 +40,6 @@ export default function AreaRechart({
   domain?: AxisDomain;
   tippyContent?: ReactNode;
   subValue?: number;
-  isReferenceLine?: boolean;
   formatY?: 'percentage' | 'currency' | 'number';
 }) {
   const formatYAxis = (tickItem: number) => {

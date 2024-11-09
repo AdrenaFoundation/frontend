@@ -168,12 +168,11 @@ export default function MyDashboard({
       await window.adrena.client.removeLockedStake({
         owner,
         resolved: !!lockedStake.resolved,
-        threadId: lockedStake.stakeResolutionThreadId,
+        id: lockedStake.id,
         stakedTokenMint,
         lockedStakeIndex: new BN(lockedStake.index),
         earlyExit,
         notification,
-
       });
 
       triggerWalletTokenBalancesReload();
@@ -308,7 +307,6 @@ export default function MyDashboard({
               positions={positions}
               triggerUserProfileReload={triggerUserProfileReload}
               title="Opened Positions"
-              userProfile={userProfile}
             />
 
             <StakesStats
