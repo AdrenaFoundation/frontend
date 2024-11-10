@@ -1,6 +1,6 @@
+import { BN } from '@coral-xyz/anchor';
 import type { ThunkAction } from '@reduxjs/toolkit';
 import { NATIVE_MINT } from '@solana/spl-token';
-import BN from 'bn.js';
 
 import { SOL_DECIMALS } from '@/constant';
 import { selectWalletPublicKey } from '@/selectors/wallet';

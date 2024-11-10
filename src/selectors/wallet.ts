@@ -1,5 +1,5 @@
+import { createSelector } from '@reduxjs/toolkit';
 import { PublicKey } from '@solana/web3.js';
-import { createSelector } from 'reselect';
 
 import type { RootState } from '@/store/store';
 
