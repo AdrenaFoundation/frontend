@@ -78,10 +78,6 @@ const CustomizedContent: React.FC<{
             textAnchor="middle"
             fill="#fff"
             fontSize={14}
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('Clicked', name);
-            }}
           >
             {pnlPercentage}
           </text>
