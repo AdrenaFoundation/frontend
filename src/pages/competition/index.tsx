@@ -167,7 +167,7 @@ export default function Competition() {
                             Adrena Trading Competition
                         </h1>
                         <p className="text-base text-txtfade mt-1 mb-3">
-                            From Nov 11 - Nov 23, 2024
+                            From Nov 11 - Dec 23, 2024
                         </p>
                         <p className="text-base max-w-[640px] text-txtfade">
                             Adrena&apos;s first trading competition. A 6 week long competition
