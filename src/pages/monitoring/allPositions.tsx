@@ -46,7 +46,7 @@ export default function AllPositions() {
         PositionExtended[]
     >([]);
 
-    const [view, setView] = useState<'list' | 'chart'>('chart');
+    const [view, setView] = useState<'list' | 'chart'>('list');
 
     useEffect(() => {
         const filteredPositions = allPositions.filter((position) => {
@@ -142,14 +142,13 @@ export default function AllPositions() {
                 <div className="flex flex-col gap-3">
                     <div className='flex gap-3 flex-col md:flex-row flex-wrap'>
                         <div className='flex text-base cursor-pointer items-center min-w-[10em] p-1 rounded grow justify-evenly border'>
-                            <div className={twMerge('hover:opacity-100', view === 'chart' ? 'opacity-100 underline' : 'opacity-50')}
-                                onClick={() => setView('chart')}>
-                                Chart
-                            </div>
-
                             <div className={twMerge('hover:opacity-100', view === 'list' ? 'opacity-100 underline' : 'opacity-50')}
                                 onClick={() => setView('list')}>
                                 List
+                            </div>
+                            <div className={twMerge('hover:opacity-100', view === 'chart' ? 'opacity-100 underline' : 'opacity-50')}
+                                onClick={() => setView('chart')}>
+                                Chart
                             </div>
                         </div>
 
