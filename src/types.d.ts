@@ -489,3 +489,13 @@ export type TradingCompetitionAchievementsAPI = {
     pnl_amounts: (number | null)[];
   };
 };
+
+export type TradingCompetitionLeaderboardAPI = {
+  [key in 'Abomination' | 'Chimera' | 'Morph' | 'Spawn' | 'No Division']: {
+    rank: number;
+    username: string;
+    volume: number;
+    pnl: number;
+    rewards: number;
+  }[];
+};

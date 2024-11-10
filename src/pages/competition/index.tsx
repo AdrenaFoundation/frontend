@@ -10,31 +10,28 @@ import Loader from '@/components/Loader/Loader';
 import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
-import { TradingCompetitionAchievementsAPI } from '@/types';
+import {
+    TradingCompetitionAchievementsAPI,
+    TradingCompetitionLeaderboardAPI,
+} from '@/types';
+import {
+    getDaysBetweenDates,
+    getHoursBetweenDates,
+    getMinutesBetweenDates,
+    getSecondsBetweenDates,
+} from '@/utils';
 
 export default function Competition() {
     const { allUserProfiles } = useAllUserProfiles();
-
-    const [data, setData] = useState<
-        | {
-            [key in
-            | 'Abomination'
-            | 'Chimera'
-            | 'Morph'
-            | 'Spawn'
-            | 'No Division']: {
-                rank: number;
-                username: string;
-                volume: number;
-                pnl: number;
-                rewards: number;
-            }[];
-        }
-        | null
-    >(null);
+    const [data, setData] = useState<TradingCompetitionLeaderboardAPI | null>(
+        null,
+    );
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
     const [week, setWeek] = useState(5);
+
+    const startDate = new Date('11/11/2024');
+    const endDate = new Date('12/23/2024');
 
     useEffect(() => {
         getData();
@@ -76,20 +73,7 @@ export default function Competition() {
                     });
                     return acc;
                 },
-                {} as {
-                    [key in
-                    | 'Abomination'
-                    | 'Chimera'
-                    | 'Morph'
-                    | 'Spawn'
-                    | 'No Division']: {
-                        rank: number;
-                        username: string;
-                        volume: number;
-                        pnl: number;
-                        rewards: number;
-                    }[];
-                },
+                {} as TradingCompetitionLeaderboardAPI,
             );
 
             setWeek(0);
@@ -99,7 +83,6 @@ export default function Competition() {
             console.error(error);
         }
     };
-    console.log(allUserProfiles);
 
     if (!data || !achievements) {
         return (
@@ -117,19 +100,21 @@ export default function Competition() {
         'No Division',
     ] as const;
 
-    const hasCampaignEnded = new Date().getTime() >= 1671868800000;
-    const days = Math.floor(
-        (1732359600000 - new Date().getTime()) / (1000 * 60 * 60 * 24),
+    const days = getDaysBetweenDates(new Date(), endDate);
+
+    const hours = getHoursBetweenDates(new Date(), endDate);
+
+    const minutes = getMinutesBetweenDates(new Date(), endDate);
+    const seconds = getSecondsBetweenDates(new Date(), endDate);
+
+    const daysUntilNextWeek = getDaysBetweenDates(
+        new Date(),
+        new Date(achievements.biggest_jito_sol_pnl.week_ends[week]),
     );
-    const hours = Math.floor(
-        ((1732359600000 - new Date().getTime()) % (1000 * 60 * 60 * 24)) /
-        (1000 * 60 * 60),
-    );
-    const minutes = Math.floor(
-        ((1732359600000 - new Date().getTime()) % (1000 * 60 * 60)) / (1000 * 60),
-    );
-    const seconds = Math.floor(
-        ((1732359600000 - new Date().getTime()) % (1000 * 60)) / 1000,
+
+    const hoursUntilNextWeek = getHoursBetweenDates(
+        new Date(),
+        new Date(achievements.biggest_jito_sol_pnl.week_ends[week]),
     );
 
     return (
@@ -163,9 +148,9 @@ export default function Competition() {
                 </div>
                 <div className="flex items-center justify-center">
                     <p className="absolute -translate-y-0.5 font-mono z-10">
-                        {hasCampaignEnded
+                        {seconds > 0
                             ? `${days}d ${hours}h ${minutes}m ${seconds}s left`
-                            : 'Campaign has ended'}
+                            : 'Competition has ended'}
                     </p>
                     <Image
                         src={timerBg}
@@ -178,7 +163,9 @@ export default function Competition() {
             <div className="px-[20px] sm:px-[50px]">
                 <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-12">
                     <div>
-                        <h1 className="font-boldy">Adrena Trading Competition</h1>
+                        <h1 className="font-boldy capitalize">
+                            Adrena Trading Competition
+                        </h1>
                         <p className="text-base text-txtfade mt-1 mb-3">
                             From Nov 11 - Nov 23, 2024
                         </p>
@@ -201,7 +188,7 @@ export default function Competition() {
                                 height={18}
                             />
                             <p className="text-xl font-boldy">
-                                178,000 ADX <span className="">Rewards</span>
+                                1.915M ADX <span className="">Rewards</span>
                             </p>
                         </div>
                         <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg p-4 px-12">
@@ -216,7 +203,7 @@ export default function Competition() {
 
             <div className="px-[20px] sm:px-[50px]">
                 <div className="flex flex-col md:flex-row gap-3 w-full mb-3">
-                    <h1 className="font-boldy flex-none">Weekly Rewards</h1>
+                    <h1 className="font-boldy flex-none capitalize">Weekly Rewards</h1>
 
                     <div className="flex flex-col sm:flex-row gap-3 justify-between sm:items-center w-full">
                         <div className="flex flex-row gap-3 items-center">
@@ -231,15 +218,26 @@ export default function Competition() {
                                 ).toLocaleDateString()}
                                 )
                             </p>
+                            <p className="text-xs font-mono z-10">
+                                {hoursUntilNextWeek > 0 &&
+                                    `${daysUntilNextWeek}d ${hoursUntilNextWeek}h left`}
+                            </p>
                         </div>
                         <div className="flex flex-row gap-2 items-center">
                             {Array.from({ length: 6 }, (_, i) => i).map((i) => (
                                 <div
                                     className={twMerge(
-                                        'rounded-lg p-1 px-2 transition border border-transparent duration-300 cursor-pointer',
+                                        'rounded-lg p-1 px-2 transition border border-transparent duration-300 cursor-pointer select-none',
                                         i === week ? 'bg-[#364250] border-white/25 ' : 'bg-third',
+                                        i !== 0 && 'cursor-not-allowed opacity-25',
                                     )}
-                                    onClick={() => setWeek(i)}
+                                    onClick={() => {
+                                        if (i > 0) {
+                                            // Only allow the first week to be selected for now
+                                            return;
+                                        }
+                                        setWeek(i);
+                                    }}
                                     key={i}
                                 >
                                     <p className="text-xxs sm:text-sm">Week {i + 1}</p>
@@ -274,14 +272,14 @@ export default function Competition() {
             </div>
             <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-[20px] sm:px-[50px] my-3" />
             <div className="px-[20px] sm:px-[50px]">
-                <h1 className="font-boldy mb-6">The leaderboard</h1>
+                <h1 className="font-boldy mb-6 capitalize">The leaderboard</h1>
 
                 <div className="grid lg:grid-cols-2 gap-[50px]">
                     {division.map((division) => {
                         return (
                             <LeaderboardTable
                                 division={division}
-                                data={data[division]}
+                                data={data}
                                 key={division}
                             />
                         );
