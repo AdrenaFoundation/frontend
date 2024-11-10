@@ -140,8 +140,8 @@ export default function AllPositions() {
         <div className="flex flex-col gap-2 p-2">
             <StyledContainer className="p-4">
                 <div className="flex flex-col gap-3">
-                    <div className='flex gap-3'>
-                        <div className='flex text-base cursor-pointer items-center w-[10em] justify-evenly border'>
+                    <div className='flex gap-3 flex-col md:flex-row flex-wrap'>
+                        <div className='flex text-base cursor-pointer items-center min-w-[10em] p-1 rounded grow justify-evenly border'>
                             <div className={twMerge('hover:opacity-100', view === 'list' ? 'opacity-100 underline' : 'opacity-50')}
                                 onClick={() => setView('list')}>
                                 List
@@ -153,7 +153,7 @@ export default function AllPositions() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 justify-between gap-3 grow">
+                        <div className="grid grid-cols-1 md:grid-cols-3 justify-between gap-3 grow">
                             <Filter
                                 options={[{ name: 'all' }, { name: 'long' }, { name: 'short' }]}
                                 activeFilter={sideFilter}
@@ -181,7 +181,7 @@ export default function AllPositions() {
                         </div>
                     </div>
 
-                    {view === 'chart' ? <div className='flex w-full h-[34em] max-h-full'>
+                    {view === 'chart' ? <div className='flex w-full min-h-[34em] h-[34em] grow'>
                         <AllPositionsChart allPositions={sortedPositions} />
                     </div> : null}
 

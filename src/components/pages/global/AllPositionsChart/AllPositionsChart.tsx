@@ -9,27 +9,25 @@ import { formatPercentage, formatPriceInfo } from '@/utils';
 
 import PositionBlockReadOnly from '../../trading/Positions/PositionBlockReadOnly';
 
-interface CustomizedContentProps {
-  root: any;
+const CustomizedContent: React.FC<{
+  root: unknown;
   depth: number;
   x: number;
   y: number;
   width: number;
   height: number;
   index: number;
-  payload: any;
+  payload: unknown;
   color: string;
   rank: number;
   name: string;
   pnl: string | null;
   pnlPercentage: string | null;
   blocTitle: string | null;
+  positionPubkey: PublicKey;
   setSelectedPosition: Dispatch<SetStateAction<PublicKey | null>>;
   selectedPosition: PublicKey | null;
-}
-
-const CustomizedContent: React.FC<CustomizedContentProps> = ({
-  root,
+}> = ({
   depth,
   x,
   y,
@@ -38,77 +36,86 @@ const CustomizedContent: React.FC<CustomizedContentProps> = ({
   index,
   color,
   name,
+  positionPubkey,
   pnlPercentage,
   blocTitle,
   setSelectedPosition,
   selectedPosition,
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
-  return (
-    <g key={`node-${index}-${depth}-${name}`} className={twMerge('relative', depth > 1 ? 'cursor-pointer' : '')} onClick={() => {
-      setSelectedPosition((prev: PublicKey | null) => {
-        const newPub = new PublicKey(name.split('-')[0]);
-
-        return prev?.equals(newPub) ? null : newPub;
-      });
-    }}
-      onMouseEnter={() => {
-        setIsHovered(true);
+    return (
+      <g key={`node-${index}-${depth}-${name}`} className={twMerge('relative', depth > 1 ? 'cursor-pointer' : '')} onClick={() => {
+        setSelectedPosition((prev: PublicKey | null) => {
+          return prev?.equals(positionPubkey) ? null : positionPubkey;
+        });
       }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
-    >
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        style={{
-          fill: color,
-          stroke: "#fff",
-          strokeWidth: 2 / (depth + 1e-10),
-          strokeOpacity: 1 / (depth + 1e-10),
-          opacity: isHovered ? 1 : 0.9,
+        onMouseEnter={() => {
+          setIsHovered(true);
         }}
-      />
-
-      <pattern id={`stripes-${index}`} patternUnits="userSpaceOnUse" width={width} height={height}>
-        <line x1={x} y1={y} x2={x + width} y2={y + width} stroke="#fff" strokeWidth="2" />
-      </pattern>
-
-      {depth === 2 && width > 100 && pnlPercentage !== null ? (
-        <text
-          x={x + width / 2}
-          y={y + height / 2 + 7}
-          textAnchor="middle"
-          fill="#fff"
-          fontSize={14}
-          onClick={(e) => {
-            e.stopPropagation();
-            console.log('Clicked', name);
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
+      >
+        <rect
+          x={x}
+          y={y}
+          width={width}
+          height={height}
+          style={{
+            fill: selectedPosition && selectedPosition.equals(positionPubkey) ? 'blue' : color,
+            stroke: "#fff",
+            strokeWidth: depth === 1 ? 5 : 1,
+            strokeOpacity: 1,
+            opacity: isHovered ? 1 : 0.9,
           }}
-        >
-          {pnlPercentage}
-        </text>
-      ) : null}
+        />
 
-      {blocTitle ? (
-        <text x={x + 10} y={y + 22} fill="#fff" fontSize={16} fillOpacity={0.9}>
-          {blocTitle}
-        </text>
-      ) : null}
-    </g>
-  );
-};
+        {depth === 2 && width > 100 && pnlPercentage !== null ? (
+          <text
+            x={x + width / 2}
+            y={y + height / 2 + 7}
+            textAnchor="middle"
+            fill="#fff"
+            fontSize={14}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('Clicked', name);
+            }}
+          >
+            {pnlPercentage}
+          </text>
+        ) : null}
+
+        {blocTitle ? (
+          <text x={x + 10} y={y + 22} fill="#fff" fontSize={16} fillOpacity={0.9}>
+            {blocTitle}
+          </text>
+        ) : null}
+      </g>
+    );
+  };
 
 export default function AllPositionsChart({
   allPositions,
 }: {
   allPositions: PositionExtended[] | null;
 }) {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<{
+    key: string;
+    name: string;
+    color: string;
+    children: {
+      blocTitle: string | null;
+      key: string;
+      name: string;
+      positionPubkey: PublicKey;
+      pnl: string | null;
+      pnlPercentage: string | null;
+      size: number;
+      color: string;
+    }[];
+  }[] | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<PublicKey | null>(null);
   const [selectedPositionObject, setSelectedPositionObject] = useState<PositionExtended | null>(null);
 
@@ -118,7 +125,7 @@ export default function AllPositionsChart({
       return;
     }
 
-    setData(window.adrena.client.tokens.map((token, i) => {
+    setData(window.adrena.client.tokens.map((token) => {
       const positions = allPositions.filter((position) => position.token === token);
 
       return {
@@ -131,19 +138,15 @@ export default function AllPositionsChart({
 
           return {
             blocTitle: j === 0 ? token.symbol : null,
-            key: position.owner.toBase58() + token.symbol,
+            key: position.owner.toBase58() + token.symbol, // Unique key for each position
             name: `${position.owner.toBase58()}-${position.side}`,
+            positionPubkey: position.pubkey,
             pnl: position.pnl !== null ? formatPriceInfo(position.pnl, 2) : null,
             pnlPercentage: pnlPercentage !== null ? formatPercentage(pnlPercentage, 2) : null,
             size: Math.floor(position.sizeUsd),
             color: (() => {
               if (position.pnl === null || typeof position.pnl === 'undefined') {
                 return '#aaa'; // Light neutral gray for undefined PnL
-              }
-
-              // Subtle color for small gains/losses within ±10%
-              if (position.pnl >= -10 && position.pnl <= 10) {
-                return '#666666'; // Subtle dark gray for small PnL changes
               }
 
               // Colors for long positions (green to red based on % PnL)
@@ -187,7 +190,7 @@ export default function AllPositionsChart({
         }),
       };
     }).filter((key) => key.children.length > 0))
-    // Force refresh on PnL change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allPositions?.map(x => x.pnl).join(',')]);
 
   useEffect(() => {
@@ -196,7 +199,7 @@ export default function AllPositionsChart({
       return;
     }
 
-    setSelectedPositionObject(allPositions?.find((position) => position.owner.equals(selectedPosition)) ?? null);
+    setSelectedPositionObject(allPositions?.find((position) => position.pubkey.equals(selectedPosition)) ?? null);
   }, [selectedPosition, allPositions]);
 
   if (allPositions !== null && !allPositions.length) {
@@ -228,48 +231,29 @@ export default function AllPositionsChart({
           data={data}
           dataKey="size"
           isAnimationActive={false}
-          content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} pnl={null} pnlPercentage={null} blocTitle={null} />}>
+          // Note: Needs to provide keys for typescript to be happy, even though Treemap is filling up the keys
+          content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} pnl={null} pnlPercentage={null} blocTitle={null} positionPubkey={PublicKey.default} />}>
         </Treemap>
       </ResponsiveContainer>
 
       <div className='flex mt-4 items-center justify-center'>
         <div className='flex ml-4 gap-8'>
           <div className='flex flex-col items-center justify-center text-xs gap-2 font-mono'>
-            Long Losing PnL
+            Long PnL
             <div
               className='h-2 w-24 border'
               style={{
-                background: 'linear-gradient(to right, #d58f8f, #b54b4b, #721717, #3d0909)',
+                background: 'linear-gradient(to right, #d58f8f, #b54b4b, #721717, #3d0909, #75d775, #4cbf4c, #2c8c2c, #064406)',
               }}
             />
           </div>
 
           <div className='flex flex-col items-center justify-center text-xs gap-2 font-mono'>
-            Long Winning PnL
+            Short PnL
             <div
               className='h-2 w-24 border'
               style={{
-                background: 'linear-gradient(to right, #75d775, #4cbf4c, #2c8c2c, #064406)',
-              }}
-            />
-          </div>
-
-          <div className='flex flex-col items-center justify-center text-xs gap-2 font-mono'>
-            Short Losing PnL
-            <div
-              className='h-2 w-24 border'
-              style={{
-                background: 'linear-gradient(to right, #f2b791, #e89b66, #bf5b00, #7a2e00)',
-              }}
-            />
-          </div>
-
-          <div className='flex flex-col items-center justify-center text-xs gap-2 font-mono'>
-            Short Winning PnL
-            <div
-              className='h-2 w-24 border'
-              style={{
-                background: 'linear-gradient(to right, #b296e4, #9e78d1, #6e33b5, #4b0082)',
+                background: 'linear-gradient(to right, #f2b791, #e89b66, #bf5b00, #7a2e00, #b296e4, #9e78d1, #6e33b5, #4b0082)',
               }}
             />
           </div>
