@@ -187,7 +187,7 @@ export default function AllPositionsChart({
       };
     }).filter((key) => key.children.length > 0))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allPositions?.map(x => x.pnl ?? 0).join(',')]);
+  }, [allPositions, allPositions?.map(x => x.pnl ?? 0).join(',')]);
 
   useEffect(() => {
     if (selectedPosition === null) {
