@@ -96,8 +96,6 @@ export default function AllPositions() {
         );
     }, [
         allPositions,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        allPositions?.map(x => x.pnl ?? 0).join(','),
         mintFilter,
         ownerFilter,
         pnlFilter,

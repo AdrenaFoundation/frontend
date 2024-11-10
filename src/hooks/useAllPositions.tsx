@@ -69,7 +69,7 @@ export function useAllPositions({ connected }: { connected: boolean }): {
             calculatePnLandLiquidationPrice(position, tokenPrices);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tokenPrices]);
+    }, [tokenPrices, allPositions]);
 
     useEffect(() => {
         loadAllPositions();
