@@ -54,7 +54,6 @@ export function useAllPositions({ connected }: { connected: boolean }): {
                 setIsLoading(false);
             } catch (e) {
                 console.log('Error loading positions', e, String(e));
-
                 // Do nothing
             }
 
@@ -70,7 +69,7 @@ export function useAllPositions({ connected }: { connected: boolean }): {
             calculatePnLandLiquidationPrice(position, tokenPrices);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tokenPrices]);
+    }, [tokenPrices, allPositions]);
 
     useEffect(() => {
         loadAllPositions();
@@ -78,7 +77,6 @@ export function useAllPositions({ connected }: { connected: boolean }): {
         const interval = setInterval(async () => {
             await loadAllPositions();
         }, 60000);
-
 
         return () => {
             clearInterval(interval);
