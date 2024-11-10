@@ -21,12 +21,12 @@ export default function ViewProfileModal({
             <div>
                 <h3 className="capitalize font-boldy">{profile.nickname}</h3>
                 <Link
-                    href={getAccountExplorer(profile.owner)}
+                    href={getAccountExplorer(profile.pubkey)}
                     target="_blank"
                     className="flex flex-row gap-1 items-center opacity-50 hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                 >
                     <p className="font-mono">
-                        {getAbbrevWalletAddress(profile.owner.toBase58())}
+                        {getAbbrevWalletAddress(profile.pubkey.toBase58())}
                     </p>
 
                     <Image src={arrowIcon} alt="arrow" width={5} height={5} />
