@@ -57,7 +57,6 @@ export default function Competition() {
     const [week, setWeek] = useState(5);
     const [myDivision, setMyDivision] = useState<string | null>(null);
 
-    const startDate = new Date('11/11/2024');
     const endDate = new Date('12/23/2024');
 
     useEffect(() => {
@@ -89,7 +88,7 @@ export default function Competition() {
             fees: achievements.fees_tickets.tickets_count[userIndex][week] ?? 0,
             jito: achievements.jitosol_tickets.tickets_count[userIndex][week] ?? 0,
         });
-    }, [wallet, data, achievements]);
+    }, [wallet, data, achievements, week]);
 
     const getData = async () => {
         try {
