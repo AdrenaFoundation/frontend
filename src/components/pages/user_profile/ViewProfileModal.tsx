@@ -7,6 +7,7 @@ import arrowIcon from '@/../public/images/Icons/arrow-sm-45.svg';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import usePositionsByAddress from '@/hooks/usePositionsByAddress';
+import { useSelector } from '@/store/store';
 import { UserProfileExtended } from '@/types';
 import { getAbbrevWalletAddress, getAccountExplorer } from '@/utils';
 
@@ -20,12 +21,15 @@ export default function ViewProfileModal({
 }: {
     profile: UserProfileExtended;
 }) {
+    const wallet = useSelector((s) => s.walletState.wallet);
+
+    const connected = !!wallet;
+
     const positions = usePositionsByAddress({
         walletAddress: profile.owner.toBase58(),
     });
 
     const [selectedTab, setSelectedTab] = useState('Overview');
-
 
     const leverageColorClass = getLeverageColorClass(
         profile.openingAverageLeverage,
@@ -232,7 +236,7 @@ export default function ViewProfileModal({
 
             {selectedTab === 'Positions History' ? (
                 <PositionsHistory
-                    connected={true}
+                    connected={connected}
                     walletAddress={profile.owner.toBase58()}
                 />
             ) : null}
