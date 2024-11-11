@@ -21,7 +21,6 @@ import {
     getHoursBetweenDates,
 } from '@/utils';
 import { useSelector } from '@/store/store';
-import { PublicKey } from '@solana/web3.js';
 
 const division = [
     'Leviathan',
@@ -213,7 +212,7 @@ export default function Competition() {
                         <Image
                             src={banner}
                             alt="competition banner"
-                            className="absolute top-0 left-0 w-full h-full object-cover opacity-75"
+                            className="absolute top-0 left-0 w-full h-full object-cover opacity-40"
                         />
                         <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
                         <div className="absolute top-0 right-0 w-[10em] h-full bg-gradient-to-r from-transparent to-secondary z-10" />

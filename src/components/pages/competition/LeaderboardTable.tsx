@@ -3,12 +3,11 @@ import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import demonImage from '@/../public/images/demon.png';
 import firstImage from '@/../public/images/first-place.svg';
-import fourthImage from '@/../public/images/fourth-place.svg';
-import goblinImage from '@/../public/images/goblin.png';
-import golemImage from '@/../public/images/golem.png';
-import overlordImage from '@/../public/images/overlord.png';
+import abominationImage from '@/../public/images/abomination.png';
+import leviathanImage from '@/../public/images/leviathan.png';
+import demonImage from '@/../public/images/demon.png';
+import spawnImage from '@/../public/images/spawn.png';
 import secondImage from '@/../public/images/second-place.svg';
 import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -34,13 +33,13 @@ export default function LeaderboardTable({
 }) {
     const DIVISIONS = {
         Leviathan: {
-            img: golemImage,
+            img: leviathanImage,
             title: 'Leviathan Division',
             topTradersPercentage: 10,
             color: 'bg-[#163C7D]',
         },
         Abomination: {
-            img: overlordImage,
+            img: abominationImage,
             title: 'Abomination Division',
             topTradersPercentage: 40,
             color: 'bg-[#6C167D]',
@@ -53,7 +52,7 @@ export default function LeaderboardTable({
             color: 'bg-[#7D1618]',
         },
         Spawn: {
-            img: goblinImage,
+            img: spawnImage,
             title: 'Spawn Division',
             topTradersPercentage: 80,
             color: 'bg-[#167D57]',
