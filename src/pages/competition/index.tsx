@@ -8,6 +8,7 @@ import jitoLogo from '@/../public/images/jito-logo.svg';
 import jitoLogo2 from '@/../public/images/jito-logo-2.png';
 import jtoImage from '@/../public/images/jito-logo-2.png';
 import Loader from '@/components/Loader/Loader';
+import FormatNumber from '@/components/Number/FormatNumber';
 import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
@@ -55,7 +56,11 @@ export default function Competition() {
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
     const [week, setWeek] = useState(5);
-    const [myDivision, setMyDivision] = useState<string | null>(null);
+    const [myDivision, setMyDivision] = useState<keyof TradingCompetitionLeaderboardAPI | null>(null);
+    const [myRank, setMyRank] = useState<number | null>(null);
+    const [myVolume, setMyVolume] = useState<number | null>(null);
+    const [myPnl, setMyPnl] = useState<number | null>(null);
+    const [myTradingProfileName, setMyTradingProfileName] = useState<string | null>(null);
 
     const endDate = new Date('12/23/2024');
 
@@ -110,11 +115,14 @@ export default function Competition() {
 
             if (wallet) {
                 const f = trader_divisions.find(({ traders }: any) => {
-                    // division.some((x) => )
                     return traders.some(({ address }: { address: string }) => address === wallet.walletAddress);
                 });
 
                 setMyDivision(f ? f.division ?? null : null);
+                setMyRank(f?.traders.find(({ address }: { address: string }) => address === wallet.walletAddress)?.rank_in_division ?? null);
+                setMyVolume(f?.traders.find(({ address }: { address: string }) => address === wallet.walletAddress)?.total_volume ?? null);
+                setMyPnl(f?.traders.find(({ address }: { address: string }) => address === wallet.walletAddress)?.total_pnl ?? null);
+                setMyTradingProfileName(f?.traders.find(({ address }: { address: string }) => address === wallet.walletAddress)?.username ?? null);
             } else {
                 setMyDivision(null);
             }
@@ -415,7 +423,44 @@ export default function Competition() {
             <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
 
             <div className="px-4 sm:px-8">
-                <h1 className="font-boldy mb-6 capitalize">The leaderboard</h1>
+                <h1 className="font-boldy mb-6 capitalize">Leaderboards</h1>
+
+                {wallet && data && myDivision ? (
+                    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 justify-between px-4 bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8">
+
+                        <div className="text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+                            {myTradingProfileName ? myTradingProfileName : 'Your Performance'}
+                        </div>
+
+                        <div className="flex items-center">
+                            <span className="text-sm text-txtfade mr-1">Rank</span>
+                            <span className="text-base font-boldy">#{myRank}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="text-sm text-txtfade mr-1">Division</span>
+                            <span className="text-base font-boldy">{myDivision}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="text-sm text-txtfade mr-1">Volume</span>
+                            <FormatNumber
+                                nb={myVolume ?? 0}
+                                format="currency"
+                                isAbbreviate={true}
+                                isDecimalDimmed={false}
+                                className="text-base font-boldy"
+                            />
+                        </div>
+                        <div className="flex items-center">
+                            <span className="text-sm text-txtfade mr-1">PnL</span>
+                            <FormatNumber
+                                nb={myPnl ?? 0}
+                                format="currency"
+                                isDecimalDimmed={false}
+                                className={twMerge('text-base font-boldy', (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red')}
+                            />
+                        </div>
+                    </div>
+                ) : null}
 
                 <div className="grid lg:grid-cols-2 gap-[50px]">
                     {division.slice(0, -1).map((division, index) => {
