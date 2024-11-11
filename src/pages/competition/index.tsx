@@ -61,6 +61,12 @@ export default function Competition() {
 
     useEffect(() => {
         getData();
+
+        const interval = setInterval(() => {
+            getData();
+        }, 10000);
+
+        return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allUserProfiles, wallet]);
 
@@ -174,9 +180,6 @@ export default function Competition() {
                 },
                 {},
             );
-
-
-            console.log('Achievements', achievements)
 
             achievements.biggest_liquidation.addresses = achievements.biggest_liquidation.addresses.map((address: string) => {
                 return allUserProfiles.find((profile) => profile.owner.toBase58() === address)?.nickname ?? address;
