@@ -7111,7 +7111,14 @@ export type Adrena = {
           ]
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "ClaimStakesParams"
+          }
+        }
+      ]
     },
     {
       "name": "finalizeGenesisLockCampaign",
@@ -10070,6 +10077,20 @@ export type Adrena = {
           {
             "name": "lockedDays",
             "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimStakesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lockedStakeIndexes",
+            "type": {
+              "option": "bytes"
+            }
           }
         ]
       }
@@ -19247,7 +19268,14 @@ export const IDL: Adrena = {
           ]
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "ClaimStakesParams"
+          }
+        }
+      ]
     },
     {
       "name": "finalizeGenesisLockCampaign",
@@ -22206,6 +22234,20 @@ export const IDL: Adrena = {
           {
             "name": "lockedDays",
             "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimStakesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lockedStakeIndexes",
+            "type": {
+              "option": "bytes"
+            }
           }
         ]
       }

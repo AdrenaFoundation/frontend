@@ -5260,7 +5260,9 @@ export class AdrenaClient {
     };
 
     const builder = adrenaProgram.methods
-      .claimStakes()
+      .claimStakes({
+        lockedStakeIndexes: null,
+      })
       .accountsStrict(accounts)
       .preInstructions(preInstructions);
 
