@@ -367,13 +367,14 @@ export default function Competition() {
                 <WeeklyReward
                     rewards={[
                         {
-                            title: 'Biggest Liquidation',
+                            title: 'Top Liquidation',
                             trader: achievements.biggest_liquidation.addresses[week],
                             result: achievements.biggest_liquidation.liquidation_amounts[week],
                             type: 'reward',
                             reward: 10000,
                             rewardToken: 'ADX',
                             rewardImage: window.adrena.client.adxToken.image,
+                            description: 'The trader with the single highest liquidation amount for the week.',
                         },
                         {
                             title: 'Fees Prize',
@@ -384,18 +385,20 @@ export default function Competition() {
                             reward: 10000,
                             rewardToken: 'ADX',
                             rewardImage: window.adrena.client.adxToken.image,
+                            description: 'Each $50 fees paid give you an entry. Winner picked at the end of the week.',
                         },
                         {
-                            title: 'Top Degen',
+                            title: 'Leverage Monster',
                             trader: achievements.top_degen.addresses[week],
                             result: achievements.top_degen.pnl_amounts[week],
                             type: 'reward',
                             reward: 10000,
                             rewardToken: 'ADX',
                             rewardImage: window.adrena.client.adxToken.image,
+                            description: 'The trader with the highest PnL on a 100x initial leverage position.',
                         },
                         {
-                            title: 'SOL Trading Volume Prize',
+                            title: 'SOL Trading Volume',
                             trader: achievements.jitosol_tickets.addresses[week],
                             totalTickets: achievements.jitosol_tickets.total_tickets[week],
                             connectedWalletTickets: connectedWalletTickets?.jito ?? null,
@@ -403,6 +406,7 @@ export default function Competition() {
                             reward: 1000,
                             rewardToken: 'JITO',
                             rewardImage: jtoImage,
+                            description: 'Each $100k volume of SOL traded give you an entry. Winner picked at the end of the week.',
                         }
                     ]}
                 />
