@@ -790,3 +790,29 @@ export const getCustodyByMint = async (mint: string) => {
   );
   return custody;
 };
+
+export const getDaysBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+}
+
+export const getHoursBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor(
+    (diffTime %
+      (1000 * 60 * 60 * 24)) /
+    (1000 * 60 * 60),
+  );
+}
+
+export const getMinutesBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor(
+    (diffTime % (1000 * 60 * 60)) / (1000 * 60),
+  );
+}
+
+export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor((diffTime % (1000 * 60)) / 1000);
+}

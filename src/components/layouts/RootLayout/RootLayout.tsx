@@ -69,6 +69,7 @@ export default function RootLayout({
     { name: 'Trade', link: '/trade' },
     { name: 'Profile', link: '/my_dashboard' },
     { name: 'Stake', link: '/stake' },
+    { name: 'Competition', link: '/competition' },
     { name: 'Provide Liquidity', link: '/buy_alp' },
     { name: 'Monitor', link: '/monitoring' },
     { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
@@ -138,7 +139,7 @@ export default function RootLayout({
       <ViewsWarning />
 
       <div className="w-full grow flex justify-center">
-        <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
+        <div className="w-full flex flex-col sm:pb-0 max-w-[1500px]">
           {children}
         </div>
       </div>
