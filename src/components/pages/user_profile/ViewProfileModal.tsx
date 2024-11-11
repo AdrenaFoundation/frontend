@@ -77,6 +77,7 @@ export default function ViewProfileModal({
                     }
                     format="percentage"
                     className="bg-[#040D14] sm:min-w-[200px]"
+                    isDecimalDimmed={false}
                 />
                 <NumberDisplay
                     title="Total fees paid"
