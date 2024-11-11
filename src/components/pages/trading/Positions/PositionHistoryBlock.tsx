@@ -447,6 +447,7 @@ export default function PositionHistoryBlock({
               fees: positionHistory.exit_fees + positionHistory.borrow_fees,
               collateralUsd: positionHistory.entry_collateral_amount,
               sizeUsd: positionHistory.entry_collateral_amount * positionHistory.entry_leverage,
+              exitPrice: positionHistory.exit_price,
               nativeObject: {
                 openTime: new Date(positionHistory.entry_date).getTime() / 1000,
               }

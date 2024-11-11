@@ -9,11 +9,13 @@ import PositionHistoryBlock from './PositionHistoryBlock';
 
 function PositionsHistory({
   connected,
+  walletAddress,
 }: {
   connected: boolean;
   className?: string;
+  walletAddress?: string;
 }) {
-  const { positionsHistory } = usePositionsHistory();
+  const { positionsHistory } = usePositionsHistory({ walletAddress });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(() => {
     return parseInt(localStorage.getItem('itemsPerPage') || '5', 10);

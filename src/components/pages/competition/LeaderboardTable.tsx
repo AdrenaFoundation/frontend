@@ -32,6 +32,7 @@ export default function LeaderboardTable({
     className,
     nbItemPerPage,
     myDivision,
+    handleProfileView
 }: {
     division: keyof TradingCompetitionLeaderboardAPI;
     index: number;
@@ -39,6 +40,7 @@ export default function LeaderboardTable({
     className?: string;
     nbItemPerPage?: number;
     myDivision: boolean;
+    handleProfileView: (nickname: string) => void;
 }) {
     const DIVISIONS = {
         Leviathan: {
@@ -89,7 +91,7 @@ export default function LeaderboardTable({
 
                 {division !== 'No Division' ? <div className="capitalize text-sm tracking-widest">TIER {index}</div> : null}
 
-                {myDivision ? <div className='font-boldy text-xs border rounded-full bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-16 text-center'>Your div.</div> : null}
+                {myDivision ? <div className='font-boldy text-xs bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-16 text-center'>Your div.</div> : null}
 
                 {DIVISIONS[division].topTradersPercentage !== null && (
                     <div
@@ -154,7 +156,7 @@ export default function LeaderboardTable({
                                 d.username
                                     ? isValidPublicKey(d.username)
                                         ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-blue' : '')}>{getAbbrevWalletAddress(d.username)}</p>
-                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy', d.connected ? 'text-blue ' : '')}>{d.username}</p>
+                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-blue ' : '')} onClick={() => handleProfileView(d.username)}>{d.username}</p>
                                     : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
                                 ,
 
