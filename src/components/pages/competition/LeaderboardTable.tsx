@@ -3,12 +3,12 @@ import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
-import firstImage from '@/../public/images/first-place.svg';
 import abominationImage from '@/../public/images/abomination.png';
-import leviathanImage from '@/../public/images/leviathan.png';
 import demonImage from '@/../public/images/demon.png';
-import spawnImage from '@/../public/images/spawn.png';
+import firstImage from '@/../public/images/first-place.svg';
+import leviathanImage from '@/../public/images/leviathan.png';
 import secondImage from '@/../public/images/second-place.svg';
+import spawnImage from '@/../public/images/spawn.png';
 import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { TradingCompetitionLeaderboardAPI } from '@/types';
@@ -109,7 +109,13 @@ export default function LeaderboardTable({
                 <Table
                     className="bg-transparent gap-1 border-none p-0"
                     columnTitlesClassName="text-sm opacity-50"
-                    columnsTitles={[<span className='ml-4 opacity-50'>#</span>, 'Trader', <span className='ml-auto mr-auto opacity-50'>PnL</span>, <span className='ml-auto mr-auto opacity-50'>Volume</span>, <span className='ml-auto opacity-50'>Rewards</span>]}
+                    columnsTitles={[
+                        <span className='ml-4 opacity-50' key='rank'>#</span>,
+                        'Trader',
+                        <span className='ml-auto mr-auto opacity-50' key='pnl'>PnL</span>,
+                        <span className='ml-auto mr-auto opacity-50' key='volume'>Volume</span>,
+                        <span className='ml-auto opacity-50' key='rewards'>Rewards</span>,
+                    ]}
                     rowHovering={true}
                     pagination={true}
                     paginationClassName='scale-[80%] p-0'
@@ -152,24 +158,23 @@ export default function LeaderboardTable({
                                     : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
                                 ,
 
-                                <div className='flex items-center justify-center grow'>
+                                <div className='flex items-center justify-center grow' key={`pnl-${i}`}>
                                     <FormatNumber
                                         nb={d.pnl}
                                         format="currency"
                                         className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
                                         isDecimalDimmed={false}
-                                        key={`pnl-${i}`}
+
                                     />
                                 </div>,
 
-                                <div className='flex items-center justify-center grow'>
+                                <div className='flex items-center justify-center grow' key={`volume-${i}`}>
                                     <FormatNumber
                                         nb={d.volume}
                                         isDecimalDimmed={false}
                                         isAbbreviate={true}
                                         className='text-xs'
                                         format="currency"
-                                        key={`volume-${i}`}
                                         isAbbreviateIcon={false}
                                     />
                                 </div>,
