@@ -6,9 +6,11 @@ import banner from '@/../public/images/comp-banner.png';
 import timerBg from '@/../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../public/images/jito-logo.svg';
 import jitoLogo2 from '@/../public/images/jito-logo-2.png';
+import jtoImage from '@/../public/images/jito-logo-2.png';
 import Loader from '@/components/Loader/Loader';
 import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
+import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import {
     TradingCompetitionAchievementsAPI,
@@ -17,8 +19,6 @@ import {
 import {
     getDaysBetweenDates,
     getHoursBetweenDates,
-    getMinutesBetweenDates,
-    getSecondsBetweenDates,
 } from '@/utils';
 
 export default function Competition() {
@@ -35,6 +35,7 @@ export default function Competition() {
 
     useEffect(() => {
         getData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allUserProfiles]);
 
     const getData = async () => {
@@ -49,10 +50,9 @@ export default function Competition() {
                 return;
             }
 
-            console.log(data);
             const formattedData = trader_divisions.reduce(
-                (acc: any, { division, traders }: any) => {
-                    acc[division] = traders.map((trader: any) => {
+                (acc: TradingCompetitionLeaderboardAPI, { division, traders }: any) => {
+                    acc[division as keyof TradingCompetitionLeaderboardAPI] = traders.map((trader: any) => {
                         let username = trader.address;
                         if (allUserProfiles && allUserProfiles.length > 0) {
                             const user = allUserProfiles.find(
@@ -63,17 +63,20 @@ export default function Competition() {
                                 username = user.nickname;
                             }
                         }
+
                         return {
                             username,
                             rank: trader.rank_in_division,
                             volume: trader.total_volume,
                             pnl: trader.total_pnl,
-                            rewards: trader.adx_reward,
+                            adxRewards: trader.adx_reward,
+                            jtoRewards: trader.jto_reward ?? 0,
                         };
                     });
+
                     return acc;
                 },
-                {} as TradingCompetitionLeaderboardAPI,
+                {},
             );
 
             setWeek(0);
@@ -93,65 +96,71 @@ export default function Competition() {
     }
 
     const division = [
-        'Morph',
+        'Leviathan',
         'Abomination',
-        'Chimera',
+        'Mutant',
         'Spawn',
         'No Division',
     ] as const;
 
-    const days = getDaysBetweenDates(new Date(), endDate);
-
-    const hours = getHoursBetweenDates(new Date(), endDate);
-
-    const minutes = getMinutesBetweenDates(new Date(), endDate);
-    const seconds = getSecondsBetweenDates(new Date(), endDate);
-
     const daysUntilNextWeek = getDaysBetweenDates(
         new Date(),
-        new Date(achievements.biggest_jito_sol_pnl.week_ends[week]),
+        new Date(achievements.biggest_liquidation.week_ends[week]),
     );
 
     const hoursUntilNextWeek = getHoursBetweenDates(
         new Date(),
-        new Date(achievements.biggest_jito_sol_pnl.week_ends[week]),
+        new Date(achievements.biggest_liquidation.week_ends[week]),
     );
 
     return (
-        <div className="flex flex-col gap-[50px] pb-[50px]">
+        <div className="flex flex-col gap-6 pb-20 relative overflow-hidden bg-[#070E18]">
+            <div className='bg-[#FF35382A] bottom-[-17%] absolute h-[20%] w-full blur-3xl backdrop-opacity-10 rounded-full'></div>
+
             <div className="relative">
-                <div className="relative flex flex-col justify-between items-center w-full h-[400px] p-[50px] border-b">
-                    <div>
+                <div className="relative flex flex-col items-center w-full h-[25em] p-[2em] border-b">
+                    <div className='mt-[7em]'>
                         <Image
                             src={banner}
                             alt="competition banner"
                             className="absolute top-0 left-0 w-full h-full object-cover opacity-75"
                         />
-                        <div className="absolute bottom-0 left-0 w-full h-[400px] bg-gradient-to-b from-transparent to-secondary z-10" />
-                        <div className="absolute top-0 right-0 w-[100px] h-full bg-gradient-to-r from-transparent to-secondary z-10" />
-                        <div className="absolute top-0 left-0 w-[100px] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
+                        <div className="absolute bottom-0 left-0 w-full h-[10em] bg-gradient-to-b from-transparent to-secondary z-10" />
+                        <div className="absolute top-0 right-0 w-[10em] h-full bg-gradient-to-r from-transparent to-secondary z-10" />
+                        <div className="absolute top-0 left-0 w-[10em] h-full bg-gradient-to-l from-transparent to-secondary z-10" />
                     </div>
+
                     <div className="z-10 text-center">
                         <p className="text-lg tracking-[0.2rem]">PRE-SEASON</p>
-                        <h1 className="text-[46px] md:text-[70px] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+                        <h1 className="text-[3em] md:text-[4em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                             AWAKENING
                         </h1>
                     </div>
-                    <div className="flex flex-row items-center gap-3 z-10">
-                        <p className="tracking-[0.2rem]">Sponsored by</p>
+
+                    <div className="flex flex-row items-center gap-3 z-10 mt-[4em]">
+                        <p className="tracking-[0.2rem] uppercase">Sponsored by</p>
                         <Image
                             src={jitoLogo}
                             alt="jito logo"
-                            className="w-[50px] md:w-[100px]"
+                            className="w-[4em] md:w-[5em]"
                         />
                     </div>
                 </div>
+
                 <div className="flex items-center justify-center">
-                    <p className="absolute -translate-y-0.5 font-mono z-10">
-                        {seconds > 0
-                            ? `${days}d ${hours}h ${minutes}m ${seconds}s left`
-                            : 'Competition has ended'}
+                    <p className="absolute -translate-y-0.5 font-mono z-10 flex items-center justify-center">
+                        {endDate.getTime() > Date.now() ? <>
+                            <RemainingTimeToDate
+                                timestamp={
+                                    endDate.getTime() / 1000
+                                }
+                                className="items-center text-base"
+                                tippyText=""
+                            />
+                            <span className='ml-2 mt-[2px] text-lg tracking-widest'>left</span></> :
+                            'Competition has ended'}
                     </p>
+
                     <Image
                         src={timerBg}
                         alt="background graphic"
@@ -160,26 +169,26 @@ export default function Competition() {
                 </div>
             </div>
 
-            <div className="px-[20px] sm:px-[50px]">
+            <div className="px-4 sm:px-8">
                 <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-12">
                     <div>
-                        <h1 className="font-boldy capitalize">
+                        <h1 className="font-boldy text-3xl capitalize">
                             Adrena Trading Competition
                         </h1>
-                        <p className="text-base text-txtfade mt-1 mb-3">
+                        <p className="text-base text-txtfade mb-3">
                             From Nov 11 - Dec 23, 2024
                         </p>
-                        <p className="text-base max-w-[640px] text-txtfade">
-                            Adrena&apos;s first trading competition. A 6 week long competition
-                            that is an intro to the upcoming recurring trading seasons.
+                        <p className="text-sm max-w-[640px] text-txtfade">
+                            Adrena&apos;s first trading competition. A 6 weeks long competition,
+                            intro to the upcoming recurring trading seasons.
                             Starting November 11th and ending December 23rd. There will be 4
                             separate divisions. You&apos;ll be qualifying for a given division
                             based on your total trading volume during the 6 week event.
                         </p>
                     </div>
 
-                    <div className="flex flex-col gap-3 w-full lg:w-auto">
-                        <h4 className="font-boldy">Total Contest Rewards</h4>
+                    <div className="flex flex-col gap-3 w-full items-center lg:w-auto">
+                        <h4 className="font-boldy text-base">Total Rewards</h4>
                         <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg p-4 px-12">
                             <Image
                                 src={window.adrena.client.adxToken.image}
@@ -188,20 +197,20 @@ export default function Competition() {
                                 height={18}
                             />
                             <p className="text-xl font-boldy">
-                                1.915M ADX <span className="">Rewards</span>
+                                2.095M ADX
                             </p>
                         </div>
                         <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg p-4 px-12">
                             <Image src={jitoLogo2} alt="adx logo" width={18} height={18} />
                             <p className="text-xl font-boldy">
-                                25,000 JTO <span className="">Rewards</span>
+                                25,000 JTO
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="px-[20px] sm:px-[50px]">
+            <div className="px-4 sm:px-8">
                 <div className="flex flex-col md:flex-row gap-3 w-full mb-3">
                     <h1 className="font-boldy flex-none capitalize">Weekly Rewards</h1>
 
@@ -210,11 +219,11 @@ export default function Competition() {
                             <p className="opacity-50">
                                 (
                                 {new Date(
-                                    achievements.biggest_jito_sol_pnl.week_starts[week],
+                                    achievements.biggest_liquidation.week_starts[week],
                                 ).toLocaleDateString()}{' '}
                                 –{' '}
                                 {new Date(
-                                    achievements.biggest_jito_sol_pnl.week_ends[week],
+                                    achievements.biggest_liquidation.week_ends[week],
                                 ).toLocaleDateString()}
                                 )
                             </p>
@@ -248,39 +257,62 @@ export default function Competition() {
                 </div>
 
                 <WeeklyReward
-                    rewards={{
-                        'biggest liquidation': {
+                    rewards={[
+                        {
+                            title: 'Biggest Liquidation',
                             trader: achievements.biggest_liquidation.addresses[week],
-                            result:
-                                achievements.biggest_liquidation.liquidation_amounts[week],
+                            result: achievements.biggest_liquidation.liquidation_amounts[week],
+                            type: 'reward',
+                            reward: 10000,
+                            rewardToken: 'ADX',
+                            rewardImage: window.adrena.client.adxToken.image,
                         },
-                        'top pnl position': {
-                            trader: achievements.top_percentage_position.addresses[week],
-                            result:
-                                achievements.top_percentage_position.pnl_percentages[week],
+                        {
+                            title: 'Fees Prize',
+                            trader: achievements.fees_tickets.addresses[week],
+                            totalTickets: achievements.fees_tickets.total_tickets[week],
+                            connectedWalletTickets: achievements.fees_tickets.tickets_count[0][week],
+                            type: 'ticket',
+                            reward: 10000,
+                            rewardToken: 'ADX',
+                            rewardImage: window.adrena.client.adxToken.image,
                         },
-                        'top degen': {
+                        {
+                            title: 'Top Degen',
                             trader: achievements.top_degen.addresses[week],
                             result: achievements.top_degen.pnl_amounts[week],
+                            type: 'reward',
+                            reward: 10000,
+                            rewardToken: 'ADX',
+                            rewardImage: window.adrena.client.adxToken.image,
                         },
-                        'partner sponsored trade': {
-                            trader: achievements.biggest_jito_sol_pnl.addresses[week],
-                            result: achievements.biggest_jito_sol_pnl.pnl_amounts[week],
-                        },
-                    }}
+                        {
+                            title: 'SOL Trading Volume Prize',
+                            trader: achievements.jitosol_tickets.addresses[week],
+                            totalTickets: achievements.jitosol_tickets.total_tickets[week],
+                            connectedWalletTickets: achievements.fees_tickets.tickets_count[0][week],
+                            type: 'ticket',
+                            reward: 1000,
+                            rewardToken: 'JITO',
+                            rewardImage: jtoImage,
+                        }
+                    ]}
                 />
             </div>
-            <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-[20px] sm:px-[50px] my-3" />
-            <div className="px-[20px] sm:px-[50px]">
+
+            <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
+
+            <div className="px-4 sm:px-8">
                 <h1 className="font-boldy mb-6 capitalize">The leaderboard</h1>
 
                 <div className="grid lg:grid-cols-2 gap-[50px]">
-                    {division.map((division) => {
+                    {division.map((division, index) => {
                         return (
                             <LeaderboardTable
                                 division={division}
                                 data={data}
                                 key={division}
+                                index={index + 1}
                             />
                         );
                     })}

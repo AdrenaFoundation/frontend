@@ -139,7 +139,7 @@ export default function RootLayout({
       <ViewsWarning />
 
       <div className="w-full grow flex justify-center">
-        <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
+        <div className="w-full flex flex-col sm:pb-0 max-w-[1500px]">
           {children}
         </div>
       </div>

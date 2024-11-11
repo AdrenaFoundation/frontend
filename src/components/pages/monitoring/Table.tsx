@@ -16,6 +16,7 @@ export default function Table({
   columnTitlesClassName,
   rowTitleClassName,
   columnWrapperClassName,
+  paginationClassName,
   pagination = false,
   nbItemPerPage = 10,
   nbItemPerPageWhenBreakpoint = 2,
@@ -41,6 +42,7 @@ export default function Table({
   )[];
   rowTitleWidth?: string;
   pagination?: boolean;
+  paginationClassName?: string;
   nbItemPerPage?: number;
   nbItemPerPageWhenBreakpoint?: number;
   rowHovering?: boolean;
@@ -159,8 +161,9 @@ export default function Table({
       ))}
 
       {pagination && nbPages && (
-        <div className='mt-auto pt-3'>
+        <div className='mt-auto pt-2'>
           <Pagination
+            className={paginationClassName}
             variant="text"
             count={nbPages}
             page={page}
@@ -180,8 +183,9 @@ export default function Table({
       />
 
       {pagination && nbPages && (
-        <div className='m-auto py-3'>
+        <div className='m-auto py-2'>
           <Pagination
+            className={paginationClassName}
             variant="text"
             count={nbPages}
             page={page}

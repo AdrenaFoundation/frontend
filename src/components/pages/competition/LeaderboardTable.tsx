@@ -19,13 +19,15 @@ import Table from '../monitoring/Table';
 
 export default function LeaderboardTable({
     division,
+    index,
     data,
 }: {
     division: keyof TradingCompetitionLeaderboardAPI;
+    index: number;
     data: TradingCompetitionLeaderboardAPI
 }) {
     const DIVISONS = {
-        Morph: {
+        Leviathan: {
             img: golemImage,
             title: 'Leviathan Division',
             topTradersPercentage: 10,
@@ -38,7 +40,7 @@ export default function LeaderboardTable({
             color: 'bg-[#C4B373]',
         },
 
-        Chimera: {
+        Mutant: {
             img: demonImage,
             title: 'Mutant Division',
             topTradersPercentage: 60,
@@ -74,14 +76,17 @@ export default function LeaderboardTable({
                 width={75}
                 height={75}
                 alt=""
-                className="rounded-full border-2 border-yellow-600"
+                className="rounded-full border-2 border-yellow-600 h-[6em] w-[6em]"
             />
             <div className="flex flex-row items-center gap-3 mt-3">
                 <h3 className="font-boldy capitalize">{DIVISONS[division].title}</h3>
+
+                <div className="capitalize text-sm tracking-widest">TIER {index}</div>
+
                 {DIVISONS[division].topTradersPercentage !== null && (
                     <div
                         className={twMerge(
-                            'rounded-full p-0.5 px-3',
+                            'rounded-full p-0.5 px-3 ml-auto',
                             DIVISONS[division].color,
                         )}
                     >
@@ -94,15 +99,16 @@ export default function LeaderboardTable({
 
             <div className="mt-3">
                 <Table
-                    className="bg-transparent gap-3 border-none p-0"
+                    className="bg-transparent gap-1 border-none p-0"
                     columnTitlesClassName="text-sm opacity-50"
                     columnsTitles={['#', 'Trader', 'PnL', 'Volume', 'Rewards']}
                     rowHovering={true}
                     pagination={true}
+                    paginationClassName='scale-[80%] p-0'
                     nbItemPerPage={10}
                     nbItemPerPageWhenBreakpoint={3}
-                    rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-2 items-center"
-                    rowTitleWidth="20px"
+                    rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
+                    rowTitleWidth=""
                     isFirstColumnId
                     data={data[division].map((d, i) => {
                         return {
@@ -124,41 +130,68 @@ export default function LeaderboardTable({
                                         width={40}
                                         height={40}
                                         alt="rank"
+                                        className='h-8 w-8'
                                         key={`rank-${i}`}
                                     />
                                 ) : (
-                                    <p className="text-lg text-center w-[40px]" key={`rank-${i}`}>
+                                    <p className="text-sm text-center w-[40px]" key={`rank-${i}`}>
                                         {d.rank}
                                     </p>
                                 ),
-                                <p key={`trader-${i}`}>
+
+                                <p key={`trader-${i}`} className='text-xs font-boldy'>
                                     {d.username
                                         ? isValidPublicKey(d.username)
                                             ? getAbbrevWalletAddress(d.username)
                                             : d.username
                                         : 'Unknown'}
                                 </p>,
+
                                 <FormatNumber
                                     nb={d.pnl}
                                     format="currency"
-                                    className={d.pnl >= 0 ? 'text-green' : 'text-red'}
+                                    className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
                                     isDecimalDimmed={false}
                                     key={`pnl-${i}`}
                                 />,
+
                                 <FormatNumber
                                     nb={d.volume}
                                     isDecimalDimmed={false}
+                                    isAbbreviate={true}
+                                    className='text-xs'
                                     format="currency"
                                     key={`volume-${i}`}
+                                    isAbbreviateIcon={false}
                                 />,
-                                <FormatNumber
-                                    nb={d.rewards}
-                                    className="text-green"
-                                    suffix=" ADX"
-                                    suffixClassName="text-green"
-                                    isDecimalDimmed={false}
-                                    key={`rewards-${i}`}
-                                />,
+
+                                <div className='flex flex-col' key={`rewards-${i}`}>
+                                    {d.adxRewards ? <div className='flex'>
+                                        <FormatNumber
+                                            nb={d.adxRewards}
+                                            className="text-green text-xs font-boldy"
+                                            prefix='+'
+                                            suffixClassName="text-green"
+                                            isDecimalDimmed={false}
+                                        />
+
+                                        <span className='flex text-green font-boldy text-xs ml-1'>ADX</span>
+                                    </div> : null}
+
+                                    {d.adxRewards ? <div className='flex'>
+                                        <FormatNumber
+                                            nb={d.jtoRewards}
+                                            className="text-green text-xs font-boldy"
+                                            suffix=""
+                                            prefix='+'
+                                            suffixClassName="text-green"
+                                            isDecimalDimmed={false}
+                                        />
+                                        <span className='flex text-green font-boldy text-xs ml-1'>JTO</span>
+                                    </div> : null}
+
+                                    {d.adxRewards === 0 && d.jtoRewards === 0 ? <span>--</span> : null}
+                                </div>
                             ],
                         };
                     })}
