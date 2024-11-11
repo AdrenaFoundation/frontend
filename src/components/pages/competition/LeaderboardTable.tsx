@@ -21,40 +21,42 @@ export default function LeaderboardTable({
     division,
     index,
     data,
+    className,
 }: {
     division: keyof TradingCompetitionLeaderboardAPI;
     index: number;
-    data: TradingCompetitionLeaderboardAPI
+    data: TradingCompetitionLeaderboardAPI;
+    className?: string;
 }) {
-    const DIVISONS = {
+    const DIVISIONS = {
         Leviathan: {
             img: golemImage,
             title: 'Leviathan Division',
             topTradersPercentage: 10,
-            color: 'bg-[#A855F7]',
+            color: 'bg-[#163C7D]',
         },
         Abomination: {
             img: overlordImage,
             title: 'Abomination Division',
             topTradersPercentage: 40,
-            color: 'bg-[#C4B373]',
+            color: 'bg-[#6C167D]',
         },
 
         Mutant: {
             img: demonImage,
             title: 'Mutant Division',
             topTradersPercentage: 60,
-            color: 'bg-[#3C82F6]',
+            color: 'bg-[#7D1618]',
         },
         Spawn: {
             img: goblinImage,
-            title: 'Spwan Division',
+            title: 'Spawn Division',
             topTradersPercentage: 80,
-            color: 'bg-[#22C55D]',
+            color: 'bg-[#167D57]',
         },
         'No Division': {
-            img: overlordImage,
-            title: 'No Division',
+            img: null,
+            title: 'Unranked',
             topTradersPercentage: null,
             color: 'bg-[#163C7D]',
         },
@@ -70,28 +72,29 @@ export default function LeaderboardTable({
     };
 
     return (
-        <div>
-            <Image
-                src={DIVISONS[division].img}
+        <div className={className}>
+            {DIVISIONS[division].img ? <Image
+                src={DIVISIONS[division].img}
                 width={75}
                 height={75}
                 alt=""
                 className="rounded-full border-2 border-yellow-600 h-[6em] w-[6em]"
-            />
+            /> : null}
+
             <div className="flex flex-row items-center gap-3 mt-3">
-                <h3 className="font-boldy capitalize">{DIVISONS[division].title}</h3>
+                <h3 className={twMerge("font-boldy capitalize", division === 'No Division' ? 'ml-auto mr-auto' : '')}>{DIVISIONS[division].title}</h3>
 
-                <div className="capitalize text-sm tracking-widest">TIER {index}</div>
+                {division !== 'No Division' ? <div className="capitalize text-sm tracking-widest">TIER {index}</div> : null}
 
-                {DIVISONS[division].topTradersPercentage !== null && (
+                {DIVISIONS[division].topTradersPercentage !== null && (
                     <div
                         className={twMerge(
                             'rounded-full p-0.5 px-3 ml-auto',
-                            DIVISONS[division].color,
+                            DIVISIONS[division].color,
                         )}
                     >
                         <p className="text-sm font-boldy">
-                            Top {DIVISONS[division].topTradersPercentage}%
+                            Top {DIVISIONS[division].topTradersPercentage}%
                         </p>
                     </div>
                 )}
@@ -101,20 +104,20 @@ export default function LeaderboardTable({
                 <Table
                     className="bg-transparent gap-1 border-none p-0"
                     columnTitlesClassName="text-sm opacity-50"
-                    columnsTitles={['#', 'Trader', 'PnL', 'Volume', 'Rewards']}
+                    columnsTitles={[<span className='ml-4 opacity-50'>#</span>, 'Trader', <span className='ml-auto mr-auto opacity-50'>PnL</span>, <span className='ml-auto mr-auto opacity-50'>Volume</span>, <span className='ml-auto opacity-50'>Rewards</span>]}
                     rowHovering={true}
                     pagination={true}
                     paginationClassName='scale-[80%] p-0'
                     nbItemPerPage={10}
                     nbItemPerPageWhenBreakpoint={3}
                     rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
-                    rowTitleWidth=""
+                    rowTitleWidth="0%"
                     isFirstColumnId
                     data={data[division].map((d, i) => {
                         return {
                             rowTitle: '',
                             values: [
-                                d.rank < 5 ? (
+                                d.rank < 4 && division !== 'No Division' ? (
                                     <Image
                                         src={
                                             d.rank === 1
@@ -123,9 +126,7 @@ export default function LeaderboardTable({
                                                     ? secondImage
                                                     : d.rank === 3
                                                         ? thirdImage
-                                                        : d.rank === 4
-                                                            ? fourthImage
-                                                            : ''
+                                                        : ''
                                         }
                                         width={40}
                                         height={40}
@@ -147,25 +148,29 @@ export default function LeaderboardTable({
                                         : 'Unknown'}
                                 </p>,
 
-                                <FormatNumber
-                                    nb={d.pnl}
-                                    format="currency"
-                                    className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
-                                    isDecimalDimmed={false}
-                                    key={`pnl-${i}`}
-                                />,
+                                <div className='flex items-center justify-center grow'>
+                                    <FormatNumber
+                                        nb={d.pnl}
+                                        format="currency"
+                                        className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
+                                        isDecimalDimmed={false}
+                                        key={`pnl-${i}`}
+                                    />
+                                </div>,
 
-                                <FormatNumber
-                                    nb={d.volume}
-                                    isDecimalDimmed={false}
-                                    isAbbreviate={true}
-                                    className='text-xs'
-                                    format="currency"
-                                    key={`volume-${i}`}
-                                    isAbbreviateIcon={false}
-                                />,
+                                <div className='flex items-center justify-center grow'>
+                                    <FormatNumber
+                                        nb={d.volume}
+                                        isDecimalDimmed={false}
+                                        isAbbreviate={true}
+                                        className='text-xs'
+                                        format="currency"
+                                        key={`volume-${i}`}
+                                        isAbbreviateIcon={false}
+                                    />
+                                </div>,
 
-                                <div className='flex flex-col' key={`rewards-${i}`}>
+                                <div className='flex flex-col items-end ml-auto' key={`rewards-${i}`}>
                                     {d.adxRewards ? <div className='flex'>
                                         <FormatNumber
                                             nb={d.adxRewards}

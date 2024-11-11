@@ -20,8 +20,10 @@ import {
     getDaysBetweenDates,
     getHoursBetweenDates,
 } from '@/utils';
+import { useSelector } from '@/store/store';
 
 export default function Competition() {
+    const wallet = useSelector((state) => state.walletState.wallet);
     const { allUserProfiles } = useAllUserProfiles();
     const [data, setData] = useState<TradingCompetitionLeaderboardAPI | null>(
         null,
@@ -37,6 +39,32 @@ export default function Competition() {
         getData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allUserProfiles]);
+
+    const [connectedWalletTickets, setConnectedWalletTickets] = useState<{
+        fees: number | null;
+        jito: number | null;
+    } | null>(null);
+
+    useEffect(() => {
+        if (!wallet || !achievements) return setConnectedWalletTickets(null);
+
+        // Find user in the data
+        const userIndex = achievements.fees_tickets.addresses[week].findIndex(x => x === wallet.walletAddress);
+
+        // Not a part of the competition yet
+        if (userIndex === -1) {
+            setConnectedWalletTickets({
+                fees: 0,
+                jito: 0,
+            });
+            return;
+        }
+
+        setConnectedWalletTickets({
+            fees: achievements.fees_tickets.tickets_count[userIndex][week] ?? 0,
+            jito: achievements.jitosol_tickets.tickets_count[userIndex][week] ?? 0,
+        });
+    }, [wallet, data, achievements]);
 
     const getData = async () => {
         try {
@@ -113,6 +141,8 @@ export default function Competition() {
         new Date(achievements.biggest_liquidation.week_ends[week]),
     );
 
+
+
     return (
         <div className="flex flex-col gap-6 pb-20 relative overflow-hidden bg-[#070E18]">
             <div className='bg-[#FF35382A] bottom-[-17%] absolute h-[20%] w-full blur-3xl backdrop-opacity-10 rounded-full'></div>
@@ -157,7 +187,7 @@ export default function Competition() {
                                 className="items-center text-base"
                                 tippyText=""
                             />
-                            <span className='ml-2 mt-[2px] text-lg tracking-widest'>left</span></> :
+                            <span className='ml-2 text-base font-boldy tracking-widest'>left</span></> :
                             'Competition has ended'}
                     </p>
 
@@ -171,38 +201,43 @@ export default function Competition() {
 
             <div className="px-4 sm:px-8">
                 <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-12">
-                    <div>
+                    <div className='flex flex-col items-center lg:items-start'>
                         <h1 className="font-boldy text-3xl capitalize">
                             Adrena Trading Competition
                         </h1>
-                        <p className="text-base text-txtfade mb-3">
+                        <p className="text-base text-txtfade mb-2">
                             From Nov 11 - Dec 23, 2024
                         </p>
-                        <p className="text-sm max-w-[640px] text-txtfade">
-                            Adrena&apos;s first trading competition. A 6 weeks long competition,
-                            intro to the upcoming recurring trading seasons.
-                            Starting November 11th and ending December 23rd. There will be 4
-                            separate divisions. You&apos;ll be qualifying for a given division
-                            based on your total trading volume during the 6 week event.
-                        </p>
+                        <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start">
+                            <span className='text-txtfade text-center lg:text-left'>Welcome to Adrena&apos;s trading pre-season, anon! This six-week event is the introduction to our upcoming recurring trading seasons.</span>
+                            <span className='text-txtfade text-center lg:text-left'>From November 11th 12pm UTC to December 23rd 12pm UTC, traders will vie for PnL-based ranks in one of four volume-based divisions.</span>
+                            <span className='text-txtfade text-center lg:text-left'>Your total trading volume during the six-week event determines your division qualification.</span>
+                            <span className='text-txtfade text-center lg:text-left'>Check out the divisions below, continuously updated based on onchain events.</span>
+
+                            <span className='text-txtfade text-center lg:text-left mt-2'>Only positions open after the start date and closed before the end date qualify.</span>
+                            <span className='text-txtfade text-center lg:text-left'>Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC.</span>
+                            <span className='text-txtfade text-center lg:text-left'>Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).</span>
+                        </div>
                     </div>
 
-                    <div className="flex flex-col gap-3 w-full items-center lg:w-auto">
+                    <div className="flex flex-col gap-3 w-full items-center lg:w-[15em]">
                         <h4 className="font-boldy text-base">Total Rewards</h4>
-                        <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg p-4 px-12">
+                        <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg pl-6 pt-4 pb-4 w-full">
                             <Image
                                 src={window.adrena.client.adxToken.image}
                                 alt="adx logo"
                                 width={18}
                                 height={18}
                             />
-                            <p className="text-xl font-boldy">
+                            <p className="text-xl font-boldy w-[7em]">
                                 2.095M ADX
                             </p>
                         </div>
-                        <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg p-4 px-12">
-                            <Image src={jitoLogo2} alt="adx logo" width={18} height={18} />
-                            <p className="text-xl font-boldy">
+
+                        <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg pl-6 pt-4 pb-4 w-full">
+                            <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+
+                            <p className="text-xl font-boldy w-[7em]">
                                 25,000 JTO
                             </p>
                         </div>
@@ -271,7 +306,7 @@ export default function Competition() {
                             title: 'Fees Prize',
                             trader: achievements.fees_tickets.addresses[week],
                             totalTickets: achievements.fees_tickets.total_tickets[week],
-                            connectedWalletTickets: achievements.fees_tickets.tickets_count[0][week],
+                            connectedWalletTickets: connectedWalletTickets?.fees ?? null,
                             type: 'ticket',
                             reward: 10000,
                             rewardToken: 'ADX',
@@ -290,7 +325,7 @@ export default function Competition() {
                             title: 'SOL Trading Volume Prize',
                             trader: achievements.jitosol_tickets.addresses[week],
                             totalTickets: achievements.jitosol_tickets.total_tickets[week],
-                            connectedWalletTickets: achievements.fees_tickets.tickets_count[0][week],
+                            connectedWalletTickets: connectedWalletTickets?.jito ?? null,
                             type: 'ticket',
                             reward: 1000,
                             rewardToken: 'JITO',
@@ -306,7 +341,7 @@ export default function Competition() {
                 <h1 className="font-boldy mb-6 capitalize">The leaderboard</h1>
 
                 <div className="grid lg:grid-cols-2 gap-[50px]">
-                    {division.map((division, index) => {
+                    {division.slice(0, -1).map((division, index) => {
                         return (
                             <LeaderboardTable
                                 division={division}
@@ -316,6 +351,18 @@ export default function Competition() {
                             />
                         );
                     })}
+                </div>
+
+                <div className='h-[1px] mt-8 mb-4 bg-bcolor' />
+
+                <div className='w-full flex items-center justify-center'>
+                    <LeaderboardTable
+                        className="w-full max-w-[40em]"
+                        division={division[4]}
+                        data={data}
+                        key={division[4]}
+                        index={5}
+                    />
                 </div>
             </div>
         </div>
