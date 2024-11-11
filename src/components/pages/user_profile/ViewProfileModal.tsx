@@ -20,12 +20,12 @@ export default function ViewProfileModal({
 }: {
     profile: UserProfileExtended;
 }) {
-    if (!profile) return null;
-    const [selectedTab, setSelectedTab] = useState('Overview');
-
     const positions = usePositionsByAddress({
         walletAddress: profile.owner.toBase58(),
     });
+
+    const [selectedTab, setSelectedTab] = useState('Overview');
+
 
     const leverageColorClass = getLeverageColorClass(
         profile.openingAverageLeverage,
