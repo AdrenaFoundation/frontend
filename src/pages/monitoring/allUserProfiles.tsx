@@ -15,7 +15,6 @@ import resetIcon from '../../../public/images/Icons/cross.svg'
 type SortableKeys = keyof Pick<UserProfileExtended, 'totalTradeVolumeUsd' | 'totalPnlUsd' | 'openingAverageLeverage' | 'totalFeesPaidUsd'>;
 
 export default function AllUserProfiles() {
-
     const { allUserProfiles, triggerAllUserProfilesReload } = useAllUserProfiles();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;

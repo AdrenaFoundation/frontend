@@ -22,11 +22,15 @@ export default function LeaderboardTable({
     index,
     data,
     className,
+    nbItemPerPage,
+    myDivision,
 }: {
     division: keyof TradingCompetitionLeaderboardAPI;
     index: number;
     data: TradingCompetitionLeaderboardAPI;
     className?: string;
+    nbItemPerPage?: number;
+    myDivision: boolean;
 }) {
     const DIVISIONS = {
         Leviathan: {
@@ -86,6 +90,8 @@ export default function LeaderboardTable({
 
                 {division !== 'No Division' ? <div className="capitalize text-sm tracking-widest">TIER {index}</div> : null}
 
+                {myDivision ? <div className='font-boldy text-xs border rounded-full bg-blue pt-1 pr-2 pl-2 pb-1 w-16 text-center'>YOU</div> : null}
+
                 {DIVISIONS[division].topTradersPercentage !== null && (
                     <div
                         className={twMerge(
@@ -108,7 +114,7 @@ export default function LeaderboardTable({
                     rowHovering={true}
                     pagination={true}
                     paginationClassName='scale-[80%] p-0'
-                    nbItemPerPage={10}
+                    nbItemPerPage={nbItemPerPage}
                     nbItemPerPageWhenBreakpoint={3}
                     rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                     rowTitleWidth="0%"
@@ -140,13 +146,12 @@ export default function LeaderboardTable({
                                     </p>
                                 ),
 
-                                <p key={`trader-${i}`} className='text-xs font-boldy'>
-                                    {d.username
-                                        ? isValidPublicKey(d.username)
-                                            ? getAbbrevWalletAddress(d.username)
-                                            : d.username
-                                        : 'Unknown'}
-                                </p>,
+                                d.username
+                                    ? isValidPublicKey(d.username)
+                                        ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-blue' : '')}>{getAbbrevWalletAddress(d.username)}</p>
+                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy', d.connected ? 'text-blue ' : '')}>{d.username}</p>
+                                    : <p key={`trader-${i}`} className='text-xs font-boldy'>Unknown</p>
+                                ,
 
                                 <div className='flex items-center justify-center grow'>
                                     <FormatNumber
@@ -195,7 +200,7 @@ export default function LeaderboardTable({
                                         <span className='flex text-green font-boldy text-xs ml-1'>JTO</span>
                                     </div> : null}
 
-                                    {d.adxRewards === 0 && d.jtoRewards === 0 ? <span>--</span> : null}
+                                    {d.adxRewards === 0 && d.jtoRewards === 0 ? <span className='h-[2.64em]'>--</span> : null}
                                 </div>
                             ],
                         };

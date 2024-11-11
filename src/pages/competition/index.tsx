@@ -31,6 +31,7 @@ export default function Competition() {
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
     const [week, setWeek] = useState(5);
+    const [myDivision, setMyDivision] = useState<string | null>(null);
 
     const startDate = new Date('11/11/2024');
     const endDate = new Date('12/23/2024');
@@ -38,7 +39,7 @@ export default function Competition() {
     useEffect(() => {
         getData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allUserProfiles]);
+    }, [allUserProfiles, wallet]);
 
     const [connectedWalletTickets, setConnectedWalletTickets] = useState<{
         fees: number | null;
@@ -46,7 +47,7 @@ export default function Competition() {
     } | null>(null);
 
     useEffect(() => {
-        if (!wallet || !achievements) return setConnectedWalletTickets(null);
+        if (!wallet || !achievements || !data) return setConnectedWalletTickets(null);
 
         // Find user in the data
         const userIndex = achievements.fees_tickets.addresses[week].findIndex(x => x === wallet.walletAddress);
@@ -78,13 +79,25 @@ export default function Competition() {
                 return;
             }
 
+            if (wallet) {
+                const f = trader_divisions.find(({ division, traders }: any) => {
+                    // division.some((x) => )
+                    return traders.some(({ address }: { address: string }) => address === wallet.walletAddress);
+                });
+
+                setMyDivision(f.division ?? null);
+            } else {
+                setMyDivision(null);
+            }
+
             const formattedData = trader_divisions.reduce(
                 (acc: TradingCompetitionLeaderboardAPI, { division, traders }: any) => {
                     acc[division as keyof TradingCompetitionLeaderboardAPI] = traders.map((trader: any) => {
                         let username = trader.address;
+
                         if (allUserProfiles && allUserProfiles.length > 0) {
                             const user = allUserProfiles.find(
-                                (profile) => profile.pubkey.toBase58() === trader.address,
+                                (profile) => profile.owner.toBase58() === trader.address,
                             );
 
                             if (user) {
@@ -93,6 +106,7 @@ export default function Competition() {
                         }
 
                         return {
+                            connected: trader.address === wallet?.walletAddress,
                             username,
                             rank: trader.rank_in_division,
                             volume: trader.total_volume,
@@ -140,8 +154,6 @@ export default function Competition() {
         new Date(),
         new Date(achievements.biggest_liquidation.week_ends[week]),
     );
-
-
 
     return (
         <div className="flex flex-col gap-6 pb-20 relative overflow-hidden bg-[#070E18]">
@@ -262,6 +274,7 @@ export default function Competition() {
                                 ).toLocaleDateString()}
                                 )
                             </p>
+
                             <p className="text-xs font-mono z-10">
                                 {hoursUntilNextWeek > 0 &&
                                     `${daysUntilNextWeek}d ${hoursUntilNextWeek}h left`}
@@ -348,6 +361,8 @@ export default function Competition() {
                                 data={data}
                                 key={division}
                                 index={index + 1}
+                                nbItemPerPage={10}
+                                myDivision={division === myDivision}
                             />
                         );
                     })}
@@ -361,7 +376,9 @@ export default function Competition() {
                         division={division[4]}
                         data={data}
                         key={division[4]}
+                        nbItemPerPage={20}
                         index={5}
+                        myDivision={division[4] === myDivision}
                     />
                 </div>
             </div>

@@ -508,6 +508,7 @@ export type TradingCompetitionLeaderboardAPI = {
   [key in 'Leviathan' | 'Abomination' | 'Mutant' | 'Spawn' | 'No Division']: {
     rank: number;
     username: string;
+    connected: boolean;
     volume: number;
     pnl: number;
     adxRewards: number;
