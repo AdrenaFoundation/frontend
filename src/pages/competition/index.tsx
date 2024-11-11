@@ -12,6 +12,7 @@ import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
+import { useSelector } from '@/store/store';
 import {
     TradingCompetitionAchievementsAPI,
     TradingCompetitionLeaderboardAPI,
@@ -20,7 +21,6 @@ import {
     getDaysBetweenDates,
     getHoursBetweenDates,
 } from '@/utils';
-import { useSelector } from '@/store/store';
 
 const division = [
     'Leviathan',
