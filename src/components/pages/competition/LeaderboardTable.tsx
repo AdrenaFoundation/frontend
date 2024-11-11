@@ -89,7 +89,7 @@ export default function LeaderboardTable({
 
                 {division !== 'No Division' ? <div className="capitalize text-sm tracking-widest">TIER {index}</div> : null}
 
-                {myDivision ? <div className='font-boldy text-xs border rounded-full bg-blue pt-1 pr-2 pl-2 pb-1 w-16 text-center'>YOU</div> : null}
+                {myDivision ? <div className='font-boldy text-xs border rounded-full bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-16 text-center'>Your div.</div> : null}
 
                 {DIVISIONS[division].topTradersPercentage !== null && (
                     <div
