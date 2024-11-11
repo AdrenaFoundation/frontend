@@ -5,7 +5,6 @@ import firstImage from '@/../public/images/first-place.svg';
 import jitoImage from '@/../public/images/jito-logo.svg';
 import jtoImage from '@/../public/images/jito-logo-2.png';
 import ticketImage from '@/../public/images/tickets.png';
-import interrogationImage from '@/../public/images/interrogation.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ImageRef } from '@/types';
 import { getAbbrevWalletAddress } from '@/utils';
