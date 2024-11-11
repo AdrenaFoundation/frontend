@@ -158,7 +158,7 @@ export default function LeaderboardTable({
                                     : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
                                 ,
 
-                                <div className='flex items-center justify-center grow' key={`pnl-${i}`}>
+                                <div className='flex items-center justify-end md:justify-center grow' key={`pnl-${i}`}>
                                     <FormatNumber
                                         nb={d.pnl}
                                         format="currency"
@@ -168,13 +168,14 @@ export default function LeaderboardTable({
                                     />
                                 </div>,
 
-                                <div className='flex items-center justify-center grow' key={`volume-${i}`}>
+                                <div className='flex items-center justify-end md:justify-center grow' key={`volume-${i}`}>
                                     <FormatNumber
                                         nb={d.volume}
                                         isDecimalDimmed={false}
                                         isAbbreviate={true}
                                         className='text-xs'
                                         format="currency"
+
                                         isAbbreviateIcon={false}
                                     />
                                 </div>,
