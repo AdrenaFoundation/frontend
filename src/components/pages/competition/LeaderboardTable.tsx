@@ -150,7 +150,7 @@ export default function LeaderboardTable({
                                     ? isValidPublicKey(d.username)
                                         ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-blue' : '')}>{getAbbrevWalletAddress(d.username)}</p>
                                         : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy', d.connected ? 'text-blue ' : '')}>{d.username}</p>
-                                    : <p key={`trader-${i}`} className='text-xs font-boldy'>Unknown</p>
+                                    : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
                                 ,
 
                                 <div className='flex items-center justify-center grow'>

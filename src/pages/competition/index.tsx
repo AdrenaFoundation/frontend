@@ -21,6 +21,31 @@ import {
     getHoursBetweenDates,
 } from '@/utils';
 import { useSelector } from '@/store/store';
+import { PublicKey } from '@solana/web3.js';
+
+const division = [
+    'Leviathan',
+    'Abomination',
+    'Mutant',
+    'Spawn',
+    'No Division',
+] as const;
+
+const adxRewardsPlaceholder = {
+    'Leviathan': [320000, 240000, 160000, 40000, 40000, 40000, 40000, 40000, 40000, 40000],
+    'Abomination': [160000, 120000, 80000, 20000, 20000, 20000, 20000, 20000, 20000, 20000],
+    'Mutant': [80000, 60000, 40000, 10000, 10000, 10000, 10000, 10000, 10000, 10000],
+    'Spawn': [40000, 30000, 20000, 5000, 5000, 5000, 5000, 5000, 5000, 5000],
+    'No Division': [],
+};
+
+const jtoRewardsPlaceholder = {
+    'Leviathan': [3200, 2400, 1600, 400, 400, 400, 400, 400, 400, 400],
+    'Abomination': [1600, 1200, 800, 200, 200, 200, 200, 200, 200, 200],
+    'Mutant': [800, 600, 400, 100, 100, 100, 100, 100, 100, 100],
+    'Spawn': [400, 300, 200, 50, 50, 50, 50, 50, 50, 50],
+    'No Division': [],
+};
 
 export default function Competition() {
     const wallet = useSelector((state) => state.walletState.wallet);
@@ -73,22 +98,53 @@ export default function Competition() {
                 'https://datapi.adrena.xyz/awakening?season=preseason&show_achievements=true&show_trader_divisions=true',
             );
             const { data } = await response.json();
-            const { trader_divisions, achievements } = data;
+            const { trader_divisions = [], achievements = [] } = data;
 
             if (!trader_divisions || !achievements) {
                 return;
             }
 
             if (wallet) {
-                const f = trader_divisions.find(({ division, traders }: any) => {
+                const f = trader_divisions.find(({ traders }: any) => {
                     // division.some((x) => )
                     return traders.some(({ address }: { address: string }) => address === wallet.walletAddress);
                 });
 
-                setMyDivision(f.division ?? null);
+                setMyDivision(f ? f.division ?? null : null);
             } else {
                 setMyDivision(null);
             }
+
+            division.forEach((divisionName) => {
+                let divisionIndex = trader_divisions.findIndex(({ division }: any) => division === divisionName);
+
+                if (divisionIndex === -1 || trader_divisions[divisionIndex].traders.length < 10) {
+                    const nbMissing = 10 - (trader_divisions[divisionIndex]?.traders.length ?? 0);
+
+                    if (divisionIndex === -1) {
+                        trader_divisions.push({
+                            division: divisionName,
+                            traders: [],
+                        });
+
+                        divisionIndex = trader_divisions.length - 1;
+                    }
+
+                    for (let i = 0; i < nbMissing; i++) {
+                        const rank = (10 - nbMissing) + (i + 1);
+                        trader_divisions[divisionIndex].traders.push({
+                            connected: false,
+                            address: '-',
+                            username: '-',
+                            rank_in_division: rank,
+                            total_volume: null,
+                            total_pnl: null,
+                            adx_reward: adxRewardsPlaceholder[divisionName]?.[rank - 1] ?? 0,
+                            jto_reward: jtoRewardsPlaceholder[divisionName]?.[rank - 1] ?? 0,
+                        });
+                    }
+                }
+            });
 
             const formattedData = trader_divisions.reduce(
                 (acc: TradingCompetitionLeaderboardAPI, { division, traders }: any) => {
@@ -136,14 +192,6 @@ export default function Competition() {
             </div>
         );
     }
-
-    const division = [
-        'Leviathan',
-        'Abomination',
-        'Mutant',
-        'Spawn',
-        'No Division',
-    ] as const;
 
     const daysUntilNextWeek = getDaysBetweenDates(
         new Date(),
