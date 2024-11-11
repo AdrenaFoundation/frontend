@@ -275,7 +275,7 @@ export default function Competition() {
 
                             <span className='text-txtfade text-center lg:text-left mt-2'>Only positions open after the start date and closed before the end date qualify.</span>
                             <span className='text-txtfade text-center lg:text-left'>Each weekly periods ends on Monday 12am UTC, except the last one ending at 12pm UTC.</span>
-                            <span className='text-txtfade text-center lg:text-left'>Volume is determined by Open/Increase and Close positions. It's accounted for when the position closes (close or liquidation).</span>
+                            <span className='text-txtfade text-center lg:text-left'>Volume is determined by Open/Increase and Close positions. It&apos;s accounted for when the position closes (close or liquidation).</span>
                         </div>
                     </div>
 
