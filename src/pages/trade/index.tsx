@@ -398,7 +398,7 @@ export default function Trade({
           />
         ) : null}
 
-        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
+        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-1 z-30">
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
               <Button
