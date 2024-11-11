@@ -22,11 +22,11 @@ export default function ViewProfileModal({
 }) {
     if (!profile) return null;
     const [selectedTab, setSelectedTab] = useState('Overview');
-    // const {positionsHistory} = usePositionsHistory({walletAddress: profile.pubkey.toBase58()});
+
     const positions = usePositionsByAddress({
         walletAddress: profile.owner.toBase58(),
     });
-    console.log('positions', positions, profile.owner.toBase58());
+
     const leverageColorClass = getLeverageColorClass(
         profile.openingAverageLeverage,
     );
