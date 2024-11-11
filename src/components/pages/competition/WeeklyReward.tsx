@@ -19,6 +19,7 @@ export type TicketData = {
     reward: number | null;
     rewardToken: 'ADX' | 'JITO';
     rewardImage: ImageRef;
+    description: string;
 };
 
 export type RewardData = {
@@ -28,6 +29,7 @@ export type RewardData = {
     reward: number | null;
     rewardToken: 'ADX' | 'JITO';
     rewardImage: ImageRef;
+    description: string;
 };
 
 const isValidPublicKey = (key: string) => {
@@ -43,10 +45,10 @@ export default function WeeklyReward({
     rewards,
 }: {
     rewards: [
-        { title: 'Biggest Liquidation' } & RewardData,
+        { title: 'Top Liquidation' } & RewardData,
         { title: 'Fees Prize' } & TicketData,
-        { title: 'Top Degen' } & RewardData,
-        { title: 'SOL Trading Volume Prize' } & TicketData,
+        { title: 'Leverage Monster' } & RewardData,
+        { title: 'SOL Trading Volume' } & TicketData,
     ];
 }) {
     return (
@@ -68,7 +70,7 @@ export default function WeeklyReward({
 
                         <div className='flex flex-col gap-2 items-center justify-between p-3 z-20'>
                             <div className='flex flex-col items-center gap-2'>
-                                {award.title === 'SOL Trading Volume Prize' ? <Image
+                                {award.title === 'SOL Trading Volume' ? <Image
                                     src={jitoImage}
                                     alt="first place logo"
                                     width={55}
@@ -142,7 +144,7 @@ export default function WeeklyReward({
                                 />
                             </div>
 
-                            <p className="opacity-50">Prize</p>
+                            <p className="opacity-50 text-center">{award.description}</p>
                         </div>
                     </div >;
                 }
@@ -209,7 +211,7 @@ export default function WeeklyReward({
                         />
                     </div>
 
-                    <p className="opacity-50">Prize</p>
+                    <p className="opacity-50 text-center">{award.description}</p>
                 </div>;
             })}
         </div >
