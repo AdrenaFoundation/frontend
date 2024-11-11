@@ -181,9 +181,6 @@ export default function Competition() {
                 {},
             );
 
-
-            console.log('Achievements', achievements)
-
             achievements.biggest_liquidation.addresses = achievements.biggest_liquidation.addresses.map((address: string) => {
                 return allUserProfiles.find((profile) => profile.owner.toBase58() === address)?.nickname ?? address;
             });
