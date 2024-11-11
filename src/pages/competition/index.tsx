@@ -61,6 +61,12 @@ export default function Competition() {
 
     useEffect(() => {
         getData();
+
+        const interval = setInterval(() => {
+            getData();
+        }, 10000);
+
+        return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allUserProfiles, wallet]);
 
