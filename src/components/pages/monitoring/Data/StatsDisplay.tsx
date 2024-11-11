@@ -17,6 +17,8 @@ export default function StatsDisplay({
     format: 'number' | 'currency' | 'percentage';
     precision?: number;
     suffix?: string;
+    bodyClassName?: string;
+    isDecimalDimmed?: boolean;
   }[];
   title?: string;
   isLive?: boolean;
@@ -51,6 +53,8 @@ export default function StatsDisplay({
           format={stats[0].format}
           suffix={stats[0].suffix}
           className="rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r"
+          bodyClassName={stats[0].bodyClassName}
+          isDecimalDimmed={stats[0].isDecimalDimmed}
         />
 
         <NumberDisplay
@@ -60,6 +64,8 @@ export default function StatsDisplay({
           format={stats[1].format}
           suffix={stats[1].suffix}
           className="rounded-none border-t-0 border-l-0 border-r-0 border-b"
+          bodyClassName={stats[1].bodyClassName}
+          isDecimalDimmed={stats[1].isDecimalDimmed}
         />
 
         <NumberDisplay
@@ -69,6 +75,8 @@ export default function StatsDisplay({
           format={stats[2].format}
           suffix={stats[2].suffix}
           className="rounded-none border-t-0 border-l-0 border-r-0 border-b sm:border-r"
+          bodyClassName={stats[2].bodyClassName}
+          isDecimalDimmed={stats[2].isDecimalDimmed}
         />
 
         <NumberDisplay
@@ -78,6 +86,8 @@ export default function StatsDisplay({
           format={stats[3].format}
           suffix={stats[3].suffix}
           className="rounded-none border-t-0 border-l-0 border-r-0 border-b"
+          bodyClassName={stats[3].bodyClassName}
+          isDecimalDimmed={stats[3].isDecimalDimmed}
         />
 
         <NumberDisplay
@@ -87,6 +97,8 @@ export default function StatsDisplay({
           format={stats[4].format}
           suffix={stats[4].suffix}
           className="rounded-none border-t-0 border-l-0 border-r-0 border-b-0 sm:border-r"
+          bodyClassName={stats[4].bodyClassName}
+          isDecimalDimmed={stats[4].isDecimalDimmed}
         />
 
         <NumberDisplay
@@ -96,6 +108,8 @@ export default function StatsDisplay({
           format={stats[5].format}
           suffix={stats[5].suffix}
           className="rounded-none border-t border-l-0 border-r-0 border-b-0 sm:border-t-0"
+          bodyClassName={stats[5].bodyClassName}
+          isDecimalDimmed={stats[5].isDecimalDimmed}
         />
       </div>
     </div>

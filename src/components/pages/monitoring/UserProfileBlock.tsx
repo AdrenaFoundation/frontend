@@ -11,7 +11,7 @@ interface UserProfileBlockProps {
     setActiveProfile: (profile: UserProfileExtended) => void;
 }
 
-function getLeverageColorClass(leverage: number): string {
+export function getLeverageColorClass(leverage: number): string {
     if (leverage < 10) return 'text-white';
     if (leverage < 25) return 'text-green';
     if (leverage < 50) return 'text-orange';
