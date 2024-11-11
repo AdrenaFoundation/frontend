@@ -3,11 +3,11 @@ import Script from 'next/script';
 
 export const metadata = {
   metadataBase: new URL('https://app.adrena.xyz/'),
-  title: 'Adrena Trading Competition',
+  title: 'Adrena | Pre-Season: Awakening',
   description:
     "Adrena's first trading competition. Compete for a share of over 2 million ADX and 25K JTO rewards",
   openGraph: {
-    title: 'Adrena Trading Competition',
+    title: 'Adrena | Pre-Season: Awakening',
     description:
       "Adrena's first trading competition. Compete for a share of over 2 million ADX and 25K JTO rewards",
     images:
@@ -15,7 +15,7 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Adrena Trading Competition',
+    title: 'Adrena | Pre-Season: Awakening',
     description:
       "Adrena's first trading competition. Compete for a share of over 2 million ADX and 25K JTO rewards",
     creator: '@adrenaprotocol',
