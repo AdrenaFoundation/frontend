@@ -45,12 +45,6 @@ export default function ViewProfileModal({
                     className="bg-[#040D14] sm:min-w-[200px]"
                 />
                 <NumberDisplay
-                    title="Total Trade Volume"
-                    nb={profile.totalTradeVolumeUsd}
-                    format="currency"
-                    className="bg-[#040D14] sm:min-w-[200px]"
-                />
-                <NumberDisplay
                     title="Total PnL"
                     nb={profile.totalPnlUsd}
                     format="currency"
