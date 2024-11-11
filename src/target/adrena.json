@@ -7111,7 +7111,14 @@
           ]
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "ClaimStakesParams"
+          }
+        }
+      ]
     },
     {
       "name": "finalizeGenesisLockCampaign",
@@ -10070,6 +10077,20 @@
           {
             "name": "lockedDays",
             "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimStakesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lockedStakeIndexes",
+            "type": {
+              "option": "bytes"
+            }
           }
         ]
       }
