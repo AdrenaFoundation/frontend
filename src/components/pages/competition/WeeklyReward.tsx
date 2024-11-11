@@ -1,5 +1,7 @@
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import firstImage from '@/../public/images/first-place.svg';
 import jitoImage from '@/../public/images/jito-logo.svg';
@@ -26,6 +28,15 @@ export type RewardData = {
     reward: number | null;
     rewardToken: 'ADX' | 'JITO';
     rewardImage: ImageRef;
+};
+
+const isValidPublicKey = (key: string) => {
+    try {
+        new PublicKey(key);
+        return true;
+    } catch (e) {
+        return false;
+    }
 };
 
 export default function WeeklyReward({
@@ -104,12 +115,12 @@ export default function WeeklyReward({
                                             className="w-10 h-8" />
                                     </div> :
                                     // There is a winner
-                                    <div className='flex items-center justify-center h-[3em]'>
-                                        <p className="opacity-75">
-                                            {award.trader
-                                                ? getAbbrevWalletAddress(award.trader)
-                                                : 'Unknown'}
-                                        </p>
+                                    <div className='flex items-center justify-center h-[3em] opacity-75'>
+                                        {award.trader
+                                            ? isValidPublicKey(award.trader)
+                                                ? <p className={twMerge('text-xs font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
+                                                : <p className={twMerge('text-xs font-boldy')}>{award.trader}</p>
+                                            : <p className='text-xs font-boldy'>-</p>}
                                     </div>
                             }
 
@@ -171,11 +182,14 @@ export default function WeeklyReward({
                             '-'
                         )}
                     </div>
-                    <p className="opacity-75">
+
+                    <div className='flex items-center justify-center opacity-75 w-full'>
                         {award.trader
-                            ? getAbbrevWalletAddress(award.trader)
-                            : 'Unknown'}
-                    </p>
+                            ? isValidPublicKey(award.trader)
+                                ? <p className={twMerge('text-xs font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
+                                : <p className={twMerge('text-xs font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden')}>{award.trader}</p>
+                            : <p className='text-xs font-boldy'>-</p>}
+                    </div>
 
                     <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
                         {award.rewardToken === 'ADX' ? <Image
