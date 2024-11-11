@@ -119,7 +119,7 @@ export default function LeaderboardTable({
                     rowClassName="bg-[#0B131D] hover:bg-[#1F2730] py-0 items-center"
                     rowTitleWidth="0%"
                     isFirstColumnId
-                    data={data[division].map((d, i) => {
+                    data={(data[division] ?? []).map((d, i) => {
                         return {
                             rowTitle: '',
                             values: [
