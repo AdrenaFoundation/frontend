@@ -16,6 +16,15 @@ import { getAbbrevWalletAddress } from '@/utils';
 
 import Table from '../monitoring/Table';
 
+const isValidPublicKey = (key: string) => {
+    try {
+        new PublicKey(key);
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
 export default function LeaderboardTable({
     division,
     index,
@@ -64,15 +73,6 @@ export default function LeaderboardTable({
             color: 'bg-[#163C7D]',
         },
     } as const;
-
-    const isValidPublicKey = (key: string) => {
-        try {
-            new PublicKey(key);
-            return true;
-        } catch (e) {
-            return false;
-        }
-    };
 
     return (
         <div className={className}>

@@ -175,6 +175,17 @@ export default function Competition() {
                 {},
             );
 
+
+            console.log('Achievements', achievements)
+
+            achievements.biggest_liquidation.addresses = achievements.biggest_liquidation.addresses.map((address: string) => {
+                return allUserProfiles.find((profile) => profile.owner.toBase58() === address)?.nickname ?? address;
+            });
+
+            achievements.top_degen.addresses = achievements.top_degen.addresses.map((address: string) => {
+                return allUserProfiles.find((profile) => profile.owner.toBase58() === address)?.nickname ?? address;
+            });
+
             setWeek(0);
             setAchievements(achievements);
             setData(formattedData);
