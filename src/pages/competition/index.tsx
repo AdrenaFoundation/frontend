@@ -274,16 +274,6 @@ export default function Competition() {
         );
     }
 
-    const daysUntilNextWeek = getDaysBetweenDates(
-        new Date(),
-        new Date(achievements.biggest_liquidation.week_ends[week]),
-    );
-
-    const hoursUntilNextWeek = getHoursBetweenDates(
-        new Date(),
-        new Date(achievements.biggest_liquidation.week_ends[week]),
-    );
-
     const handleProfileView = (nickname: string) => {
         const profile = allUserProfiles.find((p) => p.nickname === nickname);
         console.log(nickname, profile);
