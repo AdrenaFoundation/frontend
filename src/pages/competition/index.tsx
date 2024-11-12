@@ -364,7 +364,7 @@ export default function Competition() {
                                 From Nov 11 - Dec 23, 2024
                             </p>
 
-                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start mt-4 sm:mt-0 pb-4 sm:pb-0">
+                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
                                 <span className="text-txtfade text-center lg:text-left">
                                     Welcome to Adrena&apos;s trading pre-season, anon! This
                                     six-week event is the introduction to our upcoming recurring
