@@ -363,7 +363,8 @@ export default function Competition() {
                             <p className="text-base text-txtfade mb-2">
                                 From Nov 11 - Dec 23, 2024
                             </p>
-                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start">
+
+                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start mt-4 sm:mt-0 pb-4 sm:pb-0">
                                 <span className="text-txtfade text-center lg:text-left">
                                     Welcome to Adrena&apos;s trading pre-season, anon! This
                                     six-week event is the introduction to our upcoming recurring
@@ -398,10 +399,10 @@ export default function Competition() {
                                 </span>
                             </div>
 
-                            <div className="flex gap-4 mt-4">
+                            <div className="flex gap-4 mt-4 flex-col sm:flex-row">
                                 <Button
                                     title="Join Discord"
-                                    className="w-full text-sm px-8"
+                                    className="text-sm px-8 w-[15em]"
                                     href={`https://discord.gg/adrena`}
                                     isOpenLinkInNewTab
                                     rightIcon={discordIcon}
@@ -409,7 +410,7 @@ export default function Competition() {
                                 />
                                 <Button
                                     title="Share on"
-                                    className="w-full text-sm px-8"
+                                    className="text-sm px-8 w-[15em]"
                                     href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                                         twitterText,
                                     )}&url=${encodeURIComponent(
@@ -421,7 +422,7 @@ export default function Competition() {
                                 />
                                 <Button
                                     title="Trade Now"
-                                    className="w-full text-sm px-8"
+                                    className="text-sm px-8 w-[15em]"
                                     href="/trade"
                                     rightIconClassName="w-3 h-3"
                                 />
