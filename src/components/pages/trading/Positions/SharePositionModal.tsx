@@ -26,7 +26,7 @@ import xIcon from '../../../../../public/images/x-black-bg.png';
 export default function SharePositionModal({
   position,
 }: {
-  position: PositionExtended;
+  position: PositionExtended & { exitPrice?: number };
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [isPnlUsd, setIsPnlUsd] = useState(false);
@@ -86,6 +86,7 @@ export default function SharePositionModal({
       tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
       2,
     ),
+    exitPrice: position?.exitPrice ?? 0,
     price: position.price,
     size: position.sizeUsd,
     opened: Number(position.nativeObject.openTime) * 1000,
@@ -160,10 +161,13 @@ export default function SharePositionModal({
           </li>
           <li className="flex flex-col gap-1">
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
-              Mark Price
+              {position?.exitPrice ? 'Exit Price' : 'Mark Price'}
             </span>
             <span className="font-archivo text-sm sm:text-lg">
-              {formatPriceInfo(
+              {position?.exitPrice ? formatPriceInfo(
+                position.exitPrice,
+                position.token.displayPriceDecimalsPrecision,
+              ) : formatPriceInfo(
                 tokenPrices[getTokenSymbol(position.token.symbol)],
               )}
             </span>

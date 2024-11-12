@@ -43,6 +43,7 @@ const isValidPublicKey = (key: string) => {
 
 export default function WeeklyReward({
     rewards,
+    handleProfileView,
 }: {
     rewards: [
         { title: 'Top Liquidation' } & RewardData,
@@ -50,6 +51,7 @@ export default function WeeklyReward({
         { title: 'Leverage Monster' } & RewardData,
         { title: 'SOL Trading Volume' } & TicketData,
     ];
+    handleProfileView: (nickname: string) => void;
 }) {
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -121,7 +123,7 @@ export default function WeeklyReward({
                                         {award.trader
                                             ? isValidPublicKey(award.trader)
                                                 ? <p className={twMerge('text-xs font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
-                                                : <p className={twMerge('text-xs font-boldy')}>{award.trader}</p>
+                                                : <p className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.trader as string)}>{award.trader}</p>
                                             : <p className='text-xs font-boldy'>-</p>}
                                     </div>
                             }
@@ -188,8 +190,8 @@ export default function WeeklyReward({
                     <div className='flex items-center justify-center opacity-75 w-full'>
                         {award.trader
                             ? isValidPublicKey(award.trader)
-                                ? <p className={twMerge('text-xs font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
-                                : <p className={twMerge('text-xs font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden')}>{award.trader}</p>
+                                ? <p className={twMerge('text-base font-boldy opacity-50')}>{getAbbrevWalletAddress(award.trader)}</p>
+                                : <p className={twMerge('text-base font-boldy whitespace-nowrap max-w-full text-ellipsis overflow-hidden hover:underline transition duration-300 cursor-pointer')} onClick={() => handleProfileView(award.trader as string)}>{award.trader}</p>
                             : <p className='text-xs font-boldy'>-</p>}
                     </div>
 

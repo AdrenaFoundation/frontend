@@ -213,7 +213,7 @@ export default function Trade({
   }, [activePositionModal]);
 
   return (
-    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4">
+    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[100px] sm:pb-4">
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-50">
         <RiveAnimation
           animation="btm-monster"
@@ -398,7 +398,7 @@ export default function Trade({
           />
         ) : null}
 
-        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-1 z-30">
+        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-3 z-30">
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
               <Button

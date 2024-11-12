@@ -4,7 +4,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from '@/store/store';
 import { PositionHistoryApi, PositionHistoryExtended } from '@/types';
 
-export default function usePositionsHistory(): {
+export default function usePositionsHistory({
+  walletAddress,
+}: {
+  walletAddress?: string;
+}): {
   positionsHistory: PositionHistoryExtended[] | null;
   triggerPositionsReload: () => void;
 } {
@@ -27,7 +31,9 @@ export default function usePositionsHistory(): {
       const tokens = window.adrena.client.tokens;
 
       const response = await fetch(
-        `https://datapi.adrena.xyz/position?user_wallet=${wallet.walletAddress}&status=liquidate&status=close`,
+        `https://datapi.adrena.xyz/position?user_wallet=${
+          walletAddress ? walletAddress : wallet.walletAddress
+        }&status=liquidate&status=close`,
       );
 
       if (!response.ok) {

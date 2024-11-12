@@ -33,6 +33,7 @@ export default async function handler(request: NextRequest) {
         hour: 'numeric',
     });
     const opt = Number(searchParams.get('opt') || '2');
+    const exitPrice = Number(searchParams.get('exitPrice'));
 
     const OPTIONS = [
         {
@@ -134,7 +135,7 @@ export default async function handler(request: NextRequest) {
                     </li>
                     <li tw="flex flex-col ml-6">
                         <span tw="opacity-50 text-[24px] font-semibold text-white">
-                            Mark Price
+                            {exitPrice ? 'Exit Price' : 'Mark Price'}
                         </span>
                         <span
                             tw={twMerge(
@@ -142,7 +143,7 @@ export default async function handler(request: NextRequest) {
                                 symbol === 'BONK' && 'text-[30px]',
                             )}
                         >
-                            ${nFormat.format(mark)}
+                            ${nFormat.format(exitPrice ? exitPrice : mark)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">
