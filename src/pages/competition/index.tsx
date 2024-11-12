@@ -65,7 +65,7 @@ export default function Competition() {
     );
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
-    const [week, setWeek] = useState(5);
+    const [week, setWeek] = useState(0);
     const [myDivision, setMyDivision] = useState<
         keyof TradingCompetitionLeaderboardAPI | null
     >(null);
@@ -115,8 +115,8 @@ export default function Competition() {
         }
 
         setConnectedWalletTickets({
-            fees: achievements.fees_tickets.tickets_count[userIndex][week] ?? 0,
-            jito: achievements.jitosol_tickets.tickets_count[userIndex][week] ?? 0,
+            fees: achievements.fees_tickets.tickets_count[userIndex]?.[week] ?? 0,
+            jito: achievements.jitosol_tickets.tickets_count[userIndex]?.[week] ?? 0,
         });
     }, [wallet, data, achievements, week]);
 
