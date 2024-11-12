@@ -408,6 +408,7 @@ export default function Competition() {
                                     rightIcon={discordIcon}
                                     rightIconClassName="w-3 h-3"
                                 />
+
                                 <Button
                                     title="Share on"
                                     className="text-sm px-8 w-[15em]"
@@ -451,11 +452,11 @@ export default function Competition() {
                 </div>
 
                 <div className="px-4 sm:px-8">
-                    <div className="flex flex-col md:flex-row gap-3 w-full mb-3">
+                    <div className="flex flex-col lg:flex-row gap-3 w-full mb-3">
                         <h1 className="font-boldy flex-none capitalize">Weekly Rewards</h1>
 
-                        <div className="flex flex-col sm:flex-row gap-3 justify-between sm:items-center w-full">
-                            <div className="flex flex-row gap-3 items-center">
+                        <div className="flex flex-col md:flex-row gap-3 justify-between md:items-center w-full">
+                            <div className="flex flex-row gap-3 min-w-[17em]">
                                 <p className="opacity-50">
                                     (
                                     {new Date(
@@ -468,11 +469,12 @@ export default function Competition() {
                                     )
                                 </p>
 
-                                <p className="text-xs font-mono z-10">
-                                    {hoursUntilNextWeek > 0 &&
-                                        `${daysUntilNextWeek}d ${hoursUntilNextWeek}h left`}
-                                </p>
+                                <div className='flex text-xs gap-1'>
+                                    <RemainingTimeToDate timestamp={new Date(achievements.biggest_liquidation.week_ends[week]).getTime() / 1000} stopAtZero={true} />
+                                    <span className="text-xs font-boldy">left</span>
+                                </div>
                             </div>
+
                             <div className="flex flex-row gap-2 items-center">
                                 {Array.from({ length: 6 }, (_, i) => i).map((i) => (
                                     <div

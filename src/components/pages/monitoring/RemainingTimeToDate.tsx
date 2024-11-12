@@ -12,11 +12,14 @@ export default function RemainingTimeToDate({
   classNameTime,
   timestamp,
   tippyText,
+  // If true doesn't show warning
+  stopAtZero = false,
 }: {
   className?: string;
   classNameTime?: string;
   timestamp: number;
-  tippyText: string;
+  tippyText?: string;
+  stopAtZero?: boolean;
 }) {
   const [remaining, setRemaining] = useState<number | null>(null);
 
@@ -30,7 +33,7 @@ export default function RemainingTimeToDate({
 
   return (
     <div className={twMerge('flex', className)}>
-      {remaining !== null && remaining < 0 ? (
+      {remaining !== null && remaining < 0 && !stopAtZero ? (
         <Tippy content={tippyText} placement="auto">
           <Image
             className="w-auto h-[1.5em] mr-1"
@@ -41,7 +44,7 @@ export default function RemainingTimeToDate({
       ) : null}
 
       <div className={twMerge('font-mono', classNameTime)}>
-        {remaining !== null ? formatMilliseconds(remaining) : '-'}
+        {remaining !== null ? formatMilliseconds(remaining < 0 && stopAtZero ? 0 : remaining) : '-'}
       </div>
     </div>
   );
