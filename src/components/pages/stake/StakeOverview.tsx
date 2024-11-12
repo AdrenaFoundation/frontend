@@ -101,22 +101,16 @@ export default function StakeOverview({
 
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
-  const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<
-    ClaimHistoryExtended[]
-  >([]);
+  const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
   useEffect(() => {
     if (!claimsHistory) {
       return;
     }
-    setPaginatedClaimsHistory(
-      claimsHistory.slice(
-        (currentPage - 1) * claimHistoryItemsPerPage,
-        currentPage * claimHistoryItemsPerPage,
-      ) ?? [],
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [claimsHistory]);
+    const startIndex = (currentPage - 1) * claimHistoryItemsPerPage;
+    const endIndex = startIndex + claimHistoryItemsPerPage;
+    setPaginatedClaimsHistory(claimsHistory.slice(startIndex, endIndex));
+  }, [claimsHistory, currentPage, claimHistoryItemsPerPage]);
 
   const getEndDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
