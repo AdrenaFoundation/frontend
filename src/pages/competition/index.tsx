@@ -113,7 +113,7 @@ export default function Competition() {
             });
             return;
         }
-        
+
         setConnectedWalletTickets({
             fees: achievements.fees_tickets.tickets_count[week]?.[userIndex] ?? 0,
             jito: achievements.jitosol_tickets.tickets_count[week]?.[userIndex] ?? 0,
@@ -400,6 +400,14 @@ export default function Competition() {
 
                             <div className="flex gap-4 mt-4">
                                 <Button
+                                    title="Join Discord"
+                                    className="w-full text-sm px-8"
+                                    href={`https://discord.gg/adrena`}
+                                    isOpenLinkInNewTab
+                                    rightIcon={discordIcon}
+                                    rightIconClassName="w-3 h-3"
+                                />
+                                <Button
                                     title="Share on"
                                     className="w-full text-sm px-8"
                                     href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -412,11 +420,9 @@ export default function Competition() {
                                     rightIconClassName="w-3 h-3"
                                 />
                                 <Button
-                                    title="Join Discord"
+                                    title="Trade Now"
                                     className="w-full text-sm px-8"
-                                    href={`https://discord.gg/adrena`}
-                                    isOpenLinkInNewTab
-                                    rightIcon={discordIcon}
+                                    href="/trade"
                                     rightIconClassName="w-3 h-3"
                                 />
                             </div>
@@ -525,7 +531,7 @@ export default function Competition() {
                                 rewardToken: 'ADX',
                                 rewardImage: window.adrena.client.adxToken.image,
                                 description:
-                                    'The trader with the highest PnL on a 100x initial leverage position.',
+                                    'Highest PnL on a 100x initial-leverage position, w/o further increase. Add/remove collateral accepted.',
                             },
                             {
                                 title: 'SOL Trading Volume',
