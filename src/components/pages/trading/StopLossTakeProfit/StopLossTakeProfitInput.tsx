@@ -73,7 +73,7 @@ export default function StopLossTakeProfitInput({
       } else {
         max = markPrice;
         // Calculate the price at which the PnL equals the position size in USD
-        min = Math.max(position.price - ((position.sizeUsd * markPrice) / position.sizeUsd), 0.000000000001);
+        min = Math.max(position.price - ((position.sizeUsd * markPrice) / position.sizeUsd), 0.00000001);
       }
     }
 
