@@ -10,10 +10,12 @@ import PositionHistoryBlock from './PositionHistoryBlock';
 function PositionsHistory({
   connected,
   walletAddress,
+  showShareButton = true,
 }: {
   connected: boolean;
   className?: string;
   walletAddress?: string;
+  showShareButton?: boolean;
 }) {
   const { positionsHistory } = usePositionsHistory({ walletAddress });
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,6 +50,7 @@ function PositionsHistory({
                       <PositionHistoryBlock
                         key={positionHistory.position_id}
                         positionHistory={positionHistory}
+                        showShareButton={showShareButton}
                       />
                     ))}
                   </div>

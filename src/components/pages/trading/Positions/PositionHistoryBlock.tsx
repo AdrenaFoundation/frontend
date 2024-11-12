@@ -122,10 +122,12 @@ export default function PositionHistoryBlock({
   bodyClassName,
   borderColor,
   positionHistory,
+  showShareButton = true,
 }: {
   bodyClassName?: string;
   borderColor?: string;
   positionHistory: PositionHistoryExtended;
+  showShareButton?: boolean;
 }) {
   // const blockRef = useRef<HTMLDivElement>(null);
   // const isSmallSize = useResizeObserver(blockRef);
@@ -399,14 +401,16 @@ export default function PositionHistoryBlock({
           <div className="flex-1 hidden md:flex justify-center text-center border-t xl:border-0 border-dashed p-2">{renderPnl()}</div>
           <div className="flex-1 flex justify-center border-t border-r lg:border-l border-b-0 xl:border-0 border-dashed p-2">{renderExitDate()}</div>
           <div className="flex-1 flex justify-center border-t xl:border-0 border-dashed p-2">{renderFeesPaid()}</div>
-          <Button
-            leftIcon={shareIcon}
-            variant='secondary'
-            className='hidden xl:block opacity-50 hover:opacity-100'
-            onClick={() => {
+          {showShareButton && (
+            <Button
+              leftIcon={shareIcon}
+              variant='secondary'
+              className='hidden xl:block opacity-50 hover:opacity-100'
+              onClick={() => {
               setIsOpen(true);
-            }}
-          />
+              }}
+            />
+          )}
         </div>
         <div className="xl:hidden justify-center items-center w-full border-t border-dashed">
           <Button

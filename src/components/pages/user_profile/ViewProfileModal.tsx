@@ -238,6 +238,7 @@ export default function ViewProfileModal({
                 <PositionsHistory
                     connected={connected}
                     walletAddress={profile.owner.toBase58()}
+                    showShareButton={false}
                 />
             ) : null}
         </div>
