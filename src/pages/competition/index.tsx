@@ -400,6 +400,14 @@ export default function Competition() {
 
                             <div className="flex gap-4 mt-4">
                                 <Button
+                                    title="Join Discord"
+                                    className="w-full text-sm px-8"
+                                    href={`https://discord.gg/adrena`}
+                                    isOpenLinkInNewTab
+                                    rightIcon={discordIcon}
+                                    rightIconClassName="w-3 h-3"
+                                />
+                                <Button
                                     title="Share on"
                                     className="w-full text-sm px-8"
                                     href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -412,11 +420,9 @@ export default function Competition() {
                                     rightIconClassName="w-3 h-3"
                                 />
                                 <Button
-                                    title="Join Discord"
+                                    title="Trade Now"
                                     className="w-full text-sm px-8"
-                                    href={`https://discord.gg/adrena`}
-                                    isOpenLinkInNewTab
-                                    rightIcon={discordIcon}
+                                    href="/trade"
                                     rightIconClassName="w-3 h-3"
                                 />
                             </div>
