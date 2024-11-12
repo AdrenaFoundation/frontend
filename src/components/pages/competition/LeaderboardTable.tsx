@@ -48,32 +48,32 @@ export default function LeaderboardTable({
             img: leviathanImage,
             title: 'Leviathan Division',
             topTradersPercentage: 10,
-            color: '[#A45DBD]',
+            color: 'text-[#A45DBD]',
         },
         Abomination: {
             img: abominationImage,
             title: 'Abomination Division',
             topTradersPercentage: 40,
-            color: '[#FFD700]',
+            color: 'text-[#FFD700]',
         },
 
         Mutant: {
             img: demonImage,
             title: 'Mutant Division',
             topTradersPercentage: 60,
-            color: '[#4A90E2]',
+            color: 'text-[#4A90E2]',
         },
         Spawn: {
             img: spawnImage,
             title: 'Spawn Division',
             topTradersPercentage: 80,
-            color: '[#4CD964]',
+            color: 'text-[#4CD964]',
         },
         'No Division': {
             img: null,
             title: 'Unranked',
             topTradersPercentage: null,
-            color: '[#163C7D]',
+            color: 'text-[#163C7D]',
         },
     } as const;
 
@@ -91,7 +91,7 @@ export default function LeaderboardTable({
                 <h3 className={twMerge("font-boldy capitalize", division === 'No Division' ? 'ml-auto mr-auto' : '')}>{DIVISIONS[division].title}</h3>
 
                 <Tippy content={`Top ${DIVISIONS[division].topTradersPercentage} percentile of traders by traded VOLUME, minus the ones on previous divisions.`} arrow>
-                    <div className={twMerge(`capitalize text-sm tracking-widest font-boldy ${division === 'No Division' ? 'hidden' : ''}`, `text-${DIVISIONS[division].color}`)}>
+                    <div className={twMerge(`capitalize text-sm tracking-widest font-boldy ${division === 'No Division' ? 'hidden' : ''}`, DIVISIONS[division].color)}>
                         TIER {index}
                         <div className={`border-b-2 border-dotted border-gray-400 mt-0`}></div>
                     </div>
