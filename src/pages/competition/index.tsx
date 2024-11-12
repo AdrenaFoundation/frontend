@@ -113,7 +113,7 @@ export default function Competition() {
             });
             return;
         }
-        
+
         setConnectedWalletTickets({
             fees: achievements.fees_tickets.tickets_count[week]?.[userIndex] ?? 0,
             jito: achievements.jitosol_tickets.tickets_count[week]?.[userIndex] ?? 0,
@@ -525,7 +525,7 @@ export default function Competition() {
                                 rewardToken: 'ADX',
                                 rewardImage: window.adrena.client.adxToken.image,
                                 description:
-                                    'The trader with the highest PnL on a 100x initial leverage position.',
+                                    'Highest PnL on a 100x initial-leverage position, w/o further increase. Add/remove collateral accepted.',
                             },
                             {
                                 title: 'SOL Trading Volume',
