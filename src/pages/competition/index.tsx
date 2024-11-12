@@ -113,10 +113,10 @@ export default function Competition() {
             });
             return;
         }
-
+        
         setConnectedWalletTickets({
-            fees: achievements.fees_tickets.tickets_count[userIndex]?.[week] ?? 0,
-            jito: achievements.jitosol_tickets.tickets_count[userIndex]?.[week] ?? 0,
+            fees: achievements.fees_tickets.tickets_count[week]?.[userIndex] ?? 0,
+            jito: achievements.jitosol_tickets.tickets_count[week]?.[userIndex] ?? 0,
         });
     }, [wallet, data, achievements, week]);
 
