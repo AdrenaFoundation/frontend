@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import banner from '@/../public/images/comp-banner.png';
+import discordIcon from '@/../public/images/discord-black.svg';
 import timerBg from '@/../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../public/images/jito-logo.svg';
 import jitoLogo2 from '@/../public/images/jito-logo-2.png';
@@ -396,18 +397,29 @@ export default function Competition() {
                                     liquidation).
                                 </span>
                             </div>
-                            <Button
-                                title="Share on"
-                                className="w-full text-sm mt-6 px-8"
-                                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                                    twitterText,
-                                )}&url=${encodeURIComponent(
-                                    `https://${window.location.hostname}/competition`,
-                                )}`}
-                                isOpenLinkInNewTab
-                                rightIcon={xIcon}
-                                rightIconClassName="w-3 h-3"
-                            />
+
+                            <div className="flex gap-4 mt-4">
+                                <Button
+                                    title="Share on"
+                                    className="w-full text-sm px-8"
+                                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                                        twitterText,
+                                    )}&url=${encodeURIComponent(
+                                        `https://${window.location.hostname}/competition`,
+                                    )}`}
+                                    isOpenLinkInNewTab
+                                    rightIcon={xIcon}
+                                    rightIconClassName="w-3 h-3"
+                                />
+                                <Button
+                                    title="Join Discord"
+                                    className="w-full text-sm px-8"
+                                    href={`https://discord.gg/adrena`}
+                                    isOpenLinkInNewTab
+                                    rightIcon={discordIcon}
+                                    rightIconClassName="w-3 h-3"
+                                />
+                            </div>
                         </div>
 
                         <div className="flex flex-col gap-3 w-full items-center lg:w-[15em]">
