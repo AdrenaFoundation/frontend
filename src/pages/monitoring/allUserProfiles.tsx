@@ -1,5 +1,5 @@
 import { AnimatePresence } from 'framer-motion';
-import React, { act, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -200,7 +200,7 @@ export default function AllUserProfiles() {
             </div>
             <AnimatePresence>
                 {activeProfile && (
-                    <Modal className='sm:max-h-[80vh] sm:overflow-auto w-full' wrapperClassName="items-start w-full max-w-[700px] sm:mt-0" title="" close={() => setActiveProfile(null)}>
+                    <Modal className="h-[80vh] overflow-y-scroll w-full" wrapperClassName="items-start w-full max-w-[820px] sm:mt-0" title="" close={() => setActiveProfile(null)}>
                         <ViewProfileModal profile={activeProfile} />
                     </Modal>
                 )}

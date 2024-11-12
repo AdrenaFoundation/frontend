@@ -1,4 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -32,6 +33,7 @@ export default function LeaderboardTable({
     className,
     nbItemPerPage,
     myDivision,
+    handleProfileView
 }: {
     division: keyof TradingCompetitionLeaderboardAPI;
     index: number;
@@ -39,38 +41,39 @@ export default function LeaderboardTable({
     className?: string;
     nbItemPerPage?: number;
     myDivision: boolean;
+    handleProfileView: (nickname: string) => void;
 }) {
     const DIVISIONS = {
         Leviathan: {
             img: leviathanImage,
             title: 'Leviathan Division',
             topTradersPercentage: 10,
-            color: 'bg-[#163C7D]',
+            color: '[#A45DBD]',
         },
         Abomination: {
             img: abominationImage,
             title: 'Abomination Division',
             topTradersPercentage: 40,
-            color: 'bg-[#6C167D]',
+            color: '[#FFD700]',
         },
 
         Mutant: {
             img: demonImage,
             title: 'Mutant Division',
             topTradersPercentage: 60,
-            color: 'bg-[#7D1618]',
+            color: '[#4A90E2]',
         },
         Spawn: {
             img: spawnImage,
             title: 'Spawn Division',
             topTradersPercentage: 80,
-            color: 'bg-[#167D57]',
+            color: '[#4CD964]',
         },
         'No Division': {
             img: null,
             title: 'Unranked',
             topTradersPercentage: null,
-            color: 'bg-[#163C7D]',
+            color: '[#163C7D]',
         },
     } as const;
 
@@ -87,22 +90,14 @@ export default function LeaderboardTable({
             <div className="flex flex-row items-center gap-3 mt-3">
                 <h3 className={twMerge("font-boldy capitalize", division === 'No Division' ? 'ml-auto mr-auto' : '')}>{DIVISIONS[division].title}</h3>
 
-                {division !== 'No Division' ? <div className="capitalize text-sm tracking-widest">TIER {index}</div> : null}
-
-                {myDivision ? <div className='font-boldy text-xs border rounded-full bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-16 text-center'>Your div.</div> : null}
-
-                {DIVISIONS[division].topTradersPercentage !== null && (
-                    <div
-                        className={twMerge(
-                            'rounded-full p-0.5 px-3 ml-auto',
-                            DIVISIONS[division].color,
-                        )}
-                    >
-                        <p className="text-sm font-boldy">
-                            Top {DIVISIONS[division].topTradersPercentage}%
-                        </p>
+                <Tippy content={`Top ${DIVISIONS[division].topTradersPercentage} percentile of traders by traded VOLUME, minus the ones on previous divisions.`} arrow>
+                    <div className={twMerge(`capitalize text-sm tracking-widest font-boldy ${division === 'No Division' ? 'hidden' : ''}`, `text-${DIVISIONS[division].color}`)}>
+                        TIER {index}
+                        <div className={`border-b-2 border-dotted border-gray-400 mt-0`}></div>
                     </div>
-                )}
+                </Tippy>
+
+                {myDivision ? <div className='font-boldy text-xs bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 pt-1 pr-2 pl-2 pb-1 w-20 text-center'>Your division</div> : null}
             </div>
 
             <div className="mt-3">
@@ -153,8 +148,8 @@ export default function LeaderboardTable({
 
                                 d.username
                                     ? isValidPublicKey(d.username)
-                                        ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-blue' : '')}>{getAbbrevWalletAddress(d.username)}</p>
-                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy', d.connected ? 'text-blue ' : '')}>{d.username}</p>
+                                        ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-yellow-600' : '')}>{getAbbrevWalletAddress(d.username)}</p>
+                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.username)}>{d.username}</p>
                                     : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
                                 ,
 

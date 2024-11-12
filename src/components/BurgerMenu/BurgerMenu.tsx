@@ -17,6 +17,7 @@ import {
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
+import competitionIcon from '../../../public/images/competition.svg';
 import githubLogo from '../../../public/images/github.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
@@ -230,18 +231,35 @@ export default function BurgerMenu({
                   return (
                     <li
                       className={twMerge(
-                        'font-normal text-xl opacity-50 hover:opacity-100 transition-opacity duration-300 w-full',
-                        pathname === page.link ? 'opacity-100' : '',
+                        'flex flex-row gap-1 items-center font-normal text-xl opacity-50 hover:opacity-100 hover:grayscale-0 transition duration-300',
+                        pathname === page.link ? 'grayscale-0 opacity-100' : 'grayscale',
                       )}
                       key={page.name}
                     >
+                      {page.name === 'Competition' && (
+                        <Image
+                          src={competitionIcon}
+                          alt="logo"
+                          width={12}
+                          height={12}
+                        />
+                      )}
                       <Link
                         href={page.link}
-                        className="block w-full"
+                        className="block font-medium"
                         onClick={() => setIsOpen(!open)}
                       >
                         {page.name}
                       </Link>
+                      {page.name === 'Competition' && (
+                        <Image
+                          src={competitionIcon}
+                          alt="logo"
+                          width={12}
+                          height={12}
+                          className="scale-x-[-1]"
+                        />
+                      )}
                     </li>
                   );
                 })}
