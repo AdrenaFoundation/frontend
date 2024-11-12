@@ -145,6 +145,7 @@ export function AprLpChart({ isSmallScreen }: AprChartProps) {
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
       formatY='percentage'
+      tippyContent={<div>This includes the APR from fees and LM rewards (converted to $ value at the time). It does not include the JitoSOL base APR nor the ALP index appreciation.</div>}
     />
   );
 }
