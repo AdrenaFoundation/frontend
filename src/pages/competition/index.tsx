@@ -618,7 +618,7 @@ export default function Competition() {
                     </div>
 
                     {wallet && data && myDivision ? (
-                        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 justify-between px-4 bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8">
+                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8 flex-col items-center lg:flex-row lg:items-start gap-2 lg:gap-0">
                             <div className="flex items-center">
                                 <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                                     {userName}
@@ -644,66 +644,83 @@ export default function Competition() {
                                             key={`rank-${myRank}`}
                                         />
                                     ) : (
-                                        <p className="text-sm text-center w-[40px]" key={`rank-${myRank}`}>
+                                        <div className="text-base font-boldy text-center" key={`rank-${myRank}`}>
                                             # {myRank}
-                                        </p>
+                                        </div>
                                     )}
                                 </span>
-                                <span
-                                    className={`text-base font-archivo ${DIVISIONS[myDivision]?.color ?? 'default-text-color'}`}
-                                >
+
+                                <span className={`text-base flex items-center justify-center font-archivo ${DIVISIONS[myDivision]?.color ?? 'default-text-color'}`}>
                                     {myDivision}
                                 </span>
                             </div>
 
-                            <div className="hidden sm:flex items-center">
-                                <span className="text-sm text-txtfade mr-1">PnL:</span>
-                                <FormatNumber
-                                    nb={myPnl ?? 0}
-                                    format="currency"
-                                    isDecimalDimmed={false}
-                                    className={twMerge(
-                                        'text-base font-boldy',
-                                        (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
-                                    )}
-                                />
-                                <span className="text-sm text-txtfade ml-4 mr-1">Volume:</span>
-                                <FormatNumber
-                                    nb={myVolume ?? 0}
-                                    format="currency"
-                                    isAbbreviate={true}
-                                    isDecimalDimmed={false}
-                                    className="text-base font-boldy"
-                                />
+                            <div className="flex items-center grow lg:justify-evenly flex-col lg:ml-auto md:flex-row gap-2 md:gap-4">
+                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
+                                    <span className="text-sm text-txtfade font-boldy">PnL:</span>
 
-                                <span className="text-sm text-txtfade mx-4"> | </span>
-                                <span className="text-sm text-txtfade mr-4"> Rank rewards: </span>
+                                    <FormatNumber
+                                        nb={myPnl ?? 0}
+                                        format="currency"
+                                        isDecimalDimmed={false}
+                                        className={twMerge(
+                                            'text-base font-boldy',
+                                            (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
+                                        )}
+                                    />
+                                </div>
 
-                                <FormatNumber
-                                    nb={myProvisionnalAdxRewards ?? 0}
-                                    format="number"
-                                    isDecimalDimmed={false}
-                                    className="text-base font-boldy"
-                                />
-                                <Image
-                                    src={adxLogo}
-                                    width={16}
-                                    height={16}
-                                    alt="ADX"
-                                    className="ml-1 mr-4"
-                                />
-                                <FormatNumber
-                                    nb={myProvisionnalJtoRewards ?? 0}
-                                    format="number"
-                                    isDecimalDimmed={false}
-                                    className="text-base font-boldy"
-                                />
-                                <Image
-                                    src={jtoImage}
-                                    width={14}
-                                    height={14}
-                                    alt="JTO"
-                                />
+                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
+                                    <span className="text-sm text-txtfade">Volume:</span>
+
+                                    <FormatNumber
+                                        nb={myVolume ?? 0}
+                                        format="currency"
+                                        isAbbreviate={true}
+                                        isDecimalDimmed={false}
+                                        className="text-base font-boldy"
+                                    />
+                                </div>
+
+                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
+                                    <span className="text-sm text-txtfade"> Rank rewards: </span>
+
+                                    <div className='flex gap-2 items-center justify-center pl-8 md:pl-0'>
+                                        <FormatNumber
+                                            nb={myProvisionnalAdxRewards ?? 0}
+                                            format="number"
+                                            isDecimalDimmed={false}
+                                            className="text-base font-boldy"
+                                        />
+
+                                        <Image
+                                            src={adxLogo}
+                                            width={16}
+                                            height={16}
+                                            className='w-5 h-5'
+                                            alt="ADX"
+                                        />
+                                    </div>
+
+                                    <div className='flex gap-2 items-center justify-cente'>
+                                        <FormatNumber
+                                            nb={myProvisionnalJtoRewards ?? 0}
+                                            format="number"
+                                            isDecimalDimmed={false}
+                                            className="text-base font-boldy"
+                                        />
+                                        <Image
+                                            src={jtoImage}
+                                            className='w-6 h-6'
+                                            width={22}
+                                            height={22}
+                                            alt="JTO"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* <span className="text-sm text-txtfade mx-4"> | </span> */}
+
 
                             </div>
                         </div>
