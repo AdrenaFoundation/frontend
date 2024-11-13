@@ -258,7 +258,7 @@ export default function AdrenaAccounts({
               <div className="flex items-center font-boldy">
                 ADX Staking Staked Tokens Vault <TitleAnnotation text="PDA" />
                 <InfoAnnotation
-                  text="Top-level account holding staked ALP token."
+                  text="Top-level account holding staked ADX token."
                   className="mr-1"
                 />
               </div>
