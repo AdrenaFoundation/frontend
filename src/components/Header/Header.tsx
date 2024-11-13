@@ -115,7 +115,7 @@ export default function Header({
               key={page.name}
               target={page.external ? '_blank' : '_self'}
             >
-              {page.name === 'Competition' && (
+              {page.name === 'Ranked' && (
                 <Image
                   src={competitionIcon}
                   alt="logo"
@@ -124,7 +124,8 @@ export default function Header({
                 />
               )}
               <h5 className="whitespace-nowrap font-medium">{page.name}</h5>
-              {page.name === 'Competition' && (
+
+              {page.name === 'Ranked' && (
                 <Image
                   src={competitionIcon}
                   alt="logo"
