@@ -627,7 +627,7 @@ export default function Competition() {
                                     )}
                                 </span>
                                 <span
-                                    className={`text-base font-boldy ${DIVISIONS[myDivision]?.color ?? 'default-text-color'}`}
+                                    className={`text-base font-archivo ${DIVISIONS[myDivision]?.color ?? 'default-text-color'}`}
                                 >
                                     {myDivision}
                                 </span>
