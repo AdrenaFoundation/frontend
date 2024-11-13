@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -15,6 +16,7 @@ import secondImage from '@/../public/images/second-place.svg';
 import thirdImage from '@/../public/images/third-place.svg';
 import xIcon from '@/../public/images/x-black-bg.png';
 import Button from '@/components/common/Button/Button';
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import Modal from '@/components/common/Modal/Modal';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -83,6 +85,8 @@ export default function Competition() {
     const [myProvisionnalJtoRewards, setMyProvisionnalJtoRewards] = useState<number | null>(null);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
+    const [tradersCount, setTradersCount] = useState<number | null>(null);
+    const [totalVolume, setTotalVolume] = useState<number | null>(null);
 
     const endDate = new Date('12/23/2024');
 
@@ -136,6 +140,13 @@ export default function Competition() {
 
             if (!trader_divisions || !achievements) {
                 return;
+            }
+
+            {
+                const tradersCount: number = trader_divisions.reduce((acc: number, { traders }: any) => acc + traders.length, 0);
+                const volume: number = trader_divisions.reduce((acc: number, { traders }: any) => acc + traders.reduce((acc2: number, { total_volume }: any) => acc2 + (total_volume ?? 0), 0), 0);
+                setTradersCount(tradersCount);
+                setTotalVolume(volume);
             }
 
             if (wallet) {
@@ -568,8 +579,14 @@ export default function Competition() {
                 <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
 
                 <div className="px-4 sm:px-8">
-                    <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
+                    <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
                         <h1 className="font-boldy capitalize mb-4 sm:mb-0">Leaderboards</h1>
+                        <div className="flex flex-row items-center justify-center bg-[#111923] border rounded-lg pl-2 pr-3 mt-1">
+                            <LiveIcon />
+                            <Tippy content="Total number of traders participating in the competition" placement="auto">
+                                <p className="text-base text-txtfade font-boldy ml-1">{tradersCount}</p>
+                            </Tippy>
+                        </div>
 
                         {!hasProfile && (
                             <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
