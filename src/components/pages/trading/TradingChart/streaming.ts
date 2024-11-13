@@ -93,15 +93,16 @@ function handleStreamingData(data: PythStreamingData) {
   });
 
   window.addEventListener('online', (e) => {
-    startStreaming(3, 3000);
+    startStreaming(5000);
     console.log('COMES BACK ONLINE, RELAUNCH');
   });
 })();
 
 let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
 
-function startStreaming(retries = 3, delay = 3000) {
+function startStreaming(delay = 5000) {
   if (reader) {
+    console.log('CANCEL STREAMING');
     reader.cancel();
     reader = null;
   }
@@ -122,6 +123,13 @@ function startStreaming(retries = 3, delay = 3000) {
           .then(({ value, done }) => {
             if (done) {
               console.error('[stream] Streaming ended.');
+
+              if (!reader) {
+                // Price streaming should be perpetual
+                // Attempt to reconnect after a delay
+                attemptReconnect(delay);
+              }
+
               return;
             }
 
@@ -150,7 +158,7 @@ function startStreaming(retries = 3, delay = 3000) {
           })
           .catch((error) => {
             console.error('[stream] Error reading from stream:', error);
-            attemptReconnect(retries, delay);
+            attemptReconnect(delay);
           });
       }
 
@@ -163,16 +171,12 @@ function startStreaming(retries = 3, delay = 3000) {
       );
     });
 
-  function attemptReconnect(retriesLeft: number, delay: number) {
-    if (retriesLeft > 0) {
-      console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
+  function attemptReconnect(delay: number) {
+    console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
 
-      setTimeout(() => {
-        startStreaming(retriesLeft - 1, delay);
-      }, delay);
-    } else {
-      console.error('[stream] Maximum reconnection attempts reached.');
-    }
+    setTimeout(() => {
+      startStreaming(delay);
+    }, delay);
   }
 }
 
