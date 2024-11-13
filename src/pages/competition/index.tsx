@@ -86,7 +86,7 @@ export default function Competition() {
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
     const [tradersCount, setTradersCount] = useState<number | null>(null);
-    const [_, setTotalVolume] = useState<number | null>(null);
+    const [totalVolume, setTotalVolume] = useState<number | null>(null);
 
     const endDate = new Date('12/23/2024');
 
@@ -309,7 +309,6 @@ export default function Competition() {
 
     const twitterText = `Join the Adrena Trading Competition! 🚀📈🏆 @adrenaprotocol`;
 
-
     const userProfile: UserProfileExtended | undefined = allUserProfiles.find((p) => p.owner.toBase58() === wallet?.walletAddress);
 
     const hasProfile = userProfile !== undefined;
@@ -378,8 +377,8 @@ export default function Competition() {
                 </div>
 
                 <div className="px-4 sm:px-8">
-                    <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-12">
-                        <div className="flex flex-col items-center lg:items-start">
+                    <div className="flex flex-col xl:flex-row justify-between md:items-center gap-6 mb-12">
+                        <div className="flex flex-col items-center xl:items-start">
                             <h1 className="font-boldy text-3xl capitalize">
                                 Adrena Trading Competition
                             </h1>
@@ -387,35 +386,35 @@ export default function Competition() {
                                 From Nov 11 - Dec 23, 2024
                             </p>
 
-                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
-                                <span className="text-txtfade text-center lg:text-left">
+                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center xl:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Welcome to Adrena&apos;s trading pre-season, anon! This
                                     six-week event is the introduction to our upcoming recurring
                                     trading seasons.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     From November 11th 12pm UTC to December 23rd 12pm UTC, traders
                                     will vie for PnL-based ranks in one of four volume-based
                                     divisions.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Your total trading volume during the six-week event determines
                                     your division qualification.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Check out the divisions below, continuously updated based on
                                     onchain events.
                                 </span>
 
-                                <span className="text-txtfade text-center lg:text-left mt-2">
+                                <span className="text-txtfade text-center xl:text-left mt-2">
                                     Only positions open after the start date and closed before the
                                     end date qualify.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Each weekly periods ends on Monday 12am UTC, except the last
                                     one ending at 12pm UTC.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Volume is determined by Open/Increase and Close positions.
                                     It&apos;s accounted for when the position closes (close or
                                     liquidation).
@@ -453,22 +452,59 @@ export default function Competition() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-3 w-full items-center lg:w-[15em]">
-                            <h4 className="font-boldy text-base">Total Rewards</h4>
-                            <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg pl-6 pt-4 pb-4 w-full">
-                                <Image
-                                    src={window.adrena.client.adxToken.image}
-                                    alt="adx logo"
-                                    width={18}
-                                    height={18}
-                                />
-                                <p className="text-xl font-boldy w-[7em]">2.095M ADX</p>
+                        <div className='flex gap-4 flex-row flex-wrap sm:flex-nowrap'>
+                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                <h4 className="font-boldy text-base p-2 flex gap-2">Traders <LiveIcon className='absolute right-2' /></h4>
+
+                                <div className='h-[1px] bg-bcolor w-full' />
+
+                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                    <FormatNumber
+                                        nb={tradersCount}
+                                        format="number"
+                                        className={'text-3xl font-boldy'}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg pl-6 pt-4 pb-4 w-full">
-                                <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                <h4 className="font-boldy text-base p-2 flex gap-2">Volume <LiveIcon className='absolute right-2' /></h4>
 
-                                <p className="text-xl font-boldy w-[7em]">25,000 JTO</p>
+                                <div className='h-[1px] bg-bcolor w-full' />
+
+                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                    <FormatNumber
+                                        nb={totalVolume}
+                                        format="currency"
+                                        isDecimalDimmed={false}
+                                        isAbbreviate={true}
+                                        className={'text-3xl font-boldy'}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
+                                <h4 className="font-boldy text-base p-2">Total Rewards</h4>
+
+                                <div className='h-[1px] bg-bcolor w-full' />
+
+                                <div className='flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2'>
+                                    <div className="flex gap-2 items-center justify-center w-full">
+                                        <Image
+                                            src={window.adrena.client.adxToken.image}
+                                            alt="adx logo"
+                                            width={18}
+                                            height={18}
+                                        />
+                                        <div className="text-lg font-boldy w-[6.2em]">2.095M ADX</div>
+                                    </div>
+
+                                    <div className="flex gap-2 items-center justify-center w-full">
+                                        <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+
+                                        <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -581,7 +617,6 @@ export default function Competition() {
                 <div className="px-4 sm:px-8">
                     <div className="flex flex-col sm:flex-row mb-5 gap-4">
                         <div className='flex flex-row gap-3 items-center'>
-
                             <h1 className="font-boldy capitalize">Leaderboards</h1>
                             <div className="flex flex-row items-center justify-center bg-[#111923] border rounded-lg pl-2 pr-3 mt-1">
                                 <LiveIcon />
