@@ -85,16 +85,38 @@ function handleStreamingData(data: PythStreamingData) {
   channelToSubscription.set(channelString, subscriptionItem);
 }
 
+(() => {
+  if (typeof window === 'undefined') return;
+
+  window.addEventListener('offline', (e) => {
+    console.log('COMES OFFLINE');
+  });
+
+  window.addEventListener('online', (e) => {
+    startStreaming(3, 3000);
+    console.log('COMES BACK ONLINE, RELAUNCH');
+  });
+})();
+
+let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+
 function startStreaming(retries = 3, delay = 3000) {
+  if (reader) {
+    reader.cancel();
+    reader = null;
+  }
+
   fetch(streamingUrl)
     .then((response) => {
       if (response.body == null) {
         throw new Error('Error starting streaming');
       }
 
-      const reader = response.body.getReader();
+      reader = response.body.getReader();
 
       function streamData() {
+        if (!reader) return;
+
         reader
           .read()
           .then(({ value, done }) => {
