@@ -1,7 +1,7 @@
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
 import liveIcon from '../../../../public/images/Icons/live-icon.svg';
-import { twMerge } from 'tailwind-merge';
 
 export default function LiveIcon({
     className,
