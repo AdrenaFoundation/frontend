@@ -3,12 +3,16 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import adxLogo from '@/../public/images/adx.svg';
 import banner from '@/../public/images/comp-banner.png';
 import discordIcon from '@/../public/images/discord-black.svg';
+import firstImage from '@/../public/images/first-place.svg';
 import timerBg from '@/../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../public/images/jito-logo.svg';
 import jitoLogo2 from '@/../public/images/jito-logo-2.png';
 import jtoImage from '@/../public/images/jito-logo-2.png';
+import secondImage from '@/../public/images/second-place.svg';
+import thirdImage from '@/../public/images/third-place.svg';
 import xIcon from '@/../public/images/x-black-bg.png';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
@@ -18,6 +22,7 @@ import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
+import { DIVISIONS } from '@/constants/divisions';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { useSelector } from '@/store/store';
 import {
@@ -25,7 +30,9 @@ import {
     TradingCompetitionLeaderboardAPI,
     UserProfileExtended,
 } from '@/types';
-import { getDaysBetweenDates, getHoursBetweenDates } from '@/utils';
+import { getAbbrevWalletAddress } from '@/utils';
+
+import infoIcon from '../../../public/images/Icons/info.svg';
 
 const division = [
     'Leviathan',
@@ -72,9 +79,8 @@ export default function Competition() {
     const [myRank, setMyRank] = useState<number | null>(null);
     const [myVolume, setMyVolume] = useState<number | null>(null);
     const [myPnl, setMyPnl] = useState<number | null>(null);
-    const [myTradingProfileName, setMyTradingProfileName] = useState<
-        string | null
-    >(null);
+    const [myProvisionnalAdxRewards, setMyProvisionnalAdxRewards] = useState<number | null>(null);
+    const [myProvisionnalJtoRewards, setMyProvisionnalJtoRewards] = useState<number | null>(null);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
 
@@ -159,11 +165,19 @@ export default function Competition() {
                             address === wallet.walletAddress,
                     )?.total_pnl ?? null,
                 );
-                setMyTradingProfileName(
+
+                setMyProvisionnalAdxRewards(
                     f?.traders.find(
                         ({ address }: { address: string }) =>
                             address === wallet.walletAddress,
-                    )?.username ?? null,
+                    )?.adx_reward ?? null,
+                );
+
+                setMyProvisionnalJtoRewards(
+                    f?.traders.find(
+                        ({ address }: { address: string }) =>
+                            address === wallet.walletAddress,
+                    )?.jto_reward ?? null,
                 );
             } else {
                 setMyDivision(null);
@@ -281,7 +295,15 @@ export default function Competition() {
             setActiveProfile(profile);
         }
     };
+
     const twitterText = `Join the Adrena Trading Competition! 🚀📈🏆 @adrenaprotocol`;
+
+
+    const userProfile: UserProfileExtended | undefined = allUserProfiles.find((p) => p.owner.toBase58() === wallet?.walletAddress);
+
+    const hasProfile = userProfile !== undefined;
+
+    const userName = hasProfile ? userProfile?.nickname : getAbbrevWalletAddress(wallet?.walletAddress.toString() ?? 'undefined');
 
     return (
         <>
@@ -546,34 +568,71 @@ export default function Competition() {
                 <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
 
                 <div className="px-4 sm:px-8">
-                    <h1 className="font-boldy mb-6 capitalize">Leaderboards</h1>
+                    <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
+                        <h1 className="font-boldy capitalize mb-4 sm:mb-0">Leaderboards</h1>
+
+                        {!hasProfile && (
+                            <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
+                                <Image
+                                    className="opacity-70 mr-2 mb-2 sm:mb-0"
+                                    src={infoIcon}
+                                    height={16}
+                                    width={16}
+                                    alt="Info icon"
+                                />
+                                <p className="mr-2 mb-2 sm:mb-0">
+                                    Create an on-chain profile to track your all-time stats.
+                                </p>
+                                <Button
+                                    title="Go!"
+                                    className="text-xs px-4 py-1 rounded-lg"
+                                    onClick={() => {
+                                        window.location.href = '/my_dashboard';
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
 
                     {wallet && data && myDivision ? (
                         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 justify-between px-4 bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8">
-                            <div className="text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
-                                {myTradingProfileName
-                                    ? myTradingProfileName
-                                    : 'Your Performance'}
+                            <div className="flex items-center">
+                                <div className="text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+                                    {userName}
+                                </div>
+
+                                <span className="text-sm text-txtfade mx-4"> | </span>
+
+                                <span className="text-base font-boldy mr-2">
+                                    {myRank && myRank < 4 && myDivision !== 'No Division' ? (
+                                        <Image
+                                            src={
+                                                myRank === 1
+                                                    ? firstImage
+                                                    : myRank === 2
+                                                        ? secondImage
+                                                        : myRank === 3
+                                                            ? thirdImage
+                                                            : ''
+                                            }
+                                            width={20}
+                                            height={20}
+                                            alt="rank"
+                                            key={`rank-${myRank}`}
+                                        />
+                                    ) : (
+                                        <p className="text-sm text-center w-[40px]" key={`rank-${myRank}`}>
+                                            {myRank}
+                                        </p>
+                                    )}
+                                </span>
+                                <span
+                                    className={`text-base font-boldy ${DIVISIONS[myDivision]?.color ?? 'default-text-color'}`}
+                                >
+                                    {myDivision}
+                                </span>
                             </div>
 
-                            <div className="flex items-center">
-                                <span className="text-sm text-txtfade mr-1">Rank</span>
-                                <span className="text-base font-boldy">#{myRank}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="text-sm text-txtfade mr-1">Division</span>
-                                <span className="text-base font-boldy">{myDivision}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="text-sm text-txtfade mr-1">Volume</span>
-                                <FormatNumber
-                                    nb={myVolume ?? 0}
-                                    format="currency"
-                                    isAbbreviate={true}
-                                    isDecimalDimmed={false}
-                                    className="text-base font-boldy"
-                                />
-                            </div>
                             <div className="flex items-center">
                                 <span className="text-sm text-txtfade mr-1">PnL</span>
                                 <FormatNumber
@@ -585,6 +644,49 @@ export default function Competition() {
                                         (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
                                     )}
                                 />
+                                <span className="text-sm text-txtfade ml-4 mr-1">Volume</span>
+                                <FormatNumber
+                                    nb={myVolume ?? 0}
+                                    format="currency"
+                                    isAbbreviate={true}
+                                    isDecimalDimmed={false}
+                                    className="text-base font-boldy"
+                                />
+
+
+                                <span className="text-sm text-txtfade mx-4"> | </span>
+                                <span className="text-sm text-txtfade mr-2"> End of Season rewards: </span>
+
+                                <FormatNumber
+                                    nb={myProvisionnalAdxRewards ?? 0}
+                                    format="currency"
+                                    isAbbreviate={true}
+                                    isDecimalDimmed={false}
+                                    className="text-base font-boldy"
+                                />
+                                <Image
+                                    src={adxLogo}
+                                    width={14}
+                                    height={14}
+                                    alt="ADX"
+                                    className="ml-1 mr-4"
+                                />
+
+                                <FormatNumber
+                                    nb={myProvisionnalJtoRewards ?? 0}
+                                    format="currency"
+                                    isAbbreviate={true}
+                                    isDecimalDimmed={false}
+                                    className="text-base font-boldy"
+                                />
+                                <Image
+                                    src={jtoImage}
+                                    width={14}
+                                    height={14}
+                                    alt="JTO"
+                                    className="ml-1 mr-4"
+                                />
+
                             </div>
                         </div>
                     ) : null}
