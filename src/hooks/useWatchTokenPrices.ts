@@ -96,10 +96,14 @@ export default function useWatchTokenPrices() {
       return;
     }
 
-    loadPythPrices();
+    loadPythPrices().catch((e) =>
+      console.error('error happened loading pyth prices', e),
+    );
 
     pythPriceInterval = setInterval(() => {
-      loadPythPrices();
+      loadPythPrices().catch((e) =>
+        console.error('error happened loading pyth prices', e),
+      );
     }, PYTH_PRICE_LOADING_INTERVAL_IN_MS);
 
     return () => {

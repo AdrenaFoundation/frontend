@@ -489,7 +489,10 @@ export default function LongShortTradingInputs({
 
     const projectedSizeUsd = inputB * tokenPriceBTrade;
 
-    if (projectedSizeUsd > custody.maxPositionLockedUsd)
+    if (side === "long" && projectedSizeUsd > custody.maxPositionLockedUsd)
+      return setErrorMessage(`Position Exceeds Max Size`);
+
+    if (side === "short" && usdcCustody && projectedSizeUsd > usdcCustody.maxPositionLockedUsd)
       return setErrorMessage(`Position Exceeds Max Size`);
 
     // If custody doesn't have enough liquidity, tell user
@@ -704,9 +707,10 @@ export default function LongShortTradingInputs({
 
             <FormatNumber
               nb={
-                custody && custody.maxPositionLockedUsd
-                  ? custody.maxPositionLockedUsd
-                  : null
+                side === 'long' ?
+                  custody && custody.maxPositionLockedUsd
+                    ? custody.maxPositionLockedUsd
+                    : null : usdcCustody?.maxPositionLockedUsd ?? null
               }
               format="currency"
               className="text-txtfade text-xs ml-1"

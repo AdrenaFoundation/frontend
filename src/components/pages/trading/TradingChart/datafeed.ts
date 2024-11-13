@@ -1,5 +1,5 @@
 import {
-  ErrorCallback,
+  DatafeedErrorCallback,
   HistoryCallback,
   IBasicDataFeed,
   LibrarySymbolInfo,
@@ -44,7 +44,7 @@ const datafeed: IBasicDataFeed = {
   resolveSymbol: (
     symbolName: string,
     onSymbolResolvedCallback: ResolveCallback,
-    onResolveErrorCallback: ErrorCallback,
+    onResolveErrorCallback: DatafeedErrorCallback,
   ) => {
     console.log('[resolveSymbol]: Method call', symbolName);
 
@@ -69,7 +69,7 @@ const datafeed: IBasicDataFeed = {
     resolution: ResolutionString,
     periodParams: PeriodParams,
     onHistoryCallback: HistoryCallback,
-    onErrorCallback: ErrorCallback,
+    onErrorCallback: DatafeedErrorCallback,
   ) => {
     const { from, to, firstDataRequest } = periodParams;
 
