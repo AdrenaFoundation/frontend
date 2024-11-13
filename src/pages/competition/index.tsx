@@ -352,7 +352,7 @@ export default function Competition() {
                     </div>
 
                     <div className="flex items-center justify-center">
-                        <p className="absolute -translate-y-0.5 font-mono z-10 flex items-center justify-center">
+                        <div className="absolute -translate-y-0.5 font-mono z-10 flex items-center justify-center">
                             {endDate.getTime() > Date.now() ? (
                                 <>
                                     <RemainingTimeToDate
@@ -367,7 +367,7 @@ export default function Competition() {
                             ) : (
                                 'Competition has ended'
                             )}
-                        </p>
+                        </div>
 
                         <Image
                             src={timerBg}
