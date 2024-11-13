@@ -7,7 +7,6 @@ import {
   ResolutionString,
   SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library';
-import { read } from 'fs';
 const streamingUrl =
   'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
 
@@ -103,7 +102,7 @@ let readerId = 0;
 let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
 
 function startStreaming(delay = 5000) {
-  let localId = Math.random();
+  const localId = Math.random();
 
   if (reader) {
     console.log('[stream] Cancel streaming to avoid double stream.');
