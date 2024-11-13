@@ -7,8 +7,6 @@ import {
   ResolutionString,
   SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library';
-const streamingUrl =
-  'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
 
 type PythStreamingData = {
   id: string; // i.e, "Crypto.SOL/USD"
@@ -18,7 +16,10 @@ type PythStreamingData = {
   s: number; // i.e, 0
 };
 
-const channelToSubscription = new Map<
+const PYTH_STREAMING_ENDPOINT =
+  'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
+
+const CHANNEL_TO_SUBSCRIPTION_MAP = new Map<
   string,
   {
     subscriberUID: string;
@@ -30,6 +31,7 @@ const channelToSubscription = new Map<
     }[];
   }
 >();
+const TEXT_DECODER = new TextDecoder();
 
 function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
   return pythStreamingFormat.split('/')[0].split('.')[1];
@@ -38,15 +40,16 @@ function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
 function handleStreamingData(data: PythStreamingData) {
   const { id, p, t } = data;
 
-  const tradePrice = p;
-  const tradeTime = t * 1000; // Multiplying by 1000 to get milliseconds
-
   const channelString = id;
-  const subscriptionItem = channelToSubscription.get(channelString);
+  const subscriptionItem = CHANNEL_TO_SUBSCRIPTION_MAP.get(channelString);
 
-  if (!subscriptionItem) {
+  if (subscriptionItem === undefined) {
+    // no active subscription for this data, let's skip it.
     return;
   }
+
+  const tradePrice = p;
+  const tradeTime = t * 1000; // Multiplying by 1000 to get milliseconds
 
   const lastDailyBar = subscriptionItem.lastDailyBar;
   const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
@@ -82,48 +85,63 @@ function handleStreamingData(data: PythStreamingData) {
   // Send data to every subscriber of that symbol
   subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
 
-  channelToSubscription.set(channelString, subscriptionItem);
+  CHANNEL_TO_SUBSCRIPTION_MAP.set(channelString, subscriptionItem);
 }
 
-(() => {
-  if (typeof window === 'undefined') return;
+function onOfflineChange() {
+  console.log('[page] Page went offline!');
+  _abortController?.abort();
+}
 
-  window.addEventListener('offline', (e) => {
-    console.log('[page] Page went offline!');
-  });
+function onOnlineChange() {
+  console.log('[page] Page came back online!');
+  startStreaming(5000);
+}
 
-  window.addEventListener('online', (e) => {
-    console.log('[page] Page came back online!');
-    startStreaming(5000);
-  });
-})();
+let _reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+let _abortController: AbortController | null = null;
 
-let readerId = 0;
-let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+function setupStreaming() {
+  console.log('[stream] Setup.');
+  window.addEventListener('offline', onOfflineChange);
+  window.addEventListener('online', onOnlineChange);
+  _abortController = new AbortController();
+  return _abortController;
+}
 
-function startStreaming(delay = 5000) {
-  const localId = Math.random();
+function cleanupStreaming() {
+  console.log('[stream] Clean up.');
+  window.removeEventListener('offline', onOfflineChange);
+  window.removeEventListener('online', onOnlineChange);
+  _reader?.cancel();
+  _reader = null;
+  _abortController?.abort();
+  _abortController = null;
+}
 
-  if (reader) {
+function startStreaming(reconnectAttemptDelayMs = 5_000) {
+  if (_reader) {
     console.log('[stream] Cancel streaming to avoid double stream.');
-    reader.cancel();
-    reader = null;
-    readerId = localId;
+    cleanupStreaming();
   }
 
+  const abortController = setupStreaming();
   console.log('[stream] Fetch streaming data');
 
-  fetch(streamingUrl)
+  fetch(PYTH_STREAMING_ENDPOINT, { signal: abortController.signal })
     .then((response) => {
-      if (response.body == null) {
-        throw new Error('Error starting streaming');
+      if (response.body === null) {
+        throw new Error('Unexpected null response body');
       }
 
-      reader = response.body.getReader();
+      const reader = response.body.getReader();
+      _reader = reader;
 
       function streamData() {
         if (!reader) {
-          console.log('no more reader');
+          // Unexpected race condition. this fetch +
+          // let's log, ignore, stop this stale callback execution here.
+          console.error('[stream] no more reader');
           return;
         }
 
@@ -131,55 +149,37 @@ function startStreaming(delay = 5000) {
           .read()
           .then(({ value, done }) => {
             if (done) {
-              console.error('[stream] Streaming ended.');
-
-              // We are closing the reader willingly
-              if (readerId !== localId) {
-                console.log(
-                  '[stream] Reader closed and that is ok.',
-                  readerId,
-                  localId,
-                );
-                return;
-              }
-
-              console.log(
-                '[stream] Reader closed and that is not ok.',
-                localId,
-              );
-
-              // We have not chosen to close the reader, so we will attempt to reconnect
-              attemptReconnect(delay);
-
-              return;
+              throw new Error('Stream abruptly closed');
             }
 
             // Assuming the streaming data is separated by line breaks
-            const dataStrings = new TextDecoder().decode(value).split('\n');
+            const dataStrings = TEXT_DECODER.decode(value).split('\n');
 
-            dataStrings.forEach((dataString) => {
-              const trimmedDataString = dataString.trim();
+            for (const dataString of dataStrings) {
+              const trimmed = dataString.trim();
 
-              if (trimmedDataString) {
+              if (trimmed) {
                 try {
-                  const jsonData = JSON.parse(trimmedDataString);
-
-                  handleStreamingData(jsonData);
+                  const parsed = JSON.parse(trimmed);
+                  handleStreamingData(parsed);
                 } catch (e: unknown) {
-                  // streaming data is not always clean, we don't need to catch this error
+                  // streaming data is not always clean, we catch but ignore this error
                   /* console.error(
-                    'Error parsing JSON:',
-                    e instanceof Error ? e.message : String(e),
-                  ); */
+                      'Error parsing JSON:',
+                      e instanceof Error ? e.message : String(e),
+                    ); */
                 }
               }
-            });
+            }
 
-            streamData(); // Continue processing the stream
+            // Continue processing the stream
+            streamData();
           })
           .catch((error) => {
             console.error('[stream] Error reading from stream:', error);
-            attemptReconnect(delay);
+            // We have not chosen to close the reader, so we will attempt to reconnect
+            cleanupStreaming();
+            scheduleReconnectAttempt(reconnectAttemptDelayMs);
           });
       }
 
@@ -190,22 +190,23 @@ function startStreaming(delay = 5000) {
         '[stream] Error fetching from the streaming endpoint:',
         error,
       );
+      cleanupStreaming();
     });
+}
 
-  function attemptReconnect(delay: number) {
-    console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
+function scheduleReconnectAttempt(reconnectAttemptDelayMs: number) {
+  console.log(
+    `[stream] Attempting to reconnect in ${reconnectAttemptDelayMs}ms...`,
+  );
 
-    setTimeout(() => {
-      startStreaming(delay);
-    }, delay);
-  }
+  setTimeout(() => {
+    startStreaming(reconnectAttemptDelayMs);
+  }, reconnectAttemptDelayMs);
 }
 
 function getNextDailyBarTime(barTime: number) {
   const date = new Date(barTime * 1000);
-
   date.setDate(date.getDate() + 1);
-
   return date.getTime() / 1000;
 }
 
@@ -218,6 +219,11 @@ export function subscribeOnStream(
   lastDailyBar: Bar,
 ) {
   const channelString = symbolInfo.ticker;
+  console.log('[stream] new subscription request', {
+    channelString,
+    subscriberUID,
+  });
+
   const handler = {
     id: subscriberUID,
     callback: onRealtimeCallback,
@@ -225,16 +231,16 @@ export function subscribeOnStream(
 
   if (!channelString) return;
 
-  let subscriptionItem = channelToSubscription.get(channelString);
-
-  subscriptionItem = {
+  // FIXNE: we're not doing anything with the current subscription item at the moment.
+  const subscriptionItem = CHANNEL_TO_SUBSCRIPTION_MAP.get(channelString);
+  const newSubscriptionItem = {
     subscriberUID,
     resolution,
     lastDailyBar,
     handlers: [handler],
   };
 
-  channelToSubscription.set(channelString, subscriptionItem);
+  CHANNEL_TO_SUBSCRIPTION_MAP.set(channelString, newSubscriptionItem);
 
   console.log(
     '[subscribeBars]: Subscribe to streaming. Channel:',
@@ -247,24 +253,33 @@ export function subscribeOnStream(
 
 export function unsubscribeFromStream(subscriberUID: string) {
   // Find a subscription with id === subscriberUID
-  for (const channelString of channelToSubscription.keys()) {
-    const subscriptionItem = channelToSubscription.get(channelString);
+  for (const channelString of CHANNEL_TO_SUBSCRIPTION_MAP.keys()) {
+    const subscriptionItem = CHANNEL_TO_SUBSCRIPTION_MAP.get(channelString);
 
-    if (!subscriptionItem) continue;
+    // impossible case
+    if (subscriptionItem === undefined) {
+      throw new Error('Unexpected undefined subscriptionItem');
+    }
 
-    const handlerIndex = subscriptionItem.handlers.findIndex(
+    const subscriptionItemHandler = subscriptionItem.handlers.find(
       (handler) => handler.id === subscriberUID,
     );
 
-    if (handlerIndex !== -1) {
+    if (subscriptionItemHandler) {
       // Unsubscribe from the channel if it is the last handler
+      // FIXME: we can only have one handler right now.
+      // we're not checking if this handler is the last.
       console.log(
         '[unsubscribeBars]: Unsubscribe from streaming. Channel:',
         channelString,
       );
 
-      channelToSubscription.delete(channelString);
-      break;
+      CHANNEL_TO_SUBSCRIPTION_MAP.delete(channelString);
+    }
+
+    // No remaining subscriptions,
+    if (CHANNEL_TO_SUBSCRIPTION_MAP.size === 0) {
+      cleanupStreaming();
     }
   }
 }
