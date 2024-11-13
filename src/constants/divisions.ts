@@ -41,6 +41,6 @@ export const DIVISIONS: Record<string, Division> = {
         img: null,
         title: 'No Division',
         topTradersPercentage: 100,
-        color: 'text-[#163C7D]',
+        color: 'text-[#FFFFFF]',
     },
 } as const; 

@@ -573,19 +573,20 @@ export default function Competition() {
 
                         {!hasProfile && (
                             <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
-                                <Image
-                                    className="opacity-70 mr-2 mb-2 sm:mb-0"
-                                    src={infoIcon}
-                                    height={16}
-                                    width={16}
-                                    alt="Info icon"
-                                />
-                                <p className="mr-2 mb-2 sm:mb-0">
+
+                                <p className="mr-2 mb-2 sm:mb-0 flex items-center">
+                                    <Image
+                                        className="opacity-70 mr-2 mb-2 sm:mb-0"
+                                        src={infoIcon}
+                                        height={16}
+                                        width={16}
+                                        alt="Info icon"
+                                    />
                                     Create an on-chain profile to track your all-time stats.
                                 </p>
                                 <Button
                                     title="Go!"
-                                    className="text-xs px-4 py-1 rounded-lg"
+                                    className="text-xs px-4 py-1 h-[2em]"
                                     onClick={() => {
                                         window.location.href = '/my_dashboard';
                                     }}
@@ -597,11 +598,11 @@ export default function Competition() {
                     {wallet && data && myDivision ? (
                         <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 justify-between px-4 bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8">
                             <div className="flex items-center">
-                                <div className="text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+                                <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                                     {userName}
                                 </div>
 
-                                <span className="text-sm text-txtfade mx-4"> | </span>
+                                <span className="hidden sm:flex text-sm text-txtfade mx-4"> | </span>
 
                                 <span className="text-base font-boldy mr-2">
                                     {myRank && myRank < 4 && myDivision !== 'No Division' ? (
@@ -622,7 +623,7 @@ export default function Competition() {
                                         />
                                     ) : (
                                         <p className="text-sm text-center w-[40px]" key={`rank-${myRank}`}>
-                                            {myRank}
+                                            # {myRank}
                                         </p>
                                     )}
                                 </span>
@@ -633,7 +634,7 @@ export default function Competition() {
                                 </span>
                             </div>
 
-                            <div className="flex items-center">
+                            <div className="hidden sm:flex items-center">
                                 <span className="text-sm text-txtfade mr-1">PnL</span>
                                 <FormatNumber
                                     nb={myPnl ?? 0}
