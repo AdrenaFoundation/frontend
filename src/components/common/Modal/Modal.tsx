@@ -146,7 +146,7 @@ export default function Modal({
           </div>
 
           <div className={twMerge('relative', className)}>{children} <div
-            className="sticky bottom-0 h-[30px] w-full bg-gradient-to-b from-transparent to-secondary z-20"
+            className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-secondary z-20"
           /></div>
 
         </motion.div>

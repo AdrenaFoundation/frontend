@@ -274,16 +274,6 @@ export default function Competition() {
         );
     }
 
-    const daysUntilNextWeek = getDaysBetweenDates(
-        new Date(),
-        new Date(achievements.biggest_liquidation.week_ends[week]),
-    );
-
-    const hoursUntilNextWeek = getHoursBetweenDates(
-        new Date(),
-        new Date(achievements.biggest_liquidation.week_ends[week]),
-    );
-
     const handleProfileView = (nickname: string) => {
         const profile = allUserProfiles.find((p) => p.nickname === nickname);
         console.log(nickname, profile);
@@ -363,7 +353,8 @@ export default function Competition() {
                             <p className="text-base text-txtfade mb-2">
                                 From Nov 11 - Dec 23, 2024
                             </p>
-                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start">
+
+                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
                                 <span className="text-txtfade text-center lg:text-left">
                                     Welcome to Adrena&apos;s trading pre-season, anon! This
                                     six-week event is the introduction to our upcoming recurring
@@ -398,18 +389,19 @@ export default function Competition() {
                                 </span>
                             </div>
 
-                            <div className="flex gap-4 mt-4">
+                            <div className="flex gap-4 mt-4 flex-col sm:flex-row">
                                 <Button
                                     title="Join Discord"
-                                    className="w-full text-sm px-8"
+                                    className="text-sm px-8 w-[15em]"
                                     href={`https://discord.gg/adrena`}
                                     isOpenLinkInNewTab
                                     rightIcon={discordIcon}
                                     rightIconClassName="w-3 h-3"
                                 />
+
                                 <Button
                                     title="Share on"
-                                    className="w-full text-sm px-8"
+                                    className="text-sm px-8 w-[15em]"
                                     href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                                         twitterText,
                                     )}&url=${encodeURIComponent(
@@ -421,7 +413,7 @@ export default function Competition() {
                                 />
                                 <Button
                                     title="Trade Now"
-                                    className="w-full text-sm px-8"
+                                    className="text-sm px-8 w-[15em]"
                                     href="/trade"
                                     rightIconClassName="w-3 h-3"
                                 />
@@ -450,11 +442,11 @@ export default function Competition() {
                 </div>
 
                 <div className="px-4 sm:px-8">
-                    <div className="flex flex-col md:flex-row gap-3 w-full mb-3">
+                    <div className="flex flex-col lg:flex-row gap-3 w-full mb-3">
                         <h1 className="font-boldy flex-none capitalize">Weekly Rewards</h1>
 
-                        <div className="flex flex-col sm:flex-row gap-3 justify-between sm:items-center w-full">
-                            <div className="flex flex-row gap-3 items-center">
+                        <div className="flex flex-col md:flex-row gap-3 justify-between md:items-center w-full">
+                            <div className="flex flex-row gap-3 min-w-[17em]">
                                 <p className="opacity-50">
                                     (
                                     {new Date(
@@ -467,11 +459,12 @@ export default function Competition() {
                                     )
                                 </p>
 
-                                <p className="text-xs font-mono z-10">
-                                    {hoursUntilNextWeek > 0 &&
-                                        `${daysUntilNextWeek}d ${hoursUntilNextWeek}h left`}
-                                </p>
+                                <div className='flex text-xs gap-1'>
+                                    <RemainingTimeToDate timestamp={new Date(achievements.biggest_liquidation.week_ends[week]).getTime() / 1000} stopAtZero={true} />
+                                    <span className="text-xs font-boldy">left</span>
+                                </div>
                             </div>
+
                             <div className="flex flex-row gap-2 items-center">
                                 {Array.from({ length: 6 }, (_, i) => i).map((i) => (
                                     <div
