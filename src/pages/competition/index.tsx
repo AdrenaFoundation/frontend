@@ -86,7 +86,7 @@ export default function Competition() {
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
     const [tradersCount, setTradersCount] = useState<number | null>(null);
-    const [totalVolume, setTotalVolume] = useState<number | null>(null);
+    const [_, setTotalVolume] = useState<number | null>(null);
 
     const endDate = new Date('12/23/2024');
 
@@ -583,7 +583,7 @@ export default function Competition() {
                         <h1 className="font-boldy capitalize mb-4 sm:mb-0">Leaderboards</h1>
                         <div className="flex flex-row items-center justify-center bg-[#111923] border rounded-lg pl-2 pr-3 mt-1">
                             <LiveIcon />
-                            <Tippy content="Total number of traders participating in the competition" placement="auto">
+                            <Tippy content="Total number of traders that participated so far in the competition" placement="auto">
                                 <p className="text-base text-txtfade font-boldy ml-1">{tradersCount}</p>
                             </Tippy>
                         </div>
@@ -652,7 +652,7 @@ export default function Competition() {
                             </div>
 
                             <div className="hidden sm:flex items-center">
-                                <span className="text-sm text-txtfade mr-1">PnL</span>
+                                <span className="text-sm text-txtfade mr-1">PnL:</span>
                                 <FormatNumber
                                     nb={myPnl ?? 0}
                                     format="currency"
@@ -662,7 +662,7 @@ export default function Competition() {
                                         (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
                                     )}
                                 />
-                                <span className="text-sm text-txtfade ml-4 mr-1">Volume</span>
+                                <span className="text-sm text-txtfade ml-4 mr-1">Volume:</span>
                                 <FormatNumber
                                     nb={myVolume ?? 0}
                                     format="currency"
@@ -673,12 +673,11 @@ export default function Competition() {
 
 
                                 <span className="text-sm text-txtfade mx-4"> | </span>
-                                <span className="text-sm text-txtfade mr-2"> End of Season rewards: </span>
+                                <span className="text-sm text-txtfade mr-4"> Rank rewards: </span>
 
                                 <FormatNumber
                                     nb={myProvisionnalAdxRewards ?? 0}
-                                    format="currency"
-                                    isAbbreviate={true}
+                                    format="number"
                                     isDecimalDimmed={false}
                                     className="text-base font-boldy"
                                 />
@@ -692,8 +691,7 @@ export default function Competition() {
 
                                 <FormatNumber
                                     nb={myProvisionnalJtoRewards ?? 0}
-                                    format="currency"
-                                    isAbbreviate={true}
+                                    format="number"
                                     isDecimalDimmed={false}
                                     className="text-base font-boldy"
                                 />
@@ -702,7 +700,6 @@ export default function Competition() {
                                     width={14}
                                     height={14}
                                     alt="JTO"
-                                    className="ml-1 mr-4"
                                 />
 
                             </div>
