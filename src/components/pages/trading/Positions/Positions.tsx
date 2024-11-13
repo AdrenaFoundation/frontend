@@ -64,7 +64,7 @@ export default function Positions({
               </>
             }
             close={() => setPositionToClose(null)}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center w-full"
           >
             <ClosePosition
               position={positionToClose}

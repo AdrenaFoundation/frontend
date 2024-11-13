@@ -7,6 +7,7 @@ import {
   ResolutionString,
   SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library';
+import { read } from 'fs';
 const streamingUrl =
   'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
 
@@ -85,21 +86,72 @@ function handleStreamingData(data: PythStreamingData) {
   channelToSubscription.set(channelString, subscriptionItem);
 }
 
-function startStreaming(retries = 3, delay = 3000) {
+(() => {
+  if (typeof window === 'undefined') return;
+
+  window.addEventListener('offline', (e) => {
+    console.log('[page] Page went offline!');
+  });
+
+  window.addEventListener('online', (e) => {
+    console.log('[page] Page came back online!');
+    startStreaming(5000);
+  });
+})();
+
+let readerId = 0;
+let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+
+function startStreaming(delay = 5000) {
+  let localId = Math.random();
+
+  if (reader) {
+    console.log('[stream] Cancel streaming to avoid double stream.');
+    reader.cancel();
+    reader = null;
+    readerId = localId;
+  }
+
+  console.log('[stream] Fetch streaming data');
+
   fetch(streamingUrl)
     .then((response) => {
       if (response.body == null) {
         throw new Error('Error starting streaming');
       }
 
-      const reader = response.body.getReader();
+      reader = response.body.getReader();
 
       function streamData() {
+        if (!reader) {
+          console.log('no more reader');
+          return;
+        }
+
         reader
           .read()
           .then(({ value, done }) => {
             if (done) {
               console.error('[stream] Streaming ended.');
+
+              // We are closing the reader willingly
+              if (readerId !== localId) {
+                console.log(
+                  '[stream] Reader closed and that is ok.',
+                  readerId,
+                  localId,
+                );
+                return;
+              }
+
+              console.log(
+                '[stream] Reader closed and that is not ok.',
+                localId,
+              );
+
+              // We have not chosen to close the reader, so we will attempt to reconnect
+              attemptReconnect(delay);
+
               return;
             }
 
@@ -128,7 +180,7 @@ function startStreaming(retries = 3, delay = 3000) {
           })
           .catch((error) => {
             console.error('[stream] Error reading from stream:', error);
-            attemptReconnect(retries, delay);
+            attemptReconnect(delay);
           });
       }
 
@@ -141,16 +193,12 @@ function startStreaming(retries = 3, delay = 3000) {
       );
     });
 
-  function attemptReconnect(retriesLeft: number, delay: number) {
-    if (retriesLeft > 0) {
-      console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
+  function attemptReconnect(delay: number) {
+    console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
 
-      setTimeout(() => {
-        startStreaming(retriesLeft - 1, delay);
-      }, delay);
-    } else {
-      console.error('[stream] Maximum reconnection attempts reached.');
-    }
+    setTimeout(() => {
+      startStreaming(delay);
+    }, delay);
   }
 }
 

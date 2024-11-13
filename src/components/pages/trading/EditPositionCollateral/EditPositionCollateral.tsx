@@ -724,7 +724,7 @@ export default function EditPositionCollateral({
       }
 
       <Button
-        className="mt-4 rounded-none font-boldy text-lg"
+        className="m-4"
         size="lg"
         title={executeBtnText}
         disabled={
