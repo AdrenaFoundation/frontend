@@ -676,7 +676,6 @@ export default function Competition() {
                                     className="text-base font-boldy"
                                 />
 
-
                                 <span className="text-sm text-txtfade mx-4"> | </span>
                                 <span className="text-sm text-txtfade mr-4"> Rank rewards: </span>
 
@@ -688,12 +687,11 @@ export default function Competition() {
                                 />
                                 <Image
                                     src={adxLogo}
-                                    width={14}
-                                    height={14}
+                                    width={16}
+                                    height={16}
                                     alt="ADX"
                                     className="ml-1 mr-4"
                                 />
-
                                 <FormatNumber
                                     nb={myProvisionnalJtoRewards ?? 0}
                                     format="number"
