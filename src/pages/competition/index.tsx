@@ -579,19 +579,21 @@ export default function Competition() {
                 <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
 
                 <div className="px-4 sm:px-8">
-                    <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
-                        <h1 className="font-boldy capitalize mb-4 sm:mb-0">Leaderboards</h1>
-                        <div className="flex flex-row items-center justify-center bg-[#111923] border rounded-lg pl-2 pr-3 mt-1">
-                            <LiveIcon />
-                            <Tippy content="Total number of traders that participated so far in the competition" placement="auto">
-                                <p className="text-base text-txtfade font-boldy ml-1">{tradersCount}</p>
-                            </Tippy>
+                    <div className="flex flex-col sm:flex-row mb-5 gap-4">
+                        <div className='flex flex-row gap-3 items-center'>
+
+                            <h1 className="font-boldy capitalize">Leaderboards</h1>
+                            <div className="flex flex-row items-center justify-center bg-[#111923] border rounded-lg pl-2 pr-3 mt-1">
+                                <LiveIcon />
+                                <Tippy content="Total number of traders that participated so far in the competition" placement="auto">
+                                    <p className="text-base text-txtfade font-boldy ml-1">{tradersCount}</p>
+                                </Tippy>
+                            </div>
                         </div>
 
                         {!hasProfile && (
                             <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
-
-                                <p className="mr-2 mb-2 sm:mb-0 flex items-center">
+                                <div className='flex flex-row items-center'>
                                     <Image
                                         className="opacity-70 mr-2 mb-2 sm:mb-0"
                                         src={infoIcon}
@@ -599,11 +601,14 @@ export default function Competition() {
                                         width={16}
                                         alt="Info icon"
                                     />
-                                    Create an on-chain profile to track your all-time stats.
-                                </p>
+                                    <p className="mr-2 mb-2 sm:mb-0 flex items-center">
+                                        Create an on-chain profile to track your all-time stats.
+                                    </p>
+
+                                </div>
                                 <Button
                                     title="Go!"
-                                    className="text-xs px-4 py-1 h-[2em]"
+                                    className="text-xs px-4 py-1 h-[2em] w-full sm:w-auto"
                                     onClick={() => {
                                         window.location.href = '/my_dashboard';
                                     }}
