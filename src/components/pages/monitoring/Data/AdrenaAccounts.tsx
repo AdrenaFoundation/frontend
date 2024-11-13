@@ -37,6 +37,9 @@ export default function AdrenaAccounts({
   const lpStakingLmRewardTokenVaultPda =
     window.adrena.client.getStakingLmRewardTokenVaultPda(lpStakingPda);
 
+  const lmStakingStakedTokensVaultPda = window.adrena.client.getStakingStakedTokenVaultPda(lmStakingPda);
+  const lpStakingStakedTokensVaultPda = window.adrena.client.getStakingStakedTokenVaultPda(lpStakingPda);
+
   return (
     <div className="bg-[#050D14] border rounded-lg flex-1 shadow-xl">
       <div className="w-full border-b p-3">
@@ -247,6 +250,40 @@ export default function AdrenaAccounts({
               <OnchainAccountInfo
                 className="md:ml-auto"
                 address={lpStakingLmRewardTokenVaultPda}
+              />
+            ),
+          },
+          {
+            rowTitle: (
+              <div className="flex items-center font-boldy">
+                ADX Staking Staked Tokens Vault <TitleAnnotation text="PDA" />
+                <InfoAnnotation
+                  text="Top-level account holding staked ALP token."
+                  className="mr-1"
+                />
+              </div>
+            ),
+            value: (
+              <OnchainAccountInfo
+                className="md:ml-auto"
+                address={lmStakingStakedTokensVaultPda}
+              />
+            ),
+          },
+          {
+            rowTitle: (
+              <div className="flex items-center font-boldy">
+                ALP Staking Staked Tokens Vault <TitleAnnotation text="PDA" />
+                <InfoAnnotation
+                  text="Top-level account holding staked ALP token."
+                  className="mr-1"
+                />
+              </div>
+            ),
+            value: (
+              <OnchainAccountInfo
+                className="md:ml-auto"
+                address={lpStakingStakedTokensVaultPda}
               />
             ),
           },
