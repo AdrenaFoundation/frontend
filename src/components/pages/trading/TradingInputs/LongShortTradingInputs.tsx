@@ -487,7 +487,9 @@ export default function LongShortTradingInputs({
       return setErrorMessage(`Missing ${getTokenSymbol(tokenB.symbol)} price`);
     }
 
-    const projectedSizeUsd = inputB * tokenPriceBTrade;
+    const projectedSize = openedPosition ? (inputB - openedPosition.size) : inputB;
+    const projectedSizeUsd = projectedSize * tokenPriceBTrade;
+    // const availableLiquidityUsd = side === 'long' ? custody.liquidity * tokenPriceBTrade : usdcCustody?.liquidity ?? 0;
 
     if (side === "long" && projectedSizeUsd > custody.maxPositionLockedUsd)
       return setErrorMessage(`Position Exceeds Max Size`);
@@ -496,7 +498,7 @@ export default function LongShortTradingInputs({
       return setErrorMessage(`Position Exceeds Max Size`);
 
     // If custody doesn't have enough liquidity, tell user
-    if (side === 'long' && inputB > custody.liquidity)
+    if (side === 'long' && projectedSize > custody.liquidity)
       return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
 
     if (side === 'short' && usdcCustody) {
