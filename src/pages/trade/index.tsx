@@ -169,18 +169,25 @@ export default function Trade({
 
     // If token is not set or token is not allowed, set default token
     if (
-      !tokenA ||
-      !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
-    ) {
-      setTokenA(tokenACandidate[0]);
-    }
-
-    // If token is not set or token is not allowed, set default token
-    if (
       !tokenB ||
       !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
       setTokenB(pickDefaultToken(positions));
+    }
+
+    // If token is not set or token is not allowed, set default token
+    if (
+      !tokenA ||
+      !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
+    ) {
+      // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
+      const candidate = selectedAction === 'long' ? tokenB ?? pickDefaultToken(positions) : tokenACandidate[0];
+
+      if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
+        setTokenA(candidate);
+      } else {
+        setTokenA(tokenACandidate[0]);
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
