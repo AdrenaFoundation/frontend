@@ -3,9 +3,8 @@ import Image from 'next/image';
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import diceImage from '@/../public/images/dice.svg';
 import firstImage from '@/../public/images/first-place.svg';
-import jitoImage from '@/../public/images/jito-logo.svg';
-import jtoImage from '@/../public/images/jito-logo-2.png';
 import ticketImage from '@/../public/images/tickets.png';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { ImageRef } from '@/types';
@@ -47,9 +46,9 @@ export default function WeeklyReward({
 }: {
     rewards: [
         { title: 'Top Liquidation' } & RewardData,
-        { title: 'Fees Prize' } & TicketData,
+        { title: 'Fees Raffle' } & TicketData,
         { title: 'Leverage Monster' } & RewardData,
-        { title: 'SOL Trading Volume' } & TicketData,
+        { title: 'SOL Volume Raffle' } & TicketData,
     ];
     handleProfileView: (nickname: string) => void;
 }) {
@@ -72,19 +71,13 @@ export default function WeeklyReward({
 
                         <div className='flex flex-col gap-2 items-center justify-between p-3 z-20'>
                             <div className='flex flex-col items-center gap-2'>
-                                {award.title === 'SOL Trading Volume' ? <Image
-                                    src={jitoImage}
+                                <Image
+                                    src={diceImage}
                                     alt="first place logo"
-                                    width={55}
-                                    height={55}
-                                    className='h-10'
-                                /> : <Image
-                                    src={firstImage}
-                                    alt="first place logo"
-                                    className='h-10'
+                                    className='h-10 opacity-80'
                                     width={40}
                                     height={40}
-                                />}
+                                />
 
                                 <p className="text-base sm:text-lg text-center font-boldy mb-0.5">
                                     {award.title}
@@ -95,7 +88,7 @@ export default function WeeklyReward({
                                 award.trader !== null ?
                                     // There is no winner yet
                                     <div className="flex items-center justify-center h-[3em]">
-                                        <div className="mb-0 gap-1 items-center justify-center flex">
+                                        <div className="mb-0 gap-1 items-center justify-center flex ml-4">
                                             <FormatNumber
                                                 nb={award.connectedWalletTickets}
                                                 className="text-lg text-center font-boldy"
@@ -110,6 +103,7 @@ export default function WeeklyReward({
                                                 className="text-lg text-center font-boldy"
                                                 isAbbreviate={true}
                                                 isAbbreviateIcon={false}
+                                                isDecimalDimmed={false}
                                             />
                                         </div>
 
@@ -129,14 +123,11 @@ export default function WeeklyReward({
                             }
 
                             <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
-                                {award.rewardToken === 'ADX' ? <Image
+                                <Image
                                     src={window.adrena.client.adxToken.image}
                                     alt="adx logo"
                                     className="w-3 h-3 sm:w-5 sm:h-5"
-                                /> : <Image
-                                    src={jtoImage}
-                                    alt="JTO logo"
-                                    className="w-5 h-5 sm:w-7 sm:h-7" width={80} height={80} />}
+                                />
 
                                 <FormatNumber
                                     nb={award.reward}
@@ -196,14 +187,11 @@ export default function WeeklyReward({
                     </div>
 
                     <div className="flex flex-row gap-2 items-center justify-center bg-[#1B212A] border rounded-lg p-2 px-3 sm:px-8">
-                        {award.rewardToken === 'ADX' ? <Image
+                        <Image
                             src={window.adrena.client.adxToken.image}
                             alt="adx logo"
                             className="w-3 h-3 sm:w-5 sm:h-5"
-                        /> : <Image
-                            src={jtoImage}
-                            alt="JTO logo"
-                            className="w-3 h-3 sm:w-5 sm:h-5" />}
+                        />
 
                         <FormatNumber
                             nb={award.reward}

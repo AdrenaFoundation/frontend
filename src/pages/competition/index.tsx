@@ -496,7 +496,7 @@ export default function Competition() {
                                             width={18}
                                             height={18}
                                         />
-                                        <div className="text-lg font-boldy w-[6.2em]">2.095M ADX</div>
+                                        <div className="text-lg font-boldy w-[6.2em]">2.27M ADX</div>
                                     </div>
 
                                     <div className="flex gap-2 items-center justify-center w-full">
@@ -573,7 +573,7 @@ export default function Competition() {
                                     'The trader with the single highest liquidation amount for the week.',
                             },
                             {
-                                title: 'Fees Prize',
+                                title: 'Fees Raffle',
                                 trader: achievements.fees_tickets.addresses[week],
                                 totalTickets: achievements.fees_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.fees ?? null,
@@ -596,14 +596,14 @@ export default function Competition() {
                                     'Highest PnL on a 100x initial-leverage position, w/o further increase. Add/remove collateral accepted.',
                             },
                             {
-                                title: 'SOL Trading Volume',
+                                title: 'SOL Volume Raffle',
                                 trader: achievements.jitosol_tickets.addresses[week],
                                 totalTickets: achievements.jitosol_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.jito ?? null,
                                 type: 'ticket',
-                                reward: 1000,
-                                rewardToken: 'JITO',
-                                rewardImage: jtoImage,
+                                reward: 30000,
+                                rewardToken: 'ADX',
+                                rewardImage: adxLogo,
                                 description:
                                     'Each $100k volume of SOL traded give you an entry. Winner picked at the end of the week.',
                             },
