@@ -429,7 +429,7 @@ export default function Competition() {
                                     width={18}
                                     height={18}
                                 />
-                                <p className="text-xl font-boldy w-[7em]">2.095M ADX</p>
+                                <p className="text-xl font-boldy w-[7em]">2.275M ADX</p>
                             </div>
 
                             <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg pl-6 pt-4 pb-4 w-full">
