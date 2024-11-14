@@ -1,6 +1,8 @@
-import { BN, ProgramAccount } from '@coral-xyz/anchor';
+import { BN, ProgramAccount, Wallet } from '@coral-xyz/anchor';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { base64, bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
+import { PriceServiceConnection } from '@pythnetwork/price-service-client';
+import { InstructionWithEphemeralSigners, PythSolanaReceiver } from '@pythnetwork/pyth-solana-receiver';
 import {
   createAssociatedTokenAccountIdempotentInstruction,
   createAssociatedTokenAccountInstruction,
@@ -31,7 +33,7 @@ import adxIcon from '../public/images/adx.svg';
 import alpIcon from '../public/images/alp.svg';
 import MultiStepNotification from './components/common/MultiStepNotification/MultiStepNotification';
 import IConfiguration from './config/IConfiguration';
-import { BPS, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
+import { BPS, HERMES_URL, PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from './constant';
 import { getMeanPrioritizationFeeByPercentile } from './grpf';
 import { TokenPricesState } from './reducers/tokenPricesReducer';
 import {
@@ -870,7 +872,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -976,7 +978,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -1334,7 +1336,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -1408,7 +1410,7 @@ export class AdrenaClient {
       price: price.toString(),
     });
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction: await this.adrenaProgram.methods
         .closePositionLong({
           price,
@@ -1521,7 +1523,7 @@ export class AdrenaClient {
 
     const userProfile = await this.loadUserProfile(position.owner);
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction: await this.adrenaProgram.methods
         .closePositionShort({
           price,
@@ -1615,7 +1617,7 @@ export class AdrenaClient {
       return;
     }
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -1681,7 +1683,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -1819,7 +1821,7 @@ export class AdrenaClient {
     leverage: number;
     notification: MultiStepNotification;
   }) {
-    if (!this.connection) {
+    if (!this.connection || !this.adrenaProgram) {
       throw new Error('no connection');
     }
 
@@ -1858,7 +1860,7 @@ export class AdrenaClient {
       ...postInstructions,
     );
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -1890,7 +1892,7 @@ export class AdrenaClient {
       .postInstructions(postInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -1926,7 +1928,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -1961,7 +1963,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -2110,7 +2112,7 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction: await this.adrenaProgram.methods
         .removeCollateralLong({
           collateralUsd,
@@ -2179,7 +2181,7 @@ export class AdrenaClient {
     const preInstructions: TransactionInstruction[] = [];
     const postInstructions: TransactionInstruction[] = [];
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction: await this.adrenaProgram.methods
         .removeCollateralShort({
           collateralUsd,
@@ -2284,7 +2286,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({ transaction });
+    return this.signAndExecuteTx({ transaction });
   }
 
   public async getAllVestingAccounts(): Promise<Vest[]> {
@@ -2450,7 +2452,7 @@ export class AdrenaClient {
 
     console.log('transaction debug in AdrenaClient', transaction);
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -2557,7 +2559,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -2672,7 +2674,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -2758,7 +2760,7 @@ export class AdrenaClient {
       // .preInstructions([modifyComputeUnits])
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -2842,7 +2844,7 @@ export class AdrenaClient {
     );
     const transaction = await builder.transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -3037,7 +3039,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -3136,7 +3138,7 @@ export class AdrenaClient {
       .preInstructions(preInstructions)
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -3241,7 +3243,7 @@ export class AdrenaClient {
       .remainingAccounts(this.prepareCustodiesForRemainingAccounts())
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -4417,7 +4419,7 @@ export class AdrenaClient {
       })
       .transaction();
 
-    return this.signAndExecuteTxAlternative({
+    return this.signAndExecuteTx({
       transaction,
       notification,
     });
@@ -4670,12 +4672,14 @@ export class AdrenaClient {
     }
   }
 
-  public async signAndExecuteTxAlternative({
+  public async signAndExecuteTx({
     transaction,
     notification,
+    priceIds, // price ids to update before sending the transaction (pyth pull)
   }: {
     transaction: Transaction;
     notification?: MultiStepNotification;
+    priceIds?: string[];
   }): Promise<string> {
     if (!this.adrenaProgram || !this.connection) {
       throw new Error('adrena program not ready');
@@ -4715,6 +4719,55 @@ export class AdrenaClient {
 
     /////////////////////// TRANSACTION ///////////////////////
     const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
+
+
+    ////
+    ////
+    if (priceIds) {
+      const priceServiceConnection = new PriceServiceConnection(HERMES_URL, {
+        priceFeedRequestConfig: { binary: true },
+      });
+      const pythSolanaReceiver = new PythSolanaReceiver({
+        connection: this.connection,
+        wallet: wallet as Wallet,
+      });
+      const priceUpdateData = await priceServiceConnection.getLatestVaas(priceIds);
+
+      const transactionBuilder = pythSolanaReceiver.newTransactionBuilder({
+        closeUpdateAccounts: true,
+      });
+      await transactionBuilder.addPostPriceUpdates([priceUpdateData[0]]);
+
+      await transactionBuilder.addPriceConsumerInstructions(
+        async (
+          getPriceUpdateAccount: (priceFeedId: string) => PublicKey
+        ): Promise<InstructionWithEphemeralSigners[]> => {
+          return [
+            {
+              instruction: await sendUsdApp.methods
+                .send(new BN(amount))
+                .accounts({
+                  destination,
+                  priceUpdate: getPriceUpdateAccount(SOL_PRICE_FEED_ID),
+                })
+                .instruction(),
+              signers: [],
+            },
+          ];
+        }
+      );
+
+      await pythSolanaReceiver.provider.sendAll(
+        await transactionBuilder.buildVersionedTransactions({
+          computeUnitPriceMicroLamports: 50000,
+        }),
+        { skipPreflight: true }
+      );
+    }
+
+    ///
+
+    ////
 
     let latestBlockHash: {
       blockhash: Blockhash;
@@ -4925,210 +4978,6 @@ export class AdrenaClient {
     notification?.currentStepErrored(adrenaError);
 
     throw adrenaError;
-  }
-
-  public async signAndExecuteTx({
-    transaction,
-    notification,
-  }: {
-    transaction: Transaction;
-    notification?: MultiStepNotification;
-  }): Promise<string> {
-    if (!this.adrenaProgram || !this.connection) {
-      throw new Error('adrena program not ready');
-    }
-
-    // Default value
-    let priorityFeeMicroLamports: number =
-      DEFAULT_PRIORITY_FEES[this.priorityFeeOption];
-
-    try {
-      // Refresh priority fees before proceeding
-      priorityFeeMicroLamports = await getMeanPrioritizationFeeByPercentile(
-        this.connection,
-        {
-          percentile: PercentilePriorityFeeList[this.priorityFeeOption],
-          fallback: true,
-        },
-      );
-    } catch (err) {
-      console.log('Error fetching priority fee', err);
-    }
-
-    const wallet = (this.adrenaProgram.provider as AnchorProvider).wallet;
-
-    let signedTransaction: Transaction;
-
-    let serializedTransaction: Buffer;
-
-    try {
-      const latestBlockHash = await this.connection.getLatestBlockhash(
-        'confirmed',
-      );
-
-      console.log(
-        'Apply',
-        priorityFeeMicroLamports,
-        'micro lamport priority fee to transaction',
-      );
-
-      transaction.instructions.unshift(
-        ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: priorityFeeMicroLamports,
-        }),
-        ComputeBudgetProgram.setComputeUnitLimit({
-          units: 1000000, // Use a lot of units to avoid any issues during simulation
-        }),
-      );
-
-      transaction.recentBlockhash = latestBlockHash.blockhash;
-      transaction.feePayer = wallet.publicKey;
-
-      const computeUnitUsed = await this.simulateAndGetComputedUnits({
-        payer: wallet.publicKey,
-        transaction: transaction,
-        recentBlockhash: latestBlockHash.blockhash,
-      });
-
-      console.log('computeUnitUsed', computeUnitUsed);
-
-      if (
-        this.maxPriorityFee !== null &&
-        computeUnitUsed !== null &&
-        computeUnitUsed > 0
-      ) {
-        const maxPriorityFeeLamports = this.maxPriorityFee * LAMPORTS_PER_SOL;
-        const totalPriorityFee =
-          (priorityFeeMicroLamports * computeUnitUsed) / 1_000_000;
-
-        if (totalPriorityFee > maxPriorityFeeLamports) {
-          const adjustedMicroLamports = Math.floor(
-            (maxPriorityFeeLamports * 1_000_000) / computeUnitUsed,
-          );
-
-          console.log(
-            `Adjusting priority fee to ${adjustedMicroLamports} microLamports per CU to stay within max priority fee`,
-          );
-
-          transaction.instructions[0] =
-            ComputeBudgetProgram.setComputeUnitPrice({
-              microLamports: adjustedMicroLamports,
-            });
-        }
-      }
-
-      if (computeUnitUsed !== null) {
-        transaction.instructions[1] = ComputeBudgetProgram.setComputeUnitLimit({
-          units: computeUnitUsed * 1.05, // Add an extra 5% to avoid any issues
-        });
-      }
-
-      // Prepare the transaction succeeded
-      notification?.currentStepSucceeded();
-
-      const start = Date.now();
-
-      signedTransaction = await wallet.signTransaction(transaction);
-
-      serializedTransaction = signedTransaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      });
-
-      const end = Date.now();
-
-      track('transaction_duration', {
-        computeUnitUsed,
-        duration: `${end - start}ms`,
-        maxPriorityFee: this.maxPriorityFee,
-        transactionSize: serializedTransaction.length,
-      });
-    } catch (err) {
-      console.log('sign error:', err);
-
-      const adrenaError = new AdrenaTransactionError(
-        null,
-        'User rejected the request',
-      );
-
-      // Sign the transaction failed
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    // VersionedTransaction are not handled by anchor client yet, will be released in 0.27.0
-    // https://github.com/coral-xyz/anchor/blob/master/CHANGELOG.md
-    let txHash: string;
-
-    // Sign the transaction succeeded
-    notification?.currentStepSucceeded();
-
-    try {
-      txHash = await this.connection.sendRawTransaction(serializedTransaction, {
-        skipPreflight: true,
-        maxRetries: 0,
-      });
-    } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
-
-      // Execute the transaction errored
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    // Execute the transaction succeeded
-    notification?.setTxHash(txHash);
-    notification?.currentStepSucceeded();
-
-    console.log(
-      `tx: https://explorer.solana.com/tx/${txHash}${this.config.cluster === 'devnet' ? '?cluster=devnet' : ''
-      }`,
-    );
-
-    let result: RpcResponseAndContext<SignatureResult> | null = null;
-
-    // use finalized to get the latest blockhash accepted by the leader
-    const latestBlockHash = await this.connection.getLatestBlockhash(
-      'confirmed',
-    );
-
-    try {
-      const d = Date.now();
-      result = await this.connection.confirmTransaction(
-        {
-          blockhash: latestBlockHash.blockhash,
-          lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-          signature: txHash,
-        },
-        'processed',
-      );
-
-      console.log('confirmTransaction took', Date.now() - d, 'to confirm tx');
-    } catch (err) {
-      const adrenaError = parseTransactionError(this.adrenaProgram, err);
-      adrenaError.setTxHash(txHash);
-
-      // Confirm the transaction errored
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    if (result.value.err) {
-      const adrenaError = parseTransactionError(
-        this.adrenaProgram,
-        result.value.err,
-      );
-      adrenaError.setTxHash(txHash);
-
-      // Confirm the transaction errored
-      notification?.currentStepErrored(adrenaError);
-      throw adrenaError;
-    }
-
-    // Confirm the transaction succeeded
-    notification?.currentStepSucceeded();
-
-    return txHash;
   }
 
   public findCustodyAddress(mint: PublicKey): PublicKey {

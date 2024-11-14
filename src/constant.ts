@@ -9,6 +9,9 @@ export const USD_DECIMALS = 6;
 export const LP_DECIMALS = 6;
 export const SOL_DECIMALS = 9;
 
+
+export const HERMES_URL = "https://hermes.pyth.network/";
+
 // In ms
 export const MINIMUM_POSITION_OPEN_TIME = 10_000;
 
@@ -122,41 +125,34 @@ export const SOLANA_EXPLORERS_OPTIONS = {
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
       `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solanabeach.io/transaction/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solanabeach.io/transaction/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   Solscan: {
     url: 'https://solscan.io',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solscan.io/account/${address}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/account/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solscan.io/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://solscan.io/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana Explorer': {
     url: 'https://explorer.solana.com',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/address/${address}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/address/${address}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://explorer.solana.com/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet' : ''
+      `https://explorer.solana.com/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet' : ''
       }`,
   },
   'Solana FM': {
     url: 'https://solana.fm',
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
-      `https://solana.fm/address/${address}${
-        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/address/${address}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>
-      `https://solana.fm/tx/${tx}${
-        cluster === 'devnet' ? '?cluster=devnet-solana' : ''
+      `https://solana.fm/tx/${tx}${cluster === 'devnet' ? '?cluster=devnet-solana' : ''
       }`,
   },
 } as const;
