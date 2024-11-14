@@ -103,6 +103,7 @@ export default function WeeklyReward({
                                                 className="text-lg text-center font-boldy"
                                                 isAbbreviate={true}
                                                 isAbbreviateIcon={false}
+                                                isDecimalDimmed={false}
                                             />
                                         </div>
 
