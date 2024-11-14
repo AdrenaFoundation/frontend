@@ -1,16 +1,22 @@
+import Tippy from '@tippyjs/react';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import adxLogo from '@/../public/images/adx.svg';
 import banner from '@/../public/images/comp-banner.png';
 import discordIcon from '@/../public/images/discord-black.svg';
+import firstImage from '@/../public/images/first-place.svg';
 import timerBg from '@/../public/images/genesis-timer-bg.png';
 import jitoLogo from '@/../public/images/jito-logo.svg';
 import jitoLogo2 from '@/../public/images/jito-logo-2.png';
 import jtoImage from '@/../public/images/jito-logo-2.png';
+import secondImage from '@/../public/images/second-place.svg';
+import thirdImage from '@/../public/images/third-place.svg';
 import xIcon from '@/../public/images/x-black-bg.png';
 import Button from '@/components/common/Button/Button';
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import Modal from '@/components/common/Modal/Modal';
 import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -18,6 +24,7 @@ import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
+import { DIVISIONS } from '@/constants/divisions';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { useSelector } from '@/store/store';
 import {
@@ -25,7 +32,9 @@ import {
     TradingCompetitionLeaderboardAPI,
     UserProfileExtended,
 } from '@/types';
-import { getDaysBetweenDates, getHoursBetweenDates } from '@/utils';
+import { getAbbrevWalletAddress } from '@/utils';
+
+import infoIcon from '../../../public/images/Icons/info.svg';
 
 const division = [
     'Leviathan',
@@ -72,11 +81,12 @@ export default function Competition() {
     const [myRank, setMyRank] = useState<number | null>(null);
     const [myVolume, setMyVolume] = useState<number | null>(null);
     const [myPnl, setMyPnl] = useState<number | null>(null);
-    const [myTradingProfileName, setMyTradingProfileName] = useState<
-        string | null
-    >(null);
+    const [myProvisionnalAdxRewards, setMyProvisionnalAdxRewards] = useState<number | null>(null);
+    const [myProvisionnalJtoRewards, setMyProvisionnalJtoRewards] = useState<number | null>(null);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
+    const [tradersCount, setTradersCount] = useState<number | null>(null);
+    const [totalVolume, setTotalVolume] = useState<number | null>(null);
 
     const endDate = new Date('12/23/2024');
 
@@ -132,6 +142,13 @@ export default function Competition() {
                 return;
             }
 
+            {
+                const tradersCount: number = trader_divisions.reduce((acc: number, { traders }: any) => acc + traders.length, 0);
+                const volume: number = trader_divisions.reduce((acc: number, { traders }: any) => acc + traders.reduce((acc2: number, { total_volume }: any) => acc2 + (total_volume ?? 0), 0), 0);
+                setTradersCount(tradersCount);
+                setTotalVolume(volume);
+            }
+
             if (wallet) {
                 const f = trader_divisions.find(({ traders }: any) => {
                     return traders.some(
@@ -159,11 +176,19 @@ export default function Competition() {
                             address === wallet.walletAddress,
                     )?.total_pnl ?? null,
                 );
-                setMyTradingProfileName(
+
+                setMyProvisionnalAdxRewards(
                     f?.traders.find(
                         ({ address }: { address: string }) =>
                             address === wallet.walletAddress,
-                    )?.username ?? null,
+                    )?.adx_reward ?? null,
+                );
+
+                setMyProvisionnalJtoRewards(
+                    f?.traders.find(
+                        ({ address }: { address: string }) =>
+                            address === wallet.walletAddress,
+                    )?.jto_reward ?? null,
                 );
             } else {
                 setMyDivision(null);
@@ -281,7 +306,14 @@ export default function Competition() {
             setActiveProfile(profile);
         }
     };
+
     const twitterText = `Join the Adrena Trading Competition! 🚀📈🏆 @adrenaprotocol`;
+
+    const userProfile: UserProfileExtended | undefined = allUserProfiles.find((p) => p.owner.toBase58() === wallet?.walletAddress);
+
+    const hasProfile = userProfile !== undefined;
+
+    const userName = hasProfile ? userProfile?.nickname : getAbbrevWalletAddress(wallet?.walletAddress.toString() ?? 'undefined');
 
     return (
         <>
@@ -319,7 +351,7 @@ export default function Competition() {
                     </div>
 
                     <div className="flex items-center justify-center">
-                        <p className="absolute -translate-y-0.5 font-mono z-10 flex items-center justify-center">
+                        <div className="absolute -translate-y-0.5 font-mono z-10 flex items-center justify-center">
                             {endDate.getTime() > Date.now() ? (
                                 <>
                                     <RemainingTimeToDate
@@ -334,7 +366,7 @@ export default function Competition() {
                             ) : (
                                 'Competition has ended'
                             )}
-                        </p>
+                        </div>
 
                         <Image
                             src={timerBg}
@@ -345,8 +377,8 @@ export default function Competition() {
                 </div>
 
                 <div className="px-4 sm:px-8">
-                    <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6 mb-12">
-                        <div className="flex flex-col items-center lg:items-start">
+                    <div className="flex flex-col xl:flex-row justify-between md:items-center gap-6 mb-12">
+                        <div className="flex flex-col items-center xl:items-start">
                             <h1 className="font-boldy text-3xl capitalize">
                                 Adrena Trading Competition
                             </h1>
@@ -354,35 +386,35 @@ export default function Competition() {
                                 From Nov 11 - Dec 23, 2024
                             </p>
 
-                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center lg:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
-                                <span className="text-txtfade text-center lg:text-left">
+                            <div className="text-sm max-w-[70em] text-justify flex flex-col items-center xl:items-start mt-2 sm:mt-0 pb-2 sm:pb-0">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Welcome to Adrena&apos;s trading pre-season, anon! This
                                     six-week event is the introduction to our upcoming recurring
                                     trading seasons.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     From November 11th 12pm UTC to December 23rd 12pm UTC, traders
                                     will vie for PnL-based ranks in one of four volume-based
                                     divisions.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Your total trading volume during the six-week event determines
                                     your division qualification.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Check out the divisions below, continuously updated based on
                                     onchain events.
                                 </span>
 
-                                <span className="text-txtfade text-center lg:text-left mt-2">
+                                <span className="text-txtfade text-center xl:text-left mt-2">
                                     Only positions open after the start date and closed before the
                                     end date qualify.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Each weekly periods ends on Monday 12am UTC, except the last
                                     one ending at 12pm UTC.
                                 </span>
-                                <span className="text-txtfade text-center lg:text-left">
+                                <span className="text-txtfade text-center xl:text-left">
                                     Volume is determined by Open/Increase and Close positions.
                                     It&apos;s accounted for when the position closes (close or
                                     liquidation).
@@ -420,22 +452,59 @@ export default function Competition() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-3 w-full items-center lg:w-[15em]">
-                            <h4 className="font-boldy text-base">Total Rewards</h4>
-                            <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg pl-6 pt-4 pb-4 w-full">
-                                <Image
-                                    src={window.adrena.client.adxToken.image}
-                                    alt="adx logo"
-                                    width={18}
-                                    height={18}
-                                />
-                                <p className="text-xl font-boldy w-[7em]">2.095M ADX</p>
+                        <div className='flex gap-4 flex-row flex-wrap sm:flex-nowrap'>
+                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                <h4 className="font-boldy text-base p-2 flex gap-2">Traders <LiveIcon className='absolute right-2' /></h4>
+
+                                <div className='h-[1px] bg-bcolor w-full' />
+
+                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                    <FormatNumber
+                                        nb={tradersCount}
+                                        format="number"
+                                        className={'text-3xl font-boldy'}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="flex flex-row gap-2 items-center justify-center bg-[#111923] border rounded-lg pl-6 pt-4 pb-4 w-full">
-                                <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
+                                <h4 className="font-boldy text-base p-2 flex gap-2">Volume <LiveIcon className='absolute right-2' /></h4>
 
-                                <p className="text-xl font-boldy w-[7em]">25,000 JTO</p>
+                                <div className='h-[1px] bg-bcolor w-full' />
+
+                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                    <FormatNumber
+                                        nb={totalVolume}
+                                        format="currency"
+                                        isDecimalDimmed={false}
+                                        isAbbreviate={true}
+                                        className={'text-3xl font-boldy'}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
+                                <h4 className="font-boldy text-base p-2">Total Rewards</h4>
+
+                                <div className='h-[1px] bg-bcolor w-full' />
+
+                                <div className='flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2'>
+                                    <div className="flex gap-2 items-center justify-center w-full">
+                                        <Image
+                                            src={window.adrena.client.adxToken.image}
+                                            alt="adx logo"
+                                            width={18}
+                                            height={18}
+                                        />
+                                        <div className="text-lg font-boldy w-[6.2em]">2.275M ADX</div>
+                                    </div>
+
+                                    <div className="flex gap-2 items-center justify-center w-full">
+                                        <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+
+                                        <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -504,7 +573,7 @@ export default function Competition() {
                                     'The trader with the single highest liquidation amount for the week.',
                             },
                             {
-                                title: 'Fees Prize',
+                                title: 'Fees Raffle',
                                 trader: achievements.fees_tickets.addresses[week],
                                 totalTickets: achievements.fees_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.fees ?? null,
@@ -527,14 +596,14 @@ export default function Competition() {
                                     'Highest PnL on a 100x initial-leverage position, w/o further increase. Add/remove collateral accepted.',
                             },
                             {
-                                title: 'SOL Trading Volume',
+                                title: 'SOL Volume Raffle',
                                 trader: achievements.jitosol_tickets.addresses[week],
                                 totalTickets: achievements.jitosol_tickets.total_tickets[week],
                                 connectedWalletTickets: connectedWalletTickets?.jito ?? null,
                                 type: 'ticket',
-                                reward: 1000,
-                                rewardToken: 'JITO',
-                                rewardImage: jtoImage,
+                                reward: 30000,
+                                rewardToken: 'ADX',
+                                rewardImage: adxLogo,
                                 description:
                                     'Each $100k volume of SOL traded give you an entry. Winner picked at the end of the week.',
                             },
@@ -546,45 +615,148 @@ export default function Competition() {
                 <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
 
                 <div className="px-4 sm:px-8">
-                    <h1 className="font-boldy mb-6 capitalize">Leaderboards</h1>
+                    <div className="flex flex-col sm:flex-row mb-5 gap-4">
+                        <div className='flex flex-row gap-3 items-center'>
+                            <h1 className="font-boldy capitalize">Leaderboards</h1>
+                            <div className="flex flex-row items-center justify-center bg-[#111923] border rounded-lg pl-2 pr-3 mt-1">
+                                <LiveIcon />
+                                <Tippy content="Total number of traders that participated so far in the competition" placement="auto">
+                                    <p className="text-base text-txtfade font-boldy ml-1">{tradersCount}</p>
+                                </Tippy>
+                            </div>
+                        </div>
+
+                        {!hasProfile && (
+                            <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
+                                <div className='flex flex-row items-center'>
+                                    <Image
+                                        className="opacity-70 mr-2 mb-2 sm:mb-0"
+                                        src={infoIcon}
+                                        height={16}
+                                        width={16}
+                                        alt="Info icon"
+                                    />
+                                    <p className="mr-2 mb-2 sm:mb-0 flex items-center">
+                                        Create an on-chain profile to track your all-time stats.
+                                    </p>
+
+                                </div>
+                                <Button
+                                    title="Go!"
+                                    className="text-xs px-4 py-1 h-[2em] w-full sm:w-auto"
+                                    onClick={() => {
+                                        window.location.href = '/my_dashboard';
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
 
                     {wallet && data && myDivision ? (
-                        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 justify-between px-4 bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8">
-                            <div className="text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
-                                {myTradingProfileName
-                                    ? myTradingProfileName
-                                    : 'Your Performance'}
+                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8 flex-col items-center lg:flex-row lg:items-start gap-2 lg:gap-0">
+                            <div className="flex items-center">
+                                <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
+                                    {userName}
+                                </div>
+
+                                <span className="hidden sm:flex text-sm text-txtfade mx-4"> | </span>
+
+                                <span className="text-base font-boldy mr-2">
+                                    {myRank && myRank < 4 && myDivision !== 'No Division' ? (
+                                        <Image
+                                            src={
+                                                myRank === 1
+                                                    ? firstImage
+                                                    : myRank === 2
+                                                        ? secondImage
+                                                        : myRank === 3
+                                                            ? thirdImage
+                                                            : ''
+                                            }
+                                            width={20}
+                                            height={20}
+                                            alt="rank"
+                                            key={`rank-${myRank}`}
+                                        />
+                                    ) : (
+                                        <div className="text-base font-boldy text-center" key={`rank-${myRank}`}>
+                                            # {myRank}
+                                        </div>
+                                    )}
+                                </span>
+
+                                <span className={`text-base flex items-center justify-center font-archivo ${DIVISIONS[myDivision]?.color ?? 'default-text-color'}`}>
+                                    {myDivision}
+                                </span>
                             </div>
 
-                            <div className="flex items-center">
-                                <span className="text-sm text-txtfade mr-1">Rank</span>
-                                <span className="text-base font-boldy">#{myRank}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="text-sm text-txtfade mr-1">Division</span>
-                                <span className="text-base font-boldy">{myDivision}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <span className="text-sm text-txtfade mr-1">Volume</span>
-                                <FormatNumber
-                                    nb={myVolume ?? 0}
-                                    format="currency"
-                                    isAbbreviate={true}
-                                    isDecimalDimmed={false}
-                                    className="text-base font-boldy"
-                                />
-                            </div>
-                            <div className="flex items-center">
-                                <span className="text-sm text-txtfade mr-1">PnL</span>
-                                <FormatNumber
-                                    nb={myPnl ?? 0}
-                                    format="currency"
-                                    isDecimalDimmed={false}
-                                    className={twMerge(
-                                        'text-base font-boldy',
-                                        (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
-                                    )}
-                                />
+                            <div className="flex items-center grow lg:justify-evenly flex-col lg:ml-auto md:flex-row gap-2 md:gap-4">
+                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
+                                    <span className="text-sm text-txtfade font-boldy">PnL:</span>
+
+                                    <FormatNumber
+                                        nb={myPnl ?? 0}
+                                        format="currency"
+                                        isDecimalDimmed={false}
+                                        className={twMerge(
+                                            'text-base font-boldy',
+                                            (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
+                                        )}
+                                    />
+                                </div>
+
+                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
+                                    <span className="text-sm text-txtfade">Volume:</span>
+
+                                    <FormatNumber
+                                        nb={myVolume ?? 0}
+                                        format="currency"
+                                        isAbbreviate={true}
+                                        isDecimalDimmed={false}
+                                        className="text-base font-boldy"
+                                    />
+                                </div>
+
+                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
+                                    <span className="text-sm text-txtfade"> Rank rewards: </span>
+
+                                    <div className='flex gap-2 items-center justify-center pl-8 md:pl-0'>
+                                        <FormatNumber
+                                            nb={myProvisionnalAdxRewards ?? 0}
+                                            format="number"
+                                            isDecimalDimmed={false}
+                                            className="text-base font-boldy"
+                                        />
+
+                                        <Image
+                                            src={adxLogo}
+                                            width={16}
+                                            height={16}
+                                            className='w-5 h-5'
+                                            alt="ADX"
+                                        />
+                                    </div>
+
+                                    <div className='flex gap-2 items-center justify-cente'>
+                                        <FormatNumber
+                                            nb={myProvisionnalJtoRewards ?? 0}
+                                            format="number"
+                                            isDecimalDimmed={false}
+                                            className="text-base font-boldy"
+                                        />
+                                        <Image
+                                            src={jtoImage}
+                                            className='w-6 h-6'
+                                            width={22}
+                                            height={22}
+                                            alt="JTO"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* <span className="text-sm text-txtfade mx-4"> | </span> */}
+
+
                             </div>
                         </div>
                     ) : null}

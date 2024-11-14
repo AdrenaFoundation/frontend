@@ -236,7 +236,7 @@ export default function BurgerMenu({
                       )}
                       key={page.name}
                     >
-                      {page.name === 'Competition' && (
+                      {page.name === 'Ranked' && (
                         <Image
                           src={competitionIcon}
                           alt="logo"
@@ -251,7 +251,7 @@ export default function BurgerMenu({
                       >
                         {page.name}
                       </Link>
-                      {page.name === 'Competition' && (
+                      {page.name === 'Ranked' && (
                         <Image
                           src={competitionIcon}
                           alt="logo"

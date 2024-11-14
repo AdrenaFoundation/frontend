@@ -342,7 +342,7 @@ export default function ClosePosition({
       </div>
 
       <Button
-        className="mt-6 border-l-0 border-r-0 border-b-0 rounded-none"
+        className="m-4"
         size="lg"
         variant="primary"
         title={
