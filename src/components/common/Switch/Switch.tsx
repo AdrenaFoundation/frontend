@@ -30,7 +30,7 @@ export default function Switch({
     >
       <div
         className={twMerge(
-          'absolute inline-block rounded-full bg-white shadow-sm transform transition-transform',
+          'absolute left-0 inline-block rounded-full bg-white shadow-sm transform transition-transform',
           size === 'small' ? 'w-2 h-2' : size === 'large' ? 'w-4 h-4' : 'w-3 h-3', // Adjust inner size based on size prop
           checked ? (size === 'small' ? 'translate-x-2' : size === 'large' ? 'translate-x-full' : 'translate-x-full') : 'translate-x-0',
         )}

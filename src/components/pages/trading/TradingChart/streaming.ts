@@ -1,4 +1,11 @@
+import {
+  getPythProgramKeyForCluster,
+  PythConnection,
+} from '@pythnetwork/client';
+import { PublicKey } from '@solana/web3.js';
+
 import { setStreamingTokenPrice } from '@/actions/streamingTokenPrices';
+import { PYTH_CONNECTION } from '@/pages/_app';
 import store from '@/store/store';
 
 import {
@@ -7,16 +14,6 @@ import {
   ResolutionString,
   SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library';
-const streamingUrl =
-  'https://benchmarks.pyth.network/v1/shims/tradingview/streaming';
-
-type PythStreamingData = {
-  id: string; // i.e, "Crypto.SOL/USD"
-  p: number; // i.e, 172.70134218
-  t: number; // i.e, 1710418210
-  f: string; // i.e, "t"
-  s: number; // i.e, 0
-};
 
 const channelToSubscription = new Map<
   string,
@@ -31,182 +28,89 @@ const channelToSubscription = new Map<
   }
 >();
 
-function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
-  return pythStreamingFormat.split('/')[0].split('.')[1];
-}
-
-function handleStreamingData(data: PythStreamingData) {
-  const { id, p, t } = data;
-
-  const tradePrice = p;
-  const tradeTime = t * 1000; // Multiplying by 1000 to get milliseconds
-
-  const channelString = id;
-  const subscriptionItem = channelToSubscription.get(channelString);
-
-  if (!subscriptionItem) {
-    return;
-  }
-
-  const lastDailyBar = subscriptionItem.lastDailyBar;
-  const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
-
-  let bar: Bar;
-
-  if (tradeTime >= nextDailyBarTime) {
-    bar = {
-      time: nextDailyBarTime,
-      open: tradePrice,
-      high: tradePrice,
-      low: tradePrice,
-      close: tradePrice,
-    };
-  } else {
-    bar = {
-      ...lastDailyBar,
-      high: Math.max(lastDailyBar.high, tradePrice),
-      low: Math.min(lastDailyBar.low, tradePrice),
-      close: tradePrice,
-    };
-  }
-
-  store.dispatch(
-    setStreamingTokenPrice(
-      getTokenSymbolFromPythStreamingFormat(channelString),
-      tradePrice,
-    ),
-  );
-
-  subscriptionItem.lastDailyBar = bar;
-
-  // Send data to every subscriber of that symbol
-  subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
-
-  channelToSubscription.set(channelString, subscriptionItem);
-}
-
-(() => {
-  if (typeof window === 'undefined') return;
-
-  window.addEventListener('offline', (e) => {
-    console.log('[page] Page went offline!');
-  });
-
-  window.addEventListener('online', (e) => {
-    console.log('[page] Page came back online!');
-    startStreaming(5000);
-  });
-})();
-
-let readerId = 0;
-let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
-
-function startStreaming(delay = 5000) {
-  const localId = Math.random();
-
-  if (reader) {
-    console.log('[stream] Cancel streaming to avoid double stream.');
-    reader.cancel();
-    reader = null;
-    readerId = localId;
-  }
-
-  console.log('[stream] Fetch streaming data');
-
-  fetch(streamingUrl)
-    .then((response) => {
-      if (response.body == null) {
-        throw new Error('Error starting streaming');
-      }
-
-      reader = response.body.getReader();
-
-      function streamData() {
-        if (!reader) {
-          console.log('no more reader');
-          return;
-        }
-
-        reader
-          .read()
-          .then(({ value, done }) => {
-            if (done) {
-              console.error('[stream] Streaming ended.');
-
-              // We are closing the reader willingly
-              if (readerId !== localId) {
-                console.log(
-                  '[stream] Reader closed and that is ok.',
-                  readerId,
-                  localId,
-                );
-                return;
-              }
-
-              console.log(
-                '[stream] Reader closed and that is not ok.',
-                localId,
-              );
-
-              // We have not chosen to close the reader, so we will attempt to reconnect
-              attemptReconnect(delay);
-
-              return;
-            }
-
-            // Assuming the streaming data is separated by line breaks
-            const dataStrings = new TextDecoder().decode(value).split('\n');
-
-            dataStrings.forEach((dataString) => {
-              const trimmedDataString = dataString.trim();
-
-              if (trimmedDataString) {
-                try {
-                  const jsonData = JSON.parse(trimmedDataString);
-
-                  handleStreamingData(jsonData);
-                } catch (e: unknown) {
-                  // streaming data is not always clean, we don't need to catch this error
-                  /* console.error(
-                    'Error parsing JSON:',
-                    e instanceof Error ? e.message : String(e),
-                  ); */
-                }
-              }
-            });
-
-            streamData(); // Continue processing the stream
-          })
-          .catch((error) => {
-            console.error('[stream] Error reading from stream:', error);
-            attemptReconnect(delay);
-          });
-      }
-
-      streamData();
-    })
-    .catch((error) => {
-      console.error(
-        '[stream] Error fetching from the streaming endpoint:',
-        error,
-      );
-    });
-
-  function attemptReconnect(delay: number) {
-    console.log(`[stream] Attempting to reconnect in ${delay}ms...`);
-
-    setTimeout(() => {
-      startStreaming(delay);
-    }, delay);
-  }
-}
-
 function getNextDailyBarTime(barTime: number) {
   const date = new Date(barTime * 1000);
 
   date.setDate(date.getDate() + 1);
 
   return date.getTime() / 1000;
+}
+
+function getTokenSymbolFromPythStreamingFormat(pythStreamingFormat: string) {
+  return pythStreamingFormat.split('/')[0].split('.')[1];
+}
+
+// Only null in server side
+const pythConnection =
+  PYTH_CONNECTION &&
+  new PythConnection(PYTH_CONNECTION, getPythProgramKeyForCluster('pythnet'));
+
+let pythConnectionStarted = false;
+
+function startStreaming() {
+  if (pythConnectionStarted || !pythConnection) return;
+
+  pythConnectionStarted = true;
+
+  pythConnection.feedIds = [
+    new PublicKey('Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr'), // WBTC
+    new PublicKey('GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU'), // BTC
+    new PublicKey('H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG'), // SOL
+    new PublicKey('7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk'), // JITOSOL
+    new PublicKey('Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD'), // USDC
+    new PublicKey('8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN'), // BONK
+  ];
+
+  pythConnection.onPriceChange((product, price) => {
+    // sample output:
+    // Crypto.SRM/USD: $8.68725 ±$0.0131 Status: Trading
+    const subscriptionItem = channelToSubscription.get(product.symbol);
+
+    if (!subscriptionItem || !price.price) {
+      return;
+    }
+
+    const lastDailyBar = subscriptionItem.lastDailyBar;
+    const nextDailyBarTime = getNextDailyBarTime(lastDailyBar.time);
+
+    let bar: Bar;
+
+    const tradeTime = Number(price.timestamp.toString()) * 1000; // Multiplying by 1000 to get milliseconds
+
+    if (tradeTime >= nextDailyBarTime) {
+      bar = {
+        time: nextDailyBarTime,
+        open: price.price,
+        high: price.price,
+        low: price.price,
+        close: price.price,
+      };
+    } else {
+      bar = {
+        ...lastDailyBar,
+        high: Math.max(lastDailyBar.high, price.price),
+        low: Math.min(lastDailyBar.low, price.price),
+        close: price.price,
+      };
+    }
+
+    store.dispatch(
+      setStreamingTokenPrice(
+        getTokenSymbolFromPythStreamingFormat(product.symbol),
+        price.price,
+      ),
+    );
+
+    subscriptionItem.lastDailyBar = bar;
+
+    // Send data to every subscriber of that symbol
+    subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
+
+    channelToSubscription.set(product.symbol, subscriptionItem);
+  });
+
+  // Start listening for price change events.
+  pythConnection.start();
 }
 
 export function subscribeOnStream(
@@ -236,13 +140,12 @@ export function subscribeOnStream(
 
   channelToSubscription.set(channelString, subscriptionItem);
 
+  if (!pythConnectionStarted) startStreaming();
+
   console.log(
     '[subscribeBars]: Subscribe to streaming. Channel:',
     channelString,
   );
-
-  // Start streaming when the first subscription is made
-  startStreaming();
 }
 
 export function unsubscribeFromStream(subscriberUID: string) {
@@ -266,5 +169,11 @@ export function unsubscribeFromStream(subscriberUID: string) {
       channelToSubscription.delete(channelString);
       break;
     }
+  }
+
+  if (channelToSubscription.size === 0 && pythConnection) {
+    console.log('[Chart] No one subscribed to the streaming. Stopping...');
+    pythConnection.stop();
+    pythConnectionStarted = false;
   }
 }

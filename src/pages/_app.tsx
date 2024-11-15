@@ -58,7 +58,7 @@ function Loader(): JSX.Element {
 // initalized once, doesn't move afterwards.
 // actually twice, once on the server to `null` & once on the client.
 const CONFIG = initConfig();
-const PYTH_CONNECTION =
+export const PYTH_CONNECTION =
   CONFIG && new Connection(CONFIG.pythnetRpc.url, 'processed');
 
 // Load cluster from URL then load the config and initialize the app.

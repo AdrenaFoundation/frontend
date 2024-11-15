@@ -153,17 +153,17 @@ export default class MainnetConfiguration implements IConfiguration {
       ];
 
   public readonly pythnetRpc: RpcOption = {
-    name: 'Triton Mainnet',
+    name: 'Triton Pythnet Devnet',
     url: (() => {
-      const url = 'https://adrena-solanam-6f0c.mainnet.rpcpool.com';
+      const url = 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com';
 
       if (!this.devMode) return url;
 
-      const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+      const apiKey = process.env.NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY;
 
       if (!apiKey)
         throw new Error(
-          'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+          'Missing environment variable NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY',
         );
 
       return `${url}/${apiKey}`;
