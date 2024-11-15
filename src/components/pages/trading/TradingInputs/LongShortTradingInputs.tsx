@@ -487,10 +487,11 @@ export default function LongShortTradingInputs({
     }
 
     const projectedSize = openedPosition ? (inputB - openedPosition.size) : inputB;
+    // In the case of an increase, this is different from the fullProjectedSizeUsd
     const projectedSizeUsd = projectedSize * tokenPriceBTrade;
-    // const availableLiquidityUsd = side === 'long' ? custody.liquidity * tokenPriceBTrade : usdcCustody?.liquidity ?? 0;
+    const fullProjectedSizeUsd = inputB * tokenPriceBTrade;
 
-    if (side === "long" && projectedSizeUsd > custody.maxPositionLockedUsd)
+    if (side === "long" && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
       return setErrorMessage(`Position Exceeds Max Size`);
 
     if (side === "short" && usdcCustody && projectedSizeUsd > usdcCustody.maxPositionLockedUsd)
