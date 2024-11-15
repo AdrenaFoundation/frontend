@@ -10,7 +10,7 @@ import {
   SearchSymbolsCallback,
   SubscribeBarsCallback,
 } from '../../../../../public/charting_library/charting_library.js';
-import { subscribeOnStream, unsubscribeFromStream } from './streamingPythnet';
+import { subscribeOnStream, unsubscribeFromStream } from './streaming';
 
 const API_ENDPOINT = 'https://benchmarks.pyth.network/v1/shims/tradingview';
 
