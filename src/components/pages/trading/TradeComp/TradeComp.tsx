@@ -1,6 +1,6 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
@@ -48,6 +48,13 @@ export default function TradeComp({
   adapters: WalletAdapterExtended[];
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
+  const [isWhitelistedSwapper, setIsWhitelistedSwapper] = useState(false);
+
+  useEffect(() => {
+    if (window.adrena.client.mainPool.whitelistedSwapper.toBase58() == wallet?.publicKey?.toBase58()) {
+      setIsWhitelistedSwapper(true);
+    }
+  }, [wallet]);
 
   return (
     <div
@@ -93,7 +100,7 @@ export default function TradeComp({
               />
             ) : (
               <>
-                {isJupSwap ? (
+                {isJupSwap || !isWhitelistedSwapper ? (
                   <IntegratedTerminal
                     connected={connected}
                     activeRpc={activeRpc}
@@ -117,7 +124,7 @@ export default function TradeComp({
                   />
                 )}
 
-                <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
+                {isWhitelistedSwapper ? <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
                   <span
                     className={twMerge(
                       'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
@@ -143,7 +150,7 @@ export default function TradeComp({
                   >
                     Adrena
                   </span>
-                </div>
+                </div> : null}
               </>
             )}
           </>

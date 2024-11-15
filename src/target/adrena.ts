@@ -1,5 +1,5 @@
 export type Adrena = {
-  "version": "1.1.0",
+  "version": "1.1.2",
   "name": "adrena",
   "instructions": [
     {
@@ -1367,7 +1367,7 @@ export type Adrena = {
       "name": "swap",
       "accounts": [
         {
-          "name": "owner",
+          "name": "caller",
           "isMut": false,
           "isSigner": true,
           "docs": [
@@ -1375,15 +1375,15 @@ export type Adrena = {
           ]
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false,
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true,
           "docs": [
             "#2"
           ]
         },
         {
-          "name": "receivingAccount",
+          "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -1391,11 +1391,19 @@ export type Adrena = {
           ]
         },
         {
+          "name": "receivingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -1403,7 +1411,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -1411,7 +1419,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -1419,7 +1427,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -1427,7 +1435,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -1435,7 +1443,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -1443,7 +1451,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -1451,7 +1459,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -1459,7 +1467,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -1467,7 +1475,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -1475,7 +1483,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         },
         {
@@ -1483,7 +1491,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#16"
           ]
         },
         {
@@ -1491,7 +1499,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#17"
           ]
         },
         {
@@ -1499,7 +1507,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#18"
           ]
         },
         {
@@ -1507,7 +1515,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18"
+            "#19"
           ]
         },
         {
@@ -1515,7 +1523,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#19"
+            "#20"
           ]
         },
         {
@@ -1523,7 +1531,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#21"
           ]
         },
         {
@@ -1531,7 +1539,7 @@ export type Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#22"
           ]
         },
         {
@@ -1540,7 +1548,7 @@ export type Adrena = {
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#22"
+            "#23"
           ]
         },
         {
@@ -1548,7 +1556,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#24"
           ]
         },
         {
@@ -1556,7 +1564,7 @@ export type Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#25"
           ]
         }
       ],
@@ -8481,6 +8489,44 @@ export type Adrena = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "setPoolWhitelistedSwapper",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "whitelistedSwapper",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -8867,9 +8913,22 @@ export type Adrena = {
             "type": {
               "array": [
                 "publicKey",
-                10
+                8
               ]
             }
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "whitelistedSwapper",
+            "type": "publicKey"
           },
           {
             "name": "ratios",
@@ -8878,7 +8937,16 @@ export type Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                16
               ]
             }
           },
@@ -9434,7 +9502,7 @@ export type Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
               ]
             }
           }
@@ -9453,7 +9521,7 @@ export type Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
               ]
             }
           }
@@ -9526,7 +9594,7 @@ export type Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
               ]
             }
           }
@@ -12156,7 +12224,7 @@ export type Adrena = {
 };
 
 export const IDL: Adrena = {
-  "version": "1.1.0",
+  "version": "1.1.2",
   "name": "adrena",
   "instructions": [
     {
@@ -13524,7 +13592,7 @@ export const IDL: Adrena = {
       "name": "swap",
       "accounts": [
         {
-          "name": "owner",
+          "name": "caller",
           "isMut": false,
           "isSigner": true,
           "docs": [
@@ -13532,15 +13600,15 @@ export const IDL: Adrena = {
           ]
         },
         {
-          "name": "fundingAccount",
-          "isMut": true,
-          "isSigner": false,
+          "name": "owner",
+          "isMut": false,
+          "isSigner": true,
           "docs": [
             "#2"
           ]
         },
         {
-          "name": "receivingAccount",
+          "name": "fundingAccount",
           "isMut": true,
           "isSigner": false,
           "docs": [
@@ -13548,11 +13616,19 @@ export const IDL: Adrena = {
           ]
         },
         {
+          "name": "receivingAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        },
+        {
           "name": "transferAuthority",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#4"
+            "#5"
           ]
         },
         {
@@ -13560,7 +13636,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#5"
+            "#6"
           ]
         },
         {
@@ -13568,7 +13644,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#6"
+            "#7"
           ]
         },
         {
@@ -13576,7 +13652,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#7"
+            "#8"
           ]
         },
         {
@@ -13584,7 +13660,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#8"
+            "#9"
           ]
         },
         {
@@ -13592,7 +13668,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#9"
+            "#10"
           ]
         },
         {
@@ -13600,7 +13676,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#10"
+            "#11"
           ]
         },
         {
@@ -13608,7 +13684,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#11"
+            "#12"
           ]
         },
         {
@@ -13616,7 +13692,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#12"
+            "#13"
           ]
         },
         {
@@ -13624,7 +13700,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#13"
+            "#14"
           ]
         },
         {
@@ -13632,7 +13708,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#14"
+            "#15"
           ]
         },
         {
@@ -13640,7 +13716,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#15"
+            "#16"
           ]
         },
         {
@@ -13648,7 +13724,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#16"
+            "#17"
           ]
         },
         {
@@ -13656,7 +13732,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#17"
+            "#18"
           ]
         },
         {
@@ -13664,7 +13740,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#18"
+            "#19"
           ]
         },
         {
@@ -13672,7 +13748,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#19"
+            "#20"
           ]
         },
         {
@@ -13680,7 +13756,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#20"
+            "#21"
           ]
         },
         {
@@ -13688,7 +13764,7 @@ export const IDL: Adrena = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "#21"
+            "#22"
           ]
         },
         {
@@ -13697,7 +13773,7 @@ export const IDL: Adrena = {
           "isSigner": false,
           "isOptional": true,
           "docs": [
-            "#22"
+            "#23"
           ]
         },
         {
@@ -13705,7 +13781,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#23"
+            "#24"
           ]
         },
         {
@@ -13713,7 +13789,7 @@ export const IDL: Adrena = {
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "#24"
+            "#25"
           ]
         }
       ],
@@ -20638,6 +20714,44 @@ export const IDL: Adrena = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "setPoolWhitelistedSwapper",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true,
+          "docs": [
+            "#1"
+          ]
+        },
+        {
+          "name": "cortex",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#2"
+          ]
+        },
+        {
+          "name": "pool",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "#3"
+          ]
+        },
+        {
+          "name": "whitelistedSwapper",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "#4"
+          ]
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
@@ -21024,9 +21138,22 @@ export const IDL: Adrena = {
             "type": {
               "array": [
                 "publicKey",
-                10
+                8
               ]
             }
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "whitelistedSwapper",
+            "type": "publicKey"
           },
           {
             "name": "ratios",
@@ -21035,7 +21162,16 @@ export const IDL: Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
+              ]
+            }
+          },
+          {
+            "name": "padding2",
+            "type": {
+              "array": [
+                "u8",
+                16
               ]
             }
           },
@@ -21591,7 +21727,7 @@ export const IDL: Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
               ]
             }
           }
@@ -21610,7 +21746,7 @@ export const IDL: Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
               ]
             }
           }
@@ -21683,7 +21819,7 @@ export const IDL: Adrena = {
                 {
                   "defined": "TokenRatios"
                 },
-                10
+                8
               ]
             }
           }
