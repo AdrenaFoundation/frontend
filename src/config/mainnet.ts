@@ -159,7 +159,7 @@ export default class MainnetConfiguration implements IConfiguration {
 
       if (!this.devMode) return url;
 
-      const apiKey = process.env.NEXT_PUBLIC_DEV_PYTHNET_RPC_API_KEY;
+      const apiKey = process.env.NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY;
 
       if (!apiKey)
         throw new Error(
