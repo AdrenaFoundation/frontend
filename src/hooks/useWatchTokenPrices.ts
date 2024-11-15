@@ -1,11 +1,7 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { PythSolanaReceiver } from '@pythnetwork/pyth-solana-receiver';
 import { PublicKey } from '@solana/web3.js';
-import {
-  AggregatorAccount,
-  SwitchboardProgram,
-} from '@switchboard-xyz/solana.js';
-import Big from 'big.js';
+import { CrossbarClient } from '@switchboard-xyz/on-demand';
 import { useCallback, useEffect, useState } from 'react';
 
 import { setTokenPrice } from '@/actions/tokenPrices';
@@ -138,26 +134,30 @@ export default function useWatchTokenPrices() {
     if (!window.adrena.client.connection) return;
 
     try {
-      const switchboardProgram = await SwitchboardProgram.load(
-        window.adrena.client.connection,
-      );
+      // public instance crossbar switchboard : https://crossbar.switchboard.xyz
+      const crossbar = new CrossbarClient('https://crossbar.switchboard.xyz');
 
-      const aggregatorAccount = new AggregatorAccount(
-        switchboardProgram,
-        new PublicKey('FKMg7sMStMhfC3CeEUZyu6PRYhsawNW5kLy24koZzmiw'),
-      );
+      const result = await crossbar.simulateSolanaFeeds('mainnet', [
+        '55WB9SGpMwHqzz4PTuLbCcwXsrrBcxbLawbChNtquzLr',
+      ]);
 
-      const result: Big | null = await aggregatorAccount.fetchLatestValue();
-
-      if (result === null) {
+      if (result === null || result.length === 0) {
         throw new Error('Aggregator holds no value');
       }
 
-      const price = parseFloat(result.toString());
+      const firstResult = result[0] as unknown as {
+        feed: string;
+        feedHash: string;
+        result: number;
+        results: number[];
+        stdev: number;
+        variance: number;
+      };
+      const price = firstResult.result;
 
       dispatch(setTokenPrice(window.adrena.client.adxToken.symbol, price));
     } catch (e) {
-      console.log('error happened loading lp token price', e);
+      console.log('error happened loading ADX token price', e);
     }
   }, [dispatch]);
 
