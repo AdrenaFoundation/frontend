@@ -10,7 +10,7 @@ interface FeesChartProps {
 
 export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
-  const [period, setPeriod] = useState<string | null>('7d');
+  const [period, setPeriod] = useState<string | null>('1M');
   const periodRef = useRef(period);
 
   useEffect(() => {
@@ -24,27 +24,16 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
   const getPoolInfo = async () => {
     try {
-      const dataEndpoint = (() => {
-        switch (periodRef.current) {
-          case '1d':
-            return 'poolinfohourly';
-          case '7d':
-            return 'poolinfodaily';
-          case '1M':
-            return 'poolinfodaily';
-          default:
-            return 'poolinfodaily';
-        }
-      })();
-
       const dataPeriod = (() => {
         switch (periodRef.current) {
-          case '1d':
-            return 1;
-          case '7d':
-            return 8; // One more because we need to do diff with i - 1
           case '1M':
             return 32; // One more because we need to do diff with i - 1
+          case '3M':
+            return 93; // One more because we need to do diff with i - 1
+          case '6M':
+            return 182; // One more because we need to do diff with i - 1
+          case '1Y':
+            return 366; // One more because we need to do diff with i - 1
           default:
             return 1;
         }
@@ -53,7 +42,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       const [{ data }, { data: latestPoolInfoSnapshot }] = await Promise.all([
 
         fetch(
-          `https://datapi.adrena.xyz/${dataEndpoint}?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
+          `https://datapi.adrena.xyz/poolinfodaily?cumulative_swap_fee_usd=true&cumulative_liquidity_fee_usd=true&cumulative_close_position_fee_usd=true&cumulative_liquidation_fee_usd=true&cumulative_borrow_fee_usd=true&start_date=${(() => {
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - dataPeriod);
 
@@ -79,38 +68,16 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       } = data;
 
       const timeStamp = snapshot_timestamp.map((time: string) => {
-        if (periodRef.current === '1d') {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '7d') {
-          return new Date(time).toLocaleString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-          });
-        }
-
-        if (periodRef.current === '1M') {
-          return new Date(time).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'numeric',
-          });
-        }
-
-        return new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
+        return new Date(time).toLocaleString('en-US', {
+          day: 'numeric',
+          month: 'numeric',
         });
       });
-
-      console.log('timeStamp', timeStamp);
 
       // Get the days
       const days = Array.from(timeStamp.reduce((set: Set<string>, timestamp: string) => {
         set.add(timestamp.split(",")[0]);
+
         return set;
       }, new Set()));
 
@@ -131,12 +98,9 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
 
       // Push a data coming from last data point (last day or last hour) to now
       formattedData.push({
-        time: periodRef.current === "1d" ? new Date().toLocaleTimeString('en-US', {
+        time: new Date().toLocaleTimeString('en-US', {
           hour: 'numeric',
           minute: 'numeric',
-        }) : new Date().toLocaleString('en-US', {
-          day: 'numeric',
-          month: 'numeric',
         }),
         'Swap Fees': latestPoolInfoSnapshot.cumulative_swap_fee_usd[0] - cumulative_swap_fee_usd[cumulative_swap_fee_usd.length - 1],
         'Mint/Redeem ALP Fees': latestPoolInfoSnapshot.cumulative_liquidity_fee_usd[0] - cumulative_liquidity_fee_usd[cumulative_liquidity_fee_usd.length - 1],

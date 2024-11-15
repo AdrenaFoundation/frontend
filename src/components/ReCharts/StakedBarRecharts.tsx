@@ -89,30 +89,31 @@ export default function StakedBarRechart({
           <div
             className={twMerge(
               'cursor-pointer',
-              period === '1d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('1d')}
-          >
-            1d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
-              period === '7d' ? 'underline' : '',
-            )}
-            onClick={() => setPeriod('7d')}
-          >
-            7d
-          </div>
-          <div
-            className={twMerge(
-              'cursor-pointer',
               period === '1M' ? 'underline' : '',
             )}
             onClick={() => setPeriod('1M')}
           >
             1M
           </div>
+          <div
+            className={twMerge(
+              'cursor-pointer',
+              period === '3M' ? 'underline' : '',
+            )}
+            onClick={() => setPeriod('3M')}
+          >
+            3M
+          </div>
+          <Tippy
+            content={
+              <div className="text-sm w-20 flex flex-col justify-around">
+                Coming soon
+              </div>
+            }
+            placement="auto"
+          >
+            <div className="text-txtfade cursor-not-allowed">6M</div>
+          </Tippy>
 
           <Tippy
             content={
