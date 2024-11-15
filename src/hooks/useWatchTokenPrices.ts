@@ -135,7 +135,7 @@ export default function useWatchTokenPrices() {
 
     try {
       // public instance crossbar switchboard : https://crossbar.switchboard.xyz
-      const crossbar = new CrossbarClient('https://crossbar.switchboard.xyz');
+      const crossbar = new CrossbarClient('http://216.155.152.143:8080');
 
       const result = await crossbar.simulateSolanaFeeds('mainnet', [
         '55WB9SGpMwHqzz4PTuLbCcwXsrrBcxbLawbChNtquzLr',
