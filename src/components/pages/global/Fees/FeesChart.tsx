@@ -154,7 +154,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
         },
         {
           name: 'Borrow Fees',
-          color: '#DA6F71',
+          color: '#84bd82',
         },
       ]}
       period={period}
