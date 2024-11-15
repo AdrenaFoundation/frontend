@@ -618,12 +618,6 @@ export default function Competition() {
                     <div className="flex flex-col sm:flex-row mb-5 gap-4">
                         <div className='flex flex-row gap-3 items-center'>
                             <h1 className="font-boldy capitalize">Leaderboards</h1>
-                            <div className="flex flex-row items-center justify-center bg-[#111923] border rounded-lg pl-2 pr-3 mt-1">
-                                <LiveIcon />
-                                <Tippy content="Total number of traders that participated so far in the competition" placement="auto">
-                                    <p className="text-base text-txtfade font-boldy ml-1">{tradersCount}</p>
-                                </Tippy>
-                            </div>
                         </div>
 
                         {!hasProfile && (

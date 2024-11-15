@@ -220,7 +220,6 @@ export default function LongShortTradingInputs({
       });
     }
 
-
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
     if (!tokenAPrice) {
@@ -230,7 +229,7 @@ export default function LongShortTradingInputs({
         message: `Missing ${tokenA.symbol} price`,
       });
     }
-    if (tokenAPrice) {
+    if (tokenAPrice && !openedPosition) {
       const collateralValue = inputA * tokenAPrice;
       if (collateralValue < 9.5) {
         return addNotification({
@@ -468,7 +467,7 @@ export default function LongShortTradingInputs({
 
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
-    if (tokenAPrice) {
+    if (tokenAPrice && !openedPosition) {
       const collateralValue = inputA * tokenAPrice;
       if (collateralValue < 9.5) {
         return setErrorMessage('Collateral value must be at least $10');

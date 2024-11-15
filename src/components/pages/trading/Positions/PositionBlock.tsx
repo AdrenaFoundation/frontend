@@ -470,7 +470,7 @@ export default function PositionBlock({
 
           <Button
             size="xs"
-            className="text-txtfade border-bcolor border-t md:border-t-0 md:border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
+            className="text-txtfade border-bcolor border-t md:border-t-0 md:border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full min-w-[18em]"
             title="Take Profit & Stop Loss"
             rounded={false}
             onClick={() => {
@@ -478,28 +478,26 @@ export default function PositionBlock({
             }}
           />
 
-          <div className="w-full flex flex-row">
-            <Button
-              size="xs"
-              className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-              title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
-              rounded={false}
-              disabled={closableIn !== 0}
-              onClick={() => {
-                triggerClosePosition(position);
-              }}
-            />
+          <Button
+            size="xs"
+            className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
+            title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
+            rounded={false}
+            disabled={closableIn !== 0}
+            onClick={() => {
+              triggerClosePosition(position);
+            }}
+          />
 
-            <Button
-              size="xs"
-              className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-[90px]"
-              leftIcon={shareIcon}
-              rounded={false}
-              onClick={() => {
-                setIsOpen(true);
-              }}
-            />
-          </div>
+          <Button
+            size="xs"
+            className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full md:max-w-[8em]"
+            leftIcon={shareIcon}
+            rounded={false}
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          />
         </div>
 
         {liquidable ? (
