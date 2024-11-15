@@ -519,6 +519,7 @@ export class AdrenaClient {
       .filter((token) => !!token) as Token[];
 
     const mainPoolExtended: PoolExtended = {
+      whitelistedSwapper: mainPool.whitelistedSwapper,
       pubkey: poolPda,
       aumUsd: nativeToUi(u128SplitToBN(mainPool.aumUsd), USD_DECIMALS),
       aumSoftCapUsd: nativeToUi(mainPool.aumSoftCapUsd, USD_DECIMALS),

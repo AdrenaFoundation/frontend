@@ -157,6 +157,7 @@ export type PoolExtended = {
   pubkey: PublicKey;
 
   // Formatted data
+  whitelistedSwapper: PublicKey;
   aumSoftCapUsd: number;
   totalFeeCollected: number;
   profitsUsd: number;
