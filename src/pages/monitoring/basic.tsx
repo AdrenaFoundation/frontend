@@ -7,6 +7,7 @@ import { AprLmChart } from '@/components/pages/global/Apr/AprLmChart';
 import { AprLpChart } from '@/components/pages/global/Apr/AprLpChart';
 import AumChart from '@/components/pages/global/Aum/AumChart';
 import CompositionChart from '@/components/pages/global/Composition/CompositionChart';
+import FeesBarChart from '@/components/pages/global/Fees/FeesBarChart';
 import FeesChart from '@/components/pages/global/Fees/FeesChart';
 import OpenInterestChart from '@/components/pages/global/OpenInterest/OpenInterestChart';
 import { RealizedPnlChart } from '@/components/pages/global/RealizedPnl/RealizedPnlChart';
@@ -156,12 +157,16 @@ export default function BasicMonitoring({
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <FeesChart isSmallScreen={isSmallScreen} />
-          <ALPPriceChart />
+          <FeesBarChart isSmallScreen={isSmallScreen} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
           <AprLpChart isSmallScreen={isSmallScreen} />
           <AprLmChart isSmallScreen={isSmallScreen} />
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-[2em] h-[37em] lg:h-[18em]">
+          <ALPPriceChart />
         </div>
 
       </StyledContainer>

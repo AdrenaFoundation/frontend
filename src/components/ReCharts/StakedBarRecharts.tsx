@@ -1,11 +1,10 @@
 import Tippy from '@tippyjs/react';
 import React, { ReactNode } from 'react';
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
   Legend,
-  Line,
-  LineChart,
-  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -20,7 +19,7 @@ import { formatNumberShort, formatPercentage, formatPriceInfo } from '@/utils';
 import CustomRechartsToolTip from '../CustomRechartsToolTip/CustomRechartsToolTip';
 import FormatNumber from '../Number/FormatNumber';
 
-export default function LineRechart({
+export default function StakedBarRechart({
   title,
   data,
   labels,
@@ -30,7 +29,6 @@ export default function LineRechart({
   tippyContent,
   isSmallScreen = true,
   subValue,
-  isReferenceLine,
   formatY = 'currency',
 }: {
   title: string;
@@ -45,7 +43,6 @@ export default function LineRechart({
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
   subValue?: number;
-  isReferenceLine?: boolean;
   formatY?: 'percentage' | 'currency' | 'number';
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
@@ -75,7 +72,7 @@ export default function LineRechart({
             </Tippy>
           )}
 
-          {!isSmallScreen && (
+          {!isSmallScreen && typeof subValue !== 'undefined' && (
             <FormatNumber
               nb={subValue}
               className="text-sm text-txtfade sm:text-xs"
@@ -131,7 +128,7 @@ export default function LineRechart({
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data}>
+        <BarChart data={data}>
           <CartesianGrid strokeDasharray="10 10" strokeOpacity={0.1} />
 
           <XAxis dataKey="time" fontSize="12" />
@@ -143,6 +140,7 @@ export default function LineRechart({
               <CustomRechartsToolTip
                 isValueOnly={labels.length === 1}
                 format={formatY}
+                total={true}
               />
             }
             cursor={false}
@@ -171,30 +169,17 @@ export default function LineRechart({
 
           {labels.map(({ name, color }) => {
             return (
-              <Line
+              <Bar
                 type="monotone"
+                stackId="staked"
                 dataKey={hiddenLabels.includes(name) ? name + ' ' : name} // Add space to remove the line but keep the legend
                 stroke={hiddenLabels.includes(name) ? `${color}80` : color} // 50% opacity for hidden labels
                 fill={color}
-                dot={false}
                 key={name}
               />
             );
           })}
-
-          {isReferenceLine && (
-            <ReferenceLine
-              y={100}
-              stroke="white"
-              label={{
-                position: 'top',
-                value: 'Max utilization',
-                fill: 'white',
-                fontSize: 12,
-              }}
-            />
-          )}
-        </LineChart>
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );
