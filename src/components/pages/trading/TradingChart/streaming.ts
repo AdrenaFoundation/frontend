@@ -131,12 +131,16 @@ export function subscribeOnStream(
 
   let subscriptionItem = channelToSubscription.get(channelString);
 
-  subscriptionItem = {
-    subscriberUID,
-    resolution,
-    lastDailyBar,
-    handlers: [handler],
-  };
+  if (subscriptionItem) {
+    subscriptionItem.handlers.push(handler);
+  } else {
+    subscriptionItem = {
+      subscriberUID,
+      resolution,
+      lastDailyBar,
+      handlers: [handler],
+    };
+  }
 
   channelToSubscription.set(channelString, subscriptionItem);
 
@@ -145,6 +149,7 @@ export function subscribeOnStream(
   console.log(
     '[subscribeBars]: Subscribe to streaming. Channel:',
     channelString,
+    subscriberUID,
   );
 }
 
@@ -155,19 +160,36 @@ export function unsubscribeFromStream(subscriberUID: string) {
 
     if (!subscriptionItem) continue;
 
-    const handlerIndex = subscriptionItem.handlers.findIndex(
-      (handler) => handler.id === subscriberUID,
+    const before = subscriptionItem.handlers.length;
+
+    // Remove handler with id === subscriberUID
+    subscriptionItem.handlers = subscriptionItem.handlers.filter(
+      (handler) => handler.id !== subscriberUID,
     );
 
-    if (handlerIndex !== -1) {
-      // Unsubscribe from the channel if it is the last handler
+    if (subscriptionItem.handlers.length < before) {
       console.log(
         '[unsubscribeBars]: Unsubscribe from streaming. Channel:',
         channelString,
+        subscriberUID,
       );
 
-      channelToSubscription.delete(channelString);
-      break;
+      if (subscriptionItem.handlers.length === 0) {
+        console.log(
+          '[unsubscribeBars]: Delete the channel string:',
+          channelString,
+        );
+        channelToSubscription.delete(channelString);
+      } else {
+        console.log(
+          '[unsubscribeBars]: Update the channel string:',
+          channelString,
+          subscriptionItem,
+        );
+        channelToSubscription.set(channelString, subscriptionItem);
+      }
+    } else {
+      // No change
     }
   }
 
