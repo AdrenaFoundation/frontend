@@ -77,6 +77,7 @@ export default function BurgerMenu({
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
+  const isSmallerScreen = useBetterMediaQuery('(max-width: 550px)');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
@@ -189,7 +190,7 @@ export default function BurgerMenu({
           <WalletAdapter
             className="w-full"
             userProfile={userProfile}
-            isIconOnly
+            isIconOnly={isSmallerScreen === true}
             adapters={adapters}
           />
 
