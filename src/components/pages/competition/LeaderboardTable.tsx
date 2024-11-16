@@ -134,8 +134,8 @@ export default function LeaderboardTable({
                                         isDecimalDimmed={false}
                                         isAbbreviate={true}
                                         className='text-xs'
-                                        format="currency"
-
+                                        format="number"
+                                        prefix='$'
                                         isAbbreviateIcon={false}
                                     />
                                 </div>,
