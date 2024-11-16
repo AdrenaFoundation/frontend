@@ -316,7 +316,7 @@ export default function TradingChart({
               .split('.')[1]
               .split('/')[0] as TokenSymbol;
 
-            let copiedDrawings = { ...drawings };
+            const copiedDrawings = { ...drawings };
 
             copiedDrawings[symbol] = allShapes.map((shape) => {
               return {
