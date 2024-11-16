@@ -397,7 +397,10 @@ export default function TradingChart({
 
         savedDrawings.forEach(({ id, name, points }) => {
           if (points.length === 0) {
-            localStorage.setItem('chart_shapes', JSON.stringify({}));
+            localStorage.setItem('chart_shapes', JSON.stringify({
+              ...drawings,
+              [symbol]: [],
+            }));
             return;
           }
 
