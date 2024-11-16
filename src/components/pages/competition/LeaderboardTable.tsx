@@ -123,8 +123,9 @@ export default function LeaderboardTable({
                                         nb={d.pnl}
                                         format="currency"
                                         className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
-                                        isDecimalDimmed={true}
-                                        minimumFractionDigits={2}
+                                        precision={d.pnl >= 50 ? 0 : 2}
+                                        isDecimalDimmed={false}
+                                        minimumFractionDigits={d.pnl >= 50 ? 0 : 2}
                                     />
                                 </div>,
 
