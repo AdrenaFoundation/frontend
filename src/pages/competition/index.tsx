@@ -647,7 +647,7 @@ export default function Competition() {
                     </div>
 
                     {wallet && data && myDivision ? (
-                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8 flex-col items-center lg:flex-row lg:items-start gap-2 lg:gap-0">
+                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8 flex-col items-center lg:flex-row lg:items-start gap-2 lg:gap-0 ">
                             <div className="flex items-center">
                                 <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                                     {userName}
@@ -731,7 +731,7 @@ export default function Competition() {
                                         />
                                     </div>
 
-                                    <div className='flex gap-2 items-center justify-cente'>
+                                    <div className='flex gap-2 items-center justify-center'>
                                         <FormatNumber
                                             nb={myProvisionnalJtoRewards ?? 0}
                                             format="number"
