@@ -160,7 +160,7 @@ export default function Table({
         </div>
       ))}
 
-      {pagination && nbPages && (
+      {pagination && nbPages && nbPages > 1 && (
         <div className='mt-auto pt-2'>
           <Pagination
             className={paginationClassName}
@@ -182,7 +182,7 @@ export default function Table({
         className={className}
       />
 
-      {pagination && nbPages && (
+      {pagination && nbPages && nbPages > 1 && (
         <div className='m-auto py-2'>
           <Pagination
             className={paginationClassName}

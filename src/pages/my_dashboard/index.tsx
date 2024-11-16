@@ -32,6 +32,7 @@ import {
   getAlpLockedStakes,
   nativeToUi,
 } from '@/utils';
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 
 export default function MyDashboard({
   connected,
@@ -306,7 +307,7 @@ export default function MyDashboard({
               connected={connected}
               positions={positions}
               triggerUserProfileReload={triggerUserProfileReload}
-              title="Opened Positions"
+              title={<div className='flex gap-2'>Positions <LiveIcon /></div>}
             />
 
             <StakesStats

@@ -3,6 +3,7 @@ import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 
 import Positions from '../trading/Positions/Positions';
+import { ReactNode } from 'react';
 
 export default function PositionsStats({
   connected,
@@ -12,7 +13,7 @@ export default function PositionsStats({
 }: {
   connected: boolean;
   positions: PositionExtended[] | null;
-  title?: string;
+  title?: ReactNode;
   triggerUserProfileReload: () => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');

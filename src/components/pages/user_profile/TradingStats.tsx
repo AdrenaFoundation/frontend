@@ -22,71 +22,85 @@ export default function TradingStats({
 
   return (
     <StyledContainer
-      title="Trading Stats"
-      titleClassName="text-2xl"
       className={className}
-      bodyClassName=""
+      bodyClassName="gap-1 flex-wrap flex-col sm:flex-row"
     >
-      <div className='flex flex-wrap flex-col sm:flex-row w-full gap-4'>
-        <NumberDisplay
-          title="Realized PnL"
-          nb={totalProfitLoss}
-          format="currency"
-          precision={2}
-          bodyClassName={twMerge(
-            totalProfitLoss > 0 ? 'text-green' : '',
-            totalProfitLoss < 0 ? 'text-red' : '',
-          )}
-          isDecimalDimmed={false}
-          tippyInfo='This is the sum of all your profits and losses over all trades. Does not include fees.'
-        />
+      <NumberDisplay
+        title="Realized PnL"
+        nb={totalProfitLoss}
+        format="currency"
+        precision={2}
+        className='border-0 min-w-[9em] p-1'
+        headerClassName='pb-2'
+        titleClassName='text-[0.7em] sm:text-[0.7em]'
+        bodyClassName={twMerge(
+          'text-base',
+          totalProfitLoss > 0 ? 'text-green' : '',
+          totalProfitLoss < 0 ? 'text-red' : '',
+        )}
+        isDecimalDimmed={false}
+      //  tippyInfo='This is the sum of all your profits and losses over all trades. Does not include fees.'
+      />
 
-        <NumberDisplay
-          title="Fees Paid"
-          nb={
-            userProfile.longStats.feePaidUsd +
-            userProfile.shortStats.feePaidUsd
-          }
-          format="currency"
-          precision={2}
-          bodyClassName={twMerge(
-            (userProfile.longStats.feePaidUsd +
-              userProfile.shortStats.feePaidUsd) > 0 ? 'text-red' : '',
-          )}
-          isDecimalDimmed={false}
-          tippyInfo='This include the Open/Close fees (0 bps open, 16bps close) and the Borrow fees.'
-        />
-      </div>
+      <NumberDisplay
+        title="Fees Paid"
+        nb={
+          userProfile.longStats.feePaidUsd +
+          userProfile.shortStats.feePaidUsd
+        }
+        format="currency"
+        precision={2}
+        className='border-0 min-w-[9em] p-1'
+        headerClassName='pb-2'
+        titleClassName='text-[0.7em] sm:text-[0.7em]'
+        bodyClassName={twMerge(
+          'text-base',
+          (userProfile.longStats.feePaidUsd +
+            userProfile.shortStats.feePaidUsd) > 0 ? 'text-red' : '',
+        )}
+        isDecimalDimmed={false}
+      // tippyInfo='This include the Open/Close fees (0 bps open, 16bps close) and the Borrow fees.'
+      />
 
-      <div className='flex flex-wrap flex-col sm:flex-row w-full gap-4'>
-        <NumberDisplay
-          title="Opened Positions Count"
-          nb={
-            userProfile.longStats.openedPositionCount +
-            userProfile.shortStats.openedPositionCount
-          }
-          precision={0}
-        />
+      <NumberDisplay
+        title="Positions"
+        className='border-0 min-w-[9em] p-1'
+        bodyClassName='text-base'
+        headerClassName='pb-2'
+        titleClassName='text-[0.7em] sm:text-[0.7em]'
+        nb={
+          userProfile.longStats.openedPositionCount +
+          userProfile.shortStats.openedPositionCount
+        }
+        precision={0}
+      />
 
-        <NumberDisplay
-          title="Liquidated Positions Count"
-          nb={
-            userProfile.longStats.liquidatedPositionCount +
-            userProfile.shortStats.liquidatedPositionCount
-          }
-          precision={0}
-        />
+      <NumberDisplay
+        title="Liquidated Positions"
+        className='border-0 min-w-[9em] p-1'
+        bodyClassName='text-base'
+        headerClassName='pb-2'
+        titleClassName='text-[0.7em] sm:text-[0.7em]'
+        nb={
+          userProfile.longStats.liquidatedPositionCount +
+          userProfile.shortStats.liquidatedPositionCount
+        }
+        precision={0}
+      />
 
-        <NumberDisplay
-          title="All Time Volume"
-          nb={
-            userProfile.longStats.openingSizeUsd +
-            userProfile.shortStats.openingSizeUsd
-          }
-          format="currency"
-          precision={2}
-        />
-      </div>
+      <NumberDisplay
+        title="Total Volume"
+        className='border-0 min-w-[9em] p-1'
+        bodyClassName='text-base'
+        headerClassName='pb-2'
+        titleClassName='text-[0.7em] sm:text-[0.7em]'
+        nb={
+          userProfile.longStats.openingSizeUsd +
+          userProfile.shortStats.openingSizeUsd
+        }
+        format="currency"
+        precision={2}
+      />
     </StyledContainer >
   );
 }
