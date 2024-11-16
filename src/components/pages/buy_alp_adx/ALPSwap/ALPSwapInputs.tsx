@@ -1,7 +1,9 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { FeesAndAmountsType } from '@/pages/buy_alp';
@@ -9,6 +11,9 @@ import { useSelector } from '@/store/store';
 import { Token } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
+import infoIcon from '../../../../../public/images/Icons/info.svg';
+import warningIcon from '../../../../../public/images/Icons/warning.png';
+import jupIcon from '../../../../../public/images/jup-logo.png';
 import TradingInput from '../../trading/TradingInput/TradingInput';
 
 // use the counter to handle asynchronous multiple loading
@@ -342,7 +347,18 @@ export default function ALPSwapInputs({
   }, [collateralToken.symbol, feesAndAmounts]);
 
   return (
-    <div className={twMerge('relative flex flex-col', className)}>
+    <div className={twMerge('relative flex flex-col gap-2', className)}>
+      <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10">
+        <Image
+          className="opacity-100 absolute left-3 top-auto bottom-auto"
+          src={infoIcon}
+          height={20}
+          width={20}
+          alt="Info icon"
+        />
+        For the protocol health, please consider depositing using the best routes. You get lower fees, protocol pool stays balanced, we all win ❤️
+      </div>
+
       <div className="flex flex-row justify-between">
         <h5 className="text-white mb-3">Pay</h5>
         <RefreshButton />
@@ -456,7 +472,37 @@ export default function ALPSwapInputs({
             <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-lg mt-4 flex justify-center flex-col">
               <span className="text-txtfade">You are using the best route</span>
             </div>
-          ) : null}
+          ) : (
+            <Tippy
+              content={
+                <div className="text-sm flex flex-col text-center gap-2">
+                  This is not optimal and we are working on an improved experience with the upcoming &quot;deposit in ratio&quot; system.
+                </div>
+              }
+              placement="auto"
+            >
+              <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full flex-col pl-10">
+                <Image
+                  className="opacity-100 absolute left-3 top-auto bottom-auto"
+                  src={warningIcon}
+                  height={20}
+                  width={20}
+                  alt="Warning icon"
+                />
+                High fees, consider using a different asset, or in lower proportion and breaking down the deposits.
+                <Button
+                  title="Swap on Jupiter"
+                  href={`https://jup.ag/swap/USDC-`}
+                  isOpenLinkInNewTab
+                  rightIcon={jupIcon}
+                  iconClassName="w-5 h-5"
+                  // size="lg"
+                  className="mt-4 px-14 py-3 text-base"
+                />
+              </div>
+
+            </Tippy>
+          )}
 
           {saveUpFees === null ? (
             <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-lg mt-4 flex justify-center flex-col">
