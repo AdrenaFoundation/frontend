@@ -53,10 +53,10 @@ function startStreaming() {
   pythConnectionStarted = true;
 
   pythConnection.feedIds = [
-    new PublicKey('Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr'), // WBTC
+    // new PublicKey('Eavb8FKNoYPbHnSS8kMi4tnUh8qK8bqxTjCojer4pZrr'), // WBTC
     new PublicKey('GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU'), // BTC
     new PublicKey('H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG'), // SOL
-    new PublicKey('7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk'), // JITOSOL
+    // new PublicKey('7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk'), // JITOSOL
     new PublicKey('Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD'), // USDC
     new PublicKey('8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN'), // BONK
   ];
