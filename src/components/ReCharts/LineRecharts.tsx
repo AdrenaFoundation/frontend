@@ -75,7 +75,7 @@ export default function LineRechart({
             </Tippy>
           )}
 
-          {!isSmallScreen && (
+          {!isSmallScreen && typeof subValue !== 'undefined' && (
             <FormatNumber
               nb={subValue}
               className="text-sm text-txtfade sm:text-xs"
