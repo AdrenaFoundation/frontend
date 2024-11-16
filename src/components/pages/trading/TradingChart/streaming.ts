@@ -175,8 +175,17 @@ export function unsubscribeFromStream(subscriberUID: string) {
       );
 
       if (subscriptionItem.handlers.length === 0) {
+        console.log(
+          '[unsubscribeBars]: Delete the channel string:',
+          channelString,
+        );
         channelToSubscription.delete(channelString);
       } else {
+        console.log(
+          '[unsubscribeBars]: Update the channel string:',
+          channelString,
+          subscriptionItem,
+        );
         channelToSubscription.set(channelString, subscriptionItem);
       }
     } else {
