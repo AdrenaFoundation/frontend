@@ -112,7 +112,9 @@ export default function LeaderboardTable({
                                 d.username
                                     ? isValidPublicKey(d.username)
                                         ? <p key={`trader-${i}`} className={twMerge('text-xs font-boldy opacity-50', d.connected ? 'text-yellow-600' : '')}>{getAbbrevWalletAddress(d.username)}</p>
-                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.username)}>{d.username}</p>
+                                        : <p key={`trader-${i}`} className={twMerge('text-xs font-boldy hover:underline transition duration-300 cursor-pointer', d.connected ? 'text-yellow-600 ' : '')} onClick={() => handleProfileView(d.username)}>
+                                            {d.username.length > 16 ? `${d.username.substring(0, 16)}...` : d.username}
+                                        </p>
                                     : <p key={`trader-${i}`} className='text-xs font-boldy'>-</p>
                                 ,
 
@@ -121,8 +123,9 @@ export default function LeaderboardTable({
                                         nb={d.pnl}
                                         format="currency"
                                         className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
+                                        precision={d.pnl >= 50 ? 0 : 2}
                                         isDecimalDimmed={false}
-
+                                        minimumFractionDigits={d.pnl >= 50 ? 0 : 2}
                                     />
                                 </div>,
 
@@ -132,8 +135,8 @@ export default function LeaderboardTable({
                                         isDecimalDimmed={false}
                                         isAbbreviate={true}
                                         className='text-xs'
-                                        format="currency"
-
+                                        format="number"
+                                        prefix='$'
                                         isAbbreviateIcon={false}
                                     />
                                 </div>,
