@@ -278,6 +278,7 @@ export default function TradingChart({
             'header_fullscreen_button',
             'header_settings',
           ],
+
           custom_css_url: '/tradingview.css',
           overrides: {
             'paneProperties.background': '#171B26',
@@ -315,7 +316,9 @@ export default function TradingChart({
               .split('.')[1]
               .split('/')[0] as TokenSymbol;
 
-            drawings[symbol] = allShapes.map((shape) => {
+            const copiedDrawings = { ...drawings };
+
+            copiedDrawings[symbol] = allShapes.map((shape) => {
               return {
                 id: shape.id,
                 name: shape.name as Exclude<
@@ -332,9 +335,7 @@ export default function TradingChart({
               };
             });
 
-            const copiedDrawings = { ...drawings };
-
-            setDrawings(drawings);
+            setDrawings(copiedDrawings);
 
             localStorage.setItem(
               'chart_shapes',
@@ -389,8 +390,19 @@ export default function TradingChart({
         .split('/')[0] as TokenSymbol;
 
       const savedDrawings = drawings[symbol];
+      const currentShapes = widget.activeChart().getAllShapes().map(({ id }) => id);
+
       if (savedDrawings && savedDrawings.length > 0) {
-        savedDrawings.forEach(({ name, points }) => {
+
+
+        savedDrawings.forEach(({ id, name, points }) => {
+          if (points.length === 0) {
+            localStorage.setItem('chart_shapes', JSON.stringify({}));
+            return;
+          }
+
+          if (currentShapes.includes(id)) return;
+
           widget.activeChart().createMultipointShape(points, {
             shape: name,
           });
