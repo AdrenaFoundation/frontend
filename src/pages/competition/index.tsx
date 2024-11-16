@@ -696,6 +696,8 @@ export default function Competition() {
                                             'text-base font-boldy',
                                             (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
                                         )}
+                                        precision={myPnl && myPnl >= 50 ? 0 : 2}
+                                        minimumFractionDigits={myPnl && myPnl >= 50 ? 0 : 2}
                                     />
                                 </div>
 
@@ -707,6 +709,7 @@ export default function Competition() {
                                         format="currency"
                                         isAbbreviate={true}
                                         isDecimalDimmed={false}
+                                        isAbbreviateIcon={false}
                                         className="text-base font-boldy"
                                     />
                                 </div>
