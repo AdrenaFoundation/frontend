@@ -1,3 +1,4 @@
+import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -112,25 +113,37 @@ export default function LockedStakesDuration({
             <div className='text-xxs bg-[#068862a0] font-boldy pt-[0.1em] pb-[0.1em] pr-2 pl-2 mt-1 rounded w-14 text-center'>genesis</div> : null}
         </div>
 
+
+
         <div className='flex border-t pt-2 pb-2 w-full justify-evenly flex-wrap gap-y-4 gap-x-4'>
           <div className='flex items-center gap-2'>
             <Image src={weightIcon} width={20} height={6} alt="Weight icon" className='mr-1 h-5 w-5 opacity-10' />
 
-            <div className='flex items-center flex-col'>
-              <div className='text-xs text-txtfade font-boldy'>USDC Reward Weight</div>
-              <div className='flex items-center justify-center gap-1'>
-                <FormatNumber
-                  nb={totalWeight.amountWithRewardMultiplier}
-                  className='text-sm'
-                  precision={0}
-                  isDecimalDimmed={false}
-                  isAbbreviate={true}
-                  isAbbreviateIcon={false}
-                />
+            <Tippy
+              content={
+                <div className="text-sm w-60 flex flex-col justify-around items-center">
+                  <span>USDC rewards are distributed based on the amount of {token} staked and the duration of the lock.</span>
+                  <span>The longer the lock, the higher the reward weight.</span>
+                </div>
+              }
+              placement="auto"
+            >
+              <div className='flex items-center flex-col'>
+                <div className='text-xs text-txtfade font-boldy'>USDC Reward Weight</div>
+                <div className='flex items-center justify-center gap-1'>
+                  <FormatNumber
+                    nb={totalWeight.amountWithRewardMultiplier}
+                    className='text-sm'
+                    precision={0}
+                    isDecimalDimmed={false}
+                    isAbbreviate={true}
+                    isAbbreviateIcon={false}
+                  />
 
-                <div className='text-sm text-txtfade font-mono'>{'('}{rewardMultiplier}x{')'}</div>
+                  <div className='text-sm text-txtfade font-mono'>{'('}{rewardMultiplier}x{')'}</div>
+                </div>
               </div>
-            </div>
+            </Tippy>
           </div>
 
           <div className='flex items-center gap-2'>
