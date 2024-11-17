@@ -31,6 +31,7 @@ import adxTokenLogo from '../../../../public/images/adx.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
 import ClaimBlock from './ClaimBlock';
+import LockedStakes from './LockedStakes';
 
 interface SortConfig {
   size: 'asc' | 'desc';
@@ -99,7 +100,6 @@ export default function StakeOverview({
   const [currentPage, setCurrentPage] = useState(1);
   const [claimHistoryItemsPerPage,] = useState(3);
 
-  const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
   const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
@@ -132,11 +132,6 @@ export default function StakeOverview({
       return durationDiff || sizeDiff;
     })
     : [];
-
-  const paginatedLockedStakes = sortedLockedStakes.slice(
-    (lockedStakesPage - 1) * lockedStakesPerPage,
-    lockedStakesPage * lockedStakesPerPage,
-  );
 
   useEffect(() => {
     if (!stakingAccount) {
@@ -201,16 +196,6 @@ export default function StakeOverview({
     } catch (error) {
       console.error('error', error);
     }
-  };
-
-  const toggleClaimHistory = () => {
-    setIsClaimHistoryVisible(!isClaimHistoryVisible);
-    setTimeout(
-      () => {
-        setLockedStakesPerPage(isClaimHistoryVisible ? 6 : 4);
-      },
-      isClaimHistoryVisible ? 300 : 0,
-    ); // Delay matches the duration of the CSS transition
   };
 
   const totalStakeAmount =
@@ -513,7 +498,9 @@ export default function StakeOverview({
 
         <div className="flex flex-col text-sm py-0 px-5 w-full">
           <div
-            onClick={toggleClaimHistory}
+            onClick={() => {
+              setIsClaimHistoryVisible(!isClaimHistoryVisible);
+            }}
             className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200"
           >
             <div className='flex flex-col'>
@@ -685,37 +672,17 @@ export default function StakeOverview({
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            {paginatedLockedStakes.length > 0 ? (
-              paginatedLockedStakes.map((lockedStake, i) => (
-                <LockedStakedElement
-                  lockedStake={lockedStake}
-                  key={i}
-                  token={
-                    isALP
-                      ? window.adrena.client.alpToken
-                      : window.adrena.client.adxToken
-                  }
-                  handleRedeem={handleLockedStakeRedeem}
-                  handleClickOnFinalizeLockedRedeem={
-                    handleClickOnFinalizeLockedRedeem
-                  }
-                  handleClickOnUpdateLockedStake={
-                    handleClickOnUpdateLockedStake
-                  }
-                />
-              ))
-            ) : (
-              <div className="text-lg mt-4 mb-4 text-txtfade text-left pl-4">
-                No Active Locked Stakes
-              </div>
-            )}
-          </div>
-          <Pagination
-            currentPage={lockedStakesPage}
-            totalItems={lockedStakes ? lockedStakes.length : 0}
-            itemsPerPage={lockedStakesPerPage}
-            onPageChange={setLockedStakesPage}
+
+          <LockedStakes
+            lockedStakes={sortedLockedStakes}
+            className='gap-3 mt-4'
+            handleRedeem={handleLockedStakeRedeem}
+            handleClickOnFinalizeLockedRedeem={
+              handleClickOnFinalizeLockedRedeem
+            }
+            handleClickOnUpdateLockedStake={
+              handleClickOnUpdateLockedStake
+            }
           />
         </div>
 
