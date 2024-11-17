@@ -4,6 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
@@ -306,7 +307,7 @@ export default function MyDashboard({
               connected={connected}
               positions={positions}
               triggerUserProfileReload={triggerUserProfileReload}
-              title="Opened Positions"
+              title={<div className='flex gap-2'>Positions <LiveIcon /></div>}
             />
 
             <StakesStats

@@ -572,12 +572,14 @@ export default function Stake({
         wallet && alpPrice ? alpPrice * getTotalRedeemableStake('ALP') : null,
     });
 
-    setTimeout(() => {
-      setIsStakeLoaded(true);
-    }, 100);
-
+    if (!connected || stakingAccounts) {
+      setTimeout(() => {
+        setIsStakeLoaded(true);
+      }, 100);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    stakingAccounts,
     adxBalance,
     adxPrice,
     alpBalance,

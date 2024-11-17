@@ -336,7 +336,8 @@ export default function ClosePosition({
           <FormatNumber
             nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
             format="currency"
-            className="text-red"
+            className="text-redbright font-bold"
+            isDecimalDimmed={false}
           />
         </div>
       </div>

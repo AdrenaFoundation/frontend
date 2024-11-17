@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
@@ -38,7 +39,7 @@ export default function StakesStats({
     : [];
 
   return (
-    <StyledContainer title="Ongoing Stakes" titleClassName="text-2xl">
+    <StyledContainer title={<div className='flex gap-2'>Stakes <LiveIcon /></div>} titleClassName="text-2xl">
       <div className="flex flex-col sm:flex-row gap-3">
         <NumberDisplay
           title="Liquid Staked ADX"
