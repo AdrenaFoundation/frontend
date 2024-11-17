@@ -40,7 +40,6 @@ export default function LockedStakes({
         <LockedStakesDuration
           lockedStakes={lockedStakes}
           key={i}
-          className=""
           handleRedeem={handleRedeem}
           handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
           handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
