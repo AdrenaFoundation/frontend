@@ -1,3 +1,5 @@
+import { SUPPORTED_RESOLUTIONS } from '@/constant';
+
 import {
   DatafeedErrorCallback,
   HistoryCallback,
@@ -23,6 +25,7 @@ const datafeed: IBasicDataFeed = {
 
     fetch(`${API_ENDPOINT}/config`).then((response) => {
       response.json().then((configurationData) => {
+        configurationData.supported_resolutions = SUPPORTED_RESOLUTIONS;
         setTimeout(() => callback(configurationData));
       });
     });
