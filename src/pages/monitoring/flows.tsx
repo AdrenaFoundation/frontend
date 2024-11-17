@@ -34,7 +34,6 @@ export default function Flow({
   return (
     <StyledContainer className="rounded-lg overflow-hidden m-2 p-5 flex flex-wrap">
       <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between items-center">
-        <h2 className="text-xl font-bold">Flows Monitoring</h2>
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-secondary border border-gray-600 rounded p-2">
           {selectedRange === 'custom' && (
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -115,7 +114,7 @@ export default function Flow({
             </h3>
             {symbolStats.map((stat, _index) => (
               <div key={stat.side} className="mt-2">
-                <h4 className={`font-semibold ${stat.side === 'long' ? 'text-green' : 'text-red'}`}>{stat.side}</h4>
+                <h4 className={`font-semibold ${stat.side === 'long' ? 'text-green' : 'text-redbright'}`}>{stat.side}</h4>
                 <div className="ml-4">
                   <div className="flex justify-between text-txtfade">
                     <span>Positions count:</span>
@@ -135,7 +134,7 @@ export default function Flow({
                       minimumFractionDigits={2}
                       prefix="$"
                       showSignBeforePrefix={true}
-                      className={twMerge("opacity-80", stat.total_pnl < 0 ? 'text-red' : 'text-green')}
+                      className={twMerge("opacity-80", stat.total_pnl < 0 ? 'text-redbright' : 'text-green')}
                       isDecimalDimmed={false}
                     />
                   </div>
@@ -148,7 +147,7 @@ export default function Flow({
                       minimumFractionDigits={2}
                       prefix="$"
                       showSignBeforePrefix={true}
-                      className={twMerge("opacity-80", stat.min_pnl < 0 ? 'text-red' : 'text-green')}
+                      className={twMerge("opacity-80", stat.min_pnl < 0 ? 'text-redbright' : 'text-green')}
                       isDecimalDimmed={false}
                     />
                   </div>
@@ -161,7 +160,7 @@ export default function Flow({
                       minimumFractionDigits={2}
                       prefix="$"
                       showSignBeforePrefix={true}
-                      className={twMerge("opacity-80", stat.max_pnl < 0 ? 'text-red' : 'text-green')}
+                      className={twMerge("opacity-80", stat.max_pnl < 0 ? 'text-redbright' : 'text-green')}
                       isDecimalDimmed={false}
                     />
                   </div>
