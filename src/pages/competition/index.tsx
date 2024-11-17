@@ -88,7 +88,11 @@ export default function Competition() {
     const [tradersCount, setTradersCount] = useState<number | null>(null);
     const [totalVolume, setTotalVolume] = useState<number | null>(null);
 
+    const startDate = new Date('11/11/2024');
     const endDate = new Date('12/23/2024');
+    const weeksPassedSinceStartDate = Math.floor(
+        (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
+    );
 
     useEffect(() => {
         getData();
@@ -283,7 +287,8 @@ export default function Competition() {
                 },
             );
 
-            setWeek(0);
+
+            setWeek(weeksPassedSinceStartDate);
             setAchievements(achievements);
             setData(formattedData);
         } catch (error) {
@@ -301,7 +306,7 @@ export default function Competition() {
 
     const handleProfileView = (nickname: string) => {
         const profile = allUserProfiles.find((p) => p.nickname === nickname);
-        console.log(nickname, profile);
+
         if (profile) {
             setActiveProfile(profile);
         }
@@ -314,6 +319,8 @@ export default function Competition() {
     const hasProfile = userProfile !== undefined;
 
     const userName = hasProfile ? userProfile?.nickname : getAbbrevWalletAddress(wallet?.walletAddress.toString() ?? 'undefined');
+
+
 
     return (
         <>
@@ -540,13 +547,10 @@ export default function Competition() {
                                         className={twMerge(
                                             'rounded-lg p-1 whitespace-nowrap px-2 transition border border-transparent duration-300 cursor-pointer select-none',
                                             i === week ? 'bg-[#364250] border-white/25 ' : 'bg-third',
-                                            i !== 0 && 'cursor-not-allowed opacity-25',
+                                            i > weeksPassedSinceStartDate && 'cursor-not-allowed opacity-25',
                                         )}
                                         onClick={() => {
-                                            if (i > 0) {
-                                                // Only allow the first week to be selected for now
-                                                return;
-                                            }
+                                            if (i > weeksPassedSinceStartDate) return;
                                             setWeek(i);
                                         }}
                                         key={i}
@@ -647,7 +651,7 @@ export default function Competition() {
                     </div>
 
                     {wallet && data && myDivision ? (
-                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8 flex-col items-center lg:flex-row lg:items-start gap-2 lg:gap-0 ">
+                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
                             <div className="flex items-center">
                                 <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                                     {userName}
@@ -684,40 +688,40 @@ export default function Competition() {
                                 </span>
                             </div>
 
-                            <div className="flex items-center grow lg:justify-evenly flex-col lg:ml-auto md:flex-row gap-2 md:gap-4">
-                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
-                                    <span className="text-sm text-txtfade font-boldy">PnL:</span>
+                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                                <span className="text-sm text-txtfade font-boldy">PnL:</span>
 
-                                    <FormatNumber
-                                        nb={myPnl ?? 0}
-                                        format="currency"
-                                        isDecimalDimmed={false}
-                                        className={twMerge(
-                                            'text-base font-boldy',
-                                            (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
-                                        )}
-                                        precision={myPnl && myPnl >= 50 ? 0 : 2}
-                                        minimumFractionDigits={myPnl && myPnl >= 50 ? 0 : 2}
-                                    />
-                                </div>
+                                <FormatNumber
+                                    nb={myPnl ?? 0}
+                                    format="currency"
+                                    isDecimalDimmed={false}
+                                    className={twMerge(
+                                        'text-base font-boldy',
+                                        (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
+                                    )}
+                                    precision={myPnl && myPnl >= 50 ? 0 : 2}
+                                    minimumFractionDigits={myPnl && myPnl >= 50 ? 0 : 2}
+                                />
+                            </div>
 
-                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
-                                    <span className="text-sm text-txtfade">Volume:</span>
+                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                                <span className="text-sm text-txtfade">Volume:</span>
 
-                                    <FormatNumber
-                                        nb={myVolume ?? 0}
-                                        format="currency"
-                                        isAbbreviate={true}
-                                        isDecimalDimmed={false}
-                                        isAbbreviateIcon={false}
-                                        className="text-base font-boldy"
-                                    />
-                                </div>
+                                <FormatNumber
+                                    nb={myVolume ?? 0}
+                                    format="currency"
+                                    isAbbreviate={true}
+                                    isDecimalDimmed={false}
+                                    isAbbreviateIcon={false}
+                                    className="text-base font-boldy"
+                                />
+                            </div>
 
-                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
-                                    <span className="text-sm text-txtfade"> Rank rewards: </span>
+                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                                <span className="text-sm text-txtfade"> Rank rewards: </span>
 
-                                    <div className='flex gap-2 items-center justify-center pl-8 md:pl-0'>
+                                <div className='flex flex-row gap-3 items-center'>
+                                    <div className='flex gap-2 items-center justify-center pl-8 lg:pl-0'>
                                         <FormatNumber
                                             nb={myProvisionnalAdxRewards ?? 0}
                                             format="number"
@@ -750,11 +754,10 @@ export default function Competition() {
                                         />
                                     </div>
                                 </div>
-
-                                {/* <span className="text-sm text-txtfade mx-4"> | </span> */}
-
-
                             </div>
+
+                            {/* <span className="text-sm text-txtfade mx-4"> | </span> */}
+
                         </div>
                     ) : null}
 

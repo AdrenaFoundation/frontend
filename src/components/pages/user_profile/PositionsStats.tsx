@@ -1,3 +1,5 @@
+import { ReactNode } from 'react';
+
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
@@ -12,7 +14,7 @@ export default function PositionsStats({
 }: {
   connected: boolean;
   positions: PositionExtended[] | null;
-  title?: string;
+  title?: ReactNode;
   triggerUserProfileReload: () => void;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');

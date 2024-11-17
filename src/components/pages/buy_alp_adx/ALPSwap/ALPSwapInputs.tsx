@@ -348,7 +348,7 @@ export default function ALPSwapInputs({
 
   return (
     <div className={twMerge('relative flex flex-col gap-2', className)}>
-      <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10">
+      <div className="bg-blue/30 p-4 border-dashed border-blue text-sm rounded flex relative w-full pl-10">
         <Image
           className="opacity-100 absolute left-3 top-auto bottom-auto"
           src={infoIcon}
@@ -481,7 +481,7 @@ export default function ALPSwapInputs({
               }
               placement="auto"
             >
-              <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full flex-col pl-10">
+              <div className="bg-orange/30 p-4 border-dashed border-orange rounded flex relative w-full flex-col pl-10 text-sm">
                 <Image
                   className="opacity-100 absolute left-3 top-auto bottom-auto"
                   src={warningIcon}

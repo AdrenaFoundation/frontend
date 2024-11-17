@@ -89,6 +89,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       num = Number(nb).toFixed(precision);
     }
 
+
     if (isAbbreviate) {
       if (nb > 999_999_999) {
         num = (nb / 1_000_000_000).toFixed(2) + 'B';
