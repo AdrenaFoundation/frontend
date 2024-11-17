@@ -12,7 +12,6 @@ import MultiStepNotification from '@/components/common/MultiStepNotification/Mul
 import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
-import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import useStakingAccount from '@/hooks/useStakingAccount';
 import {
   DEFAULT_LOCKED_STAKE_LOCK_DURATION,
@@ -100,7 +99,6 @@ export default function StakeOverview({
   const [currentPage, setCurrentPage] = useState(1);
   const [claimHistoryItemsPerPage,] = useState(3);
 
-  const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
   const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
   useEffect(() => {
@@ -310,6 +308,7 @@ export default function StakeOverview({
                 className="inline-block ml-2 cursor-pointer txt op center"
               />
             </Tippy>
+
             <Button
               variant="primary"
               size="sm"

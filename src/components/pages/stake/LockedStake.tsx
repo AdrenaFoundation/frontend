@@ -1,12 +1,11 @@
-import Tippy from '@tippyjs/react';
-import Image from 'next/image';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Button from '@/components/common/Button/Button';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { LockedStakeExtended, Token } from '@/types';
-import { formatNumber, nativeToUi } from '@/utils';
+import { LockedStakeExtended } from '@/types';
+import { nativeToUi } from '@/utils';
+
 import RemainingTimeToDate from '../monitoring/RemainingTimeToDate';
 
 export default function LockedStake({

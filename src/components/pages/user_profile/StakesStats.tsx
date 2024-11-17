@@ -1,12 +1,9 @@
-import { useState } from 'react';
-
-import Button from '@/components/common/Button/Button';
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { LockedStakeExtended } from '@/types';
+
+import LockedStakes from '../stake/LockedStakes';
 
 export default function StakesStats({
   liquidStakedADX,
@@ -28,15 +25,8 @@ export default function StakesStats({
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
 }) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [lockedStakesPerPage,] = useState(4);
-
-  const paginatedLockedStakes = lockedStakes
-    ? lockedStakes.slice(
-      (currentPage - 1) * lockedStakesPerPage,
-      currentPage * lockedStakesPerPage
-    )
-    : [];
+  const adxLockedStakes = lockedStakes?.filter(x => x.tokenSymbol === 'ADX').sort((a, b) => a.lockDuration.toNumber() - b.lockDuration.toNumber());
+  const alpLockedStakes = lockedStakes?.filter(x => x.tokenSymbol === 'ALP').sort((a, b) => a.lockDuration.toNumber() - b.lockDuration.toNumber());
 
   return (
     <StyledContainer title={<div className='flex gap-2'>Stakes <LiveIcon /></div>} titleClassName="text-2xl">
@@ -66,52 +56,36 @@ export default function StakesStats({
         />
       </div>
 
-      {lockedStakes?.length ? (
+      {adxLockedStakes?.length || alpLockedStakes?.length ? (
         <div className="mt-2">
           <span className="font-bold opacity-50">
-            My{lockedStakes?.length ? ` ${lockedStakes.length}` : ''} Locked
+            My{adxLockedStakes?.length || alpLockedStakes?.length ? ` ${(adxLockedStakes?.length ?? 0) + (alpLockedStakes?.length ?? 0)}` : ''} Locked
             Stakes
           </span>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 mt-2 gap-3">
-            {paginatedLockedStakes.length > 0 ? (
-              paginatedLockedStakes.map((lockedStake, i) => (
-                <LockedStakedElement
-                  lockedStake={lockedStake}
-                  key={i}
-                  token={
-                    lockedStake.tokenSymbol === 'ADX'
-                      ? window.adrena.client.adxToken
-                      : window.adrena.client.alpToken
-                  }
-                  handleRedeem={handleLockedStakeRedeem}
-                  handleClickOnFinalizeLockedRedeem={
-                    handleClickOnFinalizeLockedRedeem
-                  }
-                  handleClickOnUpdateLockedStake={
-                    handleClickOnUpdateLockedStake
-                  }
-                />
-              ))
-            ) : (
-              <div className="text-sm m-auto mt-4 mb-4 text-txtfade">
-                No Active Locked Stakes
-                <Button
-                  title="Stake ADX"
-                  href={'/stake'}
-                  className="mt-3 mx-auto"
-                  size="lg"
-                />
-              </div>
-            )}
-          </div>
+          {adxLockedStakes ? <LockedStakes
+            lockedStakes={adxLockedStakes}
+            className='gap-3 mt-4'
+            handleRedeem={handleLockedStakeRedeem}
+            handleClickOnFinalizeLockedRedeem={
+              handleClickOnFinalizeLockedRedeem
+            }
+            handleClickOnUpdateLockedStake={
+              handleClickOnUpdateLockedStake
+            }
+          /> : null}
 
-          <Pagination
-            currentPage={currentPage}
-            totalItems={lockedStakes ? lockedStakes.length : 0}
-            itemsPerPage={lockedStakesPerPage}
-            onPageChange={setCurrentPage}
-          />
+          {alpLockedStakes ? <LockedStakes
+            lockedStakes={alpLockedStakes}
+            className='gap-3 mt-4'
+            handleRedeem={handleLockedStakeRedeem}
+            handleClickOnFinalizeLockedRedeem={
+              handleClickOnFinalizeLockedRedeem
+            }
+            handleClickOnUpdateLockedStake={
+              handleClickOnUpdateLockedStake
+            }
+          /> : null}
         </div>
       ) : null}
     </StyledContainer>

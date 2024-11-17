@@ -2,18 +2,18 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
+import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { LockedStakeExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import chevronDownIcon from '../../../../public/images/chevron-down.svg';
-import LockedStake from './LockedStake';
-import RemainingTimeToDate from '../monitoring/RemainingTimeToDate';
 import lockIcon from '../../../../public/images/Icons/lock.svg';
-import weightIcon from '../../../../public/images/weight.png';
 import votingIcon from '../../../../public/images/voting.png';
-import Button from '@/components/common/Button/Button';
-import Pagination from '@/components/common/Pagination/Pagination';
+import weightIcon from '../../../../public/images/weight.png';
+import RemainingTimeToDate from '../monitoring/RemainingTimeToDate';
+import LockedStake from './LockedStake';
 
 export default function LockedStakesDuration({
   lockedStakes,
@@ -33,7 +33,7 @@ export default function LockedStakesDuration({
 }) {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
-  const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
+  const lockedStakesPerPage = 6;
 
   if (lockedStakes.length === 0) {
     return null;
