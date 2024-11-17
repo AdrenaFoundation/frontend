@@ -301,7 +301,7 @@ export default function Competition() {
 
     const handleProfileView = (nickname: string) => {
         const profile = allUserProfiles.find((p) => p.nickname === nickname);
-        console.log(nickname, profile);
+
         if (profile) {
             setActiveProfile(profile);
         }
@@ -647,7 +647,7 @@ export default function Competition() {
                     </div>
 
                     {wallet && data && myDivision ? (
-                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-6 mb-8 flex-col items-center lg:flex-row lg:items-start gap-2 lg:gap-0 ">
+                        <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
                             <div className="flex items-center">
                                 <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                                     {userName}
@@ -684,9 +684,8 @@ export default function Competition() {
                                 </span>
                             </div>
 
-                            <div className="flex items-center grow lg:justify-evenly flex-col lg:ml-auto md:flex-row gap-2 md:gap-4">
-                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
-                                    <span className="text-sm text-txtfade font-boldy">PnL:</span>
+                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                                <span className="text-sm text-txtfade font-boldy">PnL:</span>
 
                                     <FormatNumber
                                         nb={myPnl ?? 0}
@@ -701,8 +700,8 @@ export default function Competition() {
                                     />
                                 </div>
 
-                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
-                                    <span className="text-sm text-txtfade">Volume:</span>
+                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                                <span className="text-sm text-txtfade">Volume:</span>
 
                                     <FormatNumber
                                         nb={myVolume ?? 0}
@@ -714,10 +713,11 @@ export default function Competition() {
                                     />
                                 </div>
 
-                                <div className='flex gap-2 items-center w-full justify-between md:w-auto md:justify-center'>
-                                    <span className="text-sm text-txtfade"> Rank rewards: </span>
+                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                                <span className="text-sm text-txtfade"> Rank rewards: </span>
 
-                                    <div className='flex gap-2 items-center justify-center pl-8 md:pl-0'>
+                                <div className='flex flex-row gap-3 items-center'>
+                                    <div className='flex gap-2 items-center justify-center pl-8 lg:pl-0'>
                                         <FormatNumber
                                             nb={myProvisionnalAdxRewards ?? 0}
                                             format="number"
@@ -750,11 +750,10 @@ export default function Competition() {
                                         />
                                     </div>
                                 </div>
-
-                                {/* <span className="text-sm text-txtfade mx-4"> | </span> */}
-
-
                             </div>
+
+                            {/* <span className="text-sm text-txtfade mx-4"> | </span> */}
+
                         </div>
                     ) : null}
 
