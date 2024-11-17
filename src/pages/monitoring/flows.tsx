@@ -1,4 +1,9 @@
+import 'react-datepicker/dist/react-datepicker.css';
+import { useState } from 'react';
+
 import Image from 'next/image';
+import DatePicker from 'react-datepicker';
+import { twMerge } from 'tailwind-merge';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
@@ -10,7 +15,8 @@ export default function Flow({
 }: {
   custodies: CustodyExtended[] | null;
 }) {
-  const { data, loading, setStartDate } = usePositionStats();
+  const { data, loading, startDate, setStartDate, endDate, setEndDate } = usePositionStats();
+  const [selectedRange, setSelectedRange] = useState('all-time');
 
   if (loading) return <div>Loading...</div>;
 
@@ -26,44 +32,78 @@ export default function Flow({
   }, {} as Record<string, typeof stats>);
 
   return (
-    <StyledContainer className="rounded-lg overflow-hidden m-2 p-5">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Custodies Flows</h2>
-        <select
-          onChange={(e) => {
-            const value = e.target.value;
-            const date = new Date();
-            switch (value) {
-              case 'all-time':
-                setStartDate('2020-01-01T00:00:00Z');
-                break;
-              case 'last-month':
-                date.setMonth(date.getMonth() - 1);
-                setStartDate(date.toISOString());
-                break;
-              case 'last-week':
-                date.setDate(date.getDate() - 7);
-                setStartDate(date.toISOString());
-                break;
-              case 'yesterday':
-                date.setDate(date.getDate() - 1);
-                setStartDate(date.toISOString());
-                break;
-              default:
-                break;
-            }
-          }}
-          className="px-4 py-2 bg-[#050D14] rounded hover:bg-[#0a1721]"
-        >
-          <option value="all-time">All Time</option>
-          <option value="last-month">Last Month</option>
-          <option value="last-week">Last Week</option>
-          <option value="yesterday">Yesterday</option>
-        </select>
+    <StyledContainer className="rounded-lg overflow-hidden m-2 p-5 flex flex-wrap">
+      <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between items-center">
+        <h2 className="text-xl font-bold">Flows Monitoring</h2>
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-secondary border border-gray-600 rounded p-2">
+          {selectedRange === 'custom' && (
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <DatePicker
+                selected={new Date(startDate)}
+                onChange={(date: Date | null) => {
+                  if (date) {
+                    setStartDate(date.toISOString());
+                  }
+                }}
+                className="px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+                minDate={new Date('2023-09-25')}
+                maxDate={new Date()}
+              />
+              <DatePicker
+                selected={new Date(endDate)}
+                onChange={(date: Date | null) => {
+                  if (date) {
+                    setEndDate(date.toISOString());
+                  }
+                }}
+                className="px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+                minDate={new Date('2023-09-25')}
+                maxDate={new Date()}
+              />
+            </div>
+          )}
+          <select
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedRange(value);
+              const date = new Date();
+              setEndDate(date.toISOString());
+              switch (value) {
+                case 'all-time':
+                  setStartDate('2024-10-25T00:00:00Z');
+                  break;
+                case 'last-month':
+                  date.setMonth(date.getMonth() - 1);
+                  setStartDate(date.toISOString());
+                  break;
+                case 'last-week':
+                  date.setDate(date.getDate() - 7);
+                  setStartDate(date.toISOString());
+                  break;
+                case 'yesterday':
+                  date.setDate(date.getDate() - 1);
+                  setStartDate(date.toISOString());
+                  break;
+                case 'custom':
+                  // Handle custom range selection
+                  break;
+                default:
+                  break;
+              }
+            }}
+            className="bg-secondary rounded hover:bg-[#0a1721]"
+          >
+            <option value="all-time">All Time</option>
+            <option value="last-month">Last Month</option>
+            <option value="last-week">Last Week</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="custom">Custom Range</option>
+          </select>
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="flex flex-wrap w-full gap-4">
         {Object.entries(groupedStats).map(([symbol, symbolStats]) => (
-          <div key={symbol} className="p-4 border rounded bg-[#050D14]">
+          <div key={symbol} className="p-4 border rounded bg-[#050D14] flex-grow">
             <h3 className="font-semibold flex items-center gap-2">
               <Image
                 src={custodies?.find((c) => c.tokenInfo.symbol.toLocaleLowerCase() === symbol.toLowerCase())?.tokenInfo.image || ''}
@@ -74,104 +114,104 @@ export default function Flow({
               {symbol}
             </h3>
             {symbolStats.map((stat, _index) => (
-              <div key={stat.side} className={'mt-2'}>
+              <div key={stat.side} className="mt-2">
                 <h4 className={`font-semibold ${stat.side === 'long' ? 'text-green' : 'text-red'}`}>{stat.side}</h4>
-                <div className="flex justify-between text-txtfade">
-                  <span>Positions count:</span>
-                  <FormatNumber
-                    nb={stat.count_positions}
-                    precision={0}
-                    minimumFractionDigits={0}
-                  />
-                </div>
-                <div className="flex justify-between text-txtfade">
-                  <span>Total PnL over the period:</span>
-                  <FormatNumber
-                    nb={stat.total_pnl}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                    className={stat.total_pnl < 0 ? 'text-red' : 'text-green'}
-                    isDecimalDimmed={false}
-                  />
-                </div>
-                <div className="flex justify-between text-txtfade">
-                  <span>Average PnL:</span>
-                  <FormatNumber
-                    nb={stat.average_pnl}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                    className={stat.average_pnl < 0 ? 'text-red' : 'text-green'}
-                    isDecimalDimmed={false}
-                  />
-                </div>
-                <div className="flex justify-between text-txtfade">
-                  <span>Worst PnL:</span>
-                  <FormatNumber
-                    nb={stat.min_pnl}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                    className={stat.min_pnl < 0 ? 'text-red' : 'text-green'}
-                    isDecimalDimmed={false}
-                  />
-                </div>
-                <div className="flex justify-between text-txtfade">
-                  <span>Best PnL:</span>
-                  <FormatNumber
-                    nb={stat.max_pnl}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                    className={stat.max_pnl < 0 ? 'text-red' : 'text-green'}
-                    isDecimalDimmed={false}
-                  />
-                </div>
-                <div className="flex justify-between text-txtfade">
-                  <span>Total Trade Volume:</span>
-                  <FormatNumber
-                    nb={stat.total_volume}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                  />
-                </div>
-                <div className="h-[1px] bg-third my-2" />
-                <div className="flex justify-between text-txtfade">
-                  <span>Smallest Trade Size:</span>
-                  <FormatNumber
-                    nb={stat.min_volume}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                  />
-                </div>
-                <div className="flex justify-between text-txtfade">
-                  <span>Biggest Trade Size:</span>
-                  <FormatNumber
-                    nb={stat.max_volume}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                  />
-                </div>
-                <div className="flex justify-between text-txtfade">
-                  <span>Average Trade Size:</span>
-                  <FormatNumber
-                    nb={stat.average_volume}
-                    precision={2}
-                    minimumFractionDigits={2}
-                    prefix='$'
-                    showSignBeforePrefix={true}
-                  />
+                <div className="ml-4">
+                  <div className="flex justify-between text-txtfade">
+                    <span>Positions count:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.count_positions}
+                      precision={0}
+                      minimumFractionDigits={0}
+                    />
+                  </div>
+                  <div className="flex justify-between text-txtfade">
+                    <span className="text-txtfade">Total PnL over the period:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.total_pnl}
+                      precision={2}
+                      minimumFractionDigits={2}
+                      prefix="$"
+                      showSignBeforePrefix={true}
+                      className={twMerge("opacity-80", stat.total_pnl < 0 ? 'text-red' : 'text-green')}
+                      isDecimalDimmed={false}
+                    />
+                  </div>
+                  <div className="flex justify-between text-txtfade">
+                    <span className="text-txtfade">Worst PnL:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.min_pnl}
+                      precision={2}
+                      minimumFractionDigits={2}
+                      prefix="$"
+                      showSignBeforePrefix={true}
+                      className={twMerge("opacity-80", stat.min_pnl < 0 ? 'text-red' : 'text-green')}
+                      isDecimalDimmed={false}
+                    />
+                  </div>
+                  <div className="flex justify-between text-txtfade">
+                    <span className="text-txtfade">Best PnL:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.max_pnl}
+                      precision={2}
+                      minimumFractionDigits={2}
+                      prefix="$"
+                      showSignBeforePrefix={true}
+                      className={twMerge("opacity-80", stat.max_pnl < 0 ? 'text-red' : 'text-green')}
+                      isDecimalDimmed={false}
+                    />
+                  </div>
+                  <div className="flex justify-between text-txtfade">
+                    <span>Total Trade Volume:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.total_volume}
+                      precision={2}
+                      minimumFractionDigits={2}
+                      prefix="$"
+                      showSignBeforePrefix={true}
+                    />
+                  </div>
+                  <div className="h-[1px] bg-third my-2" />
+                  <div className="flex justify-between text-txtfade">
+                    <span className="text-txtfade">Smallest Trade Size:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.min_volume}
+                      precision={2}
+                      minimumFractionDigits={2}
+                      prefix="$"
+                      showSignBeforePrefix={true}
+                      className="text-txtfade"
+                    />
+                  </div>
+                  <div className="flex justify-between text-txtfade">
+                    <span className="text-txtfade">Biggest Trade Size:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.max_volume}
+                      precision={2}
+                      minimumFractionDigits={2}
+                      prefix="$"
+                      showSignBeforePrefix={true}
+                      className="text-txtfade"
+                    />
+                  </div>
+                  <div className="flex justify-between text-txtfade">
+                    <span>Average Trade Size:</span>
+                    <span className="flex-grow border-b border-dotted mx-1 opacity-30 mb-1"></span>
+                    <FormatNumber
+                      nb={stat.average_volume}
+                      precision={2}
+                      minimumFractionDigits={2}
+                      prefix="$"
+                      showSignBeforePrefix={true}
+                    />
+                  </div>
                 </div>
               </div>
             ))}

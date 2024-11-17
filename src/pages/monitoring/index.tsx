@@ -84,7 +84,7 @@ export default function Monitoring(pageProps: PageProps) {
 
       <div className="mx-auto mt-2 flex flex-col bg-main border rounded-xl z-10 p-1 px-3 select-none">
         <div
-          className='flex items-center justify-evenly w-[20em] ml-auto mr-auto'
+          className='flex items-center justify-evenly w-[22em] ml-auto mr-auto'
 
         >
           <span

@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { getTokenSymbol } from '@/utils';
-
 interface PositionStats {
     side: string;
     symbol: string;
@@ -20,11 +18,12 @@ export default function usePositionStats() {
     const [data, setData] = useState<PositionStats[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [startDate, setStartDate] = useState<string>('2024-10-25T00:00:00Z');
+    const [endDate, setEndDate] = useState<string>(new Date().toISOString());
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const url = `https://datapi.adrena.xyz/position-stats?start_date=${encodeURIComponent(startDate)}`;
+                const url = `https://datapi.adrena.xyz/position-stats?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`;
                 const response = await fetch(url);
                 const result = await response.json();
                 const positionStats = result.data.position_stats;
@@ -62,7 +61,7 @@ export default function usePositionStats() {
         }
 
         fetchData();
-    }, [startDate]);
+    }, [startDate, endDate]);
 
-    return { data, loading, setStartDate };
+    return { data, loading, startDate, setStartDate, endDate, setEndDate };
 }
