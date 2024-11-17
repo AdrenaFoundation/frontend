@@ -159,6 +159,35 @@ export default function StopLossTakeProfitInput({
     return parseFloat(adjustedPrice.toFixed(precision));
   };
 
+  const adjustInputByPercentage = (percentage: number, isStopLoss: boolean) => {
+    if (infos) {
+      const baseValue = {
+        long: isStopLoss ? infos.max : infos.min,
+        short: isStopLoss ? infos.min : infos.max,
+      }[position.side];
+
+      if (baseValue !== null) {
+        let newValue: number;
+
+        if (position.side === 'long') {
+          newValue = baseValue * (isStopLoss ? (1 + percentage / 100) : (1 + percentage / 100));
+        } else { // short position
+          newValue = baseValue * (isStopLoss ? (1 + percentage / 100) : (1 + percentage / 100));
+        }
+
+        // Clip the newValue to min/max
+        if (isStopLoss) {
+          newValue = Math.max(newValue, 0); // Stop loss min is 0
+        } else {
+          if (infos.min !== null) newValue = Math.max(newValue, infos.min);
+        }
+        if (infos.max !== null) newValue = Math.min(newValue, infos.max);
+
+        handleSetInput(newValue);
+      }
+    }
+  };
+
   if (!infos) return null;
 
   const { min, max, priceIsOk, priceChangePnL } = infos;
@@ -168,6 +197,11 @@ export default function StopLossTakeProfitInput({
   const isPositive = priceChangePnL != null && priceChangePnL > 0;
 
   const displayColor = isPositive ? 'text-green' : 'text-red';
+
+  const percentages = [0.1, 0.25, 0.5, 1, 5];
+  const isStopLoss = type === 'Stop Loss';
+  const isLong = position.side === 'long';
+  const isNegative = (isLong && isStopLoss) || (!isLong && !isStopLoss);
 
   return (
     <div className="flex flex-col w-full">
@@ -199,14 +233,34 @@ export default function StopLossTakeProfitInput({
         ) : null}
       </div>
 
-      <div className="flex flex-col items-center justify-center w-full pl-6 pr-6 gap-2">
+      <div className="flex flex-col items-center justify-center w-full pl-6 pr-6 gap-0">
+        <div className="flex gap-1 mb-1 justify-center items-center">
+          <span className="text-xs text-txtfade">Price moves:</span>
+          {percentages.map((percent) => {
+            const sign = isNegative ? '-' : '+';
+
+            return (
+              <button
+                key={percent}
+                className={twMerge(
+                  "bg-inputcolor rounded px-1 py-0 text-xs hover:bg-inputcolor/80",
+                  sign === '-' ? "text-red" : "text-green"
+                )}
+                onClick={() => adjustInputByPercentage(isNegative ? -percent : percent, isStopLoss)}
+              >
+                {sign}{percent}%
+              </button>
+            );
+          })}
+        </div>
+
         <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 grow text-sm w-full relative">
           <InputNumber
             value={input === null ? undefined : input}
             placeholder="none"
             className="font-mono border-0 outline-none bg-transparent flex text-center"
             onChange={setInput}
-            onBlur={handleBlur} // Now enforces max two decimals on blur
+            onBlur={handleBlur}
             inputFontSize="1em"
           />
 
