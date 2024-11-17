@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import Button from '@/components/common/Button/Button';
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import Pagination from '@/components/common/Pagination/Pagination';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import LockedStakedElement from '@/components/pages/stake/LockedStakedElement';
 import { LockedStakeExtended } from '@/types';
-import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 
 export default function StakesStats({
   liquidStakedADX,

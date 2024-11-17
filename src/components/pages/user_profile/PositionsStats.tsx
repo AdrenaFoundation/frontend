@@ -1,9 +1,10 @@
+import { ReactNode } from 'react';
+
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 
 import Positions from '../trading/Positions/Positions';
-import { ReactNode } from 'react';
 
 export default function PositionsStats({
   connected,
