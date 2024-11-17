@@ -10,7 +10,7 @@ import { PageProps } from '@/types';
 
 import jupIcon from '../../../public/images/jup-logo.png';
 
-export default function BuyADX({ connected, activeRpc }: PageProps) {
+export default function BuyADX({ }: PageProps) {
   return (
     <div className="px-7">
       <div className="relative flex flex-col justify-center items-start w-full  mb-[150px] sm:mb-0">

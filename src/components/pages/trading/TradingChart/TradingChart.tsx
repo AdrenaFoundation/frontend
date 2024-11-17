@@ -3,6 +3,7 @@ import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import { SUPPORTED_RESOLUTIONS } from '@/constant';
 import { PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
 
@@ -211,7 +212,7 @@ export default function TradingChart({
     }
 
     // Handle Take Profit
-    if (!position.takeProfitThreadIsSet || !position.takeProfitLimitPrice) {
+    if (!position.takeProfitIsSet || !position.takeProfitLimitPrice) {
       if (positionLine.takeProfit) {
         positionLine.takeProfit.remove();
         positionLine.takeProfit = undefined;
@@ -225,7 +226,7 @@ export default function TradingChart({
     }
 
     // Handle Stop Loss
-    if (!position.stopLossThreadIsSet || !position.stopLossLimitPrice) {
+    if (!position.stopLossIsSet || !position.stopLossLimitPrice) {
       if (positionLine.stopLoss) {
         positionLine.stopLoss.remove();
         positionLine.stopLoss = undefined;
@@ -278,6 +279,7 @@ export default function TradingChart({
             'header_fullscreen_button',
             'header_settings',
           ],
+
           custom_css_url: '/tradingview.css',
           overrides: {
             'paneProperties.background': '#171B26',
@@ -291,7 +293,11 @@ export default function TradingChart({
             'mainSeriesProperties.priceLineColor': 'yellow',
           },
           theme: 'dark',
-          interval: savedResolution as ResolutionString,
+          interval: SUPPORTED_RESOLUTIONS.includes(
+            savedResolution as ResolutionString,
+          )
+            ? savedResolution as ResolutionString
+            : '1D' as ResolutionString,
           custom_formatters: {
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
@@ -315,7 +321,9 @@ export default function TradingChart({
               .split('.')[1]
               .split('/')[0] as TokenSymbol;
 
-            drawings[symbol] = allShapes.map((shape) => {
+            const copiedDrawings = { ...drawings };
+
+            copiedDrawings[symbol] = allShapes.map((shape) => {
               return {
                 id: shape.id,
                 name: shape.name as Exclude<
@@ -332,9 +340,7 @@ export default function TradingChart({
               };
             });
 
-            const copiedDrawings = { ...drawings };
-
-            setDrawings(drawings);
+            setDrawings(copiedDrawings);
 
             localStorage.setItem(
               'chart_shapes',
@@ -347,6 +353,10 @@ export default function TradingChart({
             .activeChart()
             .onIntervalChanged()
             .subscribe(null, (newInterval: ResolutionString) => {
+              if (!SUPPORTED_RESOLUTIONS.includes(newInterval)) {
+                localStorage.setItem(STORAGE_KEY_RESOLUTION, '1D');
+                return;
+              }
               localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
             });
         });
@@ -389,14 +399,33 @@ export default function TradingChart({
         .split('/')[0] as TokenSymbol;
 
       const savedDrawings = drawings[symbol];
+      const currentShapes = widget
+        .activeChart()
+        .getAllShapes()
+        .map(({ id }) => id);
+
       if (savedDrawings && savedDrawings.length > 0) {
-        savedDrawings.forEach(({ name, points }) => {
+        savedDrawings.forEach(({ id, name, points }) => {
+          if (points.length === 0) {
+            localStorage.setItem(
+              'chart_shapes',
+              JSON.stringify({
+                ...drawings,
+                [symbol]: [],
+              }),
+            );
+            return;
+          }
+
+          if (currentShapes.includes(id)) return;
+
           widget.activeChart().createMultipointShape(points, {
             shape: name,
           });
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [widgetReady]);
 
   // When the token changes, we need to change the symbol of the widget so we only reload the chart
@@ -463,13 +492,13 @@ export default function TradingChart({
                 : undefined,
               position: longPosition.pubkey,
               takeProfit:
-                longPosition.takeProfitThreadIsSet &&
+                longPosition.takeProfitIsSet &&
                   longPosition.takeProfitLimitPrice &&
                   longPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, longPosition)
                   : undefined,
               stopLoss:
-                longPosition.stopLossThreadIsSet &&
+                longPosition.stopLossIsSet &&
                   longPosition.stopLossLimitPrice &&
                   longPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, longPosition)
@@ -501,13 +530,13 @@ export default function TradingChart({
                 : undefined,
               position: shortPosition.pubkey,
               takeProfit:
-                shortPosition.takeProfitThreadIsSet &&
+                shortPosition.takeProfitIsSet &&
                   shortPosition.takeProfitLimitPrice &&
                   shortPosition.takeProfitLimitPrice > 0
                   ? createTakeProfitPositionLine(chart, shortPosition)
                   : undefined,
               stopLoss:
-                shortPosition.stopLossThreadIsSet &&
+                shortPosition.stopLossIsSet &&
                   shortPosition.stopLossLimitPrice &&
                   shortPosition.stopLossLimitPrice > 0
                   ? createStopLossPositionLine(chart, shortPosition)

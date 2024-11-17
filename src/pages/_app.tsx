@@ -23,11 +23,11 @@ import usePositions from '@/hooks/usePositions';
 import useRpc from '@/hooks/useRPC';
 import useUserProfile from '@/hooks/useUserProfile';
 import useWallet from '@/hooks/useWallet';
+import useWalletAdapters from '@/hooks/useWalletAdapters';
 import useWatchTokenPrices from '@/hooks/useWatchTokenPrices';
 import useWatchWalletBalance from '@/hooks/useWatchWalletBalance';
 import initializeApp, {
   createReadOnlyAdrenaProgram,
-  createReadOnlySablierThreadProgram,
 } from '@/initializeApp';
 import { IDL as ADRENA_IDL } from '@/target/adrena';
 import { PriorityFeeOption, SolanaExplorerOptions } from '@/types';
@@ -58,7 +58,7 @@ function Loader(): JSX.Element {
 // initalized once, doesn't move afterwards.
 // actually twice, once on the server to `null` & once on the client.
 const CONFIG = initConfig();
-const PYTH_CONNECTION =
+export const PYTH_CONNECTION =
   CONFIG && new Connection(CONFIG.pythnetRpc.url, 'processed');
 
 // Load cluster from URL then load the config and initialize the app.
@@ -172,7 +172,8 @@ function AppComponent({
   const router = useRouter();
   const mainPool = useMainPool();
   const custodies = useCustodies(mainPool);
-  const wallet = useWallet();
+  const adapters = useWalletAdapters();
+  const wallet = useWallet(adapters);
   const positions = usePositions();
   const { userProfile, triggerUserProfileReload } = useUserProfile();
 
@@ -259,10 +260,6 @@ function AppComponent({
       createReadOnlyAdrenaProgram(activeRpc.connection),
     );
 
-    window.adrena.sablierClient.setReadonlySablierProgram(
-      createReadOnlySablierThreadProgram(activeRpc.connection),
-    );
-
     if (wallet) {
       window.adrena.client.setAdrenaProgram(
         new Program(
@@ -316,6 +313,7 @@ function AppComponent({
         setCustomRpcUrl={setCustomRpcUrl}
         setFavoriteRpc={setFavoriteRpc}
         preferredSolanaExplorer={preferredSolanaExplorer}
+        adapters={adapters}
       >
         {
           <TermsAndConditionsModal
@@ -359,6 +357,7 @@ function AppComponent({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           preferredSolanaExplorer={preferredSolanaExplorer}
+          adapters={adapters}
         />
       </RootLayout>
     </>

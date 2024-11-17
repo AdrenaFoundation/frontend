@@ -3,7 +3,6 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { Connection, TransactionError } from '@solana/web3.js';
 import React, { useEffect } from 'react';
 
-import { walletAdapters } from '@/constant';
 import { useSelector } from '@/store/store';
 import { addFailedTxNotification, addSuccessTxNotification } from '@/utils';
 
@@ -29,10 +28,9 @@ export default function IntegratedTerminalChild({
 
   useEffect(() => {
     if (connected && walletState?.adapterName) {
-      const adapter = walletAdapters[walletState.adapterName];
-
-      passthroughWalletContextState.select(adapter.name as WalletName);
+      passthroughWalletContextState.select(walletState.adapterName as WalletName);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected, walletState]);
 
   useEffect(() => {
@@ -59,11 +57,13 @@ export default function IntegratedTerminalChild({
         });
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRpc.name]);
 
   useEffect(() => {
     if (!window.Jupiter.syncProps) return;
     window.Jupiter.syncProps({ passthroughWalletContextState });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passthroughWalletContextState.connected, connected]);
 
   return (

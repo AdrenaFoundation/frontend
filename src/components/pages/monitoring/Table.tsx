@@ -1,5 +1,5 @@
 import { Pagination } from '@mui/material';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledSubSubContainer from '@/components/common/StyledSubSubContainer/StyledSubSubContainer';
@@ -16,10 +16,13 @@ export default function Table({
   columnTitlesClassName,
   rowTitleClassName,
   columnWrapperClassName,
+  paginationClassName,
   pagination = false,
   nbItemPerPage = 10,
   nbItemPerPageWhenBreakpoint = 2,
   rowHovering = false,
+  rowClassName,
+  isFirstColumnId = false,
 }: {
   breakpoint?: string | null;
   className?: string;
@@ -39,9 +42,12 @@ export default function Table({
   )[];
   rowTitleWidth?: string;
   pagination?: boolean;
+  paginationClassName?: string;
   nbItemPerPage?: number;
   nbItemPerPageWhenBreakpoint?: number;
   rowHovering?: boolean;
+  rowClassName?: string;
+  isFirstColumnId?: boolean;
 }) {
   const isBreakpoint = useBetterMediaQuery(
     `(max-width: ${breakpoint ?? '800px'})`,
@@ -104,6 +110,9 @@ export default function Table({
               'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 uppercase text-txtfade',
               columnTitlesClassName,
             )}
+            style={{
+              maxWidth: (isFirstColumnId && i == 0) ? '75px' : 'auto'
+            }}
           >
             {title}
           </div>
@@ -118,6 +127,7 @@ export default function Table({
             rowHovering
               ? 'hover:bg-secondary hover:border-bcolor rounded-lg transition duration-300'
               : '',
+            rowClassName,
           )}
         >
           <div
@@ -140,7 +150,7 @@ export default function Table({
                 className="p-[0.3em] flex grow flex-shrink-0 basis-0"
                 style={{
                   // must limit here otherwise ChartJS chart can't resize well
-                  maxWidth: `calc(100% - ${rowTitleWidth ?? '150px'})`,
+                  maxWidth: (isFirstColumnId && j == 0) ? '75px' : `calc(100% - ${rowTitleWidth ?? '150px'})`,
                 }}
               >
                 {value}
@@ -150,9 +160,10 @@ export default function Table({
         </div>
       ))}
 
-      {pagination && nbPages && (
-        <div className='m-auto pt-3'>
+      {pagination && nbPages && nbPages > 1 && (
+        <div className='mt-auto pt-2'>
           <Pagination
+            className={paginationClassName}
             variant="text"
             count={nbPages}
             page={page}
@@ -171,9 +182,10 @@ export default function Table({
         className={className}
       />
 
-      {pagination && nbPages && (
-        <div className='m-auto py-3'>
+      {pagination && nbPages && nbPages > 1 && (
+        <div className='m-auto py-2'>
           <Pagination
+            className={paginationClassName}
             variant="text"
             count={nbPages}
             page={page}

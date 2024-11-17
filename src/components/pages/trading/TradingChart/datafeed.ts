@@ -1,5 +1,7 @@
+import { SUPPORTED_RESOLUTIONS } from '@/constant';
+
 import {
-  ErrorCallback,
+  DatafeedErrorCallback,
   HistoryCallback,
   IBasicDataFeed,
   LibrarySymbolInfo,
@@ -23,6 +25,7 @@ const datafeed: IBasicDataFeed = {
 
     fetch(`${API_ENDPOINT}/config`).then((response) => {
       response.json().then((configurationData) => {
+        configurationData.supported_resolutions = SUPPORTED_RESOLUTIONS;
         setTimeout(() => callback(configurationData));
       });
     });
@@ -44,7 +47,7 @@ const datafeed: IBasicDataFeed = {
   resolveSymbol: (
     symbolName: string,
     onSymbolResolvedCallback: ResolveCallback,
-    onResolveErrorCallback: ErrorCallback,
+    onResolveErrorCallback: DatafeedErrorCallback,
   ) => {
     console.log('[resolveSymbol]: Method call', symbolName);
 
@@ -69,7 +72,7 @@ const datafeed: IBasicDataFeed = {
     resolution: ResolutionString,
     periodParams: PeriodParams,
     onHistoryCallback: HistoryCallback,
-    onErrorCallback: ErrorCallback,
+    onErrorCallback: DatafeedErrorCallback,
   ) => {
     const { from, to, firstDataRequest } = periodParams;
 

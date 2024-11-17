@@ -18,7 +18,6 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import RefreshButton from '@/components/RefreshButton/RefreshButton';
 import { PRICE_DECIMALS, RATE_DECIMALS, USD_DECIMALS } from '@/constant';
 import { useDebounce } from '@/hooks/useDebounce';
-import usePriorityFee from '@/hooks/usePriorityFees';
 import { useDispatch, useSelector } from '@/store/store';
 import { CustodyExtended, PositionExtended, Token } from '@/types';
 import {
@@ -221,7 +220,6 @@ export default function LongShortTradingInputs({
       });
     }
 
-
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
     if (!tokenAPrice) {
@@ -231,7 +229,7 @@ export default function LongShortTradingInputs({
         message: `Missing ${tokenA.symbol} price`,
       });
     }
-    if (tokenAPrice) {
+    if (tokenAPrice && !openedPosition) {
       const collateralValue = inputA * tokenAPrice;
       if (collateralValue < 9.5) {
         return addNotification({
@@ -273,8 +271,6 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          existingPosition: maybeZombiePosition,
-
         })
         : window.adrena.client.openOrIncreasePositionWithSwapShort({
           owner: new PublicKey(wallet.publicKey),
@@ -284,8 +280,6 @@ export default function LongShortTradingInputs({
           collateralAmount,
           leverage: uiLeverageToNative(leverage),
           notification,
-          existingPosition: maybeZombiePosition,
-
         }));
 
       triggerWalletTokenBalancesReload();
@@ -473,7 +467,7 @@ export default function LongShortTradingInputs({
 
     // Check for minimum collateral value
     const tokenAPrice = tokenPrices[tokenA.symbol];
-    if (tokenAPrice) {
+    if (tokenAPrice && !openedPosition) {
       const collateralValue = inputA * tokenAPrice;
       if (collateralValue < 9.5) {
         return setErrorMessage('Collateral value must be at least $10');
@@ -492,13 +486,19 @@ export default function LongShortTradingInputs({
       return setErrorMessage(`Missing ${getTokenSymbol(tokenB.symbol)} price`);
     }
 
-    const projectedSizeUsd = inputB * tokenPriceBTrade;
+    const projectedSize = openedPosition ? (inputB - openedPosition.size) : inputB;
+    // In the case of an increase, this is different from the fullProjectedSizeUsd
+    const projectedSizeUsd = projectedSize * tokenPriceBTrade;
+    const fullProjectedSizeUsd = inputB * tokenPriceBTrade;
 
-    if (projectedSizeUsd > custody.maxPositionLockedUsd)
+    if (side === "long" && fullProjectedSizeUsd > custody.maxPositionLockedUsd)
+      return setErrorMessage(`Position Exceeds Max Size`);
+
+    if (side === "short" && usdcCustody && projectedSizeUsd > usdcCustody.maxPositionLockedUsd)
       return setErrorMessage(`Position Exceeds Max Size`);
 
     // If custody doesn't have enough liquidity, tell user
-    if (side === 'long' && inputB > custody.liquidity)
+    if (side === 'long' && projectedSize > custody.liquidity)
       return setErrorMessage(`Insufficient ${tokenB.symbol} liquidity`);
 
     if (side === 'short' && usdcCustody) {
@@ -510,17 +510,7 @@ export default function LongShortTradingInputs({
     }
 
     return setErrorMessage(null);
-  }, [
-    usdcCustody,
-    inputA,
-    inputB,
-    tokenA.symbol,
-    tokenB,
-    tokenPriceBTrade,
-    tokenPrices,
-    walletTokenBalances,
-    connected,
-  ]);
+  }, [usdcCustody, inputA, inputB, tokenA.symbol, tokenB, tokenPriceBTrade, tokenPrices, walletTokenBalances, connected, side, availableLiquidityShort]);
 
   const handleInputAChange = (v: number | null) => {
     console.log('handleInputAChange', v);
@@ -552,7 +542,7 @@ export default function LongShortTradingInputs({
             alt="Info icon"
           />
           <span className="text-sm" >
-            Short position have a max PnL of 100%, equivalent to the borrowed USDC. <br />More about the peer2pool perp model
+            Short positions have a maximum absolute PnL of the borrowed USDC amount (a.k.a. position size). <br />More about the peer2pool perp model
             <Link href="https://docs.adrena.xyz/technical-documentation/peer-to-pool-perp-model-and-the-risks-as-a-liquidity-provider" className="underline ml-1 text-sm" target='_blank'>
               in the docs
             </Link>
@@ -623,7 +613,7 @@ export default function LongShortTradingInputs({
 
           <LeverageSlider
             value={leverage}
-            className="w-full font-mono border-t"
+            className="w-full font-mono border-t select-none"
             onChange={(v: number) => setLeverage(v)}
           />
         </div>
@@ -719,9 +709,10 @@ export default function LongShortTradingInputs({
 
             <FormatNumber
               nb={
-                custody && custody.maxPositionLockedUsd
-                  ? custody.maxPositionLockedUsd
-                  : null
+                side === 'long' ?
+                  custody && custody.maxPositionLockedUsd
+                    ? custody.maxPositionLockedUsd
+                    : null : usdcCustody?.maxPositionLockedUsd ?? null
               }
               format="currency"
               className="text-txtfade text-xs ml-1"

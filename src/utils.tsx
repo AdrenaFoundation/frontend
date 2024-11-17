@@ -89,10 +89,8 @@ export function formatNumber(
   minimumFractionDigits = 0,
   precisionIfPriceDecimalsBelow = 6,
 ): string {
-  // Determine the absolute value for precision checks
-  const absNb = Math.abs(nb);
   // If price is below decimals precision, display up to 6 decimals (override by minimumFractionDigits)
-  if (absNb < 10 ** -precision) precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
+  if (Math.abs(nb) < 10 ** -precision) precision = Math.max(precisionIfPriceDecimalsBelow, minimumFractionDigits);
 
   return Number(nb.toFixed(precision)).toLocaleString(undefined, {
     minimumFractionDigits,
@@ -792,3 +790,29 @@ export const getCustodyByMint = async (mint: string) => {
   );
   return custody;
 };
+
+export const getDaysBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+}
+
+export const getHoursBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor(
+    (diffTime %
+      (1000 * 60 * 60 * 24)) /
+    (1000 * 60 * 60),
+  );
+}
+
+export const getMinutesBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor(
+    (diffTime % (1000 * 60 * 60)) / (1000 * 60),
+  );
+}
+
+export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.floor((diffTime % (1000 * 60)) / 1000);
+}

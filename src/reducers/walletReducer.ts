@@ -1,4 +1,4 @@
-import { WalletAdapterName } from '@/types';
+import { WalletAdapterName } from '@/hooks/useWalletAdapters';
 
 import { WalletAction } from '../actions/walletActions';
 

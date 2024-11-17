@@ -22,6 +22,7 @@ interface FormatNumberProps {
   isAbbreviate?: boolean;
   info?: number | string | null;
   showSignBeforePrefix?: boolean;
+  isAbbreviateIcon?: boolean;
 }
 
 const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
@@ -44,6 +45,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       isAbbreviate = false,
       info = null,
       showSignBeforePrefix = false,
+      isAbbreviateIcon = true,
     },
     ref,
   ) => {
@@ -110,7 +112,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
 
     const nbDiv = (
       <p ref={ref} className={twMerge('font-mono inline-block', className)}>
-        {isAbbreviate && '≈ '}
+        {isAbbreviate && isAbbreviateIcon && '~'}
         {showSignBeforePrefix && sign}
         {prefix}
         {integer}

@@ -24,7 +24,7 @@ import useCountDown from '@/hooks/useCountDown';
 import { useDebounce } from '@/hooks/useDebounce';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
-import { GenesisLock, PageProps, SolanaExplorerOptions } from '@/types';
+import { GenesisLock, PageProps, SolanaExplorerOptions, WalletAdapterExtended } from '@/types';
 import { formatNumber, formatPriceInfo, nativeToUi, uiToNative } from '@/utils';
 
 import adrenaMonsters from '../../../public/images/adrena-monsters.png';
@@ -50,6 +50,7 @@ export default function Genesis({
   setCustomRpcUrl,
   setFavoriteRpc,
   preferredSolanaExplorer,
+  adapters,
 }: PageProps & {
   activeRpc: {
     name: string;
@@ -67,6 +68,7 @@ export default function Genesis({
   setCustomRpcUrl: (customRpcUrl: string | null) => void;
   setFavoriteRpc: (favoriteRpc: string) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const { wallet } = useSelector((s) => s.walletState);
   const tokenPrices = useSelector((s) => s.tokenPrices);
@@ -106,6 +108,7 @@ export default function Genesis({
 
   useEffect(() => {
     getAlpAmount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fundsAmountDebounced]);
 
   useEffect(() => {
@@ -136,6 +139,7 @@ export default function Genesis({
 
   useEffect(() => {
     getTotalLockedStake();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingAccounts, connected]);
 
   const getTotalLockedStake = () => {
@@ -233,7 +237,6 @@ export default function Genesis({
         await window.adrena.client.initUserStaking({
           owner: new PublicKey(wallet.walletAddress),
           stakedTokenMint: window.adrena.client.alpToken.mint,
-          threadId: new BN(Date.now()),
           notification,
         });
       } catch (error) {
@@ -294,12 +297,6 @@ export default function Genesis({
   const url = 'https://app.adrena.xyz/genesis';
 
   const MAX_USDC_AMOUNT = 250_000;
-
-  const maxAmount = walletTokenABalance
-    ? walletTokenABalance >= MAX_USDC_AMOUNT
-      ? MAX_USDC_AMOUNT
-      : walletTokenABalance
-    : null;
 
   const reservedGrantOwnerLeftAmount = reservedGrantOwners?.find(
     (owner) => owner.walletAddress === wallet?.walletAddress,
@@ -619,7 +616,7 @@ export default function Genesis({
                     isIcon
                     isGenesis
                   />
-                  <WalletAdapter userProfile={userProfile} />
+                  <WalletAdapter userProfile={userProfile} adapters={adapters} />
                 </div>
 
                 {hasCampaignEnded ? (

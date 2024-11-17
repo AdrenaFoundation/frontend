@@ -33,6 +33,7 @@ export default async function handler(request: NextRequest) {
         hour: 'numeric',
     });
     const opt = Number(searchParams.get('opt') || '2');
+    const exitPrice = Number(searchParams.get('exitPrice'));
 
     const OPTIONS = [
         {
@@ -74,19 +75,25 @@ export default async function handler(request: NextRequest) {
     return new ImageResponse(
         (
             <div tw="relative flex flex-col items-start p-[50px] w-full h-full bg-[#061018] overflow-hidden">
-                <img
-                    src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/logo.svg"
-                    alt="Adrena Logo"
-                    tw="w-[150px] mt-[10px]"
-                />
+                {
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        src="https://iyd8atls7janm7g4.public.blob.vercel-storage.com/logo.svg"
+                        alt="Adrena Logo"
+                        tw="w-[150px] mt-[10px]"
+                    />
+                }
 
                 <div tw="flex flex-row items-center relative mt-[20px]">
                     <div tw="flex flex-row items-center">
-                        <img
-                            src={TOKEN_SYMBOL[symbol]}
-                            alt="Adrena Logo"
-                            tw="w-[50px] h-[50px]"
-                        />
+                        {
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                src={TOKEN_SYMBOL[symbol]}
+                                alt="Adrena Logo"
+                                tw="w-[50px] h-[50px]"
+                            />
+                        }
 
                         <h2 tw="text-[60px] font-bold text-white archivo-black m-0 ml-2">
                             {symbol}
@@ -128,7 +135,7 @@ export default async function handler(request: NextRequest) {
                     </li>
                     <li tw="flex flex-col ml-6">
                         <span tw="opacity-50 text-[24px] font-semibold text-white">
-                            Mark Price
+                            {exitPrice ? 'Exit Price' : 'Mark Price'}
                         </span>
                         <span
                             tw={twMerge(
@@ -136,7 +143,7 @@ export default async function handler(request: NextRequest) {
                                 symbol === 'BONK' && 'text-[30px]',
                             )}
                         >
-                            ${nFormat.format(mark)}
+                            ${nFormat.format(exitPrice ? exitPrice : mark)}
                         </span>
                     </li>
                     <li tw="flex flex-col ml-6">
@@ -172,7 +179,10 @@ export default async function handler(request: NextRequest) {
                     tw="absolute top-[-200px] right-[-100px] w-[600px] h-[600px] rounded-full"
                 />
                 <div tw="absolute flex bottom-0 right-0">
-                    <img src={OPTIONS[opt].img} alt="Monster" tw="w-[400px]" />
+                    {
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={OPTIONS[opt].img} alt="Monster" tw="w-[400px]" />
+                    }
                 </div>
             </div>
         ),

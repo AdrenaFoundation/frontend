@@ -39,11 +39,13 @@ export default function Modal({
   children,
   close,
   className,
+  wrapperClassName,
 }: {
   title?: ReactNode;
   children: ReactNode;
   close: () => void;
   className?: string;
+  wrapperClassName?: string;
 }) {
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const controls = useDragControls();
@@ -51,6 +53,15 @@ export default function Modal({
   function startDrag(event: PointerEvent<Element> | PointerEvent) {
     controls.start(event);
   }
+
+  // disable scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   useEffect(() => {
     const handler = (evt: KeyboardEvent) => {
@@ -87,6 +98,7 @@ export default function Modal({
           className={twMerge(
             'min-w-20 min-h-20 z-[102] rounded-lg border bg-secondary  overflow-hidden flex flex-col items-center',
             !isMobile ? '-mt-[8%] mx-4' : 'mt-auto rounded-b-none w-full',
+            wrapperClassName,
           )}
           role="dialog"
           drag="y"
@@ -133,7 +145,10 @@ export default function Modal({
             )}
           </div>
 
-          <div className={className}>{children}</div>
+          <div className={twMerge('relative', className)}>{children} <div
+            className="sticky bottom-0 h-[30px] sm:h-0 w-full bg-gradient-to-b from-transparent to-secondary z-20"
+          /></div>
+
         </motion.div>
       </motion.div>
     </PortalContainer>

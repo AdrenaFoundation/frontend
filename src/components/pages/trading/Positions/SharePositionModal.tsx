@@ -26,7 +26,7 @@ import xIcon from '../../../../../public/images/x-black-bg.png';
 export default function SharePositionModal({
   position,
 }: {
-  position: PositionExtended;
+  position: PositionExtended & { exitPrice?: number };
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
   const [isPnlUsd, setIsPnlUsd] = useState(false);
@@ -86,6 +86,7 @@ export default function SharePositionModal({
       tokenPrices[getTokenSymbol(position.token.symbol)] ?? 0,
       2,
     ),
+    exitPrice: position?.exitPrice ?? 0,
     price: position.price,
     size: position.sizeUsd,
     opened: Number(position.nativeObject.openTime) * 1000,
@@ -112,7 +113,7 @@ export default function SharePositionModal({
               alt="Adrena Logo"
               height={20}
             />
-            <h2 className="archivo-black">
+            <h2 className="font-archivo">
               {getTokenSymbol(position.token.symbol)}
             </h2>
           </div>
@@ -125,7 +126,7 @@ export default function SharePositionModal({
           >
             <p
               className={twMerge(
-                'text-sm archivo-black capitalize',
+                'text-sm font-archivo capitalize',
                 position.side === 'long' ? 'text-[#49d7ad]' : 'text-red',
               )}
             >
@@ -138,7 +139,7 @@ export default function SharePositionModal({
           nb={isPnlUsd ? pnlUsd : pnlPercentage}
           format={isPnlUsd ? 'currency' : 'percentage'}
           className={twMerge(
-            'text-[60px] sm:text-[70px] archivo-black relative z-10',
+            'text-[60px] sm:text-[70px] font-archivo relative z-10',
             pnlPercentage && pnlPercentage < 99 && 'sm:text-[85px]',
             pnlPercentage && pnlPercentage < 0
               ? 'bg-gradient-to-r from-[#F2485F]  to-red inline-block text-transparent bg-clip-text'
@@ -151,7 +152,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Entry Price
             </span>
-            <span className="archivo-black text-sm sm:text-lg">
+            <span className="font-archivo text-sm sm:text-lg">
               {formatPriceInfo(
                 position.price,
                 position.token.displayPriceDecimalsPrecision,
@@ -160,10 +161,13 @@ export default function SharePositionModal({
           </li>
           <li className="flex flex-col gap-1">
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
-              Mark Price
+              {position?.exitPrice ? 'Exit Price' : 'Mark Price'}
             </span>
-            <span className="archivo-black text-sm sm:text-lg">
-              {formatPriceInfo(
+            <span className="font-archivo text-sm sm:text-lg">
+              {position?.exitPrice ? formatPriceInfo(
+                position.exitPrice,
+                position.token.displayPriceDecimalsPrecision,
+              ) : formatPriceInfo(
                 tokenPrices[getTokenSymbol(position.token.symbol)],
               )}
             </span>
@@ -172,7 +176,7 @@ export default function SharePositionModal({
             <span className="text-txtfade text-xs sm:text-sm font-semibold">
               Opened on
             </span>
-            <span className="archivo-black text-sm sm:text-lg">{openedOn}</span>
+            <span className="font-archivo text-sm sm:text-lg">{openedOn}</span>
           </li>
         </ul>
 

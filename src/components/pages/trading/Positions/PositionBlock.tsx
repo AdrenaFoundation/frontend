@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import Modal from '@/components/common/Modal/Modal';
 import Switch from '@/components/common/Switch/Switch';
+import { Congrats } from '@/components/Congrats/Congrats';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { MINIMUM_POSITION_OPEN_TIME } from '@/constant';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
@@ -300,7 +301,7 @@ export default function PositionBlock({
               <Tippy
                 content={
                   <FormatNumber
-                    nb={position.size}
+                    nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
                     format="number"
                     className="text-gray-400 text-xs"
                     precision={position.token.displayAmountDecimalsPrecision}
@@ -412,7 +413,7 @@ export default function PositionBlock({
               role="button"
               tabIndex={0}
             >
-              {position.takeProfitThreadIsSet &&
+              {position.takeProfitIsSet &&
                 position.takeProfitLimitPrice &&
                 position.takeProfitLimitPrice > 0 ? (
                 <FormatNumber
@@ -437,7 +438,7 @@ export default function PositionBlock({
               role="button"
               tabIndex={0}
             >
-              {position.stopLossThreadIsSet &&
+              {position.stopLossIsSet &&
                 position.stopLossLimitPrice &&
                 position.stopLossLimitPrice > 0 ? (
                 <FormatNumber
@@ -469,7 +470,7 @@ export default function PositionBlock({
 
           <Button
             size="xs"
-            className="text-txtfade border-bcolor border-t md:border-t-0 md:border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
+            className="text-txtfade border-bcolor border-t md:border-t-0 md:border-l bg-[#a8a8a810] hover:bg-bcolor h-9 w-full min-w-[18em]"
             title="Take Profit & Stop Loss"
             rounded={false}
             onClick={() => {
@@ -477,28 +478,26 @@ export default function PositionBlock({
             }}
           />
 
-          <div className="w-full flex flex-row">
-            <Button
-              size="xs"
-              className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
-              title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
-              rounded={false}
-              disabled={closableIn !== 0}
-              onClick={() => {
-                triggerClosePosition(position);
-              }}
-            />
+          <Button
+            size="xs"
+            className="text-txtfade border-bcolor border-t md:border-x md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full"
+            title={closableIn === 0 || closableIn === null ? "Close" : `Close (${Math.floor(closableIn / 1000)}s)`}
+            rounded={false}
+            disabled={closableIn !== 0}
+            onClick={() => {
+              triggerClosePosition(position);
+            }}
+          />
 
-            <Button
-              size="xs"
-              className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-[90px]"
-              leftIcon={shareIcon}
-              rounded={false}
-              onClick={() => {
-                setIsOpen(true);
-              }}
-            />
-          </div>
+          <Button
+            size="xs"
+            className="text-txtfade border-bcolor border-t border-l md:border-t-0 bg-[#a8a8a810] hover:bg-bcolor h-9 w-full md:max-w-[8em]"
+            leftIcon={shareIcon}
+            rounded={false}
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          />
         </div>
 
         {liquidable ? (
@@ -511,6 +510,18 @@ export default function PositionBlock({
       <AnimatePresence>
         {isOpen && (
           <Modal title="Share PnL" close={() => setIsOpen(false)}>
+            <div className="absolute top-0 w-[300px]">
+              {(() => {
+                const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
+                const pnlUsd = position.pnl
+                  ? position.pnl - fees
+                  : null;
+
+                if (!pnlUsd || pnlUsd < 0) return;
+
+                return <Congrats />;
+              })()}
+            </div>
             <SharePositionModal position={position} />
           </Modal>
         )}

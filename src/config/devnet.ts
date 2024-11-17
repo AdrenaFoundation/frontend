@@ -85,10 +85,6 @@ export default class DevnetConfiguration implements IConfiguration {
     'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw',
   );
 
-  public readonly sablierThreadProgram: PublicKey = new PublicKey(
-    'sabGLGXfBiUCkwtprPMtatG6tCNxhcWWs1hjQAvDqEE',
-  );
-
   public readonly stakesClaimPayer: PublicKey = new PublicKey(
     'Sab1ierPayer1111111111111111111111111111111',
   );
@@ -131,17 +127,17 @@ export default class DevnetConfiguration implements IConfiguration {
       ];
 
   public readonly pythnetRpc: RpcOption = {
-    name: 'Triton Mainnet',
+    name: 'Triton Pythnet Devnet',
     url: (() => {
-      const url = 'https://adrena-solanad-ac2e.devnet.rpcpool.com';
+      const url = 'https://adrena-pythnet-99a9.mainnet.pythnet.rpcpool.com';
 
       if (!this.devMode) return url;
 
-      const apiKey = process.env.NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY;
+      const apiKey = process.env.NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY;
 
       if (!apiKey)
         throw new Error(
-          'Missing environment variable NEXT_PUBLIC_DEV_TRITON_RPC_API_KEY',
+          'Missing environment variable NEXT_PUBLIC_DEV_PYTHNET_TRITON_RPC_API_KEY',
         );
 
       return `${url}/${apiKey}`;

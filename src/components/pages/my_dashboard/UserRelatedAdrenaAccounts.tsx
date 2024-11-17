@@ -2,7 +2,6 @@ import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { ReactNode, useCallback, useEffect, useState } from 'react';
 
-import { AdrenaClient } from '@/AdrenaClient';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { SOL_DECIMALS } from '@/constant';
@@ -23,7 +22,7 @@ function onchainAccountData({
 }: {
   title: ReactNode;
   address: PublicKey;
-  program: 'Adrena' | 'Sablier';
+  program: 'Adrena';
 }) {
   return {
     rowTitle: (
@@ -66,89 +65,23 @@ export default function UserRelatedAdrenaAccounts({
     const accounts: PublicKey[] = [];
 
     if (stakingAccounts?.ADX) {
-      const adxAutoClaim = window.adrena.client.getThreadAddressPda(
-        stakingAccounts.ADX.stakesClaimCronThreadId,
-      );
-
       data.push(
         onchainAccountData({
           title: 'ADX Staking Account',
           address: stakingAccounts.ADX.pubkey,
           program: 'Adrena',
         }),
-        onchainAccountData({
-          title: `ADX Staking's Auto-claim Thread`,
-          address: adxAutoClaim,
-          program: 'Sablier',
-        }),
       );
-
-      accounts.push(stakingAccounts.ADX.pubkey, adxAutoClaim);
-
-      let i = 1;
-
-      stakingAccounts.ADX.lockedStakes.forEach((lockedStake) => {
-        if (lockedStake.amount.isZero()) return;
-
-        const adxLockedStakeResolutionThread =
-          window.adrena.client.getThreadAddressPda(
-            lockedStake.stakeResolutionThreadId,
-          );
-
-        data.push(
-          onchainAccountData({
-            title: `ADX Locked Stake Resolution Thread #${i++}`,
-            address: adxLockedStakeResolutionThread,
-            program: 'Sablier',
-          }),
-        );
-
-        accounts.push(adxLockedStakeResolutionThread);
-      });
     }
 
     if (stakingAccounts?.ALP) {
-      const alpAutoClaim = window.adrena.client.getThreadAddressPda(
-        stakingAccounts.ALP.stakesClaimCronThreadId,
-      );
-
       data.push(
         onchainAccountData({
           title: 'ALP Staking Account',
           address: stakingAccounts.ALP.pubkey,
           program: 'Adrena',
         }),
-        onchainAccountData({
-          title: `ALP Staking's Auto-claim Thread`,
-          address: alpAutoClaim,
-          program: 'Sablier',
-        }),
       );
-
-      accounts.push(stakingAccounts.ALP.pubkey, alpAutoClaim);
-
-      let i = 1;
-
-      stakingAccounts.ALP.lockedStakes.forEach((lockedStake) => {
-        if (lockedStake.amount.isZero()) return;
-
-        const alpLockedStakeResolutionThread =
-          window.adrena.client.getThreadAddressPda(
-            lockedStake.stakeResolutionThreadId,
-          );
-
-        data.push(
-          onchainAccountData({
-            title: `ALP Locked Stake Resolution Thread #${i++}`,
-            address: window.adrena.client.getThreadAddressPda(
-              lockedStake.stakeResolutionThreadId,
-            ),
-            program: 'Sablier',
-          }),
-        );
-
-        accounts.push(alpLockedStakeResolutionThread);
-      });
     }
 
     if (userProfile) {
@@ -188,48 +121,6 @@ export default function UserRelatedAdrenaAccounts({
       accounts.push(position.pubkey);
     });
 
-    positions?.forEach((position) => {
-      if (position.takeProfitThreadIsSet) {
-        const takeProfitThread =
-          window.adrena.client.getTakeProfitOrStopLossThreadAddress({
-            authority: AdrenaClient.transferAuthorityAddress,
-            threadId: position.nativeObject.takeProfitThreadId,
-            user: position.owner,
-          }).publicKey;
-
-        data.push(
-          onchainAccountData({
-            title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
-              } Position Take Profit`,
-            address: takeProfitThread,
-            program: 'Sablier',
-          }),
-        );
-
-        accounts.push(takeProfitThread);
-      }
-
-      if (position.stopLossThreadIsSet) {
-        const stopLossThread =
-          window.adrena.client.getTakeProfitOrStopLossThreadAddress({
-            authority: AdrenaClient.transferAuthorityAddress,
-            threadId: position.nativeObject.stopLossThreadId,
-            user: position.owner,
-          }).publicKey;
-
-        data.push(
-          onchainAccountData({
-            title: `${getTokenSymbol(position.token.symbol)} ${position.side === 'long' ? 'Long' : 'Short'
-              } Position Stop Loss`,
-            address: stopLossThread,
-            program: 'Sablier',
-          }),
-        );
-
-        accounts.push(stopLossThread);
-      }
-    });
-
     setData(data);
     setAccounts(accounts);
   }, [positions, stakingAccounts, userProfile, userVest]);
@@ -264,7 +155,7 @@ export default function UserRelatedAdrenaAccounts({
   return (
     <StyledContainer
       title="My Adrena's Accounts"
-      subTitle="Adrena and Sablier Programs on-chain accounts related to my wallet."
+      subTitle="Adrena Programs on-chain accounts related to my wallet."
       className="w-full grow md:min-w-[46em] relative"
       titleClassName="text-2xl"
     >

@@ -13,6 +13,7 @@ import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  WalletAdapterExtended,
 } from '@/types';
 
 import Footer from '../../Footer/Footer';
@@ -35,6 +36,7 @@ export default function RootLayout({
   maxPriorityFee,
   setMaxPriorityFee,
   preferredSolanaExplorer,
+  adapters,
 }: {
   children: ReactNode;
   userProfile: UserProfileExtended | null | false;
@@ -58,6 +60,7 @@ export default function RootLayout({
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
   const [pages, setPages] = useState<
@@ -66,6 +69,7 @@ export default function RootLayout({
     { name: 'Trade', link: '/trade' },
     { name: 'Profile', link: '/my_dashboard' },
     { name: 'Stake', link: '/stake' },
+    { name: 'Ranked', link: '/competition' },
     { name: 'Provide Liquidity', link: '/buy_alp' },
     { name: 'Monitor', link: '/monitoring' },
     { name: 'Vote', link: 'https://dao.adrena.xyz/', external: true },
@@ -108,6 +112,7 @@ export default function RootLayout({
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
           preferredSolanaExplorer={preferredSolanaExplorer}
+          adapters={adapters}
         />
       ) : (
         <BurgerMenu
@@ -127,13 +132,14 @@ export default function RootLayout({
           maxPriorityFee={maxPriorityFee}
           setMaxPriorityFee={setMaxPriorityFee}
           preferredSolanaExplorer={preferredSolanaExplorer}
+          adapters={adapters}
         />
       )}
 
       <ViewsWarning />
 
       <div className="w-full grow flex justify-center">
-        <div className="w-full flex flex-col pb-[3em] sm:pb-0 max-w-[1500px]">
+        <div className="w-full flex flex-col sm:pb-0 max-w-[1500px]">
           {children}
         </div>
       </div>

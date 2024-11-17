@@ -3,15 +3,14 @@ import {
   AllInstructionsMap,
   IdlTypes,
 } from '@coral-xyz/anchor/dist/cjs/program/namespace/types';
+import { Adapter } from '@solana/wallet-adapter-base';
 import { Connection, PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 
 import { Adrena } from '@/target/adrena';
-import { ThreadProgram as SablierThreadProgram } from '@/target/thread_program';
 
 import { AdrenaClient } from './AdrenaClient';
 import IConfiguration, { TokenInfo } from './config/IConfiguration';
-import SablierClient from './SablierClient';
 
 // Force users to provide images loaded with import so it's known from nextjs at ssr time
 export type ImageRef = Exclude<Parameters<typeof Image>[0]['src'], string>;
@@ -37,7 +36,6 @@ export type Settings = {
 export type AdrenaGlobal = {
   config: IConfiguration;
   client: AdrenaClient;
-  sablierClient: SablierClient;
   mainConnection: Connection;
   pythConnection: Connection;
   cluster: SupportedCluster;
@@ -48,8 +46,6 @@ export type AdrenaGlobal = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RiveImage = any;
 
-declare module '*.lottie';
-
 declare global {
   interface Window {
     Jupiter: any;
@@ -58,11 +54,12 @@ declare global {
   }
 }
 
-export type WalletAdapterName =
-  | 'phantom'
-  | 'backpack'
-  | 'coinbase'
-  | 'solflare';
+export type WalletAdapterExtended = Adapter & {
+  color: string;
+  beta: boolean;
+  recommended: boolean;
+  iconOverride?: ImageRef;
+};
 
 export type PageProps = {
   mainPool: PoolExtended | null;
@@ -77,6 +74,7 @@ export type PageProps = {
     name: string;
     connection: Connection;
   };
+  adapters: WalletAdapterExtended[];
 };
 
 export type CustodyExtended = {
@@ -145,10 +143,10 @@ export type PositionExtended = {
   liquidationFeeUsd: number;
   stopLossClosePositionPrice?: number | null;
   stopLossLimitPrice?: number | null;
-  stopLossThreadIsSet: boolean;
+  stopLossIsSet: boolean;
   takeProfitLimitPrice?: number | null;
-  takeProfitThreadIsSet: boolean;
-  // The position is closed and still alive due to a pending cleanup and close from Sablier
+  takeProfitIsSet: boolean;
+  // The position is closed and still alive due to a pending cleanup and close from MrSablier
   pendingCleanupAndClose: boolean;
 
   // Onchain data
@@ -159,6 +157,7 @@ export type PoolExtended = {
   pubkey: PublicKey;
 
   // Formatted data
+  whitelistedSwapper: PublicKey;
   aumSoftCapUsd: number;
   totalFeeCollected: number;
   profitsUsd: number;
@@ -269,18 +268,6 @@ export type LessThanOrEqual = 'lte';
 export type Equality = {
   GreaterThanOrEqual;
   LessThanOrEqual;
-};
-
-export type SablierAccounts = IdlAccounts<SablierThreadProgram>;
-export type SablierThread = AccountsThreadProgram['thread'];
-
-export type SablierThreadExtended = {
-  lastExecutionDate: number | null;
-  nextTheoreticalExecutionDate: number | null;
-  paused: boolean;
-  pubkey: PublicKey;
-  funding?: number;
-  nativeObject: SablierThread;
 };
 
 // The UI options for priority fees - Stored in cookies
@@ -481,4 +468,51 @@ export type ClaimHistoryExtended = {
   source: 'manual' | 'auto';
   symbol: string;
   transaction_date: Date;
+};
+
+type AchievementsBase = {
+  week_starts: string[];
+  week_ends: string[];
+  addresses: (string | null)[];
+};
+
+export type TradingCompetitionAchievementsAPI = {
+  biggest_liquidation: AchievementsBase & {
+    addresses: (string | null)[];
+    week_starts: string[];
+    week_ends: string[];
+    liquidation_amounts: (number | null)[];
+  };
+  fees_tickets: AchievementsBase & {
+    week_starts: string[][];
+    week_ends: string[][];
+    addresses: (string | null)[][];
+    tickets_count: (number | null)[][];
+    total_tickets: (number | null)[];
+  };
+  top_degen: AchievementsBase & {
+    pnl_amounts: (number | null)[];
+    addresses: (string | null)[];
+    week_starts: string[];
+    week_ends: string[];
+  };
+  jitosol_tickets: AchievementsBase & {
+    week_starts: string[][];
+    week_ends: string[][];
+    addresses: (string | null)[][];
+    tickets_count: (number | null)[][];
+    total_tickets: (number | null)[];
+  };
+};
+
+export type TradingCompetitionLeaderboardAPI = {
+  [key in 'Leviathan' | 'Abomination' | 'Mutant' | 'Spawn' | 'No Division']: {
+    rank: number;
+    username: string;
+    connected: boolean;
+    volume: number;
+    pnl: number;
+    adxRewards: number;
+    jtoRewards: number;
+  }[];
 };

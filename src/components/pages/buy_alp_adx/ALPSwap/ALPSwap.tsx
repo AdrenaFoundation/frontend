@@ -6,7 +6,6 @@ import { openCloseConnectionModalAction } from '@/actions/walletActions';
 import Button from '@/components/common/Button/Button';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
 import TabSelect from '@/components/common/TabSelect/TabSelect';
-import usePriorityFee from '@/hooks/usePriorityFees';
 import { FeesAndAmountsType } from '@/pages/buy_alp';
 import { useDispatch, useSelector } from '@/store/store';
 import { Token } from '@/types';
@@ -261,7 +260,6 @@ export default function ALPSwap({
             setCollateralPrice={setCollateralPrice}
             setErrorMessage={setErrorMessage}
             feesAndAmounts={feesAndAmounts}
-            connected={connected}
           />
 
           {/* Button to execute action */}

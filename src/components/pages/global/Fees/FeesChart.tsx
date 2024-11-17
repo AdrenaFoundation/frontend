@@ -113,7 +113,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
       const lastDataPoint = formattedData[formattedData.length - 1];
       const totalFees = Object.entries(lastDataPoint)
         .filter(([key]) => key !== 'time')
-        .reduce((sum, [_, value]) => sum + (Number(value) || 0), 0);
+        .reduce((sum, [, value]) => sum + (Number(value) || 0), 0);
       setTotalFees(totalFees);
 
       setChartData(formattedData);
@@ -154,7 +154,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
         },
         {
           name: 'Borrow Fees',
-          color: '#DA6F71',
+          color: '#84bd82',
         },
       ]}
       period={period}

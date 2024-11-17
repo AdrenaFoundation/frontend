@@ -1,5 +1,4 @@
 import { BN } from '@coral-xyz/anchor';
-import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -24,12 +23,14 @@ export default function ClosePosition({
   triggerUserProfileReload,
   onClose,
   tokenImage,
+  setShareClosePosition,
 }: {
   className?: string;
   position: PositionExtended;
   triggerUserProfileReload: () => void;
   onClose: () => void;
   tokenImage: ImageRef;
+  setShareClosePosition: (position: PositionExtended) => void;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -39,7 +40,6 @@ export default function ClosePosition({
   const markPrice: number | null = tokenPrices[position.token.symbol];
   const collateralMarkPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
-
 
   useEffect(() => {
     const localLoadingCounter = ++loadingCounter;
@@ -89,8 +89,12 @@ export default function ClosePosition({
 
       const priceWithSlippage =
         position.side === 'short'
-          ? priceAndFee.price.mul(new BN(10_000)).div(new BN(10_000 - slippageInBps))
-          : priceAndFee.price.mul(new BN(10_000 - slippageInBps)).div(new BN(10_000));
+          ? priceAndFee.price
+            .mul(new BN(10_000))
+            .div(new BN(10_000 - slippageInBps))
+          : priceAndFee.price
+            .mul(new BN(10_000 - slippageInBps))
+            .div(new BN(10_000));
 
       await (position.side === 'long'
         ? window.adrena.client.closePositionLong.bind(window.adrena.client)
@@ -98,9 +102,9 @@ export default function ClosePosition({
           position,
           price: priceWithSlippage,
           notification,
-
         });
 
+      setShareClosePosition(position);
       triggerUserProfileReload();
 
       onClose();
@@ -332,13 +336,14 @@ export default function ClosePosition({
           <FormatNumber
             nb={(position.borrowFeeUsd ?? 0) + (position.exitFeeUsd ?? 0)}
             format="currency"
-            className="text-red"
+            className="text-redbright font-bold"
+            isDecimalDimmed={false}
           />
         </div>
       </div>
 
       <Button
-        className="mt-6 border-l-0 border-r-0 border-b-0 rounded-none"
+        className="m-4"
         size="lg"
         variant="primary"
         title={

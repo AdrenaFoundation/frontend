@@ -6,10 +6,16 @@ import { twMerge } from 'tailwind-merge';
 
 import externalLinkLogo from '@/../public/images/external-link-logo.png';
 import { useSelector } from '@/store/store';
-import { PriorityFeeOption, SolanaExplorerOptions, UserProfileExtended } from '@/types';
+import {
+  PriorityFeeOption,
+  SolanaExplorerOptions,
+  UserProfileExtended,
+  WalletAdapterExtended,
+} from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
+import competitionIcon from '../../../public/images/competition.svg';
 import logo from '../../../public/images/logo.svg';
 import Button from '../common/Button/Button';
 import Menu from '../common/Menu/Menu';
@@ -37,6 +43,7 @@ export default function Header({
   maxPriorityFee,
   setMaxPriorityFee,
   preferredSolanaExplorer,
+  adapters,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
@@ -60,6 +67,7 @@ export default function Header({
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const pathname = usePathname();
 
@@ -101,13 +109,31 @@ export default function Header({
             <Link
               href={page.link}
               className={twMerge(
-                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center',
-                pathname === page.link ? 'opacity-100' : '',
+                'text-sm opacity-50 hover:opacity-100 transition-opacity duration-300 hover:grayscale-0 flex items-center justify-center',
+                pathname === page.link ? 'grayscale-0 opacity-100' : 'grayscale',
               )}
               key={page.name}
               target={page.external ? '_blank' : '_self'}
             >
-              <h5 className="whitespace-nowrap">{page.name}</h5>
+              {page.name === 'Ranked' && (
+                <Image
+                  src={competitionIcon}
+                  alt="logo"
+                  width={12}
+                  height={12}
+                />
+              )}
+              <h5 className="whitespace-nowrap font-medium">{page.name}</h5>
+
+              {page.name === 'Ranked' && (
+                <Image
+                  src={competitionIcon}
+                  alt="logo"
+                  width={12}
+                  height={12}
+                  className="scale-x-[-1]"
+                />
+              )}
 
               {page.external ? (
                 <Image
@@ -192,7 +218,7 @@ export default function Header({
           preferredSolanaExplorer={preferredSolanaExplorer}
         />
 
-        <WalletAdapter userProfile={userProfile} />
+        <WalletAdapter userProfile={userProfile} adapters={adapters} />
 
         {clusterSwitchEnabled ? (
           <Menu

@@ -3,6 +3,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "cSpell.words": [
     "adrena",
+    "aprs",
     "bcolor",
     "Blockhash",
     "boldy",
@@ -15,15 +16,18 @@
     "JITOSOL",
     "Lamport",
     "lamports",
+    "leaderboard",
+    "Leaderboards",
     "Liquidable",
     "pyth",
     "Pythnet",
     "rpcs",
-    "sablier",
     "Solana",
+    "solflare",
     "Tokenomics",
     "txtfade",
     "unstaked",
+    "walletconnect",
     "WSOL"
   ],
   "[typescriptreact]": {

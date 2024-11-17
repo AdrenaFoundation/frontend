@@ -1,12 +1,12 @@
 import { Wallet } from '@coral-xyz/anchor';
 import { Connection } from '@solana/web3.js';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import TabSelect from '@/components/common/TabSelect/TabSelect';
 import IntegratedTerminal from '@/components/Footer/IntegratedTerminal';
 import { Action } from '@/pages/trade';
-import { PositionExtended, Token } from '@/types';
+import { PositionExtended, Token, WalletAdapterExtended } from '@/types';
 
 import LongShortTradingInputs from '../TradingInputs/LongShortTradingInputs';
 import SwapTradingInputs from '../TradingInputs/SwapTradingInputs';
@@ -26,6 +26,7 @@ export default function TradeComp({
   isBigScreen,
   activeRpc,
   terminalId,
+  adapters,
 }: {
   selectedAction: Action;
   setSelectedAction: (title: Action) => void;
@@ -44,8 +45,16 @@ export default function TradeComp({
     connection: Connection;
   };
   terminalId: string;
+  adapters: WalletAdapterExtended[];
 }) {
   const [isJupSwap, setIsJupSwap] = useState(true);
+  const [isWhitelistedSwapper, setIsWhitelistedSwapper] = useState(false);
+
+  useEffect(() => {
+    if (window.adrena.client.mainPool.whitelistedSwapper.toBase58() == wallet?.publicKey?.toBase58()) {
+      setIsWhitelistedSwapper(true);
+    }
+  }, [wallet]);
 
   return (
     <div
@@ -91,12 +100,13 @@ export default function TradeComp({
               />
             ) : (
               <>
-                {isJupSwap ? (
+                {isJupSwap || !isWhitelistedSwapper ? (
                   <IntegratedTerminal
                     connected={connected}
                     activeRpc={activeRpc}
                     id={terminalId}
                     className="bg-transparent border-transparent h-[575px] min-w-[300px] w-full p-0"
+                    adapters={adapters}
                   />
                 ) : (
                   <SwapTradingInputs
@@ -114,7 +124,7 @@ export default function TradeComp({
                   />
                 )}
 
-                <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
+                {isWhitelistedSwapper ? <div className="flex items-center justify-evenly w-[14em] ml-auto mr-auto">
                   <span
                     className={twMerge(
                       'font-boldy uppercase w-15 h-8 flex items-center justify-center opacity-40 cursor-pointer hover:opacity-100',
@@ -140,7 +150,7 @@ export default function TradeComp({
                   >
                     Adrena
                   </span>
-                </div>
+                </div> : null}
               </>
             )}
           </>

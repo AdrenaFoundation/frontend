@@ -16,16 +16,54 @@ export default function CustomRechartsToolTip({
   format = 'currency',
   suffix = '',
   isPieChart,
+  precision = 2,
+  total = false,
+  totalColor = 'red',
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
   suffix?: string;
   isPieChart?: boolean;
+  precision?: number;
+  total?: boolean;
+  totalColor?: string;
 }) {
   if (active && payload && payload.length) {
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
         {label && <p className="text-lg mb-2 font-mono">{label}</p>}
+
+        {total ? <div
+          key="total"
+          className="text-sm font-mono flex gap-3 justify-between"
+          style={{ color: totalColor }}
+        >
+          {!isValueOnly && !isPieChart && (
+            <span style={{ color: totalColor }}>Total:</span>
+          )}
+
+          {!isValueOnly && isPieChart && (
+            <span style={{ color: totalColor }}>Total:</span>
+          )}
+
+          <span
+            className={twMerge('font-mono', isValueOnly && 'text-lg')}
+            style={{ color: totalColor }}
+          >
+            {(() => {
+              const v = payload.reduce((acc, item) => acc + Number(item.value), 0);
+
+              return format === 'currency'
+                ? formatPriceInfo(Number(v), precision, precision)
+                : format === 'percentage'
+                  ? formatPercentage(Number(v), precision)
+                  : formatNumber(Number(v), precision)
+            })()}
+
+            {suffix}
+          </span>
+        </div> : null}
+
         {payload.map((item) => (
           <div
             key={item.dataKey}
@@ -45,10 +83,10 @@ export default function CustomRechartsToolTip({
               style={{ color: item.color }}
             >
               {format === 'currency'
-                ? formatPriceInfo(Number(item.value), 2, 2)
+                ? formatPriceInfo(Number(item.value), precision, precision)
                 : format === 'percentage'
-                  ? formatPercentage(Number(item.value), 0)
-                  : formatNumber(Number(item.value), 2)}
+                  ? formatPercentage(Number(item.value), precision)
+                  : formatNumber(Number(item.value), precision)}
 
               {suffix}
             </span>

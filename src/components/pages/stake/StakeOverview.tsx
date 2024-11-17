@@ -30,7 +30,6 @@ import alpLogo from '../../../../public/images/adrena_logo_alp_white.svg';
 import adxTokenLogo from '../../../../public/images/adx.svg';
 import infoIcon from '../../../../public/images/Icons/info.svg';
 import usdcTokenLogo from '../../../../public/images/usdc.svg';
-import InfoAnnotation from '../monitoring/InfoAnnotation';
 import ClaimBlock from './ClaimBlock';
 
 interface SortConfig {
@@ -98,45 +97,38 @@ export default function StakeOverview({
   const [isClaimHistoryVisible, setIsClaimHistoryVisible] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [claimHistoryItemsPerPage, setClaimHistoryItemsPerPage] = useState(3);
+  const [claimHistoryItemsPerPage,] = useState(3);
 
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const [lockedStakesPerPage, setLockedStakesPerPage] = useState(6);
-  const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<
-    ClaimHistoryExtended[]
-  >([]);
+  const [paginatedClaimsHistory, setPaginatedClaimsHistory] = useState<ClaimHistoryExtended[]>([]);
 
   useEffect(() => {
     if (!claimsHistory) {
       return;
     }
-    setPaginatedClaimsHistory(
-      claimsHistory.slice(
-        (currentPage - 1) * claimHistoryItemsPerPage,
-        currentPage * claimHistoryItemsPerPage,
-      ) ?? [],
-    );
-  }, [claimsHistory]);
-
-  const getEndDate = (timestamp: number) => {
-    const date = new Date(timestamp * 1000);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  };
+    const startIndex = (currentPage - 1) * claimHistoryItemsPerPage;
+    const endIndex = startIndex + claimHistoryItemsPerPage;
+    setPaginatedClaimsHistory(claimsHistory.slice(startIndex, endIndex));
+  }, [claimsHistory, currentPage, claimHistoryItemsPerPage]);
 
   const sortedLockedStakes = lockedStakes
     ? lockedStakes.sort((a: LockedStakeExtended, b: LockedStakeExtended) => {
       const sizeModifier = sortConfig.size === 'asc' ? 1 : -1;
       const durationModifier = sortConfig.duration === 'asc' ? 1 : -1;
+
       const sizeDiff = (Number(a.amount) - Number(b.amount)) * sizeModifier;
-      const durationDiff =
-        (getEndDate(Number(a.endTime)).getTime() -
-          getEndDate(Number(b.endTime)).getTime()) *
-        durationModifier;
+      const durationDiff = ((Number(a.endTime) * 1000) - (Number(b.endTime) * 1000)) * durationModifier;
 
       if (sortConfig.lastClicked === 'size') {
-        return sizeDiff || durationDiff;
+        return sizeDiff !== 0 ? sizeDiff : durationDiff; // If sizeDiff is zero, fall back to durationDiff.
       }
 
+      if (sortConfig.lastClicked === 'duration') {
+        return durationDiff !== 0 ? durationDiff : sizeDiff; // If durationDiff is zero, fall back to sizeDiff.
+      }
+
+      // Fallback sorting by duration or size if none was clicked
       return durationDiff || sizeDiff;
     })
     : [];
@@ -240,12 +232,12 @@ export default function StakeOverview({
   const isBigAdxAllTimeClaimAmount = allTimeClaimedAdx >= 1_000_000;
 
   return (
-    <div className="flex flex-col bg-main rounded-2xl border h-full">
+    <div className="flex flex-col bg-main rounded-2xl border">
       <div className="p-5 pb-0">
-        <div className="flex flex-col sm:flex-row items-center h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
+        <div className="flex flex-col sm:flex-row items-stretch h-full w-full bg-gradient-to-br from-[#07111A] to-[#0B1722] border rounded-lg shadow-lg">
           <div
             className={twMerge(
-              'flex items-center w-full sm:w-auto sm:min-w-[200px] rounded-t-lg sm:rounded-r-none sm:rounded-l-lg p-3 sm:h-full flex-none sm:border-r',
+              'flex items-center w-full sm:w-auto sm:min-w-[200px] rounded-t-lg sm:rounded-r-none sm:rounded-l-lg p-3 flex-none sm:border-r',
               isALP ? 'bg-[#130AAA]' : 'bg-[#991B1B]',
             )}
           >
@@ -524,33 +516,38 @@ export default function StakeOverview({
             onClick={toggleClaimHistory}
             className="flex flex-col sm:flex-row gap-3 items-center justify-between w-full text-white rounded-lg transition-colors duration-200"
           >
-            <div className='flex flex-row gap-2 items-center cursor-pointer select-none'>
-              <div className="flex items-center justify-between">
-                <div className='mr-2'>
-                  <h3 className="md:text-lg font-semibold">Claim History</h3>
-                  <p className='text-xs text-txtfade'>Subject to 30s delay</p>
+            <div className='flex flex-col'>
+              <div className='flex flex-row gap-2 items-center cursor-pointer select-none'>
+                <div className="flex items-center justify-between">
+                  <div className='mr-2'>
+                    <h3 className="md:text-lg font-semibold">Claim History</h3>
+                  </div>
+
+                  <h3 className="text-lg font-semibold text-txtfade">
+                    {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
+                  </h3>
                 </div>
-                <h3 className="text-lg font-semibold text-txtfade">
-                  {claimsHistory?.length ? ` (${claimsHistory.length})` : ''}
-                </h3>
+
+                <svg
+                  className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
               </div>
 
-              <svg
-                className={`w-4 h-4 ml-2 transition-transform duration-200 ${isClaimHistoryVisible ? 'rotate-180' : ''
-                  }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
+              <p className='text-xs text-txtfade'>Subject to 30s delay</p>
             </div>
+
+
             {/* TOTALs */}
             {claimsHistory && (
               <div className="flex flex-col items-start text-xs text-txtfade bg-secondary rounded-lg border border-bcolor pt-1 pb-1 pl-2 pr-2">
@@ -723,7 +720,7 @@ export default function StakeOverview({
         </div>
 
         {/* Liquid stake section */}
-        <div className="mt-auto">
+        <div className="pb-8">
           {!isALP && (
             <>
               <div className="h-[1px] bg-bcolor w-full my-5" />
@@ -776,9 +773,6 @@ export default function StakeOverview({
               </div>
             </>
           )}
-
-          {/* New separator below liquid stake section */}
-          <div className="h-[1px] bg-bcolor w-full my-5" />
         </div>
       </div>
     </div>

@@ -12,10 +12,12 @@ import {
   PriorityFeeOption,
   SolanaExplorerOptions,
   UserProfileExtended,
+  WalletAdapterExtended,
 } from '@/types';
 import { formatPriceInfo } from '@/utils';
 
 import chevronDownIcon from '../../../public/images/chevron-down.svg';
+import competitionIcon from '../../../public/images/competition.svg';
 import githubLogo from '../../../public/images/github.svg';
 import burgerMenuIcon from '../../../public/images/Icons/burger-menu.svg';
 import crossIcon from '../../../public/images/Icons/cross.svg';
@@ -47,6 +49,7 @@ export default function BurgerMenu({
   maxPriorityFee,
   setMaxPriorityFee,
   preferredSolanaExplorer,
+  adapters,
 }: {
   userProfile: UserProfileExtended | null | false;
   PAGES: { name: string; link: string }[];
@@ -70,9 +73,11 @@ export default function BurgerMenu({
   maxPriorityFee: number | null;
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
+  adapters: WalletAdapterExtended[];
 }) {
   const { pathname } = useRouter();
   const isSmallScreen = useBetterMediaQuery('(max-width: 450px)');
+  const isSmallerScreen = useBetterMediaQuery('(max-width: 550px)');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [alpPrice, setAlpPrice] = useState<number | null>(null);
@@ -185,7 +190,8 @@ export default function BurgerMenu({
           <WalletAdapter
             className="w-full"
             userProfile={userProfile}
-            isIconOnly
+            isIconOnly={isSmallerScreen === true}
+            adapters={adapters}
           />
 
           <PriorityFeeSetting
@@ -226,18 +232,35 @@ export default function BurgerMenu({
                   return (
                     <li
                       className={twMerge(
-                        'font-normal text-xl opacity-50 hover:opacity-100 transition-opacity duration-300 w-full',
-                        pathname === page.link ? 'opacity-100' : '',
+                        'flex flex-row gap-1 items-center font-normal text-xl opacity-50 hover:opacity-100 hover:grayscale-0 transition duration-300',
+                        pathname === page.link ? 'grayscale-0 opacity-100' : 'grayscale',
                       )}
                       key={page.name}
                     >
+                      {page.name === 'Ranked' && (
+                        <Image
+                          src={competitionIcon}
+                          alt="logo"
+                          width={12}
+                          height={12}
+                        />
+                      )}
                       <Link
                         href={page.link}
-                        className="block w-full"
+                        className="block font-medium"
                         onClick={() => setIsOpen(!open)}
                       >
                         {page.name}
                       </Link>
+                      {page.name === 'Ranked' && (
+                        <Image
+                          src={competitionIcon}
+                          alt="logo"
+                          width={12}
+                          height={12}
+                          className="scale-x-[-1]"
+                        />
+                      )}
                     </li>
                   );
                 })}

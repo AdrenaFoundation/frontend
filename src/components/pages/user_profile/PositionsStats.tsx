@@ -1,8 +1,8 @@
-import { PublicKey } from '@solana/web3.js';
+import { ReactNode } from 'react';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
-import { PositionExtended, UserProfileExtended } from '@/types';
+import { PositionExtended } from '@/types';
 
 import Positions from '../trading/Positions/Positions';
 
@@ -11,14 +11,11 @@ export default function PositionsStats({
   positions,
   title,
   triggerUserProfileReload,
-  userProfile,
-
 }: {
   connected: boolean;
   positions: PositionExtended[] | null;
-  title?: string;
+  title?: ReactNode;
   triggerUserProfileReload: () => void;
-  userProfile: UserProfileExtended | null | false;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
 
@@ -40,7 +37,6 @@ export default function PositionsStats({
         positions={positions}
         triggerUserProfileReload={triggerUserProfileReload}
         isBigScreen={isBigScreen}
-        userProfile={userProfile}
       />
     </StyledContainer>
   );

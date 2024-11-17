@@ -1,31 +1,7 @@
-import {
-  BackpackWalletAdapter,
-  CoinbaseWalletAdapter,
-  PhantomWalletAdapter,
-  SolflareWalletAdapter,
-} from '@solana/wallet-adapter-wallets';
 import { Keypair, PublicKey } from '@solana/web3.js';
 
 import { ResolutionString } from '../public/charting_library/charting_library';
-import {
-  AdxLockPeriod,
-  AlpLockPeriod,
-  SupportedCluster,
-  WalletAdapterName,
-} from './types';
-
-export const walletAdapters: Record<
-  WalletAdapterName,
-  | PhantomWalletAdapter
-  | BackpackWalletAdapter
-  | CoinbaseWalletAdapter
-  | SolflareWalletAdapter
-> = {
-  phantom: new PhantomWalletAdapter(),
-  backpack: new BackpackWalletAdapter(),
-  coinbase: new CoinbaseWalletAdapter(),
-  solflare: new SolflareWalletAdapter(),
-};
+import { AdxLockPeriod, AlpLockPeriod, SupportedCluster } from './types';
 
 export const RATE_DECIMALS = 9;
 export const PRICE_DECIMALS = 10;
@@ -142,6 +118,7 @@ export const VEST_BUCKETS = [
 export const SOLANA_EXPLORERS_OPTIONS = {
   'Solana Beach': {
     url: 'https://solanabeach.io',
+    // TODO: support devnet
     getWalletAddressUrl: (address: PublicKey, cluster: SupportedCluster) =>
       `https://solanabeach.io/address/${address}`,
     getTxUrl: (tx: string, cluster: SupportedCluster) =>

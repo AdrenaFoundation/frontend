@@ -61,9 +61,8 @@ export default function Trade({
   connected,
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
-  userProfile,
   activeRpc,
-
+  adapters,
 }: PageProps) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
@@ -170,18 +169,25 @@ export default function Trade({
 
     // If token is not set or token is not allowed, set default token
     if (
-      !tokenA ||
-      !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
-    ) {
-      setTokenA(tokenACandidate[0]);
-    }
-
-    // If token is not set or token is not allowed, set default token
-    if (
       !tokenB ||
       !tokenBCandidate.find((token) => token.symbol === tokenB.symbol)
     ) {
       setTokenB(pickDefaultToken(positions));
+    }
+
+    // If token is not set or token is not allowed, set default token
+    if (
+      !tokenA ||
+      !tokenACandidate.find((token) => token.symbol === tokenA.symbol)
+    ) {
+      // If long, pick the same token as tokenB (avoid swap for user) else pick the default token
+      const candidate = selectedAction === 'long' ? tokenB ?? pickDefaultToken(positions) : tokenACandidate[0];
+
+      if (tokenACandidate.some((t) => t.symbol === candidate.symbol)) {
+        setTokenA(candidate);
+      } else {
+        setTokenA(tokenACandidate[0]);
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -214,7 +220,7 @@ export default function Trade({
   }, [activePositionModal]);
 
   return (
-    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4">
+    <div className="w-full flex flex-col items-center lg:flex-row lg:justify-center lg:items-start z-10 min-h-full p-4 pb-[100px] sm:pb-4">
       <div className="fixed w-[100vw] h-[100vh] left-0 top-0 -z-10 opacity-50">
         <RiveAnimation
           animation="btm-monster"
@@ -310,7 +316,6 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
-                    userProfile={userProfile}
                   />
                 </div>
               )}
@@ -351,7 +356,6 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
-                    userProfile={userProfile}
                   />
                 </div>
               )}
@@ -373,6 +377,7 @@ export default function Trade({
                 isBigScreen={isBigScreen}
                 activeRpc={activeRpc}
                 terminalId="integrated-terminal-1"
+                adapters={adapters}
               />
             </div>
           </div>
@@ -396,10 +401,11 @@ export default function Trade({
             isBigScreen={isBigScreen}
             activeRpc={activeRpc}
             terminalId="integrated-terminal-2"
+            adapters={adapters}
           />
         ) : null}
 
-        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-5 z-30">
+        <div className="fixed sm:hidden bottom-0 w-full bg-bcolor backdrop-blur-sm p-3 z-30">
           <ul className="flex flex-row gap-3 justify-between ml-4 mr-4">
             <li>
               <Button
@@ -465,6 +471,7 @@ export default function Trade({
                     }
                     activeRpc={activeRpc}
                     terminalId="integrated-terminal-3"
+                    adapters={adapters}
                   />
                 </div>
               </Modal>

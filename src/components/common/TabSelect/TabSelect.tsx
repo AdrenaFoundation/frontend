@@ -63,7 +63,7 @@ export default function TabSelect<T extends string | number>({
             setActiveTab(index);
           }}
         >
-          <h5 className={twMerge('text-center uppercase', titleClassName)}>
+          <h5 className={twMerge('text-center uppercase select-none', titleClassName)}>
             {title}
           </h5>
         </div>

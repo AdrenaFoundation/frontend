@@ -1,14 +1,10 @@
 import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
 import { PythSolanaReceiver } from '@pythnetwork/pyth-solana-receiver';
 import { PublicKey } from '@solana/web3.js';
-import {
-  AggregatorAccount,
-  SwitchboardProgram,
-} from '@switchboard-xyz/solana.js';
-import Big from 'big.js';
+import { CrossbarClient } from '@switchboard-xyz/on-demand';
 import { useCallback, useEffect, useState } from 'react';
 
-import { setTokenPriceAction } from '@/actions/tokenPricesActions';
+import { setTokenPrice } from '@/actions/tokenPrices';
 import { PRICE_DECIMALS } from '@/constant';
 import { useDispatch } from '@/store/store';
 import { Token } from '@/types';
@@ -32,7 +28,8 @@ export default function useWatchTokenPrices() {
   useEffect(() => {
     setPythSolanaReceiver(
       new PythSolanaReceiver({
-        connection: window.adrena.pythConnection,
+        // Use main connection as we don't use pythnet
+        connection: window.adrena.mainConnection,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         wallet: {} as any as NodeWallet,
       }),
@@ -77,7 +74,7 @@ export default function useWatchTokenPrices() {
       }
 
       dispatch(
-        setTokenPriceAction(
+        setTokenPrice(
           tokens[index].symbol,
           nativeToUi(
             priceUpdateV2Account.priceMessage.price,
@@ -96,10 +93,14 @@ export default function useWatchTokenPrices() {
       return;
     }
 
-    loadPythPrices();
+    loadPythPrices().catch((e) =>
+      console.error('error happened loading pyth prices', e),
+    );
 
     pythPriceInterval = setInterval(() => {
-      loadPythPrices();
+      loadPythPrices().catch((e) =>
+        console.error('error happened loading pyth prices', e),
+      );
     }, PYTH_PRICE_LOADING_INTERVAL_IN_MS);
 
     return () => {
@@ -120,7 +121,7 @@ export default function useWatchTokenPrices() {
       const price = await window.adrena.client.getLpTokenPrice();
 
       dispatch(
-        setTokenPriceAction(
+        setTokenPrice(
           window.adrena.client.alpToken.symbol,
           price ? nativeToUi(price, PRICE_DECIMALS) : null,
         ),
@@ -134,28 +135,30 @@ export default function useWatchTokenPrices() {
     if (!window.adrena.client.connection) return;
 
     try {
-      const switchboardProgram = await SwitchboardProgram.load(
-        window.adrena.client.connection,
-      );
+      // public instance crossbar switchboard : https://crossbar.switchboard.xyz
+      const crossbar = new CrossbarClient('https://crossbar.adrena.xyz');
 
-      const aggregatorAccount = new AggregatorAccount(
-        switchboardProgram,
-        new PublicKey('FKMg7sMStMhfC3CeEUZyu6PRYhsawNW5kLy24koZzmiw'),
-      );
+      const result = await crossbar.simulateSolanaFeeds('mainnet', [
+        '55WB9SGpMwHqzz4PTuLbCcwXsrrBcxbLawbChNtquzLr',
+      ]);
 
-      const result: Big | null = await aggregatorAccount.fetchLatestValue();
-
-      if (result === null) {
+      if (result === null || result.length === 0) {
         throw new Error('Aggregator holds no value');
       }
 
-      const price = parseFloat(result.toString());
+      const firstResult = result[0] as unknown as {
+        feed: string;
+        feedHash: string;
+        result: number;
+        results: number[];
+        stdev: number;
+        variance: number;
+      };
+      const price = firstResult.result;
 
-      dispatch(
-        setTokenPriceAction(window.adrena.client.adxToken.symbol, price),
-      );
+      dispatch(setTokenPrice(window.adrena.client.adxToken.symbol, price));
     } catch (e) {
-      console.log('error happened loading lp token price', e);
+      console.log('error happened loading ADX token price', e);
     }
   }, [dispatch]);
 
