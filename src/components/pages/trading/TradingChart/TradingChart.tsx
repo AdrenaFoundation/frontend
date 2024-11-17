@@ -3,6 +3,7 @@ import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Loader from '@/components/Loader/Loader';
+import { SUPPORTED_RESOLUTIONS } from '@/constant';
 import { PositionExtended, Token, TokenSymbol } from '@/types';
 import { formatNumber, formatNumberShort, getTokenSymbol } from '@/utils';
 
@@ -292,7 +293,11 @@ export default function TradingChart({
             'mainSeriesProperties.priceLineColor': 'yellow',
           },
           theme: 'dark',
-          interval: savedResolution as ResolutionString,
+          interval: SUPPORTED_RESOLUTIONS.includes(
+            savedResolution as ResolutionString,
+          )
+            ? savedResolution as ResolutionString
+            : '1D' as ResolutionString,
           custom_formatters: {
             priceFormatterFactory: (): ISymbolValueFormatter | null => {
               return {
@@ -348,6 +353,10 @@ export default function TradingChart({
             .activeChart()
             .onIntervalChanged()
             .subscribe(null, (newInterval: ResolutionString) => {
+              if (!SUPPORTED_RESOLUTIONS.includes(newInterval)) {
+                localStorage.setItem(STORAGE_KEY_RESOLUTION, '1D');
+                return;
+              }
               localStorage.setItem(STORAGE_KEY_RESOLUTION, newInterval);
             });
         });
@@ -390,17 +399,21 @@ export default function TradingChart({
         .split('/')[0] as TokenSymbol;
 
       const savedDrawings = drawings[symbol];
-      const currentShapes = widget.activeChart().getAllShapes().map(({ id }) => id);
+      const currentShapes = widget
+        .activeChart()
+        .getAllShapes()
+        .map(({ id }) => id);
 
       if (savedDrawings && savedDrawings.length > 0) {
-
-
         savedDrawings.forEach(({ id, name, points }) => {
           if (points.length === 0) {
-            localStorage.setItem('chart_shapes', JSON.stringify({
-              ...drawings,
-              [symbol]: [],
-            }));
+            localStorage.setItem(
+              'chart_shapes',
+              JSON.stringify({
+                ...drawings,
+                [symbol]: [],
+              }),
+            );
             return;
           }
 
