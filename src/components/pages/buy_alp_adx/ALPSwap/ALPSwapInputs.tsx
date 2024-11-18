@@ -15,6 +15,7 @@ import infoIcon from '../../../../../public/images/Icons/info.svg';
 import warningIcon from '../../../../../public/images/Icons/warning.png';
 import jupIcon from '../../../../../public/images/jup-logo.png';
 import TradingInput from '../../trading/TradingInput/TradingInput';
+import { setTime } from 'react-datepicker/dist/date_utils';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
@@ -61,6 +62,10 @@ export default function ALPSwapInputs({
   const walletTokenBalances = useSelector((s) => s.walletTokenBalances);
   const [isLoading, setLoading] = useState<boolean>(false);
 
+  const [saveUpFees, setSaveUpFees] = useState<
+    [string, FeesAndAmountsType[0]][] | null
+  >(null);
+
   // When price change or input change, recalculate inputs and displayed price
   {
     // Adapt displayed prices when token prices change
@@ -78,6 +83,7 @@ export default function ALPSwapInputs({
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       // Don't target tokenPrices directly otherwise it refreshes even when unrelated prices changes
+      collateralInput,
       // eslint-disable-next-line react-hooks/exhaustive-deps
       collateralToken && tokenPrices[collateralToken.symbol],
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -194,6 +200,8 @@ export default function ALPSwapInputs({
       const localLoadingCounter = ++loadingCounter;
 
       setFeesUsd(null);
+
+      console.log('HERE');
 
       window.adrena.client
         .getAddLiquidityAmountAndFee({
@@ -322,10 +330,6 @@ export default function ALPSwapInputs({
     />
   );
 
-  const [saveUpFees, setSaveUpFees] = useState<
-    [string, FeesAndAmountsType[0]][] | null
-  >(null);
-
   useEffect(() => {
     if (feesAndAmounts === null) {
       setSaveUpFees(null);
@@ -344,7 +348,7 @@ export default function ALPSwapInputs({
         return value.fees < feeNow;
       }),
     );
-  }, [collateralToken.symbol, feesAndAmounts]);
+  }, [collateralToken.symbol, !!feesAndAmounts]);
 
   return (
     <div className={twMerge('relative flex flex-col gap-2', className)}>
@@ -438,6 +442,11 @@ export default function ALPSwapInputs({
                       : '',
                   )}
                   onClick={() => {
+                    setSaveUpFees(null);
+                    onChangeCollateralInput(null);
+                    setCollateralPrice(null);
+                    setErrorMessage(null);
+                    setFeesUsd(null);
                     onCollateralTokenChange(token);
                   }}
                   key={token.symbol}
@@ -468,11 +477,14 @@ export default function ALPSwapInputs({
               ))}
             </ul>
           </div>
+
           {saveUpFees !== null && !saveUpFees.length ? (
             <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-lg mt-4 flex justify-center flex-col">
               <span className="text-txtfade">You are using the best route</span>
             </div>
-          ) : (
+          ) : null}
+
+          {saveUpFees !== null && saveUpFees.length ? (
             <Tippy
               content={
                 <div className="text-sm flex flex-col text-center gap-2">
@@ -502,9 +514,9 @@ export default function ALPSwapInputs({
               </div>
 
             </Tippy>
-          )}
+          ) : null}
 
-          {saveUpFees === null ? (
+          {saveUpFees === null && collateralInput !== null ? (
             <div className="pt-2 pb-2 pr-2 pl-6 bg-black border rounded-lg mt-4 flex justify-center flex-col">
               <span className="text-txtfade">Loading ...</span>
             </div>

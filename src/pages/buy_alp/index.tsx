@@ -62,6 +62,10 @@ export default function Buy({
       : 0;
 
   const getFeesAndAmounts = useCallback(async () => {
+    if (debouncedInputs === null || debouncedInputs === 0) {
+      return;
+    }
+
     const localLoadingCounter = ++loadingCounter;
 
     const data = await Promise.all(
@@ -165,7 +169,7 @@ export default function Buy({
 
   useEffect(() => {
     getFeesAndAmounts();
-  }, [getFeesAndAmounts, debouncedInputs]);
+  }, [getFeesAndAmounts]);
 
   useEffect(() => {
     if (!window.adrena.client.tokens.length) return;
@@ -193,7 +197,9 @@ export default function Buy({
       setAlpInput(null);
       setAlpPrice(null);
       setFeesUsd(null);
+      setFeesAndAmounts(null);
     } else {
+      setFeesAndAmounts(null);
       setCollateralInput(null);
       setCollateralPrice(null);
       setFeesUsd(null);

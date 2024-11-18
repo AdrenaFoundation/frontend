@@ -4301,6 +4301,8 @@ export class AdrenaClient {
 
     const custody = this.getCustodyByMint(token.mint);
 
+    console.log('AmountIn', amountIn.toString());
+
     const instruction = await this.adrenaProgram.methods
       .getAddLiquidityAmountAndFee({
         amountIn,
