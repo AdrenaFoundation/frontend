@@ -30,6 +30,7 @@ export default function StakedBarRechart({
   isSmallScreen = true,
   subValue,
   formatY = 'currency',
+  gmt,
 }: {
   title: string;
   data: RechartsData[];
@@ -44,6 +45,7 @@ export default function StakedBarRechart({
   isSmallScreen?: boolean;
   subValue?: number;
   formatY?: 'percentage' | 'currency' | 'number';
+  gmt?: number;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -142,6 +144,7 @@ export default function StakedBarRechart({
                 isValueOnly={labels.length === 1}
                 format={formatY}
                 total={true}
+                gmt={gmt}
               />
             }
             cursor={false}

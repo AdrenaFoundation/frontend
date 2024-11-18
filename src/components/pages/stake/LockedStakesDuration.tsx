@@ -34,7 +34,7 @@ export default function LockedStakesDuration({
 }) {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
-  const lockedStakesPerPage = 6;
+  const lockedStakesPerPage = 3;
 
   if (lockedStakes.length === 0) {
     return null;
@@ -78,16 +78,22 @@ export default function LockedStakesDuration({
   return (
     <div
       className={twMerge(
-        'flex flex-col w-full border-2 border-bcolor rounded-xl overflow-hidden',
+        'flex flex-col w-full border-2 border-bcolor rounded-xl overflow-hidden bg-secondary',
         className,
       )}
     >
-      <div className='flex flex-col w-full items-center'>
-        <div className={twMerge('border-b items-center justify-center bg-[#2d343cA0] w-full flex pl-4 pt-2 pb-2 pr-4')}>
+      <div className='flex flex-col w-full items-center cursor-pointer bg-secondary' onClick={() => {
+        setDetailOpen(!detailOpen)
+      }}>
+        <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-1 pb-1 pr-4')} >
           <Image src={lockIcon} width={14} height={14} alt="Lock icon" className='mr-1' />
 
-          <div className='text-sm flex gap-1 font-boldy'>
+          <div className='text-sm flex gap-1 font-boldy text-txtfade cursor-pointer'>
             {Number(lockDuration) / 3600 / 24} days lock
+          </div>
+
+          <div className='text-sm flex gap-1 font-boldy text-txtfade ml-1'>
+            ({lockedStakes.length})
           </div>
 
           {firstUnlock !== null ? <div className='flex items-center justify-center ml-auto gap-2'>
@@ -96,21 +102,22 @@ export default function LockedStakesDuration({
           </div> : null}
         </div>
 
-        <div className='flex flex-col pt-4 pb-4 items-center relative w-full'>
+        <div className='flex flex-col pt-2 pb-2 items-center relative w-full'>
           <div className='flex gap-x-2 items-center justify-center'>
+            Total :
             <FormatNumber
               nb={totalStaked}
               className='text-xl'
               isAbbreviate={true}
               isAbbreviateIcon={false}
-              isDecimalDimmed={false}
+              isDecimalDimmed={true}
             />
 
             <div className='text-xl font-boldy'>{token}</div>
           </div>
 
           {lockedStakes.length === 1 && lockedStakes[0].isGenesis ?
-            <div className='text-xxs bg-[#068862a0] font-boldy pt-[0.1em] pb-[0.1em] pr-2 pl-2 mt-1 rounded w-14 text-center'>genesis</div> : null}
+            <div className='text-xxs bg-[#068862a0] font-boldy pt-[0.1em] pb-[0.1em] px-2 mt-1 rounded w-14 text-center'>genesis</div> : null}
         </div>
 
         <div className='flex border-t pt-2 pb-2 w-full justify-evenly flex-wrap gap-y-4 gap-x-4'>
@@ -133,13 +140,13 @@ export default function LockedStakesDuration({
               placement="auto"
             >
               <div className='flex items-center flex-col'>
-                <div className='text-xs text-txtfade font-boldy'>USDC Reward Weight</div>
+                <div className='text-xs text-txtfade font-boldy underline decoration-dotted'>USDC Reward Weight</div>
                 <div className='flex items-center justify-center gap-1'>
                   <FormatNumber
                     nb={totalWeight.amountWithRewardMultiplier}
                     className='text-sm'
                     precision={0}
-                    isDecimalDimmed={false}
+                    isDecimalDimmed={true}
                     isAbbreviate={true}
                     isAbbreviateIcon={false}
                   />
@@ -169,13 +176,13 @@ export default function LockedStakesDuration({
               placement="auto"
             >
               <div className='flex items-center flex-col'>
-                <div className='text-xs text-txtfade font-boldy'>ADX Reward Weight</div>
+                <div className='text-xs text-txtfade font-boldy underline decoration-dotted'>ADX Reward Weight</div>
                 <div className='flex items-center justify-center gap-1'>
                   <FormatNumber
                     nb={totalWeight.amountWithLmRewardMultiplier}
                     className='text-sm'
                     precision={0}
-                    isDecimalDimmed={false}
+                    isDecimalDimmed={true}
                     isAbbreviate={true}
                     isAbbreviateIcon={false}
                   />
@@ -196,7 +203,7 @@ export default function LockedStakesDuration({
                   nb={totalWeight.votingPower}
                   className='text-sm'
                   precision={0}
-                  isDecimalDimmed={false}
+                  isDecimalDimmed={true}
                   isAbbreviate={true}
                   isAbbreviateIcon={false}
                 />
@@ -208,7 +215,7 @@ export default function LockedStakesDuration({
         </div>
       </div>
 
-      {detailOpen ? <div className='border-t-4'>
+      {detailOpen ? <div className='border-t-1'>
         {paginatedLockedStakes.map((lockedStake, i) => <LockedStake
           lockedStake={lockedStake}
           key={i}
@@ -226,7 +233,7 @@ export default function LockedStakesDuration({
         />
       </div> : null}
 
-      {lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex border-t bg-[#2d343cA0] cursor-pointer hover:opacity-100' onClick={() => {
+      {lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex border-t bg-secondarycursor-pointer hover:opacity-100' onClick={() => {
         setDetailOpen(!detailOpen)
       }}>
         <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('opacity-40', detailOpen ? 'rotate-180' : '')} />
@@ -246,8 +253,8 @@ export default function LockedStakesDuration({
             <Button
               variant="outline"
               size="xs"
-              title="Upgrade"
               className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+              title="Upgrade"
               onClick={() => {
                 handleClickOnUpdateLockedStake(lockedStakes[0])
               }}

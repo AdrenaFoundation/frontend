@@ -39,7 +39,7 @@ import { useSelector } from '@/store/store';
 import { PageProps } from '@/types';
 import { nativeToUi } from '@/utils';
 
-import arrowDownIcom from '../../../public/images/Icons/arrow-down.svg';
+import arrowDownIcon from '../../../public/images/Icons/arrow-down.svg';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
@@ -136,7 +136,7 @@ export default function DetailedMonitoring({
             {selectedTab}
 
             <Image
-              src={arrowDownIcom}
+              src={arrowDownIcon}
               height={12}
               width={12}
               alt="arrow down"

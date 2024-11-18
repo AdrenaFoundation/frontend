@@ -664,7 +664,6 @@ export default function StakeOverview({
                 variant="primary"
                 size="sm"
                 title="Add Stake"
-                className="px-5 w-[9em]"
                 onClick={() =>
                   handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_LOCK_DURATION)
                 }
