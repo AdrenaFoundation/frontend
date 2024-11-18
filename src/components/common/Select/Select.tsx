@@ -15,8 +15,10 @@ export default function Select<T extends string>({
   className,
   selected,
   selectedClassName,
+  selectedTextClassName,
   menuClassName,
   menuOpenBorderClassName,
+  menuTextClassName,
   options,
   onSelect,
   reversed,
@@ -24,8 +26,10 @@ export default function Select<T extends string>({
 }: {
   className?: string;
   selectedClassName?: string;
+  selectedTextClassName?: string;
   menuClassName?: string;
   menuOpenBorderClassName?: string;
+  menuTextClassName?: string;
   selected: T;
   options: { title: T; img?: ImageRef }[];
   onSelect: (opt: T) => void;
@@ -73,7 +77,7 @@ export default function Select<T extends string>({
             >
               {reversed ? img : chevron}
               <div className="flex flex-row gap-2 items-center">
-                <span className="text-lg font-boldy z-20 m-auto select-none">
+                <span className={twMerge("text-lg font-boldy z-20 m-auto select-none", selectedTextClassName)}>
                   {selected}
                 </span>
 
@@ -119,7 +123,7 @@ export default function Select<T extends string>({
                       />
                     ) : null}
 
-                    <span className="font-boldy text-lg z-20 m-auto">
+                    <span className={twMerge("font-boldy text-lg z-20 m-auto", menuTextClassName)}>
                       {option.title}
                     </span>
                   </MenuItem>
