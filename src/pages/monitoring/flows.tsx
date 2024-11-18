@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import DatePicker from 'react-datepicker';
 import { twMerge } from 'tailwind-merge';
-
+import Select from '@/components/common/Select/Select';
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import FormatNumber from '@/components/Number/FormatNumber';
 import usePositionStats from '@/hooks/usePositionStats';
@@ -16,7 +16,7 @@ export default function Flow({
   custodies: CustodyExtended[] | null;
 }) {
   const { data, loading, startDate, setStartDate, endDate, setEndDate } = usePositionStats();
-  const [selectedRange, setSelectedRange] = useState('all-time');
+  const [selectedRange, setSelectedRange] = useState('All Time');
 
   if (loading) return <div>Loading...</div>;
 
@@ -35,69 +35,76 @@ export default function Flow({
     <StyledContainer className="rounded-lg overflow-hidden m-2 p-5 flex flex-wrap">
       <div className="flex flex-col space-y-2 sm:space-y-0 sm:flex-row sm:justify-between items-center">
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 bg-secondary border border-gray-600 rounded p-2">
-          {selectedRange === 'custom' && (
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <DatePicker
-                selected={new Date(startDate)}
-                onChange={(date: Date | null) => {
-                  if (date) {
+
+          <div className="flex flex-col sm:flex-row sm:space-y-0 sm:space-x-2 space-y-2 items-center w-full sm:h-[2em]">
+            <Select
+              onSelect={(value) => {
+                setSelectedRange(value);
+                const date = new Date();
+                setEndDate(date.toISOString());
+                switch (value) {
+                  case 'All Time':
+                    setStartDate('2024-10-25T00:00:00Z');
+                    break;
+                  case 'Last Month':
+                    date.setMonth(date.getMonth() - 1);
                     setStartDate(date.toISOString());
-                  }
-                }}
-                className="px-2 py-1 bg-[#050D14] rounded border border-gray-600"
-                minDate={new Date('2023-09-25')}
-                maxDate={new Date()}
-              />
-              <DatePicker
-                selected={new Date(endDate)}
-                onChange={(date: Date | null) => {
-                  if (date) {
-                    setEndDate(date.toISOString());
-                  }
-                }}
-                className="px-2 py-1 bg-[#050D14] rounded border border-gray-600"
-                minDate={new Date('2023-09-25')}
-                maxDate={new Date()}
-              />
-            </div>
-          )}
-          <select
-            onChange={(e) => {
-              const value = e.target.value;
-              setSelectedRange(value);
-              const date = new Date();
-              setEndDate(date.toISOString());
-              switch (value) {
-                case 'all-time':
-                  setStartDate('2024-10-25T00:00:00Z');
-                  break;
-                case 'last-month':
-                  date.setMonth(date.getMonth() - 1);
-                  setStartDate(date.toISOString());
-                  break;
-                case 'last-week':
-                  date.setDate(date.getDate() - 7);
-                  setStartDate(date.toISOString());
-                  break;
-                case 'yesterday':
-                  date.setDate(date.getDate() - 1);
-                  setStartDate(date.toISOString());
-                  break;
-                case 'custom':
-                  // Handle custom range selection
-                  break;
-                default:
-                  break;
-              }
-            }}
-            className="bg-secondary rounded hover:bg-[#0a1721]"
-          >
-            <option value="all-time">All Time</option>
-            <option value="last-month">Last Month</option>
-            <option value="last-week">Last Week</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="custom">Custom Range</option>
-          </select>
+                    break;
+                  case 'Last Week':
+                    date.setDate(date.getDate() - 7);
+                    setStartDate(date.toISOString());
+                    break;
+                  case 'Yesterday':
+                    date.setDate(date.getDate() - 1);
+                    setStartDate(date.toISOString());
+                    break;
+                  case 'Custom':
+                    break;
+                  default:
+                    break;
+                }
+              }}
+              reversed={true}
+              className="shrink-0 h-full flex items-center"
+              menuClassName="rounded-tl-lg rounded-bl-lg ml-3"
+              menuOpenBorderClassName="rounded-tl-lg rounded-bl-lg"
+              options={[
+                { title: 'All Time' },
+                { title: 'Last Month' },
+                { title: 'Last Week' },
+                { title: 'Yesterday' },
+                { title: 'Custom' },
+              ]}
+              selected={selectedRange}
+            />
+            {selectedRange === 'Custom' && (
+              <>
+                <DatePicker
+                  selected={new Date(startDate)}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      setStartDate(date.toISOString());
+                    }
+                  }}
+                  className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+                  minDate={new Date('2023-09-25')}
+                  maxDate={new Date()}
+                />
+                <DatePicker
+                  selected={new Date(endDate)}
+                  onChange={(date: Date | null) => {
+                    if (date) {
+                      setEndDate(date.toISOString());
+                    }
+                  }}
+                  className="w-full sm:w-auto px-2 py-1 bg-[#050D14] rounded border border-gray-600"
+                  minDate={new Date('2023-09-25')}
+                  maxDate={new Date()}
+                />
+              </>
+            )}
+
+          </div>
         </div>
       </div>
       <div className="flex flex-wrap w-full gap-4">
