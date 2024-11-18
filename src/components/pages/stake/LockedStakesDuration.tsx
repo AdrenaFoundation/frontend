@@ -253,6 +253,7 @@ export default function LockedStakesDuration({
             <Button
               variant="outline"
               size="xs"
+              className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
               title="Upgrade"
               onClick={() => {
                 handleClickOnUpdateLockedStake(lockedStakes[0])
