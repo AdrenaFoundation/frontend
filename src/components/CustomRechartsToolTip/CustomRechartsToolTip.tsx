@@ -19,6 +19,7 @@ export default function CustomRechartsToolTip({
   precision = 2,
   total = false,
   totalColor = 'red',
+  gmt, // GMT+0
 }: TooltipProps<ValueType, NameType> & {
   isValueOnly?: boolean;
   format?: 'currency' | 'percentage' | 'number';
@@ -27,11 +28,12 @@ export default function CustomRechartsToolTip({
   precision?: number;
   total?: boolean;
   totalColor?: string;
+  gmt?: number;
 }) {
   if (active && payload && payload.length) {
     return (
       <div className="bg-third p-3 border border-white rounded-lg min-w-[12em]">
-        {label && <p className="text-lg mb-2 font-mono">{label}</p>}
+        {label && <p className="text-lg mb-2 font-mono">{label} {typeof gmt !== 'undefined' ? `GMT${gmt < 0 ? gmt : `+${gmt}`}` : null}</p>}
 
         {total ? <div
           key="total"

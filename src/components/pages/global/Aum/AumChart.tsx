@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import AreaRechart from '@/components/ReCharts/AreaRecharts';
 import { RechartsData } from '@/types';
+import { getGMT } from '@/utils';
 
 export default function AumChart() {
   const [AUM, setAUM] = useState<RechartsData[] | null>(null);
@@ -69,13 +70,11 @@ export default function AumChart() {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+            timeZone: 'UTC',
           });
         }
 
-        return new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        throw new Error('Invalid period');
       });
 
       const formattedData = aum_usd.map((aum: number, i: string | number) => ({
@@ -118,6 +117,7 @@ export default function AumChart() {
       data={AUM}
       labels={[{ name: 'value' }]}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       domain={['dataMin', 'dataMax']}
     />

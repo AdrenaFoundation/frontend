@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import AreaRechart from '@/components/ReCharts/AreaRecharts';
 import { RechartsData } from '@/types';
+import { getGMT } from '@/utils';
 
 export default function ALPPriceChart() {
   const [chartData, setChartData] = useState<RechartsData[] | null>(null);
@@ -72,13 +73,11 @@ export default function ALPPriceChart() {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+            timeZone: 'UTC',
           });
         }
 
-        return new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        throw new Error('Invalid period');
       });
 
       const formattedData = lp_token_price.map(
@@ -119,6 +118,7 @@ export default function ALPPriceChart() {
       data={chartData}
       labels={[{ name: 'value' }]}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       domain={['dataMin', 'dataMax']}
     />
