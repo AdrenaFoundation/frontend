@@ -1,7 +1,6 @@
 import { twMerge } from 'tailwind-merge';
 
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { UserProfileExtended } from '@/types';
 
 export default function TradingStats({
@@ -21,10 +20,7 @@ export default function TradingStats({
     userProfile.shortStats.feePaidUsd;
 
   return (
-    <StyledContainer
-      className={className}
-      bodyClassName="gap-1 flex-wrap flex-col sm:flex-row"
-    >
+    <div className={twMerge("gap-1 flex-wrap flex-col sm:flex-row w-full flex", className)}>
       <NumberDisplay
         title="Realized PnL"
         nb={totalProfitLoss}
@@ -101,6 +97,6 @@ export default function TradingStats({
         format="currency"
         precision={2}
       />
-    </StyledContainer >
+    </div>
   );
 }

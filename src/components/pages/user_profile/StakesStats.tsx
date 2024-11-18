@@ -1,6 +1,6 @@
-import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
+import { twMerge } from 'tailwind-merge';
+
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import { LockedStakeExtended } from '@/types';
 
 import LockedStakes from '../stake/LockedStakes';
@@ -13,6 +13,7 @@ export default function StakesStats({
   handleLockedStakeRedeem,
   handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
+  className,
 }: {
   liquidStakedADX: number | null;
   lockedStakedADX: number | null;
@@ -24,12 +25,13 @@ export default function StakesStats({
   ) => void;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
+  className?: string;
 }) {
   const adxLockedStakes = lockedStakes?.filter(x => x.tokenSymbol === 'ADX').sort((a, b) => a.lockDuration.toNumber() - b.lockDuration.toNumber());
   const alpLockedStakes = lockedStakes?.filter(x => x.tokenSymbol === 'ALP').sort((a, b) => a.lockDuration.toNumber() - b.lockDuration.toNumber());
 
   return (
-    <StyledContainer title={<div className='flex gap-2'>Stakes <LiveIcon /></div>} titleClassName="text-2xl">
+    <div className={twMerge('flex flex-col w-full items-center justify-center', className)}>
       <div className="flex flex-col sm:flex-row gap-3">
         <NumberDisplay
           title="Liquid Staked ADX"
@@ -37,6 +39,8 @@ export default function StakesStats({
           precision={2}
           placeholder="0 ADX"
           suffix="ADX"
+          className='border-none p-1'
+          titleClassName='text-xs sm:text-xs'
         />
 
         <NumberDisplay
@@ -45,6 +49,8 @@ export default function StakesStats({
           precision={2}
           placeholder="0 ADX"
           suffix="ADX"
+          className='border-none p-1'
+          titleClassName='text-xs sm:text-xs'
         />
 
         <NumberDisplay
@@ -53,11 +59,13 @@ export default function StakesStats({
           precision={2}
           placeholder="0 ALP"
           suffix="ALP"
+          className='border-none p-1'
+          titleClassName='text-xs sm:text-xs'
         />
       </div>
 
       {adxLockedStakes?.length || alpLockedStakes?.length ? (
-        <div className="mt-2">
+        <>
           <span className="font-bold opacity-50">
             My{adxLockedStakes?.length || alpLockedStakes?.length ? ` ${(adxLockedStakes?.length ?? 0) + (alpLockedStakes?.length ?? 0)}` : ''} Locked
             Stakes
@@ -86,8 +94,8 @@ export default function StakesStats({
               handleClickOnUpdateLockedStake
             }
           /> : null}
-        </div>
+        </>
       ) : null}
-    </StyledContainer>
+    </div>
   );
 }
