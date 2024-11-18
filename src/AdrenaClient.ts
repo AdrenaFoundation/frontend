@@ -4299,9 +4299,11 @@ export class AdrenaClient {
       return null;
     }
 
-    const custody = this.getCustodyByMint(token.mint);
+    if (amountIn.isZero()) {
+      throw new Error('Cannot add 0 liquidity');
+    }
 
-    console.log('AmountIn', amountIn.toString());
+    const custody = this.getCustodyByMint(token.mint);
 
     const instruction = await this.adrenaProgram.methods
       .getAddLiquidityAmountAndFee({
