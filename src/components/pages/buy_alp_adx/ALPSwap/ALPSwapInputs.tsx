@@ -15,7 +15,6 @@ import infoIcon from '../../../../../public/images/Icons/info.svg';
 import warningIcon from '../../../../../public/images/Icons/warning.png';
 import jupIcon from '../../../../../public/images/jup-logo.png';
 import TradingInput from '../../trading/TradingInput/TradingInput';
-import { setTime } from 'react-datepicker/dist/date_utils';
 
 // use the counter to handle asynchronous multiple loading
 // always ignore outdated information
