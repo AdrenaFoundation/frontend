@@ -98,7 +98,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         }),
       );
 
-      // Push a data coming from last data point (last day or last hour) to now
+      // Push a data coming from last data point (last day) to now
       formattedData.push({
         time: new Date().toLocaleTimeString('en-US', {
           hour: 'numeric',
