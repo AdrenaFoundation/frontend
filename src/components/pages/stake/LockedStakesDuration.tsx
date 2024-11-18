@@ -34,7 +34,7 @@ export default function LockedStakesDuration({
 }) {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
-  const lockedStakesPerPage = 6;
+  const lockedStakesPerPage = 3;
 
   if (lockedStakes.length === 0) {
     return null;
@@ -78,15 +78,17 @@ export default function LockedStakesDuration({
   return (
     <div
       className={twMerge(
-        'flex flex-col w-full border-2 border-bcolor rounded-xl overflow-hidden',
+        'flex flex-col w-full border-2 border-bcolor rounded-xl overflow-hidden bg-secondary',
         className,
       )}
     >
-      <div className='flex flex-col w-full items-center'>
-        <div className={twMerge('border-b items-center justify-center bg-primary w-full flex pl-4 pt-1 pb-1 pr-4')}>
+      <div className='flex flex-col w-full items-center cursor-pointer bg-secondary' onClick={() => {
+        setDetailOpen(!detailOpen)
+      }}>
+        <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-1 pb-1 pr-4')} >
           <Image src={lockIcon} width={14} height={14} alt="Lock icon" className='mr-1' />
 
-          <div className='text-sm flex gap-1 font-boldy text-txtfade'>
+          <div className='text-sm flex gap-1 font-boldy text-txtfade cursor-pointer'>
             {Number(lockDuration) / 3600 / 24} days lock
           </div>
 
@@ -231,7 +233,7 @@ export default function LockedStakesDuration({
         />
       </div> : null}
 
-      {lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex border-t bg-primary cursor-pointer hover:opacity-100' onClick={() => {
+      {lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex border-t bg-secondarycursor-pointer hover:opacity-100' onClick={() => {
         setDetailOpen(!detailOpen)
       }}>
         <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('opacity-40', detailOpen ? 'rotate-180' : '')} />
