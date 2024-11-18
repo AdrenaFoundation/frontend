@@ -1,15 +1,10 @@
-import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import FormatNumber from '@/components/Number/FormatNumber';
-import { SOL_DECIMALS } from '@/constant';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { PositionExtended, UserProfileExtended, VestExtended } from '@/types';
-import { getTokenSymbol, nativeToUi } from '@/utils';
+import { getTokenSymbol } from '@/utils';
 
-import InfoAnnotation from '../monitoring/InfoAnnotation';
 import OnchainAccountInfo from '../monitoring/OnchainAccountInfo';
 import Table from '../monitoring/Table';
 import TitleAnnotation from '../monitoring/TitleAnnotation';
@@ -48,7 +43,6 @@ export default function UserRelatedAdrenaAccounts({
   className?: string;
 }) {
   const { stakingAccounts } = useWalletStakingAccounts();
-  const [rent, setRent] = useState<number | null>(null);
   const [data, setData] = useState<
     | {
       rowTitle: ReactNode;
@@ -56,8 +50,6 @@ export default function UserRelatedAdrenaAccounts({
     }[]
     | null
   >(null);
-
-  const [accounts, setAccounts] = useState<PublicKey[] | null>(null);
 
   useEffect(() => {
     const data: {
@@ -124,33 +116,7 @@ export default function UserRelatedAdrenaAccounts({
     });
 
     setData(data);
-    setAccounts(accounts);
   }, [positions, stakingAccounts, userProfile, userVest]);
-
-  // Calculate rent for all accounts
-  const calculateRent = useCallback(async () => {
-    if (!window.adrena.client.connection || accounts === null)
-      return setRent(null);
-
-    if (!accounts.length) {
-      return setRent(0);
-    }
-
-    const accountsInfo =
-      await window.adrena.client.connection.getMultipleAccountsInfo(accounts);
-
-    const rent = accountsInfo.reduce((acc, account) => {
-      if (!account) return acc;
-
-      return acc + nativeToUi(new BN(account.lamports), SOL_DECIMALS);
-    }, 0);
-
-    setRent(rent);
-  }, [accounts]);
-
-  useEffect(() => {
-    calculateRent();
-  }, [calculateRent]);
 
   if (!data) return null;
 

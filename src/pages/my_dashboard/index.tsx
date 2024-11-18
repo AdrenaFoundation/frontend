@@ -1,5 +1,4 @@
 import { BN } from '@coral-xyz/anchor';
-import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import { PublicKey } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
@@ -7,17 +6,15 @@ import { useEffect, useState } from 'react';
 import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import Modal from '@/components/common/Modal/Modal';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import Loader from '@/components/Loader/Loader';
+import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
 import UserRelatedAdrenaAccounts from '@/components/pages/my_dashboard/UserRelatedAdrenaAccounts';
 import FinalizeLockedStakeRedeem from '@/components/pages/stake/FinalizeLockedStakeRedeem';
 import UpgradeLockedStake from '@/components/pages/stake/UpgradeLockedStake';
 import OwnerBlock from '@/components/pages/user_profile/OwnerBlock';
 import PositionsStats from '@/components/pages/user_profile/PositionsStats';
 import ProfileCreation from '@/components/pages/user_profile/ProfileCreation';
-import StakesStats from '@/components/pages/user_profile/StakesStats';
 import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
-import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { useSelector } from '@/store/store';
@@ -143,90 +140,6 @@ export default function MyDashboard({
     }
   };
 
-  const handleLockedStakeRedeem = async (
-    lockedStake: LockedStakeExtended,
-    earlyExit = false,
-  ) => {
-    if (!owner) {
-      addNotification({
-        type: 'error',
-        title: 'Please connect your wallet',
-      });
-      return;
-    }
-
-    if (earlyExit && !finalizeLockedStakeRedeem) return;
-
-    const notification = MultiStepNotification.newForRegularTransaction(
-      'Remove Locked Stake',
-    ).fire();
-
-    const stakedTokenMint =
-      lockedStake.tokenSymbol === 'ADX'
-        ? window.adrena.client.adxToken.mint
-        : window.adrena.client.alpToken.mint;
-
-    try {
-      await window.adrena.client.removeLockedStake({
-        owner,
-        resolved: !!lockedStake.resolved,
-        id: lockedStake.id,
-        stakedTokenMint,
-        lockedStakeIndex: new BN(lockedStake.index),
-        earlyExit,
-        notification,
-      });
-
-      triggerWalletTokenBalancesReload();
-      triggerWalletStakingAccountsReload();
-
-      if (earlyExit) {
-        setLockedStake(null);
-        setFinalizeLockedStakeRedeem(false);
-      }
-    } catch (error) {
-      console.error('error', error);
-    }
-  };
-
-  const handleUpgradeLockedStake = async ({
-    lockedStake,
-    upgradedDuration: upgradeDuration,
-    additionalAmount,
-  }: {
-    lockedStake: LockedStakeExtended;
-    upgradedDuration?: AdxLockPeriod | AlpLockPeriod;
-    additionalAmount?: number;
-  }) => {
-    if (!owner) {
-      addNotification({
-        type: 'error',
-        title: 'Please connect your wallet',
-      });
-      return;
-    }
-
-    const notification = MultiStepNotification.newForRegularTransaction(
-      'Upgrade Locked Stake',
-    ).fire();
-
-    try {
-      await window.adrena.client.upgradeLockedStake({
-        lockedStake,
-        updatedDuration: upgradeDuration,
-        additionalAmount,
-        notification,
-
-      });
-
-      triggerWalletTokenBalancesReload();
-      triggerWalletStakingAccountsReload();
-      setUpdateLockedStake(false);
-    } catch (error) {
-      console.error('error', error);
-    }
-  };
-
   const getUserVesting = async () => {
     try {
       const vest = await window.adrena.client.loadUserVest();
@@ -296,32 +209,43 @@ export default function MyDashboard({
 
             <div className='flex flex-col items-center gap-4 border-t pt-4'>
               <div className='text-xl font-boldy'>Staking</div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <NumberDisplay
+                  title="Liquid Staked ADX"
+                  nb={liquidStakedADX}
+                  precision={2}
+                  placeholder="0 ADX"
+                  suffix="ADX"
+                  className='border-none p-1'
+                  titleClassName='text-xs sm:text-xs'
+                />
 
-              <StakesStats
-                liquidStakedADX={liquidStakedADX}
-                lockedStakedADX={lockedStakedADX}
-                lockedStakedALP={lockedStakedALP}
-                lockedStakes={lockedStakes}
-                handleLockedStakeRedeem={handleLockedStakeRedeem}
-                handleClickOnFinalizeLockedRedeem={(
-                  lockedStake: LockedStakeExtended,
-                ) => {
-                  setLockedStake(lockedStake);
-                  setUpdateLockedStake(false);
-                  setFinalizeLockedStakeRedeem(true);
-                }}
-                handleClickOnUpdateLockedStake={(
-                  lockedStake: LockedStakeExtended,
-                ) => {
-                  setLockedStake(lockedStake);
-                  setFinalizeLockedStakeRedeem(false);
-                  setUpdateLockedStake(true);
-                }}
-              />
+                <NumberDisplay
+                  title="Locked Staked ADX"
+                  nb={lockedStakedADX}
+                  precision={2}
+                  placeholder="0 ADX"
+                  suffix="ADX"
+                  className='border-none p-1'
+                  titleClassName='text-xs sm:text-xs'
+                />
+
+                <NumberDisplay
+                  title="Locked Staked ALP"
+                  nb={lockedStakedALP}
+                  precision={2}
+                  placeholder="0 ALP"
+                  suffix="ALP"
+                  className='border-none p-1'
+                  titleClassName='text-xs sm:text-xs'
+                />
+              </div>
             </div>
           </div>
 
-          <div className='flex flex-col items-center gap-4 border-t pt-4'>
+          <div className='h-[1px] w-full bg-bcolor' />
+
+          <div className='flex flex-col items-center gap-4'>
             <div className='text-xl font-boldy'>OnChain Accounts</div>
 
             <UserRelatedAdrenaAccounts
@@ -333,51 +257,6 @@ export default function MyDashboard({
 
           </div>
         </div>
-
-        <AnimatePresence>
-          {updateLockedStake && (
-            <Modal
-              title="Upgrade Locked Stake"
-              close={() => {
-                setLockedStake(null);
-                setUpdateLockedStake(false);
-                setFinalizeLockedStakeRedeem(false);
-              }}
-              className="max-w-[28em]"
-            >
-              {lockedStake ? (
-                <UpgradeLockedStake
-                  lockedStake={lockedStake}
-                  handleUpgradeLockedStake={handleUpgradeLockedStake}
-                />
-              ) : null}
-            </Modal>
-          )}
-
-          {finalizeLockedStakeRedeem && (
-            <Modal
-              title="Early Exit"
-              close={() => {
-                setLockedStake(null);
-                setUpdateLockedStake(false);
-                setFinalizeLockedStakeRedeem(false);
-              }}
-              className="max-w-[25em]"
-            >
-              {lockedStake ? (
-                <FinalizeLockedStakeRedeem
-                  lockedStake={lockedStake}
-                  stakeTokenMintDecimals={
-                    lockedStake.tokenSymbol === 'ADX'
-                      ? window.adrena.client.adxToken.decimals
-                      : window.adrena.client.alpToken.decimals
-                  }
-                  handleLockedStakeRedeem={handleLockedStakeRedeem}
-                />
-              ) : null}
-            </Modal>
-          )}
-        </AnimatePresence>
       </div>
     </>
   );
