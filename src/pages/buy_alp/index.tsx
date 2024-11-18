@@ -1,36 +1,18 @@
 import { Alignment, Fit, Layout } from '@rive-app/react-canvas';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
-import Loader from '@/components/Loader/Loader';
 import FormatNumber from '@/components/Number/FormatNumber';
+import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
 import RewardsAnimation from '@/components/pages/buy_alp_adx/RewardsAnimation/RewardsAnimation';
 import StakeAnimation from '@/components/pages/buy_alp_adx/StakeAnimation/StakeAnimation';
 import RiveAnimation from '@/components/RiveAnimation/RiveAnimation';
 import useAssetsUnderManagement from '@/hooks/useAssetsUnderManagement';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useSelector } from '@/store/store';
-import { PageProps, Token } from '@/types';
-import { nativeToUi, uiToNative } from '@/utils';
+import { PageProps } from '@/types';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
-import ALPSwap from '@/components/pages/buy_alp_adx/ALPSwap/ALPSwap';
-
-// use the counter to handle asynchronous multiple loading
-// always ignore outdated information
-let loadingCounter = 0;
-
-export type FeesAndAmountsType = {
-  [tokenSymbol: string]: {
-    token: Token;
-    fees: number | null;
-    amount: number | null;
-    equivalentAmount: number | null;
-  };
-};
 
 export default function Buy({
   connected,
