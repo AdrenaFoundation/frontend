@@ -212,6 +212,7 @@ export type UserProfileExtended = {
   swapFeePaidUsd: number;
   // Aggregates
   totalPnlUsd: number;
+  // Only accounts for opens
   totalTradeVolumeUsd: number;
   totalFeesPaidUsd: number;
   openingAverageLeverage: number;
