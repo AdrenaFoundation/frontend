@@ -40,10 +40,12 @@ export default function UserRelatedAdrenaAccounts({
   userProfile,
   userVest,
   positions,
+  className,
 }: {
   userProfile: false | UserProfileExtended;
   userVest: VestExtended | null;
   positions: PositionExtended[] | null;
+  className?: string;
 }) {
   const { stakingAccounts } = useWalletStakingAccounts();
   const [rent, setRent] = useState<number | null>(null);
@@ -153,35 +155,15 @@ export default function UserRelatedAdrenaAccounts({
   if (!data) return null;
 
   return (
-    <StyledContainer
-      title="My Adrena's Accounts"
-      subTitle="Adrena Programs on-chain accounts related to my wallet."
-      className="w-full grow md:min-w-[46em] relative"
-      titleClassName="text-2xl"
-    >
-      <div className="absolute right-6 top-4 flex-col">
-        <div className="flex gap-2">
-          <InfoAnnotation
-            text="On-chain accounts need to be funded with SOL to be created. The SOL provided for this is called rent. This is the total rent cost for all accounts. Rent is a one-time cost that is refunded when the account is closed."
-            className="w-4 h-4"
-          />
-          <h3>Total rent</h3>
-        </div>
-
-        <div className="flex items-end justify-end gap-2">
-          <FormatNumber nb={rent} precision={4} className="text-lg" /> SOL
-        </div>
-      </div>
-
-      <Table
-        rowHovering={true}
-        breakpoint="650px"
-        rowTitleWidth="50%"
-        data={data}
-        rowTitleClassName="text-sm"
-        pagination={true}
-        nbItemPerPage={10}
-      />
-    </StyledContainer>
+    <Table
+      className={className}
+      rowHovering={true}
+      breakpoint="650px"
+      rowTitleWidth="50%"
+      data={data}
+      rowTitleClassName="text-sm"
+      pagination={true}
+      nbItemPerPage={10}
+    />
   );
 }

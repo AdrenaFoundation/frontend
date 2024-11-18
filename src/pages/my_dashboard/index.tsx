@@ -321,11 +321,17 @@ export default function MyDashboard({
             </div>
           </div>
 
-          <UserRelatedAdrenaAccounts
-            userProfile={userProfile}
-            userVest={userVest}
-            positions={positions}
-          />
+          <div className='flex flex-col items-center gap-4 border-t pt-4'>
+            <div className='text-xl font-boldy'>OnChain Accounts</div>
+
+            <UserRelatedAdrenaAccounts
+              className='h-auto w-[90%] flex ml-auto mr-auto'
+              userProfile={userProfile}
+              userVest={userVest}
+              positions={positions}
+            />
+
+          </div>
         </div>
 
         <AnimatePresence>
