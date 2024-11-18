@@ -89,7 +89,7 @@ export default function TradingStats({
       />
 
       <NumberDisplay
-        title="Total Volume"
+        title="Total Open Volume"
         className='border-0 min-w-[9em] p-1'
         bodyClassName='text-base'
         headerClassName='pb-2'

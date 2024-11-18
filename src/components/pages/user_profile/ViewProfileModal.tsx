@@ -68,7 +68,7 @@ export default function ViewProfileModal({
                 <>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <NumberDisplay
-                            title="Total Trade Volume"
+                            title="Total Open Volume"
                             nb={profile.totalTradeVolumeUsd}
                             format="currency"
                             className="bg-[#040D14] sm:min-w-[200px]"
