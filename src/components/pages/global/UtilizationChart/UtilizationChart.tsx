@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { getGMT } from '@/utils';
 
 export default function UtilizationChart() {
   const [infos, setInfos] = useState<{
@@ -109,13 +110,11 @@ export default function UtilizationChart() {
             return new Date(time).toLocaleDateString('en-US', {
               day: 'numeric',
               month: 'numeric',
+              timeZone: 'UTC',
             });
           }
 
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-          });
+          throw new Error('Invalid period');
         })();
 
         return {
@@ -171,6 +170,7 @@ export default function UtilizationChart() {
         })}
       domain={[0, 100]}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       isReferenceLine
       formatY="percentage"

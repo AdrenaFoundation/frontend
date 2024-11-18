@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import StakedBarRechart from '@/components/ReCharts/StakedBarRecharts';
 import { RechartsData } from '@/types';
+import { getGMT } from '@/utils';
 
 interface FeesChartProps {
   isSmallScreen: boolean;
@@ -71,6 +72,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         return new Date(time).toLocaleString('en-US', {
           day: 'numeric',
           month: 'numeric',
+          timeZone: 'UTC',
         });
       });
 
@@ -96,11 +98,12 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
         }),
       );
 
-      // Push a data coming from last data point (last day or last hour) to now
+      // Push a data coming from last data point (last day) to now
       formattedData.push({
         time: new Date().toLocaleTimeString('en-US', {
           hour: 'numeric',
           minute: 'numeric',
+          timeZone: 'UTC',
         }),
         'Swap Fees': latestPoolInfoSnapshot.cumulative_swap_fee_usd[0] - cumulative_swap_fee_usd[cumulative_swap_fee_usd.length - 1],
         'Mint/Redeem ALP Fees': latestPoolInfoSnapshot.cumulative_liquidity_fee_usd[0] - cumulative_liquidity_fee_usd[cumulative_liquidity_fee_usd.length - 1],
@@ -151,6 +154,7 @@ export default function FeesBarChart({ isSmallScreen }: FeesChartProps) {
       ]}
       period={period}
       setPeriod={setPeriod}
+      gmt={0}
       domain={[0, 'auto']}
       tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."
       isSmallScreen={isSmallScreen}

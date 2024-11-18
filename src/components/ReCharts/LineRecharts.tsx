@@ -26,6 +26,7 @@ export default function LineRechart({
   labels,
   period,
   setPeriod,
+  gmt,
   domain,
   tippyContent,
   isSmallScreen = true,
@@ -46,6 +47,7 @@ export default function LineRechart({
   isSmallScreen?: boolean;
   subValue?: number;
   isReferenceLine?: boolean;
+  gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
@@ -143,6 +145,7 @@ export default function LineRechart({
               <CustomRechartsToolTip
                 isValueOnly={labels.length === 1}
                 format={formatY}
+                gmt={gmt}
               />
             }
             cursor={false}
