@@ -1,3 +1,4 @@
+import { AnchorProvider } from '@coral-xyz/anchor';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -21,6 +22,7 @@ export default function MyDashboard({
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   readonly,
+  wallet,
 }: PageProps & {
   readonly?: boolean;
 }) {
@@ -91,7 +93,7 @@ export default function MyDashboard({
   return (
     <>
       <div className="flex flex-col max-w-[55em] pl-4 pr-4 pb-4 w-full min-h-full self-center pt-[6em]">
-        <div className='bg-main z-20 border w-full min-h-full gap-4 flex flex-col rounded-tl-xl rounded-tr-xl'>
+        <div className='bg-main z-20 border w-full min-h-full gap-4 flex flex-col rounded-xl'>
           {userProfile === false ? (
             <div className="flex w-full justify-center items-center">
               <ProfileCreation
@@ -107,6 +109,7 @@ export default function MyDashboard({
                 triggerUserProfileReload={triggerUserProfileReload}
                 canUpdateNickname={!readonly}
                 className="flex w-full w-min-[30em]"
+                walletPubkey={wallet?.publicKey}
               />
 
               <TradingStats userProfile={userProfile} livePositionsNb={positions === null ? null : positions.length} className='gap-y-4' />
@@ -132,7 +135,7 @@ export default function MyDashboard({
               <div className='h-[1px] w-full bg-bcolor' />
 
               <UserRelatedAdrenaAccounts
-                className='h-auto w-full flex mt-auto rounded-none'
+                className='h-auto w-full flex mt-auto'
                 userProfile={userProfile}
                 userVest={userVest}
                 positions={positions}
