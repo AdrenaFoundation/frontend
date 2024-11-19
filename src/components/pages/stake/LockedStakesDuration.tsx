@@ -233,7 +233,7 @@ export default function LockedStakesDuration({
         />
       </div> : null}
 
-      {lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex border-t bg-secondarycursor-pointer hover:opacity-100' onClick={() => {
+      {lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex border-t bg-[#a8a8a810] cursor-pointer hover:opacity-100' onClick={() => {
         setDetailOpen(!detailOpen)
       }}>
         <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('opacity-40', detailOpen ? 'rotate-180' : '')} />
