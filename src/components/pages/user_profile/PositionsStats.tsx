@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
 
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
+import { twMerge } from 'tailwind-merge';
+
 import useBetterMediaQuery from '@/hooks/useBetterMediaQuery';
 import { PositionExtended } from '@/types';
 
@@ -9,27 +9,21 @@ import Positions from '../trading/Positions/Positions';
 export default function PositionsStats({
   connected,
   positions,
-  title,
+  className,
   triggerUserProfileReload,
   showFeesInPnl,
 }: {
   connected: boolean;
   positions: PositionExtended[] | null;
-  title?: ReactNode;
+  className?: string;
   triggerUserProfileReload: () => void;
   showFeesInPnl: boolean;
 }) {
   const isBigScreen = useBetterMediaQuery('(min-width: 1100px)');
 
   return (
-    <StyledContainer
-      title={title}
-      titleClassName="text-2xl"
-      bodyClassName={
-        isBigScreen && positions && positions.length
-          ? 'border rounded-lg'
-          : 'gap-3 flex-row flex-wrap justify-center'
-      }
+    <div
+      className={twMerge('gap-3 flex-row flex-wrap justify-center', className)}
     >
       <Positions
         bodyClassName="bg-third"
@@ -41,6 +35,6 @@ export default function PositionsStats({
         isBigScreen={isBigScreen}
         showFeesInPnl={showFeesInPnl}
       />
-    </StyledContainer>
+    </div>
   );
 }

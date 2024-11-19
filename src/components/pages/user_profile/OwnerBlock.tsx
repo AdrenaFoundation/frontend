@@ -1,3 +1,4 @@
+import { PublicKey } from '@solana/web3.js';
 import Image from 'next/image';
 import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
@@ -5,24 +6,27 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import DateInfo from '@/components/pages/monitoring/DateInfo';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
 
-import editIcon from '../.../../../../../public/images/edit-icon.png';
+import editIcon from '../../../../public/images/edit-icon.png';
+import pfp from '../../../../public/images/monster-pfp.png';
+import pfw from '../../../../public/images/pfw.png';
+import walletIcon from '../../../../public/images/wallet-icon.svg';
 
 export default function OwnerBloc({
   userProfile,
   className,
   triggerUserProfileReload,
   canUpdateNickname = true,
-
+  walletPubkey,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
   triggerUserProfileReload: () => void;
   canUpdateNickname?: boolean;
+  walletPubkey?: PublicKey;
 }) {
   const [nicknameUpdating, setNicknameUpdating] = useState<boolean>(false);
   const [updatedNickname, setUpdatedNickname] = useState<string | null>(null);
@@ -58,16 +62,51 @@ export default function OwnerBloc({
   };
 
   return (
-    <StyledContainer className={twMerge(className)}>
-      <div className="flex w-full h-full items-center justify-center pb-4">
+    <div className={twMerge("items-center justify-center flex flex-col relative pt-[5em] rounded-tl-xl rounded-tr-xl min-h-[12em] sm:min-h-auto", className)}>
+      {walletPubkey ? <div className='z-20 absolute top-[-1.4em] right-0 flex gap-1'>
+        <Image
+          src={walletIcon}
+          className="w-4 h-4 inline-block opacity-50"
+          alt="alp logo"
+        />
+
+        <OnchainAccountInfo
+          address={walletPubkey}
+          className="text-md text-xs font-white font-boldy"
+          iconClassName='ml-1'
+          shorten={true}
+        />
+      </div> : null}
+
+      <div className='border-2 border-[#0000005A] rounded-full w-[10em] h-[10em] flex shrink-0 top-[-5em] absolute overflow-hidden z-30'>
+        <Image
+          src={pfp}
+          alt="Profile picture"
+          className='w-full h-full'
+          width={250}
+          height={130}
+        />
+      </div>
+
+      <div className='w-full h-full absolute opacity-40 top-0 rounded-tl-xl rounded-tr-xl z-10 overflow-hidden'>
+        <Image
+          src={pfw}
+          alt="Profile wallpaper"
+          className='min-w-full min-h-full'
+          width={800}
+          height={400}
+        />
+      </div>
+
+      <div className="flex flex-col w-full h-full items-center justify-center pb-4 z-20">
         {nicknameUpdating ? (
-          <div className="flex flex-col items-center w-full justify-center">
+          <div className="flex flex-col items-center w-full justify-center pb-4">
             <InputString
-              className="flex w-full border rounded-lg bg-inputcolor text-center justify-center mt-4"
+              className="flex w-full max-w-[24em] border rounded-lg bg-inputcolor text-center justify-center mt-4 font-boldy"
               value={updatedNickname ?? ''}
               onChange={setUpdatedNickname}
               placeholder="The Great Trader"
-              inputFontSize="2em"
+              inputFontSize="1.2em"
               maxLength={24}
             />
 
@@ -97,14 +136,14 @@ export default function OwnerBloc({
             </div>
           </div>
         ) : (
-          <div className="flex mt-4">
-            <div className="font-special text-4xl ml-2 relative">
+          <div className="flex items-center mb-4">
+            <div className="font-boldy text-4xl ml-2 relative">
               {userProfile.nickname}
             </div>
 
             {canUpdateNickname ? (
               <Image
-                className="flex ml-4 mt-2 shrink-0 max-w-[20px] max-h-[20px] opacity-20 hover:opacity-100 cursor-pointer"
+                className="flex ml-4 shrink-0 max-w-[20px] max-h-[20px] opacity-20 hover:opacity-100 cursor-pointer"
                 src={editIcon}
                 alt="edit icon"
                 width={20}
@@ -119,17 +158,12 @@ export default function OwnerBloc({
           </div>
         )}
       </div>
-      <OnchainAccountInfo
-        address={userProfile.pubkey}
-        className="text-md absolute top-2 right-4"
-        iconClassName="h-4 w-4"
-        noAddress={true}
-      />
+
       <DateInfo
-        className="text-txtfade text-sm absolute bottom-2 right-4"
+        className="text-sm absolute bottom-2 right-4 z-20 font-boldy"
         timestamp={userProfile.nativeObject.createdAt}
         shorten={true}
       />
-    </StyledContainer>
+    </div>
   );
 }

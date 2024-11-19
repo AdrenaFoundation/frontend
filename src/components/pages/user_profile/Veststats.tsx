@@ -91,7 +91,7 @@ export default function VestStats({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center bg-secondary  w-full border rounded-lg z-20">
+    <div className="flex flex-col sm:flex-row items-center z-20">
       <div className="flex flex-col gap-2 w-full p-5 sm:py-0 order-2 sm:order-1">
         <h2 className="hidden sm:block">Ongoing Vests</h2>
 

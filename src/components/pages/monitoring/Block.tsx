@@ -39,14 +39,14 @@ export default function Block({
           }
           key={i}
         >
-          <p
+          <div
             className={twMerge(
               'text-lg font-boldy overflow-hidden whitespace-nowrap flex grow flex-shrink-0 basis-0 text-txtfade',
               columnTitlesClassName,
             )}
           >
             {rowTitle}
-          </p>
+          </div>
 
           <ul className="flex flex-col gap-2 py-2">
             {(() => {
