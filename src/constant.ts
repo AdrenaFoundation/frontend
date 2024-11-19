@@ -160,3 +160,33 @@ export const SOLANA_EXPLORERS_OPTIONS = {
       }`,
   },
 } as const;
+
+export const RANKED_DIVISIONS = [
+  'Leviathan',
+  'Abomination',
+  'Mutant',
+  'Spawn',
+  'No Division',
+] as const;
+
+export const RANKED_ADX_REWARDS = {
+  Leviathan: [
+    320000, 240000, 160000, 40000, 40000, 40000, 40000, 40000, 40000, 40000,
+  ],
+  Abomination: [
+    160000, 120000, 80000, 20000, 20000, 20000, 20000, 20000, 20000, 20000,
+  ],
+  Mutant: [
+    80000, 60000, 40000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
+  ],
+  Spawn: [40000, 30000, 20000, 5000, 5000, 5000, 5000, 5000, 5000, 5000],
+  'No Division': [],
+} as const;
+
+export const RANKED_JTO_REWARDS = {
+  Leviathan: [3200, 2400, 1600, 400, 400, 400, 400, 400, 400, 400],
+  Abomination: [1600, 1200, 800, 200, 200, 200, 200, 200, 200, 200],
+  Mutant: [800, 600, 400, 100, 100, 100, 100, 100, 100, 100],
+  Spawn: [400, 300, 200, 50, 50, 50, 50, 50, 50, 50],
+  'No Division': [],
+} as const;

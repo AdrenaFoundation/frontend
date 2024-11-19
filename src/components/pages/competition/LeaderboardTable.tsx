@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
 import React from 'react';
@@ -10,18 +9,9 @@ import thirdImage from '@/../public/images/third-place.svg';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { DIVISIONS } from '@/constants/divisions';
 import { TradingCompetitionLeaderboardAPI } from '@/types';
-import { getAbbrevWalletAddress } from '@/utils';
+import { getAbbrevWalletAddress, isValidPublicKey } from '@/utils';
 
 import Table from '../monitoring/Table';
-
-const isValidPublicKey = (key: string) => {
-    try {
-        new PublicKey(key);
-        return true;
-    } catch (e) {
-        return false;
-    }
-};
 
 export default function LeaderboardTable({
     division,
@@ -122,10 +112,10 @@ export default function LeaderboardTable({
                                     <FormatNumber
                                         nb={d.pnl}
                                         format="currency"
-                                        className={twMerge('text-xs font-boldy', d.pnl >= 0 ? 'text-green' : 'text-red')}
-                                        precision={d.pnl >= 50 ? 0 : 2}
+                                        className={twMerge('text-xs font-boldy', d.pnl && (d.pnl >= 0) ? 'text-green' : 'text-red')}
+                                        precision={d.pnl && (d.pnl >= 50) ? 0 : 2}
                                         isDecimalDimmed={false}
-                                        minimumFractionDigits={d.pnl >= 50 ? 0 : 2}
+                                        minimumFractionDigits={d.pnl && (d.pnl >= 50) ? 0 : 2}
                                     />
                                 </div>,
 

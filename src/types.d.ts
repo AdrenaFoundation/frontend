@@ -472,37 +472,28 @@ export type ClaimHistoryExtended = {
 };
 
 type AchievementsBase = {
-  week_starts: string[];
-  week_ends: string[];
-  addresses: (string | null)[];
+  weekStarts: string;
+  weekEnds: string;
 };
 
 export type TradingCompetitionAchievementsAPI = {
-  biggest_liquidation: AchievementsBase & {
+  biggestLiquidation: AchievementsBase & {
+    addresses: string | null;
+    liquidationAmounts: number | null;
+  };
+  feesTickets: AchievementsBase & {
     addresses: (string | null)[];
-    week_starts: string[];
-    week_ends: string[];
-    liquidation_amounts: (number | null)[];
+    ticketsCount: (number | null)[];
+    totalTickets: number | null;
   };
-  fees_tickets: AchievementsBase & {
-    week_starts: string[][];
-    week_ends: string[][];
-    addresses: (string | null)[][];
-    tickets_count: (number | null)[][];
-    total_tickets: (number | null)[];
+  topDegen: AchievementsBase & {
+    pnlAmounts: number | null;
+    addresses: string | null;
   };
-  top_degen: AchievementsBase & {
-    pnl_amounts: (number | null)[];
+  jitosolTickets: AchievementsBase & {
     addresses: (string | null)[];
-    week_starts: string[];
-    week_ends: string[];
-  };
-  jitosol_tickets: AchievementsBase & {
-    week_starts: string[][];
-    week_ends: string[][];
-    addresses: (string | null)[][];
-    tickets_count: (number | null)[][];
-    total_tickets: (number | null)[];
+    ticketsCount: (number | null)[];
+    totalTickets: number | null;
   };
 };
 
@@ -510,10 +501,109 @@ export type TradingCompetitionLeaderboardAPI = {
   [key in 'Leviathan' | 'Abomination' | 'Mutant' | 'Spawn' | 'No Division']: {
     rank: number;
     username: string;
-    connected: boolean;
-    volume: number;
-    pnl: number;
+    connected?: boolean;
+    volume: number | null;
+    pnl: number | null;
     adxRewards: number;
     jtoRewards: number;
+    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
   }[];
 };
+
+export type TraderDivisionRawAPI = {
+  division: 'Leviathan' | 'Abomination' | 'Mutant' | 'Spawn' | 'No Division';
+  traders: {
+    address: string;
+    total_volume: number;
+    total_pnl: number;
+    rank_in_division: number;
+    adx_reward: number;
+    jto_reward: number;
+    badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
+  }[];
+};
+
+export type LeaderboardReturnTypeAPI<
+  T extends {
+    showGlobalStats?: boolean;
+    showAchievements?: boolean;
+    showTraderDivisions?: boolean;
+  },
+> = {
+  startDate: string;
+  endDate: string;
+} & (T['showGlobalStats'] extends true
+  ? {
+      globalStats: {
+        totalTraders: number;
+        totalVolume: number | null;
+        totalLiquidations: number;
+        totalClosed: number;
+        totalFees: number;
+        totalPnl: number | null;
+        totalTrades: number;
+        weekStarts: string[];
+        weekEnds: string[];
+        weeklyTraders: (string | null)[];
+        weeklyVolume: (string | null)[];
+        weeklyLiquidations: (string | null)[];
+        weeklyClosed: (string | null)[];
+        weeklyFees: (string | null)[];
+        weeklyPnl: (string | null)[];
+        weeklyTrades: (string | null)[];
+      };
+    }
+  : object) &
+  (T['showAchievements'] extends true
+    ? {
+        achievements: {
+          biggestLiquidation: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: (string | null)[];
+            liquidationAmounts: (string | null)[];
+          };
+          feesTickets: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: [string | null][];
+            ticketsCount: [number][];
+            totalTickets: number[];
+          };
+          topDegen: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: (string | null)[];
+            pnlAmounts: (string | null)[];
+          };
+          jitosolTickets: {
+            weekStarts: string[];
+            weekEnds: string[];
+            addresses: [string | null][];
+            ticketsCount: [number][];
+            totalTickets: number[];
+          };
+        };
+      }
+    : object) &
+  (T['showTraderDivisions'] extends true
+    ? {
+        traderDivisions: {
+          division:
+            | 'Leviathan'
+            | 'Abomination'
+            | 'Mutant'
+            | 'Spawn'
+            | 'No Division';
+          traders: {
+            address: string;
+            totalVolume: number | null;
+            totalPnl: number | null;
+            rankInDivision: number;
+            adxReward: number;
+            jtoReward: number;
+            badge: 'Diamond' | 'Gold' | 'Silver' | 'Bronze' | 'Iron';
+          }[];
+        }[];
+      }
+    : object);

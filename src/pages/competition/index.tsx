@@ -24,10 +24,17 @@ import LeaderboardTable from '@/components/pages/competition/LeaderboardTable';
 import WeeklyReward from '@/components/pages/competition/WeeklyReward';
 import RemainingTimeToDate from '@/components/pages/monitoring/RemainingTimeToDate';
 import ViewProfileModal from '@/components/pages/user_profile/ViewProfileModal';
+import {
+    RANKED_ADX_REWARDS,
+    RANKED_DIVISIONS,
+    RANKED_JTO_REWARDS,
+} from '@/constant';
 import { DIVISIONS } from '@/constants/divisions';
+import DataApiClient from '@/DataApiClient';
 import { useAllUserProfiles } from '@/hooks/useAllUserProfiles';
 import { useSelector } from '@/store/store';
 import {
+    LeaderboardReturnTypeAPI,
     TradingCompetitionAchievementsAPI,
     TradingCompetitionLeaderboardAPI,
     UserProfileExtended,
@@ -36,53 +43,28 @@ import { getAbbrevWalletAddress } from '@/utils';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
 
-const division = [
-    'Leviathan',
-    'Abomination',
-    'Mutant',
-    'Spawn',
-    'No Division',
-] as const;
-
-const adxRewardsPlaceholder = {
-    Leviathan: [
-        320000, 240000, 160000, 40000, 40000, 40000, 40000, 40000, 40000, 40000,
-    ],
-    Abomination: [
-        160000, 120000, 80000, 20000, 20000, 20000, 20000, 20000, 20000, 20000,
-    ],
-    Mutant: [
-        80000, 60000, 40000, 10000, 10000, 10000, 10000, 10000, 10000, 10000,
-    ],
-    Spawn: [40000, 30000, 20000, 5000, 5000, 5000, 5000, 5000, 5000, 5000],
-    'No Division': [],
-};
-
-const jtoRewardsPlaceholder = {
-    Leviathan: [3200, 2400, 1600, 400, 400, 400, 400, 400, 400, 400],
-    Abomination: [1600, 1200, 800, 200, 200, 200, 200, 200, 200, 200],
-    Mutant: [800, 600, 400, 100, 100, 100, 100, 100, 100, 100],
-    Spawn: [400, 300, 200, 50, 50, 50, 50, 50, 50, 50],
-    'No Division': [],
-};
-
 export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean }) {
     const wallet = useSelector((state) => state.walletState.wallet);
     const { allUserProfiles } = useAllUserProfiles();
     const [data, setData] = useState<TradingCompetitionLeaderboardAPI | null>(
         null,
     );
+
     const [achievements, setAchievements] =
         useState<TradingCompetitionAchievementsAPI | null>(null);
-    const [week, setWeek] = useState(0);
-    const [myDivision, setMyDivision] = useState<
-        keyof TradingCompetitionLeaderboardAPI | null
+
+    const [allAchievements, setAllAchievements] = useState<
+        LeaderboardReturnTypeAPI<{ showAchievements: true }>['achievements'] | null
     >(null);
-    const [myRank, setMyRank] = useState<number | null>(null);
-    const [myVolume, setMyVolume] = useState<number | null>(null);
-    const [myPnl, setMyPnl] = useState<number | null>(null);
-    const [myProvisionalAdxRewards, setMyProvisionalAdxRewards] = useState<number | null>(null);
-    const [myProvisionalJtoRewards, setMyProvisionalJtoRewards] = useState<number | null>(null);
+
+    const [week, setWeek] = useState(0);
+    const [currentUserData, setCurrentUserData] = useState<
+        | (TradingCompetitionLeaderboardAPI[keyof TradingCompetitionLeaderboardAPI][number] & {
+            division: keyof TradingCompetitionLeaderboardAPI;
+        })
+        | null
+    >(null);
+
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
     const [tradersCount, setTradersCount] = useState<number | null>(null);
@@ -111,11 +93,17 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     } | null>(null);
 
     useEffect(() => {
+        if (!allAchievements) return;
+
+        setAchievements(formattedAchievements(allAchievements, week));
+    }, [allAchievements, week]);
+
+    useEffect(() => {
         if (!wallet || !achievements || !data)
             return setConnectedWalletTickets(null);
 
         // Find user in the data
-        const userIndex = achievements.fees_tickets.addresses[week].findIndex(
+        const userIndex = achievements.feesTickets.addresses.findIndex(
             (x) => x === wallet.walletAddress,
         );
 
@@ -129,147 +117,149 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
         }
 
         setConnectedWalletTickets({
-            fees: achievements.fees_tickets.tickets_count[week]?.[userIndex] ?? 0,
-            jito: achievements.jitosol_tickets.tickets_count[week]?.[userIndex] ?? 0,
+            fees: achievements.feesTickets.ticketsCount?.[userIndex] ?? 0,
+            jito: achievements.jitosolTickets.ticketsCount?.[userIndex] ?? 0,
         });
     }, [wallet, data, achievements, week]);
 
+    const formattedAchievements = (
+        achievements: LeaderboardReturnTypeAPI<{
+            showAchievements: true;
+        }>['achievements'],
+        week: number,
+    ) =>
+        Object.keys(achievements).reduce((acc, key) => {
+            const k = key as keyof TradingCompetitionAchievementsAPI;
+            acc[k] = Object.keys(achievements[k] as any).reduce((acc2, key2) => {
+                (acc2 as any)[key2] = (achievements[k] as any)[key2][week];
+                return acc2;
+            }, {} as any);
+            return acc;
+        }, {} as TradingCompetitionAchievementsAPI);
+
     const getData = async () => {
         try {
-            const response = await fetch(
-                'https://datapi.adrena.xyz/awakening?season=preseason&show_achievements=true&show_trader_divisions=true',
-            );
-            const { data } = await response.json();
-            const { trader_divisions = [], achievements = [] } = data;
+            const data = await DataApiClient.getTradingCompetitionLeaderboard({
+                season: 'preseason',
+                showAchievements: true,
+                showTraderDivisions: true,
+            });
 
-            if (!trader_divisions || !achievements) {
+            if (!data) {
                 return;
             }
 
+            const { traderDivisions, achievements } = data;
+
             {
-                const tradersCount: number = trader_divisions.reduce((acc: number, { traders }: any) => acc + traders.length, 0);
-                const volume: number = trader_divisions.reduce((acc: number, { traders }: any) => acc + traders.reduce((acc2: number, { total_volume }: any) => acc2 + (total_volume ?? 0), 0), 0);
+                const tradersCount: number = traderDivisions.reduce(
+                    (acc, { traders }) => acc + traders.length,
+                    0,
+                );
+                const volume: number = traderDivisions.reduce(
+                    (acc, { traders }) =>
+                        acc +
+                        traders.reduce(
+                            (acc2, { totalVolume }) => acc2 + (totalVolume ?? 0),
+                            0,
+                        ),
+                    0,
+                );
                 setTradersCount(tradersCount);
                 setTotalVolume(volume);
             }
 
             if (wallet) {
-                const f = trader_divisions.find(({ traders }: any) => {
-                    return traders.some(
-                        ({ address }: { address: string }) =>
-                            address === wallet.walletAddress,
-                    );
-                });
+                const userStats =
+                    traderDivisions
+                        .map(({ division, traders }) => {
+                            const user = traders?.find(
+                                ({ address }) => address === wallet.walletAddress,
+                            );
 
-                setMyDivision(f ? f.division ?? null : null);
-                setMyRank(
-                    f?.traders.find(
-                        ({ address }: { address: string }) =>
-                            address === wallet.walletAddress,
-                    )?.rank_in_division ?? null,
-                );
-                setMyVolume(
-                    f?.traders.find(
-                        ({ address }: { address: string }) =>
-                            address === wallet.walletAddress,
-                    )?.total_volume ?? null,
-                );
-                setMyPnl(
-                    f?.traders.find(
-                        ({ address }: { address: string }) =>
-                            address === wallet.walletAddress,
-                    )?.total_pnl ?? null,
-                );
+                            if (!user) {
+                                return;
+                            }
 
-                setMyProvisionalAdxRewards(
-                    f?.traders.find(
-                        ({ address }: { address: string }) =>
-                            address === wallet.walletAddress,
-                    )?.adx_reward ?? null,
-                );
-
-                setMyProvisionalJtoRewards(
-                    f?.traders.find(
-                        ({ address }: { address: string }) =>
-                            address === wallet.walletAddress,
-                    )?.jto_reward ?? null,
-                );
-            } else {
-                setMyDivision(null);
-            }
-
-            division.forEach((divisionName) => {
-                let divisionIndex = trader_divisions.findIndex(
-                    ({ division }: any) => division === divisionName,
-                );
-
-                if (
-                    divisionIndex === -1 ||
-                    trader_divisions[divisionIndex].traders.length < 10
-                ) {
-                    const nbMissing =
-                        10 - (trader_divisions[divisionIndex]?.traders.length ?? 0);
-
-                    if (divisionIndex === -1) {
-                        trader_divisions.push({
-                            division: divisionName,
-                            traders: [],
-                        });
-
-                        divisionIndex = trader_divisions.length - 1;
-                    }
-
-                    for (let i = 0; i < nbMissing; i++) {
-                        const rank = 10 - nbMissing + (i + 1);
-                        trader_divisions[divisionIndex].traders.push({
-                            connected: false,
-                            address: '-',
-                            username: '-',
-                            rank_in_division: rank,
-                            total_volume: null,
-                            total_pnl: null,
-                            adx_reward: adxRewardsPlaceholder[divisionName]?.[rank - 1] ?? 0,
-                            jto_reward: jtoRewardsPlaceholder[divisionName]?.[rank - 1] ?? 0,
-                        });
-                    }
-                }
-            });
-
-            const formattedData = trader_divisions.reduce(
-                (acc: TradingCompetitionLeaderboardAPI, { division, traders }: any) => {
-                    acc[division as keyof TradingCompetitionLeaderboardAPI] = traders.map(
-                        (trader: any) => {
-                            let username = trader.address;
+                            let username = user.address;
 
                             if (allUserProfiles && allUserProfiles.length > 0) {
-                                const user = allUserProfiles.find(
-                                    (profile) => profile.owner.toBase58() === trader.address,
+                                const traderProfile = allUserProfiles.find(
+                                    (profile) => profile.owner.toBase58() === user.address,
                                 );
 
-                                if (user) {
-                                    username = user.nickname;
+                                if (traderProfile) {
+                                    username = traderProfile.nickname;
                                 }
                             }
 
                             return {
-                                connected: trader.address === wallet?.walletAddress,
                                 username,
-                                rank: trader.rank_in_division,
-                                volume: trader.total_volume,
-                                pnl: trader.total_pnl,
-                                adxRewards: trader.adx_reward,
-                                jtoRewards: trader.jto_reward ?? 0,
+                                division,
+                                volume: user.totalVolume,
+                                pnl: user.totalPnl,
+                                rank: user.rankInDivision,
+                                adxRewards: user.adxReward,
+                                jtoRewards: user.jtoReward,
+                                badge: user.badge,
                             };
-                        },
-                    );
+                        })
+                        .find((x) => x) ?? null;
+
+                setCurrentUserData(userStats);
+            } else {
+                setCurrentUserData(null);
+            }
+
+            const formattedData = traderDivisions
+                .concat()
+                .reduce((acc, { division, traders }) => {
+                    acc[division] = traders.map((trader) => {
+                        let username = trader.address;
+
+                        if (allUserProfiles && allUserProfiles.length > 0) {
+                            const traderProfile = allUserProfiles.find(
+                                (profile) => profile.owner.toBase58() === trader.address,
+                            );
+
+                            if (traderProfile) {
+                                username = traderProfile.nickname;
+                            }
+                        }
+
+                        return {
+                            username,
+                            connected: trader.address === wallet?.walletAddress,
+                            rank: trader.rankInDivision,
+                            volume: trader.totalVolume,
+                            pnl: trader.totalPnl,
+                            adxRewards: trader.adxReward,
+                            jtoRewards: trader.jtoReward ?? 0,
+                            badge: trader.badge,
+                        };
+                    });
+
+                    const nbMissing = 10 - traders.length;
+
+                    for (let i = 0; i < nbMissing; i++) {
+                        const rank = 10 - nbMissing + (i + 1);
+                        acc[division].push({
+                            connected: false,
+                            username: '-',
+                            rank,
+                            volume: null,
+                            pnl: null,
+                            adxRewards: RANKED_ADX_REWARDS[division][rank - 1] ?? 0,
+                            jtoRewards: RANKED_JTO_REWARDS[division][rank - 1] ?? 0,
+                            badge: 'Iron',
+                        });
+                    }
 
                     return acc;
-                },
-                {},
-            );
+                }, {} as TradingCompetitionLeaderboardAPI);
 
-            achievements.biggest_liquidation.addresses =
-                achievements.biggest_liquidation.addresses.map((address: string) => {
+            achievements.biggestLiquidation.addresses =
+                achievements.biggestLiquidation.addresses.map((address) => {
                     return (
                         allUserProfiles.find(
                             (profile) => profile.owner.toBase58() === address,
@@ -277,8 +267,8 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                     );
                 });
 
-            achievements.top_degen.addresses = achievements.top_degen.addresses.map(
-                (address: string) => {
+            achievements.topDegen.addresses = achievements.topDegen.addresses.map(
+                (address) => {
                     return (
                         allUserProfiles.find(
                             (profile) => profile.owner.toBase58() === address,
@@ -287,11 +277,11 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                 },
             );
 
-            // Only do once
-            if (week === 0) {
-                setWeek(weeksPassedSinceStartDate);
-            }
-            setAchievements(achievements);
+            setWeek(weeksPassedSinceStartDate);
+            setAllAchievements(achievements);
+            setAchievements(
+                formattedAchievements(achievements, weeksPassedSinceStartDate),
+            );
             setData(formattedData);
         } catch (error) {
             console.error(error);
@@ -316,13 +306,15 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
 
     const twitterText = `Join the Adrena Trading Competition! 🚀📈🏆 @adrenaprotocol`;
 
-    const userProfile: UserProfileExtended | undefined = allUserProfiles.find((p) => p.owner.toBase58() === wallet?.walletAddress);
+    const userProfile: UserProfileExtended | undefined = allUserProfiles.find(
+        (p) => p.owner.toBase58() === wallet?.walletAddress,
+    );
 
     const hasProfile = userProfile !== undefined;
 
-    const userName = hasProfile ? userProfile?.nickname : getAbbrevWalletAddress(wallet?.walletAddress.toString() ?? 'undefined');
-
-
+    const userName = hasProfile
+        ? userProfile?.nickname
+        : getAbbrevWalletAddress(wallet?.walletAddress.toString() ?? 'undefined');
 
     return (
         <>
@@ -461,13 +453,15 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             </div>
                         </div>
 
-                        <div className='flex gap-4 flex-row flex-wrap sm:flex-nowrap'>
+                        <div className="flex gap-4 flex-row flex-wrap sm:flex-nowrap">
                             <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-                                <h4 className="font-boldy text-base p-2 flex gap-2">Traders <LiveIcon className='absolute right-2' /></h4>
+                                <h4 className="font-boldy text-base p-2 flex gap-2">
+                                    Traders <LiveIcon className="absolute right-2" />
+                                </h4>
 
-                                <div className='h-[1px] bg-bcolor w-full' />
+                                <div className="h-[1px] bg-bcolor w-full" />
 
-                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                <div className="flex items-center justify-center w-full h-full pl-2 pr-2">
                                     <FormatNumber
                                         nb={tradersCount}
                                         format="number"
@@ -477,11 +471,13 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             </div>
 
                             <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 w-[10em] sm:w-[12em] h-[7.5em]">
-                                <h4 className="font-boldy text-base p-2 flex gap-2">Volume <LiveIcon className='absolute right-2' /></h4>
+                                <h4 className="font-boldy text-base p-2 flex gap-2">
+                                    Volume <LiveIcon className="absolute right-2" />
+                                </h4>
 
-                                <div className='h-[1px] bg-bcolor w-full' />
+                                <div className="h-[1px] bg-bcolor w-full" />
 
-                                <div className='flex items-center justify-center w-full h-full pl-2 pr-2'>
+                                <div className="flex items-center justify-center w-full h-full pl-2 pr-2">
                                     <FormatNumber
                                         nb={totalVolume}
                                         format="currency"
@@ -495,9 +491,9 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             <div className="flex flex-col items-center justify-between bg-[#111922] border border-[#1F252F] rounded-lg shadow-xl relative gap-1 grow sm:grow-0 sm:w-[12em] h-[7.5em]">
                                 <h4 className="font-boldy text-base p-2">Total Rewards</h4>
 
-                                <div className='h-[1px] bg-bcolor w-full' />
+                                <div className="h-[1px] bg-bcolor w-full" />
 
-                                <div className='flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2'>
+                                <div className="flex flex-col h-full justify-evenly items-center pl-2 pr-2 pb-2">
                                     <div className="flex gap-2 items-center justify-center w-full">
                                         <Image
                                             src={window.adrena.client.adxToken.image}
@@ -505,13 +501,22 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                             width={18}
                                             height={18}
                                         />
-                                        <div className="text-lg font-boldy w-[6.2em]">2.27M ADX</div>
+                                        <div className="text-lg font-boldy w-[6.2em]">
+                                            2.27M ADX
+                                        </div>
                                     </div>
 
                                     <div className="flex gap-2 items-center justify-center w-full">
-                                        <Image src={jitoLogo2} alt="adx logo" width={22} height={22} />
+                                        <Image
+                                            src={jitoLogo2}
+                                            alt="adx logo"
+                                            width={22}
+                                            height={22}
+                                        />
 
-                                        <div className="text-lg font-boldy w-[6.2em]">25,000 JTO</div>
+                                        <div className="text-lg font-boldy w-[6.2em]">
+                                            25,000 JTO
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -528,26 +533,32 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                 <p className="opacity-50">
                                     (
                                     {new Date(
-                                        achievements.biggest_liquidation.week_starts[week],
+                                        achievements.biggestLiquidation.weekStarts,
                                     ).toLocaleDateString()}{' '}
                                     –{' '}
                                     {new Date(
-                                        achievements.biggest_liquidation.week_ends[week],
+                                        achievements.biggestLiquidation.weekEnds,
                                     ).toLocaleDateString()}
                                     )
                                 </p>
 
-                                <div className='flex text-xs gap-1'>
-                                    {Date.now() < new Date(achievements.biggest_liquidation.week_ends[week]).getTime() ? (
-                                        <>
-                                            <RemainingTimeToDate timestamp={new Date(achievements.biggest_liquidation.week_ends[week]).getTime() / 1000} stopAtZero={true} />
-                                            <span className="text-xs font-boldy">left</span>
-                                        </>
-                                    ) : (
-                                        'Week has ended'
-                                    )}
-                                </div>
-                            </div>
+                                {week === weeksPassedSinceStartDate ? (
+                                    <div className="flex text-xs gap-1">
+                                        <RemainingTimeToDate
+                                            timestamp={
+                                                new Date(
+                                                    achievements.biggestLiquidation.weekEnds,
+                                                ).getTime() / 1000
+                                            }
+                                            stopAtZero={true}
+                                        />
+                                        <span className="text-xs font-boldy">left</span>
+                                    </div>
+                                ) : <p className='text-xs font-boldy'>
+                                    Week has ended
+                                </p>
+                                }
+                            </div >
 
                             <div className="flex flex-row gap-2 items-center">
                                 {Array.from({ length: 6 }, (_, i) => i).map((i) => (
@@ -555,7 +566,8 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                         className={twMerge(
                                             'rounded-lg p-1 whitespace-nowrap px-2 transition border border-transparent duration-300 cursor-pointer select-none',
                                             i === week ? 'bg-[#364250] border-white/25 ' : 'bg-third',
-                                            i > weeksPassedSinceStartDate && 'cursor-not-allowed opacity-25',
+                                            i > weeksPassedSinceStartDate &&
+                                            'cursor-not-allowed opacity-25',
                                         )}
                                         onClick={() => {
                                             if (i > weeksPassedSinceStartDate) return;
@@ -567,16 +579,15 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                    </div>
+                        </div >
+                    </div >
 
                     <WeeklyReward
                         rewards={[
                             {
                                 title: 'Top Liquidation',
-                                trader: achievements.biggest_liquidation.addresses[week],
-                                result:
-                                    achievements.biggest_liquidation.liquidation_amounts[week],
+                                trader: achievements.biggestLiquidation.addresses,
+                                result: achievements.biggestLiquidation.liquidationAmounts,
                                 type: 'reward',
                                 reward: 10000,
                                 rewardToken: 'ADX',
@@ -586,8 +597,9 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             },
                             {
                                 title: 'Fees Raffle',
-                                trader: achievements.fees_tickets.addresses[week],
-                                totalTickets: achievements.fees_tickets.total_tickets[week],
+                                allTraders: achievements.feesTickets.addresses,
+                                trader: null,
+                                totalTickets: achievements.feesTickets.totalTickets,
                                 connectedWalletTickets: connectedWalletTickets?.fees ?? null,
                                 type: 'ticket',
                                 reward: 10000,
@@ -598,8 +610,8 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             },
                             {
                                 title: 'Leverage Monster',
-                                trader: achievements.top_degen.addresses[week],
-                                result: achievements.top_degen.pnl_amounts[week],
+                                trader: achievements.topDegen.addresses,
+                                result: achievements.topDegen.pnlAmounts,
                                 type: 'reward',
                                 reward: 10000,
                                 rewardToken: 'ADX',
@@ -609,8 +621,9 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                             },
                             {
                                 title: 'SOL Volume Raffle',
-                                trader: achievements.jitosol_tickets.addresses[week],
-                                totalTickets: achievements.jitosol_tickets.total_tickets[week],
+                                allTraders: achievements.jitosolTickets.addresses,
+                                trader: null,
+                                totalTickets: achievements.jitosolTickets.totalTickets,
                                 connectedWalletTickets: connectedWalletTickets?.jito ?? null,
                                 type: 'ticket',
                                 reward: 30000,
@@ -622,19 +635,19 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                         ]}
                         handleProfileView={handleProfileView}
                     />
-                </div>
+                </div >
 
                 <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
 
                 <div className="px-4 sm:px-8">
                     <div className="flex flex-col sm:flex-row mb-5 gap-4">
-                        <div className='flex flex-row gap-3 items-center'>
+                        <div className="flex flex-row gap-3 items-center">
                             <h1 className="font-boldy capitalize">Leaderboards</h1>
                         </div>
 
                         {!hasProfile && (
                             <div className="flex flex-col sm:flex-row items-center bg-blue/30 p-2 border-dashed border-blue rounded text-sm text-center sm:text-left">
-                                <div className='flex flex-row items-center'>
+                                <div className="flex flex-row items-center">
                                     <Image
                                         className="opacity-70 mr-2 mb-2 sm:mb-0"
                                         src={infoIcon}
@@ -645,7 +658,6 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                     <p className="mr-2 mb-2 sm:mb-0 flex items-center">
                                         Create an on-chain profile to track your all-time stats.
                                     </p>
-
                                 </div>
                                 <Button
                                     title="Go!"
@@ -658,65 +670,81 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                         )}
                     </div>
 
-                    {wallet && data && myDivision ? (
+                    {wallet && data && currentUserData ? (
                         <div className="flex bg-yellow-900 bg-opacity-40 rounded-lg border border-yellow-900 p-2 mx-0 mb-8 flex-col items-center lg:flex-row lg:items-center justify-between gap-2 lg:gap-12">
                             <div className="flex items-center">
                                 <div className="hidden sm:flex text-[1em] md:text-[1em] font-archivo animate-text-shimmer bg-clip-text text-transparent bg-[linear-gradient(110deg,#E5B958,45%,#fff,55%,#E5B958)] bg-[length:250%_100%]">
                                     {userName}
                                 </div>
 
-                                <span className="hidden sm:flex text-sm text-txtfade mx-4"> | </span>
+                                <span className="hidden sm:flex text-sm text-txtfade mx-4">
+                                    {' '}
+                                    |{' '}
+                                </span>
 
                                 <span className="text-base font-boldy mr-2">
-                                    {myRank && myRank < 4 && myDivision !== 'No Division' ? (
+                                    {currentUserData.rank &&
+                                        currentUserData.rank < 4 &&
+                                        currentUserData.division !== 'No Division' ? (
                                         <Image
                                             src={
-                                                myRank === 1
+                                                currentUserData.rank === 1
                                                     ? firstImage
-                                                    : myRank === 2
+                                                    : currentUserData.rank === 2
                                                         ? secondImage
-                                                        : myRank === 3
+                                                        : currentUserData.rank === 3
                                                             ? thirdImage
                                                             : ''
                                             }
                                             width={20}
                                             height={20}
                                             alt="rank"
-                                            key={`rank-${myRank}`}
+                                            key={`rank-${currentUserData.rank}`}
                                         />
                                     ) : (
-                                        <div className="text-base font-boldy text-center" key={`rank-${myRank}`}>
-                                            # {myRank}
+                                        <div
+                                            className="text-base font-boldy text-center"
+                                            key={`rank-${currentUserData.rank}`}
+                                        >
+                                            # {currentUserData.rank}
                                         </div>
                                     )}
                                 </span>
 
-                                <span className={`text-base flex items-center justify-center font-archivo ${DIVISIONS[myDivision]?.color ?? 'default-text-color'}`}>
-                                    {myDivision}
+                                <span
+                                    className={`text-base flex items-center justify-center font-archivo ${DIVISIONS[currentUserData.division]?.color ??
+                                        'default-text-color'
+                                        }`}
+                                >
+                                    {currentUserData.division}
                                 </span>
                             </div>
 
-                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                            <div className="flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center">
                                 <span className="text-sm text-txtfade font-boldy">PnL:</span>
 
                                 <FormatNumber
-                                    nb={myPnl ?? 0}
+                                    nb={currentUserData.pnl ?? 0}
                                     format="currency"
                                     isDecimalDimmed={false}
                                     className={twMerge(
                                         'text-base font-boldy',
-                                        (myPnl ?? 0) >= 0 ? 'text-green' : 'text-red',
+                                        (currentUserData.pnl ?? 0) >= 0 ? 'text-green' : 'text-red',
                                     )}
-                                    precision={myPnl && myPnl >= 50 ? 0 : 2}
-                                    minimumFractionDigits={myPnl && myPnl >= 50 ? 0 : 2}
+                                    precision={
+                                        currentUserData.pnl && currentUserData.pnl >= 50 ? 0 : 2
+                                    }
+                                    minimumFractionDigits={
+                                        currentUserData.pnl && currentUserData.pnl >= 50 ? 0 : 2
+                                    }
                                 />
                             </div>
 
-                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                            <div className="flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center">
                                 <span className="text-sm text-txtfade">Volume:</span>
 
                                 <FormatNumber
-                                    nb={myVolume ?? 0}
+                                    nb={currentUserData.volume ?? 0}
                                     format="currency"
                                     isAbbreviate={true}
                                     isDecimalDimmed={false}
@@ -725,13 +753,13 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                 />
                             </div>
 
-                            <div className='flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center'>
+                            <div className="flex gap-2 items-center w-full justify-between lg:w-auto lg:justify-center">
                                 <span className="text-sm text-txtfade"> Rank rewards: </span>
 
-                                <div className='flex flex-row gap-3 items-center'>
-                                    <div className='flex gap-2 items-center justify-center pl-8 lg:pl-0'>
+                                <div className="flex flex-row gap-3 items-center">
+                                    <div className="flex gap-2 items-center justify-center pl-8 lg:pl-0">
                                         <FormatNumber
-                                            nb={myProvisionalAdxRewards ?? 0}
+                                            nb={currentUserData.adxRewards ?? 0}
                                             format="number"
                                             isDecimalDimmed={false}
                                             className="text-base font-boldy"
@@ -741,21 +769,21 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                             src={adxLogo}
                                             width={16}
                                             height={16}
-                                            className='w-5 h-5'
+                                            className="w-5 h-5"
                                             alt="ADX"
                                         />
                                     </div>
 
-                                    <div className='flex gap-2 items-center justify-center'>
+                                    <div className="flex gap-2 items-center justify-center">
                                         <FormatNumber
-                                            nb={myProvisionalJtoRewards ?? 0}
+                                            nb={currentUserData.jtoRewards ?? 0}
                                             format="number"
                                             isDecimalDimmed={false}
                                             className="text-base font-boldy"
                                         />
                                         <Image
                                             src={jtoImage}
-                                            className='w-6 h-6'
+                                            className="w-6 h-6"
                                             width={22}
                                             height={22}
                                             alt="JTO"
@@ -763,14 +791,11 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                     </div>
                                 </div>
                             </div>
-
-                            {/* <span className="text-sm text-txtfade mx-4"> | </span> */}
-
                         </div>
                     ) : null}
 
                     <div className="grid lg:grid-cols-2 gap-[50px]">
-                        {division.slice(0, -1).map((division, index) => {
+                        {RANKED_DIVISIONS.slice(0, -1).map((division, index) => {
                             return (
                                 <LeaderboardTable
                                     division={division}
@@ -778,7 +803,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                     key={division}
                                     index={index + 1}
                                     nbItemPerPage={10}
-                                    myDivision={division === myDivision}
+                                    myDivision={division === currentUserData?.division}
                                     handleProfileView={handleProfileView}
                                 />
                             );
@@ -790,17 +815,17 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                     <div className="w-full flex items-center justify-center">
                         <LeaderboardTable
                             className="w-full max-w-[40em]"
-                            division={division[4]}
+                            division={RANKED_DIVISIONS[4]}
                             data={data}
-                            key={division[4]}
+                            key={RANKED_DIVISIONS[4]}
                             nbItemPerPage={20}
                             index={5}
-                            myDivision={division[4] === myDivision}
+                            myDivision={RANKED_DIVISIONS[4] === currentUserData?.division}
                             handleProfileView={handleProfileView}
                         />
                     </div>
                 </div>
-            </div>
+            </div >
             <AnimatePresence>
                 {activeProfile && (
                     <Modal

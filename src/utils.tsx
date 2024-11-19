@@ -820,3 +820,12 @@ export const getSecondsBetweenDates = (date1: Date, date2: Date) => {
   const diffTime = date2.getTime() - date1.getTime();
   return Math.floor((diffTime % (1000 * 60)) / 1000);
 }
+
+export const isValidPublicKey = (key: string) => {
+  try {
+    new PublicKey(key);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
