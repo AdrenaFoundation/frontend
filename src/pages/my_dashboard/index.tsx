@@ -1,4 +1,3 @@
-import { AnchorProvider } from '@coral-xyz/anchor';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';

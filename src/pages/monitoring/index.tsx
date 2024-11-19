@@ -25,8 +25,6 @@ export default function Monitoring(pageProps: PageProps) {
     'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows'
   >('lite');
 
-
-
   const searchParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
