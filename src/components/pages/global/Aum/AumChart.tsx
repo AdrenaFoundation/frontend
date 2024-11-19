@@ -6,11 +6,16 @@ import { RechartsData } from '@/types';
 import { getGMT } from '@/utils';
 
 export default function AumChart() {
-  const [AUM, setAUM] = useState<RechartsData[] | null>(null);
+  const [chartData, setChartData] = useState<RechartsData[] | null>(null);
   const [period, setPeriod] = useState<string | null>('7d');
   const periodRef = useRef(period);
 
-  const getPoolInfo = useCallback(async () => {
+  useEffect(() => {
+    periodRef.current = period;
+    getPoolInfo();
+  }, [period]);
+
+  const getPoolInfo = async () => {
     try {
       const dataEndpoint = (() => {
         switch (periodRef.current) {
@@ -82,15 +87,12 @@ export default function AumChart() {
         value: aum,
       }));
 
-      setAUM(formattedData);
+      setChartData(formattedData);
     } catch (e) {
       console.error(e);
     }
-  }, [periodRef]);
+  };
 
-  useEffect(() => {
-    periodRef.current = period;
-  }, [period]);
 
   useEffect(() => {
     getPoolInfo();
@@ -100,9 +102,9 @@ export default function AumChart() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [getPoolInfo]);
+  }, []);
 
-  if (!AUM) {
+  if (!chartData) {
     return (
       <div className="h-full w-full flex items-center justify-center text-sm">
         <Loader />
@@ -113,8 +115,8 @@ export default function AumChart() {
   return (
     <AreaRechart
       title={'AUM'}
-      subValue={AUM[AUM.length - 1].value as number}
-      data={AUM}
+      subValue={chartData[chartData.length - 1].value as number}
+      data={chartData}
       labels={[{ name: 'value' }]}
       period={period}
       gmt={period === '1M' ? 0 : getGMT()}
