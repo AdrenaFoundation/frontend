@@ -709,6 +709,10 @@ export const verifyRpcConnection = async (rpc: string) => {
   }
 };
 
+export function getGMT(): number {
+  return new Date().getTimezoneOffset() / 60 * -1;
+}
+
 export const verifyIfValidUrl = (url: string) => {
   const regExUrl = new RegExp(/^(http|https):\/\/[^ "]+$/);
 

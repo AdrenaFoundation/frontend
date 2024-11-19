@@ -13,6 +13,7 @@ export default function PositionsBlocks({
   triggerStopLossTakeProfit,
   triggerClosePosition,
   triggerEditPositionCollateral,
+  showFeesInPnl,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -23,6 +24,7 @@ export default function PositionsBlocks({
   triggerClosePosition: (p: PositionExtended) => void;
   triggerEditPositionCollateral: (p: PositionExtended) => void;
   wrapped?: boolean;
+  showFeesInPnl: boolean;
 }) {
   if (positions === null && !connected) {
     return (
@@ -80,6 +82,7 @@ export default function PositionsBlocks({
               triggerStopLossTakeProfit={triggerStopLossTakeProfit}
               triggerClosePosition={triggerClosePosition}
               triggerEditPositionCollateral={triggerEditPositionCollateral}
+              showFeesInPnl={showFeesInPnl}
             />
           ))}
         </div>

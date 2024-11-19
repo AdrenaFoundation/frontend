@@ -63,7 +63,10 @@ export default function Trade({
   triggerWalletTokenBalancesReload,
   activeRpc,
   adapters,
-}: PageProps) {
+  showFeesInPnl,
+}: PageProps & {
+  showFeesInPnl: boolean;
+}) {
   const [activePositionModal, setActivePositionModal] = useState<Action | null>(
     null,
   );
@@ -307,7 +310,7 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="flex flex-col w-full p-4">
-                  <PositionsHistory connected={connected} />
+                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
                 </div>
               ) : (
                 <div className="flex flex-col w-full p-4">
@@ -316,6 +319,7 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
+                    showFeesInPnl={showFeesInPnl}
                   />
                 </div>
               )}
@@ -347,7 +351,7 @@ export default function Trade({
               </div>
               {history ? (
                 <div className="mt-1 w-full p-4 flex grow">
-                  <PositionsHistory connected={connected} />
+                  <PositionsHistory connected={connected} showFeesInPnl={showFeesInPnl} />
                 </div>
               ) : (
                 <div className="mt-1 w-full p-4">
@@ -356,6 +360,7 @@ export default function Trade({
                     positions={positions}
                     triggerUserProfileReload={triggerUserProfileReload}
                     isBigScreen={isBigScreen}
+                    showFeesInPnl={showFeesInPnl}
                   />
                 </div>
               )}

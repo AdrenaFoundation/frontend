@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { RechartsData } from '@/types';
+import { getGMT } from '@/utils';
 
 interface FeesChartProps {
   isSmallScreen: boolean;
@@ -90,13 +91,11 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+            timeZone: 'UTC',
           });
         }
 
-        return new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        throw new Error('Invalid period');
       });
 
       const formattedData: RechartsData[] = timeStamp.map(
@@ -158,6 +157,7 @@ export default function FeesChart({ isSmallScreen }: FeesChartProps) {
         },
       ]}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       domain={[0, 'auto']}
       tippyContent="Liquidation fees shown are exit fees from liquidated positions, not actual liquidation fees. All Opens are 0 bps, and Closes/Liquidations 16 bps."

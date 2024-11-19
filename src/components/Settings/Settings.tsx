@@ -1,3 +1,4 @@
+import { Switch } from '@mui/material';
 import { Connection } from '@solana/web3.js';
 import { AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
@@ -30,6 +31,8 @@ export default function Settings({
   isGenesis = false,
   preferredSolanaExplorer,
   isMobile = false,
+  showFeesInPnl,
+  setShowFeesInPnl,
 }: {
   activeRpc: {
     name: string;
@@ -50,6 +53,8 @@ export default function Settings({
   isGenesis?: boolean;
   preferredSolanaExplorer: SolanaExplorerOptions;
   isMobile?: boolean;
+  showFeesInPnl: boolean;
+  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -121,6 +126,19 @@ export default function Settings({
               key={exp}
             />
           ))}
+        </div>
+      </div>
+
+      <div className="w-full h-[1px] bg-bcolor my-5" />
+
+      <h2>preferences</h2>
+      <div className="flex flex-row gap-2 justify-between">
+        <p className="opacity-50 w-full mt-2">Show fees in PnL</p>
+        <div className="flex flex-col gap-1">
+          <Switch
+            checked={showFeesInPnl}
+            onChange={(event) => setShowFeesInPnl(event.target.checked)}
+          />
         </div>
       </div>
     </>

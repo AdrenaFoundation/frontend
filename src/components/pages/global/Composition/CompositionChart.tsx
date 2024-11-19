@@ -4,7 +4,7 @@ import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
 import { TokenInfo } from '@/config/IConfiguration';
 import { RechartsData } from '@/types';
-import { getCustodyByMint } from '@/utils';
+import { getCustodyByMint, getGMT } from '@/utils';
 
 export default function CompositionChart() {
   const [data, setData] = useState<RechartsData[] | null>(null);
@@ -77,13 +77,11 @@ export default function CompositionChart() {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+            timeZone: 'UTC',
           });
         }
 
-        return new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        throw new Error('Invalid period');
       });
 
       const custodyInfos: TokenInfo[] = [];
@@ -151,6 +149,7 @@ export default function CompositionChart() {
         color: info.color,
       }))}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       domain={['dataMax']}
       setPeriod={setPeriod}
     />

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { getGMT } from '@/utils';
 
 interface UnrealizedPnlChartProps {
   isSmallScreen: boolean;
@@ -79,23 +80,25 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
             hour: 'numeric',
             minute: 'numeric',
           });
-        } else if (periodRef.current === '7d') {
+        }
+
+        if (periodRef.current === '7d') {
           return new Date(time).toLocaleString('en-US', {
             day: 'numeric',
             month: 'numeric',
             hour: 'numeric',
           });
-        } else if (periodRef.current === '1M') {
+        }
+
+        if (periodRef.current === '1M') {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
-          });
-        } else {
-          return new Date(time).toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
+            timeZone: 'UTC',
           });
         }
+
+        throw new Error('Invalid period');
       });
 
       // Each custody keeps an utilization array
@@ -189,6 +192,7 @@ export function UnrealizedPnlChart({ isSmallScreen }: UnrealizedPnlChartProps) {
       ]}
       domain={[0]}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
     />

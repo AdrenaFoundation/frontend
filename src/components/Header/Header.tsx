@@ -44,6 +44,8 @@ export default function Header({
   setMaxPriorityFee,
   preferredSolanaExplorer,
   adapters,
+  showFeesInPnl,
+  setShowFeesInPnl,
 }: {
   priorityFeeOption: PriorityFeeOption;
   setPriorityFeeOption: (priorityFee: PriorityFeeOption) => void;
@@ -68,6 +70,8 @@ export default function Header({
   setMaxPriorityFee: (maxPriorityFee: number | null) => void;
   preferredSolanaExplorer: SolanaExplorerOptions;
   adapters: WalletAdapterExtended[];
+  showFeesInPnl: boolean;
+  setShowFeesInPnl: (showFeesInPnl: boolean) => void;
 }) {
   const pathname = usePathname();
 
@@ -216,6 +220,8 @@ export default function Header({
           setCustomRpcUrl={setCustomRpcUrl}
           setFavoriteRpc={setFavoriteRpc}
           preferredSolanaExplorer={preferredSolanaExplorer}
+          showFeesInPnl={showFeesInPnl}
+          setShowFeesInPnl={setShowFeesInPnl}
         />
 
         <WalletAdapter userProfile={userProfile} adapters={adapters} />

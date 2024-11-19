@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Loader from '@/components/Loader/Loader';
 import LineRechart from '@/components/ReCharts/LineRecharts';
+import { getGMT } from '@/utils';
 
 interface CumulativePnlChartProps {
   isSmallScreen: boolean;
@@ -96,13 +97,11 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
           return new Date(time).toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'numeric',
+            timeZone: 'UTC',
           });
         }
 
-        return new Date(time).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: 'numeric',
-        });
+        throw new Error('Invalid period');
       });
 
       // Each custody keeps an utilization array
@@ -206,6 +205,7 @@ export function RealizedPnlChart({ isSmallScreen }: CumulativePnlChartProps) {
       ]}
       domain={[0]}
       period={period}
+      gmt={period === '1M' ? 0 : getGMT()}
       setPeriod={setPeriod}
       isSmallScreen={isSmallScreen}
     />
