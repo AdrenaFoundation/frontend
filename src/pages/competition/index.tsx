@@ -81,8 +81,8 @@ export default function Competition() {
     const [myRank, setMyRank] = useState<number | null>(null);
     const [myVolume, setMyVolume] = useState<number | null>(null);
     const [myPnl, setMyPnl] = useState<number | null>(null);
-    const [myProvisionnalAdxRewards, setMyProvisionnalAdxRewards] = useState<number | null>(null);
-    const [myProvisionnalJtoRewards, setMyProvisionnalJtoRewards] = useState<number | null>(null);
+    const [myProvisionalAdxRewards, setMyProvisionalAdxRewards] = useState<number | null>(null);
+    const [myProvisionalJtoRewards, setMyProvisionalJtoRewards] = useState<number | null>(null);
     const [activeProfile, setActiveProfile] =
         useState<UserProfileExtended | null>(null);
     const [tradersCount, setTradersCount] = useState<number | null>(null);
@@ -181,14 +181,14 @@ export default function Competition() {
                     )?.total_pnl ?? null,
                 );
 
-                setMyProvisionnalAdxRewards(
+                setMyProvisionalAdxRewards(
                     f?.traders.find(
                         ({ address }: { address: string }) =>
                             address === wallet.walletAddress,
                     )?.adx_reward ?? null,
                 );
 
-                setMyProvisionnalJtoRewards(
+                setMyProvisionalJtoRewards(
                     f?.traders.find(
                         ({ address }: { address: string }) =>
                             address === wallet.walletAddress,
@@ -287,8 +287,10 @@ export default function Competition() {
                 },
             );
 
-
-            setWeek(weeksPassedSinceStartDate);
+            // Only do once
+            if (week === 0) {
+                setWeek(weeksPassedSinceStartDate);
+            }
             setAchievements(achievements);
             setData(formattedData);
         } catch (error) {
@@ -536,8 +538,14 @@ export default function Competition() {
                                 </p>
 
                                 <div className='flex text-xs gap-1'>
-                                    <RemainingTimeToDate timestamp={new Date(achievements.biggest_liquidation.week_ends[week]).getTime() / 1000} stopAtZero={true} />
-                                    <span className="text-xs font-boldy">left</span>
+                                    {Date.now() < new Date(achievements.biggest_liquidation.week_ends[week]).getTime() ? (
+                                        <>
+                                            <RemainingTimeToDate timestamp={new Date(achievements.biggest_liquidation.week_ends[week]).getTime() / 1000} stopAtZero={true} />
+                                            <span className="text-xs font-boldy">left</span>
+                                        </>
+                                    ) : (
+                                        'Week has ended'
+                                    )}
                                 </div>
                             </div>
 
@@ -723,7 +731,7 @@ export default function Competition() {
                                 <div className='flex flex-row gap-3 items-center'>
                                     <div className='flex gap-2 items-center justify-center pl-8 lg:pl-0'>
                                         <FormatNumber
-                                            nb={myProvisionnalAdxRewards ?? 0}
+                                            nb={myProvisionalAdxRewards ?? 0}
                                             format="number"
                                             isDecimalDimmed={false}
                                             className="text-base font-boldy"
@@ -740,7 +748,7 @@ export default function Competition() {
 
                                     <div className='flex gap-2 items-center justify-center'>
                                         <FormatNumber
-                                            nb={myProvisionnalJtoRewards ?? 0}
+                                            nb={myProvisionalJtoRewards ?? 0}
                                             format="number"
                                             isDecimalDimmed={false}
                                             className="text-base font-boldy"
