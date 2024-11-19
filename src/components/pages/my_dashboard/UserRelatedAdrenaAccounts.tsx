@@ -1,5 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { ReactNode, useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
 import { PositionExtended, UserProfileExtended, VestExtended } from '@/types';
@@ -26,7 +27,7 @@ function onchainAccountData({
       </div>
     ),
     value: (
-      <OnchainAccountInfo className="md:ml-auto text-sm" address={address} />
+      <OnchainAccountInfo className="md:ml-auto text-sm" address={address} shorten={true} />
     ),
   };
 }
@@ -120,16 +121,17 @@ export default function UserRelatedAdrenaAccounts({
 
   if (!data) return null;
 
-  return (
+  return (<div className={twMerge("flex w-full bg-third items-center justify-center", className)}>
     <Table
-      className={className}
+      className='rounded-none sm:pl-8 sm:pr-8'
       rowHovering={true}
-      breakpoint="650px"
-      rowTitleWidth="50%"
+      breakpoint="0px"
+      rowTitleWidth="60%"
       data={data}
-      rowTitleClassName="text-sm"
+      rowTitleClassName="text-xs"
+      rowClassName='text-xs'
       pagination={true}
       nbItemPerPage={10}
     />
-  );
+  </div>);
 }

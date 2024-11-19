@@ -1,4 +1,3 @@
-import { PublicKey } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
@@ -10,7 +9,6 @@ import TradingStats from '@/components/pages/user_profile/TradingStats';
 import VestStats from '@/components/pages/user_profile/Veststats';
 import WalletConnection from '@/components/WalletAdapter/WalletConnection';
 import useWalletStakingAccounts from '@/hooks/useWalletStakingAccounts';
-import { useSelector } from '@/store/store';
 import {
   PageProps,
   VestExtended,
@@ -28,11 +26,6 @@ export default function MyDashboard({
 }) {
   const [nickname, setNickname] = useState<string | null>(null);
   const { stakingAccounts } = useWalletStakingAccounts();
-  const wallet = useSelector((s) => s.walletState.wallet);
-  const owner: PublicKey | null = wallet
-    ? new PublicKey(wallet.walletAddress)
-    : null;
-
 
   const [userVest, setUserVest] = useState<VestExtended | null>(null);
 
@@ -138,20 +131,14 @@ export default function MyDashboard({
 
               <div className='h-[1px] w-full bg-bcolor' />
 
-              <div className='flex flex-col items-center gap-4 mt-auto pb-4'>
-                <div className='text-xl font-boldy'>OnChain Accounts</div>
-
-                <UserRelatedAdrenaAccounts
-                  className='h-auto w-[90%] flex ml-auto mr-auto'
-                  userProfile={userProfile}
-                  userVest={userVest}
-                  positions={positions}
-                />
-              </div>
+              <UserRelatedAdrenaAccounts
+                className='h-auto w-full flex mt-auto rounded-none'
+                userProfile={userProfile}
+                userVest={userVest}
+                positions={positions}
+              />
             </>
           )}
-
-
         </div>
       </div >
     </>
