@@ -66,7 +66,7 @@ const jtoRewardsPlaceholder = {
     'No Division': [],
 };
 
-export default function Competition() {
+export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean }) {
     const wallet = useSelector((state) => state.walletState.wallet);
     const { allUserProfiles } = useAllUserProfiles();
     const [data, setData] = useState<TradingCompetitionLeaderboardAPI | null>(
@@ -809,7 +809,7 @@ export default function Competition() {
                         title=""
                         close={() => setActiveProfile(null)}
                     >
-                        <ViewProfileModal profile={activeProfile} />
+                        <ViewProfileModal profile={activeProfile} showFeesInPnl={showFeesInPnl} />
                     </Modal>
                 )}
             </AnimatePresence>

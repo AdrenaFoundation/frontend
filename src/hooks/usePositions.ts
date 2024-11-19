@@ -101,7 +101,7 @@ export default function usePositions(): PositionExtended[] | null {
               return;
             }
 
-            console.log('Position decoded', position);
+            calculatePnLandLiquidationPrice(position, tokenPrices);
 
             setPositions((prevPositions) => [
               ...(prevPositions?.filter(

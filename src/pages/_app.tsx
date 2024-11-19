@@ -185,6 +185,7 @@ function AppComponent({
     'terms-and-conditions-acceptance',
     'priority-fee',
     'max-priority-fee',
+    'show-fees-in-pnl',
   ]);
 
   const [priorityFeeOption, setPriorityFeeOption] = useState<PriorityFeeOption>(
@@ -195,6 +196,8 @@ function AppComponent({
   const [maxPriorityFee, setMaxPriorityFee] = useState<number | null>(
     DEFAULT_MAX_PRIORITY_FEE,
   );
+
+  const [showFeesInPnl, setShowFeesInPnl] = useState<boolean>(true);
 
   const [isTermsAndConditionModalOpen, setIsTermsAndConditionModalOpen] =
     useState<boolean>(false);
@@ -222,6 +225,12 @@ function AppComponent({
 
     if (maxPriorityFee && !isNaN(maxPriorityFee)) {
       setMaxPriorityFee(maxPriorityFee);
+    }
+
+    const showFeesInPnl = cookies['show-fees-in-pnl'];
+
+    if (showFeesInPnl && showFeesInPnl === 'false') {
+      setShowFeesInPnl(false);
     }
   }, [cookies]);
 
@@ -314,6 +323,8 @@ function AppComponent({
         setFavoriteRpc={setFavoriteRpc}
         preferredSolanaExplorer={preferredSolanaExplorer}
         adapters={adapters}
+        showFeesInPnl={showFeesInPnl}
+        setShowFeesInPnl={setShowFeesInPnl}
       >
         {
           <TermsAndConditionsModal
@@ -358,6 +369,8 @@ function AppComponent({
           setFavoriteRpc={setFavoriteRpc}
           preferredSolanaExplorer={preferredSolanaExplorer}
           adapters={adapters}
+          showFeesInPnl={showFeesInPnl}
+          setShowFeesInPnl={setShowFeesInPnl}
         />
       </RootLayout>
     </>
