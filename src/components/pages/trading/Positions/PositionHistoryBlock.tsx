@@ -242,12 +242,12 @@ export default function PositionHistoryBlock({
         <label className="flex items-center ml-1 cursor-pointer">
           <Switch
             className="mr-0.5"
-            checked={!showAfterFees}
+            checked={showAfterFees}
             onChange={() => setShowAfterFees(!showAfterFees)}
             size="small"
           />
           <span className="ml-0.5 text-xxs text-gray-600 whitespace-nowrap w-6 text-center">
-            {showAfterFees ? 'w/o fees' : 'w/ fees'}
+            {showAfterFees ? 'w/ fees' : 'w/o fees'}
           </span>
         </label>
       </div>
