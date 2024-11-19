@@ -82,9 +82,9 @@ export default function OwnerBloc({
 
       <div className="flex flex-col w-full h-full items-center justify-center pb-4 z-20">
         {nicknameUpdating ? (
-          <div className="flex flex-col items-center w-full justify-center">
+          <div className="flex flex-col items-center w-full justify-center pb-4">
             <InputString
-              className="flex w-full border rounded-lg bg-inputcolor text-center justify-center mt-4 font-boldy"
+              className="flex w-full max-w-[24em] border rounded-lg bg-inputcolor text-center justify-center mt-4 font-boldy"
               value={updatedNickname ?? ''}
               onChange={setUpdatedNickname}
               placeholder="The Great Trader"
@@ -142,13 +142,13 @@ export default function OwnerBloc({
 
         <OnchainAccountInfo
           address={userProfile.pubkey}
-          className="text-md text-xs opacity-50 font-white font-boldy"
+          className="text-md text-xs font-white font-boldy z-20"
           iconClassName='hidden'
         />
       </div>
 
       <DateInfo
-        className="text-sm absolute bottom-2 right-4 z-20"
+        className="text-sm absolute bottom-2 right-4 z-20 font-boldy"
         timestamp={userProfile.nativeObject.createdAt}
         shorten={true}
       />
