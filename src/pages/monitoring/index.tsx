@@ -25,8 +25,6 @@ export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesIn
     'lite' | 'full' | 'livePositions' | 'userProfiles' | 'flows'
   >('lite');
 
-
-
   const searchParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
