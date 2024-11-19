@@ -90,7 +90,7 @@ export default function ALPSwapBuy({
             console.log('error', error);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [alpInput, collateralInput, collateralToken.decimals, collateralToken.mint, connected, triggerWalletTokenBalancesReload, wallet && wallet.walletAddress]);
+    }, [alpInput, collateralInput, collateralToken.decimals, collateralToken.mint, connected, wallet && wallet.walletAddress]);
 
     const estimateAddLiquidityAndFeeForAlternativeRoutes = useCallback(async () => {
         // Because we fire one request every time the user change the input, needs to keep only the last one
