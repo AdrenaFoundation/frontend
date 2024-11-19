@@ -1,6 +1,6 @@
 import Tippy from '@tippyjs/react';
 import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 import Switch from '@/components/common/Switch/Switch';
@@ -17,10 +17,12 @@ export default function PositionBlockReadOnly({
     bodyClassName,
     borderColor,
     position,
+    showFeesInPnl,
 }: {
     bodyClassName?: string;
     borderColor?: string;
     position: PositionExtended;
+    showFeesInPnl: boolean;
 }) {
     const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -98,7 +100,11 @@ export default function PositionBlockReadOnly({
         </div>
     );
 
-    const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
+    useEffect(() => {
+        setShowAfterFees(showFeesInPnl);
+    }, [showFeesInPnl]);
+
+    const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl); // State to manage fee display
     const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
     const pnl = (

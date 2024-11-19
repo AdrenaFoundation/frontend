@@ -27,6 +27,7 @@ const CustomizedContent: React.FC<{
   positionPubkey: PublicKey;
   setSelectedPosition: Dispatch<SetStateAction<PublicKey | null>>;
   selectedPosition: PublicKey | null;
+  showFeesInPnl: boolean;
 }> = ({
   depth,
   x,
@@ -94,8 +95,10 @@ const CustomizedContent: React.FC<{
 
 export default function AllPositionsChart({
   allPositions,
+  showFeesInPnl,
 }: {
   allPositions: PositionExtended[] | null;
+  showFeesInPnl: boolean;
 }) {
   const [data, setData] = useState<{
     key: string;
@@ -216,7 +219,7 @@ export default function AllPositionsChart({
     <div className='flex flex-col w-full h-full items-center'>
       <div className='min-h-[9em] h-auto w-full max-w-[60em] shrink-0 flex items-center justify-center pb-2'>
         {selectedPositionObject !== null ?
-          <PositionBlockReadOnly position={selectedPositionObject} /> :
+          <PositionBlockReadOnly position={selectedPositionObject} showFeesInPnl={showFeesInPnl} /> :
           <div className='w-full h-[80%] border-4 border-dashed border-bcolor flex text-xs items-center justify-center opacity-50'>Click on a position to see the detail</div>}
       </div>
 
@@ -228,7 +231,7 @@ export default function AllPositionsChart({
           dataKey="size"
           isAnimationActive={false}
           // Note: Needs to provide keys for typescript to be happy, even though Treemap is filling up the keys
-          content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} pnl={null} pnlPercentage={null} blocTitle={null} positionPubkey={PublicKey.default} />}>
+          content={<CustomizedContent setSelectedPosition={setSelectedPosition} selectedPosition={selectedPosition} root={undefined} depth={0} x={0} y={0} width={0} height={0} index={0} payload={undefined} color={''} rank={0} name={''} pnl={null} pnlPercentage={null} blocTitle={null} positionPubkey={PublicKey.default} showFeesInPnl={showFeesInPnl} />}>
         </Treemap>
       </ResponsiveContainer>
 
