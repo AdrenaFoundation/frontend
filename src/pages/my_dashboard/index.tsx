@@ -41,8 +41,10 @@ export default function MyDashboard({
   triggerUserProfileReload,
   triggerWalletTokenBalancesReload,
   readonly,
+  showFeesInPnl,
 }: PageProps & {
   readonly?: boolean;
+  showFeesInPnl: boolean;
 }) {
   const [nickname, setNickname] = useState<string | null>(null);
   const { stakingAccounts, triggerWalletStakingAccountsReload } =
@@ -308,6 +310,7 @@ export default function MyDashboard({
               positions={positions}
               triggerUserProfileReload={triggerUserProfileReload}
               title={<div className='flex gap-2'>Positions <LiveIcon /></div>}
+              showFeesInPnl={showFeesInPnl}
             />
 
             <StakesStats

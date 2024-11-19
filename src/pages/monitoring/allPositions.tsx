@@ -15,7 +15,7 @@ import { getTokenImage, getTokenSymbol } from '@/utils';
 import reloadIcon from '../../../public/images/Icons/arrow-down-up.svg';
 import resetIcon from '../../../public/images/Icons/cross.svg';
 
-export default function AllPositions() {
+export default function AllPositions({ showFeesInPnl }: { showFeesInPnl: boolean }) {
     const wallet = useSelector((state) => state.walletState.wallet);
 
     const connected = !!wallet;
@@ -181,7 +181,7 @@ export default function AllPositions() {
                     </div>
 
                     {view === 'chart' ? <div className='flex w-full min-h-[34em] h-[34em] grow'>
-                        <AllPositionsChart allPositions={sortedPositions} />
+                        <AllPositionsChart allPositions={sortedPositions} showFeesInPnl={showFeesInPnl} />
                     </div> : null}
 
                     {view === 'list' ? <><div className='flex flex-col'>
@@ -243,6 +243,7 @@ export default function AllPositions() {
                                         <PositionBlockReadOnly
                                             key={position.pubkey.toBase58()}
                                             position={position}
+                                            showFeesInPnl={showFeesInPnl}
                                         />
                                     ))}
                                 </div>

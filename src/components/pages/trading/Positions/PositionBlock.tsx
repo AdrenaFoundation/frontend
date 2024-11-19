@@ -28,6 +28,7 @@ export default function PositionBlock({
   triggerClosePosition,
   triggerStopLossTakeProfit,
   triggerEditPositionCollateral,
+  showFeesInPnl,
 }: {
   bodyClassName?: string;
   borderColor?: string;
@@ -35,6 +36,7 @@ export default function PositionBlock({
   triggerClosePosition: (p: PositionExtended) => void;
   triggerStopLossTakeProfit: (p: PositionExtended) => void;
   triggerEditPositionCollateral: (p: PositionExtended) => void;
+  showFeesInPnl: boolean;
 }) {
   const tokenPrices = useSelector((s) => s.tokenPrices);
 
@@ -148,7 +150,11 @@ export default function PositionBlock({
     </div>
   );
 
-  const [showAfterFees, setShowAfterFees] = useState(true); // State to manage fee display
+  useEffect(() => {
+    setShowAfterFees(showFeesInPnl);
+  }, [showFeesInPnl]);
+
+  const [showAfterFees, setShowAfterFees] = useState(showFeesInPnl); // State to manage fee display
   const fees = -((position.exitFeeUsd ?? 0) + (position.borrowFeeUsd ?? 0));
 
   const pnl = (

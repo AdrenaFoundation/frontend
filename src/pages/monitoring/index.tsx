@@ -15,7 +15,7 @@ import Flow from './flows';
 
 // Display all sorts of interesting data used to make sure everything works as intended
 // Created this page here so anyone can follow - open source maxi
-export default function Monitoring(pageProps: PageProps) {
+export default function Monitoring({ showFeesInPnl, ...pageProps }: { showFeesInPnl: boolean } & PageProps) {
   const poolInfo = usePoolInfo(pageProps.custodies);
 
   const [view, setView] = useState<
@@ -214,7 +214,7 @@ export default function Monitoring(pageProps: PageProps) {
           transition={{ duration: 0.3 }}
           className='min-h-[80vh]'
         >
-          <AllPositions />
+          <AllPositions showFeesInPnl={showFeesInPnl} />
         </motion.div>
       ) : null}
 
@@ -259,7 +259,7 @@ export default function Monitoring(pageProps: PageProps) {
           transition={{ duration: 0.3 }}
           className='min-h-[80vh]'
         >
-          <AllUserProfiles />{' '}
+          <AllUserProfiles showFeesInPnl={showFeesInPnl} />{' '}
         </motion.div>
       ) : null}
 
