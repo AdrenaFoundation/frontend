@@ -1,14 +1,18 @@
 import { twMerge } from 'tailwind-merge';
 
+import LiveIcon from '@/components/common/LiveIcon/LiveIcon';
 import NumberDisplay from '@/components/common/NumberDisplay/NumberDisplay';
+import FormatNumber from '@/components/Number/FormatNumber';
 import { UserProfileExtended } from '@/types';
 
 export default function TradingStats({
   userProfile,
   className,
+  livePositionsNb,
 }: {
   userProfile: UserProfileExtended;
   className?: string;
+  livePositionsNb: number | null;
 }) {
   // Calculate the total profit/loss (without fees)
   const totalProfitLoss =
@@ -20,7 +24,7 @@ export default function TradingStats({
     userProfile.shortStats.feePaidUsd;
 
   return (
-    <div className={twMerge("gap-1 flex-wrap flex-col sm:flex-row w-full flex", className)}>
+    <div className={twMerge("flex-wrap flex-row w-full flex", className)}>
       <NumberDisplay
         title="Realized PnL"
         nb={totalProfitLoss}
@@ -55,21 +59,35 @@ export default function TradingStats({
             userProfile.shortStats.feePaidUsd) > 0 ? 'text-red' : '',
         )}
         isDecimalDimmed={false}
-      // tippyInfo='This include the Open/Close fees (0 bps open, 16bps close) and the Borrow fees.'
       />
 
-      <NumberDisplay
-        title="Positions"
-        className='border-0 min-w-[9em] p-1'
-        bodyClassName='text-base'
-        headerClassName='pb-2'
-        titleClassName='text-[0.7em] sm:text-[0.7em]'
-        nb={
-          userProfile.longStats.openedPositionCount +
-          userProfile.shortStats.openedPositionCount
-        }
-        precision={0}
-      />
+      <div className='flex-col w-full rounded-lg z-20 relative flex items-center flex-1 min-h-[2em] bg-transparent border-0 min-w-[9em] p-1'>
+        <div className='flex flex-col text-center justify-center pb-2 uppercase text-txtfade text-[0.7em] sm:text-[0.7em] font-boldy'>Positions</div>
+
+        <div className='flex gap-1 items-center justify-center w-full'>
+          <FormatNumber
+            nb={
+              userProfile.longStats.openedPositionCount +
+              userProfile.shortStats.openedPositionCount
+            }
+            precision={0}
+            className='text-base'
+          />
+
+          <div className='text-txtfade'>{'/'}</div>
+
+          <div className='flex gap-1'>
+            <FormatNumber
+              nb={livePositionsNb}
+              precision={0}
+              className='text-base'
+              suffixClassName='text-sm font-boldy text-txtfade'
+            />
+
+            <LiveIcon />
+          </div>
+        </div>
+      </div>
 
       <NumberDisplay
         title="Liquidated Positions"

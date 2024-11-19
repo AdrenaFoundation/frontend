@@ -5,12 +5,13 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import InputString from '@/components/common/inputString/InputString';
 import MultiStepNotification from '@/components/common/MultiStepNotification/MultiStepNotification';
-import StyledContainer from '@/components/common/StyledContainer/StyledContainer';
 import DateInfo from '@/components/pages/monitoring/DateInfo';
 import OnchainAccountInfo from '@/components/pages/monitoring/OnchainAccountInfo';
 import { UserProfileExtended } from '@/types';
 
-import editIcon from '../.../../../../../public/images/edit-icon.png';
+import editIcon from '../../../../public/images/edit-icon.png';
+import pfp from '../../../../public/images/monster-pfp.png';
+import pfw from '../../../../public/images/pfw.png';
 
 export default function OwnerBloc({
   userProfile,
@@ -58,16 +59,36 @@ export default function OwnerBloc({
   };
 
   return (
-    <StyledContainer className={twMerge(className)}>
-      <div className="flex w-full h-full items-center justify-center pb-4">
+    <div className={twMerge("items-center justify-center flex flex-col relative pt-[5em] rounded-tl-xl rounded-tr-xl", className)}>
+      <div className='border-2 border-[#0000005A] rounded-full w-[10em] h-[10em] flex shrink-0 top-[-5em] absolute overflow-hidden z-30'>
+        <Image
+          src={pfp}
+          alt="Profile picture"
+          className='w-full h-full'
+          width={250}
+          height={130}
+        />
+      </div>
+
+      <div className='w-full h-full absolute opacity-40 top-0 rounded-tl-xl rounded-tr-xl z-10 overflow-hidden'>
+        <Image
+          src={pfw}
+          alt="Profile wallpaper"
+          className='w-full'
+          width={800}
+          height={400}
+        />
+      </div>
+
+      <div className="flex flex-col w-full h-full items-center justify-center pb-4 z-20">
         {nicknameUpdating ? (
           <div className="flex flex-col items-center w-full justify-center">
             <InputString
-              className="flex w-full border rounded-lg bg-inputcolor text-center justify-center mt-4"
+              className="flex w-full border rounded-lg bg-inputcolor text-center justify-center mt-4 font-boldy"
               value={updatedNickname ?? ''}
               onChange={setUpdatedNickname}
               placeholder="The Great Trader"
-              inputFontSize="2em"
+              inputFontSize="1.2em"
               maxLength={24}
             />
 
@@ -98,13 +119,13 @@ export default function OwnerBloc({
           </div>
         ) : (
           <div className="flex mt-4">
-            <div className="font-special text-4xl ml-2 relative">
+            <div className="font-boldy text-4xl ml-2 relative">
               {userProfile.nickname}
             </div>
 
             {canUpdateNickname ? (
               <Image
-                className="flex ml-4 mt-2 shrink-0 max-w-[20px] max-h-[20px] opacity-20 hover:opacity-100 cursor-pointer"
+                className="flex ml-4 mt-2 shrink-0 max-w-[20px] max-h-[20px] opacity-80 hover:opacity-100 cursor-pointer"
                 src={editIcon}
                 alt="edit icon"
                 width={20}
@@ -118,18 +139,19 @@ export default function OwnerBloc({
             ) : null}
           </div>
         )}
+
+        <OnchainAccountInfo
+          address={userProfile.pubkey}
+          className="text-md text-xs opacity-50 font-white font-boldy"
+          iconClassName='hidden'
+        />
       </div>
-      <OnchainAccountInfo
-        address={userProfile.pubkey}
-        className="text-md absolute top-2 right-4"
-        iconClassName="h-4 w-4"
-        noAddress={true}
-      />
+
       <DateInfo
-        className="text-txtfade text-sm absolute bottom-2 right-4"
+        className="text-sm absolute bottom-2 right-4 z-20"
         timestamp={userProfile.nativeObject.createdAt}
         shorten={true}
       />
-    </StyledContainer>
+    </div>
   );
 }

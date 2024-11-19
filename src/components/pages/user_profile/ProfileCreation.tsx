@@ -12,7 +12,7 @@ export default function ProfileCreation({
 }) {
   return (
     <>
-      <div className="flex flex-col w-full z-20 border bg-secondary p-7 self-center rounded-lg">
+      <div className="flex flex-col w-full z-20 p-7 self-center rounded-lg">
         <div className="flex">
           <h2>Trader profile</h2>
         </div>
