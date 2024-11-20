@@ -282,7 +282,7 @@ export default function StopLossTakeProfit({
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="w-full flex justify-between">
-            <div className="flex w-full justify-between">
+            <div className="flex w-full justify-between items-center">
               <span className="text-sm opacity-50">Liquidation Price</span>
 
               <FormatNumber
@@ -301,7 +301,7 @@ export default function StopLossTakeProfit({
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className="w-full flex justify-between">
-            <div className="flex w-full justify-between">
+            <div className="flex w-full justify-between items-center">
               <span className="text-sm opacity-50">Entry Price</span>
 
               <FormatNumber
@@ -319,7 +319,7 @@ export default function StopLossTakeProfit({
         </div>
 
         <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-lg border p-3">
-          <div className="flex w-full justify-between">
+          <div className="flex w-full justify-between items-center">
             <span className="text-sm opacity-50">Take Profit</span>
             <div className={takeProfitInput !== null ? 'text-blue' : ''}>
               <FormatNumber
@@ -340,7 +340,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className="flex w-full justify-between">
+          <div className="flex w-full justify-between items-center">
             <span className="text-sm opacity-50">Stop Loss</span>
             <div className={stopLossInput !== null ? 'text-blue' : ''}>
               <FormatNumber
@@ -361,7 +361,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className="flex w-full justify-between">
+          <div className="flex w-full justify-between items-center">
             <span className="text-sm opacity-50">PnL</span>
             <div
               className={twMerge(
@@ -394,7 +394,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full h-[1px] bg-bcolor my-1" />
 
-          <div className="flex w-full justify-between">
+          <div className="flex w-full justify-between items-center">
             <span className="text-sm opacity-50">Net Value</span>
             <>
               <NetValueTooltip position={position}>
