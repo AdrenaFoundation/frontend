@@ -43,7 +43,13 @@ import { getAbbrevWalletAddress } from '@/utils';
 
 import infoIcon from '../../../public/images/Icons/info.svg';
 
-export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean }) {
+export default function Competition({
+    showFeesInPnl,
+}: {
+    showFeesInPnl: boolean;
+}) {
+    const startDate = new Date('11/11/2024');
+    const endDate = new Date('12/23/2024');
     const wallet = useSelector((state) => state.walletState.wallet);
     const { allUserProfiles } = useAllUserProfiles();
     const [data, setData] = useState<TradingCompetitionLeaderboardAPI | null>(
@@ -56,8 +62,10 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
     const [allAchievements, setAllAchievements] = useState<
         LeaderboardReturnTypeAPI<{ showAchievements: true }>['achievements'] | null
     >(null);
-
-    const [week, setWeek] = useState(0);
+    const weeksPassedSinceStartDate = Math.floor(
+        (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
+    );
+    const [week, setWeek] = useState(weeksPassedSinceStartDate);
     const [currentUserData, setCurrentUserData] = useState<
         | (TradingCompetitionLeaderboardAPI[keyof TradingCompetitionLeaderboardAPI][number] & {
             division: keyof TradingCompetitionLeaderboardAPI;
@@ -69,12 +77,6 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
         useState<UserProfileExtended | null>(null);
     const [tradersCount, setTradersCount] = useState<number | null>(null);
     const [totalVolume, setTotalVolume] = useState<number | null>(null);
-
-    const startDate = new Date('11/11/2024');
-    const endDate = new Date('12/23/2024');
-    const weeksPassedSinceStartDate = Math.floor(
-        (Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 7),
-    );
 
     useEffect(() => {
         getData();
@@ -277,7 +279,6 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                 },
             );
 
-            setWeek(weeksPassedSinceStartDate);
             setAllAchievements(achievements);
             setAchievements(
                 formattedAchievements(achievements, weeksPassedSinceStartDate),
@@ -554,11 +555,10 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                         />
                                         <span className="text-xs font-boldy">left</span>
                                     </div>
-                                ) : <p className='text-xs font-boldy'>
-                                    Week has ended
-                                </p>
-                                }
-                            </div >
+                                ) : (
+                                    <p className="text-xs font-boldy">Week has ended</p>
+                                )}
+                            </div>
 
                             <div className="flex flex-row gap-2 items-center">
                                 {Array.from({ length: 6 }, (_, i) => i).map((i) => (
@@ -579,8 +579,8 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                                     </div>
                                 ))}
                             </div>
-                        </div >
-                    </div >
+                        </div>
+                    </div>
 
                     <WeeklyReward
                         rewards={[
@@ -635,7 +635,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                         ]}
                         handleProfileView={handleProfileView}
                     />
-                </div >
+                </div>
 
                 <div className="w-full h-[1px] bg-[#1F2730] bg-gradient-to-r from-[#1F2730] to-[#1F2730] opacity-50 px-4 sm:px-8 my-3" />
 
@@ -825,7 +825,7 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                         />
                     </div>
                 </div>
-            </div >
+            </div>
             <AnimatePresence>
                 {activeProfile && (
                     <Modal
@@ -834,7 +834,10 @@ export default function Competition({ showFeesInPnl }: { showFeesInPnl: boolean 
                         title=""
                         close={() => setActiveProfile(null)}
                     >
-                        <ViewProfileModal profile={activeProfile} showFeesInPnl={showFeesInPnl} />
+                        <ViewProfileModal
+                            profile={activeProfile}
+                            showFeesInPnl={showFeesInPnl}
+                        />
                     </Modal>
                 )}
             </AnimatePresence>
