@@ -11,6 +11,7 @@ import { nativeToUi } from '@/utils';
 
 import chevronDownIcon from '../../../../public/images/chevron-down.svg';
 import lockIcon from '../../../../public/images/Icons/lock.svg';
+import plusIcon from '../../../../public/images/plus.png';
 import votingIcon from '../../../../public/images/voting.png';
 import weightIcon from '../../../../public/images/weight.png';
 import RemainingTimeToDate from '../monitoring/RemainingTimeToDate';
@@ -82,8 +83,10 @@ export default function LockedStakesDuration({
         className,
       )}
     >
-      <div className='flex flex-col w-full items-center cursor-pointer bg-secondary' onClick={() => {
-        setDetailOpen(!detailOpen)
+      <div className={twMerge('flex flex-col w-full items-center bg-secondary', lockedStakes.length > 1 ? 'cursor-pointer' : '')} onClick={() => {
+        if (lockedStakes.length > 1) {
+          setDetailOpen(!detailOpen);
+        }
       }}>
         <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-1 pb-1 pr-4')} >
           <Image src={lockIcon} width={14} height={14} alt="Lock icon" className='mr-1' />
@@ -92,19 +95,19 @@ export default function LockedStakesDuration({
             {Number(lockDuration) / 3600 / 24} days lock
           </div>
 
-          <div className='text-sm flex gap-1 font-boldy text-txtfade ml-1'>
+          {lockedStakes.length > 1 ? <div className='text-sm flex gap-1 font-boldy text-txtfade ml-1'>
             ({lockedStakes.length})
-          </div>
+          </div> : null}
 
-          {firstUnlock !== null ? <div className='flex items-center justify-center ml-auto gap-2'>
+          {firstUnlock !== null ? <div className='flex items-center justify-center ml-auto flex-col sm:flex-row sm:gap-2'>
             <div className='text-xs font-boldy text-txtfade'>{lockedStakes.length > 1 ? 'First unlock in' : 'Unlock in'}</div>
             <RemainingTimeToDate timestamp={firstUnlock} className='text-xs' />
           </div> : null}
         </div>
 
         <div className='flex flex-col pt-2 pb-2 items-center relative w-full'>
-          <div className='flex gap-x-2 items-center justify-center'>
-            Total :
+          <div className='flex gap-x-2 items-center justify-center font-boldy'>
+            {lockedStakes.length > 1 ? 'Total:' : null}
             <FormatNumber
               nb={totalStaked}
               className='text-xl'
@@ -114,6 +117,22 @@ export default function LockedStakesDuration({
             />
 
             <div className='text-xl font-boldy'>{token}</div>
+
+            {lockedStakes.some(l => !l.isGenesis) ? <Tippy
+              content={
+                <div className="flex flex-col">
+                  Add more {token} to the last added/upgraded stake.
+                </div>
+              }
+              placement="auto"
+            >
+              <div className='w-6 h-8 flex items-center justify-center opacity-60 hover:opacity-100 cursor-pointer' onClick={(e) => {
+                e.stopPropagation();
+                handleClickOnUpdateLockedStake(lockedStakes.reduce((last, current) => last.endTime.toNumber() > current.endTime.toNumber() ? last : current));
+              }}>
+                <Image src={plusIcon} width={16} height={16} alt="Plus icon" />
+              </div>
+            </Tippy> : null}
           </div>
 
           {lockedStakes.length === 1 && lockedStakes[0].isGenesis ?
