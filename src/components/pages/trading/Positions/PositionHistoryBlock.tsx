@@ -257,13 +257,13 @@ export default function PositionHistoryBlock({
           <FormatNumber
             nb={
               showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl
+                ? positionHistory.pnl
+                : positionHistory.pnl + positionHistory.fees
             }
             format="currency"
             className={`mr-0.5 opacity-90 font-bold text-sm text-${(showAfterFees
-              ? positionHistory.pnl + positionHistory.fees
-              : positionHistory.pnl) > 0
+              ? positionHistory.pnl
+              : positionHistory.pnl + positionHistory.fees) > 0
               ? 'green'
               : 'redbright'
               }`}
@@ -275,8 +275,8 @@ export default function PositionHistoryBlock({
           <FormatNumber
             nb={
               ((showAfterFees
-                ? positionHistory.pnl + positionHistory.fees
-                : positionHistory.pnl) /
+                ? positionHistory.pnl
+                : positionHistory.pnl + positionHistory.fees) /
                 positionHistory.final_collateral_amount) *
               100
             }
@@ -286,14 +286,14 @@ export default function PositionHistoryBlock({
             precision={2}
             isDecimalDimmed={false}
             suffixClassName={`ml-0 text-${(showAfterFees
-              ? positionHistory.pnl + positionHistory.fees
-              : positionHistory.pnl) > 0
+              ? positionHistory.pnl
+              : positionHistory.pnl + positionHistory.fees) > 0
               ? 'green'
               : 'redbright'
               }`}
             className={`text-xxs opacity-90 text-${(showAfterFees
-              ? positionHistory.pnl + positionHistory.fees
-              : positionHistory.pnl) > 0
+              ? positionHistory.pnl
+              : positionHistory.pnl + positionHistory.fees) > 0
               ? 'green'
               : 'redbright'
               }`}
@@ -306,8 +306,8 @@ export default function PositionHistoryBlock({
   );
 
   const pnlValue = showAfterFees
-    ? positionHistory.pnl + positionHistory.fees
-    : positionHistory.pnl;
+    ? positionHistory.pnl
+    : positionHistory.pnl + positionHistory.fees;
 
   const percentage = positionHistory.final_collateral_amount
     ? (pnlValue / positionHistory.final_collateral_amount) * 100
