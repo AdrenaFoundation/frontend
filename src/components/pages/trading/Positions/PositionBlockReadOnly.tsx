@@ -126,7 +126,11 @@ export default function PositionBlockReadOnly({
             {position.pnl ? (
                 <div className="flex items-center">
                     <FormatNumber
-                        nb={showAfterFees ? position.pnl : position.pnl - fees} // Adjusted for fee display
+                        nb={
+                            showAfterFees
+                                ? position.pnl + fees
+                                : position.pnl
+                        }
                         format="currency"
                         className={`mr-0.5 font-bold text-${(showAfterFees ? position.pnl : position.pnl - fees) > 0
                             ? 'green'
