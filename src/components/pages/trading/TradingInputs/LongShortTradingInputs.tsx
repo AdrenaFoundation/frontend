@@ -740,7 +740,7 @@ export default function LongShortTradingInputs({
             />
             <InfoAnnotation
               className=" inline-flex"
-              text="This value is how much total size is available to be borrowed for that market and side by all traders. It depend of the available liquidities in the pool and restrictions from the configuration."
+              text="This value represents the total size available for borrowing in this market and side by all traders. It depends on the pool's available liquidity and configuration restrictions."
             />
           </div>
         </div>
