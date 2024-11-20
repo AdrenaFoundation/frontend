@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 import Button from '@/components/common/Button/Button';
 import Pagination from '@/components/common/Pagination/Pagination';
 import FormatNumber from '@/components/Number/FormatNumber';
-import { LockedStakeExtended } from '@/types';
+import { AdxLockPeriod, AlpLockPeriod, LockedStakeExtended } from '@/types';
 import { nativeToUi } from '@/utils';
 
 import chevronDownIcon from '../../../../public/images/chevron-down.svg';
@@ -22,6 +22,7 @@ export default function LockedStakesDuration({
   handleRedeem,
   handleClickOnFinalizeLockedRedeem,
   handleClickOnUpdateLockedStake,
+  handleClickOnStakeMore,
 }: {
   lockedStakes: LockedStakeExtended[];
   className?: string;
@@ -31,8 +32,10 @@ export default function LockedStakesDuration({
     earlyExit: boolean,
   ) => void;
   handleClickOnUpdateLockedStake: (lockedStake: LockedStakeExtended) => void;
+  handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
 }) {
   const [detailOpen, setDetailOpen] = useState<boolean>(false);
+  const [showWeights, setShowWeight] = useState<boolean>(false);
   const [lockedStakesPage, setLockedStakesPage] = useState(1);
   const lockedStakesPerPage = 3;
 
@@ -82,35 +85,45 @@ export default function LockedStakesDuration({
         className,
       )}
     >
-      <div className='flex flex-col w-full items-center cursor-pointer bg-secondary' onClick={() => {
-        setDetailOpen(!detailOpen)
+      <div className={twMerge('flex flex-col w-full items-center bg-secondary', lockedStakes.length > 1 ? 'cursor-pointer' : '')} onClick={() => {
+        if (lockedStakes.length > 1) {
+          setDetailOpen(!detailOpen);
+        }
       }}>
-        <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-1 pb-1 pr-4')} >
-          <Image src={lockIcon} width={14} height={14} alt="Lock icon" className='mr-1' />
+        <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-2 pb-2 pr-4')}>
+          <div className='flex gap-1'>
+            <Image src={lockIcon} width={14} height={14} alt="Lock icon" />
 
-          <div className='text-sm flex gap-1 font-boldy text-txtfade cursor-pointer'>
-            {Number(lockDuration) / 3600 / 24} days lock
+            <div className='text-sm flex gap-1 font-boldy text-txtfade cursor-pointer'>
+              {Number(lockDuration) / 3600 / 24} days lock
+            </div>
+
+            {lockedStakes.length > 1 ? <div className='text-sm flex gap-1 '>
+              <div className='hidden sm:block text-txtfade font-boldy'>/</div>
+              <div className='flex'>
+                <div className='sm:hidden text-txtfade font-boldy'>{"("}</div>
+                <div className='text-txtfade font-boldy'>{lockedStakes.length}</div>
+                <div className='sm:hidden text-txtfade'>{")"}</div>
+              </div>
+              <div className='hidden sm:block text-txtfade font-boldy'>stakes</div>
+            </div> : null}
           </div>
 
-          <div className='text-sm flex gap-1 font-boldy text-txtfade ml-1'>
-            ({lockedStakes.length})
-          </div>
-
-          {firstUnlock !== null ? <div className='flex items-center justify-center ml-auto gap-2'>
+          {firstUnlock !== null ? <div className='flex items-center justify-center ml-auto flex-col sm:flex-row sm:gap-2'>
             <div className='text-xs font-boldy text-txtfade'>{lockedStakes.length > 1 ? 'First unlock in' : 'Unlock in'}</div>
             <RemainingTimeToDate timestamp={firstUnlock} className='text-xs' />
           </div> : null}
         </div>
 
         <div className='flex flex-col pt-2 pb-2 items-center relative w-full'>
-          <div className='flex gap-x-2 items-center justify-center'>
-            Total :
+          <div className='flex gap-x-2 items-center justify-center font-boldy'>
+            {lockedStakes.length > 1 ? 'Total:' : null}
             <FormatNumber
               nb={totalStaked}
               className='text-xl'
               isAbbreviate={true}
               isAbbreviateIcon={false}
-              isDecimalDimmed={true}
+              isDecimalDimmed={false}
             />
 
             <div className='text-xl font-boldy'>{token}</div>
@@ -118,9 +131,15 @@ export default function LockedStakesDuration({
 
           {lockedStakes.length === 1 && lockedStakes[0].isGenesis ?
             <div className='text-xxs bg-[#068862a0] font-boldy pt-[0.1em] pb-[0.1em] px-2 mt-1 rounded w-14 text-center'>genesis</div> : null}
+
+          <div className='sm:absolute right-2 bottom-2 text-xs text-txtfade underline opacity-40 hover:opacity-100 transition-opacity cursor-pointer p-1' onClick={(e) => {
+            e.stopPropagation();
+
+            setShowWeight(!showWeights)
+          }}>{showWeights ? 'hide' : 'show'} weights</div>
         </div>
 
-        <div className='flex border-t pt-2 pb-2 w-full justify-evenly flex-wrap gap-y-4 gap-x-4'>
+        {showWeights ? <div className='flex border-t pt-2 pb-2 w-full justify-evenly flex-wrap gap-y-4 gap-x-4'>
           <div className='flex items-center gap-2'>
             <Image src={weightIcon} width={20} height={6} alt="Weight icon" className='mr-1 h-5 w-5 opacity-10' />
 
@@ -212,33 +231,72 @@ export default function LockedStakesDuration({
               </div>
             </div>
           </div> : null}
-        </div>
+        </div> : null}
       </div>
 
-      {detailOpen ? <div className='border-t-1'>
-        {paginatedLockedStakes.map((lockedStake, i) => <LockedStake
-          lockedStake={lockedStake}
-          key={i}
-          className="border-t"
-          handleRedeem={handleRedeem}
-          handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
-          handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
-        />)}
 
-        <Pagination
-          currentPage={lockedStakesPage}
-          totalItems={lockedStakes ? lockedStakes.length : 0}
-          itemsPerPage={lockedStakesPerPage}
-          onPageChange={setLockedStakesPage}
-        />
-      </div> : null}
+      {
+        detailOpen ? <div className='border-t-1'>
+          {paginatedLockedStakes.map((lockedStake, i) => <LockedStake
+            lockedStake={lockedStake}
+            key={i}
+            className="border-t"
+            handleRedeem={handleRedeem}
+            handleClickOnFinalizeLockedRedeem={handleClickOnFinalizeLockedRedeem}
+            handleClickOnUpdateLockedStake={handleClickOnUpdateLockedStake}
+          />)}
 
-      {lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex border-t bg-[#a8a8a810] cursor-pointer hover:opacity-100' onClick={() => {
-        setDetailOpen(!detailOpen)
-      }}>
-        <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('opacity-40', detailOpen ? 'rotate-180' : '')} />
-      </div> :
-        <div className='flex w-full'>
+          <Pagination
+            currentPage={lockedStakesPage}
+            totalItems={lockedStakes ? lockedStakes.length : 0}
+            itemsPerPage={lockedStakesPerPage}
+            onPageChange={setLockedStakesPage}
+          />
+        </div> : null
+      }
+
+      {
+        lockedStakes.length > 1 ? <div className='w-full items-center justify-center flex flex-col border-t  cursor-pointer'>
+          <div className='flex items-center pb-2 justify-center w-full  pt-1' onClick={() => {
+            setDetailOpen(!detailOpen)
+          }}>
+            <div className='flex gap-1 opacity-40 hover:opacity-100 cursor-pointer transition-opacity justify-center items-center'>
+              <div className='text-txtfade underline  text-xs'>{!detailOpen ? 'See' : 'Hide'} all stakes</div>
+
+              {lockedStakes.length > 1 ? <div className='text-xs flex gap-1 font-boldy text-txtfade'>
+                ({lockedStakes.length})
+              </div> : null}
+            </div>
+
+            <Image src={chevronDownIcon} width={20} height={20} alt="Chevron icon" className={twMerge('opacity-20', detailOpen ? 'rotate-180' : '')} />
+          </div>
+
+          <div className='flex w-full'>
+            {!lockedStakes[0].isGenesis && (
+              <Button
+                variant="outline"
+                size="xs"
+                className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+                title="Quick Upgrade"
+                onClick={() => {
+                  handleClickOnUpdateLockedStake(
+                    lockedStakes.reduce((last, lockedStake) => last.endTime.toNumber() > lockedStake.endTime.toNumber() ? last : lockedStake),
+                  )
+                }}
+              />
+            )}
+
+            <Button
+              variant="outline"
+              size="xs"
+              title={`New ${lockDuration.toNumber() / 3600 / 24}d Stake`}
+              className="rounded-none py-2 border-b-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+              onClick={() => {
+                handleClickOnStakeMore((lockedStakes[0].lockDuration.toNumber() / 3600 / 24) as AlpLockPeriod | AdxLockPeriod)
+              }}
+            />
+          </div>
+        </div> : <div className='flex w-full'>
           <Button
             variant="outline"
             size="xs"
@@ -260,7 +318,18 @@ export default function LockedStakesDuration({
               }}
             />
           )}
-        </div>}
-    </div>
+
+          <Button
+            variant="outline"
+            size="xs"
+            title={`New ${lockDuration.toNumber() / 3600 / 24}d Stake`}
+            className="rounded-none py-2 border-b-0 w-20 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
+            onClick={() => {
+              handleClickOnStakeMore((lockedStakes[0].lockDuration.toNumber() / 3600 / 24) as AlpLockPeriod | AdxLockPeriod)
+            }}
+          />
+        </div>
+      }
+    </div >
   );
 }
