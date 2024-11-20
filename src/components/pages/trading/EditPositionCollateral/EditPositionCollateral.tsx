@@ -366,10 +366,10 @@ export default function EditPositionCollateral({
           <div className="w-full flex justify-between">
             <div className="text-sm text-gray-400">Pos. Size native</div>
             <FormatNumber
-              nb={position.size}
+              nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
               className="text-gray-400"
-              precision={position.collateralToken.displayAmountDecimalsPrecision}
-              suffix={getTokenSymbol(position.collateralToken.symbol)}
+              precision={position.token.displayAmountDecimalsPrecision}
+              suffix={getTokenSymbol(position.token.symbol)}
               isDecimalDimmed={true}
             />
           </div>

@@ -261,7 +261,7 @@ export default function PositionBlockReadOnly({
                             <Tippy
                                 content={
                                     <FormatNumber
-                                        nb={position.size}
+                                        nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
                                         format="number"
                                         className="text-gray-400 text-xs"
                                         precision={position.token.displayAmountDecimalsPrecision}
