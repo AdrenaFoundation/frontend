@@ -13,6 +13,7 @@ interface FormatNumberProps {
   placeholder?: string;
   className?: string;
   suffixClassName?: string;
+  prefixClassName?: string;
   wrapperClassName?: string;
   placeholderClassName?: string;
   isDecimalDimmed?: boolean;
@@ -35,6 +36,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
       placeholder = '-',
       className,
       suffixClassName = '',
+      prefixClassName,
       wrapperClassName,
       placeholderClassName,
       isDecimalDimmed = true,
@@ -105,7 +107,7 @@ const FormatNumber = forwardRef<HTMLParagraphElement, FormatNumberProps>(
     const nbDiv = (
       <p ref={ref} className={twMerge('font-mono inline-block', className)}>
         {isAbbreviate && isAbbreviateIcon && '~'}
-        {prefix}
+        {prefix && <span className={twMerge(className, prefixClassName)}>{prefix}</span>}
         {integer}
         {decimal && (
           <span
