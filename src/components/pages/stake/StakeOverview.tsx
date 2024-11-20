@@ -18,6 +18,7 @@ import {
   LIQUID_STAKE_LOCK_DURATION,
 } from '@/pages/stake';
 import {
+  AdxLockPeriod,
   AlpLockPeriod,
   ClaimHistoryExtended,
   LockedStakeExtended,
@@ -64,7 +65,7 @@ export default function StakeOverview({
     lockedStake: LockedStakeExtended,
     earlyExit: boolean,
   ) => void;
-  handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod) => void;
+  handleClickOnStakeMore: (initialLockPeriod: AlpLockPeriod | AdxLockPeriod) => void;
   handleClickOnClaimRewards: () => Promise<void>;
   handleClickOnFinalizeLockedRedeem: (lockedStake: LockedStakeExtended) => void;
   userPendingUsdcRewards: number;
@@ -663,6 +664,7 @@ export default function StakeOverview({
               <Button
                 variant="primary"
                 size="sm"
+                className='w-[8em]'
                 title="Add Stake"
                 onClick={() =>
                   handleClickOnStakeMore(DEFAULT_LOCKED_STAKE_LOCK_DURATION)
@@ -681,6 +683,7 @@ export default function StakeOverview({
             handleClickOnUpdateLockedStake={
               handleClickOnUpdateLockedStake
             }
+            handleClickOnStakeMore={handleClickOnStakeMore}
           />
         </div>
 
