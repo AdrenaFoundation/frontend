@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+import Button from '@/components/common/Button/Button';
 import InputNumber from '@/components/common/InputNumber/InputNumber';
 import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatPriceInfo, getTokenSymbol } from '@/utils';
-import Button from '@/components/common/Button/Button';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;

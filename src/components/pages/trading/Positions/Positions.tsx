@@ -1,4 +1,5 @@
 import { AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import { useState } from 'react';
 
 import Modal from '@/components/common/Modal/Modal';
@@ -11,7 +12,6 @@ import EditPositionCollateral from '../EditPositionCollateral/EditPositionCollat
 import StopLossTakeProfit from '../StopLossTakeProfit/StopLossTakeProfit';
 import PositionsBlocks from './PositionsBlocks';
 import SharePositionModal from './SharePositionModal';
-import Image from 'next/image';
 
 export default function Positions({
   bodyClassName,
