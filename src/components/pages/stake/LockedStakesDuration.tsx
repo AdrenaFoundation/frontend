@@ -279,7 +279,9 @@ export default function LockedStakesDuration({
                 className="rounded-none py-2 w-20 border-b-0 border-l-0 border-r-0 text-txtfade border-bcolor bg-[#a8a8a810] grow h-8"
                 title="Quick Upgrade"
                 onClick={() => {
-                  handleClickOnUpdateLockedStake(lockedStakes[0])
+                  handleClickOnUpdateLockedStake(
+                    lockedStakes.reduce((last, lockedStake) => last.endTime.toNumber() > lockedStake.endTime.toNumber() ? last : lockedStake),
+                  )
                 }}
               />
             )}

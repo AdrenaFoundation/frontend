@@ -287,6 +287,8 @@ export default function Stake({
       setUpgradeLockedStake(false);
     } catch (error) {
       console.error('error', error);
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
     }
   };
 
@@ -331,6 +333,8 @@ export default function Stake({
       }
     } catch (error) {
       console.error('error', error);
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
     }
   };
 
@@ -403,6 +407,8 @@ export default function Stake({
       }
     } catch (error) {
       console.error('error', error);
+      triggerWalletTokenBalancesReload();
+      triggerWalletStakingAccountsReload();
     }
   };
 
