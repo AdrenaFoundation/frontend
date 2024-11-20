@@ -90,7 +90,7 @@ export default function LockedStakesDuration({
           setDetailOpen(!detailOpen);
         }
       }}>
-        <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-1 pb-1 pr-4')}>
+        <div className={twMerge('border-b items-center justify-center bg-secondary w-full flex pl-4 pt-2 pb-2 pr-4')}>
           <div className='flex gap-1'>
             <Image src={lockIcon} width={14} height={14} alt="Lock icon" />
 
@@ -98,8 +98,14 @@ export default function LockedStakesDuration({
               {Number(lockDuration) / 3600 / 24} days lock
             </div>
 
-            {lockedStakes.length > 1 ? <div className='text-sm flex gap-1 font-boldy text-txtfade'>
-              / {lockedStakes.length} stakes
+            {lockedStakes.length > 1 ? <div className='text-sm flex gap-1 '>
+              <div className='hidden sm:block text-txtfade font-boldy'>/</div>
+              <div className='flex'>
+                <div className='sm:hidden text-txtfade font-boldy'>{"("}</div>
+                <div className='text-txtfade font-boldy'>{lockedStakes.length}</div>
+                <div className='sm:hidden text-txtfade'>{")"}</div>
+              </div>
+              <div className='hidden sm:block text-txtfade font-boldy'>stakes</div>
             </div> : null}
           </div>
 
