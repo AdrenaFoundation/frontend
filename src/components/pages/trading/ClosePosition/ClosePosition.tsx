@@ -65,7 +65,7 @@ export default function ClosePosition({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position, (markPrice ?? 0) + (collateralMarkPrice ?? 0)]);
 
-  const rowStyle = 'w-full flex justify-between mt-0.5';
+  const rowStyle = 'w-full flex justify-between items-center';
 
   const doFullClose = async () => {
     if (!markPrice) return;
@@ -123,7 +123,7 @@ export default function ClosePosition({
     >
       <div className="p-4">
         <p className="mb-2 font-boldy">Receive</p>
-        <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3">
+        <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3 py-2.5">
           <div className="flex flex-row gap-3 items-center">
             <Image
               src={tokenImage}
@@ -173,7 +173,7 @@ export default function ClosePosition({
       <div className="px-4">
         <div className="text-white text-sm mb-1 font-boldy">Position to close</div>
 
-        <div className="flex flex-col border p-3 bg-[#040D14] rounded-lg">
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
           <div className={rowStyle}>
             <div className="text-sm font-bold">Mark Price</div>
 
@@ -291,7 +291,7 @@ export default function ClosePosition({
           Fees Breakdown
         </div>
 
-        <div className="flex flex-col border p-3 bg-[#040D14] rounded-lg">
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
           <div className={rowStyle}>
             <div className="flex items-center text-sm text-txtfade">
               Exit Fees

@@ -312,7 +312,7 @@ export default function EditPositionCollateral({
     }
   };
 
-  const rowStyle = 'w-full flex justify-between mt-0.5';
+  const rowStyle = 'w-full flex justify-between items-center';
 
   const rightArrowElement = (
     <Image
@@ -347,7 +347,7 @@ export default function EditPositionCollateral({
       className={twMerge('flex flex-col gap-2 h-full w-[24em] pt-4', className)}
     >
       <div className="px-4">
-        <div className="flex flex-col p-3 border bg-[#040D14] rounded-lg">
+        <div className="flex flex-col p-3 py-2.5 border bg-[#040D14] rounded-lg">
           <div className="w-full flex justify-between mt-">
             <div className="flex items-center">
               <Image
@@ -401,7 +401,7 @@ export default function EditPositionCollateral({
       </div>
 
       <div className="px-4 mt-2">
-        <div className="flex flex-col border p-3 bg-[#040D14] rounded-lg">
+        <div className="flex flex-col border p-3 py-2.5 bg-[#040D14] rounded-lg">
           <div className={rowStyle}>
             <div className="text-sm">Collateral</div>
             <div className="flex items-center justify-end">
@@ -674,7 +674,7 @@ export default function EditPositionCollateral({
         <>
           {/* Withdraw collateral info */}
           <div className="flex flex-col text-sm ml-4 mr-4">
-            <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+            <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
               <Image
                 className="opacity-60 absolute left-3 top-auto bottom-auto"
                 src={infoIcon}
@@ -694,7 +694,7 @@ export default function EditPositionCollateral({
             position.currentLeverage &&
             position.currentLeverage >= maxInitialLeverage ? (
             <div className="flex flex-col text-sm ml-4 mr-4">
-              <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
+              <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
                 <Image
                   className="opacity-60 absolute left-3 top-auto bottom-auto"
                   src={infoIcon}
