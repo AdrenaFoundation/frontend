@@ -40,13 +40,16 @@ export default function Modal({
   close,
   className,
   wrapperClassName,
+  customTitle,
 }: {
   title?: ReactNode;
+  customTitle?: ReactNode;
   children: ReactNode;
   close: () => void;
   className?: string;
   wrapperClassName?: string;
 }) {
+
   const isMobile = useBetterMediaQuery('(max-width: 640px)');
   const controls = useDragControls();
 
@@ -124,6 +127,7 @@ export default function Modal({
                   height={30}
                 />
                 {title && <h2 className="ml-4 text-[1.50em]">{title}</h2>}
+                {customTitle}
               </div>
             )}
 

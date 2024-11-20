@@ -58,7 +58,8 @@ export default function EditPositionCollateral({
     collateralUsd: number;
   } | null>();
 
-  const markPrice: number | null = tokenPrices[getTokenSymbol(position.token.symbol)];
+  const markPrice: number | null =
+    tokenPrices[getTokenSymbol(position.token.symbol)];
   const collateralPrice: number | null =
     tokenPrices[position.collateralToken.symbol];
 
@@ -72,14 +73,19 @@ export default function EditPositionCollateral({
   const [belowMinLeverage, setBelowMinLeverage] = useState(false);
   const [aboveMaxLeverage, setAboveMaxLeverage] = useState(false);
 
-  const maxInitialLeverage = window.adrena.client.getCustodyByPubkey(position.custody)?.maxInitialLeverage;
+  const maxInitialLeverage = window.adrena.client.getCustodyByPubkey(
+    position.custody,
+  )?.maxInitialLeverage;
 
   const positionNetValue = position.collateralUsd + (position.pnl ?? 0);
 
-  const [newPositionNetValue, setNewPositionNetValue] = useState<number | null>(null);
+  const [newPositionNetValue, setNewPositionNetValue] = useState<number | null>(
+    null,
+  );
 
   const executeBtnText = (() => {
-    if (selectedAction === 'deposit' && !walletBalance) return `No ${position.collateralToken.symbol} in wallet`;
+    if (selectedAction === 'deposit' && !walletBalance)
+      return `No ${position.collateralToken.symbol} in wallet`;
     if (!input) return 'Enter an amount';
 
     if (belowMinLeverage) {
@@ -90,9 +96,7 @@ export default function EditPositionCollateral({
       return 'Leverage over limit';
     }
 
-    return selectedAction === 'deposit'
-      ? 'Deposit'
-      : `Withdraw`;
+    return selectedAction === 'deposit' ? 'Deposit' : `Withdraw`;
   })();
 
   useEffect(() => {
@@ -120,7 +124,10 @@ export default function EditPositionCollateral({
       return;
     }
 
-    if (maxInitialLeverage && updatedInfos.currentLeverage > maxInitialLeverage) {
+    if (
+      maxInitialLeverage &&
+      updatedInfos.currentLeverage > maxInitialLeverage
+    ) {
       setBelowMinLeverage(false);
       setAboveMaxLeverage(true);
       return;
@@ -147,7 +154,6 @@ export default function EditPositionCollateral({
           position,
           collateralUsd: uiToNative(input, USD_DECIMALS),
           notification,
-
         });
     } catch (error) {
       console.log('error', error);
@@ -170,7 +176,6 @@ export default function EditPositionCollateral({
             : position.collateralToken.decimals,
         ),
         notification,
-
       });
 
       triggerUserProfileReload();
@@ -258,7 +263,8 @@ export default function EditPositionCollateral({
       updatedCollateralAmount = updatedCollateralUsd / collateralPrice;
     }
 
-    const updatedCurrentLeverage = position.sizeUsd / (updatedCollateralUsd + position.pnl);
+    const updatedCurrentLeverage =
+      position.sizeUsd / (updatedCollateralUsd + position.pnl);
 
     if (updatedCurrentLeverage < 1.1) {
       setBelowMinLeverage(true);
@@ -270,7 +276,6 @@ export default function EditPositionCollateral({
         setAboveMaxLeverage(true);
       } else {
         setAboveMaxLeverage(false);
-
       }
       setUpdatedInfos({
         currentLeverage: updatedCurrentLeverage,
@@ -278,14 +283,19 @@ export default function EditPositionCollateral({
         collateralUsd: updatedCollateralUsd,
       });
     }
-  }, [input, collateralPrice, position.collateralAmount, position.collateralUsd, position.pnl, position.sizeUsd, selectedAction, maxInitialLeverage]);
+  }, [
+    input,
+    collateralPrice,
+    position.collateralAmount,
+    position.collateralUsd,
+    position.pnl,
+    position.sizeUsd,
+    selectedAction,
+    maxInitialLeverage,
+  ]);
 
   const calculateCollateralPercentage = (percentage: number) =>
-    Number(
-      Number((positionNetValue * Number(percentage)) / 100).toFixed(
-        2,
-      ),
-    );
+    Number(Number((positionNetValue * Number(percentage)) / 100).toFixed(2));
 
   const handleExecute = async () => {
     if (!input) return;
@@ -326,15 +336,18 @@ export default function EditPositionCollateral({
     }
   }
 
-  const isInputValid = input !== null && input > 0 && (
-    (selectedAction === 'deposit') || // the input is capped at what the user has in wallet
-    (selectedAction === 'withdraw' && input <= position.collateralUsd)
-  );
+  const isInputValid =
+    input !== null &&
+    input > 0 &&
+    (selectedAction === 'deposit' || // the input is capped at what the user has in wallet
+      (selectedAction === 'withdraw' && input <= position.collateralUsd));
 
   return (
-    <div className={twMerge('flex flex-col gap-2 h-full w-[24em] pt-4', className)}>
-      <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
-        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg">
+    <div
+      className={twMerge('flex flex-col gap-2 h-full w-[24em] pt-4', className)}
+    >
+      <div className="px-4">
+        <div className="flex flex-col p-3 border bg-[#040D14] rounded-lg">
           <div className="w-full flex justify-between mt-">
             <div className="flex items-center">
               <Image
@@ -344,7 +357,9 @@ export default function EditPositionCollateral({
                 alt={`${getTokenSymbol(position.token.symbol)} logo`}
                 className="mr-2"
               />
-              <div className="text-sm text-bold">{getTokenSymbol(position.token.symbol)} Price</div>
+              <div className="text-sm text-bold">
+                {getTokenSymbol(position.token.symbol)} Price
+              </div>
             </div>
             <FormatNumber
               nb={markPrice}
@@ -354,7 +369,9 @@ export default function EditPositionCollateral({
             />
           </div>
 
-          <div className="w-full flex justify-between mt-2">
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className="w-full flex justify-between">
             <div className="text-sm text-gray-400">Pos. Size</div>
             <FormatNumber
               nb={position.sizeUsd}
@@ -363,10 +380,17 @@ export default function EditPositionCollateral({
               className="text-gray-400"
             />
           </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className="w-full flex justify-between">
             <div className="text-sm text-gray-400">Pos. Size native</div>
             <FormatNumber
-              nb={position.side === 'long' ? position.size : position.sizeUsd / position.price}
+              nb={
+                position.side === 'long'
+                  ? position.size
+                  : position.sizeUsd / position.price
+              }
               className="text-gray-400"
               precision={position.token.displayAmountDecimalsPrecision}
               suffix={getTokenSymbol(position.token.symbol)}
@@ -376,10 +400,8 @@ export default function EditPositionCollateral({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 text-sm mt-1 ml-4 mr-4">
-
-        <div className="flex flex-col border p-4 bg-third rounded-lg">
-
+      <div className="px-4 mt-2">
+        <div className="flex flex-col border p-3 bg-[#040D14] rounded-lg">
           <div className={rowStyle}>
             <div className="text-sm">Collateral</div>
             <div className="flex items-center justify-end">
@@ -406,6 +428,8 @@ export default function EditPositionCollateral({
             </div>
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">PnL</div>
 
@@ -419,10 +443,11 @@ export default function EditPositionCollateral({
             />
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Net Value</div>
             <div className="flex items-center justify-end">
-
               <NetValueTooltip position={position}>
                 <span className="underline-dashed">
                   <FormatNumber
@@ -451,6 +476,8 @@ export default function EditPositionCollateral({
             </div>
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Entry Price</div>
 
@@ -461,6 +488,8 @@ export default function EditPositionCollateral({
               className="text-gray-400"
             />
           </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
             <div className="text-sm text-gray-400">Initial Leverage</div>
@@ -473,6 +502,8 @@ export default function EditPositionCollateral({
               />
             </div>
           </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
             <div className="text-sm">Current Leverage</div>
@@ -494,7 +525,12 @@ export default function EditPositionCollateral({
                         <FormatNumber
                           nb={updatedInfos?.currentLeverage}
                           suffix="x"
-                          className={maxInitialLeverage && updatedInfos.currentLeverage > maxInitialLeverage ? 'text-redbright' : ''}
+                          className={
+                            maxInitialLeverage &&
+                              updatedInfos.currentLeverage > maxInitialLeverage
+                              ? 'text-redbright'
+                              : ''
+                          }
                         />
                       ) : (
                         '-'
@@ -505,6 +541,8 @@ export default function EditPositionCollateral({
               ) : null}
             </div>
           </div>
+
+          <div className="w-full h-[1px] bg-bcolor my-1" />
 
           <div className={rowStyle}>
             <div className="text-sm">Liquidation Price</div>
@@ -527,10 +565,11 @@ export default function EditPositionCollateral({
                         <FormatNumber
                           nb={liquidationPrice}
                           format="currency"
-                          precision={position.token.displayPriceDecimalsPrecision}
+                          precision={
+                            position.token.displayPriceDecimalsPrecision
+                          }
                           className={`text-orange`}
                           isDecimalDimmed={false}
-
                         />
                       ) : (
                         '-'
@@ -541,7 +580,6 @@ export default function EditPositionCollateral({
               ) : null}
             </div>
           </div>
-
         </div>
       </div>
 
@@ -571,15 +609,16 @@ export default function EditPositionCollateral({
                   width={20}
                   alt="Warning icon"
                 />
-                This action would take the leverage below the minimum of 1.1x. Please adjust your input.
+                This action would take the leverage below the minimum of 1.1x.
+                Please adjust your input.
               </div>
             </div>
           )}
 
-          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
             <TradingInput
               className="text-sm"
-              inputClassName="border-0 bg-inputcolor"
+              inputClassName="border-0 bg-third"
               value={input}
               selectedToken={
                 position.side === 'long'
@@ -617,7 +656,9 @@ export default function EditPositionCollateral({
                   />
                   <FormatNumber
                     nb={balance}
-                    precision={position.collateralToken.displayAmountDecimalsPrecision}
+                    precision={
+                      position.collateralToken.displayAmountDecimalsPrecision
+                    }
                     className="text-txtfade"
                     isDecimalDimmed={false}
                     suffix={position.collateralToken.symbol}
@@ -641,14 +682,17 @@ export default function EditPositionCollateral({
                 width={16}
                 alt="Info icon"
               />
-              <span className="text-sm" >
-                Withdrawn collateral will be received in {position.collateralToken.symbol}
+              <span className="text-sm">
+                Withdrawn collateral will be received in{' '}
+                {position.collateralToken.symbol}
               </span>
             </div>
           </div>
 
           {/* Check for max leverage*/}
-          {maxInitialLeverage && position.currentLeverage && position.currentLeverage >= maxInitialLeverage ? (
+          {maxInitialLeverage &&
+            position.currentLeverage &&
+            position.currentLeverage >= maxInitialLeverage ? (
             <div className="flex flex-col text-sm ml-4 mr-4">
               <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-xs mb-2">
                 <Image
@@ -658,17 +702,18 @@ export default function EditPositionCollateral({
                   width={16}
                   alt="Info icon"
                 />
-                <span className="text-sm" >
-                  Your position is above the maximum leverage of {maxInitialLeverage}x, you cannot withdraw more collateral.
+                <span className="text-sm">
+                  Your position is above the maximum leverage of{' '}
+                  {maxInitialLeverage}x, you cannot withdraw more collateral.
                 </span>
               </div>
             </div>
           ) : null}
 
-          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-inputcolor">
+          <div className="flex flex-col border rounded-lg ml-4 mr-4 bg-third">
             <TradingInput
               className="text-sm"
-              inputClassName="border-0 bg-inputcolor"
+              inputClassName="border-0 bg-third"
               value={input}
               selectedToken={
                 {
@@ -680,33 +725,27 @@ export default function EditPositionCollateral({
                 // One token only
               }}
               onChange={setInput}
-              disabled={position.currentLeverage !== null && position.currentLeverage <= 1.1}
+              disabled={
+                position.currentLeverage !== null &&
+                position.currentLeverage <= 1.1
+              }
             />
           </div>
+
           {!aboveMaxLeverage && !belowMinLeverage && (
-            <div className="flex flex-col gap-3 text-sm ml-4 mr-4">
-              {selectedAction === 'withdraw' ? (
-                <div className="bg-third flex justify-evenly p-1 rounded-lg border">
-                  <div
-                    className="text-md  hover:text-white cursor-pointer font-mono"
+            <div className="flex flex-row gap-3 px-4">
+              {[25, 50, 75].map((percent, i) => {
+                return (
+                  <Button
+                    key={i}
+                    title={`${percent}%`}
+                    variant="secondary"
+                    rounded={false}
+                    className="flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono"
                     onClick={() => setInput(calculateCollateralPercentage(25))}
-                  >
-                    25%
-                  </div>
-                  <div
-                    className="text-md  hover:text-white cursor-pointer font-mono"
-                    onClick={() => setInput(calculateCollateralPercentage(50))}
-                  >
-                    50%
-                  </div>
-                  <div
-                    className="text-md  hover:text-white cursor-pointer font-mono"
-                    onClick={() => setInput(calculateCollateralPercentage(75))}
-                  >
-                    75%
-                  </div>
-                </div>
-              ) : null}
+                  ></Button>
+                );
+              })}
             </div>
           )}
 
@@ -720,19 +759,15 @@ export default function EditPositionCollateral({
             of collateral in the position
           </div>
         </>
-      )
-      }
+      )}
 
       <Button
         className="m-4"
         size="lg"
         title={executeBtnText}
-        disabled={
-          !isInputValid || belowMinLeverage || aboveMaxLeverage
-        }
+        disabled={!isInputValid || belowMinLeverage || aboveMaxLeverage}
         onClick={() => handleExecute()}
       />
-    </div >
-
+    </div>
   );
 }

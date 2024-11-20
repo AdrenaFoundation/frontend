@@ -162,7 +162,9 @@ export default function StopLossTakeProfit({
         position.stopLossLimitPrice > 0;
 
       const slippageMultiplier = position.side === 'long' ? 0.99 : 1.01;
-      const adjustedStopLossPrice = stopLossInput ? stopLossInput * slippageMultiplier : null;
+      const adjustedStopLossPrice = stopLossInput
+        ? stopLossInput * slippageMultiplier
+        : null;
 
       // Create Stop loss if not set or if it changed
       if (
@@ -182,7 +184,10 @@ export default function StopLossTakeProfit({
             ))({
               position,
               stopLossLimitPrice: new BN(stopLossInput * 10 ** PRICE_DECIMALS),
-              closePositionPrice: new BN((adjustedStopLossPrice ? adjustedStopLossPrice : stopLossInput) * 10 ** PRICE_DECIMALS),
+              closePositionPrice: new BN(
+                (adjustedStopLossPrice ? adjustedStopLossPrice : stopLossInput) *
+                10 ** PRICE_DECIMALS,
+              ),
             }),
         );
       }
@@ -212,7 +217,10 @@ export default function StopLossTakeProfit({
       MultiStepNotification.newForRegularTransaction('TP/SL').fire();
 
     try {
-      await window.adrena.client.signAndExecuteTxAlternative({ transaction, notification });
+      await window.adrena.client.signAndExecuteTxAlternative({
+        transaction,
+        notification,
+      });
 
       triggerUserProfileReload();
 
@@ -232,8 +240,8 @@ export default function StopLossTakeProfit({
         className,
       )}
     >
-      <div className="w-[90%] ml-auto mr-auto">
-        <div className="bg-blue/30 p-4 border-dashed border-blue rounded flex relative w-full pl-10 text-sm mb-2">
+      <div className="px-6 sm:px-4">
+        <div className="bg-blue/30 p-3 border-dashed border-blue rounded flex relative w-full pl-10 text-sm">
           <Image
             className="opacity-60 absolute left-3 top-auto bottom-auto"
             src={infoIcon}
@@ -241,22 +249,27 @@ export default function StopLossTakeProfit({
             width={16}
             alt="Info icon"
           />
-          <a href="https://docs.adrena.xyz/technical-documentation/mrsablier-and-mrsablierstaking-open-source-keepers" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://docs.adrena.xyz/technical-documentation/mrsablier-and-mrsablierstaking-open-source-keepers"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             SL/TP are executed by our open source keeper MrSablier. Learn more
           </a>
         </div>
 
-        <div className="flex flex-col border p-4 pt-2 bg-third rounded-lg mb-2">
-          <div className="w-full flex justify-between mt-2">
-            <div className="flex items-center">
+        <div className="flex flex-col border p-3 bg-[#040D14] rounded-lg my-3">
+          <div className="w-full flex justify-between">
+            <div className="flex gap-2 items-center">
               <Image
                 src={getTokenImage(position.token)}
-                width={20}
-                height={20}
+                width={16}
+                height={16}
                 alt={`${getTokenSymbol(position.token.symbol)} logo`}
-                className="mr-2"
               />
-              <div className="text-sm text-bold">{getTokenSymbol(position.token.symbol)} Price</div>
+              <div className="text-sm text-bold">
+                {getTokenSymbol(position.token.symbol)} Price
+              </div>
             </div>
             <FormatNumber
               nb={markPrice}
@@ -266,49 +279,56 @@ export default function StopLossTakeProfit({
             />
           </div>
 
-          <div className="w-full flex justify-between mt-2">
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
+          <div className="w-full flex justify-between">
             <div className="flex w-full justify-between">
-              <span className="text-sm text-gray-600">Liquidation Price</span>
+              <span className="text-sm opacity-50">Liquidation Price</span>
 
               <FormatNumber
                 nb={position.liquidationPrice}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
                 isDecimalDimmed={false}
                 className="text-orange"
               />
             </div>
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between">
-              <span className="text-sm text-gray-600">Entry Price</span>
+              <span className="text-sm opacity-50">Entry Price</span>
 
               <FormatNumber
                 nb={position.price}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
                 isDecimalDimmed={true}
                 className="text-gray-100"
               />
             </div>
           </div>
-
         </div>
 
-        <StyledSubSubContainer className="flex-col items-center justify-center text-sm w-full p-4">
-
+        <div className="flex-col items-center justify-center text-sm w-full bg-[#040D14] rounded-lg border p-3">
           <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Take Profit</span>
+            <span className="text-sm opacity-50">Take Profit</span>
             <div className={takeProfitInput !== null ? 'text-blue' : ''}>
-
               <FormatNumber
                 nb={takeProfitInput}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
                 className={twMerge(
                   'text-sm text-regular',
                   takeProfitInput !== null ? 'text-blue' : '',
@@ -318,14 +338,18 @@ export default function StopLossTakeProfit({
             </div>
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Stop Loss</span>
+            <span className="text-sm opacity-50">Stop Loss</span>
             <div className={stopLossInput !== null ? 'text-blue' : ''}>
               <FormatNumber
                 nb={stopLossInput}
                 format="currency"
                 precision={position.token.displayPriceDecimalsPrecision}
-                minimumFractionDigits={position.token.displayPriceDecimalsPrecision}
+                minimumFractionDigits={
+                  position.token.displayPriceDecimalsPrecision
+                }
                 className={twMerge(
                   'text-sm text-regular',
                   stopLossInput !== null ? 'text-blue' : '',
@@ -335,8 +359,10 @@ export default function StopLossTakeProfit({
             </div>
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">PnL</span>
+            <span className="text-sm opacity-50">PnL</span>
             <div
               className={twMerge(
                 'font-bold text-sm',
@@ -344,7 +370,7 @@ export default function StopLossTakeProfit({
                   ? 'text-green'
                   : positionNetPnl < 0
                     ? 'text-red'
-                    : 'text-gray-400',
+                    : 'opacity-opacity-50',
               )}
             >
               {positionNetPnl > 0 ? '+' : positionNetPnl < 0 ? '−' : ''}
@@ -359,15 +385,17 @@ export default function StopLossTakeProfit({
                     ? 'text-green'
                     : positionNetPnl < 0
                       ? 'text-red'
-                      : 'text-gray-400',
+                      : 'opacity-opacity-50',
                 )}
                 isDecimalDimmed={false}
               />
             </div>
           </div>
 
+          <div className="w-full h-[1px] bg-bcolor my-1" />
+
           <div className="flex w-full justify-between">
-            <span className="text-sm text-gray-400">Net Value</span>
+            <span className="text-sm opacity-50">Net Value</span>
             <>
               <NetValueTooltip position={position}>
                 <span className="underline-dashed">
@@ -380,7 +408,7 @@ export default function StopLossTakeProfit({
               </NetValueTooltip>
             </>
           </div>
-        </StyledSubSubContainer>
+        </div>
       </div>
 
       <StopLossTakeProfitInput
@@ -399,9 +427,9 @@ export default function StopLossTakeProfit({
         setIsError={setTakeProfitError}
       />
 
-      <div className="w-full mt-4 gap-4 flex pl-6 pr-6">
+      <div className="w-full mt-4 gap-4 flex px-6 sm:px-4">
         <Button
-          className="font-boldy text-xs w-[10em] grow"
+          className="font-boldy w-[10em] grow"
           size="lg"
           title="Cancel"
           variant="outline"
@@ -409,13 +437,13 @@ export default function StopLossTakeProfit({
         />
 
         <Button
-          className="font-boldy text-xs w-[10em] grow"
+          className="font-boldy w-[10em] grow"
           size="lg"
           title="Confirm"
           disabled={stopLossError || takeProfitError}
           onClick={() => applyConfiguration()}
         />
       </div>
-    </div >
+    </div>
   );
 }

@@ -6,6 +6,7 @@ import FormatNumber from '@/components/Number/FormatNumber';
 import { useSelector } from '@/store/store';
 import { PositionExtended } from '@/types';
 import { formatPriceInfo, getTokenSymbol } from '@/utils';
+import Button from '@/components/common/Button/Button';
 
 const determinePrecision = (price: number): number => {
   if (price < 0.01) return 8;
@@ -73,7 +74,10 @@ export default function StopLossTakeProfitInput({
       } else {
         max = markPrice;
         // Calculate the price at which the PnL equals the position size in USD
-        min = Math.max(position.price - ((position.sizeUsd * markPrice) / position.sizeUsd), 0.00000001);
+        min = Math.max(
+          position.price - (position.sizeUsd * markPrice) / position.sizeUsd,
+          0.00000001,
+        );
       }
     }
 
@@ -128,7 +132,9 @@ export default function StopLossTakeProfitInput({
 
       newValue = parseFloat(newValue.toFixed(precision));
 
-      setInput(newValue !== input ? newValue : parseFloat(newValue.toFixed(precision)));
+      setInput(
+        newValue !== input ? newValue : parseFloat(newValue.toFixed(precision)),
+      );
     }
   };
 
@@ -170,9 +176,14 @@ export default function StopLossTakeProfitInput({
         let newValue: number;
 
         if (position.side === 'long') {
-          newValue = baseValue * (isStopLoss ? (1 + percentage / 100) : (1 + percentage / 100));
-        } else { // short position
-          newValue = baseValue * (isStopLoss ? (1 + percentage / 100) : (1 + percentage / 100));
+          newValue =
+            baseValue *
+            (isStopLoss ? 1 + percentage / 100 : 1 + percentage / 100);
+        } else {
+          // short position
+          newValue =
+            baseValue *
+            (isStopLoss ? 1 + percentage / 100 : 1 + percentage / 100);
         }
 
         // Clip the newValue to min/max
@@ -207,12 +218,12 @@ export default function StopLossTakeProfitInput({
     <div className="flex flex-col w-full">
       <div className="border-t border-bcolor w-full h-[1px]" />
 
-      <div className="flex justify-center mt-1 pb-2 h-8 items-center gap-2">
-        <h5>{type}</h5>
+      <div className="flex my-3 gap-2 px-6 sm:px-4">
+        <p className="font-bold text-base">{type}</p>
 
         {priceIsOk === true && displayValue !== null ? (
           <div className="flex items-center">
-            <div className={twMerge(displayColor + ' text-sm mr-1')}>
+            <div className={twMerge('text-sm mr-1 font-mono', displayColor)}>
               {' '}
               { }
               {isPositive ? '+' : '-'}
@@ -233,96 +244,101 @@ export default function StopLossTakeProfitInput({
         ) : null}
       </div>
 
-      <div className="flex flex-col items-center justify-center w-full pl-6 pr-6 gap-0">
-        <div className="flex gap-1 mb-1 justify-center items-center">
-          <span className="text-xs text-txtfade">Price moves:</span>
-          {percentages.map((percent) => {
-            const sign = isNegative ? '-' : '+';
+      <div className="flex flex-col items-center w-full px-6 sm:px-4 gap-0">
+        <div className="w-full mb-3">
+          <div className="flex items-center border rounded-lg bg-third pt-2 pb-2 grow text-sm w-full relative">
+            <InputNumber
+              value={input === null ? undefined : input}
+              placeholder="none"
+              className="font-mono border-0 outline-none bg-transparent px-2"
+              onChange={setInput}
+              onBlur={handleBlur}
+              inputFontSize="1em"
+            />
 
-            return (
-              <button
-                key={percent}
-                className={twMerge(
-                  "bg-inputcolor rounded px-1 py-0 text-xs hover:bg-inputcolor/80",
-                  sign === '-' ? "text-red" : "text-green"
-                )}
-                onClick={() => adjustInputByPercentage(isNegative ? -percent : percent, isStopLoss)}
+            {input !== null && (
+              <div
+                className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
+                onClick={() => setInput(null)}
               >
-                {sign}{percent}%
-              </button>
-            );
-          })}
+                clear
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-row gap-3 mt-3">
+            {percentages.map((percent, i) => {
+              const sign = isNegative ? '-' : '+';
+              return (
+                <Button
+                  key={i}
+                  title={`${sign}${percent}%`}
+                  variant="secondary"
+                  rounded={false}
+                  className={twMerge(
+                    'flex-grow text-xs bg-third border border-bcolor hover:border-white/10 rounded-lg flex-1 font-mono',
+                    sign === '-' ? 'text-red' : 'text-green',
+                  )}
+                  onClick={() =>
+                    adjustInputByPercentage(
+                      isNegative ? -percent : percent,
+                      isStopLoss,
+                    )
+                  }
+                ></Button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="flex items-center border rounded-lg bg-inputcolor pt-2 pb-2 grow text-sm w-full relative">
-          <InputNumber
-            value={input === null ? undefined : input}
-            placeholder="none"
-            className="font-mono border-0 outline-none bg-transparent flex text-center"
-            onChange={setInput}
-            onBlur={handleBlur}
-            inputFontSize="1em"
-          />
-
-          {input !== null && (
-            <div
-              className="absolute right-2 cursor-pointer text-txtfade hover:text-white"
-              onClick={() => setInput(null)}
-            >
-              clear
-            </div>
-          )}
-        </div>
-
-        <div className="flex">
+        <div className="flex flex-row justify-between w-full">
           {min !== null && (
             <div
-              className={twMerge(
-                'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
-              )}
-              onClick={() =>
-                handleSetInput(getAdjustedPrice(min, true))
-              }
+              className='text-base cursor-pointer hover:opacity-75 transition-opacity duration-300'
+              onClick={() => handleSetInput(getAdjustedPrice(min, true))}
             >
-              <div className={priceIsOk === -1 ? 'text-redbright' : ''}>
-                <FormatNumber
-                  nb={getAdjustedPrice(min, true)}
-                  className="text-sm"
-                  isDecimalDimmed={true}
-                  precision={determinePrecision(markPrice ?? 0)}
-                  prefix="$"
-                />
-              </div>
-              <div className="text-xs text-txtfade">min</div>
+              <FormatNumber
+                nb={getAdjustedPrice(min, true)}
+                className={twMerge(
+                  'text-sm',
+                  priceIsOk === -1 && 'text-redbright',
+                )}
+                isDecimalDimmed={true}
+                precision={determinePrecision(markPrice ?? 0)}
+                format='currency'
+                prefix="min: "
+                prefixClassName={twMerge(
+                  'opacity-50 font-mono',
+                  priceIsOk === -1 && 'text-redbright',
+                )}
+
+              />
             </div>
           )}
 
           {max !== null && (
             <div
-              className={twMerge(
-                'w-[7em] min-w-[7em] max-w-[7em] flex flex-col items-center justify-center text-base cursor-pointer',
-                priceIsOk === 1 ? 'text-redbright' : '',
-                max === null ? 'text-txtfade' : '',
-              )}
-              onClick={() =>
-                handleSetInput(getAdjustedPrice(max, false))
-              }
+              className={twMerge('text-base cursor-pointer hover:opacity-75 transition-opacity duration-300')}
+              onClick={() => handleSetInput(getAdjustedPrice(max, false))}
             >
-              <div
+              <FormatNumber
+                nb={getAdjustedPrice(max, false)}
                 className={twMerge(
-                  priceIsOk === 1 ? 'text-redbright' : '',
-                  max === null ? 'text-txtfade' : '',
+                  'text-sm',
+                  max === null && 'text-txtfade',
+                  priceIsOk === 1 && 'text-redbright',
                 )}
-              >
-                <FormatNumber
-                  nb={getAdjustedPrice(max, false)}
-                  className="text-sm"
-                  isDecimalDimmed={true}
-                  precision={determinePrecision(markPrice ?? 0)}
-                  prefix="$"
-                />
-              </div>
-              <div className="text-xs text-txtfade">max</div>
+                isDecimalDimmed={true}
+                precision={determinePrecision(markPrice ?? 0)}
+                format='currency'
+                prefix="max: "
+                prefixClassName={twMerge(
+                  'opacity-50 font-mono',
+                  max === null && 'text-txtfade',
+                  priceIsOk === 1 && 'text-redbright',
+                )}
+
+              />
             </div>
           )}
         </div>
