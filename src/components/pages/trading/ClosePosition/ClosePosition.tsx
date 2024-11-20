@@ -124,9 +124,6 @@ export default function ClosePosition({
       <div className="p-4">
         <p className="mb-2 font-boldy">Receive</p>
         <div className="flex border bg-[#040D14] w-full justify-between items-center rounded-lg p-3">
-          {/* <div className="text-2xl tracking-wider font-special ml-2">
-            Receive
-          </div> */}
           <div className="flex flex-row gap-3 items-center">
             <Image
               src={tokenImage}
