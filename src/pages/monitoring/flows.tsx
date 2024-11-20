@@ -17,7 +17,7 @@ export default function Flow({
   custodies: CustodyExtended[] | null;
 }) {
   const { data, loading, startDate, setStartDate, endDate, setEndDate } = usePositionStats();
-  const [selectedRange, setSelectedRange] = useState('All Time');
+  const [selectedRange, setSelectedRange] = useState('Last Day');
 
   if (loading) return <div>Loading...</div>;
 
@@ -43,7 +43,7 @@ export default function Flow({
               setEndDate(date.toISOString());
               switch (value) {
                 case 'All Time':
-                  setStartDate('2024-10-25T00:00:00Z');
+                  setStartDate('2024-09-25T00:00:00Z');
                   break;
                 case 'Last Month':
                   date.setMonth(date.getMonth() - 1);
@@ -53,7 +53,7 @@ export default function Flow({
                   date.setDate(date.getDate() - 7);
                   setStartDate(date.toISOString());
                   break;
-                case 'Yesterday':
+                case 'Last Day':
                   date.setDate(date.getDate() - 1);
                   setStartDate(date.toISOString());
                   break;
