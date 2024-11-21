@@ -1,4 +1,4 @@
-import { AccountInfo, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useSelector } from '@/store/store';

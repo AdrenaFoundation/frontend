@@ -31,8 +31,8 @@ export default function LineRechart({
   tippyContent,
   isSmallScreen = true,
   subValue,
-  isReferenceLine,
   formatY = 'currency',
+  isReferenceLine,
 }: {
   title: string;
   data: RechartsData[];
@@ -46,9 +46,9 @@ export default function LineRechart({
   tippyContent?: ReactNode;
   isSmallScreen?: boolean;
   subValue?: number;
-  isReferenceLine?: boolean;
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
+  isReferenceLine?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]

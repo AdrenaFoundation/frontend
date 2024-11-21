@@ -99,7 +99,7 @@ export default function LockedStakesDuration({
             </div>
 
             {lockedStakes.length > 1 ? <div className='text-sm flex gap-1 '>
-              <div className='hidden sm:block text-txtfade font-boldy'>/</div>
+              <div className='hidden sm:block text-txtfade font-boldy'>|</div>
               <div className='flex'>
                 <div className='sm:hidden text-txtfade font-boldy'>{"("}</div>
                 <div className='text-txtfade font-boldy'>{lockedStakes.length}</div>
@@ -110,7 +110,7 @@ export default function LockedStakesDuration({
           </div>
 
           {firstUnlock !== null ? <div className='flex items-center justify-center ml-auto flex-col sm:flex-row sm:gap-2'>
-            <div className='text-xs font-boldy text-txtfade'>{lockedStakes.length > 1 ? 'First unlock in' : 'Unlock in'}</div>
+            <div className='text-xs font-boldy text-txtfade'>{lockedStakes.length > 1 ? 'First unlock in' : 'Unlocks in'}</div>
             <RemainingTimeToDate timestamp={firstUnlock} className='text-xs' />
           </div> : null}
         </div>
@@ -286,7 +286,7 @@ export default function LockedStakesDuration({
               />
             )}
 
-            <Button
+            {/* <Button
               variant="outline"
               size="xs"
               title={`New ${lockDuration.toNumber() / 3600 / 24}d Stake`}
@@ -294,7 +294,7 @@ export default function LockedStakesDuration({
               onClick={() => {
                 handleClickOnStakeMore((lockedStakes[0].lockDuration.toNumber() / 3600 / 24) as AlpLockPeriod | AdxLockPeriod)
               }}
-            />
+            /> */}
           </div>
         </div> : <div className='flex w-full'>
           <Button
@@ -319,7 +319,7 @@ export default function LockedStakesDuration({
             />
           )}
 
-          <Button
+          {/* <Button
             variant="outline"
             size="xs"
             title={`New ${lockDuration.toNumber() / 3600 / 24}d Stake`}
@@ -327,7 +327,7 @@ export default function LockedStakesDuration({
             onClick={() => {
               handleClickOnStakeMore((lockedStakes[0].lockDuration.toNumber() / 3600 / 24) as AlpLockPeriod | AdxLockPeriod)
             }}
-          />
+          /> */}
         </div>
       }
     </div >
