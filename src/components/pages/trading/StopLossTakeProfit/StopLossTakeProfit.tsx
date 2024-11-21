@@ -253,7 +253,7 @@ export default function StopLossTakeProfit({
             target="_blank"
             rel="noopener noreferrer"
           >
-            SL/TP are executed by our open source keeper MrSablier. Learn more
+            SL/TP Automation by our open source keeper MrSablier
           </a>
         </div>
 
@@ -282,7 +282,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between items-center">
-              <span className="text-sm opacity-50">Liquidation Price</span>
+              <span className="text-sm opacity-50">Liquidation</span>
 
               <FormatNumber
                 nb={position.liquidationPrice}
@@ -301,7 +301,7 @@ export default function StopLossTakeProfit({
 
           <div className="w-full flex justify-between">
             <div className="flex w-full justify-between items-center">
-              <span className="text-sm opacity-50">Entry Price</span>
+              <span className="text-sm opacity-50">Entry</span>
 
               <FormatNumber
                 nb={position.price}
