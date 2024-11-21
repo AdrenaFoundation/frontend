@@ -83,7 +83,7 @@ export default function StakeApr({
         <div className='flex flex-col ml-8 mr-8 mt-4'>
           <p className='opacity-75 text-base bg-third p-4 w-full text-justify border border-bcolor rounded flex flex-col gap-2 min-h-[8em]'>
             {token === "ALP" ? <span className='text-sm'>
-              The displayed APR are projected values based on the last 7 days rolling. The liquid USDC rewards is given to each ALP, staked or not.
+              The displayed APR are projected values based on the last 7 days rolling. The liquid USDC rewards is given to each ALP, staked or not. Therefore the APR displayed below is the sum of liquid and locked APR.
               To give the most accurate estimate, the APR calculation uses the price of ADX at the time the staking round is resolved.
               The APR does not include Genesis ADX rewards.
             </span> : <span className='text-sm'>
