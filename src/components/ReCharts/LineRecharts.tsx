@@ -32,6 +32,7 @@ export default function LineRechart({
   isSmallScreen = true,
   subValue,
   formatY = 'currency',
+  isReferenceLine,
 }: {
   title: string;
   data: RechartsData[];
@@ -47,6 +48,7 @@ export default function LineRechart({
   subValue?: number;
   gmt?: number;
   formatY?: 'percentage' | 'currency' | 'number';
+  isReferenceLine?: boolean;
 }) {
   const [hiddenLabels, setHiddenLabels] = React.useState<
     DataKey<string | number>[]
@@ -182,6 +184,19 @@ export default function LineRechart({
               />
             );
           })}
+
+          {isReferenceLine && (
+            <ReferenceLine
+              y={100}
+              stroke="white"
+              label={{
+                position: 'top',
+                value: 'Max utilization',
+                fill: 'white',
+                fontSize: 12,
+              }}
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
